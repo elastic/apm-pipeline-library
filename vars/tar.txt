@@ -10,4 +10,4 @@
 <p><b>file:</b>Name of the tar file to create.</p>
 <p><b>archive:</b>If true the file will be archive in Jenkins (default true).</p>
 <p><b>dir:</b>The folder to compress (default .), it should not contain the compress file.</p>
-<p><b>pathPrefix:</b>Prefix to remove from the path when the files are compressed.</p>
+<p><b>pathPrefix:</b>Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.</p>
