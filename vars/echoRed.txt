@@ -1,0 +1,5 @@
+<p>
+ Print test on red on a xterm.
+ 
+ echoRed(text: '[ERROR]')
+</p>
