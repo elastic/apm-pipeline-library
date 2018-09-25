@@ -15,8 +15,6 @@ Jenkins pipeline shared library for the project APM
 |   +- co
 |       +- elastic
 |           +- bar.json    # static helper data for org.foo.Bar
-+- resources               # project's Jenkinsfile
-|   +- apm-server          # apm-server project's Jenkinsfile
 ```
 
 * [Pipeline](https://jenkins.io/doc/book/pipeline/)
