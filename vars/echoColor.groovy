@@ -48,8 +48,8 @@ def call(Map params = [:]) {
   colorsbgMap['light cyan'] = '106'
   colorsbgMap['white'] = '107'
   
-  def colorfgValue = colorsfgMap[colorfg.toLowercase()]
-  def colorbgValue = colorsbgMap[colorfg.toLowercase()]
+  def colorfgValue = colorsfgMap[colorfg.toLowerCase()]
+  def colorbgValue = colorsbgMap[colorfg.toLowerCase()]
   
   if(colorfgValue != null && colorbgValue != null){
     echo "\u001B[" + colorfgValue + ";" + colorbgValue + "m" + text + "\u001B[0m"
