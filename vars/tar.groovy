@@ -21,7 +21,7 @@ def call(Map params = [:]) {
     return
   }
   try {
-    sh pathPrefix + "tar -czf '" + file + "' '" + dir + "'"
+    sh pathPrefix + "tar -czf '${WORKSPACE}/" + file + "' '" + dir + "'"
     if(archive){
       archiveArtifacts(allowEmptyArchive: true, 
                             artifacts: file, 
@@ -30,7 +30,9 @@ def call(Map params = [:]) {
   } catch (e){
     echo file + " was not compresesd or archived"
     if(!allowMissing){
-        currentBuild.result = "UNSTABLE"
+      currentBuild.result = "UNSTABLE"
+    } else {
+      currentBuild.result = "STABLE"
     }
   }
 }
