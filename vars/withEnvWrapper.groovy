@@ -1,6 +1,8 @@
-def call(Closure body, Map params = [:]) {
+def call(Map params = [:]) {
   boolean cleanup = params.containsKey('cleanup') ? params.cleanup : true
   String unstashSrc = params.containsKey('unstashSrc') ? params.unstashSrc : null
+  Closure body = params.containsKey('body') ? params.body : null
+  
   timestamps {
     ansiColor('xterm') {
       withEnv([
