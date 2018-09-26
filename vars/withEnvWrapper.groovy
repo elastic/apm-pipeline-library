@@ -10,11 +10,11 @@ def call(Closure body, boolean cleanup=true, String unstashSrc=null) {
         'JOB_GCS_BUCKET=apm-ci-artifacts/jobs', 
         'JOB_GIT_CREDENTIALS=f6c7695a-671e-4f4f-a331-acdce44ff9ba']) {
           if(cleanup){
-            //deteleDir()
+            /* deteleDir() */
             echo "delete"
           }
           if(unstashSrc != null){
-            //unstash unstashSrc
+            /* unstash unstashSrc */
             echo "unstash"
           }
           body()
