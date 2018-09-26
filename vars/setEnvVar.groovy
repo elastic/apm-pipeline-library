@@ -8,7 +8,5 @@
 def call(Map params = [:]) {
   def name = params.containsKey('name') ? params.name : null
   def value = params.containsKey('value') ? params.value : null
-  script {
-    env[variable] = value
-  }
+  env["${name}"] = value
 }
