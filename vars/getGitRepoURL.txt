@@ -1,0 +1,6 @@
+<p>
+  Get the current git repository url from the .git folder.
+  If the checkout was made by Jenkins, you would use the environment variable GIT_URL.
+  In other cases, you probably has to use this step.
+</p>
+<p>def repoUrl = getGitRepoURL()</p>
