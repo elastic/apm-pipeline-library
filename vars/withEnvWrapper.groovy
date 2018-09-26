@@ -1,7 +1,4 @@
 def call(Closure body) {
-  def cleanup = true
-  def unstashSrc = "source"
-  
   timestamps {
     ansiColor('xterm') {
       withEnv([
@@ -12,15 +9,8 @@ def call(Closure body) {
         'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
         'JOB_GCS_BUCKET=apm-ci-artifacts/jobs', 
         'JOB_GIT_CREDENTIALS=f6c7695a-671e-4f4f-a331-acdce44ff9ba']) {
-          if(cleanup){
-            echo "Deleting dir content - " + pwd()
-            deleteDir()
-          }
-          if(unstashSrc != null){
-            echo "Unstashing " + unstashSrc
-            unstash unstashSrc
-          }
-          body()
+        deleteDir()
+        body()
       }
     }
   }
