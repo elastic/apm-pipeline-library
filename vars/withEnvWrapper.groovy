@@ -1,3 +1,10 @@
+#!/usr/bin/env groovy
+
+/**
+withEnvWrapper(){
+  //block
+}
+*/
 def call(Closure body) {
   timestamps {
     ansiColor('xterm') {
@@ -15,6 +22,7 @@ def call(Closure body) {
     }
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
+  https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
   withCredentials([string(credentialsId: '6a80d11c-cb5f-4e40-8565-78e127610ef1', variable: 'VAULT_ROLE_ID_HEY_APM')]) {
     // some block
   }
