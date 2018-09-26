@@ -3,8 +3,10 @@
 /**
   create/set a value to an environment variable.
 
-  setEnvVar("VARIABLE", "value") 
+  setEnvVar(name: "VARIABLE", value: "value") 
 */
-def call(String name, String value) {
+def call(Map params = [:]) {
+  def name = params.containsKey('name') ? params.name : null
+  def value = params.containsKey('value') ? params.value : null
   env[variable] = value
 }

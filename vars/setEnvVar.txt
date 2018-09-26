@@ -1,6 +1,6 @@
 <p>
-create/set a value to an environment variable.
+  create/set a value to an environment variable.
 </p>
 <pre>
-setEnvVar("VARIABLE", "value")
+  setEnvVar(name: "VARIABLE", value: "value") 
 </pre>
