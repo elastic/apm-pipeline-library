@@ -5,7 +5,7 @@ withEnvWrapper(){
   //block
 }
 */
-def call(Closure body) {
+def call(Map parameters = [:], Closure body) {
   timestamps {
     ansiColor('xterm') {
       withEnv([
@@ -16,8 +16,10 @@ def call(Closure body) {
         'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
         'JOB_GCS_BUCKET=apm-ci-artifacts/jobs', 
         'JOB_GIT_CREDENTIALS=f6c7695a-671e-4f4f-a331-acdce44ff9ba']) {
-        deleteDir()
-        body()
+          if(parameters.clean){
+            deleteDir()
+          }
+          body()
       }
     }
   }
