@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 /**
 Print a text on color on a xterm.
 
