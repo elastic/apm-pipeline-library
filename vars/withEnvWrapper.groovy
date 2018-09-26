@@ -1,4 +1,4 @@
-def call(Closure body, boolean deleteDir=true, String unstashSrc=null) {
+def call(Closure body, boolean cleanup=true, String unstashSrc=null) {
   timestamps {
     ansiColor('xterm') {
       withEnv([
@@ -9,7 +9,7 @@ def call(Closure body, boolean deleteDir=true, String unstashSrc=null) {
         'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
         'JOB_GCS_BUCKET=apm-ci-artifacts/jobs', 
         'JOB_GIT_CREDENTIALS=f6c7695a-671e-4f4f-a331-acdce44ff9ba']) {
-          if(deleteDir){
+          if(cleanup){
             deteleDir()
           }
           if(unstashSrc != null){
