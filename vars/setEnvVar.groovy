@@ -5,6 +5,6 @@
 
   setEnvVar("VARIABLE", "value") 
 */
-def call(String variable, String value) {
+def call(variable, value) {
   env[variable] = value
 }
