@@ -1,7 +1,7 @@
 <p>
  Print a text on color on a xterm.
  
- echoRed(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
+ echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
  <p><b>text</b>Text to print.</p>
  <p><b>colorfg</b>Foreground color.(default, red, green, yellow,...)</p>
  <p><b>colorbg</b>Background color.(default, red, green, yellow,...)</p>

@@ -3,7 +3,7 @@
 /**
 Print a text on color on a xterm.
 
-echoRed(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
+echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
 */
 
 @Field Map colorsfgMap = [
