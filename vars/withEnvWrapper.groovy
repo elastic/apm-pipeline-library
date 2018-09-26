@@ -15,7 +15,7 @@ def call(Closure body, boolean cleanup=true, String unstashSrc=null) {
           if(unstashSrc != null){
             echo "unstash"
           }
-          body()
+          body.call()
       }
     }
   }
