@@ -7,8 +7,6 @@ withEnvWrapper(){
 */
 def call(Closure body) {
   ansiColor('xterm') {
-    echo "Env before"
-    sh "export"
     withEnv([
       'VAULT_ROLE_ID_HEY_APM=35ad5918-eab7-c814-f8be-a305c811732e', 
       'VAULT_SECRET_ID_HEY_APM=95d18733-44b5-53c3-89c5-91e27b29be4f', 
@@ -18,7 +16,12 @@ def call(Closure body) {
       'JOB_GCS_BUCKET=apm-ci-artifacts/jobs', 
       'JOB_GIT_CREDENTIALS=f6c7695a-671e-4f4f-a331-acdce44ff9ba']) {
         deleteDir()
-        body()
+        try {
+          body()
+        } catch (err) {
+          echo "${err}"
+          throw err
+        }
     }
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
