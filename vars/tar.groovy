@@ -32,7 +32,7 @@ def call(Map params = [:]) {
     if(!allowMissing){
       currentBuild.result = "UNSTABLE"
     } else {
-      currentBuild.result = "STABLE"
+      currentBuild.result = "SUCCESS"
     }
   }
 }
