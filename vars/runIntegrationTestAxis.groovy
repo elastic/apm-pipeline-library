@@ -28,22 +28,29 @@ import groovy.transform.Field
 ]
   
 def call(agentType){
-  def parallelStages = [:]
-  def nodeVersions = readYaml(file: ymlFiles[agentType])
-  def elasticStackVersions = readYaml(file: ymlFiles["server"])
-  def serverKey = agentYamlVar["server"]
-  def agentKey = agentYamlVar[agentType]
-  
-  def elasticStackVersNoExcluded = elasticStackVersions[serverKey]?.findAll{!elasticStackVersions?.exclude?.contains(it)}
-  def nodeVersNoExcluded = nodeVersions[agentKey]?.findAll{!nodeVersions?.exclude?.contains(it)}
-  
-  elasticStackVersNoExcluded.each{ server ->
-    nodeVersNoExcluded.each{ agent ->
-      def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
-      parallelStages[tag] = nodeIntegrationTest(tag, agent, server, "${agentType}")
+  echoColor(text: "${tag}", colorfg: "green")
+  withEnvWrapper() {
+    deleteDir()
+    unstash "source_intest"
+    dir("${INTEGRATION_TEST_BASE_DIR}"){
+      def parallelStages = [:]
+      def nodeVersions = readYaml(file: ymlFiles[agentType])
+      def elasticStackVersions = readYaml(file: ymlFiles["server"])
+      def serverKey = agentYamlVar["server"]
+      def agentKey = agentYamlVar[agentType]
+      
+      def elasticStackVersNoExcluded = elasticStackVersions[serverKey]?.findAll{!elasticStackVersions?.exclude?.contains(it)}
+      def nodeVersNoExcluded = nodeVersions[agentKey]?.findAll{!nodeVersions?.exclude?.contains(it)}
+      
+      elasticStackVersNoExcluded.each{ server ->
+        nodeVersNoExcluded.each{ agent ->
+          def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
+          parallelStages[tag] = nodeIntegrationTest(tag, agent, server, "${agentType}")
+        }
+      }
+      parallel(parallelStages)
     }
   }
-  parallel(parallelStages)
 }
 
 def nodeIntegrationTest(tag, agent, server, agentType){
