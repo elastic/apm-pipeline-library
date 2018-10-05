@@ -25,9 +25,6 @@ def call(tag, agentType){
         chmod ugo+rx ./scripts/ci/*.sh
         ./scripts/ci/${agentType}.sh
         """
-      } catch (err) {
-        echo "${err}"
-        throw err
       } finally {
         junit(
           allowEmptyResults: true, 
