@@ -52,7 +52,9 @@ def call(agentType){
           parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
         }
       }
-      parallel(parallelStages)
+      lock(inversePrecedence: true, label: 'linux', quantity: 4) {
+        parallel(parallelStages)
+      }
     }
   }
 }
@@ -60,7 +62,6 @@ def call(agentType){
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
 //    node('linux') {
-    lock(inversePrecedence: true, label: 'linux', quantity: 4) {
       build(
         job: 'apm-integration-testing-pipeline', 
         parameters: [
@@ -73,7 +74,6 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
           booleanParam(name: "${agentType}_Test", value: true)], 
           wait: true,
           propagate: true)
-    }
 //    }
   }  
 }
