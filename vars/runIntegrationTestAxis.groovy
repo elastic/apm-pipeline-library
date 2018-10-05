@@ -48,8 +48,8 @@ def call(agentType){
           def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
           def serverVer = server.tokenize(";")[0]
           def opts = server.tokenize(";")[1]
-          echoColor(text: "${tag}", colorfg: "green")
-          parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, "${agentType}")
+          echoColor(text: tag, colorfg: "green")
+          parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
         }
       }
       parallel(parallelStages)
@@ -60,6 +60,7 @@ def call(agentType){
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
 //    node('linux') {
+    lock(inversePrecedence: true, label: 'linux', quantity: 2) {
       build(
         job: 'apm-integration-testing-pipeline', 
         parameters: [
@@ -72,6 +73,7 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
           booleanParam(name: "${agentType}_Test", value: true)], 
           wait: true,
           propagate: true)
+    }
 //    }
   }  
 }
