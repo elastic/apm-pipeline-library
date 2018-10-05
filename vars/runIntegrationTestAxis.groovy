@@ -71,8 +71,8 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
           string(name: agentEnvVar[agentType], value: agent), 
           string(name: 'BUILD_OPTS', value: opts),
           booleanParam(name: "${agentType}_Test", value: true)], 
-          wait: true,
-          propagate: true)
+          wait: false,
+          propagate: false)
 //    }
   //}  
 }
