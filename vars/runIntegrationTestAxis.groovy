@@ -47,7 +47,7 @@ def call(agentType){
         nodeVersNoExcluded.each{ agent ->
           def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
           def serverVer = server.tokenize(";")[0]
-          def opts = server.tokenize(";")[1]
+          def opts = server.tokenize(";")[1] ? server.tokenize(";")[1] : ''
           echoColor(text: tag, colorfg: "green")
           //parallelStages[tag] = 
           nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
