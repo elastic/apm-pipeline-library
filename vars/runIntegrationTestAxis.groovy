@@ -52,9 +52,7 @@ def call(agentType){
           parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
         }
       }
-      lock(inversePrecedence: true, label: 'linux', quantity: 4) {
-        parallel(parallelStages)
-      }
+      parallel(parallelStages)
     }
   }
 }
