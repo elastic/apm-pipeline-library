@@ -23,8 +23,8 @@ def call(Map params = [:]) {
     $class: 'GitHubCommitStatusSetter',
     reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],
     commitShaSource: [$class: "ManuallyEnteredShaSource", sha: commitSha],
-    //errorHandlers: [[$class: 'ShallowAnyErrorHandler']],
-    errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+    errorHandlers: [[$class: 'ShallowAnyErrorHandler']],
+    //errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
     statusResultSource: [
       $class: 'ConditionalStatusResultSource',
       results: [
