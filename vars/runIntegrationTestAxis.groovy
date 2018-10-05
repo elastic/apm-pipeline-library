@@ -60,7 +60,7 @@ def call(agentType){
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
 //    node('linux') {
-    lock(inversePrecedence: true, label: 'linux', quantity: 2) {
+    lock(inversePrecedence: true, label: 'linux', quantity: 4) {
       build(
         job: 'apm-integration-testing-pipeline', 
         parameters: [
