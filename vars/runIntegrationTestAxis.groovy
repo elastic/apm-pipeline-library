@@ -28,7 +28,6 @@ import groovy.transform.Field
 ]
   
 def call(agentType){
-  echoColor(text: "${tag}", colorfg: "green")
   withEnvWrapper() {
     deleteDir()
     unstash "source_intest"
@@ -45,6 +44,7 @@ def call(agentType){
       elasticStackVersNoExcluded.each{ server ->
         nodeVersNoExcluded.each{ agent ->
           def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
+          echoColor(text: "${tag}", colorfg: "green")
           parallelStages[tag] = nodeIntegrationTest(tag, agent, server, "${agentType}")
         }
       }
