@@ -49,16 +49,17 @@ def call(agentType){
           def serverVer = server.tokenize(";")[0]
           def opts = server.tokenize(";")[1]
           echoColor(text: tag, colorfg: "green")
-          parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
+          //parallelStages[tag] = 
+          nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
         }
       }
-      parallel(parallelStages)
+      //parallel(parallelStages)
     }
   }
 }
 
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
-  return {
+  //return {
 //    node('linux') {
       build(
         job: 'apm-integration-testing-pipeline', 
@@ -73,5 +74,5 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
           wait: true,
           propagate: true)
 //    }
-  }  
+  //}  
 }
