@@ -3,6 +3,8 @@
 import groovy.transform.Field
 
 @Field Map ymlFiles = [
+  'go': 'tests/versions/go.yml',
+  'java': 'tests/versions/go.yml',
   'nodejs': 'tests/versions/nodejs.yml',
   'python': 'tests/versions/python.yml',
   'ruby': 'tests/versions/ruby.yml',
@@ -44,8 +46,10 @@ def call(agentType){
       elasticStackVersNoExcluded.each{ server ->
         nodeVersNoExcluded.each{ agent ->
           def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
+          def serverVer = server.tokenize(";")[0]
+          def opts = server.tokenize(";")[1]
           echoColor(text: "${tag}", colorfg: "green")
-          parallelStages[tag] = nodeIntegrationTest(tag, agent, server, "${agentType}")
+          parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, "${agentType}")
         }
       }
       parallel(parallelStages)
@@ -53,7 +57,7 @@ def call(agentType){
   }
 }
 
-def nodeIntegrationTest(tag, agent, server, agentType){
+def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
 //    node('linux') {
       build(
@@ -62,9 +66,9 @@ def nodeIntegrationTest(tag, agent, server, agentType){
           string(name: 'JOB_SHELL', value: "${JOB_SHELL}"), 
           string(name: 'JOB_INTEGRATION_TEST_BRANCH_SPEC', value: "${JOB_INTEGRATION_TEST_BRANCH_SPEC}"), 
           string(name: 'ELASTIC_STACK_VERSION', value: "${ELASTIC_STACK_VERSION}"), 
-          string(name: 'APM_SERVER_BRANCH', value: server), /** TODO process VERSION;--release */ 
+          string(name: 'APM_SERVER_BRANCH', value: server),
           string(name: agentEnvVar[agentType], value: agent), 
-          string(name: 'BUILD_OPTS', value: ''), /** TODO process VERSION;--release */ 
+          string(name: 'BUILD_OPTS', value: opts),
           booleanParam(name: "${agentType}_Test", value: true)], 
           wait: true,
           propagate: true)
