@@ -28,7 +28,16 @@ import groovy.transform.Field
   'ruby': 'RUBY_AGENT',
   'server': 'APM_SERVER'
 ]
+
+/**
+  Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
+  It needs the following environment variables. 
+  INTEGRATION_TEST_BASE_DIR:  points to the relative path from workspace to the sources.
+  JOB_INTEGRATION_TEST_BRANCH_SPEC: git ref to the integration test branch to use.
+  ELASTIC_STACK_VERSION: Elastic Stack branch/tag to use.
   
+  runIntegrationTestAxis("ruby")
+*/
 def call(agentType){
   withEnvWrapper() {
     deleteDir()
@@ -64,7 +73,6 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
       build(
         job: 'apm-integration-testing-pipeline', 
         parameters: [
-          string(name: 'JOB_SHELL', value: "${JOB_SHELL}"), 
           string(name: 'JOB_INTEGRATION_TEST_BRANCH_SPEC', value: "${JOB_INTEGRATION_TEST_BRANCH_SPEC}"), 
           string(name: 'ELASTIC_STACK_VERSION', value: "${ELASTIC_STACK_VERSION}"), 
           string(name: 'APM_SERVER_BRANCH', value: server),
