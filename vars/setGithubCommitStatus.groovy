@@ -2,6 +2,7 @@
 
 /**
   https://plugins.jenkins.io/github
+  https://embeddedartistry.com/blog/2017/12/28/jenkins-generating-blue-ocean-urls
   Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
   setGithubCommitStatus(
