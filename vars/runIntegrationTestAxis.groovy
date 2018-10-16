@@ -68,10 +68,12 @@ def call(agentType){
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
     node('linux') {
-      env.APM_SERVER_BRANCH = server
-      env.BUILD_OPTS = opts
-      env["${agentEnvVar[agentType]}"] = agent
-      stepIntegrationTest(tag, agentType )
+      withEnv([
+        "APM_SERVER_BRANCH=${server}",
+        "BUILD_OPTS=${optd}",
+        "${agentEnvVar[agentType]}=${agent}"]){
+        stepIntegrationTest(tag, agentType)
+      }
       /*
       build(
         job: 'apm-integration-testing-pipeline', 
