@@ -70,7 +70,8 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
     node('linux') {
       env.APM_SERVER_BRANCH = server
       env.BUILD_OPTS = opts
-      stepIntegrationTest(tag, agent)
+      env["${agentEnvVar[agentType]}"] = agent
+      stepIntegrationTest(tag, agentType )
       /*
       build(
         job: 'apm-integration-testing-pipeline', 
