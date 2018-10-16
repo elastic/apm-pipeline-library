@@ -22,6 +22,7 @@ def call(tag, agentType){
         sh """#!/bin/bash
         echo "${tag}"
         export TMPDIR="${WORKSPACE}"
+        export PYTEST_ADDOPTS="--color=yes"
         chmod ugo+rx ./scripts/ci/*.sh
         ./scripts/ci/${agentType}.sh
         """
