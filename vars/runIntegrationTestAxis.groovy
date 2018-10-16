@@ -68,8 +68,8 @@ def call(agentType){
 def nodeIntegrationTest(tag, agent, server, opts, agentType){
   return {
     node('linux') {
-      def env.APM_SERVER_BRANCH = server
-      def env.BUILD_OPTS = opts
+      env.APM_SERVER_BRANCH = server
+      env.BUILD_OPTS = opts
       stepIntegrationTest(tag, agent)
       /*
       build(
