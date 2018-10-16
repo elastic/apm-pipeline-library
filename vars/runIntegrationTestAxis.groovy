@@ -70,7 +70,7 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
     node('linux') {
       withEnv([
         "APM_SERVER_BRANCH=${server}",
-        "BUILD_OPTS=${optd}",
+        "BUILD_OPTS=${opts}",
         "${agentEnvVar[agentType]}=${agent}"]){
         stepIntegrationTest(tag, agentType)
       }
