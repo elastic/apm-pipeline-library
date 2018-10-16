@@ -4,7 +4,7 @@ import groovy.transform.Field
 
 @Field Map ymlFiles = [
   'go': 'tests/versions/go.yml',
-  'java': 'tests/versions/go.yml',
+  'java': 'tests/versions/java.yml',
   'nodejs': 'tests/versions/nodejs.yml',
   'python': 'tests/versions/python.yml',
   'ruby': 'tests/versions/ruby.yml',
