@@ -84,6 +84,7 @@ def nodeIntegrationTest(tag, agent, server, opts, agentType){
           booleanParam(name: "${agentType}_Test", value: true)], 
           wait: false,
           propagate: true)
-    }*/
+          */
+    }
   }  
 }
