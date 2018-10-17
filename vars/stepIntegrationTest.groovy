@@ -15,14 +15,15 @@ def call(tag, agentType){
     deleteDir()
     unstash "source_intest"
     dir("${INTEGRATION_TEST_BASE_DIR}"){
-      def pytestIni = "[pytest]\njunit_suite_name = ${tag}\n"
+      def pytestIni = "[pytest]\n"
+      pytestIni += "junit_suite_name = ${tag}\n"
+      pytestIni += "addopts = --color=yes -ra\n"
       writeFile(file: "pytest.ini", text: pytestIni, encoding: "UTF-8")
       
       try {
         sh """#!/bin/bash
         echo "${tag}"
         export TMPDIR="${WORKSPACE}"
-        export PYTEST_ADDOPTS="--color=yes"
         chmod ugo+rx ./scripts/ci/*.sh
         ./scripts/ci/${agentType}.sh
         """
