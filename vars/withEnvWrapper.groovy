@@ -15,8 +15,6 @@ def call(Closure body) {
     'JOB_GCS_BUCKET=apm-ci-artifacts/jobs',
     'NOTIFY_TO=infra-root+build@elastic.co']) {
     deleteDir()
-    //body.resolveStrategy = Closure.DELEGATE_FIRST
-    //body.delegate = this
     body()
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
