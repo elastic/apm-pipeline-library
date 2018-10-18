@@ -8,13 +8,17 @@ def call(){
     return
   }
   
-  def parts = env.GIT_URL.split("/")
-  for (part in parts){
-    parts = parts.drop(1)
-    if (part.contains(".")) break
+  def tmpUrl = env.GIT_URL
+  
+  if (env.GIT_URL.startsWith("git")){
+    tmpUrl = tmpUrl - "git@github.com:"
+  } else {
+    tmpUrl = tmpUrl - "https://github.com/" - "http://github.com/"
   }
-  env.ORG_NAME = parts.getAt(0)
-  env.REPO_NAME = parts[1..-1].join("/") - ".git"
+  
+  def parts = tmpUrl.split("/")
+  env.ORG_NAME = parts[0]
+  env.REPO_NAME = parts[1] - ".git"
   env.GIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 
   if (env.CHANGE_TARGET){
