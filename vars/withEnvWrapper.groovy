@@ -17,7 +17,7 @@ def call(Closure body) {
     deleteDir()
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = this
-    body.run()
+    body()
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
   https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
