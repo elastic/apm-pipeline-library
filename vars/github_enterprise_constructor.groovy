@@ -4,7 +4,6 @@
 */
 
 def call(){
-  env.GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()
   def parts = env.GIT_URL.split("/")
   for (part in parts){
     parts = parts.drop(1)
