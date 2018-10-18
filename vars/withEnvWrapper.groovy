@@ -14,13 +14,10 @@ def call(Closure body) {
     'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
     'JOB_GCS_BUCKET=apm-ci-artifacts/jobs',
     'NOTIFY_TO=infra-root+build@elastic.co']) {
-      deleteDir()
-      try {
-        body()
-      } catch (err) {
-        echo "${err}"
-        throw err
-      }
+    deleteDir()
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = this
+    body.run()
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
   https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
