@@ -25,9 +25,9 @@ def call(){
     env.GIT_BUILD_CAUSE = "pr"
   } else {
     env.GIT_BUILD_CAUSE = sh (
-      script: 'git rev-list HEAD --parents -1 | wc -w', // will have 2 shas if commit, 3 or more if merge
+      script: 'git rev-list HEAD --parents -1', // will have 2 shas if commit, 3 or more if merge
       returnStdout: true
-    ).trim().toInteger() > 2 ? "merge" : "commit"
+    )?.split(" ").length > 2 ? "merge" : "commit"
   }
 
   println "Found Git Build Cause: ${env.GIT_BUILD_CAUSE}"
