@@ -4,6 +4,10 @@
 */
 
 def call(){
+  if(!env.GIT_URL){
+    return
+  }
+  
   def parts = env.GIT_URL.split("/")
   for (part in parts){
     parts = parts.drop(1)
