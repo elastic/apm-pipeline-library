@@ -1,0 +1,10 @@
+<p>
+  Get the credentials to access to the ES benchmarks service, and execute some block of code with
+  the environment variables CLOUD_USERNAME, CLOUD_PASSWORD, CLOUD_ADDR, and CLOUD_URL defined.
+ }.
+</p>
+<pre>
+withEnvBenchmarksData {
+  //body
+}
+</pre>

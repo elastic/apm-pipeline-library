@@ -1,0 +1,7 @@
+<p>
+ Send the becnhmarks to the cloud service.
+</p>
+<pre>
+ sendBenchmarks()
+ sendBenchmarks(file: 'bench.out')
+</pre>
