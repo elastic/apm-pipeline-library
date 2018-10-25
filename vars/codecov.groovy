@@ -1,7 +1,7 @@
 /**
 https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy
 */
-
+import groovy.transform.Field
 import org.kohsuke.github.GitHub
 
 @Field Map codecovTokens = [
