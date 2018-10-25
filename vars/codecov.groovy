@@ -53,9 +53,12 @@ def call(repo=null) {
 
   // Set some env variables so codecov detection script works correctly
   withEnv([
-    "ghprbPullId=${env.CHANGE_ID}", 
-    "GIT_BRANCH=${branchName}", 
-    "CODECOV_TOKEN=${token}"]) { 
-    sh 'bash < (curl -s https://codecov.io/bash) || echo "codecov exited with $?"'
+    "ghprbPullId=${env.CHANGE_ID}",
+    "GIT_BRANCH=${branchName}",
+    "CODECOV_TOKEN=${token}"]) {
+    sh '''#!/bin/bash
+    set -x
+    bash < (curl -s https://codecov.io/bash) || echo "codecov exited with $?"
+    '''
   }
 }
