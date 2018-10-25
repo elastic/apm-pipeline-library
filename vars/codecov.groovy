@@ -59,6 +59,6 @@ def call(repo=null) {
     sh '''#!/bin/bash
     set -x
     bash < (curl -s https://codecov.io/bash) || echo "codecov exited with $?"
-    '''
+    "'''
   }
 }
