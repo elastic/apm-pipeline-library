@@ -58,7 +58,8 @@ def call(repo=null) {
     "CODECOV_TOKEN=${token}"]) {
     sh '''#!/bin/bash
     set -x
-    bash < (curl -s https://codecov.io/bash) || echo "codecov exited with $?"
-    "'''
+    curl -s -o codecov.sh https://codecov.io/bash
+    bash codecov.sh || echo "codecov exited with $?
+    '''
   }
 }
