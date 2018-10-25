@@ -56,6 +56,6 @@ def call(repo=null) {
     "ghprbPullId=${env.CHANGE_ID}", 
     "GIT_BRANCH=${branchName}", 
     "CODECOV_TOKEN=${token}"]) { 
-    sh 'bash <(curl -s https://codecov.io/bash) || echo "codecov exited with \$?"'
+    sh 'bash < (curl -s https://codecov.io/bash) || echo "codecov exited with $?"'
   }
 }
