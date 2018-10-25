@@ -59,7 +59,7 @@ def call(repo=null) {
     sh '''#!/bin/bash
     set -x
     curl -s -o codecov.sh https://codecov.io/bash
-    bash codecov.sh || echo "codecov exited with $?
+    bash codecov.sh || echo "codecov exited with $?"
     '''
   }
 }
