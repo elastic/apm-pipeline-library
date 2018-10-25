@@ -7,8 +7,6 @@ withEnvWrapper(){
 */
 def call(Closure body) {
   withEnv([
-    'VAULT_ROLE_ID_HEY_APM=35ad5918-eab7-c814-f8be-a305c811732e', 
-    'VAULT_SECRET_ID_HEY_APM=95d18733-44b5-53c3-89c5-91e27b29be4f', 
     'VAULT_SECRET_ID=c50f028c-ba5d-a921-7869-c63966e3cd79', 
     'VAULT_ADDR=https://secrets.elastic.co:8200', 
     'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
