@@ -4,26 +4,18 @@ https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groo
 import groovy.transform.Field
 import org.kohsuke.github.GitHub
 
-@Field Map codecovTokens = [
-'apm-server': '81c677ad-4658-4ed5-acf0-573f264bec01',
-'apm-agent-go': 'd4faa5af-13ed-41d1-9e45-b1bb8112792f',
-'apm-agent-java': 'e6484a1e-a21c-4ac7-b19a-473c2114e016',
-'apm-agent-python': '9bbc02b4-ea79-44a4-a86f-2810f632c23e',
-'apm-agent-nodejs': 'ac7af7fd-7e40-4471-8a45-8b57f35bb19f',
-'apm-agent-ruby': 'b2e52084-f5e1-4690-9a24-f46cd6e2689c',
-]
-
 def call(repo=null) {
   if(!repo){
     echo "Codecov: No repository specified."
     return
   }
   
-  if(!codecovTokens[repo]){
+  def token = getVaultSecret("${repo}-codecov")?.data?.value
+  
+  if(!token){
     echo "Codecov: Repository not found: ${repo}"
     return
   }
-  def token = codecovTokens[repo]
   
   def branchName = env.BRANCH_NAME
   if (env.CHANGE_ID) {
@@ -52,14 +44,17 @@ def call(repo=null) {
   }
 
   // Set some env variables so codecov detection script works correctly
-  withEnv([
-    "ghprbPullId=${env.CHANGE_ID}",
-    "GIT_BRANCH=${branchName}",
-    "CODECOV_TOKEN=${token}"]) {
-    sh '''#!/bin/bash
-    set -x
-    curl -s -o codecov.sh https://codecov.io/bash
-    bash codecov.sh || echo "codecov exited with $?"
-    '''
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: 'CODECOV_TOKEN', password: "${token}"], 
+    ]]) {
+    withEnv([
+      "ghprbPullId=${env.CHANGE_ID}",
+      "GIT_BRANCH=${branchName}") {
+      sh '''#!/bin/bash
+      set -x
+      curl -s -o codecov.sh https://codecov.io/bash
+      bash codecov.sh || echo "codecov exited with $?"
+      '''
+    }
   }
 }

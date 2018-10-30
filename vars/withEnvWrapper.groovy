@@ -6,12 +6,14 @@ withEnvWrapper(){
 }
 */
 def call(Closure body) {
-  withEnv([
-    'VAULT_SECRET_ID=c50f028c-ba5d-a921-7869-c63966e3cd79', 
-    'VAULT_ADDR=https://secrets.elastic.co:8200', 
-    'JOB_GCS_CREDENTIALS=jenkins-gcs-plugin', 
-    'JOB_GCS_BUCKET=apm-ci-artifacts/jobs',
-    'NOTIFY_TO=infra-root+build@elastic.co']) {
+  wrap([$class: 'MaskPasswordsBuildWrapper', 
+    varPasswordPairs: [
+      [var: 'JOB_GCS_CREDENTIALS', password: 'apm-ci-gcs-plugin'], 
+      [var: 'JOB_GCS_BUCKET', password: 'apm-ci-artifacts/jobs'], 
+      [var: 'NOTIFY_TO', password: 'infra-root+build@elastic.co']
+    ],
+    varMaskRegexes: [[regex: 'http(s)?\\:\\/+(.*)\\.elastic\\.co']]
+    ]) {
     deleteDir()
     body()
   }
