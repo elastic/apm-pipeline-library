@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# somple script to glue all steps help in a single README.md file
+#
+#
 
 if [ $# -lt 1 ]; then
   echo "usage: ${0} folder"
