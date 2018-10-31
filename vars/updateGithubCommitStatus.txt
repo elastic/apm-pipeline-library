@@ -1,17 +1,22 @@
-<p>
-  Update the commit status on GitHub with the current status of the build.
-</p>  
-<p>
-  updateGithubCommitStatus(
-    repoUrl: "${GIT_URL}"
-    commitSha: "${GIT_COMMIT}"
-    message: 'Build result.'
-  )
-</p>
-<p>  
-  updateGithubCommitStatus()
-</p>
-<p>
-  updateGithubCommitStatus(message: 'Build result.')
-</p>
-<p>It requires <a href="https://plugins.jenkins.io/github">Github plugin</a></p>
+Update the commit status on GitHub with the current status of the build.
+
+```
+updateGithubCommitStatus(
+  repoUrl: "${GIT_URL}"
+  commitSha: "${GIT_COMMIT}"
+  message: 'Build result.'
+)
+```
+
+```
+updateGithubCommitStatus()
+```
+
+```
+updateGithubCommitStatus(message: 'Build result.')
+```
+* *repoUrl*: "${GIT_URL}"
+* *commitSha*: "${GIT_COMMIT}"
+* *message*: 'Build result.'
+
+It requires [Github plugin](https://plugins.jenkins.io/github)

@@ -1,8 +1,8 @@
-<p>
- Print a text on color on a xterm.
- 
+Print a text on color on a xterm.
+
+``` 
  echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
- <p><b>text</b>Text to print.</p>
- <p><b>colorfg</b>Foreground color.(default, red, green, yellow,...)</p>
- <p><b>colorbg</b>Background color.(default, red, green, yellow,...)</p>
-</p>
+```
+* *text*: Text to print.
+* *colorfg*: Foreground color.(default, red, green, yellow,...)
+* *colorbg*: Background color.(default, red, green, yellow,...)

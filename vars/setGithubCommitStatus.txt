@@ -1,20 +1,28 @@
-<p>
-  Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
+Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
-  setGithubCommitStatus(
-    repoUrl: "${GIT_URL}",
-    commitSha: "${GIT_COMMIT}",
-    message: 'Build result.',
-    state: "SUCCESS"
-  )
-</p>
-<p>
-  setGithubCommitStatus()
-</p>
-<p>
-  setGithubCommitStatus(message: 'Build result.', state: "FAILURE")
-</p>
-<p>  
-  setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
-<p>
-<p>It requires <a href="https://plugins.jenkins.io/github">Github plugin</a></p>
+```
+setGithubCommitStatus(
+  repoUrl: "${GIT_URL}",
+  commitSha: "${GIT_COMMIT}",
+  message: 'Build result.',
+  state: "SUCCESS"
+)
+```
+
+```
+setGithubCommitStatus()
+```
+
+```
+setGithubCommitStatus(message: 'Build result.', state: "FAILURE")
+```
+
+```  
+setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
+```
+* *repoUrl*: Repository URL.
+* *commitSha*: Commit SHA1.
+* *message*: message to post.
+* *state*: Status to report to Github.
+
+It requires [Github plugin](https://plugins.jenkins.io/github")

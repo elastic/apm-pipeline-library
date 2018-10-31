@@ -3,6 +3,11 @@
   This software package is licensed under the Booz Allen Public License. The license can be found in the License file or at http://boozallen.github.io/licenses/bapl
 */
 
+/**
+  Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
+  
+  github_enterprise_constructor()
+*/
 def call(){
   if(!env.GIT_URL){
     return

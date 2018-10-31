@@ -1,8 +1,8 @@
-<strong>codecov(repo)</strong>
+Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
-<p>Submits coverage information to codecov.io using their <a href="https://codecov.io/bash">bash script</a>.</p>
-<p>
-<code>repo</code> The repository name (for example apm-agent-go), it is needed
-</p>
-<a href="https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy">Original source</a>
+```
+codecov(repo)
+```
+*repo*: The repository name (for example apm-agent-go), it is needed
 
+[Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)

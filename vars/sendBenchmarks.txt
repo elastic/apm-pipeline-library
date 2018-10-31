@@ -1,7 +1,11 @@
-<p>
- Send the becnhmarks to the cloud service.
-</p>
-<pre>
- sendBenchmarks()
- sendBenchmarks(file: 'bench.out')
-</pre>
+Send the benchmarks to the cloud service.
+
+```
+sendBenchmarks()
+```
+
+```
+sendBenchmarks(file: 'bench.out')
+```
+
+* *file*: file that contains the stats.

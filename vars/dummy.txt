@@ -1,6 +1,5 @@
-<p>
 A sample of a step implemantetion.
 
+```
 dummy(text: 'hello world')
-
-</p>
+```

@@ -12,7 +12,7 @@ def call(Map params = [:]) {
   //https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243/_bulk
   //https://5492443829134f71a94c96689e9db66e.europe-west3.gcp.cloud.es.io:9243
   //curl --user ${CLOUD_USERNAME}:${CLOUD_PASSWORD} -XPOST 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243/_bulk' -H 'Content-Type: application/json'  --data-binary @${BULK_UPLOAD_FILE}
-  def props = getVaultSecret('apm-server-benchmark-cloud')
+  def props = getVaultSecret('java-agent-benchmark-cloud')
   if(props?.errors){
      error "Unable to get credentials from the vault: " + props.errors.toString()
   } else {

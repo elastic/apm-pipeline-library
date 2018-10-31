@@ -1,6 +1,5 @@
-<p>
  Grab the coverage files, and create the report in Jenkins.
-</p>
-<p>
- coverageReport("${WORKSPACE}/build")
-<p>
+
+```
+ coverageReport("path_to_base_folder")
+```
