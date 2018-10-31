@@ -75,7 +75,8 @@ ELASTIC_STACK_VERSION: Elastic Stack branch/tag to use.
 runIntegrationTestAxis(agent)
 ```
 
-* *agent*: agent type to run the tests (go, java, python, ruby, nodejs)## sendBenchmarks
+* *agent*: agent type to run the tests (go, java, python, ruby, nodejs)
+## sendBenchmarks
 Send the benchmarks to the cloud service.
 
 ```
@@ -86,7 +87,8 @@ sendBenchmarks()
 sendBenchmarks(file: 'bench.out')
 ```
 
-* *file*: file that contains the stats.## setGithubCommitStatus
+* *file*: file that contains the stats.
+## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
 ```
