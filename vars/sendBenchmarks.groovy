@@ -20,7 +20,7 @@ def call(Map params = [:]) {
       [var: 'CLOUD_USERNAME', password: "${props?.data?.user}"], 
       [var: 'CLOUD_PASSWORD', password: "${props?.data?.password}"], 
       [var: 'CLOUD_ADDR', password: "${props?.data.url}"], 
-      [var: 'CLOUD_URL', password: "https://${props?.data?.user}:${props?.data?.password}@props?.data?.url"], 
+      [var: 'CLOUD_URL', password: "https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"], 
       ]]) {
          sh """#!/bin/bash
          set +x
