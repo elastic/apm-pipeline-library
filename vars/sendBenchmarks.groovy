@@ -16,16 +16,22 @@ def call(Map params = [:]) {
   if(props?.errors){
      error "Unable to get credentials from the vault: " + props.errors.toString()
   } else {
+    def data = props?.data
+    def user = data?.user
+    def password = data?.password
+    def url = "1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"
+    def addr = "https://${url}"
+    def urlAuth = "https://${user}:${password}@${addr}"
     wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-      [var: 'CLOUD_USERNAME', password: "${props?.data?.user}"], 
-      [var: 'CLOUD_PASSWORD', password: "${props?.data?.password}"], 
-      [var: 'CLOUD_ADDR', password: "${props?.data.url}"], 
-      [var: 'CLOUD_URL', password: "https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"], 
+      [var: 'CLOUD_USERNAME', password: "${user}"],
+      [var: 'CLOUD_PASSWORD', password: "${password}"],
+      [var: 'CLOUD_ADDR', password: "${addr}"],
+      [var: 'CLOUD_URL', password: "${urlAuth}"],
       ]]) {
          sh """#!/bin/bash
-         set -x
+         set -euxo pipefail
          go get -v -u github.com/elastic/gobench
-         \${GOPATH}/bin/gobench -index benchmark-go -es "\${CLOUD_URL}" < ${benchFile}
+         \${GOPATH}/bin/gobench -index benchmark-go -es "${urlAuth}" < ${benchFile}
          """
      }
   }

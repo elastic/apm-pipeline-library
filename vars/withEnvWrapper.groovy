@@ -15,7 +15,13 @@ def call(Closure body) {
     varMaskRegexes: [[regex: 'http(s)?\\:\\/+(.*)\\.elastic\\.co']]
     ]) {
     deleteDir()
-    body()
+    withEnv([
+      "JOB_GCS_CREDENTIALS=apm-ci-gcs-plugin",
+      "JOB_GCS_BUCKET=apm-ci-artifacts/jobs"
+      "NOTIFY_TO=infra-root+build@elastic.co"
+      ]){
+        body()
+      }
   }
   /* TODO replace each variable with a secret text credential type, then use withCredentials step.
   https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials

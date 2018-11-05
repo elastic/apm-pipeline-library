@@ -62,7 +62,8 @@ def call(repo=null) {
     ]]) {
     withEnv([
       "ghprbPullId=${env.CHANGE_ID}",
-      "GIT_BRANCH=${branchName}") {
+      "GIT_BRANCH=${branchName}",
+      "CODECOV_TOKEN=${token}") {
       sh '''#!/bin/bash
       set -x
       curl -s -o codecov.sh https://codecov.io/bash
