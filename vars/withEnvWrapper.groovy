@@ -17,7 +17,7 @@ def call(Closure body) {
     deleteDir()
     withEnv([
       "JOB_GCS_CREDENTIALS=apm-ci-gcs-plugin",
-      "JOB_GCS_BUCKET=apm-ci-artifacts/jobs"
+      "JOB_GCS_BUCKET=apm-ci-artifacts/jobs",
       "NOTIFY_TO=infra-root+build@elastic.co"
       ]){
         body()
