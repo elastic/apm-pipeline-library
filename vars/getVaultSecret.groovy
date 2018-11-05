@@ -12,7 +12,7 @@ def call(secret) {
     [var: 'VAULT_SECRET', password: "${secret}"], 
     ]]) {
      def retJson = sh(returnStdout:true, script: '''#!/bin/bash
-     set +x
+     set -x
      VAULT_TOKEN=$(curl -s -X POST -H "Content-Type: application/json" -L -d "{\"role_id\":\"${VAULT_ROLE_ID}\",\"secret_id\":\"${VAULT_SECRET_ID}\"}" ${VAULT_ADDR}/v1/auth/approle/login | jq -r '.auth.client_token' )
      curl -s -L -H "X-Vault-Token:${VAULT_TOKEN}" ${VAULT_ADDR}/v1/secret/apm-team/ci/${VAULT_SECRET}
      ''')

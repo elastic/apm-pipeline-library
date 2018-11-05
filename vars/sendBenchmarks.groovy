@@ -23,7 +23,7 @@ def call(Map params = [:]) {
       [var: 'CLOUD_URL', password: "https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"], 
       ]]) {
          sh """#!/bin/bash
-         set +x
+         set -x
          go get -v -u github.com/elastic/gobench
          \${GOPATH}/bin/gobench -index benchmark-go -es "\${CLOUD_URL}" < ${benchFile}
          """
