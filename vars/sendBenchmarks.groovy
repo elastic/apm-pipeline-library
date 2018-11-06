@@ -7,7 +7,8 @@
 */
 def call(Map params = [:]) {
   def benchFile = params.containsKey('file') ? params.file : 'bench.out'
-  
+  def index = params.containsKey('index') ? params.index : 'benchmark-go'
+
   //apm-server-benchmark-cloud
   //java-agent-benchmark-cloud
   //https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243/_bulk
@@ -39,10 +40,10 @@ def call(Map params = [:]) {
          
          export GOPATH=\${WORKSPACE}
          export PATH=\${GOPATH}/bin:\${PATH}
-         eval "$(gvm \${GO_VERSION})"
+         eval "\$(gvm \${GO_VERSION})"
          
          go get -v -u github.com/elastic/gobench
-         \${GOPATH}/bin/gobench -index benchmark-go -es "${urlAuth}" < ${benchFile}
+         gobench -index ${index} -es "${urlAuth}" < ${benchFile}
          """
      }
   }
