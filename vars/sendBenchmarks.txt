@@ -1,4 +1,5 @@
 Send the benchmarks to the cloud service.
+Requires Go installed.
 
 ```
 sendBenchmarks()

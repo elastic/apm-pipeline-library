@@ -1,4 +1,4 @@
-This step is a workaround to hide some environment variable.
+Environment wrapper that mask some environment variables and install some tools.
 
 ```
 withEnvWrapper(){

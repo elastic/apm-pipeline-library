@@ -1,9 +1,11 @@
 #!/usr/bin/env groovy
 
 /**
-withEnvWrapper(){
-  //block
-}
+  Environment wrapper that mask some environment variables and install some tools.
+  
+  withEnvWrapper(){
+    //block
+  }
 */
 def call(Closure body) {
   wrap([$class: 'MaskPasswordsBuildWrapper', 
