@@ -9,5 +9,5 @@
 */
 def call() {
   def repoUrl = sh script: "git config --get remote.origin.url", returnStdout: true
-  return repoUrl?.trim()
+  return repoUrl
 }
