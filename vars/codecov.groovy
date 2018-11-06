@@ -26,12 +26,16 @@ def getBranchRef(){
     def repoUrl = getGitRepoURL()
     def repoName = "${ORG_NAME}/${REPO_NAME}"
     def token = getGithubToken()
-    def prJson = sh(
-      script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${CHANGE_ID}",
-      returnStdout: true
-    )
-    def pr = readJSON(text: prJson)
-    branchName = "${pr.head.repo.owner.login}/${pr.head.ref}"
+    wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+      [var: 'GITHUB_TOKEN', password: "${token}"], 
+      ]]) {
+      def prJson = sh(
+        script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${CHANGE_ID}",
+        returnStdout: true
+      )
+      def pr = readJSON(text: prJson)
+      branchName = "${pr.head.repo.owner.login}/${pr.head.ref}"
+    }
   }
   return branchName
 }
