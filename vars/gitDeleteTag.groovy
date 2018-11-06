@@ -1,5 +1,7 @@
 /**
   Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
+  It requires to initialise the pipeline with github_enterprise_constructor() first.
+
   gitDeleteTag()
 */
 

@@ -5,4 +5,6 @@ codecov(repo)
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)

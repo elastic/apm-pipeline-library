@@ -3,7 +3,7 @@
   requires Go installed.
   
   sendBenchmarks()
-  sendBenchmarks(file: 'bench.out')
+  sendBenchmarks(file: 'bench.out', index: 'index-name')
 */
 def call(Map params = [:]) {
   def benchFile = params.containsKey('file') ? params.file : 'bench.out'

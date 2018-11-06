@@ -6,7 +6,8 @@ sendBenchmarks()
 ```
 
 ```
-sendBenchmarks(file: 'bench.out')
+sendBenchmarks(file: 'bench.out', index: 'index-name')
 ```
 
 * *file*: file that contains the stats.
+* *index*: index name to store data.

@@ -7,6 +7,8 @@ codecov(repo)
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
 ## coverageReport
  Grab the coverage files, and create the report in Jenkins.
@@ -54,15 +56,66 @@ def jsonValue = getVaultSecret('secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
 
 ```
 gitCreateTag()
 ```
 ## gitDeleteTag
 Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
 
 ```
 gitDeleteTag()
+```
+## github_enterprise_constructor
+Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
+  
+```
+github_enterprise_constructor()
+```
+
+* `GIT_URL`: if it is not set, it will create the environment variable GIT_URL, getting it from local repo.
+* `ORG_NAME`: id the organization name in the git URL, it sets this environment variable processing the GIT_URL.
+* `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
+* `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
+* `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
+## on_change
+Execute some block of code if the built was trigger by a change on the repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
+```
+on_change {
+  //code block
+}
+```
+
+## on_commit
+Execute some block of code if the built was trigger by a commit on the repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
+```
+on_commit {
+  //code block
+}
+```
+## on_merge
+Execute some block of code if the built was trigger by a merge on the repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
+```
+on_merge {
+  //code block
+}
+```
+## on_pull_request
+Execute some block of code if the built was trigger by a PR creation on the repo.
+It requires to initialise the pipeline with github_enterprise_constructor() first.
+
+```
+on_pull_request {
+  //code block
+}
 ```
 ## runIntegrationTestAxis
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
@@ -78,16 +131,18 @@ runIntegrationTestAxis(agent)
 * *agent*: agent type to run the tests (go, java, python, ruby, nodejs)
 ## sendBenchmarks
 Send the benchmarks to the cloud service.
+Requires Go installed.
 
 ```
 sendBenchmarks()
 ```
 
 ```
-sendBenchmarks(file: 'bench.out')
+sendBenchmarks(file: 'bench.out', index: 'index-name')
 ```
 
 * *file*: file that contains the stats.
+* *index*: index name to store data.
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
@@ -166,7 +221,7 @@ updateGithubCommitStatus(message: 'Build result.')
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
 ## withEnvWrapper
-This step is a workaround to hide some environment variable.
+Environment wrapper that mask some environment variables and install some tools.
 
 ```
 withEnvWrapper(){

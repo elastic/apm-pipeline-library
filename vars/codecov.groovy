@@ -26,16 +26,7 @@ def getBranchRef(){
   def branchName = env.BRANCH_NAME
   if (env.CHANGE_ID) {
     def repoUrl = getGitRepoURL()
-    // Need to get name from url, supports these variants:
-    //  git@github.com:docker/docker.git -> docker/docker
-    //  git://github.com/docker/docker.git -> docker/docker
-    //  https://github.com/docker/docker.git -> docker/docker
-    //  ssh://git@github.com/docker/docker.git -> docker/docker
-    // 1. split on colon, take the last part.
-    // 2. split that on slash, take the last 2 parts and rejoin them with /.
-    // 3. remove .git at the end
-    // 4. ta-da
-    def repoName = repoUrl.split(":")[-1].split("/")[-2..-1].join("/").replaceAll(/\.git$/, '')
+    def repoName = "${ORG_NAME}/${REPO_NAME}"
     def gh = GitHub.connectUsingOAuth(getGithubToken())
     def pr = gh.getRepository(repoName).getPullRequest(env.CHANGE_ID.toInteger())
     branchName = "${pr.head.repo.owner.login}/${pr.head.ref}"

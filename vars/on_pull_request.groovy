@@ -3,6 +3,10 @@
   This software package is licensed under the Booz Allen Public License. The license can be found in the License file or at http://boozallen.github.io/licenses/bapl
 */
 
+/**
+  Execute some block of code if the built was trigger by a PR creation on the repo.
+  It requires to initialise the pipeline with github_enterprise_constructor() first.
+*/
 void call(Map args = [:], body){
   
   // do nothing if not pr

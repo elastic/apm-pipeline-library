@@ -10,7 +10,7 @@
 */
 def call(){
   if(!env.GIT_URL){
-    return
+    env.GIT_URL = getGitRepoURL()
   }
   
   def tmpUrl = env.GIT_URL
@@ -24,7 +24,7 @@ def call(){
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
-  env.GIT_SHA = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+  env.GIT_SHA = getGitCommitSha()
 
   if (env.CHANGE_TARGET){
     env.GIT_BUILD_CAUSE = "pr"
