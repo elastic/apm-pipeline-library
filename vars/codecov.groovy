@@ -25,7 +25,7 @@ def getGithubToken(){
 def getBranchRef(){
   def branchName = env.BRANCH_NAME
   if (env.CHANGE_ID) {
-    def repoUrl = sh script: "git config --get remote.origin.url", returnStdout: true
+    def repoUrl = getGitRepoURL()
     // Need to get name from url, supports these variants:
     //  git@github.com:docker/docker.git -> docker/docker
     //  git://github.com/docker/docker.git -> docker/docker
@@ -55,6 +55,7 @@ def call(repo=null) {
     return
   }
   
+  echo "Codecov: Sending data..."
   def branchName = getBranchRef()
   // Set some env variables so codecov detection script works correctly
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [

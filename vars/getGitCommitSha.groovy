@@ -8,6 +8,6 @@
   def sha = getGitCommitSha()
 */
 def call() {
-  sh "git rev-parse HEAD > .git/current-commit"
-  return readFile(".git/current-commit").trim()
+  def sha = sh script: "git rev-parse HEAD", returnStdout: true
+  return sha?.trim()
 }
