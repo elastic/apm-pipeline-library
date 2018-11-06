@@ -22,18 +22,17 @@ def call(Map params = [:]) {
     def user = data?.user
     def password = data?.password
     def url = "1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"
-    def addr = "https://${url}"
-    def urlAuth = "https://${user}:${password}@${addr}"
+    def urlAuth = "https://${user}:${password}@${url}"
     
     if(data == null || user == null || password == null){
       error "Benchmarks: was not possible to get authentication info to send benchmarks"
     }
     echo "Benchmarks: sending data..."
     wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+      [var: 'CLOUD_URL', password: "${urlAuth}"],
+      [var: 'CLOUD_ADDR', password: "${url}"],
       [var: 'CLOUD_USERNAME', password: "${user}"],
       [var: 'CLOUD_PASSWORD', password: "${password}"],
-      [var: 'CLOUD_ADDR', password: "${addr}"],
-      [var: 'CLOUD_URL', password: "${urlAuth}"],
       ]]) {
          sh """#!/bin/bash
          set +x -euo pipefail
