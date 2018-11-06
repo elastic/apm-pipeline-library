@@ -1,8 +1,6 @@
 /**
 https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy
 */
-import groovy.transform.Field
-import org.kohsuke.github.GitHub
 
 /**
 return the Github token.
@@ -27,8 +25,12 @@ def getBranchRef(){
   if (env.CHANGE_ID) {
     def repoUrl = getGitRepoURL()
     def repoName = "${ORG_NAME}/${REPO_NAME}"
-    def gh = GitHub.connectUsingOAuth(getGithubToken())
-    def pr = gh.getRepository(repoName).getPullRequest(env.CHANGE_ID.toInteger())
+    def token = getGithubToken()
+    def prJson = sh(
+      script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${CHANGE_ID}",
+      returnStdout: true
+    )
+    def pr = readJSON(text: prJson)
     branchName = "${pr.head.repo.owner.login}/${pr.head.ref}"
   }
   return branchName
