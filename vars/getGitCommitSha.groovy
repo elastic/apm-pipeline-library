@@ -9,5 +9,5 @@
 */
 def call() {
   def sha = sh script: "git rev-parse HEAD", returnStdout: true
-  return sha
+  return "${sha}"
 }
