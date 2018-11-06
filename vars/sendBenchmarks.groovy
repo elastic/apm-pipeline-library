@@ -37,9 +37,9 @@ def call(Map params = [:]) {
          sh """#!/bin/bash
          set +x -euo pipefail
          
-         export GOPATH=${WORKSPACE}
-         export PATH=\${GOPATH}/bin:${PATH}
-         eval "$(gvm ${GO_VERSION})"
+         export GOPATH=\${WORKSPACE}
+         export PATH=\${GOPATH}/bin:\${PATH}
+         eval "$(gvm \${GO_VERSION})"
          
          go get -v -u github.com/elastic/gobench
          \${GOPATH}/bin/gobench -index benchmark-go -es "${urlAuth}" < ${benchFile}
