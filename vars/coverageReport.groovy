@@ -11,11 +11,14 @@ def call(baseDir) {
     keepAll: true,
     reportDir: "${baseDir}", 
     reportFiles: 'coverage-*-report.html', 
-    reportName: 'Coverage-Report', 
+    reportName: 'Coverage-Sourcecode-Files', 
     reportTitles: 'Coverage'])
+/*
+  The current version does not show the coverage on the source code.
   publishCoverage(adapters: [
     coberturaAdapter("${baseDir}/coverage-*-report.xml")], 
     sourceFileResolver: sourceFiles('STORE_ALL_BUILD'))
+*/
   cobertura(autoUpdateHealth: false, 
     autoUpdateStability: false, 
     coberturaReportFile: "${baseDir}/coverage-*-report.xml", 
