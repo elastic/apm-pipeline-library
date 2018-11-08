@@ -11,11 +11,11 @@ def call(baseDir) {
     keepAll: true,
     reportDir: "${baseDir}", 
     reportFiles: 'coverage-*-report.html', 
-    reportName: 'coverage report', 
+    reportName: 'Coverage-Report', 
     reportTitles: 'Coverage'])
   publishCoverage(adapters: [
     coberturaAdapter("${baseDir}/coverage-*-report.xml")], 
-    sourceFileResolver: sourceFiles('STORE_LAST_BUILD'))
+    sourceFileResolver: sourceFiles('STORE_ALL_BUILD'))
   cobertura(autoUpdateHealth: false, 
     autoUpdateStability: false, 
     coberturaReportFile: "${baseDir}/coverage-*-report.xml", 
