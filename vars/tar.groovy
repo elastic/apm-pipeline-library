@@ -21,14 +21,14 @@ def call(Map params = [:]) {
     return
   }
   try {
-    sh pathPrefix + "tar -czf '${WORKSPACE}/" + file + "' '" + dir + "'"
+    sh "${pathPrefix} tar -czf '${WORKSPACE}/${file}' '${dir}'"
     if(archive){
       archiveArtifacts(allowEmptyArchive: true, 
-                            artifacts: file, 
-                            onlyIfSuccessful: false)
+                      artifacts: file, 
+                      onlyIfSuccessful: false)
     }
   } catch (e){
-    echo file + " was not compresesd or archived"
+    echo "${file} was not compresesd or archived : ${e?.message}"
     if(!allowMissing){
       currentBuild.result = "UNSTABLE"
     } else {

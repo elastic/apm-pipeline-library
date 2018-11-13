@@ -67,7 +67,7 @@ def call(Map params = [:]){
           def tag = "${agentType} ${agent}-ES:${elasticStack}-APM:${server}"
           def serverVer = server.tokenize(";")[0]
           def opts = server.tokenize(";")[1] ? server.tokenize(";")[1] : ''
-          parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)
+          parallelStages[tag] = nodeIntegrationTest(source, tag, agent, serverVer, opts, agentType)
         }
       }
       parallel(parallelStages)
@@ -75,14 +75,14 @@ def call(Map params = [:]){
   }
 }
 
-def nodeIntegrationTest(tag, agent, server, opts, agentType){
+def nodeIntegrationTest(source, tag, agent, server, opts, agentType){
   return {
     node('linux') {
       withEnv([
         "APM_SERVER_BRANCH=${server}",
         "BUILD_OPTS=${opts}",
         "${agentEnvVar[agentType]}=${agent}"]){
-        stepIntegrationTest(tag, agentType)
+        stepIntegrationTest(source: source, tag: tag, agetType: agentType)
       }
       /*
       build(

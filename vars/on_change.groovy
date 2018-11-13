@@ -20,7 +20,7 @@ void call(Map args = [:], body){
   if (!(branch ==~ args.to))
     return
   
-  println "running because of a commit to ${branch}"
+  echo "running because of a commit to ${branch}"
   body()
   
 }

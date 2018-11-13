@@ -24,13 +24,13 @@ def getBranchRef(){
   def branchName = env.BRANCH_NAME
   if (env.CHANGE_ID) {
     def repoUrl = getGitRepoURL()
-    def repoName = "${ORG_NAME}/${REPO_NAME}"
+    def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
     def token = getGithubToken()
     wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
       [var: 'GITHUB_TOKEN', password: "${token}"], 
       ]]) {
       def prJson = sh(
-        script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${CHANGE_ID}",
+        script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}",
         returnStdout: true
       )
       def pr = readJSON(text: prJson)

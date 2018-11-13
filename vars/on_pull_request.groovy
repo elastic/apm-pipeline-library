@@ -17,15 +17,19 @@ void call(Map args = [:], body){
   def target_branch = env.CHANGE_TARGET
     
   // do nothing in source branch doesn't match
-  if (args.from)
-  if (!(source_branch ==~ args.from))
-    return
+  if (args.from){
+    if (!(source_branch ==~ args.from)){
+      return
+    }
+  }
 
   // do nothing if target branch doesnt match
-  if (args.to)
-  if (!(target_branch ==~ args.to))
-    return
-  
-  println "running because of a PR from ${source_branch} to ${target_branch}"
+  if (args.to){
+    if (!(target_branch ==~ args.to)){
+        return
+      }
+  }
+
+  echo "running because of a PR from ${source_branch} to ${target_branch}"
   body()
 }

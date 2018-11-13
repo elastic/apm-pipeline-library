@@ -11,3 +11,5 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 
 * *file*: file that contains the stats.
 * *index*: index name to store data.
+* *url*: ES url to store the data.
+* *secret*: Vault secret that contains the ES credentials.
