@@ -119,17 +119,15 @@ on_pull_request {
 ```
 ## runIntegrationTestAxis
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
-It needs the following environment variables. 
-INTEGRATION_TEST_BASE_DIR:  points to the relative path from workspace to the sources.
-JOB_INTEGRATION_TEST_BRANCH_SPEC: git ref to the integration test branch to use.
-ELASTIC_STACK_VERSION: Elastic Stack branch/tag to use.
+It needs the integration test sources stashed.
 
 ```
-runIntegrationTestAxis(agent)
+runIntegrationTestAxis(source: 'source', agentType: 'go')
 ```
-
-* *agent*: agent type to run the tests (go, java, python, ruby, nodejs)
-## sendBenchmarks
+* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
+* *source*: Stash name that contains the source code.
+* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
+* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
 
@@ -143,6 +141,8 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 
 * *file*: file that contains the stats.
 * *index*: index name to store data.
+* *url*: ES url to store the data.
+* *secret*: Vault secret that contains the ES credentials.
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
@@ -173,16 +173,16 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 ## stepIntegrationTest
-Run an itegration test (all, go, java, kibana, nodejs, python, ruby, server)
-It needs the environment variable INTEGRATION_TEST_BASE_DIR that points to 
-the relative path from workspace to the sources.
-It needs the integration test sources stashed with the name 'source_intest'.
+Run an integration test (all, go, java, kibana, nodejs, python, ruby, server)
+It needs the integration test sources stashed.
 
 ```
 stepIntegrationTest("Running Go integration test", "go")
 ```
 * *tag*: Message to show in the build display name.
-* *agentType*: Agent type to test (go, java, python, nodejs, ruby).
+* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
+* *source*: Stash name that contains the source code.
+* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
 ## tar
 Compress a folder into a tar file.
 
