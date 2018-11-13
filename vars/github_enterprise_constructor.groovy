@@ -9,7 +9,7 @@
   github_enterprise_constructor()
 */
 def call(){
-  if(!env.GIT_URL){
+  if(!env?.GIT_URL){
     env.GIT_URL = getGitRepoURL()
   }
   

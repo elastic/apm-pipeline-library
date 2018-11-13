@@ -1,11 +1,10 @@
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
-It needs the following environment variables. 
-INTEGRATION_TEST_BASE_DIR:  points to the relative path from workspace to the sources.
-JOB_INTEGRATION_TEST_BRANCH_SPEC: git ref to the integration test branch to use.
-ELASTIC_STACK_VERSION: Elastic Stack branch/tag to use.
+It needs the integration test sources stashed.
 
 ```
-runIntegrationTestAxis(agent)
+runIntegrationTestAxis(source: 'source', agentType: 'go')
 ```
-
-* *agent*: agent type to run the tests (go, java, python, ruby, nodejs)
+* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
+* *source*: Stash name that contains the source code.
+* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
+* *elasticStack*: Elastic Stack branch/tag to use(default 'master').

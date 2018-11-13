@@ -31,18 +31,28 @@ import groovy.transform.Field
 
 /**
   Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
-  It needs the following environment variables. 
-  INTEGRATION_TEST_BASE_DIR:  points to the relative path from workspace to the sources.
-  JOB_INTEGRATION_TEST_BRANCH_SPEC: git ref to the integration test branch to use.
-  ELASTIC_STACK_VERSION: Elastic Stack branch/tag to use.
-  
-  runIntegrationTestAxis("ruby")
+  It needs the integration test sources stashed.
+
+  runIntegrationTestAxis(source: 'source', agentType: "ruby")
 */
-def call(agentType){
+def call(Map params = [:]){
+  def agentType = params?.agentType
+  def source = params?.source
+  def elasticStack = params.containsKey('elasticStack') ?  params.elasticStack : 'master'
+  def baseDir = params.containsKey('baseDir') ? params.baseDir : 'src/github.com/elastic/apm-integration-testing'
+
+  if(agentType == null){
+    error "runIntegrationTestAxis: no valid agentType"
+  }
+  
+  if(source == null){
+    error "runIntegrationTestAxis: no valid source to unstash"
+  }
+  
   withEnvWrapper() {
     deleteDir()
-    unstash "source_intest"
-    dir("${INTEGRATION_TEST_BASE_DIR}"){
+    unstash "${source}"
+    dir("${baseDir}"){
       def parallelStages = [:]
       def nodeVersions = readYaml(file: ymlFiles[agentType])
       def elasticStackVersions = readYaml(file: ymlFiles["server"])
@@ -54,7 +64,7 @@ def call(agentType){
       
       elasticStackVersNoExcluded.each{ server ->
         nodeVersNoExcluded.each{ agent ->
-          def tag = "${agentType} ${agent}-ES:${ELASTIC_STACK_VERSION}-APM:${server}"
+          def tag = "${agentType} ${agent}-ES:${elasticStack}-APM:${server}"
           def serverVer = server.tokenize(";")[0]
           def opts = server.tokenize(";")[1] ? server.tokenize(";")[1] : ''
           parallelStages[tag] = nodeIntegrationTest(tag, agent, serverVer, opts, agentType)

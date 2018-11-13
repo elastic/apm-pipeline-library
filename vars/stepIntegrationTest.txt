@@ -1,10 +1,10 @@
-Run an itegration test (all, go, java, kibana, nodejs, python, ruby, server)
-It needs the environment variable INTEGRATION_TEST_BASE_DIR that points to 
-the relative path from workspace to the sources.
-It needs the integration test sources stashed with the name 'source_intest'.
+Run an integration test (all, go, java, kibana, nodejs, python, ruby, server)
+It needs the integration test sources stashed.
 
 ```
 stepIntegrationTest("Running Go integration test", "go")
 ```
 * *tag*: Message to show in the build display name.
-* *agentType*: Agent type to test (go, java, python, nodejs, ruby).
+* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
+* *source*: Stash name that contains the source code.
+* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
