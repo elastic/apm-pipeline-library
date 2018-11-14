@@ -1,0 +1,22 @@
+Grab a secret from the vault and define some environment variables to access to an URL
+
+the secret must have this format
+`{ data: { user: 'username', password: 'user_password'} }``
+
+The following environment variables will be export and mask on logs
+* `CLOUD_URL`: URL for basic authentication "https://${user}:${password}@${url}"
+* `CLOUD_ADDR`: only the URL
+* `CLOUD_USERNAME`: username 
+* `CLOUD_PASSWORD`: user password
+
+```
+withEsEnv(){
+  //block
+}
+```
+
+```
+withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
+  //block
+}
+```
