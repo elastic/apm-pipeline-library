@@ -8,11 +8,19 @@ class GetVaultSecretStepTests extends BasePipelineTest {
   
   def wrapInterceptor = { map, closure ->
     map.each { key, value -> 
-          binding.setVariable("${key}", "${value}")
+      if("varPasswordPairs".equals(key)){
+        value.each{ it ->
+          binding.setVariable("${it.var}", "${it.password}")
+        }
+      }
     }
     def res = closure.call()
     map.forEach { key, value ->
-         binding.setVariable("${key}", null)
+      if("varPasswordPairs".equals(key)){
+        value.each{ it ->
+          binding.setVariable("${it.var}", null)
+        }
+      }
     }
     return res
   }

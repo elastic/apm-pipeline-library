@@ -10,13 +10,17 @@ class SendBenchmarksStepTests extends BasePipelineTest {
   def wrapInterceptor = { map, closure ->
     map.each { key, value -> 
       if("varPasswordPairs".equals(key)){
-        binding.setVariable("${value.var}", "${value.password}")
+        value.each{ it ->
+          binding.setVariable("${it.var}", "${it.password}")
+        }
       }
     }
     def res = closure.call()
     map.forEach { key, value ->
       if("varPasswordPairs".equals(key)){
-        binding.setVariable("${value.var}", null)
+        value.each{ it ->
+          binding.setVariable("${it.var}", null)
+        }
       }
     }
     return res
@@ -101,6 +105,23 @@ class SendBenchmarksStepTests extends BasePipelineTest {
         call.methodName == "error"
     }.any { call ->
         callArgsToString(call).contains("Benchmarks: Unable to get credentials from the vault: Error message")
+    })
+    assertJobStatusFailure()
+  }
+  
+  @Test
+  void testWrongProtocol() throws Exception {
+    def script = loadScript("vars/sendBenchmarks.groovy")
+    try {
+      script.call(secret: 'secret', url: 'ht://wrong.example.com')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("Benchmarks: unknow protocol, the url is not http(s).")
     })
     assertJobStatusFailure()
   }

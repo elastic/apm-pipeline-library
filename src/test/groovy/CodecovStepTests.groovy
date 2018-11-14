@@ -11,13 +11,17 @@ class CodecovStepTests extends BasePipelineTest {
   def wrapInterceptor = { map, closure ->
     map.each { key, value -> 
       if("varPasswordPairs".equals(key)){
-        binding.setVariable("${value.var}", "${value.password}")
+        value.each{ it ->
+          binding.setVariable("${it.var}", "${it.password}")
+        }
       }
     }
     def res = closure.call()
     map.forEach { key, value ->
       if("varPasswordPairs".equals(key)){
-        binding.setVariable("${value.var}", null)
+        value.each{ it ->
+          binding.setVariable("${it.var}", null)
+        }
       }
     }
     return res
