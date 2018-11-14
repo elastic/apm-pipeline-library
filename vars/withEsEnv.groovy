@@ -47,6 +47,13 @@ def call(Map params = [:], Closure body) {
     [var: 'CLOUD_USERNAME', password: "${user}"],
     [var: 'CLOUD_PASSWORD', password: "${password}"],
     ]]) {
-      body()
+    withEnv([
+      "CLOUD_URL=${urlAuth}",
+      "CLOUD_ADDR=${protocol}${url}",
+      "CLOUD_USERNAME=${user}",
+      "CLOUD_PASSWORD=${password}"
+      ]){
+        body()
+    }
    }
 }

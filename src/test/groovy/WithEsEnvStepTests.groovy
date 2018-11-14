@@ -26,6 +26,19 @@ class WithEsEnvStepTests extends BasePipelineTest {
     return res
   }
   
+  def withEnvInterceptor = { list, closure ->
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], fields[1])
+    }
+    def res = closure.call()
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], null)
+    }
+    return res
+  }
+  
   @Override
   @Before
   void setUp() throws Exception {
@@ -41,6 +54,7 @@ class WithEsEnvStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
+    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
