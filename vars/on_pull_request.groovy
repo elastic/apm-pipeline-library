@@ -10,8 +10,9 @@
 void call(Map args = [:], body){
   
   // do nothing if not pr
-  if (!env.GIT_BUILD_CAUSE.equals("pr")) 
+  if (!env.GIT_BUILD_CAUSE.equals("pr")){ 
     return
+  }
   
   def source_branch = env.BRANCH_NAME
   def target_branch = env.CHANGE_TARGET

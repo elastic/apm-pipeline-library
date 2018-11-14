@@ -10,8 +10,9 @@
 void call(Map args = [:], body){
 
   // do nothing if not merge
-  if (!env.GIT_BUILD_CAUSE.equals("merge"))
+  if (!env.GIT_BUILD_CAUSE.equals("merge")){
     return
+  }
 
   env.FEATURE_SHA = get_feature_branch_sha()
 
@@ -64,10 +65,12 @@ def get_merged_from(){
     ).replaceFirst("remotes/origin/", "")?.trim()
     // trim the ~<number> off branch names which means commits back
     // e.g. master~4 means 4 commits ago on master
-    if(branch.contains("~"))
+    if(branch.contains("~")){
       branch = branch.substring(0, branch.lastIndexOf("~"))
-    if(!branch.contains("^"))
+    }
+    if(!branch.contains("^")){
       branchNames.add(branch)
+    }
   }
   return branchNames
 }
