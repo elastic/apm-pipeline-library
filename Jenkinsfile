@@ -84,7 +84,8 @@ pipeline {
                 curl -LO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
                 tar -xzf "\${MVNW_VER}.tar.gz"
                 mv "\${MVNW_DIR}/.mvn/" .
-                mv "\${MVNW_DIR}/mvnw*" .
+                mv "\${MVNW_DIR}/mvnw" .
+                mv "\${MVNW_DIR}/mvnw.cmd" .
                 rm -fr "\${MVNW_DIR}"
                 """
               }
