@@ -1,5 +1,7 @@
 # apm-pipeline-library
 
+[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-shared/apm-apm-pipeline-library-mbp/master)](https://apm-ci.elastic.co/job/apm-shared/apm-apm-pipeline-library-mbp/master)
+
 Jenkins pipeline shared library for the project APM
 
 ```
