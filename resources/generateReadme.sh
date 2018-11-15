@@ -14,7 +14,7 @@ README="${FOLDER}/README.md"
 echo "FOLDER=${1}"
 echo "README=${FOLDER}/README.md"
 
-echo "# Steps Documentations" > ${README}
+echo "# Steps Documentation" > ${README}
 for i in ${FOLDER}/*.txt
 do
   echo "Procesing $i"

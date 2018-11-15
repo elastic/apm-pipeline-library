@@ -1,4 +1,4 @@
-# Steps Documentations
+# Steps Documentation
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -235,5 +235,28 @@ withEnvWrapper(){
 //https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
 withCredentials([string(credentialsId: '6a80d11c-cb5f-4e40-8565-78e127610ef1', variable: 'VAULT_ROLE_ID_HEY_APM')]) {
   // some block
+}
+```
+## withEsEnv
+Grab a secret from the vault and define some environment variables to access to an URL
+
+the secret must have this format
+`{ data: { user: 'username', password: 'user_password'} }``
+
+The following environment variables will be export and mask on logs
+* `CLOUD_URL`: URL for basic authentication "https://${user}:${password}@${url}"
+* `CLOUD_ADDR`: only the URL
+* `CLOUD_USERNAME`: username 
+* `CLOUD_PASSWORD`: user password
+
+```
+withEsEnv(){
+  //block
+}
+```
+
+```
+withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
+  //block
 }
 ```
