@@ -100,6 +100,7 @@ pipeline {
       agent { label 'linux && immutable' }
       environment {
         PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
+        MAVEN_OPTS = "-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       }
       steps {
         withEnvWrapper() {
@@ -113,8 +114,8 @@ pipeline {
         always { 
           junit(allowEmptyResults: true, 
             keepLongStdio: true, 
-            testResults: "${BASE_DIR}/target/surfire-reports/junit-report.xml,${BASE_DIR}/target/surfire-reports/TEST-*.xml")
-            tar(file: "surfire-reports.tgz", archive: true, dir: "surfire-reports", pathPrefix: "${BASE_DIR}/target")
+            testResults: "${BASE_DIR}/target/surefire-reports/junit-report.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+            tar(file: "surefire-reports.tgz", archive: true, dir: "surefire-reports", pathPrefix: "${BASE_DIR}/target")
         }
       }
     }
