@@ -70,7 +70,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
   @Test
   void testParams() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
-    script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: 'secret')
+    script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: 'secret', bulk: true)
     printCallStack()
     assertJobStatusSuccess()
   }

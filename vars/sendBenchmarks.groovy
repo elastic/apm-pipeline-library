@@ -10,6 +10,7 @@ def call(Map params = [:]) {
   def index = params.containsKey('index') ? params.index : 'benchmark-go'
   def url = params.containsKey('url') ? params.url : "https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"
   def secret = params.containsKey('secret') ? params.secret : 'java-agent-benchmark-cloud'
+  def bulk = params.containsKey('bulk') ? params.bulk : false
 
   //apm-server-benchmark-cloud
   //java-agent-benchmark-cloud
@@ -20,6 +21,10 @@ def call(Map params = [:]) {
   if(props?.errors){
      error "Benchmarks: Unable to get credentials from the vault: " + props.errors.toString()
   } 
+  
+  if(bulk){
+    url += '/_bulk'
+  }
   
   def protocol = "https://"
   if(url.startsWith("https://")){
