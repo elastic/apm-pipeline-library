@@ -82,9 +82,9 @@ pipeline {
               MVNW_DIR="maven-wrapper-\${MVNW_VER}"
               curl -LO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
               tar -xzf "\${MVNW_VER}.tar.gz"
-              mv "${MVNW_DIR}/.mvn/" .
-              mv "${MVNW_DIR}/mvnw*" .
-              rm -fr "${MVNW_DIR}"
+              mv "\${MVNW_DIR}/.mvn/" .
+              mv "\${MVNW_DIR}/mvnw*" .
+              rm -fr "\${MVNW_DIR}"
               """
               stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
