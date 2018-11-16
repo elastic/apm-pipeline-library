@@ -55,15 +55,23 @@ def call(Map params = [:]) {
     [var: 'CLOUD_USERNAME', password: "${user}"],
     [var: 'CLOUD_PASSWORD', password: "${password}"],
     ]]) {
-       sh """#!/bin/bash
-       set +x -euo pipefail
-       GO_VERSION=\${GO_VERSION:-"1.10.3"}
-       export GOPATH=\${WORKSPACE}
-       export PATH=\${GOPATH}/bin:\${PATH}
-       eval "\$(gvm \${GO_VERSION})"
-       
-       go get -v -u github.com/elastic/gobench
-       gobench -index ${index} -es "${urlAuth}" < ${benchFile}
-       """
+      if(index.equals('benchmark-go') || index.equals('benchmark-server')){
+        sh """#!/bin/bash
+        set +x -euo pipefail
+        GO_VERSION=\${GO_VERSION:-"1.10.3"}
+        export GOPATH=\${WORKSPACE}
+        export PATH=\${GOPATH}/bin:\${PATH}
+        eval "\$(gvm \${GO_VERSION})"
+        
+        go get -v -u github.com/elastic/gobench
+        gobench -index ${index} -es "${urlAuth}" < ${benchFile}
+        """
+      } else {
+        sh """#!/bin/bash
+        set +x -euo pipefail
+        curl --user ${user}:${password} -XPOST '${protocol}${url}/_bulk' \
+          -H 'Content-Type: application/json'  --data-binary @${benchFile}
+        """
+      }
    }
 }
