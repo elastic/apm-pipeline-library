@@ -30,7 +30,10 @@ def getBranchRef(){
       [var: 'GITHUB_TOKEN', password: "${token}"], 
       ]]) {
       def prJson = sh(
-        script: "curl -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}",
+        script: "#!/bin/bash
+        set +x
+        curl -s -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}
+        """,
         returnStdout: true
       )
       def pr = readJSON(text: prJson)
@@ -52,8 +55,9 @@ def call(repo=null) {
     return
   }
   
-  echo "Codecov: Sending data..."
+  echo "Codecov: Getting branch ref..."
   def branchName = getBranchRef()
+  echo "Codecov: Sending data..."
   // Set some env variables so codecov detection script works correctly
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'CODECOV_TOKEN', password: "${token}"], 
