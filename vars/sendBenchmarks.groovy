@@ -55,7 +55,7 @@ def call(Map params = [:]) {
     ]]) {
        sh """#!/bin/bash
        set +x -euo pipefail
-       
+       GO_VERSION=\${GO_VERSION:-"1.10.3"}
        export GOPATH=\${WORKSPACE}
        export PATH=\${GOPATH}/bin:\${PATH}
        eval "\$(gvm \${GO_VERSION})"
