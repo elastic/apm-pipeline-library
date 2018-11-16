@@ -69,7 +69,7 @@ def call(Map params = [:]) {
       } else {
         sh """#!/bin/bash
         set +x -euo pipefail
-        curl --user ${user}:${password} -XPOST '${protocol}${url}/_bulk' \
+        curl -s --user ${user}:${password} -XPOST '${protocol}${url}/_bulk' \
           -H 'Content-Type: application/json'  --data-binary @${benchFile}
         """
       }
