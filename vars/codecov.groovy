@@ -45,7 +45,7 @@ def getBranchRef(){
 
 def call(Map params = [:]){
   def repo = params?.repo
-  def basedir = params.containsKey('basedir') ? params.dir : "."
+  def basedir = params.containsKey('basedir') ? params.basedir : "."
   
   if(!repo){
     echo "Codecov: No repository specified."
