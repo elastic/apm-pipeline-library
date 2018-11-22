@@ -36,6 +36,7 @@ pipeline {
     */
     stage('Checkout') {
       agent { label 'master || linux' }
+      options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
       }
@@ -98,6 +99,7 @@ pipeline {
     */
     stage('Test') {
       agent { label 'linux && immutable' }
+      options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
       }

@@ -67,6 +67,9 @@ def call(repo=null) {
       "GIT_BRANCH=${branchName}",
       "CODECOV_TOKEN=${token}"]) {
       sh '''#!/bin/bash
+      echo "ghprbPullId=${ghprbPullId}"
+      echo "GIT_BRANCH=${GIT_BRANCH}"
+      echo "CODECOV_TOKEN=${CODECOV_TOKEN}"
       set -x
       curl -s -o codecov.sh https://codecov.io/bash
       bash codecov.sh || echo "codecov exited with $?"
