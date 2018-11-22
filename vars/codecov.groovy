@@ -57,6 +57,9 @@ def call(repo=null) {
   
   echo "Codecov: Getting branch ref..."
   def branchName = getBranchRef()
+  if(branchName == null){
+    error "Codecov: was not possible to get the branch ref"
+  }
   echo "Codecov: Sending data..."
   // Set some env variables so codecov detection script works correctly
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -67,9 +70,6 @@ def call(repo=null) {
       "GIT_BRANCH=${branchName}",
       "CODECOV_TOKEN=${token}"]) {
       sh '''#!/bin/bash
-      echo "ghprbPullId=${ghprbPullId}"
-      echo "GIT_BRANCH=${GIT_BRANCH}"
-      echo "CODECOV_TOKEN=${CODECOV_TOKEN}"
       set -x
       curl -s -o codecov.sh https://codecov.io/bash
       bash codecov.sh || echo "codecov exited with $?"
