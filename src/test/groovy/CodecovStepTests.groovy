@@ -109,7 +109,7 @@ class CodecovStepTests extends BasePipelineTest {
   @Test
   void testNoToken() throws Exception {
     def script = loadScript("vars/codecov.groovy")
-    script.call("noToken")
+    script.call(repo: "noToken")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "echo"
@@ -122,7 +122,7 @@ class CodecovStepTests extends BasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript("vars/codecov.groovy")
-    script.call("repo")
+    script.call(repo: "repo", basedir: "ws")
     printCallStack()
     assertJobStatusSuccess()
   }

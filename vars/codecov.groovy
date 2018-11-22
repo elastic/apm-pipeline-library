@@ -43,7 +43,10 @@ def getBranchRef(){
   return branchName
 }
 
-def call(repo=null) {
+def call(Map params = [:]){
+  def repo = params?.repo
+  def basedir = params.containsKey('basedir') ? params.dir : "."
+  
   if(!repo){
     echo "Codecov: No repository specified."
     return
@@ -55,25 +58,27 @@ def call(repo=null) {
     return
   }
   
-  echo "Codecov: Getting branch ref..."
-  def branchName = getBranchRef()
-  if(branchName == null){
-    error "Codecov: was not possible to get the branch ref"
-  }
-  echo "Codecov: Sending data..."
-  // Set some env variables so codecov detection script works correctly
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'CODECOV_TOKEN', password: "${token}"], 
-    ]]) {
-    withEnv([
-      "ghprbPullId=${env.CHANGE_ID}",
-      "GIT_BRANCH=${branchName}",
-      "CODECOV_TOKEN=${token}"]) {
-      sh '''#!/bin/bash
-      set -x
-      curl -s -o codecov.sh https://codecov.io/bash
-      bash codecov.sh || echo "codecov exited with $?"
-      '''
+  dir(basedir){
+    echo "Codecov: Getting branch ref..."
+    def branchName = getBranchRef()
+    if(branchName == null){
+      error "Codecov: was not possible to get the branch ref"
+    }
+    echo "Codecov: Sending data..."
+    // Set some env variables so codecov detection script works correctly
+    wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+      [var: 'CODECOV_TOKEN', password: "${token}"], 
+      ]]) {
+      withEnv([
+        "ghprbPullId=${env.CHANGE_ID}",
+        "GIT_BRANCH=${branchName}",
+        "CODECOV_TOKEN=${token}"]) {
+        sh '''#!/bin/bash
+        set -x
+        curl -s -o codecov.sh https://codecov.io/bash
+        bash codecov.sh || echo "codecov exited with $?"
+        '''
+      }
     }
   }
 }
