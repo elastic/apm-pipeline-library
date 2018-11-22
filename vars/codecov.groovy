@@ -30,7 +30,7 @@ def getBranchRef(){
       [var: 'GITHUB_TOKEN', password: "${token}"], 
       ]]) {
       def prJson = sh(
-        script: "#!/bin/bash
+        script: """#!/bin/bash
         set +x
         curl -s -H 'Authorization: token ${token}' https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}
         """,
