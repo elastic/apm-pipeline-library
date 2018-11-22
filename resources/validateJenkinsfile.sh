@@ -23,4 +23,4 @@ if [ ! -f "${JENKINS_FILE}" ]; then
 fi
 
 JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
-curl -X POST -H $JENKINS_CRUMB -F "jenkinsfile=<${JENKINS_FILE}" $JENKINS_URL/pipeline-model-converter/validate
+curl -X POST -H "$JENKINS_CRUMB" -F "jenkinsfile=<${JENKINS_FILE}" "$JENKINS_URL/pipeline-model-converter/validate"
