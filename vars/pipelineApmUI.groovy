@@ -7,7 +7,7 @@ def grabTestResults(){
     onlyIfSuccessful: false)
 }
 
-def nodeEnviromentVars(){
+def nodeEnviromentVars(nodeVersion){
   /** TODO this enviroment variables could change on diferent type of agents, so maybe it is better to move then to the stage*/
   env.NODE_DIR="${WORKSPACE}/node/${nodeVersion}"
   env.NODE_BIN="${NODE_DIR}/bin"
@@ -15,7 +15,7 @@ def nodeEnviromentVars(){
 }
 
 def installNodeJs(nodeVersion, pakages = null){
-  nodeEnviromentVars()
+  nodeEnviromentVars(nodeVersion)
   sh """#!/bin/bash
   set -euxo pipefail
   NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
@@ -93,7 +93,7 @@ def buildOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -108,7 +108,7 @@ def buildNoOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -131,7 +131,7 @@ def kibanaIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -148,7 +148,7 @@ def kibanaGroupSteps(){
     unstash 'source'
     unstash 'cache'
     unstash 'build-oss'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${BASE_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -180,7 +180,7 @@ def xPackIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -202,7 +202,7 @@ def xPackGroupSteps(){
     unstash 'source'
     unstash 'cache'
     unstash 'build-no-oss'
-    nodeEnviromentVars()
+    nodeEnviromentVars("${NODE_VERSION}")
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
