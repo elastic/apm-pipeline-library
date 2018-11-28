@@ -69,7 +69,7 @@ void call(Map args = [:]){
                environment name: 'build_oss_ci', value: 'true'
              }
              steps {
-               script { pipelineApmUI.buildOSSStep() }
+               script { pipelineApmUI.buildOSSStep() }
              }
            }
            /**
@@ -82,7 +82,7 @@ void call(Map args = [:]){
                environment name: 'build_no_oss_ci', value: 'true'
              }
              steps {
-               script { pipelineApmUI.buildNoOSSSteps() }
+               script { pipelineApmUI.buildNoOSSSteps() }
              }
            }
          }
@@ -96,7 +96,7 @@ void call(Map args = [:]){
            environment name: 'intake_ci', value: 'true'
          }
          steps {
-           script { pipelineApmUI.kibanaIntakeSteps() }
+           script { pipelineApmUI.kibanaIntakeSteps() }
          }
          post { always { grabTestResults() } }
        }
@@ -109,7 +109,7 @@ void call(Map args = [:]){
            environment name: 'ciGroup_ci', value: 'true'
          }
          steps {
-           script { pipelineApmUI.kibanaGroupSteps() }
+           script { pipelineApmUI.kibanaGroupSteps() }
          }
          post { always { grabTestResults() } }
        }
@@ -125,7 +125,7 @@ void call(Map args = [:]){
            environment name: 'x_pack_intake_ci', value: 'true'
          }
          steps {
-           script { pipelineApmUI.xPackIntakeSteps() }
+           script { pipelineApmUI.xPackIntakeSteps() }
          }
          post { always { grabTestResults() } }
        }
@@ -142,7 +142,7 @@ void call(Map args = [:]){
            environment name: 'x_pack_ciGroup_ci', value: 'true'
          }
          steps {
-           script { pipelineApmUI.xPackGroupSteps() }
+           script { pipelineApmUI.xPackGroupSteps() }
          }
          post { always { grabTestResults() } }
        }
