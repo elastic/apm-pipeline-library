@@ -56,7 +56,7 @@ void call(Map args = [:]){
                HOME = "${env.WORKSPACE}"
              }
              steps {
-               script { pipelineApmUI.checkoutSteps() }
+               script { pipelineApmUI.checkoutSteps() }
              }
            }
            /**
