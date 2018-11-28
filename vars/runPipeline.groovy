@@ -1,28 +1,10 @@
 #!/usr/bin/env groovy
 
-def defaultPipeline(){
-  return {
-
-  }
-}
-
-def testPipeline(){
-  return {
-    pipeline {
-      agent { label 'linux' }
-      stages {
-        stage('Helo'){
-          steps {
-            echo "Hello, I am Test pipeline"
-          }
-        }
-      }
-    }
-  }
-}
-
 /**
   Run a pipeline passed as parameter.
+  
+  There is a limitation, the main pipeline should be definned in the call function.
+  https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-declarative-pipelines
 */
 void call(Map args = [:]){
   def name = args.containsKey('name') ? args.name : 'default'
