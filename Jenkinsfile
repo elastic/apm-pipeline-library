@@ -14,9 +14,6 @@ pipeline {
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
   }
-  triggers {
-    cron('0 0 * * 1-5')
-  }
   options {
     timeout(time: 1, unit: 'HOURS') 
     buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
