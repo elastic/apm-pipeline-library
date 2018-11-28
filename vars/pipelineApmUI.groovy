@@ -7,11 +7,15 @@ def grabTestResults(){
     onlyIfSuccessful: false)
 }
 
-def installNodeJs(nodeVersion, pakages = null){
+def nodeEnviromentVars(){
+  /** TODO this enviroment variables could change on diferent type of agents, so maybe it is better to move then to the stage*/
   env.NODE_DIR="${WORKSPACE}/node/${nodeVersion}"
   env.NODE_BIN="${NODE_DIR}/bin"
-  env.PATH="${NODE_BIN}:${PATH}"
-  
+  env.PATH="${NODE_BIN}:${BASE_DIR}/node_modules/.bin:${PATH}"
+}
+
+def installNodeJs(nodeVersion, pakages = null){
+  nodeEnviromentVars()
   sh """#!/bin/bash
   set -euxo pipefail
   NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
@@ -28,8 +32,6 @@ def installNodeJs(nodeVersion, pakages = null){
   sh """#!/bin/bash
   set -euxo pipefail
   ${cmd}
-  
-  find "${NODE_DIR}" -name yarn
   """
 }
 
@@ -67,8 +69,13 @@ def checkoutSteps(){
         yarn kbn bootstrap
         """
       }
+      sh 'pwd'
     }
-    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules,${WORKSPACE}/node", useDefaultExcludes: false
+    sh """
+    ls -la ${BASE_DIR}/node_modules,
+    ls -la ${WORKSPACE}/node
+    """
+    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,${WORKSPACE}/node/**", useDefaultExcludes: false
     dir("${ES_BASE_DIR}"){
       /** TODO grab the correct elasticsearch branch */
       checkout([$class: 'GitSCM', branches: [[name: "master"]],
@@ -78,7 +85,7 @@ def checkoutSteps(){
         userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
         url: "${ES_GIT_URL}"]]])
     }
-    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
   }
 }
 
@@ -86,6 +93,7 @@ def buildOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
+    nodeEnviromentVars()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -100,6 +108,7 @@ def buildNoOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
+    nodeEnviromentVars()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -122,6 +131,7 @@ def kibanaIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
+    nodeEnviromentVars()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -138,6 +148,7 @@ def kibanaGroupSteps(){
     unstash 'source'
     unstash 'cache'
     unstash 'build-oss'
+    nodeEnviromentVars()
     dir("${BASE_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -169,6 +180,7 @@ def xPackIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
     unstash 'cache'
+    nodeEnviromentVars()
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -190,6 +202,7 @@ def xPackGroupSteps(){
     unstash 'source'
     unstash 'cache'
     unstash 'build-no-oss'
+    nodeEnviromentVars()
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
