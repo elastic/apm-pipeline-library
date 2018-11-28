@@ -9,9 +9,12 @@ def grabTestResults(){
 
 def nodeEnviromentVars(nodeVersion){
   /** TODO this enviroment variables could change on diferent type of agents, so maybe it is better to move then to the stage*/
+  if(env.ORG_PATH == null){
+    env.ORG_PATH = env.PATH
+  }
   env.NODE_DIR="${WORKSPACE}/node/${nodeVersion}"
   env.NODE_BIN="${NODE_DIR}/bin"
-  env.PATH="${NODE_BIN}:${BASE_DIR}/node_modules/.bin:${NODE_DIR}/lib/node_modules/yarn/bin:${PATH}"
+  env.PATH="${NODE_BIN}:${WORKSPACE}/${BASE_DIR}/node_modules/.bin:${NODE_DIR}/lib/node_modules/yarn/bin:${ORG_PATH}"
   sh 'export'
 }
 
@@ -93,6 +96,8 @@ def buildOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
+      export 
+      ls -la "${NODE_BIN}"
       node scripts/build --debug --oss --skip-node-download --skip-archives --skip-os-packages
       '''
     }

@@ -8,6 +8,6 @@
   def repoUrl = getGitRepoURL()
 */
 def call() {
-  def repoUrl = sh script: "git config --get remote.origin.url", returnStdout: true
+  def repoUrl = sh(script: "git config --get remote.origin.url", returnStdout: true)?.trim()
   return "${repoUrl}"
 }
