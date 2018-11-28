@@ -1,5 +1,9 @@
 #!/usr/bin/env groovy
 
+def method(){
+  echo "I am a method"
+}
+
 /**
  A sample of a step implemantetion.
  
