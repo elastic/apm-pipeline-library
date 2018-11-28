@@ -11,7 +11,7 @@ def nodeEnviromentVars(nodeVersion){
   /** TODO this enviroment variables could change on diferent type of agents, so maybe it is better to move then to the stage*/
   env.NODE_DIR="${WORKSPACE}/node/${nodeVersion}"
   env.NODE_BIN="${NODE_DIR}/bin"
-  env.PATH="${NODE_BIN}:${BASE_DIR}/node_modules/.bin:${PATH}"
+  env.PATH="${NODE_BIN}:${BASE_DIR}/node_modules/.bin:${NODE_DIR}/lib/node_modules/yarn/bin:${PATH}"
 }
 
 def installNodeJs(nodeVersion, pakages = null){
@@ -69,15 +69,7 @@ def checkoutSteps(){
         yarn kbn bootstrap
         """
       }
-      sh """
-      ls -la 
-      pwd
-      """
     }
-    sh """
-    ls -la ${BASE_DIR}/node_modules
-    ls -la ${WORKSPACE}/node
-    """
     stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,${WORKSPACE}/node/**", useDefaultExcludes: false
     dir("${ES_BASE_DIR}"){
       /** TODO grab the correct elasticsearch branch */
