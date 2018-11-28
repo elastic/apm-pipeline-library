@@ -44,21 +44,21 @@ void call(Map args = [:]){
        booleanParam(name: 'x_pack_ciGroup_ci', defaultValue: false, description: 'X-Pack Group Tests')
      }
      stages {
-       stage('Initializing'){
+       /**
+        Checkout the code and stash it, to use it on other stages.
+       */
+       stage('Initializing') {
+         agent { label 'linux && immutable' }
+         environment {
+           HOME = "${env.WORKSPACE}"
+         }
+         steps {
+           script { pipelineApmUI.checkoutSteps() }
+         }
+       }
+       stage('build'){
          failFast true
          parallel {
-           /**
-            Checkout the code and stash it, to use it on other stages.
-           */
-           stage('Checkout') {
-             agent { label 'linux && immutable' }
-             environment {
-               HOME = "${env.WORKSPACE}"
-             }
-             steps {
-               script { pipelineApmUI.checkoutSteps() }
-             }
-           }
            /**
            Build on a linux environment.
            */
