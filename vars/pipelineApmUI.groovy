@@ -39,7 +39,7 @@ def checkoutSteps(){
     dir("${BASE_DIR}"){
       script{
         if(!env?.branch_specifier){
-          echo "Checkout SCM ${GIT_BRANCH}"
+          echo "Checkout SCM"
           checkout scm
         } else {
           echo "Checkout ${branch_specifier}"
@@ -53,7 +53,11 @@ def checkoutSteps(){
         env.JOB_GIT_COMMIT = getGitCommitSha()
         env.JOB_GIT_URL = "${GIT_URL}"
         github_enterprise_constructor()
-        
+      }
+    }
+    stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    dir("${BASE_DIR}"){
+      script{  
         def packageJson = readJSON(file: 'package.json')
         env.NODE_VERSION = packageJson.engines.node
         env.YARN_VERSION = packageJson.engines.yarn
@@ -64,6 +68,7 @@ def checkoutSteps(){
         """
       }
     }
+    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules,${WORKSPACE}/node", useDefaultExcludes: false
     dir("${ES_BASE_DIR}"){
       /** TODO grab the correct elasticsearch branch */
       checkout([$class: 'GitSCM', branches: [[name: "master"]],
@@ -73,43 +78,50 @@ def checkoutSteps(){
         userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
         url: "${ES_GIT_URL}"]]])
     }
-    stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}", useDefaultExcludes: false
   }
 }
 
 def buildOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
+    unstash 'cache'
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      node scripts/build --debug --oss;
+      node scripts/build --debug --oss --skip-node-download --skip-archives --skip-os-packages
       '''
     }
-    stash allowEmpty: true, name: 'build-oss', useDefaultExcludes: false
+    stash allowEmpty: true, name: 'build-oss', includes: "${BASE_DIR}/build", useDefaultExcludes: false
   }
 }
 
 def buildNoOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
+    unstash 'cache'
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      node scripts/build --debug --no-oss
+      node scripts/build --debug --no-oss --skip-node-download --skip-os-packages
+      '''
+      sh '''#!/bin/bash
+      set -euxo pipefail
       linuxBuild="$(find "./target" -name 'kibana-*-linux-x86_64.tar.gz')"
-      installDir="$WORKSPACE/install/kibana"
-      mkdir -p "$installDir"
-      tar -xzf "$linuxBuild" -C "$installDir" --strip=1
+      installDir="${WORKSPACE}/install/kibana"
+      mkdir -p "${installDir}"
+      tar -xzf "${linuxBuild}" -C "${installDir}" --strip=1
       '''
     }
-    stash allowEmpty: true, name: 'build-no-oss', useDefaultExcludes: false
+    stash allowEmpty: true, name: 'kibana-bin', includes: "${WORKSPACE}/install/kibana", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'build-no-oss', includes: "${BASE_DIR}/build", useDefaultExcludes: false
   }
 }
 
 def kibanaIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
+    unstash 'cache'
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -123,6 +135,8 @@ def kibanaIntakeSteps(){
 
 def kibanaGroupSteps(){
   withEnvWrapper() {
+    unstash 'source'
+    unstash 'cache'
     unstash 'build-oss'
     dir("${BASE_DIR}"){
       script {
@@ -154,6 +168,7 @@ def kibanaGroupSteps(){
 def xPackIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
+    unstash 'cache'
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -172,6 +187,8 @@ def xPackIntakeSteps(){
 
 def xPackGroupSteps(){
   withEnvWrapper() {
+    unstash 'source'
+    unstash 'cache'
     unstash 'build-no-oss'
     dir("${XPACK_DIR}"){
       script {
