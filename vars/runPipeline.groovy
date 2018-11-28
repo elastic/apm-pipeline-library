@@ -69,7 +69,7 @@ void call(Map args = [:]){
                environment name: 'build_oss_ci', value: 'true'
              }
              steps {
-               script { pipelineApmUI.buildOSSStep() }
+               script { pipelineApmUI.buildOSSSteps() }
              }
            }
            /**
