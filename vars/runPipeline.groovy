@@ -1,12 +1,14 @@
 #!/usr/bin/env groovy
 
 def defaultPipeline(){
-  pipeline {
-    agent any
-    stages {
-      stage('Helo'){
-        steps {
-          echo "Hello, I am pipeline"
+  return {
+    pipeline {
+      agent { label 'linux' }
+      stages {
+        stage('Helo'){
+          steps {
+            echo "Hello, I am pipeline"
+          }
         }
       }
     }
@@ -14,12 +16,14 @@ def defaultPipeline(){
 }
 
 def testPipeline(){
-  pipeline {
-    agent { label 'linux' }
-    stages {
-      stage('Helo'){
-        steps {
-          echo "Hello, I am Test pipeline"
+  return {
+    pipeline {
+      agent { label 'linux' }
+      stages {
+        stage('Helo'){
+          steps {
+            echo "Hello, I am Test pipeline"
+          }
         }
       }
     }
@@ -33,12 +37,12 @@ void call(Map args = [:]){
   def name = args.containsKey('name') ? args.name : 'default'
   switch (name) {
    case 'apm-ui': 
-    defaultPipeline()
+    defaultPipeline().call()
     break
   case 'test': 
-    testPipeline()
+    testPipeline().call()
     break
    default: 
-    defaultPipeline()
+    defaultPipeline().call()
   }
 }
