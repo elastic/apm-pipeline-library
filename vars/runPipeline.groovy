@@ -47,44 +47,42 @@ void call(Map args = [:]){
        stage('Initializing'){
          failFast true
          parallel {
-           stages(){
-             /**
-              Checkout the code and stash it, to use it on other stages.
-             */
-             stage('Checkout') {
-               agent { label 'linux && immutable' }
-               environment {
-                 HOME = "${env.WORKSPACE}"
-               }
-               steps {
-                 pipelineApmUI.checkoutSteps()
-               }
+           /**
+            Checkout the code and stash it, to use it on other stages.
+           */
+           stage('Checkout') {
+             agent { label 'linux && immutable' }
+             environment {
+               HOME = "${env.WORKSPACE}"
              }
-             /**
-             Build on a linux environment.
-             */
-             stage('build oss') {
-               agent { label 'linux && immutable' }
-               when {
-                 beforeAgent true
-                 environment name: 'build_oss_ci', value: 'true'
-               }
-               steps {
-                 pipelineApmUI.buildOSSStep()
-               }
+             steps {
+               script { pipelineApmUI.checkoutSteps() }
              }
-             /**
-             Building and extracting default Kibana distributable for use in functional tests
-             */
-             stage('build no-oss') {
-               agent { label 'linux && immutable' }
-               when {
-                 beforeAgent true
-                 environment name: 'build_no_oss_ci', value: 'true'
-               }
-               steps {
-                 pipelineApmUI.buildNoOSSSteps()
-               }
+           }
+           /**
+           Build on a linux environment.
+           */
+           stage('build oss') {
+             agent { label 'linux && immutable' }
+             when {
+               beforeAgent true
+               environment name: 'build_oss_ci', value: 'true'
+             }
+             steps {
+               script { pipelineApmUI.buildOSSStep() }
+             }
+           }
+           /**
+           Building and extracting default Kibana distributable for use in functional tests
+           */
+           stage('build no-oss') {
+             agent { label 'linux && immutable' }
+             when {
+               beforeAgent true
+               environment name: 'build_no_oss_ci', value: 'true'
+             }
+             steps {
+               script { pipelineApmUI.buildNoOSSSteps() }
              }
            }
          }
@@ -98,13 +96,9 @@ void call(Map args = [:]){
            environment name: 'intake_ci', value: 'true'
          }
          steps {
-           pipelineApmUI.kibanaIntakeSteps()
+           script { pipelineApmUI.kibanaIntakeSteps() }
          }
-         post {
-           always {
-             grabTestResults()
-           }
-         }
+         post { always { grabTestResults() } }
        }
        /**
        Test ciGroup tests on a linux environment.
@@ -115,13 +109,9 @@ void call(Map args = [:]){
            environment name: 'ciGroup_ci', value: 'true'
          }
          steps {
-           pipelineApmUI.kibanaGroupSteps()
+           script { pipelineApmUI.kibanaGroupSteps() }
          }
-         post {
-           always {
-             grabTestResults()
-           }
-         }
+         post { always { grabTestResults() } }
        }
        /**
        Test x-pack-intake tests on a linux environment.
@@ -135,13 +125,9 @@ void call(Map args = [:]){
            environment name: 'x_pack_intake_ci', value: 'true'
          }
          steps {
-           pipelineApmUI.xPackIntakeSteps()
+           script { pipelineApmUI.xPackIntakeSteps() }
          }
-         post {
-           always {
-             grabTestResults()
-           }
-         }
+         post { always { grabTestResults() } }
        }
        /**
        Test x-pack-ciGroup tests on a linux environment.
@@ -156,13 +142,9 @@ void call(Map args = [:]){
            environment name: 'x_pack_ciGroup_ci', value: 'true'
          }
          steps {
-           pipelineApmUI.xPackGroupSteps()
+           script { pipelineApmUI.xPackGroupSteps() }
          }
-         post {
-           always {
-             grabTestResults()
-           }
-         }
+         post { always { grabTestResults() } }
        }
      }
     }
