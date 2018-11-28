@@ -58,6 +58,9 @@ def checkoutSteps(){
       }
     }
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    //sh "tar -czf source.tgz ${BASE_DIR}"
+    tar(file: 'source.tgz', archive: false, dir: "${BASE_DIR}", pathPrefix: "${WORKSPACE}", allowMissing: true)
+    stash allowEmpty: true, name: 'source-tgz', includes: "source.tgz", useDefaultExcludes: false
     dir("${BASE_DIR}"){
       script{  
         def packageJson = readJSON(file: 'package.json')
