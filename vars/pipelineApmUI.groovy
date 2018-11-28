@@ -58,9 +58,6 @@ def checkoutSteps(){
       }
     }
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-    //sh "tar -czf source.tgz ${BASE_DIR}"
-    tar(file: 'source.tgz', archive: false, dir: "${BASE_DIR}", pathPrefix: "${WORKSPACE}", allowMissing: true)
-    stash allowEmpty: true, name: 'source-tgz', includes: "source.tgz", useDefaultExcludes: false
     dir("${BASE_DIR}"){
       script{  
         def packageJson = readJSON(file: 'package.json')
@@ -72,10 +69,13 @@ def checkoutSteps(){
         yarn kbn bootstrap
         """
       }
-      sh 'pwd'
+      sh """
+      ls -la 
+      pwd
+      """
     }
     sh """
-    ls -la ${BASE_DIR}/node_modules,
+    ls -la ${BASE_DIR}/node_modules
     ls -la ${WORKSPACE}/node
     """
     stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,${WORKSPACE}/node/**", useDefaultExcludes: false
