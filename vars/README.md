@@ -127,7 +127,14 @@ runIntegrationTestAxis(source: 'source', agentType: 'go')
 * *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
 * *source*: Stash name that contains the source code.
 * *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
-* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## sendBenchmarks
+* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## runPipeline
+Run a pipeline passed as parameter.
+
+```
+runPipeline(name: 'pipeline-name')
+```
+
+* name: the pipeline name to execute. ## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
 
