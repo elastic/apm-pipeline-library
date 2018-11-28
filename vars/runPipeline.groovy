@@ -2,16 +2,7 @@
 
 def defaultPipeline(){
   return {
-    pipeline {
-      agent { label 'linux' }
-      stages {
-        stage('Helo'){
-          steps {
-            echo "Hello, I am pipeline"
-          }
-        }
-      }
-    }
+
   }
 }
 
@@ -37,12 +28,39 @@ void call(Map args = [:]){
   def name = args.containsKey('name') ? args.name : 'default'
   switch (name) {
    case 'apm-ui': 
-    defaultPipeline().call()
+    pipeline {
+     agent { label 'linux' }
+     stages {
+       stage('Helo'){
+         steps {
+           echo "Hello, I am pipeline"
+         }
+       }
+     }
+    }
     break
   case 'test': 
-    testPipeline().call()
+    pipeline {
+      agent { label 'linux' }
+      stages {
+        stage('Helo'){
+          steps {
+            echo "Hello, I am Test pipeline"
+          }
+        }
+      }
+    }
     break
    default: 
-    defaultPipeline().call()
+    pipeline {
+     agent { label 'linux' }
+     stages {
+       stage('Helo'){
+         steps {
+           echo "Hello, I am pipeline"
+         }
+       }
+     }
+    }
   }
 }
