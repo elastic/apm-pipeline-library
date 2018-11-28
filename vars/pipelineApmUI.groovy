@@ -12,6 +12,7 @@ def nodeEnviromentVars(nodeVersion){
   env.NODE_DIR="${WORKSPACE}/node/${nodeVersion}"
   env.NODE_BIN="${NODE_DIR}/bin"
   env.PATH="${NODE_BIN}:${BASE_DIR}/node_modules/.bin:${NODE_DIR}/lib/node_modules/yarn/bin:${PATH}"
+  sh 'export'
 }
 
 def installNodeJs(nodeVersion, pakages = null){
@@ -95,7 +96,7 @@ def buildOSSSteps(){
       node scripts/build --debug --oss --skip-node-download --skip-archives --skip-os-packages
       '''
     }
-    stash allowEmpty: true, name: 'build-oss', includes: "${BASE_DIR}/build", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'build-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
   }
 }
 
@@ -117,8 +118,8 @@ def buildNoOSSSteps(){
       tar -xzf "${linuxBuild}" -C "${installDir}" --strip=1
       '''
     }
-    stash allowEmpty: true, name: 'kibana-bin', includes: "${WORKSPACE}/install/kibana", useDefaultExcludes: false
-    stash allowEmpty: true, name: 'build-no-oss', includes: "${BASE_DIR}/build", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'kibana-bin', includes: "${WORKSPACE}/install/kibana/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'build-no-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
   }
 }
 
