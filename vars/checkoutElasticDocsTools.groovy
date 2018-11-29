@@ -1,4 +1,4 @@
-#!groovy
+#!/usr/bin/env groovy
 
 /**
   Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
