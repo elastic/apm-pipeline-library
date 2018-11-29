@@ -1,0 +1,9 @@
+Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
+Then you can run build_docs.pl to build the documentation
+
+```
+checkoutElasticDocsTools(basedir: 'elastic-doc-folder')
+sh """
+elastic-doc-folder/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc docs/index.asciidoc -out docs/html
+"""
+```
