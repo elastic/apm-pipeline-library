@@ -6,7 +6,7 @@
   checkoutElasticDocsTools(basedir: 'folder')
 */
 def call(Map params = [:]){
-  def baseDir =  params.containsKey('basedir') ? params.basedir : "${WORKSPACE}/elastic/docs"
+  def baseDir =  params.containsKey('basedir') ? params.basedir : "${env.WORKSPACE}/elastic/docs"
   dir("${baseDir}"){
     sh """#!/bin/bash
     set -euxo pipefail
