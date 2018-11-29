@@ -29,5 +29,6 @@ class DummyStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("I am a dummy step - dummy")
     })
+    assertJobStatusSuccess()
   }
 }
