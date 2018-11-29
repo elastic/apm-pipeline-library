@@ -23,7 +23,6 @@ void call(Map args = [:]){
        buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
        timestamps()
        preserveStashes()
-       //see https://issues.jenkins-ci.org/browse/JENKINS-11752, https://issues.jenkins-ci.org/browse/JENKINS-39536, https://issues.jenkins-ci.org/browse/JENKINS-54133 and jenkinsci/ansicolor-plugin#132
        ansiColor('xterm')
        disableResume()
        durabilityHint('PERFORMANCE_OPTIMIZED')
