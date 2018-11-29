@@ -1,12 +1,5 @@
 #!/usr/bin/env groovy
 
-library identifier: 'apm@master',
-changelog: false,
-retriever: modernSCM(
-  [$class: 'GitSCMSource', 
-  credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba', 
-  remote: 'git@github.com:elastic/apm-pipeline-library.git'])
-  
 pipeline {
   agent any
   environment {
@@ -19,8 +12,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
     timestamps()
     preserveStashes()
-    //see https://issues.jenkins-ci.org/browse/JENKINS-11752, https://issues.jenkins-ci.org/browse/JENKINS-39536, https://issues.jenkins-ci.org/browse/JENKINS-54133 and jenkinsci/ansicolor-plugin#132
-    //ansiColor('xterm')
+    ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
