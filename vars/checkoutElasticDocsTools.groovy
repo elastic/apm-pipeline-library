@@ -1,4 +1,4 @@
-#!groovy
+#!/usr/bin/env groovy
 
 /**
   Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
@@ -19,6 +19,7 @@ def call(Map params = [:]){
     echo conf.yaml >> .git/info/sparse-checkout
     echo resources >> .git/info/sparse-checkout
     echo shared >> .git/info/sparse-checkout
+    git fetch --no-tags --progress --depth=1 origin +refs/heads/master:refs/remotes/origin/master
     git checkout master
     git pull origin master
     """
