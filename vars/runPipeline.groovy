@@ -13,7 +13,7 @@ void call(Map args = [:]){
     pipeline {
      agent { label 'linux' }
      stages {
-       stage('Helo'){
+       stage('Hello'){
          steps {
            echo "Hello, I am pipeline"
          }
@@ -25,7 +25,7 @@ void call(Map args = [:]){
     pipeline {
       agent { label 'linux' }
       stages {
-        stage('Helo'){
+        stage('Hello'){
           steps {
             echo "Hello, I am Test pipeline"
           }
@@ -37,7 +37,7 @@ void call(Map args = [:]){
     pipeline {
      agent { label 'linux' }
      stages {
-       stage('Helo'){
+       stage('Hello'){
          steps {
            echo "Hello, I am pipeline"
          }

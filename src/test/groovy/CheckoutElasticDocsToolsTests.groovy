@@ -4,7 +4,7 @@ import org.junit.Test;
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class DummyStepTests extends BasePipelineTest {
+class CheckoutElasticDocsToolsTests extends BasePipelineTest {
   Map env = [:]
   
   @Override
@@ -21,14 +21,17 @@ class DummyStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/dummy.groovy")
-    script.call(text: "dummy")
+    def script = loadScript("vars/checkoutElasticDocsTools.groovy")
+    script.call(dir: "folder")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
-    }.any { call ->
-        callArgsToString(call).contains("I am a dummy step - dummy")
-    })
+    assertJobStatusSuccess()
+  }
+  
+  @Test
+  void testNoParam() throws Exception {
+    def script = loadScript("vars/checkoutElasticDocsTools.groovy")
+    script.call()
+    printCallStack()
     assertJobStatusSuccess()
   }
 }
