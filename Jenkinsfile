@@ -1,14 +1,7 @@
 #!/usr/bin/env groovy
 
-library identifier: 'apm@master',
-changelog: false,
-retriever: modernSCM(
-  [$class: 'GitSCMSource', 
-  credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba', 
-  remote: 'git@github.com:elastic/apm-pipeline-library.git'])
-  
 pipeline {
-  agent any
+  agent { label 'linux && immutable' }
   environment {
     HOME = "${env.HUDSON_HOME}"
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
@@ -16,11 +9,10 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS') 
-    buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10', daysToKeepStr: '30'))
     timestamps()
     preserveStashes()
-    //see https://issues.jenkins-ci.org/browse/JENKINS-11752, https://issues.jenkins-ci.org/browse/JENKINS-39536, https://issues.jenkins-ci.org/browse/JENKINS-54133 and jenkinsci/ansicolor-plugin#132
-    //ansiColor('xterm')
+    ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
@@ -32,7 +24,7 @@ pipeline {
      Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
-      agent { label 'master || linux' }
+      agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
@@ -55,24 +47,7 @@ pipeline {
                   }
                   env.JOB_GIT_COMMIT = getGitCommitSha()
                   env.JOB_GIT_URL = "${GIT_URL}"
-                  
                   github_enterprise_constructor()
-                  
-                  on_change{
-                    echo "build cause a change (commit or PR)"
-                  }
-                  
-                  on_commit {
-                    echo "build cause a commit"
-                  }
-                  
-                  on_merge {
-                    echo "build cause a merge"
-                  }
-                  
-                  on_pull_request {
-                    echo "build cause PR"
-                  }
                 }
               }
               dir("${BASE_DIR}"){
