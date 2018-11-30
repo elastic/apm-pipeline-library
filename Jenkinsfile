@@ -1,9 +1,8 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  agent { label 'linux && immutable' }
+  agent none
   environment {
-    HOME = "${env.HUDSON_HOME}"
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
   }
@@ -20,36 +19,23 @@ pipeline {
     string(name: 'branch_specifier', defaultValue: "", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
   }
   stages {
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
-    stage('Checkout') {
+    stage('Initializing'){
       agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
-        PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
+        PATH = "${env.PATH}:${env.WORKSPACE}/bin"
       }
-      steps {
-          withEnvWrapper() {
-              dir("${BASE_DIR}"){
-                script{
-                  if(!env?.branch_specifier){
-                    echo "Checkout SCM"
-                    checkout scm
-                  } else {
-                    echo "Checkout ${branch_specifier}"
-                    checkout([$class: 'GitSCM', branches: [[name: "${branch_specifier}"]], 
-                      doGenerateSubmoduleConfigurations: false, 
-                      extensions: [], 
-                      submoduleCfg: [], 
-                      userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}", 
-                      url: "${GIT_URL}"]]])
-                  }
-                  env.JOB_GIT_COMMIT = getGitCommitSha()
-                  env.JOB_GIT_URL = "${GIT_URL}"
-                  github_enterprise_constructor()
-                }
-              }
+      stages {
+        /**
+         Checkout the code and stash it, to use it on other stages.
+        */
+        stage('Checkout') {
+          steps {
+            gitCheckout(basedir: "${BASE_DIR}", 
+              branch: "${env?.branch_specifier}",
+              repo: "${env?.GIT_URL}",
+              credentialsId: "${JOB_GIT_CREDENTIALS}")
+            withEnvWrapper() {
               dir("${BASE_DIR}"){
                 sh """#!/bin/bash
                 MVNW_VER="maven-wrapper-0.4.2"
@@ -62,33 +48,30 @@ pipeline {
                 rm -fr "\${MVNW_DIR}"
                 """
               }
-              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          }
-      }
-    }
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
-    stage('Test') {
-      agent { label 'linux && immutable' }
-      options { skipDefaultCheckout() }
-      environment {
-        PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
-      }
-      steps {
-        withEnvWrapper() {
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            }
+            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
-      }
-      post { 
-        always { 
-          junit(allowEmptyResults: true, 
-            keepLongStdio: true, 
-            testResults: "${BASE_DIR}/target/surefire-reports/junit-report.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-            tar(file: "surefire-reports.tgz", archive: true, dir: "surefire-reports", pathPrefix: "${BASE_DIR}/target")
+        /**
+         Checkout the code and stash it, to use it on other stages.
+        */
+        stage('Test') {
+          steps {
+            withEnvWrapper() {
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+              }
+            }
+          }
+          post { 
+            always { 
+              junit(allowEmptyResults: true, 
+                keepLongStdio: true, 
+                testResults: "${BASE_DIR}/target/surefire-reports/junit-report.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+                tar(file: "surefire-reports.tgz", archive: true, dir: "surefire-reports", pathPrefix: "${BASE_DIR}/target")
+            }
+          }
         }
       }
     }
