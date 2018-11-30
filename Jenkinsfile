@@ -35,10 +35,10 @@ pipeline {
               withEnvWrapper() {
                   dir("${BASE_DIR}"){
                     script{
-                      if(!env?.branch_specifier){
-                        echo "Checkout SCM ${env?.BRANCH_NAME}"
+                      if(env?.BRANCH_NAME){
+                        echo "Checkout SCM ${BRANCH_NAME}"
                         checkout scm
-                      } else {
+                      } else if (env?.branch_specifier){
                         echo "Checkout ${branch_specifier}"
                         checkout([$class: 'GitSCM', branches: [[name: "${branch_specifier}"]], 
                           doGenerateSubmoduleConfigurations: false, 
@@ -46,6 +46,8 @@ pipeline {
                           submoduleCfg: [], 
                           userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}", 
                           url: "${GIT_URL}"]]])
+                      } else {
+                        error "No valid branch."
                       }
                       github_enterprise_constructor()
                     }
