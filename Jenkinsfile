@@ -31,40 +31,25 @@ pipeline {
         */
         stage('Checkout') {
           steps {
-              withEnvWrapper() {
-                  dir("${BASE_DIR}"){
-                    script{
-                      if(env?.BRANCH_NAME){
-                        echo "Checkout SCM ${BRANCH_NAME}"
-                        checkout scm
-                      } else if (env?.branch_specifier){
-                        echo "Checkout ${branch_specifier}"
-                        checkout([$class: 'GitSCM', branches: [[name: "${branch_specifier}"]], 
-                          doGenerateSubmoduleConfigurations: false, 
-                          extensions: [], 
-                          submoduleCfg: [], 
-                          userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}", 
-                          url: "${GIT_URL}"]]])
-                      } else {
-                        error "No valid branch."
-                      }
-                      github_enterprise_constructor()
-                    }
-                  }
-                  dir("${BASE_DIR}"){
-                    sh """#!/bin/bash
-                    MVNW_VER="maven-wrapper-0.4.2"
-                    MVNW_DIR="maven-wrapper-\${MVNW_VER}"
-                    curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
-                    tar -xzf "\${MVNW_VER}.tar.gz"
-                    mv "\${MVNW_DIR}/.mvn/" .
-                    mv "\${MVNW_DIR}/mvnw" .
-                    mv "\${MVNW_DIR}/mvnw.cmd" .
-                    rm -fr "\${MVNW_DIR}"
-                    """
-                  }
-                  stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            gitCheckout(basedir: "${BASE_DIR}", 
+              branch: "${env?.branch_specifier}",
+              repo: "${env?.GIT_URL}",
+              credentialsId: "${JOB_GIT_CREDENTIALS}")
+            withEnvWrapper() {
+              dir("${BASE_DIR}"){
+                sh """#!/bin/bash
+                MVNW_VER="maven-wrapper-0.4.2"
+                MVNW_DIR="maven-wrapper-\${MVNW_VER}"
+                curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
+                tar -xzf "\${MVNW_VER}.tar.gz"
+                mv "\${MVNW_DIR}/.mvn/" .
+                mv "\${MVNW_DIR}/mvnw" .
+                mv "\${MVNW_DIR}/mvnw.cmd" .
+                rm -fr "\${MVNW_DIR}"
+                """
               }
+            }
+            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
         /**
