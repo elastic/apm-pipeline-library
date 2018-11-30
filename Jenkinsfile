@@ -35,19 +35,17 @@ pipeline {
               branch: "${env?.branch_specifier}",
               repo: "${env?.GIT_URL}",
               credentialsId: "${JOB_GIT_CREDENTIALS}")
-            withEnvWrapper() {
-              dir("${BASE_DIR}"){
-                sh """#!/bin/bash
-                MVNW_VER="maven-wrapper-0.4.2"
-                MVNW_DIR="maven-wrapper-\${MVNW_VER}"
-                curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
-                tar -xzf "\${MVNW_VER}.tar.gz"
-                mv "\${MVNW_DIR}/.mvn/" .
-                mv "\${MVNW_DIR}/mvnw" .
-                mv "\${MVNW_DIR}/mvnw.cmd" .
-                rm -fr "\${MVNW_DIR}"
-                """
-              }
+            dir("${BASE_DIR}"){
+              sh """#!/bin/bash
+              MVNW_VER="maven-wrapper-0.4.2"
+              MVNW_DIR="maven-wrapper-\${MVNW_VER}"
+              curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
+              tar -xzf "\${MVNW_VER}.tar.gz"
+              mv "\${MVNW_DIR}/.mvn/" .
+              mv "\${MVNW_DIR}/mvnw" .
+              mv "\${MVNW_DIR}/mvnw.cmd" .
+              rm -fr "\${MVNW_DIR}"
+              """
             }
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
