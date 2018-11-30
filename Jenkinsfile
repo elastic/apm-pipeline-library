@@ -35,6 +35,7 @@ pipeline {
               withEnvWrapper() {
                   dir("${BASE_DIR}"){
                     script{
+                      sh "export"
                       if(!env?.branch_specifier){
                         echo "Checkout SCM"
                         checkout scm
