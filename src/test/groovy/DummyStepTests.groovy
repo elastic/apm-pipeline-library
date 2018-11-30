@@ -17,6 +17,8 @@ class DummyStepTests extends BasePipelineTest {
     
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
+    helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod("script", [Closure.class], { closure -> closure.call() })
   }
 
   @Test
