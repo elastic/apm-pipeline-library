@@ -35,9 +35,8 @@ pipeline {
               withEnvWrapper() {
                   dir("${BASE_DIR}"){
                     script{
-                      sh "export"
                       if(!env?.branch_specifier){
-                        echo "Checkout SCM"
+                        echo "Checkout SCM ${env?.BRANCH_NAME}"
                         checkout scm
                       } else {
                         echo "Checkout ${branch_specifier}"
@@ -48,8 +47,6 @@ pipeline {
                           userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}", 
                           url: "${GIT_URL}"]]])
                       }
-                      env.JOB_GIT_COMMIT = getGitCommitSha()
-                      env.JOB_GIT_URL = "${GIT_URL}"
                       github_enterprise_constructor()
                     }
                   }
