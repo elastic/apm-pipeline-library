@@ -24,7 +24,7 @@ pipeline {
      Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
-      agent { label 'master || linux' }
+      agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
@@ -47,24 +47,7 @@ pipeline {
                   }
                   env.JOB_GIT_COMMIT = getGitCommitSha()
                   env.JOB_GIT_URL = "${GIT_URL}"
-                  
                   github_enterprise_constructor()
-                  
-                  on_change{
-                    echo "build cause a change (commit or PR)"
-                  }
-                  
-                  on_commit {
-                    echo "build cause a commit"
-                  }
-                  
-                  on_merge {
-                    echo "build cause a merge"
-                  }
-                  
-                  on_pull_request {
-                    echo "build cause PR"
-                  }
                 }
               }
               dir("${BASE_DIR}"){
