@@ -8,6 +8,6 @@
   def sha = getGitCommitSha()
 */
 def call() {
-  def sha = sh script: "git rev-parse HEAD", returnStdout: true
+  def sha = sh(script: "git rev-parse HEAD", returnStdout: true)?.trim()
   return "${sha}"
 }
