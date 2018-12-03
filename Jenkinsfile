@@ -8,15 +8,11 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS') 
-    buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
     timestamps()
-    preserveStashes()
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
-  }
-  parameters {
-    string(name: 'branch_specifier', defaultValue: "", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
   }
   stages {
     stage('Initializing'){
@@ -31,10 +27,7 @@ pipeline {
         */
         stage('Checkout') {
           steps {
-            gitCheckout(basedir: "${BASE_DIR}", 
-              branch: "${env?.branch_specifier}",
-              repo: "${env?.GIT_URL}",
-              credentialsId: "${JOB_GIT_CREDENTIALS}")
+            gitCheckout(basedir: "${BASE_DIR}")
             dir("${BASE_DIR}"){
               sh """#!/bin/bash
               MVNW_VER="maven-wrapper-0.4.2"
@@ -66,8 +59,7 @@ pipeline {
             always { 
               junit(allowEmptyResults: true, 
                 keepLongStdio: true, 
-                testResults: "${BASE_DIR}/target/surefire-reports/junit-report.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-                tar(file: "surefire-reports.tgz", archive: true, dir: "surefire-reports", pathPrefix: "${BASE_DIR}/target")
+                testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
             }
           }
         }
