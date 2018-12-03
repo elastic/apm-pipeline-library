@@ -43,7 +43,7 @@ def checkoutSteps(){
   sh 'export'
   withEnvWrapper() {
     gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
-      repo: 'git@github.com:elastic/apm-integration-testing.git', 
+      repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
     dir("${BASE_DIR}"){
