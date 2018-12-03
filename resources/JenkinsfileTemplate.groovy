@@ -68,7 +68,7 @@ pipeline {
           }
         }
         /**
-          Build the documenattions.
+          Build the documentation.
         */
         stage('Documentation') {
           when {
