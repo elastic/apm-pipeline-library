@@ -42,25 +42,9 @@ def installNodeJs(nodeVersion, pakages = null){
 def checkoutSteps(){
   sh 'export'
   withEnvWrapper() {
-    dir("${BASE_DIR}"){
-      script{
-        if(!env?.branch_specifier){
-          echo "Checkout SCM"
-          checkout scm
-        } else {
-          echo "Checkout ${branch_specifier}"
-          checkout([$class: 'GitSCM', branches: [[name: "${branch_specifier}"]],
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [],
-            submoduleCfg: [],
-            userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
-            url: "${GIT_URL}"]]])
-        }
-        env.JOB_GIT_COMMIT = getGitCommitSha()
-        env.JOB_GIT_URL = "${GIT_URL}"
-        github_enterprise_constructor()
-      }
-    }
+    gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
+      repo: 'git@github.com:elastic/apm-integration-testing.git', 
+      credentialsId: "${JOB_GIT_CREDENTIALS}")
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
     dir("${BASE_DIR}"){
       script{  
@@ -136,9 +120,10 @@ def kibanaIntakeSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      pwd
+      PATH=${PATH}:$(yarn bin)
       export
-      "$(yarn bin)/grunt" jenkins:unit --from=source --dev;
+      ls -la $(yarn bin)
+      grunt jenkins:unit --from=source --dev;
       '''
     }
   }
