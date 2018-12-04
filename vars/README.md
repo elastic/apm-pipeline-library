@@ -13,9 +13,10 @@ elastic-doc-folder/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc docs/index.a
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
 ```
-codecov(repo)
+codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
+*basedir*: the folder to search into (the default value is '.').
 
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
