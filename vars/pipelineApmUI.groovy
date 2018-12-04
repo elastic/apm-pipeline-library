@@ -94,10 +94,6 @@ def buildNoOSSSteps(){
     unstash 'source'
     unstash 'cache'
     nodeEnviromentVars("${NODE_VERSION}")
-    input {
-          message "Can we continue"
-          ok "Yes, we can."
-    }
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -121,6 +117,10 @@ def kibanaIntakeSteps(){
     unstash 'source'
     unstash 'cache'
     nodeEnviromentVars("${NODE_VERSION}")
+    input {
+          message "Can we continue"
+          ok "Yes, we can."
+    }
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
