@@ -45,7 +45,7 @@ def checkoutSteps(){
     gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
       repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
-    //stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    stash allowEmpty: true, name: 'source', useDefaultExcludes: false
     dir("${BASE_DIR}"){
       script{  
         def packageJson = readJSON(file: 'package.json')
