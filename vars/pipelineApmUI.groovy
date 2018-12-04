@@ -58,7 +58,7 @@ def checkoutSteps(){
         """
       }
     }
-    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,${WORKSPACE}/node/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
     dir("${ES_BASE_DIR}"){
       /** TODO grab the correct elasticsearch branch */
       checkout([$class: 'GitSCM', branches: [[name: "master"]],
@@ -107,17 +107,14 @@ def buildNoOSSSteps(){
       tar -xzf "${linuxBuild}" -C "${installDir}" --strip=1
       '''
     }
-    stash allowEmpty: true, name: 'kibana-bin', includes: "${WORKSPACE}/install/kibana/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'kibana-bin', includes: "install/kibana/**", useDefaultExcludes: false
     stash allowEmpty: true, name: 'build-no-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
   }
 }
 
 def kibanaIntakeSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
-      repo: "${GIT_URL}", 
-      credentialsId: "${JOB_GIT_CREDENTIALS}")
+    unstash 'source'
     unstash 'cache'
     nodeEnviromentVars("${NODE_VERSION}")
     input(message: 'Can we continue?', ok: 'Yes, we can.')
