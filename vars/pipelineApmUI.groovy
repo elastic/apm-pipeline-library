@@ -80,7 +80,7 @@ def buildOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      node scripts/build --debug --oss --skip-node-download --skip-archives --skip-os-packages
+      node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
     stash allowEmpty: true, name: 'build-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
@@ -95,7 +95,7 @@ def buildNoOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      node scripts/build --debug --no-oss --skip-node-download --skip-os-packages
+      node scripts/build --debug --no-oss --skip-os-packages
       '''
       sh '''#!/bin/bash
       set -euxo pipefail
