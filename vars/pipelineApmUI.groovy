@@ -80,8 +80,6 @@ def buildOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      export 
-      ls -la "${NODE_BIN}"
       node scripts/build --debug --oss --skip-node-download --skip-archives --skip-os-packages
       '''
     }
@@ -122,8 +120,6 @@ def kibanaIntakeSteps(){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
-      export
-      ls -la $(yarn bin)
       grunt jenkins:unit --from=source --dev;
       '''
     }
