@@ -68,7 +68,7 @@ def checkoutSteps(){
         userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
         url: "${ES_GIT_URL}"]]])
     }
-    //stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
   }
 }
 
