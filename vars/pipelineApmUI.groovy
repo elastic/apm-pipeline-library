@@ -120,7 +120,8 @@ def kibanaIntakeSteps(){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
-      grunt jenkins:unit --from=source --dev;
+      yarn kbn bootstrap
+      grunt jenkins:unit --from=source --dev || echo -e "\033[31;49mTests FAILED\033[0m"
       '''
     }
   }
@@ -136,21 +137,31 @@ def kibanaGroupSteps(){
       script {
         def parallelSteps = Map [:]
         def groups = (1..12)
+        sh '''#!/bin/bash
+        set -euxo pipefail
+        PATH=${PATH}:$(yarn bin)
+        yarn kbn bootstrap'''
         
         parallelSteps['ensureAllTestsInCiGroup'] = {sh '''#!/bin/bash
         set -euxo pipefail
-        "$(yarn bin)/grunt" functionalTests:ensureAllTestsInCiGroup;
+        PATH=${PATH}:$(yarn bin)
+        
+        grunt functionalTests:ensureAllTestsInCiGroup || echo -e "\033[31;49mTests FAILED\033[0m"
         '''}
         
         parallelSteps['pluginFunctionalTestsRelease'] = {sh '''#!/bin/bash
         set -euxo pipefail
-        "$(yarn bin)/grunt" run:pluginFunctionalTestsRelease --from=source;
+        PATH=${PATH}:$(yarn bin)
+        
+        grunt run:pluginFunctionalTestsRelease --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
         '''}
         
         groups.each{ group ->
           parallelSteps["functionalTests_ciGroup${group}"] ={sh """#!/bin/bash
           set -euxo pipefail
-          "\$(yarn bin)/grunt" "run:functionalTests_ciGroup${group}" --from=source;
+          PATH=\${PATH}:\$(yarn bin)
+          
+          grunt "run:functionalTests_ciGroup${group}" --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
           """}
         }
         parallel(parallelSteps)
@@ -170,6 +181,7 @@ def xPackIntakeSteps(){
         
         parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
+        yarn kbn bootstrap
         yarn test'''}
         parallelSteps['Jest tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
