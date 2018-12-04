@@ -68,7 +68,7 @@ def checkoutSteps(){
         userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
         url: "${ES_GIT_URL}"]]])
     }
-    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
+    //stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
   }
 }
 
@@ -94,6 +94,10 @@ def buildNoOSSSteps(){
     unstash 'source'
     unstash 'cache'
     nodeEnviromentVars("${NODE_VERSION}")
+    input {
+          message "Can we continue"
+          ok "Yes, we can."
+    }
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
