@@ -1,9 +1,0 @@
-Execute some block of code if the built was trigger by a change on the repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
-
-```
-on_change {
-  //code block
-}
-```
-
