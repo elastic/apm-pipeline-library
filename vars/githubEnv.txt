@@ -1,7 +1,7 @@
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
   
 ```
-github_enterprise_constructor()
+githubEnv()
 ```
 
 * `GIT_URL`: if it is not set, it will create the environment variable GIT_URL, getting it from local repo.
