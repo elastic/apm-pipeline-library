@@ -14,6 +14,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   parameters {
+    string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
   }
   stages {
@@ -23,6 +24,8 @@ pipeline {
       environment {
         PATH = "${env.PATH}:${env.WORKSPACE}/bin"
         ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+        //see JENKINS-41929
+        PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
       stages {
         /**
