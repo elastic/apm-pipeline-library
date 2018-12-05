@@ -1,0 +1,21 @@
+Perform a checkout from the SCM configuration on a folder inside the workspace,
+if branch, repo, and credentialsId are defined make a checkout using those parameters.
+
+```
+gitCheckout()
+```
+
+```
+gitCheckout(basedir: 'sub-folder')
+```
+
+```
+gitCheckout(basedir: 'sub-folder', branch: 'master', 
+  repo: 'git@github.com:elastic/apm-pipeline-library.git', 
+  credentialsId: 'credentials-id')
+```
+
+* *basedir*: directory where checkout the sources.
+* *repo*: the repository to use.
+* *credentialsId*: the credentials to access to the repository.
+* *branch*: the branch to checkout from the repo.

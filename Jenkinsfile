@@ -1,119 +1,67 @@
 #!/usr/bin/env groovy
 
-library identifier: 'apm@master',
-changelog: false,
-retriever: modernSCM(
-  [$class: 'GitSCMSource', 
-  credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba', 
-  remote: 'git@github.com:elastic/apm-pipeline-library.git'])
-  
 pipeline {
-  agent any
+  agent none
   environment {
-    HOME = "${env.HUDSON_HOME}"
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
   }
   options {
     timeout(time: 1, unit: 'HOURS') 
-    buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
     timestamps()
-    preserveStashes()
-    //see https://issues.jenkins-ci.org/browse/JENKINS-11752, https://issues.jenkins-ci.org/browse/JENKINS-39536, https://issues.jenkins-ci.org/browse/JENKINS-54133 and jenkinsci/ansicolor-plugin#132
-    //ansiColor('xterm')
+    ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
-  parameters {
-    string(name: 'branch_specifier', defaultValue: "", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
-  }
   stages {
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
-    stage('Checkout') {
-      agent { label 'master || linux' }
-      options { skipDefaultCheckout() }
-      environment {
-        PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
-      }
-      steps {
-          withEnvWrapper() {
-              dir("${BASE_DIR}"){
-                script{
-                  if(!env?.branch_specifier){
-                    echo "Checkout SCM"
-                    checkout scm
-                  } else {
-                    echo "Checkout ${branch_specifier}"
-                    checkout([$class: 'GitSCM', branches: [[name: "${branch_specifier}"]], 
-                      doGenerateSubmoduleConfigurations: false, 
-                      extensions: [], 
-                      submoduleCfg: [], 
-                      userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}", 
-                      url: "${GIT_URL}"]]])
-                  }
-                  env.JOB_GIT_COMMIT = getGitCommitSha()
-                  env.JOB_GIT_URL = "${GIT_URL}"
-                  
-                  github_enterprise_constructor()
-                  
-                  on_change{
-                    echo "build cause a change (commit or PR)"
-                  }
-                  
-                  on_commit {
-                    echo "build cause a commit"
-                  }
-                  
-                  on_merge {
-                    echo "build cause a merge"
-                  }
-                  
-                  on_pull_request {
-                    echo "build cause PR"
-                  }
-                }
-              }
-              dir("${BASE_DIR}"){
-                sh """#!/bin/bash
-                MVNW_VER="maven-wrapper-0.4.2"
-                MVNW_DIR="maven-wrapper-\${MVNW_VER}"
-                curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
-                tar -xzf "\${MVNW_VER}.tar.gz"
-                mv "\${MVNW_DIR}/.mvn/" .
-                mv "\${MVNW_DIR}/mvnw" .
-                mv "\${MVNW_DIR}/mvnw.cmd" .
-                rm -fr "\${MVNW_DIR}"
-                """
-              }
-              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          }
-      }
-    }
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
-    stage('Test') {
+    stage('Initializing'){
       agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
-        PATH = "${env.PATH}:${env.HUDSON_HOME}/go/bin/:${env.WORKSPACE}/bin"
+        PATH = "${env.PATH}:${env.WORKSPACE}/bin"
       }
-      steps {
-        withEnvWrapper() {
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+      stages {
+        /**
+         Checkout the code and stash it, to use it on other stages.
+        */
+        stage('Checkout') {
+          steps {
+            gitCheckout(basedir: "${BASE_DIR}")
+            dir("${BASE_DIR}"){
+              sh """#!/bin/bash
+              MVNW_VER="maven-wrapper-0.4.2"
+              MVNW_DIR="maven-wrapper-\${MVNW_VER}"
+              curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
+              tar -xzf "\${MVNW_VER}.tar.gz"
+              mv "\${MVNW_DIR}/.mvn/" .
+              mv "\${MVNW_DIR}/mvnw" .
+              mv "\${MVNW_DIR}/mvnw.cmd" .
+              rm -fr "\${MVNW_DIR}"
+              """
+            }
+            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
-      }
-      post { 
-        always { 
-          junit(allowEmptyResults: true, 
-            keepLongStdio: true, 
-            testResults: "${BASE_DIR}/target/surefire-reports/junit-report.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-            tar(file: "surefire-reports.tgz", archive: true, dir: "surefire-reports", pathPrefix: "${BASE_DIR}/target")
+        /**
+         Checkout the code and stash it, to use it on other stages.
+        */
+        stage('Test') {
+          steps {
+            withEnvWrapper() {
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+              }
+            }
+          }
+          post { 
+            always { 
+              junit(allowEmptyResults: true, 
+                keepLongStdio: true, 
+                testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+            }
+          }
         }
       }
     }

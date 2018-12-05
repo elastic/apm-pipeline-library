@@ -13,9 +13,10 @@ elastic-doc-folder/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc docs/index.a
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
 ```
-codecov(repo)
+codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
+*basedir*: the folder to search into (the default value is '.').
 
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
@@ -64,7 +65,29 @@ Get a secret from the Vault.
 def jsonValue = getVaultSecret('secret-name')
 ```
 
-* *secret-name*: Name of the secret on the the vault root path.## gitCreateTag
+* *secret-name*: Name of the secret on the the vault root path.## gitCheckout
+Perform a checkout from the SCM configuration on a folder inside the workspace,
+if branch, repo, and credentialsId are defined make a checkout using those parameters.
+
+```
+gitCheckout()
+```
+
+```
+gitCheckout(basedir: 'sub-folder')
+```
+
+```
+gitCheckout(basedir: 'sub-folder', branch: 'master', 
+  repo: 'git@github.com:elastic/apm-pipeline-library.git', 
+  credentialsId: 'credentials-id')
+```
+
+* *basedir*: directory where checkout the sources.
+* *repo*: the repository to use.
+* *credentialsId*: the credentials to access to the repository.
+* *branch*: the branch to checkout from the repo.
+## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
