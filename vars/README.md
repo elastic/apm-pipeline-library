@@ -101,11 +101,11 @@ It requires to initialise the pipeline with github_enterprise_constructor() firs
 ```
 gitDeleteTag()
 ```
-## github_enterprise_constructor
+## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
   
 ```
-github_enterprise_constructor()
+githubEnv()
 ```
 
 * `GIT_URL`: if it is not set, it will create the environment variable GIT_URL, getting it from local repo.
@@ -113,43 +113,6 @@ github_enterprise_constructor()
 * `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
-## on_change
-Execute some block of code if the built was trigger by a change on the repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
-
-```
-on_change {
-  //code block
-}
-```
-
-## on_commit
-Execute some block of code if the built was trigger by a commit on the repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
-
-```
-on_commit {
-  //code block
-}
-```
-## on_merge
-Execute some block of code if the built was trigger by a merge on the repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
-
-```
-on_merge {
-  //code block
-}
-```
-## on_pull_request
-Execute some block of code if the built was trigger by a PR creation on the repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
-
-```
-on_pull_request {
-  //code block
-}
-```
 ## runIntegrationTestAxis
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
 It needs the integration test sources stashed.

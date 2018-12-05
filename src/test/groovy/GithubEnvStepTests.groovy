@@ -5,7 +5,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
+class GithubEnvStepTests extends BasePipelineTest {
   
   String url = 'http://github.com/org/repo.git'
   String sha = '29480a51'
@@ -33,7 +33,7 @@ class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
   
   @Test
   void testNoGitURL() throws Exception {
-    def script = loadScript("vars/github_enterprise_constructor.groovy")
+    def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     script.call()
     printCallStack()
@@ -45,7 +45,7 @@ class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
   
   @Test
   void testGitUrl() throws Exception {
-    def script = loadScript("vars/github_enterprise_constructor.groovy")
+    def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     env.GIT_URL = url
     script.call()
@@ -58,7 +58,7 @@ class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
   
   @Test
   void testChangeTarget() throws Exception {
-    def script = loadScript("vars/github_enterprise_constructor.groovy")
+    def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     env.CHANGE_TARGET = "NotEmpty"
     script.call()
@@ -71,7 +71,7 @@ class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
     
   @Test
   void testMerge() throws Exception {
-    def script = loadScript("vars/github_enterprise_constructor.groovy")
+    def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
@@ -89,7 +89,7 @@ class GithubEnterpriseConstructorStepTests extends BasePipelineTest {
   
   @Test
   void testSshUrl() throws Exception {
-    def script = loadScript("vars/github_enterprise_constructor.groovy")
+    def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     env.GIT_URL = 'git@github.com:org/repo.git'
     script.call()
