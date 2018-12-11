@@ -1,3 +1,163 @@
+/**
+  APM UI Pipeline
+*/
+void call(Map args = [:]){
+  pipeline {
+   agent { label 'linux && immutable' }
+   environment {
+     BASE_DIR="src/github.com/elastic/kibana"
+     ES_BASE_DIR="src/github.com/elastic/elasticsearch"
+     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
+     FORCE_COLOR = "2"
+     GIT_URL = "https://github.com/elastic/kibana.git"
+     ES_GIT_URL = "https://github.com/elastic/elasticsearch.git"
+     TEST_BROWSER_HEADLESS = "${params.TEST_BROWSER_HEADLESS}"
+     TEST_ES_FROM = "${params.TEST_ES_FROM}"
+   }
+   options {
+     timeout(time: 1, unit: 'HOURS')
+     buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
+     timestamps()
+     preserveStashes()
+     ansiColor('xterm')
+     disableResume()
+     durabilityHint('PERFORMANCE_OPTIMIZED')
+   }
+   parameters {
+     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
+     string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
+     string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
+     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
+     booleanParam(name: 'test_ci', defaultValue: true, description: 'Enable test')
+     booleanParam(name: 'build_oss_ci', defaultValue: false, description: 'Build OSS')
+     booleanParam(name: 'build_no_oss_ci', defaultValue: false, description: 'Build NO OSS')
+     booleanParam(name: 'intake_ci', defaultValue: false, description: 'Intake Tests')
+     booleanParam(name: 'ciGroup_ci', defaultValue: false, description: 'Group Tests')
+     booleanParam(name: 'x_pack_intake_ci', defaultValue: false, description: 'X-Pack intake Tests')
+     booleanParam(name: 'x_pack_ciGroup_ci', defaultValue: false, description: 'X-Pack Group Tests')
+   }
+   stages {
+     /**
+      Checkout the code and stash it, to use it on other stages.
+     */
+     stage('Initializing') {
+       agent { label 'linux && immutable' }
+       environment {
+         HOME = "${env.WORKSPACE}"
+       }
+       steps {
+         checkoutSteps()
+       }
+     }
+     stage('build'){
+       failFast true
+       parallel {
+         /**
+         Build on a linux environment.
+         */
+         stage('build oss') {
+           agent { label 'linux && immutable' }
+           when {
+             beforeAgent true
+             expression { return params.build_oss_ci }
+           }
+           steps {
+             buildOSSSteps()
+           }
+         }
+         /**
+         Building and extracting default Kibana distributable for use in functional tests
+         */
+         stage('build no-oss') {
+           agent { label 'linux && immutable' }
+           when {
+             beforeAgent true
+             expression { return params.build_no_oss_ci }
+           }
+           steps {
+             buildNoOSSSteps()
+           }
+         }
+       }
+     }
+     /**
+     Test on a linux environment.
+     */
+     stage('kibana-intake') {
+       when {
+         beforeAgent true
+         expression { return params.intake_ci }
+       }
+       steps {
+         kibanaIntakeSteps()
+       }
+       post { always { grabTestResults() } }
+     }
+     /**
+     Test ciGroup tests on a linux environment.
+     */
+     stage('kibana-ciGroup') {
+       when {
+         beforeAgent true
+         expression { return params.ciGroup_ci }
+       }
+       steps {
+         kibanaGroupSteps()
+       }
+       post { always { grabTestResults() } }
+     }
+     /**
+     Test x-pack-intake tests on a linux environment.
+     */
+     stage('x-pack-intake') {
+       environment {
+         XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
+       }
+       when {
+         beforeAgent true
+         expression { return params.x_pack_intake_ci }
+       }
+       steps {
+         xPackIntakeSteps()
+       }
+       post { always { grabTestResults() } }
+     }
+     /**
+     Test x-pack-ciGroup tests on a linux environment.
+     */
+     stage('x-pack-ciGroup') {
+       environment {
+         XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
+         INSTALL_DIR = "${env.WORKSPACE}/install/kibana"
+       }
+       when {
+         beforeAgent true
+         expression { return params.x_pack_ciGroup_ci }
+       }
+       steps {
+         xPackGroupSteps()
+       }
+       post { always { grabTestResults() } }
+     }
+   }
+   post { 
+     success {
+       echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
+     }
+     aborted {
+       echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
+     }
+     failure { 
+       echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
+       //step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+     }
+     unstable { 
+       echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
+     }
+   }
+  }
+}
+
 def grabTestResults(){
   junit(allowEmptyResults: true,
     keepLongStdio: true,
@@ -43,7 +203,7 @@ def checkoutSteps(){
   sh 'export'
   withEnvWrapper() {
     gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
-      repo: "${GIT_URL}", 
+      repo: "${params.GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
     dir("${BASE_DIR}"){
@@ -218,160 +378,5 @@ def xPackGroupSteps(){
         parallel(parallelSteps)
       }
     }
-  }
-}
-
-void call(Map args = [:]){
-  pipeline {
-   agent { label 'linux && immutable' }
-   environment {
-     BASE_DIR="src/github.com/elastic/kibana"
-     ES_BASE_DIR="src/github.com/elastic/elasticsearch"
-     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
-     FORCE_COLOR = "2"
-   }
-   options {
-     timeout(time: 1, unit: 'HOURS')
-     buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
-     timestamps()
-     preserveStashes()
-     ansiColor('xterm')
-     disableResume()
-     durabilityHint('PERFORMANCE_OPTIMIZED')
-   }
-   parameters {
-     string(name: 'GIT_URL', defaultValue: "https://github.com/elastic/kibana.git", description: "Repo")
-     string(name: 'ES_GIT_URL', defaultValue: "https://github.com/elastic/elasticsearch.git", description: "Repo")
-     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
-     string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
-     string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
-     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
-     booleanParam(name: 'test_ci', defaultValue: true, description: 'Enable test')
-     booleanParam(name: 'build_oss_ci', defaultValue: false, description: 'Build OSS')
-     booleanParam(name: 'build_no_oss_ci', defaultValue: false, description: 'Build NO OSS')
-     booleanParam(name: 'intake_ci', defaultValue: false, description: 'Intake Tests')
-     booleanParam(name: 'ciGroup_ci', defaultValue: false, description: 'Group Tests')
-     booleanParam(name: 'x_pack_intake_ci', defaultValue: false, description: 'X-Pack intake Tests')
-     booleanParam(name: 'x_pack_ciGroup_ci', defaultValue: false, description: 'X-Pack Group Tests')
-   }
-   stages {
-     /**
-      Checkout the code and stash it, to use it on other stages.
-     */
-     stage('Initializing') {
-       agent { label 'linux && immutable' }
-       environment {
-         HOME = "${env.WORKSPACE}"
-       }
-       steps {
-         script { pipelineApmUI.checkoutSteps() }
-       }
-     }
-     stage('build'){
-       failFast true
-       parallel {
-         /**
-         Build on a linux environment.
-         */
-         stage('build oss') {
-           agent { label 'linux && immutable' }
-           when {
-             beforeAgent true
-             environment name: 'build_oss_ci', value: 'true'
-           }
-           steps {
-             script { pipelineApmUI.buildOSSSteps() }
-           }
-         }
-         /**
-         Building and extracting default Kibana distributable for use in functional tests
-         */
-         stage('build no-oss') {
-           agent { label 'linux && immutable' }
-           when {
-             beforeAgent true
-             environment name: 'build_no_oss_ci', value: 'true'
-           }
-           steps {
-             script { pipelineApmUI.buildNoOSSSteps() }
-           }
-         }
-       }
-     }
-     /**
-     Test on a linux environment.
-     */
-     stage('kibana-intake') {
-       when {
-         beforeAgent true
-         environment name: 'intake_ci', value: 'true'
-       }
-       steps {
-         script { pipelineApmUI.kibanaIntakeSteps() }
-       }
-       post { always { grabTestResults() } }
-     }
-     /**
-     Test ciGroup tests on a linux environment.
-     */
-     stage('kibana-ciGroup') {
-       when {
-         beforeAgent true
-         environment name: 'ciGroup_ci', value: 'true'
-       }
-       steps {
-         script { pipelineApmUI.kibanaGroupSteps() }
-       }
-       post { always { grabTestResults() } }
-     }
-     /**
-     Test x-pack-intake tests on a linux environment.
-     */
-     stage('x-pack-intake') {
-       environment {
-         XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
-       }
-       when {
-         beforeAgent true
-         environment name: 'x_pack_intake_ci', value: 'true'
-       }
-       steps {
-         script { pipelineApmUI.xPackIntakeSteps() }
-       }
-       post { always { grabTestResults() } }
-     }
-     /**
-     Test x-pack-ciGroup tests on a linux environment.
-     */
-     stage('x-pack-ciGroup') {
-       environment {
-         XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
-         INSTALL_DIR = "${env.WORKSPACE}/install/kibana"
-       }
-       when {
-         beforeAgent true
-         environment name: 'x_pack_ciGroup_ci', value: 'true'
-       }
-       steps {
-         script { pipelineApmUI.xPackGroupSteps() }
-       }
-       post { always { grabTestResults() } }
-     }
-   }
-   post { 
-     success {
-       echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
-     }
-     aborted {
-       echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
-     }
-     failure { 
-       echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-       //step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
-     }
-     unstable { 
-       echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
-     }
-   }
   }
 }
