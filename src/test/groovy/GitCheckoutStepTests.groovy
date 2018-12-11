@@ -18,7 +18,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("checkout", [String.class], { "OK" })
-    helper.registerAllowedMethod("github_enterprise_constructor", [], { "OK" })
+    helper.registerAllowedMethod("githubEnv", [], { "OK" })
     helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
   }
 
