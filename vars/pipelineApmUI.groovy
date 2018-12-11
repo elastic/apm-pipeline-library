@@ -250,7 +250,6 @@ def buildOSSSteps(){
   withEnvWrapper() {
     //unstash 'source'
     //unstash 'cache'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
@@ -267,7 +266,6 @@ def buildNoOSSSteps(){
   withEnvWrapper() {
     //unstash 'source'
     //unstash 'cache'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
@@ -293,7 +291,6 @@ def kibanaIntakeSteps(){
   withEnvWrapper() {
     //unstash 'source'
     //unstash 'cache'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
@@ -310,7 +307,6 @@ def kibanaGroupSteps(){
     //unstash 'source'
     //unstash 'cache'
     unstash 'build-oss'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${BASE_DIR}"){
       script {
@@ -349,7 +345,6 @@ def xPackIntakeSteps(){
   withEnvWrapper() {
     //unstash 'source'
     //unstash 'cache'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
@@ -373,7 +368,6 @@ def xPackGroupSteps(){
     //unstash 'source'
     //unstash 'cache'
     unstash 'build-no-oss'
-    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
