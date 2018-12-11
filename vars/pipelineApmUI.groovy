@@ -200,13 +200,24 @@ def installNodeJs(nodeVersion, pakages = null){
   """
 }
 
+def checkoutES(){
+  dir("${ES_BASE_DIR}"){
+    checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
+      doGenerateSubmoduleConfigurations: false,
+      extensions: [],
+      submoduleCfg: [],
+      userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
+      url: "${ES_GIT_URL}"]]])
+  }
+}
+
 def checkoutSteps(){
   sh 'export'
   withEnvWrapper() {
     gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
       repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
-    stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    //stash allowEmpty: true, name: 'source', excludes: ".git", useDefaultExcludes: false
     dir("${BASE_DIR}"){
       script{  
         def packageJson = readJSON(file: 'package.json')
@@ -220,30 +231,29 @@ def checkoutSteps(){
         '''
       }
     }
-    stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
-    dir("${ES_BASE_DIR}"){
-      /** TODO grab the correct elasticsearch branch */
-      checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [],
-        submoduleCfg: [],
-        userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
-        url: "${ES_GIT_URL}"]]])
-    }
-    stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'source', excludes: ".git,node/**", useDefaultExcludes: false
+    //stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
+    // dir("${ES_BASE_DIR}"){
+    //   checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
+    //     doGenerateSubmoduleConfigurations: false,
+    //     extensions: [],
+    //     submoduleCfg: [],
+    //     userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
+    //     url: "${ES_GIT_URL}"]]])
+    // }
+    //stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", excludes: ".git", useDefaultExcludes: false
   }
 }
 
 def buildOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
-    nodeEnviromentVars("${NODE_VERSION}")
+    //unstash 'cache'
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
-      yarn kbn bootstrap
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
@@ -254,13 +264,12 @@ def buildOSSSteps(){
 def buildNoOSSSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
-    nodeEnviromentVars("${NODE_VERSION}")
+    //unstash 'cache'
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
-      yarn kbn bootstrap
       node scripts/build --debug --no-oss --skip-os-packages
       '''
       sh '''#!/bin/bash
@@ -280,13 +289,12 @@ def buildNoOSSSteps(){
 def kibanaIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
-    nodeEnviromentVars("${NODE_VERSION}")
+    //unstash 'cache'
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
-      yarn kbn bootstrap
       grunt jenkins:unit --from=source --dev || echo -e "\033[31;49mTests FAILED\033[0m"
       '''
     }
@@ -296,17 +304,13 @@ def kibanaIntakeSteps(){
 def kibanaGroupSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
+    //unstash 'cache'
     unstash 'build-oss'
-    nodeEnviromentVars("${NODE_VERSION}")
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${BASE_DIR}"){
       script {
         def parallelSteps = Map [:]
         def groups = (1..12)
-        sh '''#!/bin/bash
-        set -euxo pipefail
-        PATH=${PATH}:$(yarn bin)
-        yarn kbn bootstrap'''
         
         parallelSteps['ensureAllTestsInCiGroup'] = {sh '''#!/bin/bash
         set -euxo pipefail
@@ -339,8 +343,8 @@ def kibanaGroupSteps(){
 def xPackIntakeSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
-    nodeEnviromentVars("${NODE_VERSION}")
+    //unstash 'cache'
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -348,7 +352,6 @@ def xPackIntakeSteps(){
         parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
         PATH=${PATH}:$(yarn bin)
-        yarn kbn bootstrap
         yarn test'''}
         parallelSteps['Jest tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
@@ -362,9 +365,9 @@ def xPackIntakeSteps(){
 def xPackGroupSteps(){
   withEnvWrapper() {
     unstash 'source'
-    unstash 'cache'
+    //unstash 'cache'
     unstash 'build-no-oss'
-    nodeEnviromentVars("${NODE_VERSION}")
+    installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
