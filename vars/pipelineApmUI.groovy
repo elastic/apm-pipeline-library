@@ -24,7 +24,7 @@ void call(Map args = [:]){
      durabilityHint('PERFORMANCE_OPTIMIZED')
    }
    parameters {
-     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
+     string(name: 'branch_specifier', defaultValue: "6.5", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
      string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
      string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
      booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
