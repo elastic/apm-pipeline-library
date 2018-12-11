@@ -372,14 +372,14 @@ def xPackGroupSteps(){
         groups.each{ group ->
           parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
           set -euxo pipefail
-          PATH=${PATH}:$(yarn bin)
+          PATH=\${PATH}:\$(yarn bin)
           node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
           """}
         }
         funTestGroups.each{ group ->
           parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
           set -euxo pipefail
-          PATH=${PATH}:$(yarn bin)
+          PATH=\${PATH}:\$(yarn bin)
           node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
           """}
         }
