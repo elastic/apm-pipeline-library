@@ -29,7 +29,6 @@ void call(Map args = [:]){
      string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
      string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
      booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
-     booleanParam(name: 'test_ci', defaultValue: true, description: 'Enable test')
      booleanParam(name: 'build_oss_ci', defaultValue: false, description: 'Build OSS')
      booleanParam(name: 'build_no_oss_ci', defaultValue: false, description: 'Build NO OSS')
      booleanParam(name: 'intake_ci', defaultValue: false, description: 'Intake Tests')
@@ -310,7 +309,7 @@ def kibanaGroupSteps(){
     checkoutSteps()
     dir("${BASE_DIR}"){
       script {
-        def parallelSteps = Map [:]
+        def parallelSteps = [:]
         def groups = (1..12)
         
         parallelSteps['ensureAllTestsInCiGroup'] = {sh '''#!/bin/bash
@@ -348,7 +347,7 @@ def xPackIntakeSteps(){
     checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
-        def parallelSteps = Map [:]
+        def parallelSteps = [:]
         
         parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
@@ -371,7 +370,7 @@ def xPackGroupSteps(){
     checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
-        def parallelSteps = Map [:]
+        def parallelSteps = [:]
         def groups = (1..6)
         def funTestGroups = (1..12)
         
