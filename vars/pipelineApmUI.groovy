@@ -213,10 +213,11 @@ def checkoutSteps(){
         env.NODE_VERSION = packageJson.engines.node
         env.YARN_VERSION = packageJson.engines.yarn
         installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
-        sh """#!/bin/bash
+        sh '''#!/bin/bash
         set -euxo pipefail
+        PATH=${PATH}:$(yarn bin)
         yarn kbn bootstrap
-        """
+        '''
       }
     }
     stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
@@ -241,6 +242,7 @@ def buildOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
+      PATH=${PATH}:$(yarn bin)
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
@@ -256,10 +258,12 @@ def buildNoOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
+      PATH=${PATH}:$(yarn bin)
       node scripts/build --debug --no-oss --skip-os-packages
       '''
       sh '''#!/bin/bash
       set -euxo pipefail
+      PATH=${PATH}:$(yarn bin)
       linuxBuild="$(find "./target" -name 'kibana-*-linux-x86_64.tar.gz')"
       installDir="${WORKSPACE}/install/kibana"
       mkdir -p "${installDir}"
@@ -341,6 +345,7 @@ def xPackIntakeSteps(){
         
         parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
         set -euxo pipefail
+        PATH=${PATH}:$(yarn bin)
         yarn kbn bootstrap
         yarn test'''}
         parallelSteps['Jest tests'] = {sh '''#!/bin/bash
@@ -367,12 +372,14 @@ def xPackGroupSteps(){
         groups.each{ group ->
           parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
           set -euxo pipefail
+          PATH=${PATH}:$(yarn bin)
           node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
           """}
         }
         funTestGroups.each{ group ->
           parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
           set -euxo pipefail
+          PATH=${PATH}:$(yarn bin)
           node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
           """}
         }
