@@ -243,6 +243,7 @@ def buildOSSSteps(){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
+      yarn kbn bootstrap
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
@@ -259,6 +260,7 @@ def buildNoOSSSteps(){
       sh '''#!/bin/bash
       set -euxo pipefail
       PATH=${PATH}:$(yarn bin)
+      yarn kbn bootstrap
       node scripts/build --debug --no-oss --skip-os-packages
       '''
       sh '''#!/bin/bash
