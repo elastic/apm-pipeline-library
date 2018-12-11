@@ -47,7 +47,8 @@ void call(Map args = [:]){
          HOME = "${env.WORKSPACE}"
        }
        steps {
-         checkoutSteps()
+         //checkoutSteps()
+         echo "NOOP"
        }
      }
      stage('build'){
@@ -231,7 +232,7 @@ def checkoutSteps(){
         '''
       }
     }
-    stash allowEmpty: true, name: 'source', excludes: ".git,node/**", useDefaultExcludes: false
+    //stash allowEmpty: true, name: 'source', excludes: ".git,node/**", useDefaultExcludes: false
     //stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
     // dir("${ES_BASE_DIR}"){
     //   checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
@@ -247,9 +248,10 @@ def checkoutSteps(){
 
 def buildOSSSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -263,9 +265,10 @@ def buildOSSSteps(){
 
 def buildNoOSSSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -288,9 +291,10 @@ def buildNoOSSSteps(){
 
 def kibanaIntakeSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -303,10 +307,11 @@ def kibanaIntakeSteps(){
 
 def kibanaGroupSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     unstash 'build-oss'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${BASE_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -342,9 +347,10 @@ def kibanaGroupSteps(){
 
 def xPackIntakeSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
@@ -364,10 +370,11 @@ def xPackIntakeSteps(){
 
 def xPackGroupSteps(){
   withEnvWrapper() {
-    unstash 'source'
+    //unstash 'source'
     //unstash 'cache'
     unstash 'build-no-oss'
     installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+    checkoutSteps()
     dir("${XPACK_DIR}"){
       script {
         def parallelSteps = Map [:]
