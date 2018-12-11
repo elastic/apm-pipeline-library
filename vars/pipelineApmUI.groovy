@@ -9,8 +9,8 @@ void call(Map args = [:]){
      ES_BASE_DIR="src/github.com/elastic/elasticsearch"
      JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
      FORCE_COLOR = "2"
-     GIT_URL = "https://github.com/elastic/kibana.git"
-     ES_GIT_URL = "https://github.com/elastic/elasticsearch.git"
+     GIT_URL = "git@github.com:elastic/kibana.git"
+     ES_GIT_URL = "git@github.com:elastic/elasticsearch.git"
      TEST_BROWSER_HEADLESS = "${params.TEST_BROWSER_HEADLESS}"
      TEST_ES_FROM = "${params.TEST_ES_FROM}"
    }
@@ -25,6 +25,7 @@ void call(Map args = [:]){
    }
    parameters {
      string(name: 'branch_specifier', defaultValue: "6.5", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
+     string(name: 'ES_VERSION', defaultValue: "6.5", description: "Elastic Stack Git branch/tag to use")
      string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
      string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
      booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
@@ -202,8 +203,8 @@ def installNodeJs(nodeVersion, pakages = null){
 def checkoutSteps(){
   sh 'export'
   withEnvWrapper() {
-    gitCheckout(basedir: "${BASE_DIR}", branch: env?.branch_specifier, 
-      repo: "${params.GIT_URL}", 
+    gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
+      repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
     stash allowEmpty: true, name: 'source', useDefaultExcludes: false
     dir("${BASE_DIR}"){
@@ -221,7 +222,7 @@ def checkoutSteps(){
     stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
     dir("${ES_BASE_DIR}"){
       /** TODO grab the correct elasticsearch branch */
-      checkout([$class: 'GitSCM', branches: [[name: "master"]],
+      checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
         doGenerateSubmoduleConfigurations: false,
         extensions: [],
         submoduleCfg: [],
