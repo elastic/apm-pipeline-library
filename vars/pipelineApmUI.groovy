@@ -48,7 +48,8 @@ void call(Map args = [:]){
        stages {
          stage('Checkout') {
            steps {
-             checkoutSteps()
+             checkoutKibana()
+             checkoutES()
            }
          }
          stage('Quick Test') {
@@ -183,6 +184,22 @@ void call(Map args = [:]){
   }
 }
 
+/**
+  unstash the stash passed as parameter or execute the block code passed.
+  This works as a cache that make the retrieve process only once, the rest of times
+  unstash the stuff.
+*/
+def unstashOrGet(String name, Closure body){
+  try{
+    unstash name
+  } catch(error){
+    body()
+  }
+}
+
+/**
+  Archive result files.
+*/
 def grabTestResults(){
   junit(allowEmptyResults: true,
     keepLongStdio: true,
@@ -192,6 +209,9 @@ def grabTestResults(){
     onlyIfSuccessful: false)
 }
 
+/**
+  Define NodeJs environment variables.
+*/
 def nodeEnviromentVars(nodeVersion){
   /** TODO this enviroment variables could change on diferent type of agents, so maybe it is better to move then to the stage*/
   if(env.ORG_PATH == null){
@@ -203,92 +223,122 @@ def nodeEnviromentVars(nodeVersion){
   sh 'export'
 }
 
+/**
+  install NodeJs, it uses stash as cache.
+*/
 def installNodeJs(nodeVersion, pakages = null){
   nodeEnviromentVars(nodeVersion)
-  sh """#!/bin/bash
-  set -euxo pipefail
-  NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
-  mkdir -p "${NODE_DIR}"
-  curl -sL \${NODE_URL} | tar -xz -C "${NODE_DIR}" --strip-components=1
-  node --version
-  npm config set prefix "${NODE_DIR}"
-  npm config list
-  """
-  def cmd = "echo 'Installing aditional packages'\n"
-  pakages?.each{ pkg ->
-    cmd += "npm install -g ${pkg}\n"
+  unstashOrGet('nodeJs'){
+    sh """#!/bin/bash
+    set -euxo pipefail
+    NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
+    mkdir -p "${NODE_DIR}"
+    curl -sL \${NODE_URL} | tar -xz -C "${NODE_DIR}" --strip-components=1
+    node --version
+    npm config set prefix "${NODE_DIR}"
+    npm config list
+    """
+    def cmd = "echo 'Installing aditional packages'\n"
+    pakages?.each{ pkg ->
+      cmd += "npm install -g ${pkg}\n"
+    }
+    sh """#!/bin/bash
+    set -euxo pipefail
+    ${cmd}
+    """
+    stash allowEmpty: true, name: 'nodeJs', includes: "node/**", useDefaultExcludes: false
   }
-  sh """#!/bin/bash
-  set -euxo pipefail
-  ${cmd}
-  """
 }
 
+/**
+  Get Elasticsearch sources, it uses stash as cache.
+*/
 def checkoutES(){
-  dir("${ES_BASE_DIR}"){
-    checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
-      doGenerateSubmoduleConfigurations: false,
-      extensions: [],
-      submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
-      url: "${ES_GIT_URL}"]]])
+  unstashOrGet('es-source'){
+    dir("${ES_BASE_DIR}"){
+      checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [],
+        submoduleCfg: [],
+        userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
+        url: "${ES_GIT_URL}"]]])
+    }
+    stash allowEmpty: true, name: 'es-source', includes: "${ES_BASE_DIR}/**", excludes: ".git", useDefaultExcludes: false
   }
 }
 
-def checkoutSteps(){
-  sh 'export'
-  withEnvWrapper() {
+/**
+  Get Kibana sources, it uses stash as cache.
+  also, define NODE_VERSION, and YARN_VERSION environment variables.
+  It modifies the path to add the `yarn bin` folder.
+  It executes `yarn kbn bootstrap` and stash the reults.
+*/
+def checkoutKibana(){
+  unstashOrGet('source'){
     gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
       repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
-    //stash allowEmpty: true, name: 'source', excludes: ".git", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
+  }
+  dir("${BASE_DIR}"){
+    def packageJson = readJSON(file: 'package.json')
+    env.NODE_VERSION = packageJson.engines.node
+    env.YARN_VERSION = packageJson.engines.yarn
+  }
+  
+  installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+  
+  dir("${BASE_DIR}"){
+    def yarnBinPath = sh(script: 'yarn bin', returnStdout: true)
+    env.PATH="${env.PATH}:${yarnBinPath}"
+  }
+  
+  unstashOrGet('cache'){
     dir("${BASE_DIR}"){
-      def packageJson = readJSON(file: 'package.json')
-      env.NODE_VERSION = packageJson.engines.node
-      env.YARN_VERSION = packageJson.engines.yarn
-      installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
-      def yarnBinPath = sh(script: 'yarn bin', returnStdout: true)
-      env.PATH="${env.PATH}:${yarnBinPath}"
       sh '''#!/bin/bash
       set -euxo pipefail
       yarn kbn bootstrap
       '''
     }
-    //stash allowEmpty: true, name: 'source', excludes: ".git,node/**", useDefaultExcludes: false
-    //stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
-    // dir("${ES_BASE_DIR}"){
-    //   checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
-    //     doGenerateSubmoduleConfigurations: false,
-    //     extensions: [],
-    //     submoduleCfg: [],
-    //     userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
-    //     url: "${ES_GIT_URL}"]]])
-    // }
-    //stash allowEmpty: true, name: 'es', includes: "${ES_BASE_DIR}/**", excludes: ".git", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'cache', 
+      includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**", 
+      useDefaultExcludes: false
   }
 }
 
+/**
+  build the Kibana OSS.
+*/
 def buildOSSSteps(){
-  withEnvWrapper() {
-    checkoutSteps()
+  unstashOrGet('build-oss'){
+    checkoutKibana()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
-    stash allowEmpty: true, name: 'build-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
+    stash allowEmpty: true, name: 'build-oss', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
   }
 }
 
+/**
+  build the Kibana No OSS.
+*/
 def buildNoOSSSteps(){
-  withEnvWrapper() {
-    checkoutSteps()
+  unstashOrGet('build-no-oss'){
+    checkoutKibana()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       node scripts/build --debug --no-oss --skip-os-packages
       '''
+    }
+    stash allowEmpty: true, name: 'build-no-oss', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
+  }
+
+  unstashOrGet('kibana-bin'){
+    dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
       linuxBuild="$(find "./target" -name 'kibana-*-linux-x86_64.tar.gz')"
@@ -298,95 +348,89 @@ def buildNoOSSSteps(){
       '''
     }
     stash allowEmpty: true, name: 'kibana-bin', includes: "install/kibana/**", useDefaultExcludes: false
-    stash allowEmpty: true, name: 'build-no-oss', includes: "${BASE_DIR}/build/**", useDefaultExcludes: false
   }
 }
 
+/**
+  Some quick Test to run before anything else.
+*/
 def quickTest(){
-  sh 'yarn tslint ~/elastic/kibana/x-pack/plugins/apm/**/*.{ts,tsx} --fix'
-  sh 'cd x-pack/plugins/apm && yarn tsc --noEmit' 
-  sh 'cd x-pack && node ./scripts/jest.js apm'
+  dir("${BASE_DIR}"){
+    sh 'yarn tslint ~/elastic/kibana/x-pack/plugins/apm/**/*.{ts,tsx} --fix'
+    sh 'cd x-pack/plugins/apm && yarn tsc --noEmit' 
+    sh 'cd x-pack && node ./scripts/jest.js apm'
+  }
 }
 
 def kibanaIntakeSteps(){
-  withEnvWrapper() {
-    checkoutSteps()
-    dir("${BASE_DIR}"){
-      sh '''#!/bin/bash
-      set -euxo pipefail
-      grunt jenkins:unit --from=source --dev || echo -e "\033[31;49mTests FAILED\033[0m"
-      '''
-    }
+  checkoutKibana()
+  dir("${BASE_DIR}"){
+    sh '''#!/bin/bash
+    set -euxo pipefail
+    grunt jenkins:unit --from=source --dev || echo -e "\033[31;49mTests FAILED\033[0m"
+    '''
   }
 }
 
 def kibanaGroupSteps(){
-  withEnvWrapper() {
-    unstash 'build-oss'
-    checkoutSteps()
-    checkoutES()
-    dir("${BASE_DIR}"){
-      def parallelSteps = [:]
-      def groups = (1..12)
-      sh '''#!/bin/bash
+  buildOSSSteps()
+  checkoutES()
+  dir("${BASE_DIR}"){
+    def parallelSteps = [:]
+    def groups = (1..12)
+    sh '''#!/bin/bash
+    set -euxo pipefail
+    grunt functionalTests:ensureAllTestsInCiGroup || echo -e "\033[31;49mTests FAILED\033[0m"
+    '''
+    
+    parallelSteps['pluginFunctionalTestsRelease'] = {sh '''#!/bin/bash
+    set -euxo pipefail
+    grunt run:pluginFunctionalTestsRelease --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
+    '''}
+    
+    groups.each{ group ->
+      parallelSteps["functionalTests_ciGroup${group}"] ={sh """#!/bin/bash
       set -euxo pipefail
-      grunt functionalTests:ensureAllTestsInCiGroup || echo -e "\033[31;49mTests FAILED\033[0m"
-      '''
-      
-      parallelSteps['pluginFunctionalTestsRelease'] = {sh '''#!/bin/bash
-      set -euxo pipefail
-      grunt run:pluginFunctionalTestsRelease --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
-      '''}
-      
-      groups.each{ group ->
-        parallelSteps["functionalTests_ciGroup${group}"] ={sh """#!/bin/bash
-        set -euxo pipefail
-        grunt "run:functionalTests_ciGroup${group}" --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
-        """}
-      }
-      parallel(parallelSteps)
+      grunt "run:functionalTests_ciGroup${group}" --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
+      """}
     }
+    parallel(parallelSteps)
   }
 }
 
 def xPackIntakeSteps(){
-  withEnvWrapper() {
-    checkoutSteps()
-    dir("${XPACK_DIR}"){
-      def parallelSteps = [:]
-      parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
-      set -euxo pipefail
-      yarn test'''}
-      parallelSteps['Jest tests'] = {sh '''#!/bin/bash
-      set -euxo pipefail
-      node scripts/jest --ci --no-cache --verbose'''}
-      parallel(parallelSteps)
-    }
+  checkoutKibana()
+  dir("${XPACK_DIR}"){
+    def parallelSteps = [:]
+    parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
+    set -euxo pipefail
+    yarn test'''}
+    parallelSteps['Jest tests'] = {sh '''#!/bin/bash
+    set -euxo pipefail
+    node scripts/jest --ci --no-cache --verbose'''}
+    parallel(parallelSteps)
   }
 }
 
 def xPackGroupSteps(){
-  withEnvWrapper() {
-    unstash 'build-no-oss'
-    checkoutSteps()
-    dir("${XPACK_DIR}"){
-      def parallelSteps = [:]
-      def groups = (1..6)
-      def funTestGroups = (1..12)
-      
-      groups.each{ group ->
-        parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
-        set -euxo pipefail
-        node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
-        """}
-      }
-      funTestGroups.each{ group ->
-        parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
-        set -euxo pipefail
-        node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
-        """}
-      }
-      parallel(parallelSteps)
+  buildNoOSSSteps()
+  dir("${XPACK_DIR}"){
+    def parallelSteps = [:]
+    def groups = (1..6)
+    def funTestGroups = (1..12)
+    
+    groups.each{ group ->
+      parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
+      set -euxo pipefail
+      node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
+      """}
     }
+    funTestGroups.each{ group ->
+      parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
+      set -euxo pipefail
+      node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
+      """}
+    }
+    parallel(parallelSteps)
   }
 }
