@@ -45,8 +45,8 @@ void call(Map args = [:]){
        environment {
          HOME = "${env.WORKSPACE}"
        }
-       stages('Checkout') {
-         stage {
+       stages {
+         stage('Checkout') {
            steps {
              checkoutSteps()
            }
