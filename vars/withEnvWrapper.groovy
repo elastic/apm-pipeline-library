@@ -7,7 +7,10 @@
     //block
   }
 */
-def call(Closure body) {
+def call(Map params = [:], Closure body) {
+  def cleanAfter = params.containsKey('cleanAfter') ? params.cleanAfter : false
+  def cleanBefore = params.containsKey('cleanBefore') ? params.cleanBefore : true
+  def baseDir =  params.containsKey('baseDir') ? params.baseDir : '.'
   wrap([$class: 'MaskPasswordsBuildWrapper', 
     varPasswordPairs: [
       [var: 'JOB_GCS_CREDENTIALS', password: 'apm-ci-gcs-plugin'], 
@@ -16,13 +19,22 @@ def call(Closure body) {
     ],
     varMaskRegexes: [[regex: 'http(s)?\\:\\/+(.*)\\.elastic\\.co']]
     ]) {
-    deleteDir()
+    cleanWS(cleanBefore)
     withEnv([
       "JOB_GCS_CREDENTIALS=apm-ci-gcs-plugin",
       "JOB_GCS_BUCKET=apm-ci-artifacts/jobs",
       "NOTIFY_TO=infra-root+build@elastic.co"
       ]){
-        body()
-      }
+        dir(baseDir){
+          body()
+        }
+    }
+    cleanWS(cleanAfter)
+  }
+}
+
+def cleanWS(condition){
+  if(condition){
+    deleteDir()
   }
 }
