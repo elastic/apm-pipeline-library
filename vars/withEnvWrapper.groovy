@@ -25,9 +25,9 @@ def call(Map params = [:], Closure body) {
       "JOB_GCS_BUCKET=apm-ci-artifacts/jobs",
       "NOTIFY_TO=infra-root+build@elastic.co"
       ]){
-        dir(baseDir){
-          body()
-        }
+      dir(baseDir){
+        body()
+      }
     }
     cleanWS(cleanAfter)
   }
