@@ -3,6 +3,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
+
 
 class WithEnvWrapperStepTests extends BasePipelineTest {
   
@@ -46,6 +48,7 @@ class WithEnvWrapperStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("deleteDir", [], { "OK" })
     helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod("dir", [String.class, Closure.class], { path, body -> body() })
   }
 
   @Test
@@ -64,6 +67,35 @@ class WithEnvWrapperStepTests extends BasePipelineTest {
       })
     printCallStack()
     assertTrue(isOK)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "deleteDir"
+    }?.size()==1)
+    assertJobStatusSuccess()
+  }
+  
+  @Test
+  void testCleanAfter() throws Exception {
+    def script = loadScript("vars/withEnvWrapper.groovy")
+    def isOK = false
+    script.call(cleanBefore: false, {isOK = true})
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "deleteDir"
+    }?.size()==0)
+    assertJobStatusSuccess()
+  }
+  
+  @Test
+  void testCleanAfterBefore() throws Exception {
+    def script = loadScript("vars/withEnvWrapper.groovy")
+    def isOK = false
+    script.call(cleanAfter: true, cleanBefore: true, baseDir: 'src', {isOK = true})
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "deleteDir"
+    }?.size()==2)
     assertJobStatusSuccess()
   }
 }

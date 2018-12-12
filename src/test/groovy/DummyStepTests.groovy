@@ -31,6 +31,7 @@ class DummyStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("failure", [Closure.class], { body -> body() })
     helper.registerAllowedMethod("unstable", [Closure.class], { body -> body() })
     helper.registerAllowedMethod("always", [Closure.class], { body -> body() })
+    helper.registerAllowedMethod("dir", [String.class, Closure.class], { path, body -> body() })
     helper.registerAllowedMethod("when", [Closure.class], { "OK" })
     helper.registerAllowedMethod("parallel", [Closure.class], { body -> body() })
     helper.registerAllowedMethod("failFast", [Boolean.class], { "OK" })
