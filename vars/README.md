@@ -239,6 +239,16 @@ withEnvWrapper(){
 }
 ```
 
+```
+withEnvWrapper(cleanBefore: true, cleanAfter: true, baseDir: 'src'){
+  //block
+}
+```
+
+* cleanBefore: clean the workspace before execute the code block.
+* cleanAfter: clean the workspace after execute the code block.
+* baseDir: directory to work into, if does not exists would be created.
+
 *TODO* replace each variable with a secret text credential type, then use withCredentials step.
 
 ```
