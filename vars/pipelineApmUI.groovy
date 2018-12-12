@@ -15,7 +15,7 @@ void call(Map args = [:]){
      TEST_ES_FROM = "${params.TEST_ES_FROM}"
    }
    options {
-     timeout(time: 1, unit: 'HOURS')
+     //timeout(time: 5, unit: 'HOURS')
      buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
      timestamps()
      preserveStashes()
@@ -24,7 +24,7 @@ void call(Map args = [:]){
      durabilityHint('PERFORMANCE_OPTIMIZED')
    }
    parameters {
-     string(name: 'branch_specifier', defaultValue: "6.5", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
+     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build (branchName, tagName, commitId, etc.)")
      string(name: 'ES_VERSION', defaultValue: "6.5", description: "Elastic Stack Git branch/tag to use")
      string(name: 'TEST_BROWSER_HEADLESS', defaultValue: "1", description: "Use headless browser.")
      string(name: 'TEST_ES_FROM', defaultValue: "source", description: "Test from sources.")
@@ -45,9 +45,17 @@ void call(Map args = [:]){
        environment {
          HOME = "${env.WORKSPACE}"
        }
-       steps {
-         //checkoutSteps()
-         echo "NOOP"
+       stages('Checkout') {
+         stage {
+           steps {
+             checkoutSteps()
+           }
+         }
+         stage('Quick Test') {
+           steps {
+             quickTest()
+           }
+         }
        }
      }
      stage('build'){
@@ -85,6 +93,11 @@ void call(Map args = [:]){
      Test on a linux environment.
      */
      stage('kibana-intake') {
+       environment {
+         HOME = "${env.WORKSPACE}"
+         JAVA_HOME = "${env.HUDSON_HOME}/.java/java11"
+         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+       }
        when {
          beforeAgent true
          expression { return params.intake_ci }
@@ -98,6 +111,11 @@ void call(Map args = [:]){
      Test ciGroup tests on a linux environment.
      */
      stage('kibana-ciGroup') {
+       environment {
+         HOME = "${env.WORKSPACE}"
+         JAVA_HOME = "${env.HUDSON_HOME}/.java/java11"
+         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+       }
        when {
          beforeAgent true
          expression { return params.ciGroup_ci }
@@ -112,6 +130,9 @@ void call(Map args = [:]){
      */
      stage('x-pack-intake') {
        environment {
+         HOME = "${env.WORKSPACE}"
+         JAVA_HOME = "${env.HUDSON_HOME}/.java/java11"
+         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
          XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
        }
        when {
@@ -128,6 +149,9 @@ void call(Map args = [:]){
      */
      stage('x-pack-ciGroup') {
        environment {
+         HOME = "${env.WORKSPACE}"
+         JAVA_HOME = "${env.HUDSON_HOME}/.java/java11"
+         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
          XPACK_DIR = "${env.WORKSPACE}/${env.BASE_DIR}/x-pack"
          INSTALL_DIR = "${env.WORKSPACE}/install/kibana"
        }
@@ -219,17 +243,16 @@ def checkoutSteps(){
       credentialsId: "${JOB_GIT_CREDENTIALS}")
     //stash allowEmpty: true, name: 'source', excludes: ".git", useDefaultExcludes: false
     dir("${BASE_DIR}"){
-      script{  
-        def packageJson = readJSON(file: 'package.json')
-        env.NODE_VERSION = packageJson.engines.node
-        env.YARN_VERSION = packageJson.engines.yarn
-        installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
-        sh '''#!/bin/bash
-        set -euxo pipefail
-        PATH=${PATH}:$(yarn bin)
-        yarn kbn bootstrap
-        '''
-      }
+      def packageJson = readJSON(file: 'package.json')
+      env.NODE_VERSION = packageJson.engines.node
+      env.YARN_VERSION = packageJson.engines.yarn
+      installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
+      def yarnBinPath = sh(script: 'yarn bin', returnStdout: true)
+      env.PATH="${env.PATH}:${yarnBinPath}"
+      sh '''#!/bin/bash
+      set -euxo pipefail
+      yarn kbn bootstrap
+      '''
     }
     //stash allowEmpty: true, name: 'source', excludes: ".git,node/**", useDefaultExcludes: false
     //stash allowEmpty: true, name: 'cache', includes: "${BASE_DIR}/node_modules/**,node/**", useDefaultExcludes: false
@@ -247,13 +270,10 @@ def checkoutSteps(){
 
 def buildOSSSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
@@ -263,18 +283,14 @@ def buildOSSSteps(){
 
 def buildNoOSSSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
       node scripts/build --debug --no-oss --skip-os-packages
       '''
       sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
       linuxBuild="$(find "./target" -name 'kibana-*-linux-x86_64.tar.gz')"
       installDir="${WORKSPACE}/install/kibana"
       mkdir -p "${installDir}"
@@ -286,15 +302,18 @@ def buildNoOSSSteps(){
   }
 }
 
+def quickTest(){
+  sh 'yarn tslint ~/elastic/kibana/x-pack/plugins/apm/**/*.{ts,tsx} --fix'
+  sh 'cd x-pack/plugins/apm && yarn tsc --noEmit' 
+  sh 'cd x-pack && node ./scripts/jest.js apm'
+}
+
 def kibanaIntakeSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     checkoutSteps()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
       grunt jenkins:unit --from=source --dev || echo -e "\033[31;49mTests FAILED\033[0m"
       '''
     }
@@ -303,34 +322,25 @@ def kibanaIntakeSteps(){
 
 def kibanaGroupSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     unstash 'build-oss'
     checkoutSteps()
     checkoutES()
     dir("${BASE_DIR}"){
       def parallelSteps = [:]
       def groups = (1..12)
-      input("Can we continue?")
-      
       sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
       grunt functionalTests:ensureAllTestsInCiGroup || echo -e "\033[31;49mTests FAILED\033[0m"
       '''
       
       parallelSteps['pluginFunctionalTestsRelease'] = {sh '''#!/bin/bash
       set -euxo pipefail
-      PATH=${PATH}:$(yarn bin)
-      
       grunt run:pluginFunctionalTestsRelease --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
       '''}
       
       groups.each{ group ->
         parallelSteps["functionalTests_ciGroup${group}"] ={sh """#!/bin/bash
         set -euxo pipefail
-        PATH=\${PATH}:\$(yarn bin)
-        
         grunt "run:functionalTests_ciGroup${group}" --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
         """}
       }
@@ -341,54 +351,42 @@ def kibanaGroupSteps(){
 
 def xPackIntakeSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     checkoutSteps()
     dir("${XPACK_DIR}"){
-      script {
-        def parallelSteps = [:]
-        
-        parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
-        set -euxo pipefail
-        PATH=${PATH}:$(yarn bin)
-        yarn test'''}
-        parallelSteps['Jest tests'] = {sh '''#!/bin/bash
-        set -euxo pipefail
-        node scripts/jest --ci --no-cache --verbose'''}
-        parallel(parallelSteps)
-      }
+      def parallelSteps = [:]
+      parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
+      set -euxo pipefail
+      yarn test'''}
+      parallelSteps['Jest tests'] = {sh '''#!/bin/bash
+      set -euxo pipefail
+      node scripts/jest --ci --no-cache --verbose'''}
+      parallel(parallelSteps)
     }
   }
 }
 
 def xPackGroupSteps(){
   withEnvWrapper() {
-    //unstash 'source'
-    //unstash 'cache'
     unstash 'build-no-oss'
     checkoutSteps()
     dir("${XPACK_DIR}"){
-      script {
-        def parallelSteps = [:]
-        def groups = (1..6)
-        def funTestGroups = (1..12)
-        
-        groups.each{ group ->
-          parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
-          set -euxo pipefail
-          PATH=\${PATH}:\$(yarn bin)
-          node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
-          """}
-        }
-        funTestGroups.each{ group ->
-          parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
-          set -euxo pipefail
-          PATH=\${PATH}:\$(yarn bin)
-          node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
-          """}
-        }
-        parallel(parallelSteps)
+      def parallelSteps = [:]
+      def groups = (1..6)
+      def funTestGroups = (1..12)
+      
+      groups.each{ group ->
+        parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
+        set -euxo pipefail
+        node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
+        """}
       }
+      funTestGroups.each{ group ->
+        parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
+        set -euxo pipefail
+        node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
+        """}
+      }
+      parallel(parallelSteps)
     }
   }
 }
