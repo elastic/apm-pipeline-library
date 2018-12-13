@@ -27,7 +27,7 @@ def call(Map params = [:]){
       } else if (branch && branch != ""
           && repo
           && credentialsId){
-        echo "Checkout ${branch}"
+        echo "Checkout ${branch} from ${repo} with credentials ${credentialsId}"
         checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], 
           doGenerateSubmoduleConfigurations: false, 
           extensions: [], 

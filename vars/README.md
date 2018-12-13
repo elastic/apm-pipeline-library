@@ -113,6 +113,20 @@ githubEnv()
 * `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
+## log
+Allow to print messages with different levels of verbosity. It will show all messages that match 
+to an upper log level than defined, the default level is debug. 
+You have to define the environment variable PIPELINE_LOG_LEVEL to select 
+the log level by default is INFO.
+ 
+ Levels: DEBUG, INFO, WARN, ERROR
+
+```
+ log(level: 'INFO', text: 'message')
+```
+
+* `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
+* `text`: Message to print. The color of the messages depends on the level.
 ## runIntegrationTestAxis
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
 It needs the integration test sources stashed.
@@ -123,14 +137,7 @@ runIntegrationTestAxis(source: 'source', agentType: 'go')
 * *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
 * *source*: Stash name that contains the source code.
 * *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
-* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## runPipeline
-Run a pipeline passed as parameter.
-
-```
-runPipeline(name: 'pipeline-name')
-```
-
-* name: the pipeline name to execute. ## sendBenchmarks
+* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
 
@@ -231,6 +238,16 @@ withEnvWrapper(){
   //block
 }
 ```
+
+```
+withEnvWrapper(cleanBefore: true, cleanAfter: true, baseDir: 'src'){
+  //block
+}
+```
+
+* cleanBefore: clean the workspace before execute the code block.
+* cleanAfter: clean the workspace after execute the code block.
+* baseDir: directory to work into, if does not exists would be created.
 
 *TODO* replace each variable with a secret text credential type, then use withCredentials step.
 

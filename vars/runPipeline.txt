@@ -1,7 +1,0 @@
-Run a pipeline passed as parameter.
-
-```
-runPipeline(name: 'pipeline-name')
-```
-
-* name: the pipeline name to execute. 
