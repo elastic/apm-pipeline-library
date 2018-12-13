@@ -189,11 +189,12 @@ void call(Map args = [:]){
   This works as a cache that make the retrieve process only once, the rest of times
   unstash the stuff.
 */
-def unstashOrGet(String name, Closure body){
+def useCache(String name, Closure body){
   try{
     unstash name
   } catch(error){
     body()
+    currentBuild.result = "SUCCESS"
   }
 }
 
@@ -228,7 +229,7 @@ def nodeEnviromentVars(nodeVersion){
 */
 def installNodeJs(nodeVersion, pakages = null){
   nodeEnviromentVars(nodeVersion)
-  unstashOrGet('nodeJs'){
+  useCache('nodeJs'){
     sh """#!/bin/bash
     set -euxo pipefail
     NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
@@ -254,7 +255,7 @@ def installNodeJs(nodeVersion, pakages = null){
   Get Elasticsearch sources, it uses stash as cache.
 */
 def checkoutES(){
-  unstashOrGet('es-source'){
+  useCache('es-source'){
     dir("${ES_BASE_DIR}"){
       checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
         doGenerateSubmoduleConfigurations: false,
@@ -274,7 +275,7 @@ def checkoutES(){
   It executes `yarn kbn bootstrap` and stash the reults.
 */
 def checkoutKibana(){
-  unstashOrGet('source'){
+  useCache('source'){
     gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
       repo: "${GIT_URL}", 
       credentialsId: "${JOB_GIT_CREDENTIALS}")
@@ -293,7 +294,7 @@ def checkoutKibana(){
     env.PATH="${env.PATH}:${yarnBinPath}"
   }
   
-  unstashOrGet('cache'){
+  useCache('cache'){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
@@ -310,7 +311,7 @@ def checkoutKibana(){
   build the Kibana OSS.
 */
 def buildOSSSteps(){
-  unstashOrGet('build-oss'){
+  useCache('build-oss'){
     checkoutKibana()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
@@ -326,7 +327,7 @@ def buildOSSSteps(){
   build the Kibana No OSS.
 */
 def buildNoOSSSteps(){
-  unstashOrGet('build-no-oss'){
+  useCache('build-no-oss'){
     checkoutKibana()
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
@@ -337,7 +338,7 @@ def buildNoOSSSteps(){
     stash allowEmpty: true, name: 'build-no-oss', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
   }
 
-  unstashOrGet('kibana-bin'){
+  useCache('kibana-bin'){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
