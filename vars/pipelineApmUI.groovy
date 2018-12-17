@@ -67,6 +67,9 @@ void call(Map args = [:]){
          */
          stage('build oss') {
            agent { label 'linux && immutable' }
+           environment {
+             HOME = "${env.WORKSPACE}"
+           }
            when {
              beforeAgent true
              expression { return params.build_oss_ci }
@@ -80,6 +83,9 @@ void call(Map args = [:]){
          */
          stage('build no-oss') {
            agent { label 'linux && immutable' }
+           environment {
+             HOME = "${env.WORKSPACE}"
+           }
            when {
              beforeAgent true
              expression { return params.build_no_oss_ci }
@@ -282,6 +288,9 @@ def checkoutKibana(){
     stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
   }
   dir("${BASE_DIR}"){
+    sh "git log origin/${env.CHANGE_TARGET}...${env.GIT_SHA}"
+  }
+  dir("${BASE_DIR}"){
     def packageJson = readJSON(file: 'package.json')
     env.NODE_VERSION = packageJson.engines.node
     env.YARN_VERSION = packageJson.engines.yarn
@@ -305,6 +314,10 @@ def checkoutKibana(){
       includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**", 
       useDefaultExcludes: false
   }
+  sh '''#!/bin/bash
+  set -euxo pipefail
+  yarn kbn bootstrap
+  '''
 }
 
 /**
@@ -316,6 +329,7 @@ def buildOSSSteps(){
     dir("${BASE_DIR}"){
       sh '''#!/bin/bash
       set -euxo pipefail
+      babel --version
       node scripts/build --debug --oss --skip-archives --skip-os-packages
       '''
     }
@@ -357,7 +371,7 @@ def buildNoOSSSteps(){
 */
 def quickTest(){
   dir("${BASE_DIR}"){
-    sh 'yarn tslint ~/elastic/kibana/x-pack/plugins/apm/**/*.{ts,tsx} --fix'
+    sh 'yarn tslint x-pack/plugins/apm/**/*.{ts,tsx} --fix'
     sh 'cd x-pack/plugins/apm && yarn tsc --noEmit' 
     sh 'cd x-pack && node ./scripts/jest.js apm'
   }
