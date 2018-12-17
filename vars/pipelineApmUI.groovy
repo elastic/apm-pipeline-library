@@ -288,7 +288,7 @@ def checkoutKibana(){
     stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
   }
   dir("${BASE_DIR}"){
-    sh "git log origin/${env.CHANGE_TARGET}...${env.GIT_SHA}"
+    sh 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'
   }
   dir("${BASE_DIR}"){
     def packageJson = readJSON(file: 'package.json')
