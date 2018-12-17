@@ -314,10 +314,12 @@ def checkoutKibana(){
       includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**", 
       useDefaultExcludes: false
   }
-  sh '''#!/bin/bash
-  set -euxo pipefail
-  yarn kbn bootstrap
-  '''
+  dir("${BASE_DIR}"){
+    sh '''#!/bin/bash
+    set -euxo pipefail
+    yarn kbn bootstrap
+    '''
+  }
 }
 
 /**
