@@ -68,6 +68,7 @@ def checkApproved(){
   }
   
   if(pr?.author_association == 'MEMBER'){
+    log(level: 'INFO', text: "The user is MEMBER")
     approved = true
   }
   
