@@ -19,6 +19,7 @@ def call(Map params = [:]){
       """,
       returnStdout: true
     )
+    log(level: 'INFO', text: json.toString())
     return readJSON(text: json)
   }
 }
