@@ -32,6 +32,6 @@ def call(Map params = [:]){
   }
   
   if(!approved){
-    error("The PR is not approced yet")
+    error("The PR is not approved yet")
   }
 }
