@@ -60,11 +60,7 @@ def checkApproved(){
       returnStdout: true
     )
     def pr = readJSON(text: prJson)
-    log(level: 'INFO', text: """
-    Title: ${pr?.title}
-    User: ${pr?.user.login}
-    Author Association: ${pr?.author_association}
-    """)
+    log(level: 'INFO', text: "Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
     
     def prReviewsJson = sh(
       script: """#!/bin/bash
@@ -73,10 +69,11 @@ def checkApproved(){
       """,
       returnStdout: true
     )
+    echo prReviewsJson.toString()
     def reviews = readJSON(text: prReviewsJson)
     def approved = false
     reviews.each{ r ->
-      println r.toString()
+      echo r.toString()
       if(r['state'] == 'APPROVED'){
         log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${pr?.author_association} : ${r['state']}")
         approved = true
