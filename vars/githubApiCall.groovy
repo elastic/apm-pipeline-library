@@ -20,7 +20,7 @@ def call(Map params = [:]){
       returnStdout: true
     )
     def ret = readJSON(text: json)
-    if(ret?.message){
+    if(ret?.message != null){
       error("makeGithubApiCall: ${url} - ${ret.message}")
     }
     return ret
