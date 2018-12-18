@@ -76,8 +76,9 @@ def checkApproved(){
     def reviews = readJSON(text: prReviewsJson)
     def approved = false
     reviews.each{ r ->
-      if(r?.state == 'APPROVED'){
-        log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${pr?.author_association} : ${r?.state}")
+      println r.toString()
+      if(r['state'] == 'APPROVED'){
+        log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${pr?.author_association} : ${r['state']}")
         approved = true
       }
     }
