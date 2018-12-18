@@ -21,9 +21,7 @@ def call(Map params = [:]){
     )
     def ret = readJSON(text: json)
     if(ret?.message){
-      log(level: 'INFO', text: "token: ${token} - url: ${url}")
-      log(level: 'INFO', text: json)
-      error("makeGithubApiCall: ${ret.message}")
+      error("makeGithubApiCall: ${url} - ${ret.message}")
     }
     return ret
   }
