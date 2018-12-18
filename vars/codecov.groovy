@@ -3,27 +3,11 @@ https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groo
 */
 
 /**
-return the Github token.
-*/
-def getGithubToken(){
-  def githubToken
-  withCredentials([[
-    variable: "GITHUB_TOKEN",
-    credentialsId: "2a9602aa-ab9f-4e52-baf3-b71ca88469c7",
-    $class: "StringBinding",
-  ]]) {
-    githubToken = env.GITHUB_TOKEN
-  }
-  return githubToken
-}
-
-/**
   return the branch name, if we are in a branch, or the git ref, if we are in a PR.
 */
 def getBranchRef(){
   def branchName = env.BRANCH_NAME
   if (env.CHANGE_ID) {
-    def repoUrl = getGitRepoURL()
     def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
     def token = getGithubToken()
     wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [

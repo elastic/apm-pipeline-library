@@ -19,8 +19,6 @@ def call(Map params = [:]){
   def credentialsId =  params?.credentialsId
   def branch =  params?.branch
   
-  checkApproved()
-  
   withEnvWrapper() {
     dir("${basedir}"){
       if(env?.BRANCH_NAME){
@@ -40,6 +38,7 @@ def call(Map params = [:]){
         error "No valid SCM config passed."
       }
       githubEnv()
+      checkApproved()
     }
   }
 }
@@ -48,6 +47,8 @@ def checkApproved(){
   if(env?.CHANGE_ID == null){
     return true
   }
+  def token = getGithubToken()
+  def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'GITHUB_TOKEN', password: "${token}"], 
     ]]) {
