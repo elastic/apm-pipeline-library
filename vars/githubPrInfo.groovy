@@ -5,5 +5,5 @@ def call(Map params = [:]){
   def token =  params?.token
   def repo =  params?.url
   def pr =  params.containsKey('pr') ? params.pr : error('githubPrInfo: no valid PR ID.')
-  return githubApiCall(token, "https://api.github.com/repos/${repo}/pulls/${pr}")
+  return githubApiCall(token: token, url: "https://api.github.com/repos/${repo}/pulls/${pr}")
 }
