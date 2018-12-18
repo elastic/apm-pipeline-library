@@ -38,6 +38,7 @@ def call(Map params = [:]){
         error "No valid SCM config passed."
       }
       githubEnv()
+      githubPrCheckApproved()
     }
   }
 }

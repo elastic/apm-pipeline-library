@@ -1,0 +1,9 @@
+
+Make a REST API call to Github. It manage to hide the call and the token in the console output.
+
+```
+  githubApiCall(token: '4457d4e98f91501bb7914cbb29e440a857972fee', url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
+```
+
+* token: String to use as authentication token.
+* url: URL of the Github API call.

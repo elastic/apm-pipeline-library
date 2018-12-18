@@ -1,0 +1,3 @@
+return the Github token.
+
+* credentialsId: it is possible to pass a credentials ID as parameter, by default use a hardcoded ID
