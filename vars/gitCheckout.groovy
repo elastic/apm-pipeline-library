@@ -39,6 +39,7 @@ def call(Map params = [:]){
       }
       githubEnv()
       checkApproved()
+      sh "export"
     }
   }
 }
