@@ -61,14 +61,13 @@ def checkApproved(){
   }
   
   reviews.each{ r ->
-    echo r.toString()
     if(r?.state == 'APPROVED' && r?.author_association == "MEMBER"){
       log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${r?.author_association} : ${r['state']}")
       approved = true
     }
   }
   
-  if(pr?.author_associatio == 'MEMBER'){
+  if(pr?.author_association == 'MEMBER'){
     approved = true
   }
   
