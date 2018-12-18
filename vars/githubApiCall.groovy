@@ -20,10 +20,11 @@ def call(Map params = [:]){
       returnStdout: true
     )
     def ret = readJSON(text: json)
+    /** TODO manage errors
     echo json
-    if(ret?.message != null){
-      error("makeGithubApiCall: ${url} - ${ret.message}")
-    }
+    if(ret[0]?.message != null){
+      error("makeGithubApiCall: ${url} - ${ret[0].message}")
+    }*/
     return ret
   }
 }
