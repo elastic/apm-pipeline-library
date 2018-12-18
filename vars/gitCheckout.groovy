@@ -73,13 +73,16 @@ def checkApproved(){
     echo prReviewsJson.toString()
     def reviews = readJSON(text: prReviewsJson)
     def approved = false
+    
     if(reviews?.size() == 0){
-      log(level: 'INFO', text: "There is not review")
+      log(level: 'INFO', text: "There are no reviews yet")
+      approved = false
     }
+    
     reviews.each{ r ->
       echo r.toString()
-      if(r['state'] == 'APPROVED'){
-        log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${pr?.author_association} : ${r['state']}")
+      if(r?.state == 'APPROVED' && r?.author_association == "MEMBER"){
+        log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${r?.author_association} : ${r['state']}")
         approved = true
       }
     }
@@ -87,6 +90,9 @@ def checkApproved(){
     if(pr?.author_associatio == 'MEMBER'){
       approved = true
     }
-    return approved
+    
+    if(!approved){
+      error("The PR is not approced yet")
+    }
   }
 }
