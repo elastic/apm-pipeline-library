@@ -19,6 +19,8 @@ def call(Map params = [:]){
   def credentialsId =  params?.credentialsId
   def branch =  params?.branch
   
+  checkApproved()
+  
   withEnvWrapper() {
     dir("${basedir}"){
       if(env?.BRANCH_NAME){
@@ -39,5 +41,49 @@ def call(Map params = [:]){
       }
       githubEnv()
     }
+  }
+}
+
+def checkApproved(){
+  if(env?.CHANGE_ID == null){
+    return true
+  }
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: 'GITHUB_TOKEN', password: "${token}"], 
+    ]]) {
+    def prJson = sh(
+      script: """#!/bin/bash
+      set +x
+      curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}'
+      """,
+      returnStdout: true
+    )
+    def pr = readJSON(text: prJson)
+    log(level: 'INFO', text: """
+    Title: ${pr?.title}
+    User: ${pr?.user.login}
+    Author Association: ${pr?.author_association}
+    """)
+    
+    def prReviewsJson = sh(
+      script: """#!/bin/bash
+      set +x
+      curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}'
+      """,
+      returnStdout: true
+    )
+    def reviews = readJSON(text: prReviewsJson)
+    def approved = false
+    reviews.each{ r ->
+      if(r?.state == 'APPROVED'){
+        log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${pr?.author_association} : ${r?.state}")
+        approved = true
+      }
+    }
+    
+    if(pr?.author_associatio == 'MEMBER'){
+      approved = true
+    }
+    return approved
   }
 }
