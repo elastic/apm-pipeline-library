@@ -69,7 +69,7 @@ def checkApproved(){
     def prReviewsJson = sh(
       script: """#!/bin/bash
       set +x
-      curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}'
+      curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}/reviews'
       """,
       returnStdout: true
     )
