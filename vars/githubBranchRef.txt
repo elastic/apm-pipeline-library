@@ -1,0 +1,1 @@
+return the branch name, if we are in a branch, or the git ref, if we are in a PR.
