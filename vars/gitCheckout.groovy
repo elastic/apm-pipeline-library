@@ -70,7 +70,6 @@ def checkApproved(){
       returnStdout: true
     )
     echo "curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}/reviews'"
-    )
     echo prReviewsJson.toString()
     def reviews = readJSON(text: prReviewsJson)
     def approved = false
