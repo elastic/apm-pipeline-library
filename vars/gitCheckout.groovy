@@ -40,6 +40,7 @@ def call(Map params = [:]){
       githubEnv()
       checkApproved()
       sh "export"
+      echo getBuildCauses.getBuildCauses()
     }
   }
 }
