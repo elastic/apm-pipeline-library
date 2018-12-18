@@ -69,9 +69,17 @@ def checkApproved(){
       """,
       returnStdout: true
     )
+    sh(
+      script: """#!/bin/bash
+      curl -s -H 'Authorization: token ${token}' 'https://api.github.com/repos/${repoName}/pulls/${env.CHANGE_ID}/reviews'
+      """
+    )
     echo prReviewsJson.toString()
     def reviews = readJSON(text: prReviewsJson)
     def approved = false
+    if(reviews?.size() == 0){
+      log(level: 'INFO', text: "There is not review")
+    }
     reviews.each{ r ->
       echo r.toString()
       if(r['state'] == 'APPROVED'){
