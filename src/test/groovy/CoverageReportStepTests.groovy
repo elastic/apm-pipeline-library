@@ -11,6 +11,7 @@ class CoverageReportStepTests extends BasePipelineTest {
     super.setUp()
     helper.registerAllowedMethod("publishHTML", [Map.class],  null)
     helper.registerAllowedMethod("cobertura", [Map.class], null)
+    helper.registerAllowedMethod("githubBranchRef", [], { return "master" })
   }
 
   @Test

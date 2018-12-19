@@ -21,7 +21,7 @@ def call(Map params = [:]){
   
   reviews.each{ r ->
     if(r?.state == 'APPROVED' && r?.author_association == "MEMBER"){
-      log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${r?.author_association} : ${r['state']}")
+      log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
       approved = true
     }
   }
