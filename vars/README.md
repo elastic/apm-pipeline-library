@@ -42,6 +42,7 @@ Print a text on color on a xterm.
 * *text*: Text to print.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.
@@ -58,6 +59,15 @@ In other cases, you probably has to use this step.
 ```
 def repoUrl = getGitRepoURL()
 ```
+## getGithubToken
+return the Github token.
+
+```
+def token = getGithubToken()
+```
+
+* credentialsId: it is possible to pass a credentials ID as parameter, by default use a hardcoded ID
+
 ## getVaultSecret
 Get a secret from the Vault.
 
@@ -65,7 +75,9 @@ Get a secret from the Vault.
 def jsonValue = getVaultSecret('secret-name')
 ```
 
-* *secret-name*: Name of the secret on the the vault root path.## gitCheckout
+* *secret-name*: Name of the secret on the the vault root path.
+
+## gitCheckout
 Perform a checkout from the SCM configuration on a folder inside the workspace,
 if branch, repo, and credentialsId are defined make a checkout using those parameters.
 
@@ -87,6 +99,7 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *repo*: the repository to use.
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
+
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
 It requires to initialise the pipeline with github_enterprise_constructor() first.
@@ -101,6 +114,26 @@ It requires to initialise the pipeline with github_enterprise_constructor() firs
 ```
 gitDeleteTag()
 ```
+## githubApiCall
+
+Make a REST API call to Github. It manage to hide the call and the token in the console output.
+
+```
+  githubApiCall(token: '4457d4e98f91501bb7914cbb29e440a857972fee', url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
+```
+
+* token: String to use as authentication token.
+* url: URL of the Github API call.
+
+[Github REST API](https://developer.github.com/v3/)
+
+## githubBranchRef
+return the branch name, if we are in a branch, or the git ref, if we are in a PR.
+
+```
+def ref = githubBranchRef()
+```
+
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
   
@@ -113,6 +146,55 @@ githubEnv()
 * `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
+
+## githubPrCheckApproved
+If the current build is a PR, it would check if it is approved or created 
+by a user with write/admin permission on the repo. 
+If it is not approbed, the method will throw an error.
+
+```
+githubPrCheckApproved()
+```
+
+## githubPrInfo
+Get the Pull Request details from the Github REST API.
+
+```
+def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
+```
+
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* pr: Pull Request number.
+
+[Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
+
+## githubPrReviews
+Get the Pull Request reviews from the Github REST API.
+
+```
+def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
+```
+
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* pr: Pull Request number.
+
+[Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
+
+## githubRepoGetUserPermission
+Get a user's permission level on a Github repo. 
+
+```
+githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
+```
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* user: Github username.
+
+[Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
+
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match 
 to an upper log level than defined, the default level is debug. 
@@ -127,6 +209,8 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+
 ## runIntegrationTestAxis
 Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
 It needs the integration test sources stashed.
@@ -137,7 +221,9 @@ runIntegrationTestAxis(source: 'source', agentType: 'go')
 * *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
 * *source*: Stash name that contains the source code.
 * *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
-* *elasticStack*: Elastic Stack branch/tag to use(default 'master').## sendBenchmarks
+* *elasticStack*: Elastic Stack branch/tag to use(default 'master').
+
+## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
 
@@ -153,6 +239,7 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 * *index*: index name to store data.
 * *url*: ES url to store the data.
 * *secret*: Vault secret that contains the ES credentials.
+
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
@@ -182,6 +269,7 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 * *state*: Status to report to Github.
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
+
 ## stepIntegrationTest
 Run an integration test (all, go, java, kibana, nodejs, python, ruby, server)
 It needs the integration test sources stashed.
@@ -193,6 +281,7 @@ stepIntegrationTest("Running Go integration test", "go")
 * *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
 * *source*: Stash name that contains the source code.
 * *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
+
 ## tar
 Compress a folder into a tar file.
 
@@ -207,6 +296,7 @@ pathPrefix: '')
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
 * *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
 
@@ -230,6 +320,7 @@ updateGithubCommitStatus(message: 'Build result.')
 * *message*: 'Build result.'
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
+
 ## withEnvWrapper
 Environment wrapper that mask some environment variables and install some tools.
 
@@ -257,6 +348,7 @@ withCredentials([string(credentialsId: '6a80d11c-cb5f-4e40-8565-78e127610ef1', v
   // some block
 }
 ```
+
 ## withEsEnv
 Grab a secret from the vault and define some environment variables to access to an URL
 
@@ -280,3 +372,4 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
+

@@ -8,3 +8,4 @@ stepIntegrationTest("Running Go integration test", "go")
 * *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
 * *source*: Stash name that contains the source code.
 * *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
+

@@ -1,0 +1,12 @@
+Get the Pull Request reviews from the Github REST API.
+
+```
+def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
+```
+
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* pr: Pull Request number.
+
+[Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
+

@@ -57,6 +57,7 @@ class CodecovStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("deleteDir", [], { "OK" })
     helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
     helper.registerAllowedMethod("readJSON", [Map.class], {return [
       head: [
         repo: [

@@ -2,8 +2,7 @@
   Make a REST API call to Github. It manage to hide the call and the token in the console output.
   
   githubApiCall(token, "https://api.github.com/repos/${repoName}/pulls/${prID}")
-  
-  TODO make test
+
 */
 def call(Map params = [:]){  
   def token =  params.containsKey('token') ? params.token : error('makeGithubApiCall: no valid Github token.')

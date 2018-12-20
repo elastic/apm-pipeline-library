@@ -19,3 +19,4 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *repo*: the repository to use.
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
+
