@@ -1,6 +1,9 @@
 /**
-
-TODO make test
+  If the current build is a PR, it would check if it is approved or created 
+  by a user with write/admin permission on the repo. 
+  If it is not approbed, the method will throw an error.
+  
+  githubPrCheckApproved()
 */
 def call(Map params = [:]){
   if(env?.CHANGE_ID == null){
@@ -12,26 +15,38 @@ def call(Map params = [:]){
   def pr = githubPrInfo(token: token, repo: repoName, pr: env.CHANGE_ID)
   def reviews = githubPrReviews(token: token, repo: repoName, pr: env.CHANGE_ID)
   
-  log(level: 'INFO', text: "Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
+  log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
   
+  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user)
+  
+  if(!approved){
+    error("githubPrCheckApproved: The PR is not approved yet")
+  }
+  return approved
+}
+
+/**
+  Check reviews to find one approved by a MEMBER or COLLABORATOR.
+*/
+def isPrApproved(reviews){
   if(reviews?.size() == 0){
-    log(level: 'INFO', text: "There are no reviews yet")
-    approved = false
+    log(level: 'INFO', text: "githubPrCheckApproved: There are no reviews yet")
+    return false
   }
   
   reviews.each{ r ->
-    if(r?.state == 'APPROVED' && r?.author_association == "MEMBER"){
-      log(level: 'INFO', text: "User: ${r?.user.login} - Author Association: ${r?.author_association} : ${r['state']}")
-      approved = true
+    if(r?.state == 'APPROVED' && (r?.author_association == "MEMBER" || r?.author_association == "COLLABORATOR")){
+      log(level: 'INFO', text: "githubPrCheckApproved: User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
+      return true
     }
   }
-  
-  if(pr?.author_association == 'MEMBER'){
-    log(level: 'INFO', text: "The user is MEMBER")
-    approved = true
-  }
-  
-  if(!approved){
-    error("The PR is not approved yet")
-  }
 }
+
+/**
+  Check user has write or admin permissions.
+*/
+def hasWritePermission(token, repo, user){
+  def json = githubRepoGetUserPermission(token: token, repo: repo, user: user)
+  return json?.permission == 'admin' || json?.permission == 'write'
+}
+
