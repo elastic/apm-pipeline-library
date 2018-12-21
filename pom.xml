@@ -72,7 +72,7 @@
           </execution>
         </executions>
         <configuration>
-          <providerSelection>1.8</providerSelection>
+          <providerSelection>2.0</providerSelection>
           <!-- <sources>
             <source> <directory>${project.basedir}/src</directory> <includes> <include>**/*.groovy</include> </includes> </source>
             <source>
