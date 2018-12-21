@@ -38,7 +38,18 @@ def call(Map params = [:]){
         error "No valid SCM config passed."
       }
       githubEnv()
-      githubPrCheckApproved()
+      if(!isManualyTrigger()){
+        githubPrCheckApproved()
+      }
     }
   }
+}
+
+def isManualyTrigger(){
+  def ret = false
+  if(currentBuild.getBuildCauses()?.findAll{ bc -> bc._class == 'hudson.model.Cause$UserIdCause'}?.size() >= 1){
+    log(level: 'INFO', text: "gitCheckout: Build manually triggered")
+    ret = true
+  }
+  return ret
 }

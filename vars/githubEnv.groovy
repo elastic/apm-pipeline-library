@@ -30,5 +30,5 @@ def call(){
     )?.split(" ").length > 2 ? "merge" : "commit"
   }
 
-  println "Found Git Build Cause: ${env.GIT_BUILD_CAUSE}"
+  echo "Found Git Build Cause: ${env.GIT_BUILD_CAUSE}"
 }
