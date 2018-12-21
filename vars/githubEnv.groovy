@@ -30,5 +30,5 @@ def call(){
     )?.split(" ").length > 2 ? "merge" : "commit"
   }
   
-  log(level: 'INFO', text: "Found Git Build Cause: ${env.GIT_BUILD_CAUSE}")
+  log(level: 'INFO', text: "githubEnv: Found Git Build Cause: ${env.GIT_BUILD_CAUSE}")
 }
