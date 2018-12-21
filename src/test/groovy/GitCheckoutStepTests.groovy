@@ -36,7 +36,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Checkout SCM ${env.BRANCH_NAME}")
     })
@@ -51,7 +51,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     script.call(basedir: 'sub-folder')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Checkout SCM ${env.BRANCH_NAME}")
     })
@@ -67,7 +67,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Checkout master")
     })

@@ -29,6 +29,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod('getGitRepoURL', [], {return url})
     helper.registerAllowedMethod('getGitCommitSha', [], {return sha})
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
   
   @Test

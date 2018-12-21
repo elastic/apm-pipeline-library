@@ -36,6 +36,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
       }
     })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], {return [plaintext: '12345', encrypted: 'ABCDE'] })
   }
 

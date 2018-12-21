@@ -94,7 +94,7 @@ class DummyStepTests extends BasePipelineTest {
     script.call(text: "dummy")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("I am a dummy step - dummy")
     })

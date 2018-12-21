@@ -20,6 +20,7 @@ class StepIntegrationTestStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('deleteDir', [], { 'OK' })
     helper.registerAllowedMethod('unstash', [String.class], { 'OK' })
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { c -> return c.call() })
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)

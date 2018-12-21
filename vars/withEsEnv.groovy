@@ -25,7 +25,7 @@ def call(Map params = [:], Closure body) {
     url = url - "https://"
     protocol = "https://"
   } else if (url.startsWith("http://")){
-    echo "withEsEnv: you are using 'http' protocol to access to the service."
+    log(level: 'INFO', text: "withEsEnv: you are using 'http' protocol to access to the service.")
     url = url - "http://"
     protocol = "http://"
   } else {

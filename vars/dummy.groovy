@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 def method(){
-  echo "I am a method"
+  log(level: 'INFO', text: "I am a method")
 }
 
 /**
@@ -12,5 +12,5 @@ def method(){
 */
 def call(Map params = [:]) {
   def text = params.containsKey('text') ? params.text : 'sample text'
-  echo 'I am a dummy step - ' + text
+  log(level: 'INFO', text: 'I am a dummy step - ' + text)
 }
