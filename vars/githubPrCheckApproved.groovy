@@ -17,7 +17,7 @@ def call(Map params = [:]){
   
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
   
-  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user)
+  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user.login)
   
   if(!approved){
     error("githubPrCheckApproved: The PR is not approved yet")
