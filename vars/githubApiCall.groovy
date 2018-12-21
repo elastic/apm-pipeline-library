@@ -11,19 +11,24 @@ def call(Map params = [:]){
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'GITHUB_TOKEN', password: "${token}"], 
     ]]) {
-    def json = sh(
-      script: """#!/bin/bash
-      set +x
-      curl -s -H 'Authorization: token ${token}' '${url}'
-      """,
-      returnStdout: true
-    )
+    def json = "{}"
+    try {
+      json = sh(
+        script: """#!/bin/bash
+        set +x
+        curl -s -H 'Authorization: token ${token}' '${url}'
+        """,
+        returnStdout: true
+      )
+    } catch(err) {
+      json = """{"message": "${err.toString().replace('"',"'")}"}"""
+    }
     def ret = readJSON(text: json)
-    /** TODO manage errors
-    echo json
-    if(ret[0]?.message != null){
-      error("makeGithubApiCall: ${url} - ${ret[0].message}")
-    }*/
+    if(ret instanceof ArrayList && ret.size() == 0){
+      log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return 0 elements")
+    } else if(ret instanceof Map && ret.containsKey('message')){
+      log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return the message : ${ret.message}")
+    }
     return ret
   }
 }

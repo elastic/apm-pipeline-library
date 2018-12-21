@@ -1,6 +1,7 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before;
 import org.junit.Test;
+import groovy.json.JsonSlurper
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
@@ -27,29 +28,21 @@ class GithubApiCallStepTests extends BasePipelineTest {
   }
   
   def shInterceptor = {
-    if(env?.url == "http://error"){
-      return """{
-        "message": "Not Found",
-        "documentation_url": "https://developer.github.com/v3"
-      }"""
-    }
-    return """[
-      {
-        "id": 186086539,
-        "node_id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3MTg2MDg2NTM5",
-        "user": {
-          "login": "githubusername",
-          "type": "User",
-          "site_admin": false
-        },
-        "body": "",
-        "state": "APPROVED",
-        "pull_request_url": "https://api.github.com/repos/elastic/apm-agent-java/pulls/388",
-        "author_association": "MEMBER",
-        "submitted_at": "2018-12-18T14:13:16Z",
-        "commit_id": "4457d4e98f91501bb7914cbb29e440a857972fee"
-      }
-    ]"""
+    return """[{
+      "id": 186086539,
+      "node_id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3MTg2MDg2NTM5",
+      "user": {
+        "login": "githubusername",
+        "type": "User",
+        "site_admin": false
+      },
+      "body": "",
+      "state": "APPROVED",
+      "pull_request_url": "https://api.github.com/repos/org/repo/pulls/1",
+      "author_association": "MEMBER",
+      "submitted_at": "2018-12-18T14:13:16Z",
+      "commit_id": "4457d4e98f91501bb7914cbb29e440a857972fee"
+    }]"""
   }
   
   @Override
@@ -60,24 +53,29 @@ class GithubApiCallStepTests extends BasePipelineTest {
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
     
-    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
-    helper.registerAllowedMethod("sh", [String.class], shInterceptor)
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
-    helper.registerAllowedMethod("readJSON", [Map.class], {return [:]})
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
+      def jsonSlurper = new JsonSlurper()
+      def object = jsonSlurper.parseText(m.text)
+      return object
+      })
   }
 
   @Test
   void test() throws Exception {
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     def ret = script.call(url: "dummy", token: "dummy")
     printCallStack()
-    assertTrue(ret instanceof Map)
+    assertTrue(ret[0].user.login == "githubusername")
     assertJobStatusSuccess()
   }
   
   @Test
   void testErrorNoToken() throws Exception {
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     script.call(url: "dummy")
     printCallStack()
@@ -90,6 +88,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testErrorNoUrl() throws Exception {
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     script.call(token: "dummy")
     printCallStack()
@@ -102,11 +101,28 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testRequestError() throws Exception {
+    helper.registerAllowedMethod("sh", [Map.class], {
+      return """{
+        "message": "Not Found",
+        "documentation_url": "https://developer.github.com/v3"
+      }"""
+    })
     def script = loadScript("vars/githubApiCall.groovy")
-    env.url = "http://error"
     def ret = script.call(token: "dummy", url: "http://error")
     printCallStack()
     assertTrue(ret instanceof Map)
+    assertJobStatusSuccess()
+  }
+  
+  @Test
+  void testRequestFailure() throws Exception {
+    helper.registerAllowedMethod("sh", [Map.class], {
+      throw new Exception('Failure')
+    })
+    def script = loadScript("vars/githubApiCall.groovy")
+    def ret = script.call(token: "dummy", url: "http://error")
+    printCallStack()
+    assertTrue(ret.message == "java.lang.Exception: Failure")
     assertJobStatusSuccess()
   }
 }
