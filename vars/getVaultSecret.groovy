@@ -31,7 +31,8 @@ def getVaultToken(addr, roleId, secretId){
   set +x -euo pipefail
   curl -s -X POST -H "Content-Type: application/json" -L -d '{"role_id":"${roleId}","secret_id":"${secretId}"}' ${addr}/v1/auth/approle/login
   """)
-  return readJSON(text: tokenJson)?.auth?.client_token
+  def value = readJSON(text: tokenJson)?.auth?.client_token
+  return value
 }
 
 def getVaultSecretObject(addr, secret, token){
