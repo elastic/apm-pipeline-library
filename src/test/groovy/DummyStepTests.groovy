@@ -86,6 +86,10 @@ class DummyStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("error", [String.class], {s -> 
+      printCallStack()
+      throw new Exception(s)
+      })
   }
 
   @Test
