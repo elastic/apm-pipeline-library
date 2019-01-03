@@ -81,6 +81,11 @@ def jsonValue = getVaultSecret('secret-name')
 Perform a checkout from the SCM configuration on a folder inside the workspace,
 if branch, repo, and credentialsId are defined make a checkout using those parameters.
 
+For security reasons PRs from not Elastic organization or with write permissions 
+on the repo are block at this point see [githubPrCheckApproved](#githubPrCheckApproved), 
+whoever if you login in the Jenkins UI, it would be always possible to trigger 
+the job manually from the Jenkins UI.
+
 ```
 gitCheckout()
 ```
@@ -150,7 +155,7 @@ githubEnv()
 ## githubPrCheckApproved
 If the current build is a PR, it would check if it is approved or created 
 by a user with write/admin permission on the repo. 
-If it is not approbed, the method will throw an error.
+If it is not approved, the method will throw an error.
 
 ```
 githubPrCheckApproved()
