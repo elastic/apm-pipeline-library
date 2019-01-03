@@ -1,7 +1,7 @@
 /**
   If the current build is a PR, it would check if it is approved or created 
   by a user with write/admin permission on the repo. 
-  If it is not approbed, the method will throw an error.
+  If it is not approved, the method will throw an error.
   
   githubPrCheckApproved()
 */
