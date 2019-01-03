@@ -13,7 +13,7 @@ def call(secret) {
     string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
     string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
-      def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+      def token = readJSON(text:getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID))?.auth?.client_token
       if(token == null){
         error("getVaultSecret: Unable to get the token.")
       }
@@ -31,7 +31,7 @@ def getVaultToken(addr, roleId, secretId){
   set +x -euo pipefail
   curl -s -X POST -H "Content-Type: application/json" -L -d '{"role_id":"${roleId}","secret_id":"${secretId}"}' ${addr}/v1/auth/approle/login
   """)
-  return readJSON(text: "\n${tokenJson}")?.auth?.client_token
+  return tokenJson
 }
 
 def getVaultSecretObject(addr, secret, token){
