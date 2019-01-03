@@ -17,7 +17,7 @@ def call(Map params = [:]) {
   def allowMissing = params.containsKey('allowMissing') ? params.allowMissing : true
   
   if(!isUnix()){
-    echo "tar step is compatible only with unix systems"
+    log(level: 'INFO', text: "tar step is compatible only with unix systems")
     return
   }
   try {
@@ -28,7 +28,7 @@ def call(Map params = [:]) {
                       onlyIfSuccessful: false)
     }
   } catch (e){
-    echo "${file} was not compresesd or archived : ${e?.message}"
+    log(level: 'INFO', text: "${file} was not compresesd or archived : ${e?.message}")
     if(!allowMissing){
       currentBuild.result = "UNSTABLE"
     } else {

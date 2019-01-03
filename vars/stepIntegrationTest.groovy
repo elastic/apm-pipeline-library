@@ -21,7 +21,7 @@ def call(Map params = [:]){
     error "stepIntegrationTest: no valid source to unstash"
   }
   
-  echoColor(text: "${tag}", colorfg: "green")
+  log(level: 'INFO', text: "${tag}")
   withEnvWrapper() {
     deleteDir()
     unstash "${source}"

@@ -33,7 +33,7 @@ def call(Map params = [:]) {
     url = url - "https://"
     protocol = "https://"
   } else if (url.startsWith("http://")){
-    echo "withEsEnv: you are using 'http' protocol to access to the service."
+    log(level: 'INFO', text: "withEsEnv: you are using 'http' protocol to access to the service.")
     url = url - "http://"
     protocol = "http://"
   } else {
@@ -48,7 +48,7 @@ def call(Map params = [:]) {
   if(data == null || user == null || password == null){
     error "Benchmarks: was not possible to get authentication info to send benchmarks"
   }
-  echo "Benchmarks: sending data..."
+  log(level: 'INFO', text: "Benchmarks: sending data...")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'CLOUD_URL', password: "${urlAuth}"],
     [var: 'CLOUD_ADDR', password: "${protocol}${url}"],

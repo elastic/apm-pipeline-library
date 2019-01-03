@@ -22,12 +22,12 @@ def call(Map params = [:]){
   withEnvWrapper() {
     dir("${basedir}"){
       if(env?.BRANCH_NAME){
-        echo "Checkout SCM ${env.BRANCH_NAME}"
+        log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
         checkout scm
       } else if (branch && branch != ""
           && repo
           && credentialsId){
-        echo "Checkout ${branch} from ${repo} with credentials ${credentialsId}"
+        log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
         checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], 
           doGenerateSubmoduleConfigurations: false, 
           extensions: [], 
@@ -38,7 +38,18 @@ def call(Map params = [:]){
         error "No valid SCM config passed."
       }
       githubEnv()
-      githubPrCheckApproved()
+      if(!isManualyTrigger()){
+        githubPrCheckApproved()
+      }
     }
   }
+}
+
+def isManualyTrigger(){
+  def ret = false
+  if(currentBuild.getBuildCauses()?.findAll{ bc -> bc._class == 'hudson.model.Cause$UserIdCause'}?.size() >= 1){
+    log(level: 'INFO', text: "gitCheckout: Build manually triggered")
+    ret = true
+  }
+  return ret
 }

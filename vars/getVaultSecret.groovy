@@ -8,7 +8,7 @@ def call(secret) {
   def roleId = '35ad5918-eab7-c814-f8be-a305c811732e'
   def secretId = '95d18733-44b5-53c3-89c5-91e27b29be4f'
   def addr = 'https://secrets.elastic.co:8200'
-  echo "Getting secrets"
+  log(level: 'INFO', text: "Getting secrets")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'VAULT_ROLE_ID', password: roleId], 
     [var: 'VAULT_SECRET_ID', password: secretId], 

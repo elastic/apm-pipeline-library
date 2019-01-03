@@ -1,10 +1,11 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  agent none
+  agent any
   environment {
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
-    JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
+    NOTIFY_TO = credentials('notify-to')
+    JOB_GCS_BUCKET = credentials('gcs-bucket')
   }
   options {
     timeout(time: 1, unit: 'HOURS') 
@@ -27,6 +28,7 @@ pipeline {
         */
         stage('Checkout') {
           steps {
+            deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
             dir("${BASE_DIR}"){
               sh """#!/bin/bash
@@ -48,11 +50,10 @@ pipeline {
         */
         stage('Test') {
           steps {
-            withEnvWrapper() {
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-              }
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
             }
           }
           post { 
@@ -75,7 +76,7 @@ pipeline {
     }
     failure { 
       echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-      //step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+      step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
     }
     unstable { 
       echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')

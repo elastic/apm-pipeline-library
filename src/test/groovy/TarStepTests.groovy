@@ -13,6 +13,7 @@ class TarStepTests extends BasePipelineTest {
     super.setUp()
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod("isUnix", [], {true})
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     binding.setVariable('WORKSPACE', "WS")
   }
 
@@ -49,7 +50,7 @@ class TarStepTests extends BasePipelineTest {
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true)
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("tar step is compatible only with unix systems")
     })

@@ -58,6 +58,7 @@ class CodecovStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("deleteDir", [], { "OK" })
     helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], {return [
       head: [
         repo: [
@@ -100,7 +101,7 @@ class CodecovStepTests extends BasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Codecov: No repository specified.")
     })
@@ -113,7 +114,7 @@ class CodecovStepTests extends BasePipelineTest {
     script.call(repo: "noToken")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "echo"
+        call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Codecov: Repository not found: noToken")
     })

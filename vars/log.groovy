@@ -26,7 +26,7 @@ def logMessage(level, text){
       echoColor(text: "[DEBUG] ${text}", colorfg: 'blue', colorbg: 'default')
     break
     case 1:
-      echoColor(text: "[INFO] ${text}", colorfg: 'white', colorbg: 'default')
+      echoColor(text: "[INFO] ${text}", colorfg: 'default', colorbg: 'default')
     break
     case 2:
       echoColor(text: "[WARN] ${text}", colorfg: 'yellow', colorbg: 'default')
