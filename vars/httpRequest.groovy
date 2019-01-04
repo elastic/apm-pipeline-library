@@ -30,6 +30,7 @@ def call(Map params = [:]){
     input = new BufferedReader(new InputStreamReader(con.getErrorStream()));
   }
 
+String body = org.apache.commons.io.IOUtils.toString(input, encoding);
   String inputLine
   StringBuffer response = new StringBuffer()
 
