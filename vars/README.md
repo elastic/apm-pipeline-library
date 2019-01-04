@@ -215,6 +215,7 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match 
 to an upper log level than defined, the default level is debug. 
@@ -316,6 +317,22 @@ pathPrefix: '')
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
 * *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+
+## toJSON
+This step converts a JSON string to net.sf.json.JSON or and POJO to net.sf.json.JSON.
+readJSON show the JSON in the Blue Ocean console output so it can not be used.
+[JENKINS-54248](https://issues.jenkins-ci.org/browse/JENKINS-54248)
+
+```
+net.sf.json.JSON obj = toJSON("{property: value, property1: value}")
+```
+
+```
+Person p = new Person();
+p.setName("John");
+p.setAge(50);
+net.sf.json.JSON obj = toJSON(p)
+```
 
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
