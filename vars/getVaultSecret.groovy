@@ -50,12 +50,12 @@ def getVaultSecretObject(addr, secret, token){
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
-      def retJson = sh(returnStdout: true, script: """#!/bin/bash
-      set +x -euo pipefail
-      curl -s -L -H "X-Vault-Token:${token}" ${addr}/v1/secret/apm-team/ci/${secret}
-      """)
+      // def retJson = sh(returnStdout: true, script: """#!/bin/bash
+      // set +x -euo pipefail
+      // curl -s -L -H "X-Vault-Token:${token}" ${addr}/v1/secret/apm-team/ci/${secret}
+      // """)
       
-      httpRequest("${addr}/v1/secret/apm-team/ci/${secret}", "GET", ["X-Vault-Token": "${token}"])
+      def retJson = httpRequest("${addr}/v1/secret/apm-team/ci/${secret}", "GET", ["X-Vault-Token": "${token}"])
       def obj = toJSON(retJson);
       if(!(obj instanceof JSONObject)){
         error("getVaultSecret: Unable to get the secret.")
@@ -75,33 +75,4 @@ def toJSON(text){
     }
   }
   return obj
-}
-
-def httpRequest(url, method, headers, data = null){
-  URL obj = new URL(url)
-  def con = obj.openConnection()
-  con.setRequestMethod(method)
-  headers.each{ k, v ->
-    con.setRequestProperty(k, v);
-  }
-  int responseCode = con.getResponseCode()
-  println("\nSending 'GET' request to URL : " + url)
-  println("Response Code : " + responseCode)
-  
-  if(responseCode != 200){
-    error("getVaultSecret: Failure connecting to the service.")
-  }
-  BufferedReader input = new BufferedReader(
-          new InputStreamReader(con.getInputStream()))
-  String inputLine
-  StringBuffer response = new StringBuffer()
-
-  while ((inputLine = input.readLine()) != null) {
-    response.append(inputLine);
-  }
-  input.close();
-
-  //print result
-  println("Response: " + response.toString())
-  return response.toString()
 }
