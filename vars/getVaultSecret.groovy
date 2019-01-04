@@ -29,7 +29,7 @@ def getVaultToken(addr, roleId, secretId){
   def tokenJson = httpRequest(url: "${addr}/v1/auth/approle/login",
     method: "POST",
     headers: ["Content-Type": "application/json"],
-    data: "{'role_id':'${roleId}','secret_id':'${secretId}'}")
+    data: "{\"role_id\":\"${roleId}\",\"secret_id\":\"${secretId}\"}")
   def obj = toJSON(tokenJson);
   if(!(obj instanceof JSONObject) || !(obj.auth instanceof JSONObject) || obj.auth.client_token == null){
     error("getVaultSecret: Unable to get the token.")

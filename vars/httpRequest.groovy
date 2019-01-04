@@ -20,6 +20,7 @@ def call(Map params = [:]){
     con.setRequestProperty(k, v)
   }
   if(data != null){
+    println "Data: ${data}"
     IOUtils.write(data, con.getOutputStream(), "UTF-8")
   }
   int responseCode = con.getResponseCode()
