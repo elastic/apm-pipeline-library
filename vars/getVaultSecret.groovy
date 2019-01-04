@@ -3,13 +3,6 @@
 import net.sf.json.JSON
 import net.sf.json.JSONObject
 import net.sf.json.JSONSerializer
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
   Get a secret from the Vault.
@@ -26,17 +19,17 @@ def call(secret) {
     string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
     string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
-      def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
-      props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+    props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
   }
   return props
 }
 
 def getVaultToken(addr, roleId, secretId){
-  def tokenJson =  sh(returnStdout: true, script: """#!/bin/bash
-  set +x -euo pipefail
-  curl -s -X POST -H "Content-Type: application/json" -L -d '{"role_id":"${roleId}","secret_id":"${secretId}"}' ${addr}/v1/auth/approle/login
-  """)
+  def tokenJson = httpRequest(url: "${addr}/v1/auth/approle/login",
+    method: "POST",
+    headers: ["Content-Type": "application/json"],
+    data: "{'role_id':'${roleId}','secret_id':'${secretId}'}")
   def obj = toJSON(tokenJson);
   if(!(obj instanceof JSONObject) || !(obj.auth instanceof JSONObject) || obj.auth.client_token == null){
     error("getVaultSecret: Unable to get the token.")
@@ -50,18 +43,14 @@ def getVaultSecretObject(addr, secret, token){
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
-      // def retJson = sh(returnStdout: true, script: """#!/bin/bash
-      // set +x -euo pipefail
-      // curl -s -L -H "X-Vault-Token:${token}" ${addr}/v1/secret/apm-team/ci/${secret}
-      // """)
-      
-      def retJson = httpRequest("${addr}/v1/secret/apm-team/ci/${secret}", "GET", ["X-Vault-Token": "${token}"])
-      def obj = toJSON(retJson);
-      if(!(obj instanceof JSONObject)){
-        error("getVaultSecret: Unable to get the secret.")
-      }
-      return obj
+    def retJson = httpRequest(url: "${addr}/v1/secret/apm-team/ci/${secret}",
+      headers: ["X-Vault-Token": "${token}"])
+    def obj = toJSON(retJson);
+    if(!(obj instanceof JSONObject)){
+      error("getVaultSecret: Unable to get the secret.")
     }
+    return obj
+  }
 }
 
 def toJSON(text){

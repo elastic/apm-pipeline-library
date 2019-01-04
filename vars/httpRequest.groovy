@@ -1,3 +1,4 @@
+import org.apache.commons.io.IOUtils
 /**
 
 */
@@ -13,8 +14,13 @@ def call(Map params = [:]){
   con.setUseCaches(false)
   con.setDoInput(true)
   con.setDoOutput(true)
+  con.setFollowRedirects(true)
+  con.setInstanceFollowRedirects(true)
   headers.each{ k, v ->
-    con.setRequestProperty(k, v);
+    con.setRequestProperty(k, v)
+  }
+  if(data != null){
+    IOUtils.write(data, con.getOutputStream(), "UTF-8")
   }
   int responseCode = con.getResponseCode()
   println("Sending '${method}' request to URL : ${url}")
@@ -25,13 +31,11 @@ def call(Map params = [:]){
   String encoding = con.getContentEncoding();
   encoding = encoding == null ? "UTF-8" : encoding;
   if (200 <= con.getResponseCode() && con.getResponseCode() <= 299) {
-    body = org.apache.commons.io.IOUtils.toString(con.getInputStream(), encoding);
+    body = IOUtils.toString(con.getInputStream(), encoding)
   } else {
-    //error("getVaultSecret: Failure connecting to the service.")
-    body = org.apache.commons.io.IOUtils.toString(con.getErrorStream(), encoding);
+    body = IOUtils.toString(con.getErrorStream(), encoding)
+    error("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
   }
-
-  //print result
   println("Response: ${body}")
   return body
 }
