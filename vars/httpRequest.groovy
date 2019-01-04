@@ -24,10 +24,10 @@ def call(Map params = [:]){
   BufferedReader input
   String encoding = con.getContentEncoding();
   if (200 <= conn.getResponseCode() && conn.getResponseCode() <= 299) {
-    input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    input = new BufferedReader(new InputStreamReader(con.getInputStream()));
   } else {
     //error("getVaultSecret: Failure connecting to the service.")
-    input = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+    input = new BufferedReader(new InputStreamReader(con.getErrorStream()));
   }
 
   String inputLine
