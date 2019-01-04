@@ -10,12 +10,15 @@ def call(Map params = [:]){
   URL obj = new URL(url)
   def con = obj.openConnection()
   con.setRequestMethod(method)
+  con.setUseCaches(false)
+  con.setDoInput(true)
+  con.setDoOutput(true)
   headers.each{ k, v ->
     con.setRequestProperty(k, v);
   }
   int responseCode = con.getResponseCode()
-  println("\nSending 'GET' request to URL : " + url)
-  println("Response Code : " + responseCode)
+  println("Sending '${method}' request to URL : ${url}")
+  println("Response Code : ${responseCode}")
   
   if(responseCode != 200){
     error("getVaultSecret: Failure connecting to the service.")
@@ -31,6 +34,6 @@ def call(Map params = [:]){
   input.close();
 
   //print result
-  println("Response: " + response.toString())
+  println("Response: ${response.toString()}")
   return response.toString()
 }
