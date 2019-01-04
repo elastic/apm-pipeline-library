@@ -51,18 +51,10 @@ class GetVaultSecretStepTests extends BasePipelineTest {
         return "{auth: {client_token: 'TOKEN'}}"
       }
     })
-    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      if(m?.text?.contains("SECRET")){
-        return [plaintext: '12345', encrypted: 'SECRET'] 
-      }
-      if(m?.text?.contains("TOKEN")){
-        return [auth: [client_token: 'TOKEN']]
-      }
-    })
     helper.registerAllowedMethod("string", [Map.class], { m -> return m })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("log", [Map.class], {m -> println "[${m.level}] ${m.text}"})
     helper.registerAllowedMethod("error", [String.class], {s -> 
       printCallStack()
       throw new Exception(s)
@@ -108,6 +100,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     } catch(e) {
       //NOOP
     }
+    printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
@@ -132,10 +125,12 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     } catch(e) {
       //NOOP
     }
+    printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
         callArgsToString(call).contains("getVaultSecret: Unable to get the secret.")
     })
   }
+
 }
