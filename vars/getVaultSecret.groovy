@@ -79,21 +79,21 @@ def toJSON(text){
 
 def httpRequest(url, method, headers, data = null){
   URL obj = new URL(url)
-  HttpURLConnection con = (HttpURLConnection) obj.openConnection()
+  def con = obj.openConnection()
   con.setRequestMethod(method)
   int responseCode = con.getResponseCode()
   println("\nSending 'GET' request to URL : " + url)
   println("Response Code : " + responseCode)
 
-  BufferedReader in = new BufferedReader(
+  BufferedReader input = new BufferedReader(
           new InputStreamReader(con.getInputStream()))
   String inputLine
   StringBuffer response = new StringBuffer()
 
-  while ((inputLine = in.readLine()) != null) {
+  while ((inputLine = input.readLine()) != null) {
     response.append(inputLine);
   }
-  in.close();
+  input.close();
 
   //print result
   println(response.toString())
