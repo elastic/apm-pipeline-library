@@ -200,6 +200,21 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
 
 
+## httpRequest
+Step to make HTTP request and get the result. 
+If the return code is >= 400, it would throw an error.
+
+```
+def body = httpRequest(url: "https://www.google.com")
+```
+
+```
+def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["User-Agent": "dummy"])
+```
+
+```
+def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
+```
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match 
 to an upper log level than defined, the default level is debug. 

@@ -43,11 +43,11 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     super.setUp()
 
     binding.setVariable('env', env)
-    helper.registerAllowedMethod('sh', [Map.class], { m -> 
-      if(m?.script?.contains("v1/secret/apm-team/ci/secret")){
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+      if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return "{plaintext: '12345', encrypted: 'SECRET'}"
       }
-      if(m?.script?.contains("v1/auth/approle/login")){
+      if(m?.url?.contains("v1/auth/approle/login")){
         return "{auth: {client_token: 'TOKEN'}}"
       }
     })
@@ -88,8 +88,8 @@ class GetVaultSecretStepTests extends BasePipelineTest {
   
   @Test
   void testGetTokenError() throws Exception {
-    helper.registerAllowedMethod('sh', [Map.class], { m -> 
-      if(m?.script?.contains("v1/auth/approle/login")){
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+      if(m?.url?.contains("v1/auth/approle/login")){
         return "{auth: ''}"
       }
     })
@@ -110,11 +110,11 @@ class GetVaultSecretStepTests extends BasePipelineTest {
   
   @Test
   void testGetSecretError() throws Exception {
-    helper.registerAllowedMethod('sh', [Map.class], { m -> 
-      if(m?.script?.contains("v1/secret/apm-team/ci/secret")){
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+      if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return ""
       }
-      if(m?.script?.contains("v1/auth/approle/login")){
+      if(m?.url?.contains("v1/auth/approle/login")){
         return "{auth: {client_token: 'TOKEN'}}"
       }
     })
