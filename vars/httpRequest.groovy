@@ -18,7 +18,8 @@ def call(Map params = [:]){
   }
   int responseCode = con.getResponseCode()
   println("Sending '${method}' request to URL : ${url}")
-  println("Response Code : ${responseCode}")
+  println("Response Code: ${responseCode}")
+  println("Response message: ${conn.getResponseMessage()}")
   
   if(responseCode != 200){
     error("getVaultSecret: Failure connecting to the service.")
