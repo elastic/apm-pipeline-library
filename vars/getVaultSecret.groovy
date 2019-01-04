@@ -102,6 +102,6 @@ def httpRequest(url, method, headers, data = null){
   input.close();
 
   //print result
-  println(response.toString())
+  println("Response: " + response.toString())
   return response.toString()
 }
