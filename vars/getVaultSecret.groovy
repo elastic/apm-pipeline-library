@@ -1,8 +1,4 @@
-//readJSON show the JSON in the BO console output so it can not be used.
-//https://issues.jenkins-ci.org/browse/JENKINS-54248
-import net.sf.json.JSON
 import net.sf.json.JSONObject
-import net.sf.json.JSONSerializer
 
 /**
   Get a secret from the Vault.
@@ -53,15 +49,3 @@ def getVaultSecretObject(addr, secret, token){
   }
 }
 
-def toJSON(text){
-  def obj = null
-  if(text != null){
-    try {
-      obj = JSONSerializer.toJSON(text?.trim());
-    } catch(e){
-      //NOOP
-      log(level: 'DEBUG', text: "getVaultSecret: Unable to Parsing JSON: ${e?.message}" )
-    }
-  }
-  return obj
-}

@@ -1,6 +1,6 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Before
+import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
@@ -59,7 +59,10 @@ class GetVaultSecretStepTests extends BasePipelineTest {
       printCallStack()
       throw new Exception(s)
       })
-
+    helper.registerAllowedMethod("toJSON", [String.class], { s ->
+      def script = loadScript("vars/toJSON.groovy")
+      return script.call(s)
+      })
   }
 
   @Test
