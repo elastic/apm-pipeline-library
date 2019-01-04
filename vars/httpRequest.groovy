@@ -21,11 +21,15 @@ def call(Map params = [:]){
   println("Response Code: ${responseCode}")
   println("Response message: ${con.getResponseMessage()}")
   
-  if(responseCode != 200){
-    error("getVaultSecret: Failure connecting to the service.")
+  BufferedReader input
+  String encoding = con.getContentEncoding();
+  if (200 <= conn.getResponseCode() && conn.getResponseCode() <= 299) {
+    input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+  } else {
+    //error("getVaultSecret: Failure connecting to the service.")
+    input = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
   }
-  BufferedReader input = new BufferedReader(
-          new InputStreamReader(con.getInputStream()))
+
   String inputLine
   StringBuffer response = new StringBuffer()
 
