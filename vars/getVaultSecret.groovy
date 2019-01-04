@@ -81,10 +81,16 @@ def httpRequest(url, method, headers, data = null){
   URL obj = new URL(url)
   def con = obj.openConnection()
   con.setRequestMethod(method)
+  headers.each{ k, v ->
+    con.setRequestProperty(k, v);
+  }
   int responseCode = con.getResponseCode()
   println("\nSending 'GET' request to URL : " + url)
   println("Response Code : " + responseCode)
-
+  
+  if(responseCode != 200){
+    error("getVaultSecret: Failure connecting to the service.")
+  }
   BufferedReader input = new BufferedReader(
           new InputStreamReader(con.getInputStream()))
   String inputLine
