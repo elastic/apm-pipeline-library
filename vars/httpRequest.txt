@@ -12,3 +12,4 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
+

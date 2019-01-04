@@ -13,15 +13,11 @@ def call(Map params = [:]){
     ]]) {
     def json = "{}"
     try {
-      json = sh(
-        script: """#!/bin/bash
-        set +x
-        curl -s -H 'Authorization: token ${token}' '${url}'
-        """,
-        returnStdout: true
-      )
+      json = httpRequest(url: url, headers: ["Authorization": token])
     } catch(err) {
-      json = """{"message": "${err.toString().replace('"',"'")}"}"""
+      def obj = [:]
+      obj.message = err.toString()
+      json = toJSON(obj).toString()
     }
     def ret = readJSON(text: json)
     if(ret instanceof ArrayList && ret.size() == 0){
