@@ -1,3 +1,5 @@
+import net.sf.json.JSONArray
+
 /**
   Make a REST API call to Github. It manage to hide the call and the token in the console output.
   
@@ -13,18 +15,14 @@ def call(Map params = [:]){
     ]]) {
     def json = "{}"
     try {
-      json = sh(
-        script: """#!/bin/bash
-        set +x
-        curl -s -H 'Authorization: token ${token}' '${url}'
-        """,
-        returnStdout: true
-      )
+      json = httpRequest(url: url, headers: ["Authorization": token])
     } catch(err) {
-      json = """{"message": "${err.toString().replace('"',"'")}"}"""
+      def obj = [:]
+      obj.message = err.toString()
+      json = toJSON(obj).toString()
     }
-    def ret = readJSON(text: json)
-    if(ret instanceof ArrayList && ret.size() == 0){
+    def ret = toJSON(json)
+    if(ret instanceof List && ret.size() == 0){
       log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return 0 elements")
     } else if(ret instanceof Map && ret.containsKey('message')){
       log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return the message : ${ret.message}")

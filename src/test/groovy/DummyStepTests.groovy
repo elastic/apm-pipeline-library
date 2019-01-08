@@ -1,6 +1,6 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Before
+import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
@@ -86,6 +86,19 @@ class DummyStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
+      def jsonSlurper = new groovy.json.JsonSlurper()
+      def object = jsonSlurper.parseText(m.text)
+      return object
+      })
+    helper.registerAllowedMethod("error", [String.class], {s -> 
+      printCallStack()
+      throw new Exception(s)
+      })
+    helper.registerAllowedMethod("toJSON", [String.class], { s ->
+      def script = loadScript("vars/toJSON.groovy")
+      return script.call(s)
+      })
   }
 
   @Test

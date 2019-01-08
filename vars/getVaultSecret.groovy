@@ -1,26 +1,51 @@
+import net.sf.json.JSONObject
+
 /**
   Get a secret from the Vault.
 
   def jsonValue = getVaultSecret('secret-name')
 */
 def call(secret) {
+  if(secret == null){
+    error("getVaultSecret: No valid secret to looking for.")
+  }
   def props = null
-  def roleId = '35ad5918-eab7-c814-f8be-a305c811732e'
-  def secretId = '95d18733-44b5-53c3-89c5-91e27b29be4f'
-  def addr = 'https://secrets.elastic.co:8200'
-  log(level: 'INFO', text: "Getting secrets")
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'VAULT_ROLE_ID', password: roleId], 
-    [var: 'VAULT_SECRET_ID', password: secretId], 
-    [var: 'VAULT_ADDR', password: addr], 
-    [var: 'VAULT_SECRET', password: "${secret}"], 
-    ]]) {
-      def retJson = sh(returnStdout: true, script: """#!/bin/bash
-      set +x -euo pipefail
-      VAULT_TOKEN=\$(curl -s -X POST -H "Content-Type: application/json" -L -d '{"role_id":"${roleId}","secret_id":"${secretId}"}' ${addr}/v1/auth/approle/login | jq -r '.auth.client_token' )
-      curl -s -L -H "X-Vault-Token:\${VAULT_TOKEN}" ${addr}/v1/secret/apm-team/ci/${secret}
-      """)
-      props = readJSON(text: retJson)
-   }
-   return props
+  log(level: 'INFO', text: "getVaultSecret: Getting secrets")
+  withCredentials([
+    string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
+    string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
+    string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
+    def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+    props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+  }
+  return props
 }
+
+def getVaultToken(addr, roleId, secretId){
+  def tokenJson = httpRequest(url: "${addr}/v1/auth/approle/login",
+    method: "POST",
+    headers: ["Content-Type": "application/json"],
+    data: "{\"role_id\":\"${roleId}\",\"secret_id\":\"${secretId}\"}")
+  def obj = toJSON(tokenJson);
+  if(!(obj instanceof JSONObject) || !(obj.auth instanceof JSONObject) || obj.auth.client_token == null){
+    error("getVaultSecret: Unable to get the token.")
+  }
+  return obj.auth.client_token
+}
+
+def getVaultSecretObject(addr, secret, token){
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: 'VAULT_SECRET', password: secret], 
+    [var: 'VAULT_TOKEN', password: token],
+    [var: 'VAULT_ADDR', password: addr],
+    ]]) {
+    def retJson = httpRequest(url: "${addr}/v1/secret/apm-team/ci/${secret}",
+      headers: ["X-Vault-Token": "${token}"])
+    def obj = toJSON(retJson);
+    if(!(obj instanceof JSONObject)){
+      error("getVaultSecret: Unable to get the secret.")
+    }
+    return obj
+  }
+}
+
