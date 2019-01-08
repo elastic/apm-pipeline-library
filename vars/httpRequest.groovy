@@ -45,9 +45,11 @@ def call(Map params = [:]){
     encoding = encoding == null ? "UTF-8" : encoding;
     if (con.getResponseCode() < 400) {
       body = IOUtils.toString(con.getInputStream(), encoding)
-      log(level: "DEBUG", text: "Response: ${body}")
+      log(level: "DEBUG", text: "httpRequest: Response: ${body}")
     } else {
-      body = IOUtils.toString(con.getErrorStream(), encoding)
+      body = "\nMessage: " + con.getResponseMessage()
+      body = "\nCode: " + responseCode
+      body = body + "\nError: " + IOUtils.toString(con.getErrorStream(), encoding)
       error("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
     }
     return body
