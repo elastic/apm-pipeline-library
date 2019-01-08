@@ -3,7 +3,7 @@ import net.sf.json.JSONArray
 /**
   Make a REST API call to Github. It manage to hide the call and the token in the console output.
   
-  githubApiCall(token, "https://api.github.com/repos/${repoName}/pulls/${prID}")
+  githubApiCall(token: token, url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
 
 */
 def call(Map params = [:]){  
@@ -15,7 +15,7 @@ def call(Map params = [:]){
     ]]) {
     def json = "{}"
     try {
-      json = httpRequest(url: url, headers: ["Authorization": token])
+      json = httpRequest(url: url, headers: ["Authorization": "token ${token}"])
     } catch(err) {
       def obj = [:]
       obj.message = err.toString()
