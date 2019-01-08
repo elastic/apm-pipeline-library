@@ -1,6 +1,7 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
-import org.junit.Before
-import org.junit.Test
+import org.junit.Before;
+import org.junit.Test;
+import groovy.json.JsonSlurper
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
@@ -55,19 +56,16 @@ class GithubApiCallStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("toJSON", [String.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
-      })
-    helper.registerAllowedMethod("toJSON", [Map.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
+    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
+      def jsonSlurper = new JsonSlurper()
+      def object = jsonSlurper.parseText(m.text)
+      return object
       })
   }
 
   @Test
   void test() throws Exception {
-    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     def ret = script.call(url: "dummy", token: "dummy")
     printCallStack()
@@ -77,7 +75,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testErrorNoToken() throws Exception {
-    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     script.call(url: "dummy")
     printCallStack()
@@ -90,7 +88,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testErrorNoUrl() throws Exception {
-    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    helper.registerAllowedMethod("sh", [Map.class], shInterceptor)
     def script = loadScript("vars/githubApiCall.groovy")
     script.call(token: "dummy")
     printCallStack()
@@ -103,7 +101,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testRequestError() throws Exception {
-    helper.registerAllowedMethod("httpRequest", [Map.class], {
+    helper.registerAllowedMethod("sh", [Map.class], {
       return """{
         "message": "Not Found",
         "documentation_url": "https://developer.github.com/v3"
@@ -118,7 +116,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
   
   @Test
   void testRequestFailure() throws Exception {
-    helper.registerAllowedMethod("httpRequest", [Map.class], {
+    helper.registerAllowedMethod("sh", [Map.class], {
       throw new Exception('Failure')
     })
     def script = loadScript("vars/githubApiCall.groovy")
