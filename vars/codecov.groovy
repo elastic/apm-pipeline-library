@@ -5,6 +5,7 @@ https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groo
 def call(Map params = [:]){
   def repo = params?.repo
   def basedir = params.containsKey('basedir') ? params.basedir : "."
+  def flags = params.containsKey("flags") ? params.flags : ""
   
   if(!repo){
     log(level: 'WARN', text: "Codecov: No repository specified.")
@@ -32,11 +33,11 @@ def call(Map params = [:]){
         "ghprbPullId=${env.CHANGE_ID}",
         "GIT_BRANCH=${branchName}",
         "CODECOV_TOKEN=${token}"]) {
-        sh '''#!/bin/bash
+        sh """#!/bin/bash
         set -x
         curl -s -o codecov.sh https://codecov.io/bash
-        bash codecov.sh || echo "codecov exited with $?"
-        '''
+        bash codecov.sh ${flags} || echo "codecov exited with \$?"
+        """
       }
     }
   }
