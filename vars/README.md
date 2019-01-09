@@ -97,13 +97,15 @@ gitCheckout(basedir: 'sub-folder')
 ```
 gitCheckout(basedir: 'sub-folder', branch: 'master', 
   repo: 'git@github.com:elastic/apm-pipeline-library.git', 
-  credentialsId: 'credentials-id')
+  credentialsId: 'credentials-id',
+  reference: '/var/lib/jenkins/reference-repo.git')
 ```
 
 * *basedir*: directory where checkout the sources.
 * *repo*: the repository to use.
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
+* *reference*: Repository to be used as reference repository.
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
