@@ -196,12 +196,15 @@ void call(Map args = [:]){
   unstash the stuff.
 */
 def useCache(String name, Closure body){
+  def isCacheUsed = false
   try{
     unstash name
+    isCacheUsed = true
   } catch(error){
     body()
     currentBuild.result = "SUCCESS"
   }
+  return isCacheUsed
 }
 
 /**
@@ -261,17 +264,22 @@ def installNodeJs(nodeVersion, pakages = null){
   Get Elasticsearch sources, it uses stash as cache.
 */
 def checkoutES(){
-  useCache('es-source'){
+//  useCache('es-source'){
     dir("${ES_BASE_DIR}"){
       checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
         doGenerateSubmoduleConfigurations: false,
-        extensions: [],
+        extensions: [[$class: 'CloneOption',
+          depth: 1,
+          noTags: false,
+          reference: "/var/lib/jenkins/.git-references/elasticsearch.git",
+          shallow: true
+          ]],
         submoduleCfg: [],
         userRemoteConfigs: [[credentialsId: "${JOB_GIT_CREDENTIALS}",
         url: "${ES_GIT_URL}"]]])
     }
-    stash allowEmpty: true, name: 'es-source', includes: "${ES_BASE_DIR}/**", excludes: ".git", useDefaultExcludes: false
-  }
+//    stash allowEmpty: true, name: 'es-source', includes: "${ES_BASE_DIR}/**", excludes: ".git", useDefaultExcludes: false
+//  }
 }
 
 /**
@@ -281,12 +289,13 @@ def checkoutES(){
   It executes `yarn kbn bootstrap` and stash the reults.
 */
 def checkoutKibana(){
-  useCache('source'){
+//  useCache('source'){
     gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
       repo: "${GIT_URL}", 
-      credentialsId: "${JOB_GIT_CREDENTIALS}")
-    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
-  }
+      credentialsId: "${JOB_GIT_CREDENTIALS}",
+      reference: "/var/lib/jenkins/.git-references/kibana.git")
+//    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
+//  }
   dir("${BASE_DIR}"){
     sh 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'
   }
@@ -303,22 +312,19 @@ def checkoutKibana(){
     env.PATH="${env.PATH}:${yarnBinPath}"
   }
   
-  useCache('cache'){
+  def isCacheUsed = useCache('cache'){
+    firstTime = true
     dir("${BASE_DIR}"){
-      sh '''#!/bin/bash
-      set -euxo pipefail
-      yarn kbn bootstrap
-      '''
+      sh 'yarn kbn bootstrap'
     }
     stash allowEmpty: true, name: 'cache', 
-      includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**", 
+      includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**,${BASE_DIR}/packages/**,${BASE_DIR}/x-pack,${BASE_DIR}/test", 
       useDefaultExcludes: false
   }
-  dir("${BASE_DIR}"){
-    sh '''#!/bin/bash
-    set -euxo pipefail
-    yarn kbn bootstrap
-    '''
+  if(isCacheUsed){
+    dir("${BASE_DIR}"){
+      sh 'yarn kbn bootstrap'
+    }
   }
 }
 
@@ -346,10 +352,7 @@ def buildNoOSSSteps(){
   useCache('build-no-oss'){
     checkoutKibana()
     dir("${BASE_DIR}"){
-      sh '''#!/bin/bash
-      set -euxo pipefail
-      node scripts/build --debug --no-oss --skip-os-packages
-      '''
+      sh 'node scripts/build --debug --no-oss --skip-os-packages'
     }
     stash allowEmpty: true, name: 'build-no-oss', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
   }
@@ -419,12 +422,8 @@ def xPackIntakeSteps(){
   checkoutKibana()
   dir("${XPACK_DIR}"){
     def parallelSteps = [:]
-    parallelSteps['Mocha tests'] = {sh '''#!/bin/bash
-    set -euxo pipefail
-    yarn test'''}
-    parallelSteps['Jest tests'] = {sh '''#!/bin/bash
-    set -euxo pipefail
-    node scripts/jest --ci --no-cache --verbose'''}
+    parallelSteps['Mocha tests'] = {sh 'yarn test'}
+    parallelSteps['Jest tests'] = {sh 'node scripts/jest --ci --no-cache --verbose'}
     parallel(parallelSteps)
   }
 }
@@ -437,17 +436,16 @@ def xPackGroupSteps(){
     def funTestGroups = (1..12)
     
     groups.each{ group ->
-      parallelSteps["ciGroup${group}"] = {sh """#!/bin/bash
-      set -euxo pipefail
-      node scripts/functional_tests --assert-none-excluded --include-tag "ciGroup${group}"
-      """}
+      parallelSteps["ciGroup${group}"] = {
+        sh "node scripts/functional_tests --assert-none-excluded --include-tag 'ciGroup${group}'"
+      }
     }
     funTestGroups.each{ group ->
-      parallelSteps["functional and api tests ciGroup${group}"] = {sh """#!/bin/bash
-      set -euxo pipefail
-      node scripts/functional_tests --debug --bail --kibana-install-dir "${INSTALL_DIR}" --include-tag "ciGroup${group}"
-      """}
+      parallelSteps["functional and api tests ciGroup${group}"] = {
+        sh "node scripts/functional_tests --debug --bail --kibana-install-dir '${INSTALL_DIR}' --include-tag 'ciGroup${group}'"
+      }
     }
     parallel(parallelSteps)
   }
 }
+
