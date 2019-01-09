@@ -10,7 +10,8 @@
   
   gitCheckout(basedir: 'sub-folder', branch: 'master', 
     repo: 'git@github.com:elastic/apm-pipeline-library.git', 
-    credentialsId: 'credentials-id')
+    credentialsId: 'credentials-id',
+    reference: '/var/lib/jenkins/reference-repo.git')
 
 */
 def call(Map params = [:]){
@@ -18,29 +19,35 @@ def call(Map params = [:]){
   def repo =  params?.repo
   def credentialsId =  params?.credentialsId
   def branch =  params?.branch
+  def reference = params?.reference
   
-  withEnvWrapper() {
-    dir("${basedir}"){
-      if(env?.BRANCH_NAME){
-        log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
-        checkout scm
-      } else if (branch && branch != ""
-          && repo
-          && credentialsId){
-        log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
-        checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], 
-          doGenerateSubmoduleConfigurations: false, 
-          extensions: [], 
-          submoduleCfg: [], 
-          userRemoteConfigs: [[credentialsId: "${credentialsId}", 
-          url: "${repo}"]]])
-      } else {
-        error "No valid SCM config passed."
-      }
-      githubEnv()
-      if(!isManualyTrigger()){
-        githubPrCheckApproved()
-      }
+  def extensions = []
+  
+  if(reference != null){
+    extensions.add([$class: 'CloneOption', depth: 1, noTags: false, reference: "${reference}", shallow: true])
+    log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
+  }
+
+  dir("${basedir}"){
+    if(env?.BRANCH_NAME && branch == null){
+      log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
+      checkout scm
+    } else if (branch && branch != ""
+        && repo
+        && credentialsId){
+      log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
+      checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: extensions,
+        submoduleCfg: [],
+        userRemoteConfigs: [[credentialsId: "${credentialsId}",
+        url: "${repo}"]]])
+    } else {
+      error "No valid SCM config passed."
+    }
+    githubEnv()
+    if(!isManualyTrigger()){
+      githubPrCheckApproved()
     }
   }
 }

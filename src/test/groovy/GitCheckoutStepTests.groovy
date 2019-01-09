@@ -6,15 +6,15 @@ import static org.junit.Assert.assertTrue
 
 class GitCheckoutStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
-    
+
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("checkout", [String.class], { "OK" })
@@ -42,7 +42,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testBaseDir() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
@@ -57,7 +57,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testBranch() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
@@ -73,7 +73,24 @@ class GitCheckoutStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
+  @Test
+  void testReferenceRepo() throws Exception {
+    def script = loadScript("vars/gitCheckout.groovy")
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      reference: "repo")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("Checkout master")
+    })
+    assertJobStatusSuccess()
+  }
+
   @Test
   void testErrorBranchIncomplete() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
@@ -86,7 +103,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
         callArgsToString(call).contains("No valid SCM config passed.")
     })
   }
-  
+
   @Test
   void testErrorBranchNoCredentials() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
@@ -100,7 +117,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
         callArgsToString(call).contains("No valid SCM config passed.")
     })
   }
-  
+
   @Test
   void testErrorBranchNoRepo() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
@@ -114,7 +131,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
         callArgsToString(call).contains("No valid SCM config passed.")
     })
   }
-  
+
   @Test
   void testManuallyTriggered() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = {
