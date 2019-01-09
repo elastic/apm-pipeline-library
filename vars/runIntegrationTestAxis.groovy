@@ -44,34 +44,32 @@ def call(Map params = [:]){
   if(agentType == null){
     error "runIntegrationTestAxis: no valid agentType"
   }
-  
+
   if(source == null){
     error "runIntegrationTestAxis: no valid source to unstash"
   }
-  
-  withEnvWrapper() {
-    deleteDir()
-    unstash "${source}"
-    dir("${baseDir}"){
-      def parallelStages = [:]
-      def nodeVersions = readYaml(file: ymlFiles[agentType])
-      def elasticStackVersions = readYaml(file: ymlFiles["server"])
-      def serverKey = agentYamlVar["server"]
-      def agentKey = agentYamlVar[agentType]
-      
-      def elasticStackVersNoExcluded = elasticStackVersions[serverKey]?.findAll{!elasticStackVersions?.exclude?.contains(it)}
-      def nodeVersNoExcluded = nodeVersions[agentKey]?.findAll{!nodeVersions?.exclude?.contains(it)}
-      
-      elasticStackVersNoExcluded.each{ server ->
-        nodeVersNoExcluded.each{ agent ->
-          def tag = "${agentType} ${agent}-ES:${elasticStack}-APM:${server}"
-          def serverVer = server.tokenize(";")[0]
-          def opts = server.tokenize(";")[1] ? server.tokenize(";")[1] : ''
-          parallelStages[tag] = nodeIntegrationTest(source, tag, agent, serverVer, opts, agentType)
-        }
+
+  deleteDir()
+  unstash "${source}"
+  dir("${baseDir}"){
+    def parallelStages = [:]
+    def nodeVersions = readYaml(file: ymlFiles[agentType])
+    def elasticStackVersions = readYaml(file: ymlFiles["server"])
+    def serverKey = agentYamlVar["server"]
+    def agentKey = agentYamlVar[agentType]
+
+    def elasticStackVersNoExcluded = elasticStackVersions[serverKey]?.findAll{!elasticStackVersions?.exclude?.contains(it)}
+    def nodeVersNoExcluded = nodeVersions[agentKey]?.findAll{!nodeVersions?.exclude?.contains(it)}
+
+    elasticStackVersNoExcluded.each{ server ->
+      nodeVersNoExcluded.each{ agent ->
+        def tag = "${agentType} ${agent}-ES:${elasticStack}-APM:${server}"
+        def serverVer = server.tokenize(";")[0]
+        def opts = server.tokenize(";")[1] ? server.tokenize(";")[1] : ''
+        parallelStages[tag] = nodeIntegrationTest(source, tag, agent, serverVer, opts, agentType)
       }
-      parallel(parallelStages)
     }
+    parallel(parallelStages)
   }
 }
 

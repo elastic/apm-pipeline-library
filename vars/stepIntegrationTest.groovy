@@ -12,39 +12,37 @@ def call(Map params = [:]){
   def agentType = params?.agentType
   def source = params?.source
   def baseDir = params.containsKey('baseDir') ? params.baseDir : 'src/github.com/elastic/apm-integration-testing'
-  
+
   if(agentType == null){
     error "stepIntegrationTest: no valid agentType"
   }
-  
+
   if(source == null){
     error "stepIntegrationTest: no valid source to unstash"
   }
-  
+
   log(level: 'INFO', text: "${tag}")
-  withEnvWrapper() {
-    deleteDir()
-    unstash "${source}"
-    dir("${baseDir}"){
-      def pytestIni = "[pytest]\n"
-      pytestIni += "junit_suite_name = ${tag}\n"
-      pytestIni += "addopts = --color=yes -ra\n"
-      writeFile(file: "pytest.ini", text: pytestIni, encoding: "UTF-8")
-      
-      try {
-        sh """#!/bin/bash
-        echo "${tag}"
-        export TMPDIR="${WORKSPACE}"
-        chmod ugo+rx ./scripts/ci/*.sh
-        ./scripts/ci/${agentType}.sh
-        """
-      } finally {
-        junit(
-          allowEmptyResults: true, 
-          keepLongStdio: true, 
-          testResults: "tests/results/*-junit*.xml")
-        deleteDir()
-      }
+  deleteDir()
+  unstash "${source}"
+  dir("${baseDir}"){
+    def pytestIni = "[pytest]\n"
+    pytestIni += "junit_suite_name = ${tag}\n"
+    pytestIni += "addopts = --color=yes -ra\n"
+    writeFile(file: "pytest.ini", text: pytestIni, encoding: "UTF-8")
+
+    try {
+      sh """#!/bin/bash
+      echo "${tag}"
+      export TMPDIR="${WORKSPACE}"
+      chmod ugo+rx ./scripts/ci/*.sh
+      ./scripts/ci/${agentType}.sh
+      """
+    } finally {
+      junit(
+        allowEmptyResults: true, 
+        keepLongStdio: true, 
+        testResults: "tests/results/*-junit*.xml")
+      deleteDir()
     }
   }
 }
