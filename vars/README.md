@@ -17,6 +17,7 @@ codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 *basedir*: the folder to search into (the default value is '.').
+*flags*: a string holding arbitrary flags to pass to the codecov bash script
 
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
