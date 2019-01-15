@@ -40,6 +40,8 @@ def isPrApproved(reviews){
       return true
     }
   }
+  log(level: 'INFO', text: "githubPrCheckApproved: User: There is no APPROVED review")
+  return false
 }
 
 /**
