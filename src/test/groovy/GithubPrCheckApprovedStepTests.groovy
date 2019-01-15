@@ -96,6 +96,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("githubPrCheckApproved: The PR is not approved yet")
     })
+    assertJobStatusFailure()
   }
   
   @Test
@@ -130,6 +131,40 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertJobStatusSuccess()
+  }
+  
+  @Test
+  void testIsRejected() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return []
+      })
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
+      })
+    helper.registerAllowedMethod("githubPrReviews", [Map.class], {
+      return [
+              [
+                "id": 80,
+                "node_id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3ODA=",
+                "user": [
+                  "login": "octocat",
+                  "id": 1,
+                  "type": "User",
+                  "site_admin": false
+                ],
+                "body": "Here is the body for the review.",
+                "commit_id": "ecdd80bb57125d7ba9641ffaa4d7d2c19d3f3091",
+                "state": "REQUEST_CHANGES",
+                "author_association": "MEMBER",
+              ]
+            ]
+      })
+    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    env.CHANGE_ID = 1
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusFailure()
   }
   
   @Test
