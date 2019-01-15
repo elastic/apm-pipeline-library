@@ -29,6 +29,7 @@ def call(Map params = [:]){
   Check reviews to find one approved by a MEMBER or COLLABORATOR.
 */
 def isPrApproved(reviews){
+  def ret = false
   if(reviews?.size() == 0){
     log(level: 'INFO', text: "githubPrCheckApproved: There are no reviews yet")
     return false
@@ -37,11 +38,11 @@ def isPrApproved(reviews){
   reviews.each{ r ->
     if(r?.state == 'APPROVED' && (r?.author_association == "MEMBER" || r?.author_association == "COLLABORATOR")){
       log(level: 'INFO', text: "githubPrCheckApproved: User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
-      return true
+      ret = true
+      return
     }
   }
-  log(level: 'INFO', text: "githubPrCheckApproved: User: There is no APPROVED review")
-  return false
+  return ret
 }
 
 /**
