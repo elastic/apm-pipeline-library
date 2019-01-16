@@ -22,7 +22,7 @@ class DefaultParallelTaskGenerator {
   public String name
   /** object to access to pipeline steps */
   public steps
-  
+
   public DefaultParallelTaskGenerator(Map params){
     this.name = params.name
     this.tag = params.tag
@@ -88,7 +88,7 @@ class DefaultParallelTaskGenerator {
   }
 
   /**
-    Initialize the results map, read the info from the YAML files, and call the 
+    Initialize the results map, read the info from the YAML files, and call the
     buildMatrix method to build the parallel tasks.
   */
   public Map generateParallelTests() {
@@ -103,7 +103,7 @@ class DefaultParallelTaskGenerator {
   }
 
   /**
-    build the x,y pairs, remove the excludes and call the method 
+    build the x,y pairs, remove the excludes and call the method
     to build the parallel task for each pair.
   */
   protected Map buildMatrix(){
@@ -118,7 +118,7 @@ class DefaultParallelTaskGenerator {
   }
 
   /**
-    build a map of clousures to be used as parallel steps.
+    build a map of closures to be used as parallel steps.
     This method can be overwritten by the target pipeline.
   */
   protected Map generateParallelSteps(column){
@@ -129,7 +129,7 @@ class DefaultParallelTaskGenerator {
     }
     return parallelStep
   }
-  
+
   /**
     Default step implementation, it will provision a node and echo some text.
     This method should be overwritten by the target pipeline.
@@ -145,8 +145,8 @@ class DefaultParallelTaskGenerator {
           steps.error("Some ${tag} tests failed")
         } finally {
           steps.junit(
-            allowEmptyResults: false, 
-            keepLongStdio: true, 
+            allowEmptyResults: false,
+            keepLongStdio: true,
             testResults: "**/tests/results/*-junit*.xml")
         }
       }
