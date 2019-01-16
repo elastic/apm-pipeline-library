@@ -65,18 +65,18 @@ public processResults(results){
       padding: 2px 8px;
       border-radius: 5px;
     }
-    
+
     .error {
       color: red;
     }
-    
+
     .ok {
       color: green;
     }
   </style>
   <body>
   """
-  
+
   results.each{ k, v ->
     def records = []
     v.data.each{ dk, dv ->
@@ -87,7 +87,7 @@ public processResults(results){
       row.putAll(dv)
       records.add(row)
     }
-    
+
     String jsonRecords = toJSON(records).toString()
     html += """
     <h2>Agent ${v.name}</h2>
@@ -98,7 +98,7 @@ public processResults(results){
     </script>
     """
   }
-  
+
   html += '''
   <script type="text/javascript">
     $('td').each(function(){

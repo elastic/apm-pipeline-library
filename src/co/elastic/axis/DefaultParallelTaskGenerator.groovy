@@ -68,7 +68,7 @@ class DefaultParallelTaskGenerator {
   protected saveResult(x, y, value){
     if(results.data[x] == null){
       results.data[x] = [:]
-      results.data[x]["Agent ${results.name}"] = x
+      results.data[x]["${results.name}"] = x
     }
     results.data[x][y] = value
   }
