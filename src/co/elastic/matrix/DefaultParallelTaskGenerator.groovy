@@ -8,6 +8,16 @@ class DefaultParallelTaskGenerator {
   public Map results = [:]
   /** Tag to identify the tasks */
   public String tag
+  /** YAML file 'x' coordinates Key */
+  public String xKey
+  /** YAML file 'y' coordinates Key */
+  public String yKey
+  /** YAML file 'x' coordinates path */
+  public String xFile
+  /** YAML file 'y' coordinates path */
+  public String yFile
+  /** YAML file exclusions path */
+  public String exclusionFile
   /* versions to use for the 'x' coordinates */
   public Map xVersions
   /* versions to use for the 'y' coordinates */
@@ -45,49 +55,51 @@ class DefaultParallelTaskGenerator {
     this.xVersions = params.xVersions
     this.yVersions = params.yVersions
     this.excludedVersions = params.excludedVersions
-    //
-    // if(params.xFile){
-    //   this.xVersions = loadXVersions(params.xFile, params.xKey)
-    // } else {
-    //
-    // }
-    // if(params.yFile){
-    //   this.yVersions = loadYVersion(params.yFile, params.yKey)
-    // } else {
-    //
-    // }
-    // if(params.exclusionFile){
-    //   this.excludedVersions = loadExcludeVersions(params.exclusionFile, params.xKey, params.yKey)
-    // } else {
-    // }
+    this.xKey = params.xKey
+    this.yKey = params.yKey
+    this.xFile = params.xFile
+    this.yFile = params.yFile
+    this.exclusionFile = params.exclusionFile
   }
   /**
     read the X versions YAML file and return a versions list.
   */
-  protected List loadXVersions(xFile, xKey){
-    return steps.readYaml(file: xFile)[xKey]
+  protected List loadXVersions(){
+    if(this.xVersions){
+      return this.xVersions
+    } else {
+      return steps.readYaml(file: this.xFile)[this.xKey]
+    }
   }
 
   /**
     read the Y versions YAML file and return a versions list.
   */
-  protected List loadYVersions(yFile, yKey){
-    return steps.readYaml(file: yFile)[yKey]
+  protected List loadYVersions(){
+    if(this.yVersions){
+      return this.yVersions
+    } else {
+      return steps.readYaml(file: this.yFile)[this.yKey]
+    }
   }
 
   /**
     read the excludes YAML file and return a map of version pairs to exclude.
   */
-  protected List loadExcludeVersions(exclusionFile, xKey, yKey){
-    def ret = []
-    steps.readYaml(file: exclusionFile)['exclude'].each{ v ->
-      def x = v[xKey]
-      def y = v[yKey]
-      String key = "${x}#${y}"
-      steps.log(level: "DEBUG", text: "Exclude : ${key}")
-      ret.add(key)
+  protected List loadExcludeVersions(){
+    if(this.excludedVersions){
+      return this.excludedVersions
+    } else {
+      def ret = []
+      steps.readYaml(file: this.exclusionFile)['exclude'].each{ v ->
+        def x = v[this.xKey]
+        def y = v[this.yKey]
+        String key = "${x}#${y}"
+        steps.log(level: "DEBUG", text: "Exclude : ${key}")
+        ret.add(key)
+      }
+      return ret
     }
-    return ret
   }
 
   /**
@@ -124,9 +136,9 @@ class DefaultParallelTaskGenerator {
     results.data = [:]
     results.tag = this.tag
     results.name = this.name
-    results.x = this.xVersions
-    results.y = this.yVersions
-    results.excludes = this.excludedVersions
+    results.x = loadXVersions()
+    results.y = loadYVersions()
+    results.excludes = loadExcludeVersions()
     return buildMatrix();
   }
 
