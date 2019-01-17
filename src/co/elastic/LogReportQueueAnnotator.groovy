@@ -19,6 +19,6 @@ public class LogReportQueueAnnotator extends ConsoleAnnotatorFactory<Object> {
 
   @Override
   public ConsoleAnnotator newInstance(Object context) {
-      return new UrlConsoleAnnotator()
+      return new LogReportQueueConsoleAnnotator()
   }
 }
