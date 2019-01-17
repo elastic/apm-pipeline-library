@@ -19,11 +19,11 @@ class DefaultParallelTaskGenerator {
   /** YAML file exclusions path */
   public String exclusionFile
   /* versions to use for the 'x' coordinates */
-  public Map xVersions
+  public List xVersions
   /* versions to use for the 'y' coordinates */
-  public Map yVersions
+  public List yVersions
   /* versions to exclude for the pairs 'x,y' */
-  public Map excludedVersions
+  public List excludedVersions
   /** Name to be displayed in the UI/logs */
   public String name
   /** object to access to pipeline steps */
