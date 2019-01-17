@@ -8,53 +8,78 @@ class DefaultParallelTaskGenerator {
   public Map results = [:]
   /** Tag to identify the tasks */
   public String tag
-  /** YAML file 'x' coordinates Key */
-  public String xKey
-  /** YAML file 'y' coordinates Key */
-  public String yKey
-  /** YAML file 'x' coordinates path */
-  public String xFile
-  /** YAML file 'y' coordinates path */
-  public String yFile
-  /** YAML file exclusions path */
-  public String exclusionFile
+  /* versions to use for the 'x' coordinates */
+  public Map xVersions
+  /* versions to use for the 'y' coordinates */
+  public Map yVersions
+  /* versions to exclude for the pairs 'x,y' */
+  public Map excludedVersions
   /** Name to be displayed in the UI/logs */
   public String name
   /** object to access to pipeline steps */
   public steps
 
+  /**
+    DefaultParallelTaskGenerator(
+      name: 'Name',
+      tag: 'ID',
+      xFile: 'xfile.yml',
+      xkey: 'X_VERSION',
+      yFile: 'yfile.yml',
+      ykey: 'Y_VERSION',
+      exclusionFile: 'exclusion_file.yml'
+    )
+
+    DefaultParallelTaskGenerator(
+      name: 'Name',
+      tag: 'ID',
+      xVersions: [ '1.0', '2.0' ],
+      yVersions: [ 'b1.0', 'b2.0' ],
+      excludedVersions: [ '2.0#b1.0', '1.0#b2.0' ]
+    )
+  */
   public DefaultParallelTaskGenerator(Map params){
     this.name = params.name
     this.tag = params.tag
-    this.xKey = params.xKey
-    this.yKey = params.yKey
-    this.xFile = params.xFile
-    this.yFile = params.yFile
-    this.exclusionFile = params.exclusionFile
     this.steps = params.steps
+    if(params.xFile){
+      this.xVersions = loadXVersions(params.xFile, params.xKey)
+    } else {
+      xVersions = params.xVersions
+    }
+    if(params.yFile){
+      this.yVersions = loadYVersion(params.yFile, params.yKey)
+    } else {
+      yVersions = params.yVersions
+    }
+    if(params.exclusionFile){
+      this.excludedVersions = loadExcludeVersions(params.exclusionFile, params.xKey, params.yKey)
+    } else {
+      this.excludedVersions = params.excludedVersions
+    }
   }
   /**
     read the X versions YAML file and return a versions list.
   */
-  protected Map getXVersions(){
-    return steps.readYaml(file: this.xFile)[this.xKey]
+  protected List loadXVersions(xFile, xKey){
+    return steps.readYaml(file: xFile)[xKey]
   }
 
   /**
     read the Y versions YAML file and return a versions list.
   */
-  protected Map getYVersions(){
-    return steps.readYaml(file: this.yFile)[this.yKey]
+  protected List loadYVersions(yFile, yKey){
+    return steps.readYaml(file: yFile)[yKey]
   }
 
   /**
     read the excludes YAML file and return a map of version pairs to exclude.
   */
-  protected List getExcludeVersions(){
+  protected List loadExcludeVersions(exclusionFile, xKey, yKey){
     def ret = []
-    steps.readYaml(file: this.exclusionFile)['exclude'].each{ v ->
-      def x = v[this.xKey]
-      def y = v[this.yKey]
+    steps.readYaml(file: exclusionFile)['exclude'].each{ v ->
+      def x = v[xKey]
+      def y = v[yKey]
       String key = "${x}#${y}"
       steps.log(level: "DEBUG", text: "Exclude : ${key}")
       ret.add(key)
@@ -81,7 +106,7 @@ class DefaultParallelTaskGenerator {
     yItems.each{ y ->
       String key = "${x}#${y}"
       if(!excludes.contains(key)){
-        column[key] = [X: x, Y: y]
+        column[key] = [x: x, y: y]
       }
     }
     return column
@@ -96,9 +121,9 @@ class DefaultParallelTaskGenerator {
     results.data = [:]
     results.tag = this.tag
     results.name = this.name
-    results.x = getXVersions()
-    results.y = getYVersions()
-    results.excludes = getExcludeVersions()
+    results.x = this.xVersions
+    results.y = this.yVersions
+    results.excludes = this.excludedVersions
     return buildMatrix();
   }
 
@@ -124,8 +149,8 @@ class DefaultParallelTaskGenerator {
   protected Map generateParallelSteps(column){
     def parallelStep = [:]
     column.each{ key, value ->
-      def keyGrp = "${this.tag}-${value.X}-${value.Y}"
-      parallelStep[keyGrp] = generateStep(value.X, value.Y)
+      def keyGrp = "${this.tag}-${value.x}-${value.y}"
+      parallelStep[keyGrp] = generateStep(value.x, value.y)
     }
     return parallelStep
   }
