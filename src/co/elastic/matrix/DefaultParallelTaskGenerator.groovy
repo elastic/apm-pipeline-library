@@ -42,21 +42,24 @@ class DefaultParallelTaskGenerator {
     this.name = params.name
     this.tag = params.tag
     this.steps = params.steps
-    if(params.xFile){
-      this.xVersions = loadXVersions(params.xFile, params.xKey)
-    } else {
-      xVersions = params.xVersions
-    }
-    if(params.yFile){
-      this.yVersions = loadYVersion(params.yFile, params.yKey)
-    } else {
-      yVersions = params.yVersions
-    }
-    if(params.exclusionFile){
-      this.excludedVersions = loadExcludeVersions(params.exclusionFile, params.xKey, params.yKey)
-    } else {
-      this.excludedVersions = params.excludedVersions
-    }
+    this.xVersions = params.xVersions
+    this.yVersions = params.yVersions
+    this.excludedVersions = params.excludedVersions
+    //
+    // if(params.xFile){
+    //   this.xVersions = loadXVersions(params.xFile, params.xKey)
+    // } else {
+    //
+    // }
+    // if(params.yFile){
+    //   this.yVersions = loadYVersion(params.yFile, params.yKey)
+    // } else {
+    //
+    // }
+    // if(params.exclusionFile){
+    //   this.excludedVersions = loadExcludeVersions(params.exclusionFile, params.xKey, params.yKey)
+    // } else {
+    // }
   }
   /**
     read the X versions YAML file and return a versions list.
