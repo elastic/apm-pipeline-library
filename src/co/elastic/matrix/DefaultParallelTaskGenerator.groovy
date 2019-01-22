@@ -164,7 +164,7 @@ class DefaultParallelTaskGenerator {
   protected Map generateParallelSteps(column){
     def parallelStep = [:]
     column.each{ key, value ->
-      def keyGrp = "${this.tag}-${value.x}-${value.y}"
+      def keyGrp = "${this.tag}:${value.x}#${value.y}"
       parallelStep[keyGrp] = generateStep(value.x, value.y)
     }
     return parallelStep
