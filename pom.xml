@@ -18,7 +18,7 @@
   <properties>
     <findbugs.skip>true</findbugs.skip>
   </properties>
-  
+
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
@@ -56,6 +56,11 @@
 
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
@@ -120,6 +125,12 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
       </plugin>
     </plugins>
     <pluginManagement>
