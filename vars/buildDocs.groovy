@@ -10,7 +10,7 @@ def call(Map params = [:]){
 
   def elasticDocsDir = "${env.WORKSPACE}/elastic/docs"
   def builDocScript = libraryResource('scripts/jenkins/build_docs.sh')
-  writeFile(file: 'build_docs.sh', data: builDocScript)
+  writeFile(file: 'build_docs.sh', text: builDocScript)
   sh 'chmod ugo+rx build_docs.sh'
 
   checkoutElasticDocsTools(basedir: elasticDocsDir)
