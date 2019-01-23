@@ -1,0 +1,5 @@
+Decode a base64 input to string
+
+```
+base64decode(input: "ZHVtbXk=", encoding: "UTF-8")
+```

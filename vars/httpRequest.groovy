@@ -12,7 +12,6 @@ def call(Map params = [:]){
   def method = params.containsKey('method') ? params.method : "GET"
   def headers = params.containsKey('headers') ? params.headers : ["User-Agent": "Mozilla/5.0"]
   def data = params?.data
-  log(level: "DEBUG", text: "httpRequest: Data: ${params}")
 
   URL obj
   try {
