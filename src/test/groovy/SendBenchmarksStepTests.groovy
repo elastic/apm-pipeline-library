@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue
 
 class SendBenchmarksStepTests extends BasePipelineTest {
   Map env = [:]
-    
+
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -25,12 +25,25 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
+  def withEnvInterceptor = { list, closure ->
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], fields[1])
+    }
+    def res = closure.call()
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], null)
+    }
+    return res
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
@@ -42,24 +55,25 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
     helper.registerAllowedMethod("getVaultSecret", [String.class], { s ->
       if("secret".equals(s) || "java-agent-benchmark-cloud".equals(s)){
-        return [data: [ user: 'user', password: 'password']] 
+        return [data: [ user: 'user', password: 'password']]
       }
       if("secretError".equals(s)){
-        return [errors: 'Error message'] 
+        return [errors: 'Error message']
       }
       if("secretNotValid".equals(s)){
-        return [data: [ user: null, password: null]] 
+        return [data: [ user: null, password: null]]
       }
       return null
     })
   }
-  
+
   @Test
   void test() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
@@ -67,7 +81,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testParams() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
@@ -75,7 +89,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testSecretNotFound() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
@@ -92,7 +106,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     })
     assertJobStatusFailure()
   }
-  
+
   @Test
   void testSecretError() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
@@ -109,7 +123,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     })
     assertJobStatusFailure()
   }
-  
+
   @Test
   void testWrongProtocol() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
