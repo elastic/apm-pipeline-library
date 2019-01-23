@@ -15,7 +15,7 @@ def call(Map params = [:]){
 
   checkoutElasticDocsTools(basedir: elasticDocsDir)
   withEnv(["ELASTIC_DOCS=${elasticDocsDir}"]){
-    sh "build_docs.sh ${docsDir}"
+    sh "./build_docs.sh ${docsDir}"
   }
   if(archive){
     tar(file: "doc-files.tgz", archive: true, dir: "${docsDir}/html", pathPrefix: "${docsDir}")
