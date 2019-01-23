@@ -18,6 +18,6 @@ def call(Map params = [:]){
     sh "./build_docs.sh ${docsDir}"
   }
   if(archive){
-    tar(file: "doc-files.tgz", archive: true, dir: "${docsDir}/html", pathPrefix: "${docsDir}")
+    tar(file: "doc-files.tgz", archive: true, dir: "html", pathPrefix: "${docsDir}")
   }
 }
