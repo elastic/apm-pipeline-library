@@ -54,7 +54,7 @@ def call(Map params = [:]){
     }
     return body
   } catch(e){
-    log(level: "DEBUG", text: "httpRequest: Response: ${body}")
+    log(level: "DEBUG", text: "httpRequest: ${e}")
     error("httpRequest: Failure connecting to the service ${url}")
   }
 }
