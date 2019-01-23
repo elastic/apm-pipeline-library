@@ -1,4 +1,29 @@
 # Steps Documentation
+## base64decode
+Decode a base64 input to string
+
+```
+base64decode(input: "ZHVtbXk=", encoding: "UTF-8")
+```
+## base64encode
+Encode a text to base64
+
+```
+base64encode(text: "text to encode", encoding: "UTF-8")
+```
+## buildDocs
+Build documentation from asciidoc files.
+
+```
+buildDocs()
+```
+
+```
+buildDocs(docsDir: "docs", archive: true)
+```
+
+* docsDir: relative folder were are the document source files (by default docs is relative to WORKSPACE).
+* archive: if true, archive the tar file with the doc in Jenkins.
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation
@@ -235,18 +260,6 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 
-## runIntegrationTestAxis
-Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
-It needs the integration test sources stashed.
-
-```
-runIntegrationTestAxis(source: 'source', agentType: 'go')
-```
-* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
-* *source*: Stash name that contains the source code.
-* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
-* *elasticStack*: Elastic Stack branch/tag to use(default 'master').
-
 ## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
@@ -293,18 +306,6 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 * *state*: Status to report to Github.
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
-
-## stepIntegrationTest
-Run an integration test (all, go, java, kibana, nodejs, python, ruby, server)
-It needs the integration test sources stashed.
-
-```
-stepIntegrationTest("Running Go integration test", "go")
-```
-* *tag*: Message to show in the build display name.
-* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
-* *source*: Stash name that contains the source code.
-* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
 
 ## tar
 Compress a folder into a tar file.
