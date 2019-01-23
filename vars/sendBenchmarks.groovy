@@ -1,7 +1,7 @@
 /**
   Send the becnhmarks to the cloud service.
   requires Go installed.
-  
+
   sendBenchmarks()
   sendBenchmarks(file: 'bench.out', index: 'index-name')
 */
@@ -20,14 +20,14 @@ def call(Map params = [:]) {
   def props = getVaultSecret(secret)
   if(props?.errors){
      error "Benchmarks: Unable to get credentials from the vault: " + props.errors.toString()
-  } 
-  
+  }
+
   if(archive){
-    archiveArtifacts(allowEmptyArchive: true, 
-      artifacts: benchFile, 
+    archiveArtifacts(allowEmptyArchive: true,
+      artifacts: benchFile,
       onlyIfSuccessful: false)
   }
-  
+
   def protocol = "https://"
   if(url.startsWith("https://")){
     url = url - "https://"
@@ -39,12 +39,12 @@ def call(Map params = [:]) {
   } else {
     error "Benchmarks: unknow protocol, the url is not http(s)."
   }
-  
+
   def data = props?.data
   def user = data?.user
   def password = data?.password
   def urlAuth = "${protocol}${user}:${password}@${url}"
-  
+
   if(data == null || user == null || password == null){
     error "Benchmarks: was not possible to get authentication info to send benchmarks"
   }
@@ -55,23 +55,31 @@ def call(Map params = [:]) {
     [var: 'CLOUD_USERNAME', password: "${user}"],
     [var: 'CLOUD_PASSWORD', password: "${password}"],
     ]]) {
-      if(index.equals('benchmark-go') || index.equals('benchmark-server')){
-        sh """#!/bin/bash
-        set +x -euo pipefail
-        GO_VERSION=\${GO_VERSION:-"1.10.3"}
-        export GOPATH=\${WORKSPACE}
-        export PATH=\${GOPATH}/bin:\${PATH}
-        eval "\$(gvm \${GO_VERSION})"
-        
-        go get -v -u github.com/elastic/gobench
-        gobench -index ${index} -es "${urlAuth}" < ${benchFile}
-        """
-      } else {
-        sh """#!/bin/bash
-        set +x -euo pipefail
-        curl -s --user ${user}:${password} -XPOST '${protocol}${url}/_bulk' \
-          -H 'Content-Type: application/json'  --data-binary @${benchFile}
-        """
+      withEnv([
+        "CLOUD_URL=${urlAuth}",
+        "CLOUD_ADDR=${protocol}${url}",
+        "CLOUD_USERNAME=${user}",
+        "CLOUD_PASSWORD=${password}",
+        "BENCH_FILE=${benchFile}",
+        "INDEX=${index}"]){
+          if(index.equals('benchmark-go') || index.equals('benchmark-server')){
+            sh '''#!/bin/bash
+            set +x -euo pipefail
+            GO_VERSION=${GO_VERSION:-"1.10.3"}
+            export GOPATH=${WORKSPACE}
+            export PATH=${GOPATH}/bin:${PATH}
+            eval "$(gvm ${GO_VERSION})"
+
+            go get -v -u github.com/elastic/gobench
+            gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}
+            '''
+          } else {
+            sh '''#!/bin/bash
+            set +x -euo pipefail
+            curl -s --user ${CLOUD_USERNAME}:${CLOUD_PASSWORD} -XPOST "${CLOUD_ADDR}/_bulk" \
+              -H 'Content-Type: application/json'  --data-binary @${BENCH_FILE}
+            '''
+          }
       }
    }
 }
