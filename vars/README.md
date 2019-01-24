@@ -260,6 +260,16 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 
+## randomNumber
+it generates a random number, by default the number is between 1 to 100.
+
+```
+def i = randomNumber()
+```
+
+```
+def i = randomNumber(min: 1, max: 99)
+```
 ## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
