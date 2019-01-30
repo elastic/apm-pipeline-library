@@ -74,11 +74,14 @@ def call(Map params = [:]) {
             gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}
             '''
           } else {
-            sh '''#!/bin/bash
-            set +x -euo pipefail
-            curl -s --user ${CLOUD_USERNAME}:${CLOUD_PASSWORD} -XPOST "${CLOUD_ADDR}/_bulk" \
-              -H 'Content-Type: application/json'  --data-binary @${BENCH_FILE}
-            '''
+            def datafile = readFile(file: "${BENCH_FILE}")
+            def messageBase64UrlPad = base64encode(text: "${CLOUD_USERNAME}:${CLOUD_PASSWORD}", encoding: "UTF-8")
+
+            httpRequest(url: "${CLOUD_ADDR}/_bulk", method: "POST",
+                headers: [
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic ${messageBase64UrlPad}"],
+                data: datafile.toString() + "\n")
           }
       }
    }

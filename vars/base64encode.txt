@@ -1,0 +1,5 @@
+Encode a text to base64
+
+```
+base64encode(text: "text to encode", encoding: "UTF-8")
+```

@@ -1,4 +1,29 @@
 # Steps Documentation
+## base64decode
+Decode a base64 input to string
+
+```
+base64decode(input: "ZHVtbXk=", encoding: "UTF-8")
+```
+## base64encode
+Encode a text to base64
+
+```
+base64encode(text: "text to encode", encoding: "UTF-8")
+```
+## buildDocs
+Build documentation from asciidoc files.
+
+```
+buildDocs()
+```
+
+```
+buildDocs(docsDir: "docs", archive: true)
+```
+
+* docsDir: relative folder were are the document source files (by default docs is relative to WORKSPACE).
+* archive: if true, archive the tar file with the doc in Jenkins.
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation
@@ -235,18 +260,16 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 
-## runIntegrationTestAxis
-Run a set of integration test against a Axis of versions.(go, java, nodejs, python, ruby)
-It needs the integration test sources stashed.
+## randomNumber
+it generates a random number, by default the number is between 1 to 100.
 
 ```
-runIntegrationTestAxis(source: 'source', agentType: 'go')
+def i = randomNumber()
 ```
-* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
-* *source*: Stash name that contains the source code.
-* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
-* *elasticStack*: Elastic Stack branch/tag to use(default 'master').
 
+```
+def i = randomNumber(min: 1, max: 99)
+```
 ## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
@@ -293,18 +316,6 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 * *state*: Status to report to Github.
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
-
-## stepIntegrationTest
-Run an integration test (all, go, java, kibana, nodejs, python, ruby, server)
-It needs the integration test sources stashed.
-
-```
-stepIntegrationTest("Running Go integration test", "go")
-```
-* *tag*: Message to show in the build display name.
-* *agentType*: Agent type to test (all, go, java, python, nodejs, ruby, ...).
-* *source*: Stash name that contains the source code.
-* *baseDir*: Directory where the code is in the stash code(default 'src/github.com/elastic/apm-integration-testing').
 
 ## tar
 Compress a folder into a tar file.
@@ -360,34 +371,6 @@ updateGithubCommitStatus(message: 'Build result.')
 * *message*: 'Build result.'
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
-
-## withEnvWrapper
-Environment wrapper that mask some environment variables and install some tools.
-
-```
-withEnvWrapper(){
-  //block
-}
-```
-
-```
-withEnvWrapper(cleanBefore: true, cleanAfter: true, baseDir: 'src'){
-  //block
-}
-```
-
-* cleanBefore: clean the workspace before execute the code block.
-* cleanAfter: clean the workspace after execute the code block.
-* baseDir: directory to work into, if does not exists would be created.
-
-*TODO* replace each variable with a secret text credential type, then use withCredentials step.
-
-```
-//https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
-withCredentials([string(credentialsId: '6a80d11c-cb5f-4e40-8565-78e127610ef1', variable: 'VAULT_ROLE_ID_HEY_APM')]) {
-  // some block
-}
-```
 
 ## withEsEnv
 Grab a secret from the vault and define some environment variables to access to an URL

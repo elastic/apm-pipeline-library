@@ -1,8 +1,8 @@
 import org.apache.commons.io.IOUtils
 /**
-  Step to make HTTP request and get the result. 
+  Step to make HTTP request and get the result.
   If the return code is >= 400, it would throw an error.
-  
+
   httpRequest(url: "https://www.google.com")
   httpRequest(url: "https://www.google.com", method: "GET", headers: ["User-Agent": "dummy"])
   httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=java")
@@ -19,7 +19,7 @@ def call(Map params = [:]){
   } catch(e){
     error("httpRequest: Invalid URL")
   }
-  
+
   try {
     def con = obj.openConnection()
     con.setRequestMethod(method)
@@ -39,7 +39,7 @@ def call(Map params = [:]){
     log(level: "DEBUG", text: "httpRequest: Sending '${method}' request to URL : ${url}")
     log(level: "DEBUG", text: "httpRequest: Response Code: ${responseCode}")
     log(level: "DEBUG", text: "httpRequest: Response message: ${con.getResponseMessage()}")
-    
+
     String body
     String encoding = con.getContentEncoding();
     encoding = encoding == null ? "UTF-8" : encoding;
@@ -54,6 +54,7 @@ def call(Map params = [:]){
     }
     return body
   } catch(e){
+    log(level: "DEBUG", text: "httpRequest: ${e}")
     error("httpRequest: Failure connecting to the service ${url}")
   }
 }
