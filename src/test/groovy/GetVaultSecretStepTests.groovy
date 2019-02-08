@@ -8,7 +8,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
   Map env = [:]
 
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -25,7 +25,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withCredentialsInterceptor = { list, closure ->
     list.forEach {
       env[it.variable] = "dummyValue"
@@ -36,14 +36,14 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
     binding.setVariable('env', env)
-    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
       if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return "{plaintext: '12345', encrypted: 'SECRET'}"
       }
@@ -55,7 +55,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println "[${m.level}] ${m.text}"})
-    helper.registerAllowedMethod("error", [String.class], {s -> 
+    helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
       throw new Exception(s)
       })
@@ -73,7 +73,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testNoSecret() throws Exception {
     def script = loadScript("vars/getVaultSecret.groovy")
@@ -88,15 +88,15 @@ class GetVaultSecretStepTests extends BasePipelineTest {
         callArgsToString(call).contains("getVaultSecret: No valid secret to looking for.")
     })
   }
-  
+
   @Test
   void testGetTokenError() throws Exception {
-    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
       if(m?.url?.contains("v1/auth/approle/login")){
         return "{auth: ''}"
       }
     })
-    
+
     def script = loadScript("vars/getVaultSecret.groovy")
     try {
       def jsonValue = script.call("secret")
@@ -110,10 +110,10 @@ class GetVaultSecretStepTests extends BasePipelineTest {
         callArgsToString(call).contains("getVaultSecret: Unable to get the token.")
     })
   }
-  
+
   @Test
   void testGetSecretError() throws Exception {
-    helper.registerAllowedMethod('httpRequest', [Map.class], { m -> 
+    helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
       if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return ""
       }
@@ -121,7 +121,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
         return "{auth: {client_token: 'TOKEN'}}"
       }
     })
-    
+
     def script = loadScript("vars/getVaultSecret.groovy")
     try {
       def jsonValue = script.call("secret")

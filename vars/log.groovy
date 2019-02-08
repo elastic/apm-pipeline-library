@@ -1,15 +1,15 @@
 #!/usr/bin/env groovy
 
 /**
-Allow to print messages with different levels of verbosity. It will show all messages that match 
-to an upper log level than defined, the default level is debug. 
-You have to define the environment variable PIPELINE_LOG_LEVEL to select 
+Allow to print messages with different levels of verbosity. It will show all messages that match
+to an upper log level than defined, the default level is debug.
+You have to define the environment variable PIPELINE_LOG_LEVEL to select
 the log level by default is INFO.
- 
+
  Levels: DEBUG, INFO, WARN, ERROR
- 
+
  log(level: 'INFO', text: 'message')
- 
+
 */
 def call(Map params = [:]) {
   def level = params.containsKey('level') ? getLogLevelNum(params.level) : getLogLevelNum('DEBUG')

@@ -5,12 +5,14 @@ Decode a base64 input to string
 ```
 base64decode(input: "ZHVtbXk=", encoding: "UTF-8")
 ```
+
 ## base64encode
 Encode a text to base64
 
 ```
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
+
 ## buildDocs
 Build documentation from asciidoc files.
 
@@ -24,6 +26,7 @@ buildDocs(docsDir: "docs", archive: true)
 
 * docsDir: relative folder were are the document source files (by default docs is relative to WORKSPACE).
 * archive: if true, archive the tar file with the doc in Jenkins.
+
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation
@@ -34,6 +37,7 @@ sh """
 elastic-doc-folder/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc docs/index.asciidoc -out docs/html
 """
 ```
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -47,22 +51,25 @@ codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go')
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
+
 ## coverageReport
  Grab the coverage files, and create the report in Jenkins.
 
 ```
  coverageReport("path_to_base_folder")
 ```
+
 ## dummy
 A sample of a step implemantetion.
 
 ```
 dummy(text: 'hello world')
 ```
+
 ## echoColor
 Print a text on color on a xterm.
 
-``` 
+```
  echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
 ```
 * *text*: Text to print.
@@ -77,6 +84,7 @@ In other cases, you probably has to use this step.
 ```
 def sha = getGitCommitSha()
 ```
+
 ## getGitRepoURL
 Get the current git repository url from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_URL.
@@ -85,6 +93,7 @@ In other cases, you probably has to use this step.
 ```
 def repoUrl = getGitRepoURL()
 ```
+
 ## getGithubToken
 return the Github token.
 
@@ -103,13 +112,20 @@ def jsonValue = getVaultSecret('secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.
 
+## gitChangelog
+Return the changes between the parent commit and the current commit.
+
+```
+ def changelog = gitChangelog()
+```
+
 ## gitCheckout
 Perform a checkout from the SCM configuration on a folder inside the workspace,
 if branch, repo, and credentialsId are defined make a checkout using those parameters.
 
-For security reasons PRs from not Elastic organization or with write permissions 
-on the repo are block at this point see [githubPrCheckApproved](#githubPrCheckApproved), 
-whoever if you login in the Jenkins UI, it would be always possible to trigger 
+For security reasons PRs from not Elastic organization or with write permissions
+on the repo are block at this point see [githubPrCheckApproved](#githubPrCheckApproved),
+whoever if you login in the Jenkins UI, it would be always possible to trigger
 the job manually from the Jenkins UI.
 
 ```
@@ -121,8 +137,8 @@ gitCheckout(basedir: 'sub-folder')
 ```
 
 ```
-gitCheckout(basedir: 'sub-folder', branch: 'master', 
-  repo: 'git@github.com:elastic/apm-pipeline-library.git', 
+gitCheckout(basedir: 'sub-folder', branch: 'master',
+  repo: 'git@github.com:elastic/apm-pipeline-library.git',
   credentialsId: 'credentials-id',
   reference: '/var/lib/jenkins/reference-repo.git')
 ```
@@ -140,6 +156,7 @@ It requires to initialise the pipeline with github_enterprise_constructor() firs
 ```
 gitCreateTag()
 ```
+
 ## gitDeleteTag
 Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
 It requires to initialise the pipeline with github_enterprise_constructor() first.
@@ -147,6 +164,7 @@ It requires to initialise the pipeline with github_enterprise_constructor() firs
 ```
 gitDeleteTag()
 ```
+
 ## githubApiCall
 
 Make a REST API call to Github. It manage to hide the call and the token in the console output.
@@ -169,7 +187,7 @@ def ref = githubBranchRef()
 
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
-  
+
 ```
 githubEnv()
 ```
@@ -181,8 +199,8 @@ githubEnv()
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
 
 ## githubPrCheckApproved
-If the current build is a PR, it would check if it is approved or created 
-by a user with write/admin permission on the repo. 
+If the current build is a PR, it would check if it is approved or created
+by a user with write/admin permission on the repo.
 If it is not approved, the method will throw an error.
 
 ```
@@ -216,7 +234,7 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
 ## githubRepoGetUserPermission
-Get a user's permission level on a Github repo. 
+Get a user's permission level on a Github repo.
 
 ```
 githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
@@ -227,9 +245,8 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
 
-
 ## httpRequest
-Step to make HTTP request and get the result. 
+Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
 
 ```
@@ -245,11 +262,11 @@ def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: [
 ```
 
 ## log
-Allow to print messages with different levels of verbosity. It will show all messages that match 
-to an upper log level than defined, the default level is debug. 
-You have to define the environment variable PIPELINE_LOG_LEVEL to select 
+Allow to print messages with different levels of verbosity. It will show all messages that match
+to an upper log level than defined, the default level is debug.
+You have to define the environment variable PIPELINE_LOG_LEVEL to select
 the log level by default is INFO.
- 
+
  Levels: DEBUG, INFO, WARN, ERROR
 
 ```
@@ -258,7 +275,6 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
-
 
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
@@ -270,6 +286,7 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
 ## sendBenchmarks
 Send the benchmarks to the cloud service.
 Requires Go installed.
@@ -307,7 +324,7 @@ setGithubCommitStatus()
 setGithubCommitStatus(message: 'Build result.', state: "FAILURE")
 ```
 
-```  
+```
 setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 ```
 * *repoUrl*: Repository URL.
@@ -381,7 +398,7 @@ the secret must have this format
 The following environment variables will be export and mask on logs
 * `CLOUD_URL`: URL for basic authentication "https://${user}:${password}@${url}"
 * `CLOUD_ADDR`: only the URL
-* `CLOUD_USERNAME`: username 
+* `CLOUD_USERNAME`: username
 * `CLOUD_PASSWORD`: user password
 
 ```

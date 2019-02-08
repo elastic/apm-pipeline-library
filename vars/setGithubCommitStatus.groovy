@@ -15,7 +15,7 @@
   setGithubCommitStatus()
 
   setGithubCommitStatus(message: 'Build result.', state: "FAILURE")
-  
+
   setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 */
 def call(Map params = [:]) {
@@ -23,7 +23,7 @@ def call(Map params = [:]) {
   def commitSha = params.containsKey('commitSha') ? params.commitSha : getGitCommitSha()
   def message = params.containsKey('message') ? params.message : 'Build result.'
   def state = params.containsKey('state') ? params.state : 'SUCCESS'
-  
+
   step([
       $class: "GitHubCommitStatusSetter",
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],

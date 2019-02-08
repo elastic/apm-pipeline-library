@@ -62,8 +62,8 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testBranch() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master', 
-      repo: 'git@github.com:elastic/apm-pipeline-library.git', 
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -108,7 +108,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorBranchNoCredentials() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master', 
+    script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -122,7 +122,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorBranchNoRepo() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master', 
+    script.call(basedir: 'sub-folder', branch: 'master',
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -146,7 +146,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     }
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master', 
+    script.call(basedir: 'sub-folder', branch: 'master',
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->

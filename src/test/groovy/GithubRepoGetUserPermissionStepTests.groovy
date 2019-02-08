@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue
 
 class GithubRepoGetUserPermissionStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
     helper.registerAllowedMethod("githubApiCall", [Map.class], { return [:]})
@@ -25,7 +25,7 @@ class GithubRepoGetUserPermissionStepTests extends BasePipelineTest {
     assertTrue(pr instanceof Map)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testErrorNoRepo() throws Exception {
     def script = loadScript("vars/githubRepoGetUserPermission.groovy")
@@ -37,7 +37,7 @@ class GithubRepoGetUserPermissionStepTests extends BasePipelineTest {
         callArgsToString(call).contains('githubRepoGetUserPermission: no valid repository.')
     })
   }
-  
+
   @Test
   void testErrorNoUser() throws Exception {
     def script = loadScript("vars/githubRepoGetUserPermission.groovy")

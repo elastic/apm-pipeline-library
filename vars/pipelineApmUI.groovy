@@ -172,18 +172,18 @@ void call(Map args = [:]){
        post { always { grabTestResults() } }
      }
    }
-   post { 
+   post {
      success {
        echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
      }
      aborted {
        echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
      }
-     failure { 
+     failure {
        echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
        //step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
      }
-     unstable { 
+     unstable {
        echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
      }
    }
@@ -239,7 +239,7 @@ def nodeEnviromentVars(nodeVersion){
 def installNodeJs(nodeVersion, pakages = null){
   nodeEnviromentVars(nodeVersion)
   useCache('nodeJs'){
-    sh """#!/bin/bash
+    sh label: 'Install Node.js', script: """#!/bin/bash
     set -euxo pipefail
     NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
     mkdir -p "${NODE_DIR}"
@@ -252,7 +252,7 @@ def installNodeJs(nodeVersion, pakages = null){
     pakages?.each{ pkg ->
       cmd += "npm install -g ${pkg}\n"
     }
-    sh """#!/bin/bash
+    sh label: 'Install packages', script: """#!/bin/bash
     set -euxo pipefail
     ${cmd}
     """
@@ -290,35 +290,33 @@ def checkoutES(){
 */
 def checkoutKibana(){
 //  useCache('source'){
-    gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier, 
-      repo: "${GIT_URL}", 
+    gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier,
+      repo: "${GIT_URL}",
       credentialsId: "${JOB_GIT_CREDENTIALS}",
       reference: "/var/lib/jenkins/.git-references/kibana.git")
 //    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
 //  }
-  dir("${BASE_DIR}"){
-    sh 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'
-  }
+
   dir("${BASE_DIR}"){
     def packageJson = readJSON(file: 'package.json')
     env.NODE_VERSION = packageJson.engines.node
     env.YARN_VERSION = packageJson.engines.yarn
   }
-  
+
   installNodeJs("${NODE_VERSION}", ["yarn@${YARN_VERSION}"])
-  
+
   dir("${BASE_DIR}"){
     def yarnBinPath = sh(script: 'yarn bin', returnStdout: true)
     env.PATH="${env.PATH}:${yarnBinPath}"
   }
-  
+
   def isCacheUsed = useCache('cache'){
     firstTime = true
     dir("${BASE_DIR}"){
       sh 'yarn kbn bootstrap'
     }
-    stash allowEmpty: true, name: 'cache', 
-      includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**,${BASE_DIR}/packages/**,${BASE_DIR}/x-pack,${BASE_DIR}/test", 
+    stash allowEmpty: true, name: 'cache',
+      includes: "${BASE_DIR}/node_modules/**,${BASE_DIR}/optimize/**,${BASE_DIR}/target/**,${BASE_DIR}/packages/**,${BASE_DIR}/x-pack,${BASE_DIR}/test",
       useDefaultExcludes: false
   }
   if(isCacheUsed){
@@ -377,7 +375,7 @@ def buildNoOSSSteps(){
 def quickTest(){
   dir("${BASE_DIR}"){
     sh 'yarn tslint x-pack/plugins/apm/**/*.{ts,tsx} --fix'
-    sh 'cd x-pack/plugins/apm && yarn tsc --noEmit' 
+    sh 'cd x-pack/plugins/apm && yarn tsc --noEmit'
     sh 'cd x-pack && node ./scripts/jest.js apm'
   }
 }
@@ -402,12 +400,12 @@ def kibanaGroupSteps(){
     set -euxo pipefail
     grunt functionalTests:ensureAllTestsInCiGroup || echo -e "\033[31;49mTests FAILED\033[0m"
     '''
-    
+
     parallelSteps['pluginFunctionalTestsRelease'] = {sh '''#!/bin/bash
     set -euxo pipefail
     grunt run:pluginFunctionalTestsRelease --from=source || echo -e "\033[31;49mTests FAILED\033[0m"
     '''}
-    
+
     groups.each{ group ->
       parallelSteps["functionalTests_ciGroup${group}"] ={sh """#!/bin/bash
       set -euxo pipefail
@@ -434,7 +432,7 @@ def xPackGroupSteps(){
     def parallelSteps = [:]
     def groups = (1..6)
     def funTestGroups = (1..12)
-    
+
     groups.each{ group ->
       parallelSteps["ciGroup${group}"] = {
         sh "node scripts/functional_tests --assert-none-excluded --include-tag 'ciGroup${group}'"
@@ -448,4 +446,3 @@ def xPackGroupSteps(){
     parallel(parallelSteps)
   }
 }
-

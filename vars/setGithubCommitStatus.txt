@@ -17,7 +17,7 @@ setGithubCommitStatus()
 setGithubCommitStatus(message: 'Build result.', state: "FAILURE")
 ```
 
-```  
+```
 setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 ```
 * *repoUrl*: Repository URL.
@@ -26,4 +26,3 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 * *state*: Status to report to Github.
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
-

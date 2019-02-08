@@ -6,15 +6,15 @@ import static org.junit.Assert.assertTrue
 
 class LogStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
-    helper.registerAllowedMethod("echoColor", [Map.class], { m -> 
+    helper.registerAllowedMethod("echoColor", [Map.class], { m ->
       def echoColor = loadScript("vars/echoColor.groovy")
       echoColor.call(m)
     })
@@ -34,7 +34,7 @@ class LogStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testDebug() throws Exception {
     def script = loadScript("vars/log.groovy")
@@ -49,7 +49,7 @@ class LogStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testInfo() throws Exception {
     def script = loadScript("vars/log.groovy")
@@ -63,7 +63,7 @@ class LogStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testWarn() throws Exception {
     def script = loadScript("vars/log.groovy")
@@ -78,7 +78,7 @@ class LogStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testError() throws Exception {
     def script = loadScript("vars/log.groovy")
@@ -93,7 +93,7 @@ class LogStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testLevel() throws Exception {
     def script = loadScript("vars/log.groovy")

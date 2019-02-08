@@ -35,7 +35,7 @@ def getVaultToken(addr, roleId, secretId){
 
 def getVaultSecretObject(addr, secret, token){
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'VAULT_SECRET', password: secret], 
+    [var: 'VAULT_SECRET', password: secret],
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
@@ -48,4 +48,3 @@ def getVaultSecretObject(addr, secret, token){
     return obj
   }
 }
-

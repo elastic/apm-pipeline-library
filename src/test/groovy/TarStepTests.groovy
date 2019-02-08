@@ -12,6 +12,7 @@ class TarStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
+    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod("isUnix", [], {true})
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     binding.setVariable('WORKSPACE', "WS")
@@ -24,11 +25,11 @@ class TarStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testError() throws Exception {
     def script = loadScript("vars/tar.groovy")
-    helper.registerAllowedMethod('sh', [String.class], { throw new Exception("Error") })
+    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception("Error") })
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
     printCallStack()
     assertJobStatusUnstable()
@@ -42,7 +43,7 @@ class TarStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-    
+
   @Test
   void testIsNotUnix() throws Exception {
     def script = loadScript("vars/tar.groovy")

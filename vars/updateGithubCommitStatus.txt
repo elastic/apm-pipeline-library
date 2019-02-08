@@ -20,4 +20,3 @@ updateGithubCommitStatus(message: 'Build result.')
 * *message*: 'Build result.'
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
-

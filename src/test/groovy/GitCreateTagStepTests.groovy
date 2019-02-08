@@ -13,11 +13,12 @@ class GitCreateTagStepTests extends BasePipelineTest {
     binding.setVariable("RUN_DISPLAY_URL", "https://jenkins/jobs/jobname")
 
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
+    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
       def res = closure.call()
       return res
     })
-    helper.registerAllowedMethod('usernamePassword', [Map.class], { m -> 
+    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->
         binding.setVariable("${v}", "defined")
       }

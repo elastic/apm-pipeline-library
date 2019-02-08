@@ -12,4 +12,3 @@ p.setName("John");
 p.setAge(50);
 net.sf.json.JSON obj = toJSON(p)
 ```
-

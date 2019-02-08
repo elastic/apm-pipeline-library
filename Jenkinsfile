@@ -8,7 +8,7 @@ pipeline {
     JOB_GCS_BUCKET = credentials('gcs-bucket')
   }
   options {
-    timeout(time: 1, unit: 'HOURS') 
+    timeout(time: 1, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
     timestamps()
     ansiColor('xterm')
@@ -56,10 +56,10 @@ pipeline {
               sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
             }
           }
-          post { 
-            always { 
-              junit(allowEmptyResults: true, 
-                keepLongStdio: true, 
+          post {
+            always {
+              junit(allowEmptyResults: true,
+                keepLongStdio: true,
                 testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
             }
           }
@@ -67,18 +67,18 @@ pipeline {
       }
     }
   }
-  post { 
+  post {
     success {
       echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
     }
     aborted {
       echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
     }
-    failure { 
+    failure {
       echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
       step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
     }
-    unstable { 
+    unstable {
       echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
     }
   }

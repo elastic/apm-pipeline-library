@@ -23,4 +23,3 @@ Jenkins pipeline shared library for the project APM
 * [Pipeline shared library](https://jenkins.io/doc/book/pipeline/shared-libraries/)
 
 * [Steps Documentation](vars/README.md)
-

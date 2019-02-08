@@ -6,16 +6,16 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GithubEnvStepTests extends BasePipelineTest {
-  
+
   String url = 'http://github.com/org/repo.git'
   String sha = '29480a51'
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.GIT_URL = null
     binding.setVariable('env', env)
   }
@@ -31,7 +31,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('getGitCommitSha', [], {return sha})
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
-  
+
   @Test
   void testNoGitURL() throws Exception {
     def script = loadScript("vars/githubEnv.groovy")
@@ -43,7 +43,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
-  
+
   @Test
   void testGitUrl() throws Exception {
     def script = loadScript("vars/githubEnv.groovy")
@@ -56,7 +56,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
-  
+
   @Test
   void testChangeTarget() throws Exception {
     def script = loadScript("vars/githubEnv.groovy")
@@ -69,7 +69,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
-    
+
   @Test
   void testMerge() throws Exception {
     def script = loadScript("vars/githubEnv.groovy")
@@ -87,7 +87,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('merge'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
-  
+
   @Test
   void testSshUrl() throws Exception {
     def script = loadScript("vars/githubEnv.groovy")
