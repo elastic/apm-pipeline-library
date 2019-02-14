@@ -21,4 +21,5 @@ do
   step=$(basename $i .txt)
   echo "## ${step}" >>  ${README}
   cat $i >>  ${README}
+  echo "" >> ${README}
 done

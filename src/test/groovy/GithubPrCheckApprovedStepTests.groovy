@@ -7,9 +7,9 @@ import static org.junit.Assert.assertFalse
 
 class GithubPrCheckApprovedStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -26,7 +26,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withEnvInterceptor = { list, closure ->
     list.forEach {
       def fields = it.split("=")
@@ -39,7 +39,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withCredentialsInterceptor = { list, closure ->
     list.forEach {
       env[it.variable] = "dummyValue"
@@ -50,12 +50,12 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
@@ -75,7 +75,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     assertTrue(ret)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testNotAllow() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -98,7 +98,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     })
     assertJobStatusFailure()
   }
-  
+
   @Test
   void testIsApprobed() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -132,7 +132,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     assertTrue(ret)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testIsRejected() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -166,7 +166,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     assertFalse(ret)
     assertJobStatusFailure()
   }
-  
+
   @Test
   void testHasWritePermision() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -190,7 +190,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     assertTrue(ret)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testHasAdminPermision() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {

@@ -6,7 +6,7 @@ the secret must have this format
 The following environment variables will be export and mask on logs
 * `CLOUD_URL`: URL for basic authentication "https://${user}:${password}@${url}"
 * `CLOUD_ADDR`: only the URL
-* `CLOUD_USERNAME`: username 
+* `CLOUD_USERNAME`: username
 * `CLOUD_PASSWORD`: user password
 
 ```
@@ -20,4 +20,3 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
-

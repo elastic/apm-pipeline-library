@@ -13,7 +13,7 @@ class ToJSONStepTests extends BasePipelineTest {
     super.setUp()
 
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("error", [String.class], {s -> 
+    helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
       throw new Exception(s)
       })
@@ -27,7 +27,7 @@ class ToJSONStepTests extends BasePipelineTest {
     assertTrue(obj instanceof JSONObject)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testNoJSON() throws Exception {
     def script = loadScript("vars/toJSON.groovy")
@@ -36,7 +36,7 @@ class ToJSONStepTests extends BasePipelineTest {
     assertTrue(obj == null)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testPOJO() throws Exception {
     def script = loadScript("vars/toJSON.groovy")

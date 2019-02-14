@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue
 
 class GithubPrReviewsStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
     helper.registerAllowedMethod("githubApiCall", [Map.class], { return [:]})
@@ -25,7 +25,7 @@ class GithubPrReviewsStepTests extends BasePipelineTest {
     assertTrue(pr instanceof Map)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testErrorNoRepo() throws Exception {
     def script = loadScript("vars/githubPrReviews.groovy")
@@ -37,7 +37,7 @@ class GithubPrReviewsStepTests extends BasePipelineTest {
         callArgsToString(call).contains('githubPrReviews: no valid repository.')
     })
   }
-  
+
   @Test
   void testErrorNoPR() throws Exception {
     def script = loadScript("vars/githubPrReviews.groovy")

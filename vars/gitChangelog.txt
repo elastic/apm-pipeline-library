@@ -1,0 +1,5 @@
+Return the changes between the parent commit and the current commit.
+
+```
+ def changelog = gitChangelog()
+```

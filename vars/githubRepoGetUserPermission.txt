@@ -1,4 +1,4 @@
-Get a user's permission level on a Github repo. 
+Get a user's permission level on a Github repo.
 
 ```
 githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
@@ -8,5 +8,3 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 * user: Github username.
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
-
-

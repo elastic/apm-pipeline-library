@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue
 
 class DummyStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -25,7 +25,7 @@ class DummyStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withEnvInterceptor = { list, closure ->
     list.forEach {
       def fields = it.split("=")
@@ -38,7 +38,7 @@ class DummyStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withCredentialsInterceptor = { list, closure ->
     list.forEach {
       env[it.variable] = "dummyValue"
@@ -49,15 +49,15 @@ class DummyStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
-    
+
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
@@ -91,7 +91,7 @@ class DummyStepTests extends BasePipelineTest {
       def object = jsonSlurper.parseText(m.text)
       return object
       })
-    helper.registerAllowedMethod("error", [String.class], {s -> 
+    helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
       throw new Exception(s)
       })

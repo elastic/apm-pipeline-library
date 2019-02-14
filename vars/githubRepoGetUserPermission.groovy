@@ -1,5 +1,5 @@
 /**
-Get a user's permission level on a Github repo. 
+Get a user's permission level on a Github repo.
 
  githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 */

@@ -8,11 +8,11 @@
 def call() {
   withCredentials([
     usernamePassword(
-      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', 
-      passwordVariable: 'GIT_PASSWORD', 
+      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+      passwordVariable: 'GIT_PASSWORD',
       usernameVariable: 'GIT_USERNAME')]) {
-    sh("git fetch --tags")
-    sh("git tag -d '${BUILD_TAG}'")
-    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git --tags')
+    sh(label: 'Fetch tags', script: "git fetch --tags")
+    sh(label: "Delete tag ${BUILD_TAG}", script: "git tag -d '${BUILD_TAG}'")
+    sh(label: 'Push tags', script: 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git --tags')
   }
 }
