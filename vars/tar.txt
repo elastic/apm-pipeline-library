@@ -11,4 +11,3 @@ pathPrefix: '')
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
 * *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
-

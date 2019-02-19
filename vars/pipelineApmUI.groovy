@@ -241,7 +241,7 @@ def nodeEnviromentVars(nodeVersion){
 def installNodeJs(nodeVersion, pakages = null){
   nodeEnviromentVars(nodeVersion)
   useCache('nodeJs'){
-    sh """#!/bin/bash
+    sh label: 'Install Node.js', script: """#!/bin/bash
     set -euxo pipefail
     NODE_URL="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
     mkdir -p "${NODE_DIR}"
@@ -254,7 +254,7 @@ def installNodeJs(nodeVersion, pakages = null){
     pakages?.each{ pkg ->
       cmd += "npm install -g ${pkg}\n"
     }
-    sh """#!/bin/bash
+    sh label: 'Install packages', script: """#!/bin/bash
     set -euxo pipefail
     ${cmd}
     """
@@ -298,9 +298,7 @@ def checkoutKibana(){
       reference: "/var/lib/jenkins/.git-references/kibana.git")
 //    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
 //  }
-  dir("${BASE_DIR}"){
-    sh 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'
-  }
+
   dir("${BASE_DIR}"){
     def packageJson = readJSON(file: 'package.json')
     env.NODE_VERSION = packageJson.engines.node

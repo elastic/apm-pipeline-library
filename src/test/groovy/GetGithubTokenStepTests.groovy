@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue
 
 class GetGithubTokenStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   def withCredentialsInterceptor = { list, closure ->
     list.forEach {
       env[it.variable] = "dummyValue"
@@ -17,7 +17,7 @@ class GetGithubTokenStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -34,7 +34,7 @@ class GetGithubTokenStepTests extends BasePipelineTest {
     assertTrue(value == "dummyValue")
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testCredentialsId() throws Exception {
     def script = loadScript("vars/getGithubToken.groovy")

@@ -63,7 +63,7 @@ def call(Map params = [:]) {
         "BENCH_FILE=${benchFile}",
         "INDEX=${index}"]){
           if(index.equals('benchmark-go') || index.equals('benchmark-server')){
-            sh '''#!/bin/bash
+            sh label: 'Sending benchmarks', script: '''#!/bin/bash
             set +x -euo pipefail
             GO_VERSION=${GO_VERSION:-"1.10.3"}
             export GOPATH=${WORKSPACE}

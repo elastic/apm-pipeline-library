@@ -11,11 +11,12 @@ class GitDeleteTagStepTests extends BasePipelineTest {
     super.setUp()
     binding.setVariable("BUILD_TAG", "tag")
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
+    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
       def res = closure.call()
       return res
     })
-    helper.registerAllowedMethod('usernamePassword', [Map.class], { m -> 
+    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->
         binding.setVariable("${v}", "defined")
       }

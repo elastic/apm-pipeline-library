@@ -6,19 +6,19 @@ import static org.junit.Assert.assertTrue
 
 class GithubBranchRefStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = 'WS'
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
     env.CHANGE_ID = '1'
     env.BRANCH_NAME = 'master'
     binding.setVariable('env', env)
-    
+
     helper.registerAllowedMethod('getGithubToken', [], {return 'dummy'})
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
       return [
@@ -30,8 +30,8 @@ class GithubBranchRefStepTests extends BasePipelineTest {
             ]
           ]
         ],
-        title: 'dummy PR', 
-        user: [login: 'username'], 
+        title: 'dummy PR',
+        user: [login: 'username'],
         author_association: 'NONE'
         ]
       })
@@ -45,7 +45,7 @@ class GithubBranchRefStepTests extends BasePipelineTest {
     assertTrue(ret == 'username/master')
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testNoPR() throws Exception {
     env.CHANGE_ID = null
@@ -55,7 +55,7 @@ class GithubBranchRefStepTests extends BasePipelineTest {
     assertTrue(ret == 'master')
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testEnvError() throws Exception {
     env.ORG_NAME = null

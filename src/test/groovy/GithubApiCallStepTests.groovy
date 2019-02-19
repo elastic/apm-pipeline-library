@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue
 
 class GithubApiCallStepTests extends BasePipelineTest {
   Map env = [:]
-  
+
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -25,7 +25,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def shInterceptor = {
     return """[{
       "id": 186086539,
@@ -43,15 +43,15 @@ class GithubApiCallStepTests extends BasePipelineTest {
       "commit_id": "4457d4e98f91501bb7914cbb29e440a857972fee"
     }]"""
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
-    
+
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
@@ -74,7 +74,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(ret[0].user.login == "githubusername")
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testErrorNoToken() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
@@ -87,7 +87,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
         callArgsToString(call).contains('makeGithubApiCall: no valid Github token.')
     })
   }
-  
+
   @Test
   void testErrorNoUrl() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
@@ -100,7 +100,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
         callArgsToString(call).contains('makeGithubApiCall: no valid Github REST API URL.')
     })
   }
-  
+
   @Test
   void testRequestError() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
@@ -115,7 +115,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(ret instanceof Map)
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testRequestFailure() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {

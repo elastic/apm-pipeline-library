@@ -1,9 +1,8 @@
 Print a text on color on a xterm.
 
-``` 
+```
  echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
 ```
 * *text*: Text to print.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
-

@@ -5,15 +5,15 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class UpdateGithubCommitStatusStepTests extends BasePipelineTest {
-  
+
   String url = 'http://github.com/org/repo.git'
   String sha = '29480a51'
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     helper.registerAllowedMethod('getGitRepoURL', [], {return url})
     helper.registerAllowedMethod('getGitCommitSha', [], {return sha})
   }
@@ -25,7 +25,7 @@ class UpdateGithubCommitStatusStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testParams() throws Exception {
     def script = loadScript("vars/updateGithubCommitStatus.groovy")

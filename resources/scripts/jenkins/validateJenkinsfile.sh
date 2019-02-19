@@ -9,7 +9,7 @@
 # JENKINS_CRUMB is needed if your Jenkins master has CRSF protection enabled as it should
 
 if [ -z "${JENKINS_URL}" ]; then
-  echo "JENKINS_URL not defined" 
+  echo "JENKINS_URL not defined"
   echo "usage: $0 [Jenkinsfile]"
   exit 1
 fi

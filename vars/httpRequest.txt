@@ -1,4 +1,4 @@
-Step to make HTTP request and get the result. 
+Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
 
 ```
@@ -12,4 +12,3 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
-

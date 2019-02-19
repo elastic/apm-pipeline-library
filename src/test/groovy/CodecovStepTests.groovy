@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue
 class CodecovStepTests extends BasePipelineTest {
   Map env = [:]
   String url = 'http://github.com/org/repo.git'
-  
+
   def wrapInterceptor = { map, closure ->
-    map.each { key, value -> 
+    map.each { key, value ->
       if("varPasswordPairs".equals(key)){
         value.each{ it ->
           binding.setVariable("${it.var}", "${it.password}")
@@ -26,7 +26,7 @@ class CodecovStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   def withEnvInterceptor = { list, closure ->
     list.forEach {
       def fields = it.split("=")
@@ -39,12 +39,12 @@ class CodecovStepTests extends BasePipelineTest {
     }
     return res
   }
-  
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    
+
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
@@ -71,13 +71,13 @@ class CodecovStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('getGitRepoURL', [], {return url})
     helper.registerAllowedMethod("getVaultSecret", [String.class], { s ->
       if("repo-codecov".startsWith(s)){
-        return [data: [ value: 'codecov-token']] 
+        return [data: [ value: 'codecov-token']]
       }
       return null
     })
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
       list.each{ map ->
-        map.each{ key, value -> 
+        map.each{ key, value ->
           if("variable".equals(key)){
             binding.setVariable("${value}", "defined")
           }
@@ -85,7 +85,7 @@ class CodecovStepTests extends BasePipelineTest {
       }
       def res = closure.call()
       list.each{ map ->
-        map.each{ key, value -> 
+        map.each{ key, value ->
           if("variable".equals(key)){
             binding.setVariable("${value}", null)
           }
@@ -107,7 +107,7 @@ class CodecovStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void testNoToken() throws Exception {
     def script = loadScript("vars/codecov.groovy")
@@ -120,7 +120,7 @@ class CodecovStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void test() throws Exception {
     def script = loadScript("vars/codecov.groovy")

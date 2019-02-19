@@ -1,5 +1,5 @@
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
-  
+
 ```
 githubEnv()
 ```
@@ -9,4 +9,3 @@ githubEnv()
 * `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
-

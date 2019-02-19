@@ -52,13 +52,13 @@ def call(Map params = [:]) {
   def text = params.containsKey('text') ? params.text : ''
   def colorfg = params.containsKey('colorfg') ? params.colorfg : 'default'
   def colorbg = params.containsKey('colorbg') ? params.colorbg : 'default'
-  
+
   def colorfgValue = colorsfgMap[colorfg.toLowerCase()]
   def colorbgValue = colorsbgMap[colorbg.toLowerCase()]
-  
+
   if(colorfgValue != null && colorbgValue != null){
     echo "\u001B[" + colorfgValue + ";" + colorbgValue + "m" + text + "\u001B[0m"
   } else {
     echo text
-  }  
+  }
 }
