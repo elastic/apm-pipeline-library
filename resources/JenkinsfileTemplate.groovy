@@ -1,17 +1,26 @@
 #!/usr/bin/env groovy
 
+@Library('apm@v1.0.6') _
+
 pipeline {
-  agent none
+  agent { label 'flyweight' }
   environment {
     BASE_DIR="src/github.com/elastic/PROJECT"
+    NOTIFY_TO = credentials('notify-to')
+    JOB_GCS_BUCKET = credentials('gcs-bucket')
+    PIPELINE_LOG_LEVEL='INFO'
   }
   options {
-    timeout(time: 1, unit: 'HOURS') 
+    timeout(time: 1, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
     timestamps()
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  triggers {
+    cron 'H H(3-4) * * 1-5'
+    issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
@@ -30,98 +39,90 @@ pipeline {
       }
       stages {
         /**
-         Checkout the code and stash it, to use it on other stages.
+        Checkout the code and stash it, to use it on other stages.
         */
         stage('Checkout') {
           steps {
+            deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
         /**
-         Build the project from code..
+        Build the project from code..
         */
         stage('Build') {
           steps {
-            withEnvWrapper() {
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh './scripts/jenkins/build.sh'
-              }
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              sh './scripts/jenkins/build.sh'
             }
           }
         }
         /**
-         Execute unit tests.
+        Execute unit tests.
         */
         stage('Test') {
           steps {
-            withEnvWrapper() {
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh './scripts/jenkins/test.sh'
-              }
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              sh './scripts/jenkins/test.sh'
             }
           }
-          post { 
-            always { 
-              junit(allowEmptyResults: true, 
-                keepLongStdio: true, 
+          post {
+            always {
+              junit(allowEmptyResults: true,
+                keepLongStdio: true,
                 testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+              }
             }
           }
-        }
-        /**
+          /**
           Build the documentation.
-        */
-        stage('Documentation') {
-          when {
-            beforeAgent true
-            allOf {
-              anyOf {
-                not {
-                  changeRequest()
+          */
+          stage('Documentation') {
+            when {
+              beforeAgent true
+              allOf {
+                anyOf {
+                  not {
+                    changeRequest()
+                  }
+                  branch 'master'
+                  branch "\\d+\\.\\d+"
+                  branch "v\\d?"
+                  tag "v\\d+\\.\\d+\\.\\d+*"
+                  environment name: 'Run_As_Master_Branch', value: 'true'
                 }
-                branch 'master'
-                branch "\\d+\\.\\d+"
-                branch "v\\d?"
-                tag "v\\d+\\.\\d+\\.\\d+*"
-                environment name: 'Run_As_Master_Branch', value: 'true'
+                expression { return params.doc_ci }
               }
-              expression { return params.doc_ci }
             }
-          }
-          steps {
-            withEnvWrapper() {
+            steps {
+              deleteDir()
               unstash 'source'
-              checkoutElasticDocsTools(basedir: "${ELASTIC_DOCS}")
               dir("${BASE_DIR}"){
-                sh './scripts/jenkins/docs.sh'
+                buildDocs(docsDir: "docs", archive: true)
               }
-            }
-          }
-          post{
-            success {
-              tar(file: "doc-files.tgz", archive: true, dir: "html", pathPrefix: "${BASE_DIR}/docs")
             }
           }
         }
       }
     }
+    post {
+      success {
+        echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
+      }
+      aborted {
+        echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
+      }
+      failure {
+        echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
+        step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+      }
+      unstable {
+        echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
+      }
+    }
   }
-  post { 
-    success {
-      echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
-    }
-    aborted {
-      echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
-    }
-    failure { 
-      echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-      //step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
-    }
-    unstable { 
-      echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
-    }
-  }
-}

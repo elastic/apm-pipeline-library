@@ -17,6 +17,7 @@ def call(secret) {
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
     def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
     props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    revokeToken(token)
   }
   return props
 }
@@ -35,7 +36,7 @@ def getVaultToken(addr, roleId, secretId){
 
 def getVaultSecretObject(addr, secret, token){
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'VAULT_SECRET', password: secret], 
+    [var: 'VAULT_SECRET', password: secret],
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
@@ -49,3 +50,18 @@ def getVaultSecretObject(addr, secret, token){
   }
 }
 
+def revokeToken(token){
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: 'VAULT_SECRET', password: secret],
+    [var: 'VAULT_TOKEN', password: token],
+    [var: 'VAULT_ADDR', password: addr],
+    ]]) {
+    httpRequest(url: "${addr}/v1/auth/token/revoke",
+      method: "POST",
+      headers: [
+        "Content-Type": "application/json",
+        "X-Vault-Token": "${token}"
+      ],
+      data: "{\"token\":\"${token}\"}")
+  }
+}
