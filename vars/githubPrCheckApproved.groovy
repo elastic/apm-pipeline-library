@@ -17,7 +17,7 @@ def call(Map params = [:]){
 
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
 
-  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user.login)
+  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user.login) || isAuthorizedBot(pr?.user.login, pr?.user.type)
 
   if(!approved){
     error("githubPrCheckApproved: The PR is not approved yet")
@@ -31,13 +31,13 @@ def call(Map params = [:]){
 def isPrApproved(reviews){
   def ret = false
   if(reviews?.size() == 0){
-    log(level: 'INFO', text: "githubPrCheckApproved: There are no reviews yet")
+    log(level: 'DEBUG', text: "githubPrCheckApproved: There are no reviews yet")
     return false
   }
 
   reviews.each{ r ->
     if(r?.state == 'APPROVED' && (r?.author_association == "MEMBER" || r?.author_association == "COLLABORATOR")){
-      log(level: 'INFO', text: "githubPrCheckApproved: User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
+      log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
       ret = true
       return
     }
@@ -50,6 +50,19 @@ def isPrApproved(reviews){
 */
 def hasWritePermission(token, repo, user){
   def json = githubRepoGetUserPermission(token: token, repo: repo, user: user)
-  log(level: 'INFO', text: "githubPrCheckApproved: User: ${user}, Repo: ${repo}, Permision: ${json?.permission}")
+  log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${user}, Repo: ${repo}, Permision: ${json?.permission}")
   return json?.permission == 'admin' || json?.permission == 'write'
+}
+
+/**
+  Check if the PR come from a bot and if the bot is authorized.
+*/
+def isAuthorizedBot(login, type){
+  def authorizedBots = ['greenkeeperio[bot]']
+  log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${login}, Type: ${type}")
+  def ret = false;
+  if('bot'.equalsIgnoreCase(type)){
+    ret = authorizedBots.any{ it.equals(login) }
+  }
+  return ret;
 }
