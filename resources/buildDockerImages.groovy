@@ -1,14 +1,14 @@
 #!/usr/bin/env groovy
 
-@Library('apm@master') _
+@Library('apm@v1.0.6') _
 
 pipeline {
-  agent any
+  agent { label 'flyweight' }
   environment {
-    BASE_DIR="src/github.com/elastic/apm-pipeline-library"
+    BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
-    PIPELINE_LOG_LEVEL = 'INFO'
+    PIPELINE_LOG_LEVEL='INFO'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -18,57 +18,45 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
+  triggers {
+    cron 'H H(3-4) * * 1-5'
+    issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+  }
+  parameters {
+    string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
+    booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
+    booleanParam(name: 'doc_ci', defaultValue: true, description: 'Enable build docs.')
+  }
   stages {
     stage('Initializing'){
       agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.WORKSPACE}/bin"
+        ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+        //see JENKINS-41929
+        PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
       stages {
         /**
-         Checkout the code and stash it, to use it on other stages.
+        Checkout the code and stash it, to use it on other stages.
         */
         stage('Checkout') {
           steps {
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
-            script {
-              currentBuild.getBuildCauses().each{
-                echo it.toString()
-              }
-            }
-            dir("${BASE_DIR}"){
-              sh """#!/bin/bash
-              MVNW_VER="maven-wrapper-0.4.2"
-              MVNW_DIR="maven-wrapper-\${MVNW_VER}"
-              curl -sLO "https://github.com/takari/maven-wrapper/archive/\${MVNW_VER}.tar.gz"
-              tar -xzf "\${MVNW_VER}.tar.gz"
-              mv "\${MVNW_DIR}/.mvn/" .
-              mv "\${MVNW_DIR}/mvnw" .
-              mv "\${MVNW_DIR}/mvnw.cmd" .
-              rm -fr "\${MVNW_DIR}"
-              """
-            }
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
         /**
-         Checkout the code and stash it, to use it on other stages.
+        Build the project from code..
         */
-        stage('Test') {
+        stage('Build') {
           steps {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-            }
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true,
-                keepLongStdio: true,
-                testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+              sh './scripts/jenkins/build.sh'
             }
           }
         }

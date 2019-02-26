@@ -56,7 +56,7 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './scripts/jenkins/build.sh'
+              sh './resources/scripts/jenkins/build.sh'
             }
           }
         }
@@ -68,7 +68,7 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './scripts/jenkins/test.sh'
+              sh './resources/scripts/jenkins/test.sh'
             }
           }
           post {
