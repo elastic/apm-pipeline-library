@@ -8,6 +8,7 @@ pipeline {
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
+    PIPELINE_LOG_LEVEL = 'DEBUG'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -32,6 +33,11 @@ pipeline {
           steps {
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
+            script {
+              currentBuild.getBuildCauses().each{
+                echo it.toString()
+              }
+            }
             dir("${BASE_DIR}"){
               sh """#!/bin/bash
               MVNW_VER="maven-wrapper-0.4.2"
