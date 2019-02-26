@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+@Library('apm@vdevelop') _
+
 pipeline {
   agent any
   environment {
