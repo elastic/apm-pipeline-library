@@ -1,0 +1,158 @@
+{
+  "_index": "build-1531848254847",
+  "_type": "t",
+  "_id": "20181115170350-F39B7860",
+  "_version": 2,
+  "_score": null,
+  "_source": {
+    "id": "20181115170350-F39B7860",
+    "version": {
+      "string": "1.6.6",
+      "hash": "1dece86b12c41423f41ac587748b82469c66d30c"
+    },
+    "java": {
+      "vm": {
+        "info": "mixed mode",
+        "version": "25.181-b13",
+        "vendor": "Oracle Corporation",
+        "name": "OpenJDK 64-Bit Server VM"
+      },
+      "vendor": "Oracle Corporation",
+      "home": "/usr/lib/jvm/java-8-openjdk-amd64",
+      "class": {
+        "path": "/usr/local/bin/runbld"
+      },
+      "runtime": {
+        "version": "1.8.0_181-8u181-b13-1ubuntu0.16.04.1-b13",
+        "name": "OpenJDK Runtime Environment"
+      },
+      "version": "1.8.0_181"
+    },
+    "build": {
+      "console-url": "https://beats-ci.elastic.co/job/elastic+beats+pull-request+multijob-linux/beat=winlogbeat,label=ubuntu/1629/console",
+      "scheduler": "jenkins",
+      "tags": [
+        "beats-ci-immutable-ubuntu-1604-1542301374465559256",
+        "docker",
+        "immutable",
+        "linux",
+        "swarm",
+        "ubuntu",
+        "ubuntu-16.04",
+        "virtual",
+        "x86_64"
+      ],
+      "org-project-branch": "elastic/beats#pull-request",
+      "job-name": "elastic+beats+pull-request+multijob-linux/beat=winlogbeat,label=ubuntu",
+      "number": "1629",
+      "node": "beats-ci-immutable-ubuntu-1604-1542301374465559256",
+      "org": "elastic",
+      "project": "beats",
+      "url": "https://beats-ci.elastic.co/job/elastic+beats+pull-request+multijob-linux/beat=winlogbeat,label=ubuntu/1629/",
+      "executor": "0",
+      "job-name-extra": "multijob-linux/beat=winlogbeat,label=ubuntu",
+      "branch": "pull-request",
+      "metadata": "",
+      "user-specified-branch": true
+    },
+    "process": {
+      "time-start": "2018-11-15T17:03:52.006Z",
+      "err-bytes": 7042,
+      "took": 107522,
+      "millis-start": 1542301432006,
+      "total-bytes": 17573,
+      "cmd-source": "#!/usr/local/bin/runbld\n./dev-tools/jenkins_ci.sh\n",
+      "time-end": "2018-11-15T17:05:39.528Z",
+      "exit-code": 0,
+      "millis-end": 1542301539528,
+      "cmd": [
+        "bash",
+        "-x",
+        "/tmp/jenkins2449278481823545458.sh"
+      ],
+      "out-bytes": 10531,
+      "status": "SUCCESS"
+    },
+    "test": {
+      "failures": 0,
+      "tests": 32,
+      "failed-testcases": [],
+      "errors": 0,
+      "skipped": 32
+    },
+    "vcs": {
+      "author-email": "sitbackandwait@gmail.com",
+      "message-full": "rewrite check again",
+      "commit-short": "a18c282",
+      "commit-url": "https://github.com/elastic/beats/commit/a18c28289cfc9e167ee4f7fbc1458f6ebc157427",
+      "commit-id": "a18c28289cfc9e167ee4f7fbc1458f6ebc157427",
+      "message": "rewrite check again",
+      "author-time": "2018-11-15T16:55:57Z",
+      "log-pretty": "commit a18c28289cfc9e167ee4f7fbc1458f6ebc157427\nAuthor: Noémi Ványi <sitbackandwait@gmail.com>\nDate:   2018-11-15T16:55:57Z\n\nrewrite check again",
+      "branch-url": "https://github.com/elastic/beats/tree/pull-request",
+      "project-url": "https://github.com/elastic/beats",
+      "author-name": "Noémi Ványi",
+      "provider": "git",
+      "commit-email": "sitbackandwait@gmail.com",
+      "commit-name": "Noémi Ványi",
+      "commit-time": "2018-11-15T16:55:57Z"
+    },
+    "sys": {
+      "kernel-name": "Linux",
+      "kernel-release": "4.15.0-1023-gcp",
+      "timezone": "Etc/UTC",
+      "uptime-secs": 39,
+      "hostname": "beats-ci-immutable-ubuntu-1604-1542301374465559256",
+      "uptime-days": 0,
+      "fs-type": "ext4",
+      "provider": "default",
+      "fs-mountpoint": "/dev/sda1",
+      "cpu-type": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+      "model": "x86_64",
+      "fs-percent-used": 13.736,
+      "facter-provider": "oshi",
+      "fs-percent-free": 86.264,
+      "cpus-physical": 1,
+      "os": "Ubuntu",
+      "cpus": 4,
+      "fs-bytes-used": 7139717120,
+      "ip4": [
+        "172.17.0.1",
+        "10.224.0.107"
+      ],
+      "ip6": [
+        "fe80:0:0:0:4001:aff:fee0:6b"
+      ],
+      "uptime": "0 day",
+      "kernel-version": "4.15.0",
+      "os-version": "16.04.5 LTS",
+      "ram-mb": 15032.64,
+      "ram-gb": 14.68,
+      "arch": "x86_64",
+      "fs-bytes-free": 44837253120,
+      "fs-bytes-total": 51976970240
+    }
+  },
+  "fields": {
+    "vcs.author-time": [
+      "2018-11-15T16:55:57.000Z"
+    ],
+    "vcs.commit-time": [
+      "2018-11-15T16:55:57.000Z"
+    ],
+    "process.time-start": [
+      "2018-11-15T17:03:52.006Z"
+    ],
+    "process.time-end": [
+      "2018-11-15T17:05:39.528Z"
+    ]
+  },
+  "highlight": {
+    "process.cmd": [
+      "@kibana-highlighted-field@-x@/kibana-highlighted-field@"
+    ]
+  },
+  "sort": [
+    1542301432006
+  ]
+}

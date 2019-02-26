@@ -1,0 +1,26 @@
+{
+  "_index": "log-1542249257015",
+  "_type": "t",
+  "_id": "rF5RGGcBZI9dC_t5tN24",
+  "_version": 1,
+  "_score": null,
+  "_source": {
+    "time": "2018-11-15T17:09:47.090Z",
+    "stream": "stderr",
+    "log": "+ echo 'Cleanup complete.'",
+    "size": 27,
+    "ord": {
+      "total": 113,
+      "stream": 49
+    },
+    "build-id": "20181115170808-220B2A0D"
+  },
+  "fields": {
+    "time": [
+      "2018-11-15T17:09:47.090Z"
+    ]
+  },
+  "sort": [
+    1542301787090
+  ]
+}

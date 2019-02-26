@@ -1,0 +1,15 @@
+[{
+  "id": 186086539,
+  "node_id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3MTg2MDg2NTM5",
+  "user": {
+    "login": "githubusername",
+    "type": "User",
+    "site_admin": false
+  },
+  "body": "",
+  "state": "APPROVED",
+  "pull_request_url": "https://api.github.com/repos/org/repo/pulls/1",
+  "author_association": "MEMBER",
+  "submitted_at": "2018-12-18T14:13:16Z",
+  "commit_id": "4457d4e98f91501bb7914cbb29e440a857972fee"
+}]
