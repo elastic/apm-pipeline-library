@@ -17,7 +17,8 @@ def call(secret) {
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
     def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
     props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
-    revokeToken(env.VAULT_ADDR, token)
+    //we do not have permissions to revoke a token.
+    //revokeToken(env.VAULT_ADDR, token)
   }
   return props
 }
