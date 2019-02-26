@@ -5,7 +5,7 @@
 pipeline {
   agent { label 'flyweight' }
   environment {
-    BASE_DIR="src/github.com/elastic/PROJECT"
+    BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL='INFO'
@@ -56,73 +56,26 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './resources/scripts/jenkins/build.sh'
+              sh './scripts/jenkins/build.sh'
             }
           }
         }
-        /**
-        Execute unit tests.
-        */
-        stage('Test') {
-          steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              sh './resources/scripts/jenkins/test.sh'
-            }
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true,
-                keepLongStdio: true,
-                testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-              }
-            }
-          }
-          /**
-          Build the documentation.
-          */
-          stage('Documentation') {
-            when {
-              beforeAgent true
-              allOf {
-                anyOf {
-                  not {
-                    changeRequest()
-                  }
-                  branch 'master'
-                  branch "\\d+\\.\\d+"
-                  branch "v\\d?"
-                  tag "v\\d+\\.\\d+\\.\\d+*"
-                  environment name: 'Run_As_Master_Branch', value: 'true'
-                }
-                expression { return params.doc_ci }
-              }
-            }
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                buildDocs(docsDir: "docs", archive: true)
-              }
-            }
-          }
-        }
-      }
-    }
-    post {
-      success {
-        echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
-      }
-      aborted {
-        echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
-      }
-      failure {
-        echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-        step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
-      }
-      unstable {
-        echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
       }
     }
   }
+  post {
+    success {
+      echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
+    }
+    aborted {
+      echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
+    }
+    failure {
+      echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
+      step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+    }
+    unstable {
+      echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
+    }
+  }
+}
