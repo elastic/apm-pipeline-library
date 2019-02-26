@@ -17,7 +17,7 @@ def call(secret) {
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
     def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
     props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
-    revokeToken(token)
+    revokeToken(env.VAULT_ADDR, token)
   }
   return props
 }
@@ -50,9 +50,8 @@ def getVaultSecretObject(addr, secret, token){
   }
 }
 
-def revokeToken(token){
+def revokeToken(addr, token){
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'VAULT_SECRET', password: secret],
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
