@@ -29,7 +29,7 @@ pipeline {
   }
   stages {
     stage('Initializing'){
-      agent { label 'linux && immutable' }
+      agent { label 'flyweight' }
       options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.WORKSPACE}/bin"
@@ -38,6 +38,15 @@ pipeline {
         PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
       stages {
+        stage('Check flyweight Commands support'){
+          steps{
+            sh 'docker --version || exit 0'
+            sh 'java -version || exit 0'
+            sh 'go version || exit 0'
+            sh 'git version || exit 0'
+            sh 'mvn --version || exist 0'
+          }
+        }
         /**
         Checkout the code and stash it, to use it on other stages.
         */
@@ -110,6 +119,20 @@ pipeline {
               }
             }
           }
+        }
+      }
+      stage('windows 2012 check'){
+        agent { label 'windows-2012r2' }
+        options { skipDefaultCheckout() }
+        steps {
+          bat returnStatus: true, script: 'msbuild'
+        }
+      }
+      stage('windows 2016 check'){
+        agent { label 'windows-2016' }
+        options { skipDefaultCheckout() }
+        steps {
+          bat returnStatus: true, script: 'msbuild'
         }
       }
     }
