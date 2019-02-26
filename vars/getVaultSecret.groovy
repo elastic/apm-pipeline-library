@@ -17,6 +17,8 @@ def call(secret) {
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
     def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
     props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    //we do not have permissions to revoke a token.
+    //revokeToken(env.VAULT_ADDR, token)
   }
   return props
 }
@@ -46,5 +48,20 @@ def getVaultSecretObject(addr, secret, token){
       error("getVaultSecret: Unable to get the secret.")
     }
     return obj
+  }
+}
+
+def revokeToken(addr, token){
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: 'VAULT_TOKEN', password: token],
+    [var: 'VAULT_ADDR', password: addr],
+    ]]) {
+    httpRequest(url: "${addr}/v1/auth/token/revoke",
+      method: "POST",
+      headers: [
+        "Content-Type": "application/json",
+        "X-Vault-Token": "${token}"
+      ],
+      data: "{\"token\":\"${token}\"}")
   }
 }

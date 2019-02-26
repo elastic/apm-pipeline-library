@@ -59,6 +59,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     env.WORKSPACE = "WS"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
+    env.PIPELINE_LOG_LEVEL = 'DEBUG'
     binding.setVariable('env', env)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("getGithubToken", [], {return "dummy"})
@@ -203,6 +204,38 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'MEMBER']
+      })
+    helper.registerAllowedMethod("githubPrReviews", [Map.class], {
+      return []
+      })
+    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    env.CHANGE_ID = 1
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsAuthorizedBot() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return [
+        permission: "NONE",
+        user: [
+          login: "greenkeeperio[bot]",
+          type: "Bot",
+        ]
+      ]
+    })
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [
+        title: 'dummy PR',
+        user: [
+          login: 'greenkeeperio[bot]',
+          type: "Bot",
+          ],
+        author_association: 'NONE'
+        ]
       })
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []

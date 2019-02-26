@@ -235,6 +235,8 @@ def nodeEnviromentVars(nodeVersion){
 
 /**
   install NodeJs, it uses stash as cache.
+
+  see how to we can grab the cache from ~/.npm/_cacache
 */
 def installNodeJs(nodeVersion, pakages = null){
   nodeEnviromentVars(nodeVersion)

@@ -22,6 +22,8 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrCheckApproved", [], { return true })
     helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("isUserTrigger", {return false})
+    helper.registerAllowedMethod("isCommentTrigger", {return false})
 
     binding.getVariable('currentBuild').getBuildCauses = {
       return null
@@ -133,17 +135,24 @@ class GitCheckoutStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testManuallyTriggered() throws Exception {
-    binding.getVariable('currentBuild').getBuildCauses = {
-      return [
-        [
-          _class: 'hudson.model.Cause$UserIdCause',
-          shortDescription: 'Started by user admin',
-          userId: 'admin',
-          userName: 'admin'
-        ]
-      ]
-    }
+  void testUserTriggered() throws Exception {
+    helper.registerAllowedMethod("isUserTrigger", {return true})
+    helper.registerAllowedMethod("isCommentTrigger", {return true})
+    def script = loadScript("vars/gitCheckout.groovy")
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: 'master',
+      credentialsId: 'credentials-id')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("No valid SCM config passed.")
+    })
+  }
+
+  @Test
+  void testCommentTriggered() throws Exception {
+    helper.registerAllowedMethod("isCommentTrigger", {return true})
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',

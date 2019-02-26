@@ -52,9 +52,10 @@ def call(Map params = [:]){
       body = body + "\nError: " + IOUtils.toString(con.getErrorStream(), encoding)
       error("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
     }
+    con = null
     return body
   } catch(e){
-    log(level: "DEBUG", text: "httpRequest: ${e}")
+    log(level: "DEBUG", text: "httpRequest: ${e.toString()}")
     error("httpRequest: Failure connecting to the service ${url}")
   }
 }
