@@ -8,7 +8,7 @@ pipeline {
     BASE_DIR="src/github.com/elastic/apm-pipeline-library"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
-    PIPELINE_LOG_LEVEL = 'DEBUG'
+    PIPELINE_LOG_LEVEL = 'INFO'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
