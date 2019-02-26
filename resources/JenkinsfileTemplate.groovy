@@ -44,7 +44,10 @@ pipeline {
         stage('Checkout') {
           steps {
             deleteDir()
-            gitCheckout(basedir: "${BASE_DIR}")
+            //gitCheckout(basedir: "${BASE_DIR}")
+            gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+              repo: 'git@github.com:elastic/apm-pipeline-library.git',
+              credentialsId: "${JOB_GIT_CREDENTIALS}")
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
