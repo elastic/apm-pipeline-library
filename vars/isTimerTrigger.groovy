@@ -1,13 +1,10 @@
 /**
-  Check it the build was triggerd by a timer (scheduled job).
+  Check it the build was triggered by a timer (scheduled job).
 
   def timmerTrigger = isTimerTrigger()
 */
-def isTimerTrigger(){
-  def ret = false
-  if(currentBuild.getBuildCauses()?.any{ bc -> bc._class == 'hudson.triggers.TimerTrigger$TimerTriggerCause'}){
-    ret = true
-  }
+def call(){
+  def ret = currentBuild.getBuildCauses()?.any{ it._class == 'hudson.triggers.TimerTrigger$TimerTriggerCause'}
   log(level: 'DEBUG', text: "isTimerTrigger: ${ret}")
   return ret
 }
