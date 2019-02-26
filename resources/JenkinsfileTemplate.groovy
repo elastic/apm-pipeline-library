@@ -40,11 +40,11 @@ pipeline {
       stages {
         stage('Check flyweight Commands support'){
           steps{
-            sh 'docker --version || echo KO'
-            sh 'java -version || echo KO'
-            sh 'go version || echo KO'
-            sh 'git version || echo KO'
-            sh 'mvn --version || echo KO'
+            sh returnStatus: true, script: 'docker --version'
+            sh returnStatus: true, script: 'java -version'
+            sh returnStatus: true, script: 'go version'
+            sh returnStatus: true, script: 'git version'
+            sh returnStatus: true, script: 'mvn --version'
           }
         }
         /**
