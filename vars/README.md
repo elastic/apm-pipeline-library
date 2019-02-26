@@ -261,6 +261,29 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
 
+## isCommentTrigger
+Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
+it stores the comment owner username in the BUILD_CAUSE_USER environment variable.
+
+```
+def commentTrigger = isCommentTrigger()
+``
+
+## isTimerTrigger
+Check it the build was triggered by a timer (scheduled job).
+
+```
+def timmerTrigger = isTimerTrigger()
+```
+
+## isUserTrigger
+Check it the build was triggered by a user.
+it stores the username in the BUILD_CAUSE_USER environment variable.
+
+```
+def userTrigger = isUserTrigger()
+```
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
