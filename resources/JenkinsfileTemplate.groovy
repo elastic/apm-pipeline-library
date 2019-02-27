@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-@Library('apm@v1.0.6') _
+@Library('apm@v1.0.7') _
 
 pipeline {
   agent { label 'flyweight' }
@@ -8,6 +8,7 @@ pipeline {
     BASE_DIR="src/github.com/elastic/PROJECT"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
+    JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
   }
   options {
@@ -40,11 +41,11 @@ pipeline {
       stages {
         stage('Check flyweight Commands support'){
           steps{
-            sh 'docker --version || exit 0'
-            sh 'java -version || exit 0'
-            sh 'go version || exit 0'
-            sh 'git version || exit 0'
-            sh 'mvn --version || exist 0'
+            sh returnStatus: true, script: 'docker --version'
+            sh returnStatus: true, script: 'java -version'
+            sh returnStatus: true, script: 'go version'
+            sh returnStatus: true, script: 'git version'
+            sh returnStatus: true, script: 'mvn --version'
           }
         }
         /**
