@@ -19,7 +19,10 @@ def call(){
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
-  env.GIT_SHA = getGitCommitSha()
+
+  if(!env?.GIT_SHA){
+    env.GIT_SHA = getGitCommitSha()
+  }
 
   if (env.CHANGE_TARGET){
     env.GIT_BUILD_CAUSE = "pr"
