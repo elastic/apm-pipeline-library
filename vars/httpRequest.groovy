@@ -1,4 +1,6 @@
 import org.apache.commons.io.IOUtils
+import java.net.URLConnection
+
 /**
   Step to make HTTP request and get the result.
   If the return code is >= 400, it would throw an error.
@@ -20,8 +22,9 @@ def call(Map params = [:]){
     error("httpRequest: Invalid URL")
   }
 
+  URLConnection con
   try {
-    def con = obj.openConnection()
+    con = obj.openConnection()
     con.setRequestMethod(method)
     con.setUseCaches(false)
     con.setDoInput(true)
@@ -55,6 +58,7 @@ def call(Map params = [:]){
     con = null
     return body
   } catch(e){
+    con = null
     log(level: "DEBUG", text: "httpRequest: ${e.toString()}")
     error("httpRequest: Failure connecting to the service ${url}")
   }
