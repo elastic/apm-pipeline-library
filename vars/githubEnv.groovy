@@ -24,6 +24,8 @@ def call(){
     env.GIT_SHA = getGitCommitSha()
   }
 
+  getBaseCommit()
+
   if (env.CHANGE_TARGET){
     env.GIT_BUILD_CAUSE = "pr"
   } else {
@@ -35,4 +37,19 @@ def call(){
   }
 
   log(level: 'INFO', text: "githubEnv: Found Git Build Cause: ${env.GIT_BUILD_CAUSE}")
+}
+
+def getBaseCommit(){
+  def baseCommit = ''
+  def latestCommit = getGitCommitSha()
+  def previousCommit = sh(label: 'Get previous commit', script: "git rev-parse HEAD^", returnStdout: true)?.trim()
+  if(env?.CHANGE_ID == null){
+    baseCommit = env.GIT_COMMIT
+  } else if("${env.GIT_COMMIT}".equals("${latestCommit}")){
+    baseCommit = env.GIT_COMMIT
+  } else {
+    baseCommit = previousCommit
+  }
+  env.GIT_BASE_COMMIT = baseCommit
+  return baseCommit
 }
