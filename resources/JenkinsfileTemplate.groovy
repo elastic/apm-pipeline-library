@@ -127,6 +127,7 @@ pipeline {
         options { skipDefaultCheckout() }
         steps {
           bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'dir C:\\Program Files (x86)\\Microsoft Visual Studio'
         }
       }
       stage('windows 2016 check'){
@@ -134,6 +135,7 @@ pipeline {
         options { skipDefaultCheckout() }
         steps {
           bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'dir C:\\Program Files (x86)\\Microsoft Visual Studio'
         }
       }
     }
