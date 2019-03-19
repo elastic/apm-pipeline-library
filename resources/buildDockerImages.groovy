@@ -3,7 +3,7 @@
 @Library('apm@v1.0.6') _
 
 pipeline {
-  agent { label 'flyweight' }
+  agent { label 'linux && immutable' }
   environment {
     BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
