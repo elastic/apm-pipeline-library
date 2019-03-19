@@ -1,0 +1,9 @@
+use git diff to check the changes on a path, then return true or false.
+
+```
+def numOfChanges = checkGitChanges(target: env.CHANGE_TARGET, commit: env.GIT_SHA, prefix: '_beats')
+```
+
+* target: branch or commit to use as reference to check the changes.
+* commit: branch or commit to compare target to
+* prefix: text to find at the beginning of file changes.

@@ -94,6 +94,23 @@ class GitCheckoutStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testMergeTargetRepo() throws Exception {
+    def script = loadScript("vars/gitCheckout.groovy")
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      mergeTarget: "master")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("Checkout master")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testErrorBranchIncomplete() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"

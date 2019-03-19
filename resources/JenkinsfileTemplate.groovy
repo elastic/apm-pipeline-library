@@ -3,7 +3,7 @@
 @Library('apm@v1.0.7') _
 
 pipeline {
-  agent { label 'flyweight' }
+  agent { label 'linux && immutable' }
   environment {
     BASE_DIR="src/github.com/elastic/PROJECT"
     NOTIFY_TO = credentials('notify-to')
@@ -18,6 +18,8 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+    rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
+    quietPeriod(10)
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
@@ -30,7 +32,7 @@ pipeline {
   }
   stages {
     stage('Initializing'){
-      agent { label 'flyweight' }
+      agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
         PATH = "${env.PATH}:${env.WORKSPACE}/bin"
@@ -58,6 +60,7 @@ pipeline {
             gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
               repo: 'git@github.com:elastic/apm-pipeline-library.git',
               credentialsId: "${JOB_GIT_CREDENTIALS}")
+            sh 'chmod ugo+rx /resources/scripts/jenkins/*.sh'
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
@@ -69,7 +72,7 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './resources/scripts/jenkins/build.sh'
+              sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
             }
           }
         }
@@ -81,7 +84,7 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              sh './resources/scripts/jenkins/test.sh'
+              sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
             }
           }
           post {
@@ -107,7 +110,7 @@ pipeline {
                   branch "\\d+\\.\\d+"
                   branch "v\\d?"
                   tag "v\\d+\\.\\d+\\.\\d+*"
-                  environment name: 'Run_As_Master_Branch', value: 'true'
+                  expression { return params.Run_As_Master_Branch }
                 }
                 expression { return params.doc_ci }
               }
@@ -116,7 +119,7 @@ pipeline {
               deleteDir()
               unstash 'source'
               dir("${BASE_DIR}"){
-                buildDocs(docsDir: "docs", archive: true)
+                buildDocs(docsDir: "resources/docs", archive: true)
               }
             }
           }

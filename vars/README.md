@@ -27,6 +27,17 @@ buildDocs(docsDir: "docs", archive: true)
 * docsDir: relative folder were are the document source files (by default docs is relative to WORKSPACE).
 * archive: if true, archive the tar file with the doc in Jenkins.
 
+## checkGitChanges
+use git diff to check the changes on a path, then return true or false.
+
+```
+def numOfChanges = checkGitChanges(target: env.CHANGE_TARGET, commit: env.GIT_SHA, prefix: '_beats')
+```
+
+* target: branch or commit to use as reference to check the changes.
+* commit: branch or commit to compare target to
+* prefix: text to find at the beginning of file changes.
+
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation

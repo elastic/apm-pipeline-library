@@ -20,11 +20,17 @@ def call(Map params = [:]){
   def credentialsId =  params?.credentialsId
   def branch =  params?.branch
   def reference = params?.reference
+  def mergeTarget = params?.mergeTarget
 
   def extensions = []
 
   if(reference != null){
-    extensions.add([$class: 'CloneOption', depth: 1, noTags: false, reference: "${reference}", shallow: true])
+    extensions.add([$class: 'CloneOption', depth: 5, noTags: false, reference: "${reference}", shallow: true])
+    log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
+  }
+
+  if(mergeTarget != null){
+    extensions.add([$class: 'PreBuildMerge', options: [mergeTarget: "${mergeTarget}"]])
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
