@@ -23,7 +23,11 @@ class GithubEnvStepTests extends BasePipelineTest {
   void registerMethods(){
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
-          return "${sha} ${sha}"
+        return "${sha} ${sha}"
+      } else if('git rev-parse HEAD^'.equals(map.script)){
+        return "previousCommit"
+      } else if(map.script.startsWith("git branch -r --contains")){
+        return "${sha}"
       }
       return ""
     })
@@ -62,6 +66,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     def script = loadScript("vars/githubEnv.groovy")
     registerMethods()
     env.CHANGE_TARGET = "NotEmpty"
+    env.CHANGE_ID = "NotEmpty"
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
@@ -99,5 +104,70 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
+  }
+
+  @Test
+  void testChangeTargetBaseCommitOnNoMergeChangesInPR() throws Exception {
+    def script = loadScript("vars/githubEnv.groovy")
+    registerMethods()
+    env.CHANGE_TARGET = "NotEmpty"
+    env.CHANGE_ID = "NotEmpty"
+    env.GIT_COMMIT = sha
+    script.call()
+    printCallStack()
+    assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+  }
+
+  @Test
+  void testChangeTargetBaseCommitOnNoGitCommit() throws Exception {
+    def script = loadScript("vars/githubEnv.groovy")
+    registerMethods()
+    env.CHANGE_TARGET = "NotEmpty"
+    env.CHANGE_ID = "NotEmpty"
+    env.GIT_COMMIT = null
+    script.call()
+    printCallStack()
+    assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+  }
+
+  @Test
+  void testChangeTargetBaseCommitOnMergeChangesInPR() throws Exception {
+    def script = loadScript("vars/githubEnv.groovy")
+    registerMethods()
+    env.CHANGE_ID = "NotEmpty"
+    env.CHANGE_TARGET = "NotEmpty"
+    env.GIT_COMMIT = 'different'
+    script.call()
+    printCallStack()
+    assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
+    println(binding.getVariable('env').GIT_BASE_COMMIT)
+    assertTrue('previousCommit'.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+  }
+
+  @Test
+  void testChangeTargetBaseCommitOnBranch() throws Exception {
+    def script = loadScript("vars/githubEnv.groovy")
+    registerMethods()
+    env.CHANGE_ID = null
+    env.CHANGE_TARGET = null
+    env.GIT_COMMIT = sha
+    script.call()
+    printCallStack()
+    assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
+    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 }
