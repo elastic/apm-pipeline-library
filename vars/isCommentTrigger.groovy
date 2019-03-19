@@ -8,6 +8,7 @@ def call(){
   log(level: 'DEBUG', text: "isCommentTrigger: ${ret}")
   if(ret){
     def buildCause = currentBuild.getBuildCauses().find{ it._class.startsWith('org.jenkinsci.plugins.pipeline.github.trigger.IssueCommentCause')}
+    log(level: 'DEBUG', text: "isCommentTrigger: ${buildCause}")
     env.BUILD_CAUSE_USER = buildCause?.userLogin
     //Only Elastic users are allowed
     def token = getGithubToken()
