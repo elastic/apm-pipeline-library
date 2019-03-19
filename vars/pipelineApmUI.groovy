@@ -378,7 +378,7 @@ def quickTest(){
   dir("${BASE_DIR}"){
     sh 'yarn tslint x-pack/plugins/apm/**/*.{ts,tsx} --fix'
     sh 'cd x-pack/plugins/apm && yarn tsc --noEmit'
-    sh 'cd x-pack && node ./scripts/jest.js apm'
+    sh 'cd x-pack && node ./scripts/jest.js plugins/apm'
   }
 }
 
