@@ -1,6 +1,10 @@
+import groovy.transform.Field
+
 /**
 https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy
 */
+
+@Field def tokens = [:]
 
 def call(Map params = [:]){
   def repo = params?.repo
@@ -12,7 +16,15 @@ def call(Map params = [:]){
     return
   }
 
-  def token = getVaultSecret("${repo}-codecov")?.data?.value
+  def token = null
+  if(tokens["${repo}"] == null){
+    log(level: 'DEBUG', text: "Codecov: get the token from Vault.")
+    token = getVaultSecret("${repo}-codecov")?.data?.value
+    tokens["${repo}"] = token
+  } else {
+    log(level: 'DEBUG', text: "Codecov: get the token from cache.")
+    token = tokens["${repo}"]
+  }
   if(!token){
     log(level: 'WARN', text: "Codecov: Repository not found: ${repo}")
     return

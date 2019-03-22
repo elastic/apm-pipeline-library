@@ -50,6 +50,7 @@ class CodecovStepTests extends BasePipelineTest {
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
+    env.PIPELINE_LOG_LEVEL = 'DEBUG'
     binding.setVariable('env', env)
 
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
@@ -126,6 +127,25 @@ class CodecovStepTests extends BasePipelineTest {
     def script = loadScript("vars/codecov.groovy")
     script.call(repo: "repo", basedir: "ws")
     printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCache() throws Exception {
+    def script = loadScript("vars/codecov.groovy")
+    script.call(repo: "repo", basedir: "ws")
+    script.call(repo: "repo", basedir: "ws")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("Codecov: get the token from Vault.")
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("Codecov: get the token from cache.")
+    })
     assertJobStatusSuccess()
   }
 }
