@@ -158,7 +158,7 @@ def buildDockerImage(args){
   try {
     dir("${tag}"){
       git "${repo}"
-      dir("${dir}"{
+      dir("${dir}"){
         withEnv(env){
           def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
           sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
