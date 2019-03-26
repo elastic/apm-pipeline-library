@@ -150,8 +150,8 @@ pipeline {
 
 def buildDockerImage(args){
   script {
-    String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
-    String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
+    String repo = args.containsKey('repo') ? args.repo : "" //error("Repository not valid")
+    String tag = args.containsKey('tag') ? args.tag : "" //error("Tag not valid")
     String version = args.containsKey('version') ? args.version : "latest"
     String dir = args.containsKey('dir') ? args.dir : "."
     def env = args.containsKey('env') ? args.env : []
