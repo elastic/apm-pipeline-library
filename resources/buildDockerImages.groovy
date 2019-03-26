@@ -27,7 +27,7 @@ pipeline {
     string(name: 'tag_prefix', defaultValue: "employees/kuisathaverat", description: "")
   }
   stages {
-    stage('Build images'){
+    stage('Build Opbeans images'){
       parallel {
         stage('Opbeans-node') {
           agent { label 'docker' }
@@ -103,6 +103,13 @@ pipeline {
         }
 
       }
+      post {
+        failure {
+          script {
+            currentBuild.result = "UNSTABLE"
+          }
+        }
+      }
     }
   }
   post {
@@ -131,9 +138,7 @@ def buildDockerImage(args){
   dir("${tag}"){
     git "${repo}"
     def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
-    sh(label: "build docker image", script: """
-    docker build -t ${image} .
-    docker push ${image}
-    """)
+    sh(label: "build docker image", script: "docker build -t ${image} .")
+    sh(label: "push docker image", script: "docker push ${image}")
   }
 }
