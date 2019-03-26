@@ -158,11 +158,11 @@ def buildDockerImage(args){
   echo "1"
   try {
     echo "2"
-    dir("${tag}"){
+    dir(tag){
       echo "3"
       git "${repo}"
       echo "4"
-      dir("${dir}"){
+      dir(dir){
         echo "5"
         withEnv(env){
           echo "6"
