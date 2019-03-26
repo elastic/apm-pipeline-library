@@ -101,12 +101,28 @@ pipeline {
               version: "daily")
           }
         }
-
       }
-      post {
-        failure {
+    }
+    stage('Build agent Python images'){
+      agent { label 'docker' }
+      options { skipDefaultCheckout() }
+      steps {
+        dir('apm-agent-python'){
+          git 'https://github.com/elastic/apm-agent-python.git'
           script {
-            currentBuild.result = "UNSTABLE"
+            def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
+            def tasks = [:]
+            pythonVersions.each{ pythonIn ->
+              def pythonVersion = pythonIn.replace("-",":")
+              tasks["${pythonVersion}"] = {
+                buildDockerImage(repo: 'https://github.com/elastic/apm-agent-python.git',
+                  tag: "apm-agent-python-test",
+                  version: "${pythonVersion}",
+                  dir: "tests",
+                  options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
+              }
+            }
+            parallel(tasks)
           }
         }
       }
@@ -132,13 +148,26 @@ pipeline {
 }
 
 def buildDockerImage(args){
-  def repo = args.repo
-  def tag = args.tag
-  def version = args.version
-  dir("${tag}"){
-    git "${repo}"
-    def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
-    sh(label: "build docker image", script: "docker build -t ${image} .")
-    sh(label: "push docker image", script: "docker push ${image}")
+  def repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
+  def tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
+  def version = args.containsKey('version') ? args.version : "latest"
+  def dir = args.containsKey('dir') ? args.dir : "."
+  def env = args.containsKey('env') ? args.env : []
+  def options = args.containsKey('options') ? args.options : ""
+
+  try {
+    dir("${tag}"){
+      git "${repo}"
+      dir("${dir}"{
+        withEnv(env){
+          def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
+          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          sh(label: "push docker image", script: "docker push ${image}")
+        }
+      }
+    }
+  } catch (e){
+    log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
+    currentBuild.result = "UNSTABLE"
   }
 }
