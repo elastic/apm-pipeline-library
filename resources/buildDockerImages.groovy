@@ -113,7 +113,7 @@ pipeline {
             def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
-              def pythonVersion = new String(pythonIn).replace("-",":")
+              def pythonVersion = pythonIn.replace("-",":")
               tasks["${pythonVersion}"] = {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-python.git',
@@ -149,36 +149,37 @@ pipeline {
 }
 
 def buildDockerImage(args){
-  String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
-  String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
-  String version = args.containsKey('version') ? args.version : "latest"
-  String dir = args.containsKey('dir') ? args.dir : "."
-  def env = args.containsKey('env') ? args.env : []
-  String options = args.containsKey('options') ? args.options : ""
-  echo "1"
-  try {
-    echo "2"
-    dir(tag){
-      echo "3"
-      git "${repo}"
-      echo "4"
-      dir(dir){
-        echo "5"
-        withEnv(env){
-          echo "6"
-          def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
-          echo "7"
-          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
-          echo "8"
-          sh(label: "push docker image", script: "docker push ${image}")
+  script {
+    String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
+    String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
+    String version = args.containsKey('version') ? args.version : "latest"
+    String dir = args.containsKey('dir') ? args.dir : "."
+    def env = args.containsKey('env') ? args.env : []
+    String options = args.containsKey('options') ? args.options : ""
+    echo "1"
+    try {
+      echo "2"
+      dir(tag){
+        echo "3"
+        git "${repo}"
+        echo "4"
+        dir(dir){
+          echo "5"
+          withEnv(env){
+            echo "6"
+            def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
+            echo "7"
+            sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+            echo "8"
+            sh(label: "push docker image", script: "docker push ${image}")
+          }
         }
       }
+    } catch (e){
+      echo "9"
+      log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
+      echo "10"
+      currentBuild.result = "UNSTABLE"
     }
-  } catch (e){
-    echo "9"
-    log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
-    echo "10"
-    currentBuild.result = "UNSTABLE"
   }
-
 }
