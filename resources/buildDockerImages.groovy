@@ -170,4 +170,5 @@ def buildDockerImage(args){
     log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
     currentBuild.result = "UNSTABLE"
   }
+
 }
