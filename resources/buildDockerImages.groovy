@@ -157,7 +157,7 @@ def buildDockerImage(args){
     def env = args.containsKey('env') ? args.env : []
     String options = args.containsKey('options') ? args.options : ""
     echo "1"
-    try {
+    //try {
       echo "2"
       dir(tag){
         echo "3"
@@ -175,11 +175,11 @@ def buildDockerImage(args){
           }
         }
       }
-    } catch (e){
-      echo "9"
-      log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
-      echo "10"
-      currentBuild.result = "UNSTABLE"
-    }
+    // } catch (e){
+    //   echo "9"
+    //   log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
+    //   echo "10"
+    //   currentBuild.result = "UNSTABLE"
+    // }
   }
 }
