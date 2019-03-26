@@ -176,7 +176,7 @@ def buildDockerImage(args){
 
   def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
   try {
-    dir("${tag}"){
+    dir("${tag}-${version}"){
       git "${repo}"
       dir("${folder}"){
         withEnv(env){
