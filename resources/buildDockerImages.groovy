@@ -1,6 +1,9 @@
 #!/usr/bin/env groovy
+import groovy.transform.Field
 
 @Library('apm@current') _
+
+@Field def results = [:]
 
 pipeline {
   agent none
@@ -118,7 +121,7 @@ pipeline {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-python.git',
                   tag: "apm-agent-python-test",
-                  version: "${pythonVersion}",
+                  version: "${pythonIn}",
                   folder: "tests",
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
               }
@@ -130,6 +133,19 @@ pipeline {
     }
   }
   post {
+    always {
+      node('master'){
+        log(level: "INFO", text: "=====SUMARY=====")
+        results.each{ k, v ->
+          level = "INFO"
+          if(!v){
+            level = "ERROR"
+            currentBuild.result = "FAILURE"
+          }
+          log(level: "INFO", text: "${k}")
+        }
+      }
+    }
     success {
       echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
     }
@@ -156,20 +172,23 @@ def buildDockerImage(args){
     String folder = args.containsKey('folder') ? args.folder : "."
     def env = args.containsKey('env') ? args.env : []
     String options = args.containsKey('options') ? args.options : ""
+
+    def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
     try {
       dir("${tag}"){
         git "${repo}"
         dir("${folder}"){
           withEnv(env){
-            def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
             sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
             sh(label: "push docker image", script: "docker push ${image}")
           }
         }
       }
+      results[image] = true
     } catch (e){
       log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
-      currentBuild.result = "UNSTABLE"
+      results[image] = false
+      currentBuild.result = "SUCCESS"
     }
   }
 }
