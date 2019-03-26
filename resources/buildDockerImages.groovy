@@ -112,15 +112,14 @@ pipeline {
           script {
             def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
-            pythonVersions.each{ pythonIn ->
+            pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replace("-",":")
-              tasks["${pythonVersion}"] = {
-                buildDockerImage(repo: 'https://github.com/elastic/apm-agent-python.git',
+              tasks["${pythonVersion}"] = buildDockerImage(
+                  repo: 'https://github.com/elastic/apm-agent-python.git',
                   tag: "apm-agent-python-test",
                   version: "${pythonVersion}",
                   dir: "tests",
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
-              }
             }
             parallel(tasks)
           }
