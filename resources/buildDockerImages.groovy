@@ -136,13 +136,15 @@ pipeline {
     always {
       node('master'){
         log(level: "INFO", text: "=====SUMARY=====")
-        results.each{ k, v ->
-          level = "INFO"
-          if(!v){
-            level = "ERROR"
-            currentBuild.result = "FAILURE"
+        script {
+          results.each{ k, v ->
+            level = "INFO"
+            if(!v){
+              level = "ERROR"
+              currentBuild.result = "FAILURE"
+            }
+            log(level: "INFO", text: "${k}")
           }
-          log(level: "INFO", text: "${k}")
         }
       }
     }
@@ -165,30 +167,28 @@ pipeline {
 }
 
 def buildDockerImage(args){
-  script {
-    String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
-    String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
-    String version = args.containsKey('version') ? args.version : "latest"
-    String folder = args.containsKey('folder') ? args.folder : "."
-    def env = args.containsKey('env') ? args.env : []
-    String options = args.containsKey('options') ? args.options : ""
+  String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
+  String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
+  String version = args.containsKey('version') ? args.version : "latest"
+  String folder = args.containsKey('folder') ? args.folder : "."
+  def env = args.containsKey('env') ? args.env : []
+  String options = args.containsKey('options') ? args.options : ""
 
-    def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
-    try {
-      dir("${tag}"){
-        git "${repo}"
-        dir("${folder}"){
-          withEnv(env){
-            sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
-            sh(label: "push docker image", script: "docker push ${image}")
-          }
+  def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
+  try {
+    dir("${tag}"){
+      git "${repo}"
+      dir("${folder}"){
+        withEnv(env){
+          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          sh(label: "push docker image", script: "docker push ${image}")
         }
       }
-      results[image] = true
-    } catch (e){
-      log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
-      results[image] = false
-      currentBuild.result = "SUCCESS"
     }
+    results[image] = true
+  } catch (e){
+    log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
+    results[image] = false
+    currentBuild.result = "SUCCESS"
   }
 }
