@@ -1,9 +1,9 @@
 #!/usr/bin/env groovy
 
-@Library('apm@v1.0.6') _
+@Library('apm@current') _
 
 pipeline {
-  agent { label 'linux && immutable' }
+  agent none
   environment {
     BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
@@ -23,43 +23,85 @@ pipeline {
     issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
-    string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
-    booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
-    booleanParam(name: 'doc_ci', defaultValue: true, description: 'Enable build docs.')
+    string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
+    string(name: 'tag_prefix', defaultValue: "employees/kuisathaverat", description: "")
   }
   stages {
-    stage('Initializing'){
-      agent { label 'linux && immutable' }
-      options { skipDefaultCheckout() }
-      environment {
-        PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-        ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
-        //see JENKINS-41929
-        PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
-      }
-      stages {
-        /**
-        Checkout the code and stash it, to use it on other stages.
-        */
-        stage('Checkout') {
+    stage('Build images'){
+      parallel {
+        stage('Opbeans-node') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
           steps {
-            deleteDir()
-            gitCheckout(basedir: "${BASE_DIR}")
-            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-node.git',
+              tag: "opbeans-node",
+              version: "daily")
           }
         }
-        /**
-        Build the project from code..
-        */
-        stage('Build') {
+        stage('Opbeans-python') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
           steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              sh './scripts/jenkins/build.sh'
-            }
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-python.git',
+              tag: "opbeans-python",
+              version: "daily")
           }
         }
+        stage('Opbeans-frontend') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-frontend.git',
+              tag: "opbeans-frontend",
+              version: "daily")
+          }
+        }
+        stage('Opbeans-java') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-java.git',
+              tag: "opbeans-java",
+              version: "daily")
+          }
+        }
+        stage('Opbeans-go') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-go.git',
+              tag: "opbeans-go",
+              version: "daily")
+          }
+        }
+        stage('Opbeans-loadgen') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-loadgen.git',
+              tag: "opbeans-loadgen",
+              version: "daily")
+          }
+        }
+        stage('Opbeans-flask') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
+              tag: "opbeans-flask",
+              version: "daily")
+          }
+        }
+        stage('Opbeans-ruby') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-ruby.git',
+              tag: "opbeans-ruby",
+              version: "daily")
+          }
+        }
+
       }
     }
   }
@@ -72,10 +114,26 @@ pipeline {
     }
     failure {
       echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-      step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+      node('master'){
+        step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
+      }
     }
     unstable {
       echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
     }
+  }
+}
+
+def buildDockerImage(args){
+  def repo = args.repo
+  def tag = args.tag
+  def version = args.version
+  dir("${tag}"){
+    git "${repo}"
+    def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
+    sh(label: "build docker image", script: """
+    docker build -t ${image} .
+    docker push ${image}
+    """)
   }
 }
