@@ -28,17 +28,24 @@ pipeline {
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "employees/kuisathaverat", description: "")
+    string(name: 'version', defaultValue: "daily", description: "")
+    booleanParam(name: 'opbeans', defaultValue: "false", description: "")
+    booleanParam(name: 'python', defaultValue: "false", description: "")
   }
   stages {
     stage('Build Opbeans images'){
+      when{
+        beforeAgent true
+        expression { return params.opbeans }
+      }
       parallel {
         stage('Opbeans-node') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-node.git',
-              tag: "opbeans-node",
-              version: "daily")
+              tag: "opbeans/opbeans-node",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-python') {
@@ -46,8 +53,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-python.git',
-              tag: "opbeans-python",
-              version: "daily")
+              tag: "opbeans/opbeans-python",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-frontend') {
@@ -55,8 +62,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-frontend.git',
-              tag: "opbeans-frontend",
-              version: "daily")
+              tag: "opbeans/opbeans-frontend",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-java') {
@@ -64,8 +71,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-java.git',
-              tag: "opbeans-java",
-              version: "daily")
+              tag: "opbeans/opbeans-java",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-go') {
@@ -73,8 +80,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-go.git',
-              tag: "opbeans-go",
-              version: "daily")
+              tag: "opbeans/opbeans-go",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-loadgen') {
@@ -82,8 +89,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-loadgen.git',
-              tag: "opbeans-loadgen",
-              version: "daily")
+              tag: "opbeans/opbeans-loadgen",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-flask') {
@@ -91,8 +98,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
-              tag: "opbeans-flask",
-              version: "daily")
+              tag: "opbeans/opbeans-flask",
+              version: "${params.version}")
           }
         }
         stage('Opbeans-ruby') {
@@ -100,8 +107,8 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-ruby.git',
-              tag: "opbeans-ruby",
-              version: "daily")
+              tag: "opbeans/opbeans-ruby",
+              version: "${params.version}")
           }
         }
       }
@@ -109,6 +116,10 @@ pipeline {
     stage('Build agent Python images'){
       agent { label 'docker' }
       options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.python }
+      }
       steps {
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
@@ -126,7 +137,7 @@ pipeline {
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
               }
             }
-            parallel(tasks)
+            // parallel(tasks)
           }
         }
       }
@@ -174,7 +185,11 @@ def buildDockerImage(args){
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
 
-  def image = "${params.registry}/${params.tag_prefix}/${tag}:${version}"
+  def image = "${params.registry}"
+  if(params.tag_prefix != null && params.tag_prefix != ""){
+    image += "/${params.tag_prefix}"
+  }
+  image += "/${tag}:${version}"
   try {
     dir("${tag}-${version}"){
       git "${repo}"
