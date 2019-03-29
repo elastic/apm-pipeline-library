@@ -2,6 +2,7 @@
 set -euo pipefail
 
 #VERSION=7.0
+#https://artifacts-api.elastic.co/v1/versions/${VERSION}/builds/latest
 JSON=$(curl https://staging.elastic.co/latest/${VERSION}.json)
 BUILD_ID=$(echo ${JSON}|jq -r .build_id)
 VERSION_ID=$(echo ${JSON}|jq -r .version)

@@ -127,4 +127,24 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(ret.message == "java.lang.Exception: Failure")
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testCache() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def script = loadScript("vars/githubApiCall.groovy")
+    def ret0 = script.call(url: "dummy", token: "dummy")
+    def ret1 = script.call(url: "dummy", token: "dummy")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("githubApiCall: get the JSON from GitHub.")
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("githubApiCall: get the JSON from cache.")
+    })
+    assertJobStatusSuccess()
+  }
 }

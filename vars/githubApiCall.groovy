@@ -1,4 +1,7 @@
 import net.sf.json.JSONArray
+import groovy.transform.Field
+
+@Field def cache = [:]
 
 /**
   Make a REST API call to Github. It manage to hide the call and the token in the console output.
@@ -15,7 +18,15 @@ def call(Map params = [:]){
     ]]) {
     def json = "{}"
     try {
-      json = httpRequest(url: url, headers: ["Authorization": "token ${token}"])
+      def key = "${token}#${url}"
+      if(cache["${key}"] == null){
+        log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
+        json = httpRequest(url: url, headers: ["Authorization": "token ${token}"])
+        cache["${key}"] = json
+      } else {
+        log(level: 'DEBUG', text: "githubApiCall: get the JSON from cache.")
+        json = cache["${key}"]
+      }
     } catch(err) {
       def obj = [:]
       obj.message = err.toString()
