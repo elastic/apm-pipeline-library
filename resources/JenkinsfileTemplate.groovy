@@ -60,7 +60,6 @@ pipeline {
             gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
               repo: 'git@github.com:elastic/apm-pipeline-library.git',
               credentialsId: "${JOB_GIT_CREDENTIALS}")
-            sh 'chmod ugo+rx /resources/scripts/jenkins/*.sh'
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
