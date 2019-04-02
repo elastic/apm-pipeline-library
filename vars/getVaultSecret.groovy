@@ -3,12 +3,27 @@ import net.sf.json.JSONObject
 /**
   Get a secret from the Vault.
 
+  def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
+*/
+def call(Map params = [:]){
+  def secret = params.containsKey('secret') ? params.secret : error("getVaultSecret: No valid secret to looking for.")
+  return readSecret(secret)
+}
+
+/**
+  Get a secret from the Vault.
+
   def jsonValue = getVaultSecret('secret-name')
 */
 def call(secret) {
   if(secret == null){
     error("getVaultSecret: No valid secret to looking for.")
   }
+  secret = 'secret/apm-team/ci/' + secret
+  return readSecret(secret)
+}
+
+def readSecret(secret){
   def props = null
   log(level: 'INFO', text: "getVaultSecret: Getting secrets")
   withCredentials([
@@ -41,7 +56,7 @@ def getVaultSecretObject(addr, secret, token){
     [var: 'VAULT_TOKEN', password: token],
     [var: 'VAULT_ADDR', password: addr],
     ]]) {
-    def retJson = httpRequest(url: "${addr}/v1/secret/apm-team/ci/${secret}",
+    def retJson = httpRequest(url: "${addr}/v1/${secret}",
       headers: ["X-Vault-Token": "${token}"])
     def obj = toJSON(retJson);
     if(!(obj instanceof JSONObject)){

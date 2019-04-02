@@ -75,6 +75,15 @@ class GetVaultSecretStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testMap() throws Exception {
+    def script = loadScript("vars/getVaultSecret.groovy")
+    def jsonValue = script.call(secret: "secret/apm-team/ci/secret")
+    assertTrue(jsonValue.plaintext == '12345')
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNoSecret() throws Exception {
     def script = loadScript("vars/getVaultSecret.groovy")
     try {
