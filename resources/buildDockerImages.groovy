@@ -29,8 +29,10 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "beats-dev", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
+    string(name: 'elastic_stack', defaultValue: "7.0", description: "")
     booleanParam(name: 'opbeans', defaultValue: "false", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
+    booleanParam(name: 'es_latest', defaultValue: "false", description: "")
   }
   stages {
     stage('Build Opbeans images'){
@@ -137,7 +139,7 @@ pipeline {
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
               }
             }
-            // parallel(tasks)
+            parallel(tasks)
           }
         }
       }
