@@ -70,6 +70,21 @@ It requires to initialise the pipeline with github_enterprise_constructor() firs
  coverageReport("path_to_base_folder")
 ```
 
+## dockerLogin
+Login to hub.docker.com with an authentication credentials from a Vault secret.
+The vault secret contains `user` and `password` fields with the authentication details.
+
+```
+dockerLogin(secret: 'secret/team/ci/secret-name')
+```
+
+```
+dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
+```
+
+* secret: Vault secret where the user and password stored.
+* registry: Registry to login into.
+
 ## dummy
 A sample of a step implemantetion.
 
@@ -123,6 +138,10 @@ You will need some credentials created to use the vault :
 
 ```
 def jsonValue = getVaultSecret('secret-name')
+```
+
+```
+def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.

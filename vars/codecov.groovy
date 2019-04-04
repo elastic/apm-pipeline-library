@@ -10,6 +10,7 @@ def call(Map params = [:]){
   def repo = params?.repo
   def basedir = params.containsKey('basedir') ? params.basedir : "."
   def flags = params.containsKey("flags") ? params.flags : ""
+  def secret = params?.secret
 
   if(!repo){
     log(level: 'WARN', text: "Codecov: No repository specified.")
@@ -19,7 +20,12 @@ def call(Map params = [:]){
   def token = null
   if(tokens["${repo}"] == null){
     log(level: 'DEBUG', text: "Codecov: get the token from Vault.")
-    token = getVaultSecret("${repo}-codecov")?.data?.value
+    if(secret != null){
+      token = getVaultSecret(secret: secret)?.data?.value
+    } else {
+      /** TODO remove it is only for APM projects */
+      token = getVaultSecret("${repo}-codecov")?.data?.value
+    }
     tokens["${repo}"] = token
   } else {
     log(level: 'DEBUG', text: "Codecov: get the token from cache.")
