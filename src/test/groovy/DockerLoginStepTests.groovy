@@ -39,7 +39,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
-      return [user: "my-user", password: "my-password"]
+      return [data: [user: "my-user", password: "my-password"]]
       })
   }
 
