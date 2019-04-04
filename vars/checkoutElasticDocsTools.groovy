@@ -13,7 +13,12 @@ def call(Map params = [:]){
     git init
     git remote add origin https://github.com/elastic/docs.git
     git config core.sparsecheckout true
-    echo build_docs >> .git/info/sparse-checkout
+    echo lib >> .git/info/sparse-checkout
+    echo build_docs.pl >> .git/info/sparse-checkout
+    echo .run >> .git/info/sparse-checkout
+    echo conf.yaml >> .git/info/sparse-checkout
+    echo resources >> .git/info/sparse-checkout
+    echo shared >> .git/info/sparse-checkout
     git fetch --no-tags --progress --depth=1 origin +refs/heads/master:refs/remotes/origin/master
     git checkout master
     git pull origin master
