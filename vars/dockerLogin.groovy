@@ -6,6 +6,7 @@
   dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 */
 def call(Map params = [:]){
+  echo "Is me not you"
   def secret = params.containsKey('secret') ? params.secret : error("dockerLogin: No valid secret to looking for.")
   def registry = params.containsKey('registry') ? params.registry : "docker.io"
   def jsonValue = getVaultSecret(secret: secret)
