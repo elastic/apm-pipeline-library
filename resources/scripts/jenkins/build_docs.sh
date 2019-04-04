@@ -7,4 +7,4 @@ if [ -z "${ELASTIC_DOCS}" -o ! -d "${ELASTIC_DOCS}" ]; then
   exit 1
 fi
 
-${ELASTIC_DOCS}/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc ${DOCS_DIR}/index.asciidoc -out ${DOCS_DIR}/html
+${ELASTIC_DOCS}/build_docs --chunk=1 ${BUILD_DOCS_ARGS} --doc ${DOCS_DIR}/index.asciidoc -out ${DOCS_DIR}/html --open --lenient
