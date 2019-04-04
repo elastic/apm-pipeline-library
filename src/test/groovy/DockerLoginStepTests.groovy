@@ -51,7 +51,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "sh"
     }.any { call ->
-        callArgsToString(call).contains("docker login -u my-user -p my-password docker.io")
+        callArgsToString(call).contains("docker login -u 'my-user' -p 'my-password' 'docker.io'")
     })
     assertJobStatusSuccess()
   }
@@ -64,7 +64,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "sh"
     }.any { call ->
-        callArgsToString(call).contains("docker login -u my-user -p my-password other.docker.io")
+        callArgsToString(call).contains("docker login -u 'my-user' -p 'my-password' 'other.docker.io'")
     })
     assertJobStatusSuccess()
   }
