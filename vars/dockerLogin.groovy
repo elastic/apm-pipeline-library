@@ -19,6 +19,6 @@ def call(Map params = [:]){
     [var: 'DOCKER_PASSWORD', password: dockerPassword],
     ]]) {
     log(level: "DEBUG", text: "auth: ${dockerUser} ${dockerPassword}")
-    sh(label: "Docker login", script: "docker login -u ${dockerUser} -p ${dockerPassword} ${registry}")
+    sh(label: "Docker login", script: "docker login -u '${dockerUser}' -p '${dockerPassword}' '${registry}'")
   }
 }
