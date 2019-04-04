@@ -12,7 +12,7 @@ def call(Map params = [:]){
   log(level: "DEBUG", text: "secret: ${jsonValue.data.toString()}")
   def user = jsonValue.data.user =! null ? jsonValue.data.user : error("dockerLogin: No valid user in secret.")
   def password = jsonValue.data.password =! null ? jsonValue.data.password : error("dockerLogin: No valid password in secret.")
-  log(level: "DEBUG", text: "auth: ${user} ${password}")
+  log(level: "DEBUG", text: "auth: ${jsonValue.data.user} ${jsonValue.data.password}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'DOCKER_USER', password: user],
     [var: 'DOCKER_PASSWORD', password: password],
