@@ -10,9 +10,9 @@ def call(Map params = [:]){
   def registry = params.containsKey('registry') ? params.registry : "docker.io"
   def jsonValue = getVaultSecret(secret: secret)
   log(level: "DEBUG", text: "secret: ${jsonValue.data.toString()}")
-  def data = jsonValue.data
-  def dockerUser = data.user =! null ? data.user : error("dockerLogin: No valid user in secret.")
-  def dockerPassword = data.password =! null ? data.password : error("dockerLogin: No valid password in secret.")
+  def data = jsonValue.containsKey('data') ? jsonValue.data : error("dockerLogin: No valid data in secret.")
+  def dockerUser = data.containsKey('user') ? data.user : error("dockerLogin: No valid user in secret.")
+  def dockerPassword = data.containsKey('password') ? data.password : error("dockerLogin: No valid password in secret.")
   log(level: "DEBUG", text: "auth: ${data.user} ${data.password}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'DOCKER_USER', password: dockerUser],
