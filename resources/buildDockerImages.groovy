@@ -28,93 +28,9 @@ pipeline {
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "beats-dev", description: "")
-    string(name: 'version', defaultValue: "daily", description: "")
-    string(name: 'elastic_stack', defaultValue: "7.0", description: "")
-    booleanParam(name: 'opbeans', defaultValue: "false", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
-    booleanParam(name: 'es_latest', defaultValue: "false", description: "")
   }
   stages {
-    stage('Build Opbeans images'){
-      when{
-        beforeAgent true
-        expression { return params.opbeans }
-      }
-      parallel {
-        stage('Opbeans-node') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-node.git',
-              tag: "opbeans/opbeans-node",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-python') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-python.git',
-              tag: "opbeans/opbeans-python",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-frontend') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-frontend.git',
-              tag: "opbeans/opbeans-frontend",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-java') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-java.git',
-              tag: "opbeans/opbeans-java",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-go') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-go.git',
-              tag: "opbeans/opbeans-go",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-loadgen') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-loadgen.git',
-              tag: "opbeans/opbeans-loadgen",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-flask') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
-              tag: "opbeans/opbeans-flask",
-              version: "${params.version}")
-          }
-        }
-        stage('Opbeans-ruby') {
-          agent { label 'docker' }
-          options { skipDefaultCheckout() }
-          steps {
-            buildDockerImage(repo: 'https://github.com/elastic/opbeans-ruby.git',
-              tag: "opbeans/opbeans-ruby",
-              version: "${params.version}")
-          }
-        }
-      }
-    }
     stage('Build agent Python images'){
       agent { label 'docker' }
       options { skipDefaultCheckout() }
@@ -186,26 +102,22 @@ def buildDockerImage(args){
   String folder = args.containsKey('folder') ? args.folder : "."
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
+  boolean push = args.containsKey('push') ? args.push : false
 
   def image = "${params.registry}"
   if(params.tag_prefix != null && params.tag_prefix != ""){
     image += "/${params.tag_prefix}"
   }
   image += "/${tag}:${version}"
-  try {
-    dir("${tag}-${version}"){
-      git "${repo}"
-      dir("${folder}"){
-        withEnv(env){
-          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+  dir("${tag}-${version}"){
+    git "${repo}"
+    dir("${folder}"){
+      withEnv(env){
+        sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        if(push){
           sh(label: "push docker image", script: "docker push ${image}")
         }
       }
     }
-    results[image] = true
-  } catch (e){
-    log(level: "ERROR", text: "${tag} failed: ${e?.getMessage()}")
-    results[image] = false
-    currentBuild.result = "SUCCESS"
   }
 }
