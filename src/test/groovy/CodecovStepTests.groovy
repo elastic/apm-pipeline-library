@@ -70,6 +70,12 @@ class CodecovStepTests extends BasePipelineTest {
         ref: 'refs/'
       ]]})
     helper.registerAllowedMethod('getGitRepoURL', [], {return url})
+    helper.registerAllowedMethod("getVaultSecret", [Map.class], { m ->
+      if("secret-codecov".startsWith(m.secret)){
+        return [data: [ value: 'codecov-token']]
+      }
+      return null
+    })
     helper.registerAllowedMethod("getVaultSecret", [String.class], { s ->
       if("repo-codecov".startsWith(s)){
         return [data: [ value: 'codecov-token']]
@@ -112,7 +118,7 @@ class CodecovStepTests extends BasePipelineTest {
   @Test
   void testNoToken() throws Exception {
     def script = loadScript("vars/codecov.groovy")
-    script.call(repo: "noToken")
+    script.call(repo: "noToken", secret: "secret-bad")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"
@@ -125,7 +131,7 @@ class CodecovStepTests extends BasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript("vars/codecov.groovy")
-    script.call(repo: "repo", basedir: "ws")
+    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     printCallStack()
     assertJobStatusSuccess()
   }
@@ -133,8 +139,8 @@ class CodecovStepTests extends BasePipelineTest {
   @Test
   void testCache() throws Exception {
     def script = loadScript("vars/codecov.groovy")
-    script.call(repo: "repo", basedir: "ws")
-    script.call(repo: "repo", basedir: "ws")
+    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
+    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"

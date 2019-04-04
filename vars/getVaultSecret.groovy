@@ -14,6 +14,8 @@ def call(Map params = [:]){
   Get a secret from the Vault.
 
   def jsonValue = getVaultSecret('secret-name')
+
+  TODO remove it is only for APM projects
 */
 def call(secret) {
   if(secret == null){
