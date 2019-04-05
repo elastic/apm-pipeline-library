@@ -1,11 +1,12 @@
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
 ```
-codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go')
+codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/ci/apm-agent-go-codecov')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 *basedir*: the folder to search into (the default value is '.').
 *flags*: a string holding arbitrary flags to pass to the codecov bash script
+*secret*: Vault secret where the CodeCov project token is stored.
 
 It requires to initialise the pipeline with github_enterprise_constructor() first.
 
