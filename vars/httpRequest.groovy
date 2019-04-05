@@ -1,5 +1,6 @@
 import org.apache.commons.io.IOUtils
 import java.net.URLConnection
+import com.cloudbees.groovy.cps.NonCPS
 
 /**
   Step to make HTTP request and get the result.
@@ -9,6 +10,7 @@ import java.net.URLConnection
   httpRequest(url: "https://www.google.com", method: "GET", headers: ["User-Agent": "dummy"])
   httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=java")
 */
+@NonCPS
 def call(Map params = [:]){
   def url = params?.url
   def method = params.containsKey('method') ? params.method : "GET"
