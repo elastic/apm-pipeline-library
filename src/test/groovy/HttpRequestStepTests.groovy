@@ -21,13 +21,9 @@ class HttpRequestStepTests extends BasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
-    def body = script.call(url: "https://www.google.com")
-
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Response Code: 200")
-    })
+    def body = script.call(url: "https://www.google.com", debug: 'true')
+    printCallStack()
+    assertTrue(body != null)
     assertJobStatusSuccess()
   }
 
@@ -35,13 +31,9 @@ class HttpRequestStepTests extends BasePipelineTest {
   void testGetWithParams() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
     def body = script.call(url: "https://www.google.com",
-      method: "GET", headers: ["User-Agent": "dummy"])
-
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Response Code: 200")
-    })
+      method: "GET", headers: ["User-Agent": "dummy"], debug: 'true')
+    printCallStack()
+    assertTrue(body != null)
     assertJobStatusSuccess()
   }
 
@@ -53,74 +45,62 @@ class HttpRequestStepTests extends BasePipelineTest {
       method: "POST",
       headers: ["User-Agent": "dummy"],
       data: "q=value&other=value")
-
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Response Code: 200")
-    })
+    printCallStack()
+    assertTrue(body != null)
     assertJobStatusSuccess()
   }
 
   @Test
   void testNoURL() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
+    def message = ""
     try {
       script.call()
     } catch(e) {
-      //NOOP
+      message = e.getMessage()
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Invalid URL")
-    })
+    printCallStack()
+    assertTrue(message.equals("httpRequest: Invalid URL"))
   }
 
   @Test
   void testInvalidURL() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
+    def message = ""
     try {
       script.call(url: "htttttp://google.com")
     } catch(e) {
-      //NOOP
+      message = e.getMessage()
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Invalid URL")
-    })
+    printCallStack()
+    assertTrue(message.equals("httpRequest: Invalid URL"))
   }
 
   @Test
   void testConnectionError() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
+    def message = ""
     try {
       script.call(url: "https://thisdomaindoesnotexistforsure.com")
     } catch(e) {
-      //NOOP
+      message = e.getMessage()
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Failure connecting to the service")
-    })
+    printCallStack()
+    assertTrue(message.startsWith("httpRequest: Failure connecting to the service"))
   }
 
   @Test
   void testHttpError() throws Exception {
     def script = loadScript("vars/httpRequest.groovy")
+    def message = ""
     try {
       script.call(url: "https://google.com",
         method: "POST",
         headers: ["User-Agent": "dummy"])
     } catch(e) {
-      //NOOP
+      message = e.getMessage()
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("httpRequest: Failure connecting to the service")
-    })
+    printCallStack()
+    assertTrue(message.startsWith("httpRequest: Failure connecting to the service"))
   }
 }

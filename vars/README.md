@@ -302,7 +302,7 @@ it stores the comment owner username in the BUILD_CAUSE_USER environment variabl
 
 ```
 def commentTrigger = isCommentTrigger()
-``
+```
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
