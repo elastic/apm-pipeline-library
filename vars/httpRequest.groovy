@@ -22,6 +22,7 @@ def call(Map params = [:]){
     obj = new URL(url)
   } catch(e){
     //error("httpRequest: Invalid URL")
+    println "httpRequest: Invalid URL"
     new Exception("httpRequest: Invalid URL")
   }
 
