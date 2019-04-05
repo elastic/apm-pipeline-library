@@ -21,9 +21,7 @@ def call(Map params = [:]){
   try {
     obj = new URL(url)
   } catch(e){
-    //error("httpRequest: Invalid URL")
-    println "httpRequest: Invalid URL"
-    new Exception("httpRequest: Invalid URL")
+    throw new Exception("httpRequest: Invalid URL")
   }
 
   URLConnection con
@@ -39,33 +37,24 @@ def call(Map params = [:]){
       con.setRequestProperty(k, v)
     }
     if(data != null){
-      //log(level: "DEBUG", text: "httpRequest: Data: ${data}")
       IOUtils.write(data, con.getOutputStream(), "UTF-8")
     }
     int responseCode = con.getResponseCode()
-    //log(level: "DEBUG", text: "httpRequest: Sending '${method}' request to URL : ${url}")
-    //log(level: "DEBUG", text: "httpRequest: Response Code: ${responseCode}")
-    //log(level: "DEBUG", text: "httpRequest: Response message: ${con.getResponseMessage()}")
-
     String body
     String encoding = con.getContentEncoding();
     encoding = encoding == null ? "UTF-8" : encoding;
     if (con.getResponseCode() < 400) {
       body = IOUtils.toString(con.getInputStream(), encoding)
-      //log(level: "DEBUG", text: "httpRequest: Response: ${body}")
     } else {
       body = "\nMessage: " + con.getResponseMessage()
       body = "\nCode: " + responseCode
       body = body + "\nError: " + IOUtils.toString(con.getErrorStream(), encoding)
-      new Exception("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
-      //error("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
+      throw new Exception("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
     }
     con = null
     return body
   } catch(e){
     con = null
-    new Exception("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
-    //log(level: "DEBUG", text: "httpRequest: ${e?.getMessage()}")
-    //error("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
+    throw new Exception("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
   }
 }
