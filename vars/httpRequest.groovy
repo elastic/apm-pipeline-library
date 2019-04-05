@@ -22,6 +22,7 @@ def call(Map params = [:]){
     obj = new URL(url)
   } catch(e){
     //error("httpRequest: Invalid URL")
+    new Exception("httpRequest: Invalid URL")
   }
 
   URLConnection con
@@ -55,12 +56,14 @@ def call(Map params = [:]){
       body = "\nMessage: " + con.getResponseMessage()
       body = "\nCode: " + responseCode
       body = body + "\nError: " + IOUtils.toString(con.getErrorStream(), encoding)
+      new Exception("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
       //error("httpRequest: Failure connecting to the service ${url} : ${body ? body : 'unknown error'}")
     }
     con = null
     return body
   } catch(e){
     con = null
+    new Exception("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
     //log(level: "DEBUG", text: "httpRequest: ${e?.getMessage()}")
     //error("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
   }
