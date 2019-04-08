@@ -12,6 +12,7 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL='INFO'
+    DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -31,6 +32,13 @@ pipeline {
     booleanParam(name: 'python', defaultValue: "false", description: "")
   }
   stages {
+    stage('test-login'){
+      agent { label 'docker' }
+      steps {
+        sh 'dig +short docker.io'
+        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: "docker.io")
+      }
+    }
     stage('Build agent Python images'){
       agent { label 'docker' }
       options { skipDefaultCheckout() }
