@@ -18,6 +18,10 @@ def call(Map params = [:]){
     [var: 'DOCKER_USER', password: dockerUser],
     [var: 'DOCKER_PASSWORD', password: dockerPassword],
     ]]) {
-    sh(label: "Docker login", script: "set +x ;docker login -u '${dockerUser}' -p '${dockerPassword}' '${registry}' 2>/dev/null")
+    sh(label: "Docker login", script: """
+    set +x
+    host ${registry} 2>&1 > /dev/null
+    docker login -u '${dockerUser}' -p '${dockerPassword}' '${registry}' 2>/dev/null
+    """)
   }
 }
