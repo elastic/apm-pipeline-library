@@ -33,7 +33,7 @@ pipeline {
   }
   stages {
     stage('test-login'){
-      agent { label 'inmmutable && docker' }
+      agent { label 'immutable && docker' }
       steps {
         sh "host ${params.registry}"
         dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: params.registry)
