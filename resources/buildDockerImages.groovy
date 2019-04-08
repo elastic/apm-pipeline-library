@@ -35,8 +35,8 @@ pipeline {
     stage('test-login'){
       agent { label 'docker' }
       steps {
-        sh 'dig +short docker.io'
-        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: "docker.io")
+        sh "host ${params.registry}"
+        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: params.registry)
       }
     }
     stage('Build agent Python images'){
