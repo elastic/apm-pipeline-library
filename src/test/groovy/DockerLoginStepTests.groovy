@@ -25,6 +25,18 @@ class DockerLoginStepTests extends BasePipelineTest {
     }
     return res
   }
+  def withEnvInterceptor = { list, closure ->
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], fields[1])
+    }
+    def res = closure.call()
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], null)
+    }
+    return res
+  }
 
   @Override
   @Before
@@ -38,6 +50,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "my-user", password: "my-password"]]
       })
@@ -51,7 +64,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "sh"
     }.any { call ->
-        callArgsToString(call).contains("docker login -u 'my-user' -p 'my-password' 'docker.io'")
+        callArgsToString(call).contains('docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"')
     })
     assertJobStatusSuccess()
   }
@@ -64,7 +77,7 @@ class DockerLoginStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "sh"
     }.any { call ->
-        callArgsToString(call).contains("docker login -u 'my-user' -p 'my-password' 'other.docker.io'")
+        callArgsToString(call).contains('docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"')
     })
     assertJobStatusSuccess()
   }
