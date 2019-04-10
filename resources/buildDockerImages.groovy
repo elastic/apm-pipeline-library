@@ -38,21 +38,17 @@ pipeline {
       agent { label 'immutable && docker' }
       environment {
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
+        HOME = "${env.WORKSPACE}"
       }
       when{
         beforeAgent true
         expression { return params.docker_io_login }
       }
       steps {
-        sh "host docker.io"
-        sh 'export'
-        
         script{
-          env.HOME = env.WORKSPACE
           dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
           sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
 
-          env.HOME = env.JENKINS_HOME
           if(params.secret != null && "${params.secret}" != ""){
              dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }
