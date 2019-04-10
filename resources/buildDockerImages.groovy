@@ -68,6 +68,9 @@ pipeline {
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
+            if(params.secret != null && "${params.secret}" != ""){
+               dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+            }
             def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
