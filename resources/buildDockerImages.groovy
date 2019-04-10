@@ -44,7 +44,7 @@ pipeline {
       }
       steps {
         sh "host docker.io"
-        sh "cat $HOME/.docker/.docker/config.json "
+        sh 'cat ${HOME}/.docker/config.json'
         
         script{
           def oldHome = env.HOME
@@ -59,7 +59,7 @@ pipeline {
       }
     }
     stage('Build agent Python images'){
-      agent { label 'docker' }
+      agent { label 'immutable && docker' }
       options { skipDefaultCheckout() }
       when{
         beforeAgent true
