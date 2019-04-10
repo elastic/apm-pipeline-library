@@ -53,8 +53,8 @@ pipeline {
           sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
 
           env.HOME = env.JENKINS_HOME
-          if(parms.secret != null && "${parms.secret}" != ""){
-             dockerLogin(secret: "${parms.secret}", registry: "${params.registry}")
+          if(params.secret != null && "${params.secret}" != ""){
+             dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }
           sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
           sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
