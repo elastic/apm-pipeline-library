@@ -44,7 +44,7 @@ pipeline {
       }
       steps {
         sh "host docker.io"
-        sh 'cat ${HOME}/.docker/config.json'
+        sh 'export'
         
         script{
           def oldHome = env.HOME
