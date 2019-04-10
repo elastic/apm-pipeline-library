@@ -16,7 +16,7 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2', daysToKeepStr: '30'))
     timestamps()
     ansiColor('xterm')
     disableResume()
@@ -29,6 +29,7 @@ pipeline {
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
+    string(name: 'secret', defaultValue: "", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'docker_io_login', defaultValue: "false", description: "")
   }
@@ -47,12 +48,14 @@ pipeline {
         sh 'export'
         
         script{
-          def oldHome = env.HOME
           env.HOME = env.WORKSPACE
           dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
           sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
 
-          env.HOME = oldHome
+          env.HOME = env.JENKINS_HOME
+          if(parms.secret != null && "${parms.secret}" != ""){
+             dockerLogin(secret: "${parms.secret}", registry: "${params.registry}")
+          }
           sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
           sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
         }
