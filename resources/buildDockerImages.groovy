@@ -28,7 +28,7 @@ pipeline {
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
-    string(name: 'tag_prefix', defaultValue: "beats-dev", description: "")
+    string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
   }
   stages {
