@@ -44,10 +44,18 @@ pipeline {
       }
       steps {
         sh "host docker.io"
-        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-        sh(label: 'pull Docker image', script: 'docker pull store/oracle/weblogic:12.2.1.3-dev')
-        sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
-        sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
+        sh "cat $HOME/.docker/.docker/config.json "
+        
+        script{
+          def oldHome = env.HOME
+          env.HOME = env.WORKSPACE
+          dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+          sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
+
+          env.HOME = oldHome
+          sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
+          sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
+        }
       }
     }
     stage('Build agent Python images'){
