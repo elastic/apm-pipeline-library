@@ -33,15 +33,21 @@ pipeline {
     booleanParam(name: 'docker_io_login', defaultValue: "false", description: "")
   }
   stages {
-    stage('test-login'){
+    stage('Cache Weblogic Docker Image'){
       agent { label 'immutable && docker' }
+      environment {
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
+      }
       when{
         beforeAgent true
         expression { return params.docker_io_login }
       }
       steps {
-        sh "host ${params.registry}"
+        sh "host docker.io"
         dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+        sh(label: 'pull Docker image', script: 'docker pull store/oracle/weblogic:12.2.1.3-dev')
+        sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
+        sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
       }
     }
     stage('Build agent Python images'){
