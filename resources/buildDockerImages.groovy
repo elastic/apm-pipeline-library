@@ -71,7 +71,8 @@ pipeline {
                   tag: "apm-agent-python-test",
                   version: "${pythonIn}",
                   folder: "tests",
-                  options: "--build-arg PYTHON_IMAGE=${pythonVersion}")
+                  options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
+                  push: true)
               }
             }
             parallel(tasks)
