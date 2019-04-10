@@ -30,13 +30,18 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
+    booleanParam(name: 'docker_io_login', defaultValue: "false", description: "")
   }
   stages {
     stage('test-login'){
       agent { label 'immutable && docker' }
+      when{
+        beforeAgent true
+        expression { return params.docker_io_login }
+      }
       steps {
         sh "host ${params.registry}"
-        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: params.registry)
+        dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
       }
     }
     stage('Build agent Python images'){
