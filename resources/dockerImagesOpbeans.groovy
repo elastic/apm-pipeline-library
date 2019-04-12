@@ -29,7 +29,7 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
-    string(name: 'docker_login', defaultValue: "secret/apm-team/ci/elastic-observability-dockerhub", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
     booleanParam(name: 'opbeans', defaultValue: "false", description: "")
   }
   stages {
@@ -142,8 +142,8 @@ def buildDockerImage(args){
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
 
-  if(params.docker_login != null && "${params.docker_login}" != ""){
-    dockerLogin(secret: "${params.docker_login}", registry: "${params.registry}")
+  if(params.secret != null && "${params.secret}" != ""){
+    dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
   }
   def image = "${params.registry}"
   if(params.tag_prefix != null && params.tag_prefix != ""){
