@@ -31,7 +31,8 @@ pipeline {
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'secret', defaultValue: "", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
-    booleanParam(name: 'docker_io_login', defaultValue: "false", description: "")
+    booleanParam(name: 'weblogic', defaultValue: "false", description: "")
+    booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -42,7 +43,7 @@ pipeline {
       }
       when{
         beforeAgent true
-        expression { return params.docker_io_login }
+        expression { return params.weblogic }
       }
       steps {
         script{
@@ -88,6 +89,40 @@ pipeline {
             parallel(tasks)
           }
         }
+      }
+    }
+    stage('Build Curator image'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.python }
+      }
+      steps {
+        buildDockerImage(
+          repo: 'https://github.com/elastic/curator.git',
+          tag: "curator",
+          version: "daily",
+          folder: "curator",
+          options: "",
+          push: true)
+      }
+    }
+    stage('Build Integration test Docker images'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.apm_integration_testing }
+      }
+      steps {
+        buildDockerImage(
+          repo: 'https://github.com/elastic/apm-integration-testing.git',
+          tag: "apm-integration-testing",
+          version: "daily",
+          folder: "apm-integration-testing",
+          options: "",
+          push: true)
       }
     }
   }

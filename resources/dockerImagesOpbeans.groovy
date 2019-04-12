@@ -27,7 +27,7 @@ pipeline {
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
-    string(name: 'tag_prefix', defaultValue: "beats-dev", description: "")
+    string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
     string(name: 'docker_login', defaultValue: "secret/apm-team/ci/elastic-observability-dockerhub", description: "")
     booleanParam(name: 'opbeans', defaultValue: "false", description: "")

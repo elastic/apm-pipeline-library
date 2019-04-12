@@ -23,14 +23,14 @@ pipeline {
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
-    string(name: 'tag_prefix', defaultValue: "beats-dev", description: "")
+    string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
     string(name: 'elastic_stack', defaultValue: "7.0.0-rc2", description: "")
   }
   stages {
     stage('Get Docker images'){
       steps {
-        sh(label: 'Get Docker images', script: "./resources/scripts/getDockerImages.sh ${params.elastic_stack.substring(0,3)}")
+        sh(label: 'Get Docker images', script: "./resources/scripts/getDockerImages.sh ${params.elastic_stack}")
       }
     }
     stage('Push Docker images'){
