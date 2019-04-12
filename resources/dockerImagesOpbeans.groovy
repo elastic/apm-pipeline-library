@@ -141,7 +141,7 @@ def buildDockerImage(args){
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
-
+  sleep randomNumber(min: 1, max: 10)
   if(params.secret != null && "${params.secret}" != ""){
     dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
   }

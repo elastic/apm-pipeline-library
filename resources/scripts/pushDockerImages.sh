@@ -1,5 +1,5 @@
 #!#!/usr/bin/env bash
-set -exuo pipefail
+set -euo pipefail
 
 #PREFIX="employees/user"
 #PUSH_VERSION="daily"
