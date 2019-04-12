@@ -104,7 +104,6 @@ pipeline {
           tag: "curator",
           version: "daily",
           folder: "curator",
-          options: "",
           push: true)
       }
     }
@@ -120,8 +119,6 @@ pipeline {
           repo: 'https://github.com/elastic/apm-integration-testing.git',
           tag: "apm-integration-testing",
           version: "daily",
-          folder: "apm-integration-testing",
-          options: "",
           push: true)
       }
     }
