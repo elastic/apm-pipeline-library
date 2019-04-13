@@ -33,6 +33,7 @@ pipeline {
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
+    booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -119,6 +120,21 @@ pipeline {
           repo: 'https://github.com/elastic/apm-integration-testing.git',
           tag: "apm-integration-testing",
           version: "daily",
+          push: true)
+      }
+    }
+    stage('Build helm-kubernetes Docker hub image'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.helm_kubectl }
+      }
+      steps {
+        buildDockerImage(
+          repo: 'https://github.com/dtzar/helm-kubectl.git',
+          tag: "helm-kubectl",
+          version: "latest",
           push: true)
       }
     }

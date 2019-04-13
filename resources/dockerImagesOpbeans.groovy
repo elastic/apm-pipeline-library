@@ -44,8 +44,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-node.git',
-              tag: "opbeans/opbeans-node",
-              version: "${params.version}")
+              tag: "opbeans-node",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-python') {
@@ -53,8 +54,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-python.git',
-              tag: "opbeans/opbeans-python",
-              version: "${params.version}")
+              tag: "opbeans-python",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-frontend') {
@@ -62,8 +64,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-frontend.git',
-              tag: "opbeans/opbeans-frontend",
-              version: "${params.version}")
+              tag: "opbeans-frontend",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-java') {
@@ -71,8 +74,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-java.git',
-              tag: "opbeans/opbeans-java",
-              version: "${params.version}")
+              tag: "opbeans-java",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-go') {
@@ -80,8 +84,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-go.git',
-              tag: "opbeans/opbeans-go",
-              version: "${params.version}")
+              tag: "opbeans-go",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-loadgen') {
@@ -89,8 +94,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-loadgen.git',
-              tag: "opbeans/opbeans-loadgen",
-              version: "${params.version}")
+              tag: "opbeans-loadgen",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-flask') {
@@ -98,8 +104,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
-              tag: "opbeans/opbeans-flask",
-              version: "${params.version}")
+              tag: "opbeans-flask",
+              version: "${params.version}",
+              push: true)
           }
         }
         stage('Opbeans-ruby') {
@@ -107,8 +114,9 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-ruby.git',
-              tag: "opbeans/opbeans-ruby",
-              version: "${params.version}")
+              tag: "opbeans-ruby",
+              version: "${params.version}",
+              push: true)
           }
         }
       }
@@ -141,7 +149,7 @@ def buildDockerImage(args){
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
-  sleep randomNumber(min: 1, max: 10)
+  sleep randomNumber(min: 10, max: 30)
   if(params.secret != null && "${params.secret}" != ""){
     dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
   }
