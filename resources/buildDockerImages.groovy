@@ -50,7 +50,11 @@ pipeline {
         script{
           dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
           sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
-
+          sh "export"
+          sh "ls -la ${JENKINS_HOME}"
+          sh "cp /var/lib/jenkins/packer_cache* ."
+          archiveArtifacts 'packer_cache*'
+          
           if(params.secret != null && "${params.secret}" != ""){
              dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }
