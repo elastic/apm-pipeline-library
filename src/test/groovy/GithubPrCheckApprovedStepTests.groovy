@@ -231,7 +231,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
       return [
         title: 'dummy PR',
         user: [
-          login: 'greenkeeperio[bot]',
+          login: 'greenkeeper[bot]',
           type: "Bot",
           ],
         author_association: 'NONE'

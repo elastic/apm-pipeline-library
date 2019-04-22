@@ -25,17 +25,28 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
-    string(name: 'elastic_stack', defaultValue: "7.0.0-rc2", description: "")
+    string(name: 'elastic_stack', defaultValue: "8.0.0-SNAPSHOT", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
   }
   stages {
     stage('Get Docker images'){
       steps {
-        sh(label: 'Get Docker images', script: "./resources/scripts/getDockerImages.sh ${params.elastic_stack}")
+        script {
+          if(params.secret != null && "${params.secret}" != ""){
+             dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+          }
+          sh(label: 'Get Docker images', script: "./resources/scripts/getDockerImages.sh ${params.elastic_stack}")
+        }
       }
     }
     stage('Push Docker images'){
       steps {
-        sh(label: 'Push Docker images', script: "./resources/scripts/pushDockerImages.sh ${params.elastic_stack} ${params.tag_prefix} ${params.version} ${params.registry}")
+        script {
+          if(params.secret != null && "${params.secret}" != ""){
+             dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+          }
+          sh(label: 'Push Docker images', script: "./resources/scripts/pushDockerImages.sh ${params.elastic_stack} ${params.tag_prefix} ${params.version} ${params.registry}")
+        }
       }
     }
   }
