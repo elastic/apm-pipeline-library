@@ -1,5 +1,5 @@
 #!#!/usr/bin/env bash
-set -euo pipefail
+set -exuo pipefail
 
 if [ $# -lt 1 ]; then
   echo "${0} VERSION"
@@ -19,14 +19,14 @@ MANIFEST_JSON=$(curl -sSf https://artifacts-api.elastic.co/v1/versions/${VERSION
 
 for product in elasticsearch kibana apm-server
 do
-  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.\"${product}\".packages[]|select(.type==\"docker\").url"|grep "${product}-${VERSION_ID}")
+  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.\"${product}\".packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${VERSION_ID}")
   echo "Downloading ${product} - ${URL}"
   curl ${URL}|docker load
 done
 
 for product in auditbeat filebeat heartbeat metricbeat packetbeat
 do
-  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.beats.packages[]|select(.type==\"docker\").url"|grep "${product}-${VERSION_ID}")
+  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.beats.packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${VERSION_ID}")
   echo "Downloading ${product} - ${URL}"
   curl ${URL}|docker load
 done
