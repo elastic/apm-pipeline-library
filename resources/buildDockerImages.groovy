@@ -29,7 +29,7 @@ pipeline {
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
-    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
@@ -54,7 +54,7 @@ pipeline {
           sh "ls -la ${JENKINS_HOME}"
           sh "cp /var/lib/jenkins/packer_cache* ."
           archiveArtifacts 'packer_cache*'
-          
+
           if(params.secret != null && "${params.secret}" != ""){
              dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }

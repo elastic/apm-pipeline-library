@@ -26,7 +26,7 @@ pipeline {
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
     string(name: 'elastic_stack', defaultValue: "8.0.0-SNAPSHOT", description: "")
-    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
   }
   stages {
     stage('Get Docker images'){
