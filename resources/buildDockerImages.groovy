@@ -156,9 +156,10 @@ pipeline {
           dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
         }
         sh(label: 'build docker image', script: './build.sh 1.7')
-        /*if(push){
-          sh(label: "push docker image", script: "./push.sh")
-        }*/
+        if(push){
+          sh(label: 'push docker image', script: './push.sh 1.7')
+        }
+        archiveArtifacts '*.log'
       }
     }
   }
