@@ -146,6 +146,9 @@ pipeline {
     stage('Build JRuby-jdk Docker images'){
       agent { label 'immutable && docker' }
       options { skipDefaultCheckout() }
+      environment {
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}"
+      }
       when{
         beforeAgent true
         expression { return params.jruby }
@@ -155,10 +158,10 @@ pipeline {
         if(params.secret != null && "${params.secret}" != ""){
           dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
         }
-        sh(label: 'build docker images', script: "./run.sh --action build --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
-        sh(label: 'test docker images', script: "./run.sh --action test --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
+        sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
+        sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
         if(push){
-          sh(label: 'push docker images', script: "./run.sh --action push --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
+          sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
         }
         archiveArtifacts '*.log'
       }
