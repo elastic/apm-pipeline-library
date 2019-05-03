@@ -154,16 +154,18 @@ pipeline {
         expression { return params.jruby }
       }
       steps {
-        git 'https://github.com/v1v/docker-jruby', branch: 'versions'
-        if(params.secret != null && "${params.secret}" != ""){
-          dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+        git url: 'https://github.com/v1v/docker-jruby', branch: 'versions'
+        script {
+          if(params.secret != null && "${params.secret}" != ""){
+            dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+          }
+          sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
+          sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
+          if(push){
+            sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
+          }
+          archiveArtifacts '*.log'
         }
-        sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
-        sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
-        if(push){
-          sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
-        }
-        archiveArtifacts '*.log'
       }
     }
   }
