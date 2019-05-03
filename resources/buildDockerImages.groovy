@@ -34,6 +34,7 @@ pipeline {
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
+    booleanParam(name: 'jruby', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -54,7 +55,7 @@ pipeline {
           sh "ls -la ${JENKINS_HOME}"
           sh "cp /var/lib/jenkins/packer_cache* ."
           archiveArtifacts 'packer_cache*'
-          
+
           if(params.secret != null && "${params.secret}" != ""){
              dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }
@@ -140,6 +141,24 @@ pipeline {
           tag: "helm-kubectl",
           version: "latest",
           push: true)
+      }
+    }
+    stage('Build JRuby-jdk Docker images'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.jruby }
+      }
+      steps {
+        git 'https://github.com/v1v/docker-jruby', branch: 'versions'
+        if(params.secret != null && "${params.secret}" != ""){
+          dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+        }
+        sh(label: 'build docker image', script: './build.sh 1.7')
+        /*if(push){
+          sh(label: "push docker image", script: "./push.sh")
+        }*/
       }
     }
   }
