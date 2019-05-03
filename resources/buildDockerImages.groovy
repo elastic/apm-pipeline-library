@@ -155,9 +155,10 @@ pipeline {
         if(params.secret != null && "${params.secret}" != ""){
           dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
         }
-        sh(label: 'build docker image', script: './build.sh 1.7')
+        sh(label: 'build docker images', script: "./run.sh --action build --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
+        sh(label: 'test docker images', script: "./run.sh --action test --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
         if(push){
-          sh(label: 'push docker image', script: './push.sh 1.7')
+          sh(label: 'push docker images', script: "./run.sh --action push --registry ${params.registry}/${params.tag_prefix} --exclude 1.7")
         }
         archiveArtifacts '*.log'
       }
