@@ -154,7 +154,7 @@ pipeline {
         expression { return params.jruby }
       }
       steps {
-        git url: 'https://github.com/v1v/docker-jruby', branch: 'versions'
+        git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
         script {
           if(params.secret != null && "${params.secret}" != ""){
             dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
