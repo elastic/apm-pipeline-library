@@ -40,8 +40,8 @@ the Maven wrapper available in .mvn folder.
 ## Create a new step
 
 We have several steps created that can be used on our Jenkins pipelines,
-this allow us to reuse common process along Jenkins pipelines.
-These are the common step we should follow to create a new step:
+this allow us to reuse common processes along Jenkins pipelines.
+These are the common steps we should follow to create a new step:
 
 * Create a new groovy file in `vars/dummy.groovy`
 * Create a new help file in `vars/dummy.txt`
@@ -57,13 +57,9 @@ Those steps should satisfy the following characteristics:
 In some cases, we need to make complex task, for those cases we can use classes
 and should be created in the folder `src/co/elastic`.
 
-## Test the pipeline steps
-
-
-
 ## Release a version
 
-Every time there is enough changes, we would release a new version. A version
+Every time there are enough changes, we would release a new version. A version
 has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](https://semver.org/).
 To create a new release we should create a new tar with the version number and point the
 `current` tag to the same version. The `current` tag is used to use the last stable
