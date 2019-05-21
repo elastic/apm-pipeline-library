@@ -34,6 +34,7 @@ pipeline {
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
+    booleanParam(name: 'jruby', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -140,6 +141,29 @@ pipeline {
           tag: "helm-kubectl",
           version: "latest",
           push: true)
+      }
+    }
+    stage('Build JRuby-jdk Docker images'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      environment {
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}"
+      }
+      when{
+        beforeAgent true
+        expression { return params.jruby }
+      }
+      steps {
+        git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
+        script {
+          if(params.secret != null && "${params.secret}" != ""){
+            dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+          }
+          sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
+          sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
+          sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
+          archiveArtifacts '*.log'
+        }
       }
     }
   }
