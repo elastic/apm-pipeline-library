@@ -15,7 +15,7 @@ PATH="${JAVA_HOME}/bin:${PATH}"
 java -version || true
 
 uname -a || true
-dh -h || true
+df -h || true
 
 docker images || true
 
