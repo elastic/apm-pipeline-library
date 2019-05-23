@@ -45,6 +45,11 @@ pipeline {
           steps{
             sh returnStatus: true, script: 'docker --version'
             sh returnStatus: true, script: 'java -version'
+            sh returnStatus: true, script: '''
+            JAVA_HOME="${HUDSON_HOME}/.java/java10"
+            PATH="${JAVA_HOME}/bin:${PATH}"
+            java -version
+            '''
             sh returnStatus: true, script: 'go version'
             sh returnStatus: true, script: 'git version'
             sh returnStatus: true, script: 'mvn --version'
