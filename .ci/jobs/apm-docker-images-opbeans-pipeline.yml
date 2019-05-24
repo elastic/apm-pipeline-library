@@ -1,8 +1,8 @@
 ---
 - job:
     name: apm-shared/apm-docker-images-pipeline
-    display-name: Build Docker images Pipeline
-    description: Build several Docker images daily
+    display-name: Build OpBeans Docker images Pipeline
+    description: Build OpBeans Docker images daily
     view: APM-CI
     project-type: pipeline
     parameters:
@@ -11,7 +11,7 @@
         default: master
         description: the Git branch specifier to build
     pipeline-scm:
-      script-path: resources/buildDockerImages.groovy
+      script-path: rresources/dockerImagesOpbeans.groovy
       scm:
       - git:
           url: git@github.com:elastic/apm-pipeline-library.git
