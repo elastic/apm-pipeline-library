@@ -39,6 +39,16 @@ pipeline {
         expression { return params.opbeans }
       }
       parallel {
+        stage('Opbeans-dotnet') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-dotnet.git',
+              tag: "opbeans-dotnet",
+              version: "${params.version}",
+              push: true)
+          }
+        }
         stage('Opbeans-node') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }
