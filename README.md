@@ -23,3 +23,56 @@ Jenkins pipeline shared library for the project APM
 * [Pipeline shared library](https://jenkins.io/doc/book/pipeline/shared-libraries/)
 
 * [Steps Documentation](vars/README.md)
+
+## Requirements
+
+In order to test the library you need Maven 3 installed, also, it is possible to use
+the Maven wrapper available in .mvn folder.
+
+`mvn test`
+
+`mvn test -Dtest=CLASS#TEST_NAME`
+
+`./mvnw test`
+
+`./mvnw test -Dtest=CLASS#TEST_NAME`
+
+## Create a new step
+
+We have several steps created that can be used on our Jenkins pipelines,
+this allow us to reuse common processes along Jenkins pipelines.
+These are the common steps we should follow to create a new step:
+
+* Create a new groovy file in `vars/dummy.groovy`
+* Create a new help file in `vars/dummy.txt`
+* Create a new test for the step in `src/test/groovy/DummyStepTests.groovy`
+* Update the steps `README.md` by executing `./resources/scripts/generateReadme.sh vars/`
+
+Those steps should satisfy the following characteristics:
+* It does only one thing
+* It does it well
+* It is short
+* It is reusable
+
+In some cases, we need to make complex task, for those cases we can use classes
+and should be created in the folder `src/co/elastic`.
+
+## Release a version
+
+Every time there are enough changes, we would release a new version. A version
+has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](https://semver.org/).
+To create a new release we should create a new tar with the version number and point the
+`current` tag to the same version. The `current` tag is used to use the last stable
+library version on pipelines.
+
+```
+git checkout master
+git pull origin master
+git tag v1.0.18
+git tag -f current
+git push -f --tags
+```
+
+## Upgrade repository maven wrapper
+
+`mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`

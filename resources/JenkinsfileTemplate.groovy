@@ -41,15 +41,6 @@ pipeline {
         PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
       stages {
-        stage('Check flyweight Commands support'){
-          steps{
-            sh returnStatus: true, script: 'docker --version'
-            sh returnStatus: true, script: 'java -version'
-            sh returnStatus: true, script: 'go version'
-            sh returnStatus: true, script: 'git version'
-            sh returnStatus: true, script: 'mvn --version'
-          }
-        }
         /**
         Checkout the code and stash it, to use it on other stages.
         */

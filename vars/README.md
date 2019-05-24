@@ -472,3 +472,18 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
 }
 ```
 
+## withSecretVault
+Grab a secret from the vault, define the environment variables which have been
+passed as parameters and mask the secrets
+
+the secret must have this format
+`{ data: { user: 'username', password: 'user_password'} }`
+
+The passed data variables will be exported and masked on logs
+
+```
+withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: 'my_password_env'){
+  //block
+}
+```
+
