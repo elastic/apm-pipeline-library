@@ -74,7 +74,7 @@
     </tr>
     <tr>
       <td>Duration:</td>
-      <td>${build.durationString}</td>
+      <td>${build.duration}</td>
     </tr>
     <tr>
       <td>Cause:</td>
