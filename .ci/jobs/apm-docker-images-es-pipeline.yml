@@ -1,6 +1,6 @@
 ---
 - job:
-    name: apm-shared/apm-docker-images-pipeline
+    name: apm-shared/apm-docker-es-pipeline
     display-name: Update Elastic Stack Docker images Pipeline
     description: Update Elastic Stack Docker images daily on the Observability docker.elastic.co namespace.
     view: APM-CI

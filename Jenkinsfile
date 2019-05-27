@@ -31,17 +31,12 @@ pipeline {
         */
         stage('Checkout') {
           steps {
-            emailext body: '''${SCRIPT, template="groovy_html.template"}''',
+            emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
             subject: currentBuild.currentResult + " : " + env.JOB_NAME,
             to: "${NOTIFY_TO}"
 
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
-            script {
-              currentBuild.getBuildCauses().each {
-                echo it.toString()
-              }
-            }
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
