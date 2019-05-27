@@ -31,12 +31,23 @@ pipeline {
         */
         stage('Checkout') {
           steps {
-            emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
-            subject: currentBuild.currentResult + " : " + env.JOB_NAME,
-            to: "${NOTIFY_TO}"
-
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
+
+            emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
+            subject: currentBuild.currentResult + " : 1 " + env.JOB_NAME,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+            to: "ivan.fernandez@elastic.co"
+
+            emailext body: '${SCRIPT, template="groovy-html"}',
+            subject: currentBuild.currentResult + " : 2 " + env.JOB_NAME,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+            to: "ivan.fernandez@elastic.co"
+
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
