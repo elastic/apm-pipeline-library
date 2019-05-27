@@ -38,6 +38,7 @@ pipeline {
               emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
               mimeType: 'text/html',
               subject: currentBuild.currentResult + " : 1 " + env.JOB_NAME,
+              //"Status: ${currentBuild.result?:'SUCCESS'} - Job \'${env.JOB_NAME}:${env.BUILD_NUMBER}\'",
               attachLog: true,
               compressLog: true,
               recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
@@ -45,7 +46,16 @@ pipeline {
             }
 
             emailext body: '${SCRIPT, template="groovy-html"}',
+            mimeType: 'text/html',
             subject: currentBuild.currentResult + " : 2 " + env.JOB_NAME,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+            to: "ivan.fernandez@elastic.co"
+
+            emailext body: '${JELLY_SCRIPT,template="static-analysis.jelly"}',
+            mimeType: 'text/html',
+            subject: currentBuild.currentResult + " : 3 " + env.JOB_NAME,
             attachLog: true,
             compressLog: true,
             recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
