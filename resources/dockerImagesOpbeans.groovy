@@ -23,13 +23,13 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'version', defaultValue: "daily", description: "")
-    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'opbeans', defaultValue: "false", description: "")
   }
   stages {
@@ -39,6 +39,16 @@ pipeline {
         expression { return params.opbeans }
       }
       parallel {
+        stage('Opbeans-dotnet') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-dotnet.git',
+              tag: "opbeans-dotnet",
+              version: "${params.version}",
+              push: true)
+          }
+        }
         stage('Opbeans-node') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }

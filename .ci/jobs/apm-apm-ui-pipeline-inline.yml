@@ -1,0 +1,10 @@
+---
+- job:
+    name: apm-ui/apm-apm-ui-pipeline-inline
+    display-name: APM UI
+    description: APM UI build and tests
+    view: APM-CI
+    project-type: pipeline
+    dsl: 'pipelineApmUI()
+
+      '

@@ -24,16 +24,17 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
-    string(name: 'secret', defaultValue: "secret/apm-team/ci/elastic-observability-docker-elastic-co", description: "")
+    string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
+    booleanParam(name: 'jruby', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -54,7 +55,7 @@ pipeline {
           sh "ls -la ${JENKINS_HOME}"
           sh "cp /var/lib/jenkins/packer_cache* ."
           archiveArtifacts 'packer_cache*'
-          
+
           if(params.secret != null && "${params.secret}" != ""){
              dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
           }
@@ -140,6 +141,44 @@ pipeline {
           tag: "helm-kubectl",
           version: "latest",
           push: true)
+      }
+    }
+    stage('Build helm-kubernetes Docker hub image'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      when{
+        beforeAgent true
+        expression { return params.helm_kubectl }
+      }
+      steps {
+        buildDockerImage(
+          repo: 'https://github.com/dtzar/helm-kubectl.git',
+          tag: "helm-kubectl",
+          version: "latest",
+          push: true)
+      }
+    }
+    stage('Build JRuby-jdk Docker images'){
+      agent { label 'immutable && docker' }
+      options { skipDefaultCheckout() }
+      environment {
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}"
+      }
+      when{
+        beforeAgent true
+        expression { return params.jruby }
+      }
+      steps {
+        git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
+        script {
+          if(params.secret != null && "${params.secret}" != ""){
+            dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
+          }
+          sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
+          sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
+          sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
+          archiveArtifacts '*.log'
+        }
       }
     }
   }

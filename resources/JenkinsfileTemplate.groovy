@@ -23,7 +23,7 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
@@ -41,15 +41,6 @@ pipeline {
         PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
       stages {
-        stage('Check flyweight Commands support'){
-          steps{
-            sh returnStatus: true, script: 'docker --version'
-            sh returnStatus: true, script: 'java -version'
-            sh returnStatus: true, script: 'go version'
-            sh returnStatus: true, script: 'git version'
-            sh returnStatus: true, script: 'mvn --version'
-          }
-        }
         /**
         Checkout the code and stash it, to use it on other stages.
         */
