@@ -184,94 +184,57 @@
 
 <!-- JUnit TEMPLATE -->
 
-<%
-  testResult = build.testResultAction
-
-  if (testResult) {
-    jobName = build.parent.name
-    rootUrl = hudson.model.Hudson.instance.rootUrl
-    testResultsUrl = "${rootUrl}${build.url}testReport/"
-
-    if (testResult.failCount){
-      lastBuildSuccessRate = String.format("%.2f", (testResult.totalCount - testResult.failCount) * 100f / testResult.totalCount)
-    }
-    else{
-      lastBuildSuccessRate = 100f;
-    }
-
-    startedPassing = []
-    startedFailing = []
-    failing = []
-
-    previousFailedTestCases = new HashSet()
-    currentFailedTestCase = new HashSet()
-
-    if (build.previousBuild?.testResultAction) {
-      build.previousBuild.testResultAction.failedTests.each {
-        previousFailedTestCases << it.simpleName + "." + it.safeName
+  <%
+  def junitResultList = it.JUnitTestResult
+  try {
+    def cucumberTestResultAction = it.getAction("org.jenkinsci.plugins.cucumber.jsontestsupport.CucumberTestResultAction")
+    junitResultList.add( cucumberTestResultAction.getResult() )
+  } catch(e) {
+    //cucumberTestResultAction not exist in this build
+  }
+  if ( junitResultList.size() > 0 ) { %>
+  <table class="section">
+    <tr class="tr-title">
+      <td class="td-title" colspan="5">${junitResultList.first().displayName}</td>
+    </tr>
+    <tr>
+        <td class="td-title-tests">Name</td>
+        <td class="td-title-tests">Failed</td>
+        <td class="td-title-tests">Passed</td>
+        <td class="td-title-tests">Skipped</td>
+        <td class="td-title-tests">Total</td>
+      </tr>
+    <% junitResultList.each {
+      junitResult -> junitResult.getChildren().each {
+        packageResult -> %>
+    <tr>
+      <td>${packageResult.getName()}</td>
+      <td>${packageResult.getFailCount()}</td>
+      <td>${packageResult.getPassCount()}</td>
+      <td>${packageResult.getSkipCount()}</td>
+      <td>${packageResult.getPassCount() + packageResult.getFailCount() + packageResult.getSkipCount()}</td>
+    </tr>
+    <% packageResult.getPassedTests().findAll({it.getStatus().toString() == "FIXED";}).each{
+        test -> %>
+            <tr>
+              <td class="test test-fixed" colspan="5">
+                ${test.getFullName()} ${test.getStatus()}
+              </td>
+            </tr>
+        <% } %>
+        <% packageResult.getFailedTests().sort({a,b -> a.getAge() <=> b.getAge()}).each{
+          failed_test -> %>
+    <tr>
+      <td class="test test-failed" colspan="5">
+        ${failed_test.getFullName()} (Age: ${failed_test.getAge()})
+      </td>
+    </tr>
+        <% }
       }
-    }
-
-    testResult.failedTests.each { tr ->
-        packageName = tr.packageName
-        className = tr.simpleName
-        testName = tr.safeName
-        displayName = className + "." + testName
-
-        currentFailedTestCase << displayName
-        url = "${rootUrl}${build.url}testReport/$packageName/$className/$testName"
-        if (tr.age == 1) {
-          startedFailing << [displayName: displayName, url: url, age: 1]
-        } else {
-          failing << [displayName: displayName, url: url, age: tr.age]
-        }
-    }
-
-    startedPassing = previousFailedTestCases - currentFailedTestCase
-    startedFailing = startedFailing.sort {it.displayName}
-    failing = failing.sort {it.displayName}
-    startedPassing = startedPassing.sort()
-%>
-
-<% if (testResult) { %>
-<h2>Test Results</h2>
-<ul>
-  <li>Total tests ran: <a href="${testResultsUrl}">${testResult.totalCount}</a></li>
-  <%if (testResult.failCount){%>
-    <li>Failure count and delta: ${testResult.failCount} ${testResult.failureDiffString}</li>
-  <%}%>
-  <li>Success rate: ${lastBuildSuccessRate}% </li>
-</ul>
-<% } %>
-
-<% if (startedPassing) { %>
-<h3>Following tests started passing. Good work!</h3>
-<ul>
-  <% startedPassing.each { %>
-    <li>${it}</li>
+    } %>
+  </table>
+  <br/>
   <% } %>
-</ul>
-<% } %>
-
-<% if (startedFailing) { %>
-<h3>Following tests started FAILING. Have the last change caused it!!</h3>
-<ul>
-  <% startedFailing.each { %>
-    <li><a href="${it.url}">${it.displayName}</a></li>
-  <% } %>
-</ul>
-<% } %>
-
-<% if (failing) { %>
-<h3>Following tests are conitnuously failing. Someone should look into it!!!</h3>
-<ul>
-  <% failing.each { %>
-    <li><a href="${it.url}">${it.displayName}</a> (Failing since ${it.age} runs)</li>
-  <% } %>
-</ul>
-<% } %>
-
-<% } %>
 
 <!-- CONSOLE OUTPUT -->
   <%
