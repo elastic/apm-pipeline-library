@@ -61,6 +61,22 @@ pipeline {
             recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
             to: "ivan.fernandez@elastic.co"
 
+            emailext body: '${JELLY_SCRIPT,template="html-with-health-and-console.jelly"}',
+            mimeType: 'text/html',
+            subject: currentBuild.currentResult + " : 4 " + env.JOB_NAME,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+            to: "ivan.fernandez@elastic.co"
+
+            emailext body: '${JELLY_SCRIPT,template="html.jelly"}',
+            mimeType: 'text/html',
+            subject: currentBuild.currentResult + " : 5 " + env.JOB_NAME,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+            to: "ivan.fernandez@elastic.co"
+
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
