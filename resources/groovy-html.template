@@ -182,60 +182,6 @@
     // we don't do anything
   } %>
 
-<!-- JUnit TEMPLATE -->
-
-  <%
-  def junitResultList = it.JUnitTestResult
-  try {
-    def cucumberTestResultAction = it.getAction("org.jenkinsci.plugins.cucumber.jsontestsupport.CucumberTestResultAction")
-    junitResultList.add( cucumberTestResultAction.getResult() )
-  } catch(e) {
-    //cucumberTestResultAction not exist in this build
-  }
-  if ( junitResultList.size() > 0 ) { %>
-  <table class="section">
-    <tr class="tr-title">
-      <td class="td-title" colspan="5">${junitResultList.first().displayName}</td>
-    </tr>
-    <tr>
-        <td class="td-title-tests">Name</td>
-        <td class="td-title-tests">Failed</td>
-        <td class="td-title-tests">Passed</td>
-        <td class="td-title-tests">Skipped</td>
-        <td class="td-title-tests">Total</td>
-      </tr>
-    <% junitResultList.each {
-      junitResult -> junitResult.getChildren().each {
-        packageResult -> %>
-    <tr>
-      <td>${packageResult.name}</td>
-      <td>${packageResult.failCount}</td>
-      <td>${packageResult.passCount}</td>
-      <td>${packageResult.skipCount}</td>
-      <td>${packageResult.passCount + packageResult.failCount + packageResult.skipCount}</td>
-    </tr>
-    <% packageResult.getPassedTests().findAll({it.getStatus().toString() == "FIXED";}).each{
-        test -> %>
-            <tr>
-              <td class="test test-fixed" colspan="5">
-                ${test.getFullName()} ${test.getStatus()}
-              </td>
-            </tr>
-        <% } %>
-        <% packageResult.getFailedTests().sort({a,b -> a.getAge() <=> b.getAge()}).each{
-          failed_test -> %>
-    <tr>
-      <td class="test test-failed" colspan="5">
-        ${failed_test.getFullName()} (Age: ${failed_test.getAge()})
-      </td>
-    </tr>
-        <% }
-      }
-    } %>
-  </table>
-  <br/>
-  <% } %>
-
 <!-- CONSOLE OUTPUT -->
   <%
   if ( build.result == hudson.model.Result.FAILURE ) { %>

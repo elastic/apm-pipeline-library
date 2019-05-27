@@ -45,7 +45,7 @@ pipeline {
               to: "ivan.fernandez@elastic.co"
             }
 
-            emailext body: '${SCRIPT, template="groovy-html"}',
+            emailext body: '${SCRIPT, template="groovy-html.template"}',
             mimeType: 'text/html',
             subject: currentBuild.currentResult + " : 2 " + env.JOB_NAME,
             attachLog: true,
