@@ -34,12 +34,14 @@ pipeline {
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
 
-            emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
-            subject: currentBuild.currentResult + " : 1 " + env.JOB_NAME,
-            attachLog: true,
-            compressLog: true,
-            recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
-            to: "ivan.fernandez@elastic.co"
+            dir("${BASE_DIR}"){
+              emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
+              subject: currentBuild.currentResult + " : 1 " + env.JOB_NAME,
+              attachLog: true,
+              compressLog: true,
+              recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
+              to: "ivan.fernandez@elastic.co"
+            }
 
             emailext body: '${SCRIPT, template="groovy-html"}',
             subject: currentBuild.currentResult + " : 2 " + env.JOB_NAME,
