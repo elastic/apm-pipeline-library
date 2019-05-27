@@ -208,7 +208,7 @@
       junitResult -> junitResult.getChildren().each {
         packageResult -> %>
     <tr>
-      <td>${packageResult.name}</td>
+      <td>${packageResult.displayName}</td>
       <td>${packageResult.failCount}</td>
       <td>${packageResult.passCount}</td>
       <td>${packageResult.skipCount}</td>
