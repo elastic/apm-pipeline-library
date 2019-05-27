@@ -208,11 +208,11 @@
       junitResult -> junitResult.getChildren().each {
         packageResult -> %>
     <tr>
-      <td>${packageResult.getName()}</td>
-      <td>${packageResult.getFailCount()}</td>
-      <td>${packageResult.getPassCount()}</td>
-      <td>${packageResult.getSkipCount()}</td>
-      <td>${packageResult.getPassCount() + packageResult.getFailCount() + packageResult.getSkipCount()}</td>
+      <td>${packageResult.name}</td>
+      <td>${packageResult.failCount}</td>
+      <td>${packageResult.passCount}</td>
+      <td>${packageResult.skipCount}</td>
+      <td>${packageResult.passCount + packageResult.failCount + packageResult.skipCount}</td>
     </tr>
     <% packageResult.getPassedTests().findAll({it.getStatus().toString() == "FIXED";}).each{
         test -> %>
