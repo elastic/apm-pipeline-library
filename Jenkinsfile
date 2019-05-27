@@ -36,6 +36,7 @@ pipeline {
 
             dir("${BASE_DIR}"){
               emailext body: '''${SCRIPT, template="resources/groovy-html.template"}''',
+              mimeType: 'text/html',
               subject: currentBuild.currentResult + " : 1 " + env.JOB_NAME,
               attachLog: true,
               compressLog: true,
