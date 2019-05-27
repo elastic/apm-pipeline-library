@@ -31,6 +31,10 @@ pipeline {
         */
         stage('Checkout') {
           steps {
+            emailext body: '''${SCRIPT, template="groovy_html.template"}''',
+            subject: currentBuild.currentResult + " : " + env.JOB_NAME,
+            to: "${NOTIFY_TO}"
+
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
             script {
