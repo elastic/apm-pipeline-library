@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.21</version>
+    <version>3.40</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>0.1</version>
+  <version>1.0.18</version>
 
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
@@ -17,6 +17,8 @@
 
   <properties>
     <findbugs.skip>true</findbugs.skip>
+    <jenkins.version>2.164</jenkins.version>
+    <java.level>8</java.level>
   </properties>
 
   <repositories>
@@ -35,12 +37,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>2.4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
@@ -51,6 +47,16 @@
       <artifactId>jenkins-pipeline-unit</artifactId>
       <version>1.1</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

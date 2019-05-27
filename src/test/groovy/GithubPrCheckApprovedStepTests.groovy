@@ -222,7 +222,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
       return [
         permission: "NONE",
         user: [
-          login: "greenkeeperio[bot]",
+          login: "greenkeeper[bot]",
           type: "Bot",
         ]
       ]
