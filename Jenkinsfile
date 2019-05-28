@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-@Library('apm@develop') _
+@Library('apm@current') _
 
 pipeline {
   agent any
@@ -44,6 +44,7 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
+              //checkLicenses()
               sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
             }
           }
@@ -52,10 +53,6 @@ pipeline {
               junit(allowEmptyResults: true,
                 keepLongStdio: true,
                 testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-
-              dir("${BASE_DIR}"){
-                notifyBuildResult()
-              }
             }
           }
         }
@@ -63,18 +60,16 @@ pipeline {
     }
   }
   post {
-    success {
-      echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
+    always {
+      notifyBuildResult()
     }
-    aborted {
-      echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
-    }
-    failure {
-      echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-      step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
-    }
-    unstable {
-      echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
-    }
+  }
+}
+
+def checkLicenses(){
+  docker.image('golang:1.12').inside("-e HOME=${WORKSPACE}/${BASE_DIR}"){
+    sh(label: "Check Licenses", script: '''
+    go get -u github.com/elastic/go-licenser
+    go-licenser -d -ext .groovy''')
   }
 }
