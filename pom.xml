@@ -106,6 +106,12 @@
                 <include>*.groovy</include>
               </includes>
             </testSource>
+            <testSource>
+              <directory>${project.basedir}/src/co</directory>
+              <includes>
+                <include>**/*.groovy</include>
+              </includes>
+            </testSource>
           </testSources>
 
         </configuration>

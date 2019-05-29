@@ -1,0 +1,10 @@
+Send an email message with a summary of the build result,
+and send some data to Elastic search.
+
+```
+notifyBuildResult()
+```
+
+```
+notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+```
