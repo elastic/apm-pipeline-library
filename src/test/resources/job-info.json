@@ -1,0 +1,115 @@
+{
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/"
+    },
+    "scm": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/scm/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/actions/"
+    },
+    "runs": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/"
+    },
+    "trends": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/trends/"
+    },
+    "queue": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/queue/"
+    }
+  },
+  "actions": [],
+  "disabled": false,
+  "displayName": "develop",
+  "estimatedDurationInMillis": 202001,
+  "fullDisplayName": "apm-shared/APM%20Pipeline%20Library/develop",
+  "fullName": "apm-shared/apm-apm-pipeline-library-mbp/develop",
+  "latestRun": {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl$PipelineRunSummary",
+    "_links": {
+      "prevRun": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/branches/develop/runs/48/"
+      },
+      "parent": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/"
+      },
+      "tests": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/"
+      },
+      "log": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/log/"
+      },
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/"
+      },
+      "blueTestSummary": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/blueTestSummary/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/actions/"
+      },
+      "changeSet": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/changeSet/"
+      },
+      "artifacts": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/artifacts/"
+      }
+    },
+    "actions": [],
+    "artifactsZipFile": null,
+    "causeOfBlockage": null,
+    "causes": [{
+      "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$BlueCauseImpl",
+      "shortDescription": "Push event to branch develop"
+    }],
+    "description": null,
+    "durationInMillis": 0,
+    "enQueueTime": "2019-05-29T12:07:15.094+0000",
+    "endTime": null,
+    "estimatedDurationInMillis": 202001,
+    "id": "49",
+    "name": null,
+    "organization": "jenkins",
+    "pipeline": "develop",
+    "replayable": false,
+    "result": "UNKNOWN",
+    "runSummary": "?",
+    "startTime": "2019-05-29T12:07:15.104+0000",
+    "state": "RUNNING",
+    "type": "WorkflowRun",
+    "changeSet": []
+  },
+  "name": "develop",
+  "organization": "jenkins",
+  "parameters": [],
+  "permissions": {
+    "create": false,
+    "configure": false,
+    "read": true,
+    "start": false,
+    "stop": false
+  },
+  "weatherScore": 0,
+  "branch": {
+    "isPrimary": false,
+    "issues": [],
+    "url": "https://github.com/elastic/apm-pipeline-library/tree/develop"
+  }
+}

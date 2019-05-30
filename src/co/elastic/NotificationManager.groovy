@@ -21,7 +21,16 @@ def emailTemplate(params) {
  * @param buildStatus String with job result
  * @param emailRecipients Array with emails: emailRecipients = []
  */
-def notifyEmail(build, buildStatus, emailRecipients, testsSummary, changeSet, statsUrl, log) {
+def notifyEmail(Map params = [:]) {
+    def build = params.containsKey('build') ? params.build : error('notifyEmail: build parameter it is not valid')
+    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyEmail: buildStatus parameter is not valid')
+    def emailRecipients = params.containsKey('emailRecipients') ? params.emailRecipients : error('notifyEmail: emailRecipients parameter is not valid')
+    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
+    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
+    def log = params.containsKey('log') ? params.log : null
+    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
 
     try {
 
@@ -34,14 +43,17 @@ def notifyEmail(build, buildStatus, emailRecipients, testsSummary, changeSet, st
         }
 
         def body = emailTemplate([
+            "jobUrl": env.RUN_DISPLAY_URL,
             "build": build,
             "jenkinsText": env.JOB_NAME,
-            "jenkinsUrl": env.RUN_DISPLAY_URL,
+            "jenkinsUrl": env.JENKINS_URL,
             "statusSuccess": statusSuccess,
             "testsSummary": testsSummary,
             "changeSet": changeSet,
             "statsUrl": statsUrl,
-            "log": log
+            "log": log,
+            "stepsErrors": stepsErrors,
+            "testsErrors": testsErrors
         ]);
 
         mail(to: emailRecipients.join(","),

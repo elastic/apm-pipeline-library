@@ -1,0 +1,589 @@
+[{
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/7/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/7/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/7/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Check out from version control",
+  "durationInMillis": 2123,
+  "id": "7",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:07:19.019+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/30/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/30/actions/"
+    }
+  },
+  "actions": [],
+  "displayDescription": null,
+  "displayName": "Recursively delete the current directory from the workspace",
+  "durationInMillis": 365,
+  "id": "30",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:40.397+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/33/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/33/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/33/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Print Message",
+  "durationInMillis": 8,
+  "id": "33",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:40.832+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/34/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/34/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/34/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Check out from version control",
+  "durationInMillis": 6357,
+  "id": "34",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:40.840+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/35/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/35/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/35/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "git rev-parse HEAD",
+  "displayName": "Get commit SHA",
+  "durationInMillis": 469,
+  "id": "35",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:47.197+0000",
+  "state": "FINISHED",
+  "type": "STAGE"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/36/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/36/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/36/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "git rev-parse HEAD",
+  "displayName": "Get commit SHA",
+  "durationInMillis": 308,
+  "id": "36",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:47.666+0000",
+  "state": "FINISHED",
+  "type": "STAGE"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/37/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/37/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/37/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "git rev-parse HEAD^",
+  "displayName": "Get previous commit",
+  "durationInMillis": 327,
+  "id": "37",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:47.974+0000",
+  "state": "FINISHED",
+  "type": "STAGE"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/38/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/38/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/38/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "git rev-list HEAD --parents -1",
+  "displayName": "Get latest commits SHA",
+  "durationInMillis": 328,
+  "id": "38",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:48.301+0000",
+  "state": "FINISHED",
+  "type": "STAGE"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/39/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/39/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/39/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Print Message",
+  "durationInMillis": 142,
+  "id": "39",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:48.629+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/42/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/42/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/42/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "source",
+  "displayName": "Stash some files to be used later in the build",
+  "durationInMillis": 441,
+  "id": "42",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:48.783+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/47/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/47/actions/"
+    }
+  },
+  "actions": [],
+  "displayDescription": null,
+  "displayName": "Recursively delete the current directory from the workspace",
+  "durationInMillis": 26,
+  "id": "47",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:49.256+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/48/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/48/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/48/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "source",
+  "displayName": "Restore files previously stashed",
+  "durationInMillis": 132,
+  "id": "48",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:49.282+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/51/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/51/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/51/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "docker inspect -f . golang:1.12",
+  "displayName": "Shell Script",
+  "durationInMillis": 581,
+  "id": "51",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:49.877+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/52/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/52/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/52/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "docker pull golang:1.12",
+  "displayName": "Shell Script",
+  "durationInMillis": 879,
+  "id": "52",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:50.458+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/55/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/55/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/55/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Check Licenses",
+  "durationInMillis": 2861,
+  "id": "55",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:08:52.647+0000",
+  "state": "FINISHED",
+  "type": "STAGE"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/58/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/58/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/58/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": "./mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
+  "displayName": "Shell Script",
+  "durationInMillis": 101825,
+  "id": "58",
+  "input": null,
+  "result": "FAILURE",
+  "startTime": "2019-05-29T12:08:57.040+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/61/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/61/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/61/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Archive JUnit-formatted test results",
+  "durationInMillis": 986,
+  "id": "61",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:10:38.898+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/74/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/74/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/74/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Extended Email",
+  "durationInMillis": 845,
+  "id": "74",
+  "input": null,
+  "result": "SUCCESS",
+  "startTime": "2019-05-29T12:10:40.265+0000",
+  "state": "FINISHED",
+  "type": "STEP"
+}, {
+  "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/75/"
+    },
+    "actions": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/75/actions/"
+    }
+  },
+  "actions": [{
+    "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/steps/75/log/"
+      }
+    },
+    "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+    "urlName": "log"
+  }],
+  "displayDescription": null,
+  "displayName": "Get Build info",
+  "durationInMillis": 1132,
+  "id": "75",
+  "input": null,
+  "result": "UNKNOWN",
+  "startTime": "2019-05-29T12:10:41.110+0000",
+  "state": "RUNNING",
+  "type": "STAGE"
+}]

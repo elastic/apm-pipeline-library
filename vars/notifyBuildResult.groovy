@@ -30,6 +30,7 @@ def call(Map params = [:]) {
 
   node('master'){
     stage('Reporting build status'){
+      /*
       emailext body: '''${SCRIPT, template="groovy-html.template"}''',
         mimeType: 'text/html',
         subject: "${currentBuild.currentResult} ${env.JOB_NAME}#${env.BRANCH_NAME} ${env.BUILD_NUMBER}",
@@ -37,25 +38,22 @@ def call(Map params = [:]) {
         compressLog: true,
         recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
         to: "ivan.fernandez@elastic.co"
+        */
 
       generateBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 
       def notificationManager = new co.elastic.NotificationManager()
-      def build = readJSON(file: "build-info.json")
-      def testsSummary = readJSON(file: "tests-summary.json")
-      def testsErrors = null //readJSON(file: "tests-errors.json")
-      def changeSet = readJSON(file: "changeSet-info.json")
-      def stepsErrors = null //readJSON(file: "steps-errors.json")
-      def statsUrl = "${es}/app/kibana"
-      def log = readFile(file: "pipeline-log-summary.txt")
       notificationManager.notifyEmail(
-        build,
-        currentBuild.currentResult,
-        ["ivan.fernandez@elastic.co"],
-        testsSummary,
-        changeSet,
-        statsUrl,
-        log)
+        build: readJSON(file: "build-info.json"),
+        buildStatus: currentBuild.currentResult,
+        emailRecipients: ["ivan.fernandez@elastic.co"],
+        testsSummary: readJSON(file: "tests-summary.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        statsUrl: "${es}/app/kibana",
+        log: readFile(file: "pipeline-log-summary.txt"),
+        testsErrors: readJSON(file: "tests-info.json"),
+        stepsErrors: readJSON(file: "steps-info.json")
+      )
 
       def datafile = readFile(file: "build-report.json")
       sendReportToElasticsearch(es, secret, datafile)
@@ -87,8 +85,8 @@ def generateBuildInfoJsonFiles(jobURL, buildNumber){
     """)
 
   sh(label: "Console lg sumary", script: "tail -n 100 pipeline-log.txt > pipeline-log-summary.txt")
-  //sh(label: "Get Tests failed", script: "cat tests-info.json|jq '.[]|select(.status==\"FAILED\")|[{name,hasStdLog,errorStackTrace,errorDetails,duration]}' > tests-errors.json")
-  //sh(label: "Get steps failed", script: "cat steps-info.json|jq '.[]|select(.result==\"FAILURE\")|[{displayName,displayDescription,durationInMillis,id,result,state,type,startTime,actions}]' > steps-errors.json")
+  //sh(label: "Get Tests failed", script: "cat tests-info.json|jq '.[]|select(.status==\"FAILED\")|[.]' > tests-errors.json")
+  //sh(label: "Get steps failed", script: "cat steps-info.json|jq '.[]|select(.result==\"FAILURE\")|[.]' > steps-errors.json")
 
 
   def json = [:]
@@ -103,7 +101,7 @@ def generateBuildInfoJsonFiles(jobURL, buildNumber){
 
   json.build.result = currentBuild.currentResult
   json.build.state = "FINISHED"
-  json.build.durationInMillis = json.build.estimatedDurationInMillis
+  json.build.durationInMillis = currentBuild.duration
 
   writeJSON(file: "build-report.json" , json: toJSON(json), pretty: 2)
 }
