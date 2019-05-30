@@ -29,7 +29,7 @@ pipeline {
         /**
          Checkout the code and stash it, to use it on other stages.
         */
-        stage('Checkout', 'Checkout') {
+        stage('Checkout') {
           steps {
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
@@ -39,13 +39,15 @@ pipeline {
         /**
          Checkout the code and stash it, to use it on other stages.
         */
-        stage('Test', 'Test') {
+        stage('Test') {
           steps {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              //checkLicenses()
-              sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+              withGithubNotify(context: 'test') {
+                //checkLicenses()
+                sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+              }
             }
           }
           post {

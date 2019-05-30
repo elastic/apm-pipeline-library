@@ -1,0 +1,7 @@
+Wrap the GitHub notify check step
+
+```
+withGithubNotify(name: 'checkName', description: 'Execute something') {
+  // block
+}
+```

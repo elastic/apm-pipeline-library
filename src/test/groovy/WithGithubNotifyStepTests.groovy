@@ -22,19 +22,9 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class StageStepTests extends BasePipelineTest {
-  String scriptName = "vars/stage.groovy"
+class WithGithubNotifyStepTests extends BasePipelineTest {
+  String scriptName = "vars/withGithubNotify.groovy"
   Map env = [:]
-
-  class Steps {
-    def call(String name, Closure body) {
-      body()
-    }
-  }
-
-  void stage(String name, Closure body) {
-    body()
-  }
 
   @Override
   @Before
@@ -47,21 +37,16 @@ class StageStepTests extends BasePipelineTest {
     env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
 
     binding.setVariable('env', env)
-    binding.setVariable('steps', new Steps())
 
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
 
-    helper.registerAllowedMethod("stage", [String.class, Closure.class], { body -> body() })
-    helper.registerAllowedMethod("stage", [String.class, String.class, Closure.class], { body -> body() })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
-      if(m?.context.equals('failed')){
+      if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
         throw new Exception('Failed')
-      } else {
-        "OK"
       }
     })
   }
@@ -77,6 +62,30 @@ class StageStepTests extends BasePipelineTest {
       //NOOP
     }
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == "error"
+    }.any { call ->
+      callArgsToString(call).contains('withGithubNotify: Missing arguments')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingDescriptionArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(description: 'foo'){
+        //NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == "error"
+    }.any { call ->
+      callArgsToString(call).contains('withGithubNotify: Missing arguments')
+    })
     assertJobStatusFailure()
   }
 
@@ -84,7 +93,7 @@ class StageStepTests extends BasePipelineTest {
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call('name', 'foo') {
+    script.call(context: 'foo', description: 'bar') {
       isOK = true
     }
     printCallStack()
@@ -97,7 +106,7 @@ class StageStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     def isOK = false
     try{
-      script.call('name', 'failed') {
+      script.call(context: 'failed') {
         isOK = true
       }
     } catch(e){

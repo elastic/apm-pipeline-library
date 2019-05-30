@@ -393,24 +393,6 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 
-## stage
-Override built-in stage step to be able to set a GitHub check as long as the
-call contains a second parameter.
-
-```
-// New behaviour: a stage which will create a GitHub check called Foo
-stage('stageName', 'Foo') {
-  // block
-}
-
-// Normal behaviour: a stage
-stage('stageName') {
-  // block
-}
-```
-It requires [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
-
-
 ## tar
 Compress a folder into a tar file.
 
@@ -489,6 +471,20 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
+
+## withGithubNotify
+Wrap the GitHub notify check step
+
+```
+withGithubNotify(context: 'checkName', description: 'Execute something') {
+  // block
+}
+```
+
+* *context*: Name of the GH check context. (Mandatory)
+* *description*: Description of the GH check. If unset then it will use the description.
+
+It requires [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
