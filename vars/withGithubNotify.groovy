@@ -75,10 +75,12 @@ def getUrlGivenType(String type) {
 * Further details: https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
 */
 def getBORedirect(String url) {
-  def redirect = url
+  def redirect
   if (isUnix()) {
     redirect = sh(script: "curl -w '%{url_effective}' -I -L -s -S ${url} -o /dev/null", returnStdout: true)
+  } else {
+    redirect = powershell(script: "[System.Net.HttpWebRequest]::Create('${url}').GetResponse().ResponseUri.AbsoluteUri",
+                          returnStdout: true)
   }
-  // Windows is not yet supported, let's return the same URL for now
   return redirect
 }
