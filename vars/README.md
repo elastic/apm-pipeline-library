@@ -393,6 +393,24 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 
+## stage
+Override built-in stage step to be able to set a GitHub check as long as the
+call contains a second parameter.
+
+```
+// New behaviour: a stage which will create a GitHub check called Foo
+stage('stageName', 'Foo') {
+  // block
+}
+
+// Normal behaviour: a stage
+stage('stageName') {
+  // block
+}
+```
+It requires [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
+
+
 ## tar
 Compress a folder into a tar file.
 
@@ -486,4 +504,3 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
-
