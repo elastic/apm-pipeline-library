@@ -34,11 +34,11 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     env.WORKSPACE = "WS"
     env.BUILD_ID = "4"
     env.BRANCH_NAME = "PR-60"
-    env.JOB_NAME = "mbp/${env.BRANCH_NAME}"
+    env.JOB_NAME = "folder/mbp/${env.BRANCH_NAME}"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.JOB_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}"
-    env.BUILD_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
-    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/display/redirect"
+    env.JOB_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}"
+    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/display/redirect"
 
     binding.setVariable('env', env)
 
@@ -46,7 +46,8 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-
+    helper.registerAllowedMethod("sh", [Map.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
+    helper.registerAllowedMethod("isUnix", [], { "OK" })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -138,6 +139,24 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
       call.methodName == "githubNotify"
     }.any { call ->
       callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/test")
+    })
+  }
+
+  @Test
+  void testSuccessWithTestLinkInWindows() throws Exception {
+    helper.registerAllowedMethod("isUnix", [], { false })
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.call(context: 'foo', description: 'bar', type: 'build') {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == "githubNotify"
+    }.any { call ->
+      callArgsToString(call).contains('display/redirect')
     })
   }
 

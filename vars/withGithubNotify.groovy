@@ -49,22 +49,36 @@ def notify(String context, String description, String status, String redirect) {
 def getUrlGivenType(String type) {
   def url
 
-  // Workaround https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
-  def buildURL = "${env.JENKINS_URL}/blue/organizations/jenkins/${env.JOB_NAME}"
-  buildURL = buildURL.replace("${env.BRANCH_NAME}", "detail/${env.BRANCH_NAME}/${env.BUILD_ID}")
+  def blueoceanBuildURL = getBORedirect(env.RUN_DISPLAY_URL)
 
   switch (type) {
     case 'test':
-      url = "${buildURL}/tests"
+      url = "${blueoceanBuildURL}tests"
       break
     case 'artifact':
-      url = "${buildURL}/artifacts"
+      url = "${blueoceanBuildURL}artifacts"
       break
     case 'build':
-      url = env.RUN_DISPLAY_URL
+      url = blueoceanBuildURL
       break
     default:
       error 'withGithubNotify: Unsupported type'
   }
   return url
+}
+
+/**
+* Blueocean doesn't provide any env variable with the final URL to the BO view.
+* Besides, folder separator is raw encoded, aka %2F, rather than '/'. Therefore,
+* it's not easy to detect progammatically what items are either MBP or folders.
+*
+* Further details: https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
+*/
+def getBORedirect(String url) {
+  def redirect = url
+  if (isUnix()) {
+    redirect = sh(script: "curl -w '%{url_effective}' -I -L -s -S ${url} -o /dev/null", returnStdout: true)
+  }
+  // Windows is not yet supported, let's return the same URL for now
+  return redirect
 }
