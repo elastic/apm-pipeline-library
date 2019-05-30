@@ -25,17 +25,46 @@
 def call(Map params = [:], Closure body) {
   def context = params.context
   def description = params.containsKey('description') ? params.description : context
+  def type = params.type ?: 'build'
 
   if (!context) {
     error 'withGithubNotify: Missing arguments'
   }
 
+  def redirect = getUrlGivenType(type)
   try {
-    githubNotify(context: "${context}", description: "${description} ...", status: 'PENDING')
+    notify(context, "${description} ...", 'PENDING', redirect)
     body()
-    githubNotify(context: "${context}", description: "${description} passed", status: 'SUCCESS')
+    notify(context, "${description} passed", 'SUCCESS', redirect)
   } catch (err) {
-    githubNotify(context: "${context}", description: "${description} failed", status: 'FAILURE')
+    notify(context, "${description} failed", 'FAILURE', redirect)
     throw err
   }
+}
+
+def notify(String context, String description, String status, String redirect) {
+  githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
+}
+
+def getUrlGivenType(String type) {
+  def url
+
+  // Workaround https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
+  def buildURL = "${env.JENKINS_URL}/blue/organizations/jenkins/${env.JOB_NAME}"
+  buildURL = buildURL.replace("${env.BRANCH_NAME}", "detail/${env.BRANCH_NAME}/${env.BUILD_ID}")
+
+  switch (type) {
+    case 'test':
+      url = "${buildURL}/tests"
+      break
+    case 'artifact':
+      url = "${buildURL}/artifacts"
+      break
+    case 'build':
+      url = env.RUN_DISPLAY_URL
+      break
+    default:
+      error 'withGithubNotify: Unsupported type'
+  }
+  return url
 }

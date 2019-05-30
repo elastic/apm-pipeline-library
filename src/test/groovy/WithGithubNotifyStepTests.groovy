@@ -32,9 +32,13 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     super.setUp()
 
     env.WORKSPACE = "WS"
-    env.JOB_NAME = "testJob"
+    env.BUILD_ID = "4"
+    env.BRANCH_NAME = "PR-60"
+    env.JOB_NAME = "mbp/${env.BRANCH_NAME}"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
+    env.JOB_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}"
+    env.BUILD_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/display/redirect"
 
     binding.setVariable('env', env)
 
@@ -90,6 +94,25 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testWrongTypeArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(context: 'foo', type: 'unknown'){
+        //NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == "error"
+    }.any { call ->
+      callArgsToString(call).contains('withGithubNotify: Unsupported type')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
@@ -99,6 +122,23 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithTestLink() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.call(context: 'foo', description: 'bar', type: 'test') {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == "githubNotify"
+    }.any { call ->
+      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/test")
+    })
   }
 
   @Test

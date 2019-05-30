@@ -483,6 +483,7 @@ withGithubNotify(context: 'checkName', description: 'Execute something') {
 
 * *context*: Name of the GH check context. (Mandatory)
 * *description*: Description of the GH check. If unset then it will use the description.
+* *type*: What kind of details links will be used. Enum type: test, build and artifact). Default build.
 
 It requires [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
