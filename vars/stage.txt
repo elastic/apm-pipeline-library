@@ -1,0 +1,14 @@
+Override built-in stage step to be able to set a GitHub check as long as the
+call contains a second parameter.
+
+```
+// To create stage which creates a GitHub check called Foo
+stage('stageName', 'Foo') {
+  // block
+}
+
+// To create a stage as it used to be
+stage('stageName') {
+  // block
+}
+```
