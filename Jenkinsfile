@@ -29,7 +29,7 @@ pipeline {
         /**
          Checkout the code and stash it, to use it on other stages.
         */
-        stage('Checkout') {
+        stage('Checkout', 'Checkout') {
           steps {
             deleteDir()
             gitCheckout(basedir: "${BASE_DIR}")
@@ -39,7 +39,7 @@ pipeline {
         /**
          Checkout the code and stash it, to use it on other stages.
         */
-        stage('Test') {
+        stage('Test', 'Test') {
           steps {
             deleteDir()
             unstash 'source'
