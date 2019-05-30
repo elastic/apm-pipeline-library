@@ -20,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
 class StageStepTests extends BasePipelineTest {
   String scriptName = "vars/stage.groovy"
@@ -55,7 +56,14 @@ class StageStepTests extends BasePipelineTest {
 
     helper.registerAllowedMethod("stage", [String.class, Closure.class], { body -> body() })
     helper.registerAllowedMethod("stage", [String.class, String.class, Closure.class], { body -> body() })
-    helper.registerAllowedMethod("githubNotify", [Map.class], { "OK" })
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if(m?.context.equals('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      } else {
+        "OK"
+      }
+    })
   }
 
   @Test
@@ -73,7 +81,7 @@ class StageStepTests extends BasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void testSuccess() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
     script.call('name', 'foo') {
@@ -82,5 +90,21 @@ class StageStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testFailure() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    try{
+      script.call('name', 'failed') {
+        isOK = true
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(isOK)
+    assertJobStatusFailure()
   }
 }
