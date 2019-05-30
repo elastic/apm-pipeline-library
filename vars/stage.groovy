@@ -38,7 +38,9 @@ def call(String name, Closure body) {
 def call(String name, String check, Closure body) {
     githubNotify(context: check, description: "${name} ...", status: 'PENDING')
     try {
-        call(name, body)
+        call(name) {
+            body()
+        }
         githubNotify(context: check, description: "${name} passed", status: 'SUCCESS')
     } catch (err) {
         githubNotify(context: check, description: "${name} failed", status: 'FAILURE')

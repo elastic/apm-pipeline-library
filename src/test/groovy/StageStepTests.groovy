@@ -25,6 +25,16 @@ class StageStepTests extends BasePipelineTest {
   String scriptName = "vars/stage.groovy"
   Map env = [:]
 
+  class Steps {
+    def call(String name, Closure body) {
+      body()
+    }
+  }
+
+  void stage(String name, Closure body) {
+    body()
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -35,10 +45,14 @@ class StageStepTests extends BasePipelineTest {
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
 
+    binding.setVariable('env', env)
+    binding.setVariable('steps', new Steps())
+
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+
     helper.registerAllowedMethod("stage", [String.class, Closure.class], { body -> body() })
     helper.registerAllowedMethod("stage", [String.class, String.class, Closure.class], { body -> body() })
     helper.registerAllowedMethod("githubNotify", [Map.class], { "OK" })
@@ -62,7 +76,7 @@ class StageStepTests extends BasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call('name', 'foo'){
+    script.call('name', 'foo') {
       isOK = true
     }
     printCallStack()
