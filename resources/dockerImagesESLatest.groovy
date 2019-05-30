@@ -44,6 +44,12 @@ pipeline {
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
   }
   stages {
+    stage('Checkout') {
+      steps {
+        deleteDir()
+        gitCheckout()
+      }
+    }
     stage('Get Docker images'){
       steps {
         script {
