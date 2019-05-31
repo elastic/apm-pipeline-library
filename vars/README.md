@@ -103,6 +103,15 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## getBlueoceanDisplayURL
+Provides the Blueocean URL for the current build/run
+
+```
+def URL = getBlueoceanDisplayURL()
+```
+
+[Powershell plugin](https://plugins.jenkins.io/powershell)
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.

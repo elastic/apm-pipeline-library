@@ -48,9 +48,7 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-    helper.registerAllowedMethod("sh", [Map.class], { redirectURL })
-    helper.registerAllowedMethod("powershell", [Map.class], { redirectURL })
-    helper.registerAllowedMethod("isUnix", [], { "OK" })
+    helper.registerAllowedMethod("getBlueoceanDisplayURL", [], { redirectURL })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -142,24 +140,6 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
       call.methodName == "githubNotify"
     }.any { call ->
       callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/tests")
-    })
-  }
-
-  @Test
-  void testSuccessWithTestLinkInWindows() throws Exception {
-    helper.registerAllowedMethod("isUnix", [], { false })
-    def script = loadScript(scriptName)
-    def isOK = false
-    script.call(context: 'foo', description: 'bar', type: 'build') {
-      isOK = true
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "githubNotify"
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/")
     })
   }
 

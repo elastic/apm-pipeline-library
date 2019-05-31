@@ -49,7 +49,7 @@ def notify(String context, String description, String status, String redirect) {
 def getUrlGivenType(String type) {
   def url
 
-  def blueoceanBuildURL = getBORedirect(env.RUN_DISPLAY_URL)
+  def blueoceanBuildURL = getBlueoceanDisplayURL()
 
   switch (type) {
     case 'test':
@@ -65,22 +65,4 @@ def getUrlGivenType(String type) {
       error 'withGithubNotify: Unsupported type'
   }
   return url
-}
-
-/**
-* Blueocean doesn't provide any env variable with the final URL to the BO view.
-* Besides, folder separator is raw encoded, aka %2F, rather than '/'. Therefore,
-* it's not easy to detect progammatically what items are either MBP or folders.
-*
-* Further details: https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
-*/
-def getBORedirect(String url) {
-  def redirect
-  if (isUnix()) {
-    redirect = sh(script: "curl -w '%{url_effective}' -I -L -s -S ${url} -o /dev/null", returnStdout: true)
-  } else {
-    redirect = powershell(script: "[System.Net.HttpWebRequest]::Create('${url}').GetResponse().ResponseUri.AbsoluteUri",
-                          returnStdout: true)
-  }
-  return redirect
 }

@@ -1,0 +1,7 @@
+Provides the Blueocean URL for the current build/run
+
+```
+def URL = getBlueoceanDisplayURL()
+```
+
+[Powershell plugin](https://plugins.jenkins.io/powershell)
