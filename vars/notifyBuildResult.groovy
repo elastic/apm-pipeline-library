@@ -39,95 +39,27 @@ def call(Map params = [:]) {
         recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
         to: "ivan.fernandez@elastic.co"
         */
+      catchError {
+        generateBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 
-      generateBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+        def notificationManager = new co.elastic.NotificationManager()
+        notificationManager.notifyEmail(
+          build: readJSON(file: "build-info.json"),
+          buildStatus: currentBuild.currentResult,
+          emailRecipients: ["ivan.fernandez@elastic.co"],
+          testsSummary: readJSON(file: "tests-summary.json"),
+          changeSet: readJSON(file: "changeSet-info.json"),
+          statsUrl: "${es}/app/kibana",
+          log: readFile(file: "pipeline-log-summary.txt"),
+          testsErrors: readJSON(file: "tests-info.json"),
+          stepsErrors: readJSON(file: "steps-info.json")
+        )
 
-      def notificationManager = new co.elastic.NotificationManager()
-      notificationManager.notifyEmail(
-        build: readJSON(file: "build-info.json"),
-        buildStatus: currentBuild.currentResult,
-        emailRecipients: ["ivan.fernandez@elastic.co"],
-        testsSummary: readJSON(file: "tests-summary.json"),
-        changeSet: readJSON(file: "changeSet-info.json"),
-        statsUrl: "${es}/app/kibana",
-        log: readFile(file: "pipeline-log-summary.txt"),
-        testsErrors: readJSON(file: "tests-info.json"),
-        stepsErrors: readJSON(file: "steps-info.json")
-      )
+        def datafile = readFile(file: "build-report.json")
+        sendDataToElasticsearch(es: es, secret: secret, data: datafile)
 
-      def datafile = readFile(file: "build-report.json")
-      sendReportToElasticsearch(es, secret, datafile)
-
-      archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
+        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
+      }
     }
   }
-}
-
-/**
-  Grab build related info from the Blueocean REST API and store it on JSON files.
-  Then put all togeder in a simple JSON file.
-*/
-def generateBuildInfoJsonFiles(jobURL, buildNumber){
-  def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
-  restURLJob = restURLJob.replace("/job/","/")
-  restURLJob = "${env.JENKINS_URL}/blue/rest/organizations/jenkins/pipelines/${restURLJob}"
-  def restURLBuild = "${restURLJob}/runs/${buildNumber}"
-
-  sh(label: "Get Build info", script: """
-    curl -sSL -o job-info.json ${restURLJob}
-    curl -sSL -o build-info.json ${restURLBuild}
-    curl -sSL -o tests-summary.json ${restURLBuild}/blueTestSummary
-    curl -sSL -o tests-info.json ${restURLBuild}/tests
-    curl -sSL -o changeSet-info.json ${restURLBuild}/changeSet
-    curl -sSL -o artifacts-info.json ${restURLBuild}/artifacts
-    curl -sSL -o steps-info.json ${restURLBuild}/steps
-    curl -sSL -o pipeline-log.txt ${restURLBuild}/log
-    """)
-
-  sh(label: "Console lg sumary", script: "tail -n 100 pipeline-log.txt > pipeline-log-summary.txt")
-  //sh(label: "Get Tests failed", script: "cat tests-info.json|jq '.[]|select(.status==\"FAILED\")|[.]' > tests-errors.json")
-  //sh(label: "Get steps failed", script: "cat steps-info.json|jq '.[]|select(.result==\"FAILURE\")|[.]' > steps-errors.json")
-
-
-  def json = [:]
-  json.job = readJSON(file: "job-info.json")
-  json.build = readJSON(file: "build-info.json")
-  json.test_summary = readJSON(file: "tests-summary.json")
-  json.test = readJSON(file: "tests-info.json")
-  json.changeSet = readJSON(file: "changeSet-info.json")
-  json.artifacts = readJSON(file: "artifacts-info.json")
-  json.steps = readJSON(file: "steps-info.json")
-  json.log = readFile(file: "pipeline-log.txt")
-
-  json.build.result = currentBuild.currentResult
-  json.build.state = "FINISHED"
-  json.build.durationInMillis = currentBuild.duration
-
-  writeJSON(file: "build-report.json" , json: toJSON(json), pretty: 2)
-}
-
-/**
-  Send the JSON report file to Elastisearch.
-*/
-def sendReportToElasticsearch(es, secret, data){
-  def props = getVaultSecret(secret: secret)
-  if(props?.errors){
-     error "notifyBuildResult: Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def value = props?.data
-  def user = value?.user
-  def password = value?.password
-  if(data == null || user == null || password == null){
-    error "notifyBuildResult: was not possible to get authentication info to send data"
-  }
-
-  log(level: 'INFO', text: "notifyBuildResult: sending data...")
-
-  def messageBase64UrlPad = base64encode(text: "${user}:${password}", encoding: "UTF-8")
-  httpRequest(url: "${es}/jenkins-builds/_doc/", method: "POST",
-      headers: [
-          "Content-Type": "application/json",
-          "Authorization": "Basic ${messageBase64UrlPad}"],
-      data: data.toString() + "\n")
 }

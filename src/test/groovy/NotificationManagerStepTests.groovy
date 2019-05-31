@@ -20,52 +20,10 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
 class NotificationManagerStepTests extends BasePipelineTest {
   Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
-
-  def withCredentialsInterceptor = { list, closure ->
-    list.forEach {
-      env[it.variable] = "dummyValue"
-    }
-    def res = closure.call()
-    list.forEach {
-      env.remove(it.variable)
-    }
-    return res
-  }
 
   @Override
   @Before
@@ -78,35 +36,12 @@ class NotificationManagerStepTests extends BasePipelineTest {
     env.BUILD_NUMBER = "123"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     env.RUN_DISPLAY_URL = "http://jenkins.example.com:8080/job/folder/job/myJob/display/redirect"
+    env.JOB_BASE_NAME = "myJob"
+
     binding.setVariable('env', env)
 
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
-    helper.registerAllowedMethod("script", [Closure.class], { closure -> closure.call() })
-    helper.registerAllowedMethod("pipeline", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("agent", [String.class], { "OK" })
-    helper.registerAllowedMethod("agent", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("label", [String.class], { "OK" })
-    helper.registerAllowedMethod("stages", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("steps", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("post", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("success", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("aborted", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("failure", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("unstable", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("always", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("dir", [String.class, Closure.class], { path, body -> body() })
-    helper.registerAllowedMethod("when", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("parallel", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("failFast", [Boolean.class], { "OK" })
-    helper.registerAllowedMethod("script", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("options", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("environment", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
-    helper.registerAllowedMethod("deleteDir", [], { "OK" })
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println(m.text)})
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
       return readJSON(m)
@@ -120,27 +55,17 @@ class NotificationManagerStepTests extends BasePipelineTest {
       return script.call(s)
     })
     helper.registerAllowedMethod("mail", [Map.class], { m ->
-      println("Subject: ${m.subject}")
-      println("Body: \n${m.body}")
-      def f = new File('mail-out.html')
+      println("Writting mail-out.html file with the email result")
+      def f = new File("mail-out-${env.TEST}.html")
       f.write(m.body)
     })
-  }
-
-  def readJSON(params){
-    def jsonSlurper = new groovy.json.JsonSlurper()
-    def jsonText = params.text
-    if(params.file){
-      File f = new File("src/test/resources/${params.file}")
-      jsonText = f.getText()
-    }
-    return jsonSlurper.parseText(jsonText)
   }
 
   @Test
   void test() throws Exception {
     def script = loadScript("src/co/elastic/NotificationManager.groovy")
     def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "test"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESSFUL",
@@ -153,9 +78,139 @@ class NotificationManagerStepTests extends BasePipelineTest {
       stepsErrors: readJSON(file: "steps-errors.json")
     )
     printCallStack()
+    assertFalse(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: Error sending the email -")
+    })
+    assertJobStatusSuccess()
+  }
 
-    //"NotificationManager.mail" "SUCCESSFUL folder/myJob#master 123"
-    //ERROR SENDING EMAIL
+  @Test
+  void testMinParams() throws Exception {
+    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testMinParams"
+    script.notifyEmail(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESSFUL",
+      emailRecipients: ["me@example.com"]
+    )
+    printCallStack()
+    assertFalse(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: Error sending the email -")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testFAILURE() throws Exception {
+    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testFAILURE"
+    script.notifyEmail(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      emailRecipients: ["me@example.com"],
+      testsSummary: readJSON(file: "tests-summary.json"),
+      changeSet: readJSON(file: "changeSet-info.json"),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      log: f.getText(),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      stepsErrors: readJSON(file: "steps-errors.json")
+    )
+    printCallStack()
+    assertFalse(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: Error sending the email -")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoBuildInfo() throws Exception {
+    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testNoBuildInfo"
+    try{
+      script.notifyEmail(
+        buildStatus: "FAILURE",
+        emailRecipients: ["me@example.com"],
+        testsSummary: readJSON(file: "tests-summary.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        statsUrl: "https://ecs.example.com/app/kibana",
+        log: f.getText(),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        stepsErrors: readJSON(file: "steps-errors.json")
+      )
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: build parameter it is not valid")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoBuildStatus() throws Exception {
+    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testNoBuildStatus"
+    try{
+      script.notifyEmail(
+        build: readJSON(file: "build-info.json"),
+        emailRecipients: ["me@example.com"],
+        testsSummary: readJSON(file: "tests-summary.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        statsUrl: "https://ecs.example.com/app/kibana",
+        log: f.getText(),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        stepsErrors: readJSON(file: "steps-errors.json")
+      )
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: buildStatus parameter is not valid")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoEmailRecipients() throws Exception {
+    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testNoEmailRecipients"
+    try{
+      script.notifyEmail(
+        build: readJSON(file: "build-info.json"),
+        buildStatus: "FAILURE",
+        testsSummary: readJSON(file: "tests-summary.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        statsUrl: "https://ecs.example.com/app/kibana",
+        log: f.getText(),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        stepsErrors: readJSON(file: "steps-errors.json")
+      )
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("notifyEmail: emailRecipients parameter is not valid")
+    })
     assertJobStatusSuccess()
   }
 }

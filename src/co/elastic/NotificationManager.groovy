@@ -42,8 +42,9 @@ def notifyEmail(Map params = [:]) {
             statusSuccess = false
         }
 
+        def boURL = "${JENKINS_URL}/blue/organizations/jenkins/${JOB_NAME}/detail/${JOB_BASE_NAME}/${BUILD_NUMBER}"
         def body = emailTemplate([
-            "jobUrl": env.RUN_DISPLAY_URL,
+            "jobUrl": env.boURL,
             "build": build,
             "jenkinsText": env.JOB_NAME,
             "jenkinsUrl": env.JENKINS_URL,
@@ -63,6 +64,6 @@ def notifyEmail(Map params = [:]) {
         );
 
     } catch (e){
-        println "ERROR SENDING EMAIL ${e}"
+      log(level: 'ERROR', text: "notifyEmail: Error sending the email - ${e}")
     }
 }

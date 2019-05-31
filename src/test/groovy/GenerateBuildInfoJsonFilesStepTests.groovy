@@ -20,9 +20,8 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
-import co.elastic.NotificationManager
 
-class NotifyBuildResultStepTests extends BasePipelineTest {
+class GenerateBuildInfoJsonFilesStepTests extends BasePipelineTest {
   Map env = [:]
 
   @Override
@@ -31,17 +30,14 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     super.setUp()
 
     env.WORKSPACE = "WS"
-    env.JOB_NAME = "testJob"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
-
     binding.setVariable('env', env)
 
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("emailext", [Map.class], { println("sending email") })
+    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      return ["field": "value"]
+      return readJSON(m)
     })
     helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
@@ -51,31 +47,19 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
       def script = loadScript("vars/toJSON.groovy")
       return script.call(s)
     })
-    helper.registerAllowedMethod("toJSON", [Map.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
-    })
-    helper.registerAllowedMethod("brokenTestsSuspects", { "OK" })
-    helper.registerAllowedMethod("brokenBuildSuspects", { "OK" })
-    helper.registerAllowedMethod("upstreamDevelopers", { "OK" })
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], {
-      return [data: [user: "admin", password: "admin123"]]
-    })
-    helper.registerAllowedMethod("httpRequest", [Map.class], { "OK" })
-    helper.registerAllowedMethod("base64encode", [Map.class], { return "dTpwCg==" })
     helper.registerAllowedMethod("writeJSON", [Map.class], { "OK" })
-    helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("generateBuildInfoJsonFiles", [String.class,String.class], { "OK" })
   }
-
-/** TODO implement test */
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/notifyBuildResult.groovy")
-    script.call()
+    def script = loadScript("vars/generateBuildInfoJsonFiles.groovy")
+    script.call(text: "dummy")
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("I am a dummy step - dummy")
+    })
     assertJobStatusSuccess()
   }
 }
