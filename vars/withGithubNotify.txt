@@ -1,7 +1,21 @@
 Wrap the GitHub notify check step
 
 ```
-withGithubNotify(name: 'checkName', description: 'Execute something') {
+withGithubNotify(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubNotify(context: 'Test', description: 'UTs', type: 'test') {
+  // block
+}
+
+withGithubNotify(context: 'Release', type: 'artifact') {
   // block
 }
 ```
+
+* context: Name of the GH check context. (Mandatory).
+* description: Description of the GH check. If unset then it will use the description.
+* type: What kind of details links will be used. Enum type: test, build and artifact). Default build.
+
+[Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
