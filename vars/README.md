@@ -103,6 +103,29 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## getBlueoceanDisplayURL
+Provides the Blueocean URL for the current build/run
+
+```
+def URL = getBlueoceanDisplayURL()
+```
+
+[Powershell plugin](https://plugins.jenkins.io/powershell)
+
+## getBlueoceanTabURL
+Provides the specific Blueocean URL tab for the current build/run
+
+Tab refers to the kind of available tabs in the BO view. So far:
+* pipeline
+* tests
+* changes
+* artifacts
+
+```
+def testURL = getBlueoceanTabURL('test')
+def artifactURL = getBlueoceanTabURL('artifact')
+```
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.
@@ -335,6 +358,18 @@ the log level by default is INFO.
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
 
+## notifyBuildResult
+Send an email message with a summary of the build result,
+and send some data to Elastic search.
+
+```
+notifyBuildResult()
+```
+
+```
+notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+```
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 
@@ -471,6 +506,29 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
+
+## withGithubNotify
+Wrap the GitHub notify check step
+
+```
+withGithubNotify(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubNotify(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GH check context. (Mandatory).
+* description: Description of the GH check. If unset then it will use the description.
+* tabs: What kind of details links will be used. Enum type: tests, changes, artifacts and pipeline). Default pipeline.
+
+[Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
