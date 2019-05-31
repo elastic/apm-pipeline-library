@@ -101,7 +101,7 @@
       <tr>
         <td colspan="7" style="padding-left: 24px;border-collapse: collapse;background-color: #F4F4F4;">
           <table logopacing="0" cellpadding="0" style="text-align: left;font-size: 12px;">
-          <% changeSet.each{ c -> %>
+          <% changeSet?.each{ c -> %>
             <tr>
               <td>
               <strong style="font-family: Helvetica; color: #343B49;">Author:</strong> ${c.author.id}<br>
@@ -153,7 +153,7 @@
       </tr>
       <!--TABLE_STEP_ERRORS-->
       <tr>
-        <td colspan="7" style="height: 32px;${ testsSummary?.size() != 0 ? '' : 'display: none;' }"></td>
+        <td colspan="7" style="height: 32px;${ testsSummary?.total != null ? '' : 'display: none;' }"></td>
       </tr>
       <!--TABLE_TEST-->
       <tr style="background-color: #F4F4F4;${ testsSummary?.total != null ? '' : 'display: none;' }">
@@ -165,10 +165,10 @@
       </tr>
       <tr style="${ testsSummary?.total != null ? '' : 'display: none;' }">
         <td colspan="7" style="padding-left: 24px;text-align: left; border-collapse: collapse;font-size: 12px;">
-          <strong style="font-family: Helvetica; color: #343B49;">Failed:</strong>  ${testsSummary.failed}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Passed:</strong>  ${testsSummary.passed}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Skipped:</strong>  ${testsSummary.skipped}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Total:</strong>  ${testsSummary.total}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Failed:</strong>  ${testsSummary?.failed}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Passed:</strong>  ${testsSummary?.passed}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Skipped:</strong>  ${testsSummary?.skipped}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Total:</strong>  ${testsSummary?.total}<br>
         </td>
       </tr>
       <!--TABLE_TEST-->
@@ -237,7 +237,16 @@
         <td colspan="6" style="text-align: right;padding-right: 67px;">
           <ul style="list-style-type: none; margin: 0; padding: 0;">
             <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}?page=pipeline" style="text-decoration: none; color: #343B49;">Pipeline</a>
+              <a href="${jobUrl}" style="text-decoration: none; color: #343B49;">Pipeline</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/tests" style="text-decoration: none; color: #343B49;">Tests</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/changes" style="text-decoration: none; color: #343B49;">Changes</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/artifacts" style="text-decoration: none; color: #343B49;">Artifacts</a>
             </li>
             <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica;">
               <a href="${statsUrl}" style="text-decoration: none; color: #343B49;">Stats</a>

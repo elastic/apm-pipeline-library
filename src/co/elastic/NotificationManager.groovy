@@ -42,9 +42,11 @@ def notifyEmail(Map params = [:]) {
             statusSuccess = false
         }
 
-        def boURL = "${JENKINS_URL}/blue/organizations/jenkins/${JOB_NAME}/detail/${JOB_BASE_NAME}/${BUILD_NUMBER}"
+        def jobName = env.JOB_NAME.replace("/","%2F")
+        def boURL = "${JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}"
+
         def body = emailTemplate([
-            "jobUrl": env.boURL,
+            "jobUrl": boURL,
             "build": build,
             "jenkinsText": env.JOB_NAME,
             "jenkinsUrl": env.JENKINS_URL,
