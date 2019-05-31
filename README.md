@@ -76,3 +76,10 @@ git push -f --tags
 ## Upgrade repository maven wrapper
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
+
+## Resources
+
+* [Jenkins Pipeline Unit testing framework](https://github.com/jenkinsci/JenkinsPipelineUnit)
+* [Groovy Testing guide](http://groovy-lang.org/testing.html)
+* [Jenkins World 2017: How to Use Jenkins Less](https://www.youtube.com/watch?v=Zeqc6--0eQw)
+* [Jenkins World 2017: JenkinsPipelineUnit: Test your Continuous Delivery Pipeline](https://www.youtube.com/watch?v=RmrpUtbVR7o)

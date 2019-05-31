@@ -34,6 +34,7 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     env.JOB_NAME = "testJob"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
+    env.NOTIFY_TO = "myName@example.com"
 
     binding.setVariable('env', env)
 
@@ -66,16 +67,61 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("writeJSON", [Map.class], { "OK" })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("generateBuildInfoJsonFiles", [String.class,String.class], { "OK" })
-  }
+    helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { "OK" })
+    helper.registerAllowedMethod("catchError", [Closure.class], { c -> c() })
+    helper.registerAllowedMethod("sendDataToElasticsearch", [Map.class], { "OK" })
 
-/** TODO implement test */
+    co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
+  }
 
   @Test
   void test() throws Exception {
     def script = loadScript("vars/notifyBuildResult.groovy")
+    script.call(es: "https://ecs.example.com:9200", secret: "secret")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "getBuildInfoJsonFiles"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "archiveArtifacts"
+    }.size()== 1)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithoutParams() throws Exception {
+    def script = loadScript("vars/notifyBuildResult.groovy")
     script.call()
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "getBuildInfoJsonFiles"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "archiveArtifacts"
+    }.size()== 1)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithoutSecret() throws Exception {
+    def script = loadScript("vars/notifyBuildResult.groovy")
+    script.call(es: "https://ecs.example.com:9200")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "getBuildInfoJsonFiles"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "archiveArtifacts"
+    }.size()== 1)
     assertJobStatusSuccess()
   }
 }

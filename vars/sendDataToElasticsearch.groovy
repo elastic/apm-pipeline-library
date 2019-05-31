@@ -17,11 +17,16 @@
 
 /**
   Send the JSON report file to Elastisearch.
+
+  sendDataToElasticsearch(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field": "value"}')
 */
 def call(Map params = [:]){
   def es = params.containsKey('es') ? params.es : error("sendDataToElasticsearch: Elasticsearch URL is not valid.")
   def secret = params.containsKey('secret') ? params.secret : error("sendDataToElasticsearch: secret is not valid.")
   def data = params.containsKey('data') ? params.data : error("sendDataToElasticsearch: data is not valid.")
+  def restCall = params.containsKey('restCall') ? params.restCall : "/jenkins-builds/_doc/"
+  def contentType = params.containsKey('contentType') ? params.contentType : "application/json"
+  def method = params.containsKey('method') ? params.method : "POST"
 
   def props = getVaultSecret(secret: secret)
   if(props?.errors){
@@ -32,15 +37,15 @@ def call(Map params = [:]){
   def user = value?.user
   def password = value?.password
   if(data == null || user == null || password == null){
-    error "notifyBuildResult: was not possible to get authentication info to send data"
+    error "notifyBuildResult: was not possible to get authentication info to send data."
   }
 
   log(level: 'INFO', text: "notifyBuildResult: sending data...")
 
   def messageBase64UrlPad = base64encode(text: "${user}:${password}", encoding: "UTF-8")
-  httpRequest(url: "${es}/jenkins-builds/_doc/", method: "POST",
+  return httpRequest(url: "${es}${restCall}", method: "${method}",
       headers: [
-          "Content-Type": "application/json",
+          "Content-Type": "${contentType}",
           "Authorization": "Basic ${messageBase64UrlPad}"],
       data: data.toString() + "\n")
 }

@@ -53,8 +53,8 @@
         <td colspan="2" style="vertical-align: bottom;font-family: Georgia; font-weight: bold; font-size: 16px; color: #343B49; letter-spacing: 1px; line-height: 16px;">
           Jenkins
         </td>
-        <td rowspan="3" colspan="1"></td>
-        <td rowspan="3" colspan="3" style="padding-right: 24px;">
+        <td rowspan="3" colspan="3"></td>
+        <td rowspan="3" colspan="1" style="padding-right: 24px;">
           <table logopacing="0" cellpadding="0" style="text-align: right;width:90%">
             <tr>
               <td width="64px" height="142px">
@@ -67,7 +67,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" style="vertical-align: middle; font-family: Helvetica; font-size: 24px; color: #343B49; letter-spacing: 1px; line-height: 30px;">
+        <td colspan="5" style="vertical-align: middle; font-family: Helvetica; font-size: 24px; color: #343B49; letter-spacing: 1px; line-height: 30px;overflow: hidden;word-break: break-word;">
           ${jenkinsText}
         </td>
       </tr>
@@ -83,7 +83,7 @@
         <td colspan="7" style="padding-left: 24px;text-align: left; vertical-align: middle; font-family: Helvetica; font-size: 12px; color: #343B49; letter-spacing: 1px;">
           <strong style="font-family: Helvetica; color: #343B49;">Build Cause:</strong> ${build?.causes?.shortDescription}<br>
           <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong> ${build?.startTime}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build?.durationInMillis/1000/60)} min ${Math.round(build?.durationInMillis/1000)%60} sec<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build?.durationInMillis/1000/60)} min ${Math.round(build?.durationInMillis/1000)%60} sec - ${build?.durationInMillis}<br>
         </td>
       </tr>
       <!--TABLE_BUILD-->
@@ -118,6 +118,7 @@
         </td>
       </tr>
       <!--TABLE_CHANGES-->
+      <%stepsErrors = stepsErrors.findAll{item -> item?.result == "FAILURE"}%>
       <tr>
         <td colspan="7" style="height: 32px;${ stepsErrors.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
@@ -172,6 +173,7 @@
         </td>
       </tr>
       <!--TABLE_TEST-->
+      <%testsErrors = testsErrors.findAll{item -> item?.status == "FAILED"}%>
       <tr>
         <td colspan="7" style="height: 32px;${ testsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
@@ -206,22 +208,25 @@
       </tr>
       <!--TABLE_TEST_ERRORS-->
       <tr>
-        <td colspan="7" style="height: 32px;${ log != null ? '' : 'display: none;' }"></td>
+        <td colspan="7" style="height: 32px;${ log != null && !statusSuccess ? '' : 'display: none;' }"></td>
       </tr>
       <!--TABLE_LOG-->
-      <tr style="background-color: #F4F4F4;${ log != null ? '' : 'display: none;' }">
+      <tr style="background-color: #F4F4F4;${ log != null && !statusSuccess ? '' : 'display: none;' }">
         <td colspan="6" style="padding-left: 24px;font-family: Helvetica; font-size: 10px; color: #343B49; letter-spacing: 2px; line-height: 16px; margin-bottom: 0; text-transform: uppercase;">
           Log
           <hr>
         </td>
         <td colspan="1" style="background-color: #F4F4F4;"></td>
       </tr>
-      <tr style="${ log != null ? '' : 'display: none;' }">
+      <tr style="${ log != null && !statusSuccess ? '' : 'display: none;' }">
         <td colspan="7" style="padding: 0 24px 0 24px;border-collapse: collapse;background-color: #F4F4F4;">
           <pre style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;">${log}</pre>
         </td>
       </tr>
       <!--TABLE_LOG-->
+      <tr>
+        <td colspan="7" style="height: 32px;"></td>
+      </tr>
     </tbody>
 
     <tfoot style="background-color: #F4F4F4;">

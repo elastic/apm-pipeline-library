@@ -31,7 +31,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
     super.setUp()
 
     env.WORKSPACE = "WS"
-    env.JOB_NAME = "folder/myJob"
+    env.JOB_NAME = "folder/folder/folder/folder/folder/folder/name-name-name-myJob"
     env.BRANCH_NAME = "master"
     env.BUILD_NUMBER = "123"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
@@ -61,6 +61,16 @@ class NotificationManagerStepTests extends BasePipelineTest {
     })
   }
 
+  def readJSON(params){
+    def jsonSlurper = new groovy.json.JsonSlurper()
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return jsonSlurper.parseText(jsonText)
+  }
+
   @Test
   void test() throws Exception {
     def script = loadScript("src/co/elastic/NotificationManager.groovy")
@@ -68,7 +78,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
     env.TEST = "test"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
-      buildStatus: "SUCCESSFUL",
+      buildStatus: "SUCCESS",
       emailRecipients: ["me@example.com"],
       testsSummary: readJSON(file: "tests-summary.json"),
       changeSet: readJSON(file: "changeSet-info.json"),
@@ -93,7 +103,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
     env.TEST = "testMinParams"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
-      buildStatus: "SUCCESSFUL",
+      buildStatus: "SUCCESS",
       emailRecipients: ["me@example.com"]
     )
     printCallStack()

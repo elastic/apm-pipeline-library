@@ -24,32 +24,27 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 **/
 
+import co.elastic.NotificationManager
+
 def call(Map params = [:]) {
-  def es = params.containsKey('es') ? getLogLevelNum(params.es) : 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243'
+  def es = params.containsKey('es') ? params.es : 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243'
   def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
+  def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
+  def statsURL = params.containsKey('statsURL') ? params.to : "ela.st/observabtl-ci-stats"
 
   node('master'){
     stage('Reporting build status'){
-      /*
-      emailext body: '''${SCRIPT, template="groovy-html.template"}''',
-        mimeType: 'text/html',
-        subject: "${currentBuild.currentResult} ${env.JOB_NAME}#${env.BRANCH_NAME} ${env.BUILD_NUMBER}",
-        attachLog: true,
-        compressLog: true,
-        recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), upstreamDevelopers()],
-        to: "ivan.fernandez@elastic.co"
-        */
       catchError {
-        generateBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 
-        def notificationManager = new co.elastic.NotificationManager()
+        def notificationManager = new NotificationManager()
         notificationManager.notifyEmail(
           build: readJSON(file: "build-info.json"),
           buildStatus: currentBuild.currentResult,
-          emailRecipients: ["ivan.fernandez@elastic.co"],
+          emailRecipients: to,
           testsSummary: readJSON(file: "tests-summary.json"),
           changeSet: readJSON(file: "changeSet-info.json"),
-          statsUrl: "${es}/app/kibana",
+          statsUrl: "${statsURL}",
           log: readFile(file: "pipeline-log-summary.txt"),
           testsErrors: readJSON(file: "tests-info.json"),
           stepsErrors: readJSON(file: "steps-info.json")

@@ -2,5 +2,5 @@ Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
 
 ```
-  generateBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 ```

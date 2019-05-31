@@ -21,7 +21,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GenerateBuildInfoJsonFilesStepTests extends BasePipelineTest {
+class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
   Map env = [:]
 
   @Override
@@ -43,23 +43,32 @@ class GenerateBuildInfoJsonFilesStepTests extends BasePipelineTest {
       printCallStack()
       throw new Exception(s)
     })
-    helper.registerAllowedMethod("toJSON", [String.class], { s ->
+    helper.registerAllowedMethod("toJSON", [Map.class], { m ->
       def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
+      return script.call(m)
     })
     helper.registerAllowedMethod("writeJSON", [Map.class], { "OK" })
+    helper.registerAllowedMethod("readFile", [Map.class], { m ->
+      File f = new File("src/test/resources/${m.file}")
+      return f.getText()
+    })
+  }
+
+  def readJSON(params){
+    def jsonSlurper = new groovy.json.JsonSlurper()
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return jsonSlurper.parseText(jsonText)
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/generateBuildInfoJsonFiles.groovy")
-    script.call(text: "dummy")
+    def script = loadScript("vars/getBuildInfoJsonFiles.groovy")
+    script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("I am a dummy step - dummy")
-    })
     assertJobStatusSuccess()
   }
 }

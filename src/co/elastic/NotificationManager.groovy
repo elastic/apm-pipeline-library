@@ -37,13 +37,13 @@ def notifyEmail(Map params = [:]) {
         def icon = "✅"
         def statusSuccess = true
 
-        if(buildStatus != "SUCCESSFUL") {
+        if(buildStatus != "SUCCESS") {
             icon = "❌"
             statusSuccess = false
         }
 
         def jobName = env.JOB_NAME.replace("/","%2F")
-        def boURL = "${JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}"
+        def boURL = "${env.JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}"
 
         def body = emailTemplate([
             "jobUrl": boURL,
