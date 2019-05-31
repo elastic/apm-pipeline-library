@@ -30,13 +30,9 @@ class GetBlueoceanDisplayURLStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
-    env.WORKSPACE = "WS"
     env.BUILD_ID = "4"
     env.BRANCH_NAME = "PR-60"
-    env.JOB_NAME = "folder/mbp/${env.BRANCH_NAME}"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.JOB_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}"
-    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/display/redirect"
 
     binding.setVariable('env', env)
