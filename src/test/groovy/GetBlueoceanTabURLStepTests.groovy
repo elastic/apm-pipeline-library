@@ -22,8 +22,8 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class WithGithubNotifyStepTests extends BasePipelineTest {
-  String scriptName = "vars/withGithubNotify.groovy"
+class GetBlueoceanTabURLStepTests extends BasePipelineTest {
+  String scriptName = "vars/getBlueoceanTabURL.groovy"
   Map env = [:]
 
   @Override
@@ -37,28 +37,20 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
 
     binding.setVariable('env', env)
 
-    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests"
+    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/"
 
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-    helper.registerAllowedMethod("getBlueoceanTabURL", [String.class], { redirectURL })
-    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
-      if(m.context.equalsIgnoreCase('failed')){
-        updateBuildStatus('FAILURE')
-        throw new Exception('Failed')
-      }
-    })
+    helper.registerAllowedMethod("getBlueoceanDisplayURL", [], { redirectURL })
   }
 
   @Test
   void testMissingArguments() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(){
-        //NOOP
-      }
+      script.call()
     } catch(e){
       //NOOP
     }
@@ -66,18 +58,16 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == "error"
     }.any { call ->
-      callArgsToString(call).contains('withGithubNotify: Missing arguments')
+      callArgsToString(call).contains('getBlueoceanTabURL: Unsupported type')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testMissingDescriptionArgument() throws Exception {
+  void testWrongTypeArgument() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(description: 'foo'){
-        //NOOP
-      }
+      script.call('unknown')
     } catch(e){
       //NOOP
     }
@@ -85,58 +75,44 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == "error"
     }.any { call ->
-      callArgsToString(call).contains('withGithubNotify: Missing arguments')
+      callArgsToString(call).contains('getBlueoceanTabURL: Unsupported type')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testSuccess() throws Exception {
+  void testSuccessWithTestsTab() throws Exception {
     def script = loadScript(scriptName)
-    def isOK = false
-    script.call(context: 'foo', description: 'bar') {
-      isOK = true
-    }
+    def ret = script.call('tests')
     printCallStack()
-    assertTrue(isOK)
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/tests"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "githubNotify"
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}")
-    })
   }
 
   @Test
-  void testSuccessWithAllArguments() throws Exception {
+  void testSuccessWithChangesTab() throws Exception {
     def script = loadScript(scriptName)
-    def isOK = false
-    script.call(context: 'foo', description: 'bar', tab: 'tests') {
-      isOK = true
-    }
+    def ret = script.call('changes')
     printCallStack()
-    assertTrue(isOK)
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/changes"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "githubNotify"
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}")
-    })
   }
 
   @Test
-  void testFailure() throws Exception {
+  void testSuccessWithPipelineTab() throws Exception {
     def script = loadScript(scriptName)
-    def isOK = false
-    try{
-      script.call(context: 'failed') {
-        isOK = true
-      }
-    } catch(e){
-      //NOOP
-    }
+    def ret = script.call('pipeline')
     printCallStack()
-    assertFalse(isOK)
-    assertJobStatusFailure()
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/pipeline"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithArtifactsTab() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call('artifacts')
+    printCallStack()
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/artifacts"))
+    assertJobStatusSuccess()
   }
 }

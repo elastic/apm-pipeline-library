@@ -112,6 +112,20 @@ def URL = getBlueoceanDisplayURL()
 
 [Powershell plugin](https://plugins.jenkins.io/powershell)
 
+## getBlueoceanTabURL
+Provides the specific Blueocean URL tab for the current build/run
+
+Tab refers to the kind of available tabs in the BO view. So far:
+* pipeline
+* tests
+* changes
+* artifacts
+
+```
+def testURL = getBlueoceanTabURL('test')
+def artifactURL = getBlueoceanTabURL('artifact')
+```
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.
@@ -501,18 +515,18 @@ withGithubNotify(context: 'Build', description: 'Execute something') {
   // block
 }
 
-withGithubNotify(context: 'Test', description: 'UTs', type: 'test') {
+withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
   // block
 }
 
-withGithubNotify(context: 'Release', type: 'artifact') {
+withGithubNotify(context: 'Release', tab: 'artifacts') {
   // block
 }
 ```
 
 * context: Name of the GH check context. (Mandatory).
 * description: Description of the GH check. If unset then it will use the description.
-* type: What kind of details links will be used. Enum type: test, build and artifact). Default build.
+* tabs: What kind of details links will be used. Enum type: tests, changes, artifacts and pipeline). Default pipeline.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 

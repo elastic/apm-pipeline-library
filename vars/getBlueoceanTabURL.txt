@@ -1,0 +1,12 @@
+Provides the specific Blueocean URL tab for the current build/run
+
+Tab refers to the kind of available tabs in the BO view. So far:
+* pipeline
+* tests
+* changes
+* artifacts
+
+```
+def testURL = getBlueoceanTabURL('test')
+def artifactURL = getBlueoceanTabURL('artifact')
+```

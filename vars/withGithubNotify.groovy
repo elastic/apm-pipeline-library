@@ -25,13 +25,13 @@
 def call(Map params = [:], Closure body) {
   def context = params.context
   def description = params.containsKey('description') ? params.description : context
-  def type = params.type ?: 'build'
+  def tab = params.tab ?: 'pipeline'
 
   if (!context) {
     error 'withGithubNotify: Missing arguments'
   }
 
-  def redirect = getUrlGivenType(type)
+  def redirect = getBlueoceanTabURL(tab)
   try {
     notify(context, "${description} ...", 'PENDING', redirect)
     body()
@@ -44,25 +44,4 @@ def call(Map params = [:], Closure body) {
 
 def notify(String context, String description, String status, String redirect) {
   githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
-}
-
-def getUrlGivenType(String type) {
-  def url
-
-  def blueoceanBuildURL = getBlueoceanDisplayURL()
-
-  switch (type) {
-    case 'test':
-      url = "${blueoceanBuildURL}tests"
-      break
-    case 'artifact':
-      url = "${blueoceanBuildURL}artifacts"
-      break
-    case 'build':
-      url = blueoceanBuildURL
-      break
-    default:
-      error 'withGithubNotify: Unsupported type'
-  }
-  return url
 }
