@@ -1,0 +1,2501 @@
+[{
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ANotifyBuildResultStepTests%253Ajunit%252F(root)%252FNotifyBuildResultStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ANotifyBuildResultStepTests%253Ajunit%252F(root)%252FNotifyBuildResultStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ANotifyBuildResultStepTests%253Ajunit%252F(root)%252FNotifyBuildResultStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 11,
+  "duration": 0.15,
+  "errorDetails": "No signature of method: notifyBuildResult.toJSON() is applicable for argument types: (java.util.LinkedHashMap) values: [[job:[field:value], build:[field:value, result:null, state:FINISHED], ...]]",
+  "errorStackTrace": "groovy.lang.MissingMethodException: No signature of method: notifyBuildResult.toJSON() is applicable for argument types: (java.util.LinkedHashMap) values: [[job:[field:value], build:[field:value, result:null, state:FINISHED], ...]]\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)\n\tat sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)\n\tat sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)\n\tat java.lang.reflect.Constructor.newInstance(Constructor.java:423)\n\tat org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:83)\n\tat org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:60)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:235)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$_closure4.doCall(PipelineTestHelper.groovy:182)\n\tat sun.reflect.GeneratedMethodAccessor60.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.invoke(ClosureMetaMethod.java:84)\n\tat groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:939)\n\tat groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:826)\n\tat groovy.lang.DelegatingMetaClass.invokeMissingMethod(DelegatingMetaClass.java:234)\n\tat groovy.lang.MetaClass$invokeMissingMethod.call(Unknown Source)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$_closure3.doCall(PipelineTestHelper.groovy:143)\n\tat sun.reflect.GeneratedMethodAccessor12.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.invoke(ClosureMetaMethod.java:84)\n\tat groovy.lang.ExpandoMetaClass.invokeMethod(ExpandoMetaClass.java:1123)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:810)\n\tat groovy.lang.GroovyObjectSupport.invokeMethod(GroovyObjectSupport.java:46)\n\tat groovy.lang.Script.invokeMethod(Script.java:80)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeOnDelegationObjects(ClosureMetaClass.java:430)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:369)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:69)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:52)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:154)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:166)\n\tat notifyBuildResult$_call_closure1.doCall(notifyBuildResult.groovy:69)\n\tat notifyBuildResult$_call_closure1.doCall(notifyBuildResult.groovy)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:294)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:42)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:57)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:117)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper.callClosure(PipelineTestHelper.groovy:472)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper.callClosure(PipelineTestHelper.groovy)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$callClosure$2.callCurrent(Unknown Source)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:52)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$callClosure$2.callCurrent(Unknown Source)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper.callIfClosure(PipelineTestHelper.groovy:192)\n\tat sun.reflect.GeneratedMethodAccessor33.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1213)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:69)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:174)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$_closure4.doCall(PipelineTestHelper.groovy:171)\n\tat sun.reflect.GeneratedMethodAccessor60.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.invoke(ClosureMetaMethod.java:84)\n\tat groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:939)\n\tat groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:826)\n\tat groovy.lang.DelegatingMetaClass.invokeMissingMethod(DelegatingMetaClass.java:234)\n\tat groovy.lang.MetaClass$invokeMissingMethod.call(Unknown Source)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)\n\tat groovy.lang.MetaClass$invokeMissingMethod.call(Unknown Source)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$_closure3.doCall(PipelineTestHelper.groovy:143)\n\tat sun.reflect.GeneratedMethodAccessor12.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.invoke(ClosureMetaMethod.java:84)\n\tat groovy.lang.ExpandoMetaClass.invokeMethod(ExpandoMetaClass.java:1123)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:69)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:52)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:154)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:174)\n\tat notifyBuildResult.call(notifyBuildResult.groovy:31)\n\tat notifyBuildResult.call(notifyBuildResult.groovy)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)\n\tat groovy.lang.MetaMethod$doMethodInvoke.call(Unknown Source)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)\n\tat groovy.lang.MetaMethod$doMethodInvoke.call(Unknown Source)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper.callMethod(PipelineTestHelper.groovy:156)\n\tat sun.reflect.GeneratedMethodAccessor34.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1213)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:69)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:182)\n\tat com.lesfurets.jenkins.unit.PipelineTestHelper$_closure3.doCall(PipelineTestHelper.groovy:143)\n\tat sun.reflect.GeneratedMethodAccessor12.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)\n\tat org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.invoke(ClosureMetaMethod.java:84)\n\tat groovy.lang.ExpandoMetaClass.invokeMethod(ExpandoMetaClass.java:1123)\n\tat groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1022)\n\tat org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:42)\n\tat org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:113)\n\tat org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:117)\n\tat NotifyBuildResultStepTests.test(NotifyBuildResultStepTests.groovy:68)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\n\tat org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)\n\tat org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)\n\tat org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:363)\n\tat org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:365)\n\tat org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:273)\n\tat org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)\n\tat org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:159)\n\tat org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)\n\tat org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)\n\tat org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)\n\tat org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)\n",
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:NotifyBuildResultStepTests%3Ajunit%2F(root)%2FNotifyBuildResultStepTests%2Ftest",
+  "name": "test – NotifyBuildResultStepTests",
+  "state": "UNKNOWN",
+  "status": "FAILED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.854,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:Base64decodeStepTests%3Ajunit%2F(root)%2FBase64decodeStepTests%2Ftest",
+  "name": "test – Base64decodeStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252FtestParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252FtestParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64decodeStepTests%253Ajunit%252F(root)%252FBase64decodeStepTests%252FtestParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.063,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:Base64decodeStepTests%3Ajunit%2F(root)%2FBase64decodeStepTests%2FtestParams",
+  "name": "testParams – Base64decodeStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.113,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:Base64encodeStepTests%3Ajunit%2F(root)%2FBase64encodeStepTests%2Ftest",
+  "name": "test – Base64encodeStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252FtestParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252FtestParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABase64encodeStepTests%253Ajunit%252F(root)%252FBase64encodeStepTests%252FtestParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.071,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:Base64encodeStepTests%3Ajunit%2F(root)%2FBase64encodeStepTests%2FtestParams",
+  "name": "testParams – Base64encodeStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.156,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:BuildDocsStepTests%3Ajunit%2F(root)%2FBuildDocsStepTests%2Ftest",
+  "name": "test – BuildDocsStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252FtestParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252FtestParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ABuildDocsStepTests%253Ajunit%252F(root)%252FBuildDocsStepTests%252FtestParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.124,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:BuildDocsStepTests%3Ajunit%2F(root)%2FBuildDocsStepTests%2FtestParams",
+  "name": "testParams – BuildDocsStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.099,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CheckoutElasticDocsToolsTests%3Ajunit%2F(root)%2FCheckoutElasticDocsToolsTests%2Ftest",
+  "name": "test – CheckoutElasticDocsToolsTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252FtestNoParam/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252FtestNoParam/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACheckoutElasticDocsToolsTests%253Ajunit%252F(root)%252FCheckoutElasticDocsToolsTests%252FtestNoParam/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.106,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CheckoutElasticDocsToolsTests%3Ajunit%2F(root)%2FCheckoutElasticDocsToolsTests%2FtestNoParam",
+  "name": "testNoParam – CheckoutElasticDocsToolsTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestCache/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestCache/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestCache/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.181,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CodecovStepTests%3Ajunit%2F(root)%2FCodecovStepTests%2FtestCache",
+  "name": "testCache – CodecovStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.094,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CodecovStepTests%3Ajunit%2F(root)%2FCodecovStepTests%2Ftest",
+  "name": "test – CodecovStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.093,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CodecovStepTests%3Ajunit%2F(root)%2FCodecovStepTests%2FtestNoRepo",
+  "name": "testNoRepo – CodecovStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoToken/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoToken/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACodecovStepTests%253Ajunit%252F(root)%252FCodecovStepTests%252FtestNoToken/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.101,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CodecovStepTests%3Ajunit%2F(root)%2FCodecovStepTests%2FtestNoToken",
+  "name": "testNoToken – CodecovStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACoverageReportStepTests%253Ajunit%252F(root)%252FCoverageReportStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACoverageReportStepTests%253Ajunit%252F(root)%252FCoverageReportStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ACoverageReportStepTests%253Ajunit%252F(root)%252FCoverageReportStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.047,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:CoverageReportStepTests%3Ajunit%2F(root)%2FCoverageReportStepTests%2Ftest",
+  "name": "test – CoverageReportStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.07,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:DockerLoginStepTests%3Ajunit%2F(root)%2FDockerLoginStepTests%2Ftest",
+  "name": "test – DockerLoginStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252FtestRegistry/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252FtestRegistry/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADockerLoginStepTests%253Ajunit%252F(root)%252FDockerLoginStepTests%252FtestRegistry/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.081,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:DockerLoginStepTests%3Ajunit%2F(root)%2FDockerLoginStepTests%2FtestRegistry",
+  "name": "testRegistry – DockerLoginStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADummyStepTests%253Ajunit%252F(root)%252FDummyStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADummyStepTests%253Ajunit%252F(root)%252FDummyStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ADummyStepTests%253Ajunit%252F(root)%252FDummyStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.09,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:DummyStepTests%3Ajunit%2F(root)%2FDummyStepTests%2Ftest",
+  "name": "test – DummyStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AEchoColorStepTests%253Ajunit%252F(root)%252FEchoColorStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AEchoColorStepTests%253Ajunit%252F(root)%252FEchoColorStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AEchoColorStepTests%253Ajunit%252F(root)%252FEchoColorStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.09,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:EchoColorStepTests%3Ajunit%2F(root)%2FEchoColorStepTests%2Ftest",
+  "name": "test – EchoColorStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitCommitShaStepTests%253Ajunit%252F(root)%252FGetGitCommitShaStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitCommitShaStepTests%253Ajunit%252F(root)%252FGetGitCommitShaStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitCommitShaStepTests%253Ajunit%252F(root)%252FGetGitCommitShaStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.047,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetGitCommitShaStepTests%3Ajunit%2F(root)%2FGetGitCommitShaStepTests%2Ftest",
+  "name": "test – GetGitCommitShaStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitRepoURLStepTests%253Ajunit%252F(root)%252FGetGitRepoURLStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitRepoURLStepTests%253Ajunit%252F(root)%252FGetGitRepoURLStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGitRepoURLStepTests%253Ajunit%252F(root)%252FGetGitRepoURLStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.043,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetGitRepoURLStepTests%3Ajunit%2F(root)%2FGetGitRepoURLStepTests%2Ftest",
+  "name": "test – GetGitRepoURLStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.059,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetGithubTokenStepTests%3Ajunit%2F(root)%2FGetGithubTokenStepTests%2Ftest",
+  "name": "test – GetGithubTokenStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252FtestCredentialsId/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252FtestCredentialsId/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetGithubTokenStepTests%253Ajunit%252F(root)%252FGetGithubTokenStepTests%252FtestCredentialsId/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.058,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetGithubTokenStepTests%3Ajunit%2F(root)%2FGetGithubTokenStepTests%2FtestCredentialsId",
+  "name": "testCredentialsId – GetGithubTokenStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestMap/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestMap/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestMap/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.376,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetVaultSecretStepTests%3Ajunit%2F(root)%2FGetVaultSecretStepTests%2FtestMap",
+  "name": "testMap – GetVaultSecretStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.143,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetVaultSecretStepTests%3Ajunit%2F(root)%2FGetVaultSecretStepTests%2Ftest",
+  "name": "test – GetVaultSecretStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetSecretError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetSecretError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetSecretError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.165,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetVaultSecretStepTests%3Ajunit%2F(root)%2FGetVaultSecretStepTests%2FtestGetSecretError",
+  "name": "testGetSecretError – GetVaultSecretStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestNoSecret/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestNoSecret/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestNoSecret/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.118,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetVaultSecretStepTests%3Ajunit%2F(root)%2FGetVaultSecretStepTests%2FtestNoSecret",
+  "name": "testNoSecret – GetVaultSecretStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetTokenError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetTokenError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGetVaultSecretStepTests%253Ajunit%252F(root)%252FGetVaultSecretStepTests%252FtestGetTokenError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.132,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GetVaultSecretStepTests%3Ajunit%2F(root)%2FGetVaultSecretStepTests%2FtestGetTokenError",
+  "name": "testGetTokenError – GetVaultSecretStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.096,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestErrorBranchNoRepo",
+  "name": "testErrorBranchNoRepo – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestCommentTriggered/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestCommentTriggered/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestCommentTriggered/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.104,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestCommentTriggered",
+  "name": "testCommentTriggered – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestUserTriggered/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestUserTriggered/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestUserTriggered/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.09,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestUserTriggered",
+  "name": "testUserTriggered – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestReferenceRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestReferenceRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestReferenceRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.105,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestReferenceRepo",
+  "name": "testReferenceRepo – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchIncomplete/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchIncomplete/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchIncomplete/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.1,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestErrorBranchIncomplete",
+  "name": "testErrorBranchIncomplete – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBaseDir/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBaseDir/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBaseDir/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.115,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestBaseDir",
+  "name": "testBaseDir – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoCredentials/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoCredentials/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestErrorBranchNoCredentials/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.117,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestErrorBranchNoCredentials",
+  "name": "testErrorBranchNoCredentials – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestMergeTargetRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestMergeTargetRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestMergeTargetRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.088,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestMergeTargetRepo",
+  "name": "testMergeTargetRepo – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.101,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2Ftest",
+  "name": "test – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBranch/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBranch/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCheckoutStepTests%253Ajunit%252F(root)%252FGitCheckoutStepTests%252FtestBranch/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.066,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCheckoutStepTests%3Ajunit%2F(root)%2FGitCheckoutStepTests%2FtestBranch",
+  "name": "testBranch – GitCheckoutStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCreateTagStepTests%253Ajunit%252F(root)%252FGitCreateTagStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCreateTagStepTests%253Ajunit%252F(root)%252FGitCreateTagStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitCreateTagStepTests%253Ajunit%252F(root)%252FGitCreateTagStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.077,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitCreateTagStepTests%3Ajunit%2F(root)%2FGitCreateTagStepTests%2Ftest",
+  "name": "test – GitCreateTagStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitDeleteTagStepTests%253Ajunit%252F(root)%252FGitDeleteTagStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitDeleteTagStepTests%253Ajunit%252F(root)%252FGitDeleteTagStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGitDeleteTagStepTests%253Ajunit%252F(root)%252FGitDeleteTagStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.061,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GitDeleteTagStepTests%3Ajunit%2F(root)%2FGitDeleteTagStepTests%2Ftest",
+  "name": "test – GitDeleteTagStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.108,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2FtestRequestError",
+  "name": "testRequestError – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestCache/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestCache/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestCache/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.13,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2FtestCache",
+  "name": "testCache – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoToken/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoToken/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoToken/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.117,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2FtestErrorNoToken",
+  "name": "testErrorNoToken – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.092,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2Ftest",
+  "name": "test – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestFailure/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestFailure/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestRequestFailure/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.094,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2FtestRequestFailure",
+  "name": "testRequestFailure – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoUrl/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoUrl/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubApiCallStepTests%253Ajunit%252F(root)%252FGithubApiCallStepTests%252FtestErrorNoUrl/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.108,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubApiCallStepTests%3Ajunit%2F(root)%2FGithubApiCallStepTests%2FtestErrorNoUrl",
+  "name": "testErrorNoUrl – GithubApiCallStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestEnvError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestEnvError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestEnvError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.075,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubBranchRefStepTests%3Ajunit%2F(root)%2FGithubBranchRefStepTests%2FtestEnvError",
+  "name": "testEnvError – GithubBranchRefStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestNoPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestNoPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252FtestNoPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.065,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubBranchRefStepTests%3Ajunit%2F(root)%2FGithubBranchRefStepTests%2FtestNoPR",
+  "name": "testNoPR – GithubBranchRefStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubBranchRefStepTests%253Ajunit%252F(root)%252FGithubBranchRefStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.105,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubBranchRefStepTests%3Ajunit%2F(root)%2FGithubBranchRefStepTests%2Ftest",
+  "name": "test – GithubBranchRefStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnMergeChangesInPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnMergeChangesInPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnMergeChangesInPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.146,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestChangeTargetBaseCommitOnMergeChangesInPR",
+  "name": "testChangeTargetBaseCommitOnMergeChangesInPR – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestMerge/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestMerge/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestMerge/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.091,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestMerge",
+  "name": "testMerge – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoMergeChangesInPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoMergeChangesInPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoMergeChangesInPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.12,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestChangeTargetBaseCommitOnNoMergeChangesInPR",
+  "name": "testChangeTargetBaseCommitOnNoMergeChangesInPR – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnBranch/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnBranch/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnBranch/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.105,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestChangeTargetBaseCommitOnBranch",
+  "name": "testChangeTargetBaseCommitOnBranch – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoGitCommit/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoGitCommit/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTargetBaseCommitOnNoGitCommit/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.11,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestChangeTargetBaseCommitOnNoGitCommit",
+  "name": "testChangeTargetBaseCommitOnNoGitCommit – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTarget/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTarget/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestChangeTarget/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.118,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestChangeTarget",
+  "name": "testChangeTarget – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestNoGitURL/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestNoGitURL/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestNoGitURL/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.163,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestNoGitURL",
+  "name": "testNoGitURL – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestGitUrl/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestGitUrl/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestGitUrl/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.103,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestGitUrl",
+  "name": "testGitUrl – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestSshUrl/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestSshUrl/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubEnvStepTests%253Ajunit%252F(root)%252FGithubEnvStepTests%252FtestSshUrl/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.118,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubEnvStepTests%3Ajunit%2F(root)%2FGithubEnvStepTests%2FtestSshUrl",
+  "name": "testSshUrl – GithubEnvStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsRejected/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsRejected/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsRejected/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.09,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestIsRejected",
+  "name": "testIsRejected – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNotAllow/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNotAllow/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNotAllow/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.091,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestNotAllow",
+  "name": "testNotAllow – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasAdminPermision/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasAdminPermision/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasAdminPermision/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.087,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestHasAdminPermision",
+  "name": "testHasAdminPermision – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasWritePermision/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasWritePermision/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestHasWritePermision/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.077,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestHasWritePermision",
+  "name": "testHasWritePermision – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNoPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNoPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestNoPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.072,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestNoPR",
+  "name": "testNoPR – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsApprobed/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsApprobed/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsApprobed/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.067,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestIsApprobed",
+  "name": "testIsApprobed – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsAuthorizedBot/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsAuthorizedBot/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrCheckApprovedStepTests%253Ajunit%252F(root)%252FGithubPrCheckApprovedStepTests%252FtestIsAuthorizedBot/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.073,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrCheckApprovedStepTests%3Ajunit%2F(root)%2FGithubPrCheckApprovedStepTests%2FtestIsAuthorizedBot",
+  "name": "testIsAuthorizedBot – GithubPrCheckApprovedStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.03,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrInfoStepTests%3Ajunit%2F(root)%2FGithubPrInfoStepTests%2FtestErrorNoRepo",
+  "name": "testErrorNoRepo – GithubPrInfoStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.056,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrInfoStepTests%3Ajunit%2F(root)%2FGithubPrInfoStepTests%2Ftest",
+  "name": "test – GithubPrInfoStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrInfoStepTests%253Ajunit%252F(root)%252FGithubPrInfoStepTests%252FtestErrorNoPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.045,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrInfoStepTests%3Ajunit%2F(root)%2FGithubPrInfoStepTests%2FtestErrorNoPR",
+  "name": "testErrorNoPR – GithubPrInfoStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.042,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrReviewsStepTests%3Ajunit%2F(root)%2FGithubPrReviewsStepTests%2FtestErrorNoRepo",
+  "name": "testErrorNoRepo – GithubPrReviewsStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.038,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrReviewsStepTests%3Ajunit%2F(root)%2FGithubPrReviewsStepTests%2Ftest",
+  "name": "test – GithubPrReviewsStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoPR/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoPR/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubPrReviewsStepTests%253Ajunit%252F(root)%252FGithubPrReviewsStepTests%252FtestErrorNoPR/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.035,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubPrReviewsStepTests%3Ajunit%2F(root)%2FGithubPrReviewsStepTests%2FtestErrorNoPR",
+  "name": "testErrorNoPR – GithubPrReviewsStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoRepo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoRepo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoRepo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.044,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubRepoGetUserPermissionStepTests%3Ajunit%2F(root)%2FGithubRepoGetUserPermissionStepTests%2FtestErrorNoRepo",
+  "name": "testErrorNoRepo – GithubRepoGetUserPermissionStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoUser/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoUser/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252FtestErrorNoUser/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.051,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubRepoGetUserPermissionStepTests%3Ajunit%2F(root)%2FGithubRepoGetUserPermissionStepTests%2FtestErrorNoUser",
+  "name": "testErrorNoUser – GithubRepoGetUserPermissionStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AGithubRepoGetUserPermissionStepTests%253Ajunit%252F(root)%252FGithubRepoGetUserPermissionStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.045,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:GithubRepoGetUserPermissionStepTests%3Ajunit%2F(root)%2FGithubRepoGetUserPermissionStepTests%2Ftest",
+  "name": "test – GithubRepoGetUserPermissionStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestNoURL/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestNoURL/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestNoURL/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.083,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestNoURL",
+  "name": "testNoURL – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestPostWithParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestPostWithParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestPostWithParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.643,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestPostWithParams",
+  "name": "testPostWithParams – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestGetWithParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestGetWithParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestGetWithParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.176,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestGetWithParams",
+  "name": "testGetWithParams – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.144,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2Ftest",
+  "name": "test – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestConnectionError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestConnectionError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestConnectionError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.115,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestConnectionError",
+  "name": "testConnectionError – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestHttpError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestHttpError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestHttpError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.104,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestHttpError",
+  "name": "testHttpError – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestInvalidURL/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestInvalidURL/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AHttpRequestStepTests%253Ajunit%252F(root)%252FHttpRequestStepTests%252FtestInvalidURL/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.071,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:HttpRequestStepTests%3Ajunit%2F(root)%2FHttpRequestStepTests%2FtestInvalidURL",
+  "name": "testInvalidURL – HttpRequestStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoCommentTriggered/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoCommentTriggered/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoCommentTriggered/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.077,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsCommentTriggerStepTests%3Ajunit%2F(root)%2FIsCommentTriggerStepTests%2FtestNoCommentTriggered",
+  "name": "testNoCommentTriggered – IsCommentTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoElasticUser/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoElasticUser/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252FtestNoElasticUser/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.221,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsCommentTriggerStepTests%3Ajunit%2F(root)%2FIsCommentTriggerStepTests%2FtestNoElasticUser",
+  "name": "testNoElasticUser – IsCommentTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsCommentTriggerStepTests%253Ajunit%252F(root)%252FIsCommentTriggerStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.051,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsCommentTriggerStepTests%3Ajunit%2F(root)%2FIsCommentTriggerStepTests%2Ftest",
+  "name": "test – IsCommentTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252FtestFalse/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252FtestFalse/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252FtestFalse/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.043,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsTimerTriggerStepTests%3Ajunit%2F(root)%2FIsTimerTriggerStepTests%2FtestFalse",
+  "name": "testFalse – IsTimerTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsTimerTriggerStepTests%253Ajunit%252F(root)%252FIsTimerTriggerStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.041,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsTimerTriggerStepTests%3Ajunit%2F(root)%2FIsTimerTriggerStepTests%2Ftest",
+  "name": "test – IsTimerTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252FtestFalse/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252FtestFalse/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252FtestFalse/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.054,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsUserTriggerStepTests%3Ajunit%2F(root)%2FIsUserTriggerStepTests%2FtestFalse",
+  "name": "testFalse – IsUserTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3AIsUserTriggerStepTests%253Ajunit%252F(root)%252FIsUserTriggerStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.052,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:IsUserTriggerStepTests%3Ajunit%2F(root)%2FIsUserTriggerStepTests%2Ftest",
+  "name": "test – IsUserTriggerStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestDebug/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestDebug/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestDebug/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.122,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2FtestDebug",
+  "name": "testDebug – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.088,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2FtestError",
+  "name": "testError – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestLevel/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestLevel/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestLevel/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.089,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2FtestLevel",
+  "name": "testLevel – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestInfo/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestInfo/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestInfo/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.082,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2FtestInfo",
+  "name": "testInfo – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestWarn/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestWarn/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252FtestWarn/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.088,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2FtestWarn",
+  "name": "testWarn – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ALogStepTests%253Ajunit%252F(root)%252FLogStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.078,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:LogStepTests%3Ajunit%2F(root)%2FLogStepTests%2Ftest",
+  "name": "test – LogStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.0,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:RandomNumberStepTests%3Ajunit%2F(root)%2FRandomNumberStepTests%2Ftest",
+  "name": "test – RandomNumberStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252FtestParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252FtestParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ARandomNumberStepTests%253Ajunit%252F(root)%252FRandomNumberStepTests%252FtestParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.0,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:RandomNumberStepTests%3Ajunit%2F(root)%2FRandomNumberStepTests%2FtestParams",
+  "name": "testParams – RandomNumberStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestWrongProtocol/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestWrongProtocol/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestWrongProtocol/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.018,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:SendBenchmarksStepTests%3Ajunit%2F(root)%2FSendBenchmarksStepTests%2FtestWrongProtocol",
+  "name": "testWrongProtocol – SendBenchmarksStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252Ftest/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252Ftest/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252Ftest/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.119,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:SendBenchmarksStepTests%3Ajunit%2F(root)%2FSendBenchmarksStepTests%2Ftest",
+  "name": "test – SendBenchmarksStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretError/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretError/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretError/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.117,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:SendBenchmarksStepTests%3Ajunit%2F(root)%2FSendBenchmarksStepTests%2FtestSecretError",
+  "name": "testSecretError – SendBenchmarksStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestParams/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestParams/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestParams/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.151,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:SendBenchmarksStepTests%3Ajunit%2F(root)%2FSendBenchmarksStepTests%2FtestParams",
+  "name": "testParams – SendBenchmarksStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult",
+  "_links": {
+    "stdOut": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretNotFound/stdOut/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretNotFound/"
+    },
+    "stdErr": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/tests/io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult%3ASendBenchmarksStepTests%253Ajunit%252F(root)%252FSendBenchmarksStepTests%252FtestSecretNotFound/stdErr/"
+    }
+  },
+  "age": 0,
+  "duration": 0.086,
+  "errorDetails": null,
+  "errorStackTrace": null,
+  "hasStdLog": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:SendBenchmarksStepTests%3Ajunit%2F(root)%2FSendBenchmarksStepTests%2FtestSecretNotFound",
+  "name": "testSecretNotFound – SendBenchmarksStepTests",
+  "state": "UNKNOWN",
+  "status": "PASSED"
+}]

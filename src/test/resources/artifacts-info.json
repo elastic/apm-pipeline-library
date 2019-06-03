@@ -1,0 +1,57 @@
+[{
+  "_class": "io.jenkins.blueocean.htmlpublisher.HTMLArtifact",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-server/pipelines/apm-server-mbp/branches/master/runs/198/artifacts/io.jenkins.blueocean.htmlpublisher.HTMLArtifact%253ACoverage-Sourcecode-Files/"
+    }
+  },
+  "downloadable": false,
+  "id": "io.jenkins.blueocean.htmlpublisher.HTMLArtifact:Coverage-Sourcecode-Files",
+  "name": "Coverage-Sourcecode-Files",
+  "path": "Coverage-Sourcecode-Files",
+  "size": -1,
+  "url": "/job/apm-server/job/apm-server-mbp/job/master/198/Coverage-Sourcecode-Files"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-server/pipelines/apm-server-mbp/branches/master/runs/198/artifacts/io.jenkins.blueocean.service.embedded.rest.ArtifactImpl%253Abench.out/"
+    }
+  },
+  "downloadable": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl:bench.out",
+  "name": "bench.out",
+  "path": "bench.out",
+  "size": 10778,
+  "url": "/job/apm-server/job/apm-server-mbp/job/master/198/artifact/bench.out"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-server/pipelines/apm-server-mbp/branches/master/runs/198/artifacts/io.jenkins.blueocean.service.embedded.rest.ArtifactImpl%253Acoverage-files.tgz/"
+    }
+  },
+  "downloadable": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl:coverage-files.tgz",
+  "name": "coverage-files.tgz",
+  "path": "coverage-files.tgz",
+  "size": 469093,
+  "url": "/job/apm-server/job/apm-server-mbp/job/master/198/artifact/coverage-files.tgz"
+}, {
+  "_class": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl",
+  "_links": {
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/apm-server/pipelines/apm-server-mbp/branches/master/runs/198/artifacts/io.jenkins.blueocean.service.embedded.rest.ArtifactImpl%253Asystem-tests-linux-files.tgz/"
+    }
+  },
+  "downloadable": true,
+  "id": "io.jenkins.blueocean.service.embedded.rest.ArtifactImpl:system-tests-linux-files.tgz",
+  "name": "system-tests-linux-files.tgz",
+  "path": "system-tests-linux-files.tgz",
+  "size": 2229952,
+  "url": "/job/apm-server/job/apm-server-mbp/job/master/198/artifact/system-tests-linux-files.tgz"
+}]

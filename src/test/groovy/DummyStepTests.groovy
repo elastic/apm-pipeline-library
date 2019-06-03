@@ -104,18 +104,26 @@ class DummyStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      def jsonSlurper = new groovy.json.JsonSlurper()
-      def object = jsonSlurper.parseText(m.text)
-      return object
-      })
+      return readJSON(m)
+    })
     helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
       throw new Exception(s)
-      })
+    })
     helper.registerAllowedMethod("toJSON", [String.class], { s ->
       def script = loadScript("vars/toJSON.groovy")
       return script.call(s)
-      })
+    })
+  }
+
+  def readJSON(params){
+    def jsonSlurper = new groovy.json.JsonSlurper()
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return jsonSlurper.parseText(jsonText)
   }
 
   @Test

@@ -1,0 +1,100 @@
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/package.rb:283:in `cleanup_staging'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/package.rb:278:in `cleanup'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:519:in `ensure in execute'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:520:in `execute'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/clamp-1.0.1/lib/clamp/command.rb:68:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:574:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/clamp-1.0.1/lib/clamp/command.rb:133:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/bin/fpm:7:in `<top (required)>'
+[2019-05-23T17:19:02.605Z] 	from /usr/local/bin/fpm:22:in `load'
+[2019-05-23T17:19:02.605Z] 	from /usr/local/bin/fpm:22:in `<main>'
+[2019-05-23T17:19:02.605Z] /var/lib/gems/2.3.0/gems/stud-0.0.23/lib/stud/temporary.rb:47:in `mkdir': No space left on device @ dir_s_mkdir - /tmp/package-tar-staging-28e0a3a111c2bee0f2c917132d2f37e4fd628e4010303d0056ee92959c53 (Errno::ENOSPC)
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/stud-0.0.23/lib/stud/temporary.rb:47:in `directory'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/package.rb:257:in `staging_path'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/package.rb:283:in `cleanup_staging'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/package.rb:278:in `cleanup'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:519:in `ensure in execute'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:520:in `execute'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/clamp-1.0.1/lib/clamp/command.rb:68:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/lib/fpm/command.rb:574:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/clamp-1.0.1/lib/clamp/command.rb:133:in `run'
+[2019-05-23T17:19:02.605Z] 	from /var/lib/gems/2.3.0/gems/fpm-1.11.0/bin/fpm:7:in `<top (required)>'
+[2019-05-23T17:19:02.605Z] 	from /usr/local/bin/fpm:22:in `load'
+[2019-05-23T17:19:02.605Z] 	from /usr/local/bin/fpm:22:in `<main>'
+[2019-05-23T17:19:02.874Z] /var/lib/gems/2.3.0/gems/stud-0.0.23/lib/stud/temporary.rb:47:in `mkdir': No space left on device @ dir_s_mkdir - /tmp/package-tar-staging-6be31448638936b689a04508a783df37447acae91f89cd441767674bb1ff (Errno::ENOS>> package: Building apm-server-oss type=zip for platform=windows/amd64
+[2019-05-23T17:19:03.137Z] >> package: Building apm-server-oss type=tar.gz for platform=linux/386
+[2019-05-23T17:19:07.355Z] package ran for 18m20.307013954s
+[2019-05-23T17:19:07.356Z] Error: failed building apm-server-oss type=docker for platform=linux/amd64: failed to save docker as artifact: write build/distributions/apm-server-oss-8.0.0-SNAPSHOT-linux-amd64.docker.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=rpm for platform=linux/386: failed while running FPM in docker: running "docker run -e EXEC_UID=1134 -e EXEC_GID=1135 --rm -w /app -v /var/lib/jenkins/workspace/apm-server_apm-server-mbp_master/src/github.com/elastic/apm-server:/app docker.elastic.co/beats-dev/fpm:1.11.0 fpm --force --input-type tar --output-type rpm --name apm-server --architecture i686 --version 8.0.0 --vendor Elastic --license ASL-2.0 --description Elastic APM Server --url https://www.elastic.co/solutions/apm --before-install build/package/apm-server-oss-linux-386.rpm/scripts/pre-install.sh --after-install build/package/apm-server-oss-linux-386.rpm/scripts/deb-post-install.sh --config-files /etc/apm-server/apm-server.yml --rpm-attr 0600,apm-server,apm-server:/etc/apm-server/apm-server.yml --rpm-attr 0750,apm-server,apm-server:/var/lib/apm-server --rpm-attr 0750,apm-server,apm-server:/var/log/apm-server -p build/distributions/apm-server-oss-8.0.0-SNAPSHOT-i686.rpm build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-i686-1560647185.tar.gz" failed with exit code 1
+[2019-05-23T17:19:07.356Z] failed building apm-server type=tar.gz for platform=linux/armv7: write build/distributions/apm-server-8.0.0-SNAPSHOT-linux-armv7.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=deb for platform=linux/ppc64le: write build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-ppc64el-1639070413.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=rpm for platform=linux/armv7: write build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-armhfp-4319457081.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=deb for platform=linux/armv7: write build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-armhf-5742021669.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=tar.gz for platform=linux/mips64: write build/distributions/apm-server-8.0.0-SNAPSHOT-linux-mips64.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=tar.gz for platform=linux/mips64: write build/distributions/apm-server-oss-8.0.0-SNAPSHOT-linux-mips64.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=deb for platform=linux/ppc64le: write build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-ppc64el-9890607386.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=tar.gz for platform=linux/ppc64le: write build/distributions/apm-server-oss-8.0.0-SNAPSHOT-linux-ppc64le.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=rpm for platform=linux/ppc64le: write build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-ppc64le-7932409250.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=tar.gz for platform=linux/ppc64le: write build/distributions/apm-server-8.0.0-SNAPSHOT-linux-ppc64le.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=rpm for platform=linux/386: write build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-i686-8030586537.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=rpm for platform=linux/ppc64le: write build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-ppc64le-1783850696.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=tar.gz for platform=linux/s390x: write build/distributions/apm-server-8.0.0-SNAPSHOT-linux-s390x.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=deb for platform=linux/s390x: write build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-s390x-1072002492.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=tar.gz for platform=linux/s390x: write build/distributions/apm-server-oss-8.0.0-SNAPSHOT-linux-s390x.tar.gz: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=deb for platform=linux/386: failed while running FPM in docker: running "docker run -e EXEC_UID=1134 -e EXEC_GID=1135 --rm -w /app -v /var/lib/jenkins/workspace/apm-server_apm-server-mbp_master/src/github.com/elastic/apm-server:/app docker.elastic.co/beats-dev/fpm:1.11.0 fpm --force --input-type tar --output-type deb --name apm-server --architecture i386 --version 8.0.0 --vendor Elastic --license Elastic-License --description Elastic APM Server --url https://www.elastic.co/solutions/apm --before-install build/package/apm-server-linux-386.deb/scripts/pre-install.sh --after-install build/package/apm-server-linux-386.deb/scripts/deb-post-install.sh --config-files /etc/apm-server/apm-server.yml --rpm-attr 0600,apm-server,apm-server:/etc/apm-server/apm-server.yml --rpm-attr 0750,apm-server,apm-server:/var/log/apm-server --rpm-attr 0750,apm-server,apm-server:/var/lib/apm-server -p build/distributions/apm-server-8.0.0-SNAPSHOT-i386.deb build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-i386-1272765718.tar.gz" failed with exit code 125
+[2019-05-23T17:19:07.356Z] failed building apm-server type=docker for platform=linux/amd64: failed to build docker: running "docker build -t docker.elastic.co/apm/apm-server:8.0.0-SNAPSHOT build/package/apm-server-linux-amd64.docker/docker-build" failed with exit code 1
+[2019-05-23T17:19:07.356Z] failed building apm-server type=zip for platform=windows/386: failed to write zip file: write build/distributions/apm-server-8.0.0-SNAPSHOT-windows-x86.zip: no space left on device
+[2019-05-23T17:19:07.356Z] failed building apm-server type=deb for platform=linux/s390x: failed while running FPM in docker: running "docker run -e EXEC_UID=1134 -e EXEC_GID=1135 --rm -w /app -v /var/lib/jenkins/workspace/apm-server_apm-server-mbp_master/src/github.com/elastic/apm-server:/app docker.elastic.co/beats-dev/fpm:1.11.0 fpm --force --input-type tar --output-type deb --name apm-server --architecture s390x --version 8.0.0 --vendor Elastic --license Elastic-License --description Elastic APM Server --url https://www.elastic.co/solutions/apm --before-install build/package/apm-server-linux-s390x.deb/scripts/pre-install.sh --after-install build/package/apm-server-linux-s390x.deb/scripts/deb-post-install.sh --rpm-attr 0750,apm-server,apm-server:/var/log/apm-server --config-files /etc/apm-server/apm-server.yml --rpm-attr 0600,apm-server,apm-server:/etc/apm-server/apm-server.yml --rpm-attr 0750,apm-server,apm-server:/var/lib/apm-server -p build/distributions/apm-server-8.0.0-SNAPSHOT-s390x.deb build/distributions/tmp-deb-apm-server-8.0.0-SNAPSHOT-linux-s390x-1742478796.tar.gz" failed with exit code 1
+[2019-05-23T17:19:07.356Z] failed building apm-server-oss type=rpm for platform=linux/s390x: failed while running FPM in docker: running "docker run -e EXEC_UID=1134 -e EXEC_GID=1135 --rm -w /app -v /var/lib/jenkins/workspace/apm-server_apm-server-mbp_master/src/github.com/elastic/apm-server:/app docker.elastic.co/beats-dev/fpm:1.11.0 fpm --force --input-type tar --output-type rpm --name apm-server --architecture s390x --version 8.0.0 --vendor Elastic --license ASL-2.0 --description Elastic APM Server --url https://www.elastic.co/solutions/apm --before-install build/package/apm-server-oss-linux-s390x.rpm/scripts/pre-install.sh --after-install build/package/apm-server-oss-linux-s390x.rpm/scripts/deb-post-install.sh --config-files /etc/apm-server/apm-server.yml --rpm-attr 0600,apm-server,apm-server:/etc/apm-server/apm-server.yml --rpm-attr 0750,apm-server,apm-server:/var/lib/apm-server --rpm-attr 0750,apm-server,apm-server:/var/log/apm-server -p build/distributions/apm-server-oss-8.0.0-SNAPSHOT-s390x.rpm build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-s390x-2181250989.tar.gz" failed with exit code 1
+[2019-05-23T17:19:07.356Z] failed building apm-server type=rpm for platform=linux/s390x: failed while running FPM in docker: running "docker run -e EXEC_UID=1134 -e EXEC_GID=1135 --rm -w /app -v /var/lib/jenkins/workspace/apm-server_apm-server-mbp_master/src/github.com/elastic/apm-server:/app docker.elastic.co/beats-dev/fpm:1.11.0 fpm --force --input-type tar --output-type rpm --name apm-server --architecture s390x --version 8.0.0 --vendor Elastic --license Elastic-License --description Elastic APM Server --url https://www.elastic.co/solutions/apm --before-install build/package/apm-server-linux-s390x.rpm/scripts/pre-install.sh --after-install build/package/apm-server-linux-s390x.rpm/scripts/deb-post-install.sh --config-files /etc/apm-server/apm-server.yml --rpm-attr 0600,apm-server,apm-server:/etc/apm-server/apm-server.yml --rpm-attr 0750,apm-server,apm-server:/var/lib/apm-server --rpm-attr 0750,apm-server,apm-server:/var/log/apm-server -p build/distributions/apm-server-8.0.0-SNAPSHOT-s390x.rpm build/distributions/tmp-rpm-apm-server-8.0.0-SNAPSHOT-linux-s390x-1654678365.tar.gz" failed with exit code 1
+[2019-05-23T17:19:07.356Z] _beats/libbeat/scripts/Makefile:461: recipe for target 'release' failed
+[2019-05-23T17:19:07.356Z] make: *** [release] Error 1
+[2019-05-23T17:19:07.356Z] + cleanup
+[2019-05-23T17:19:07.356Z] + echo 'Running cleanup...'
+[2019-05-23T17:19:07.356Z] Running cleanup...
+[2019-05-23T17:19:07.356Z] + rm -rf /tmp/tmp.bnS9ABlJ7P
+[2019-05-23T17:19:07.356Z] + docker info
+[2019-05-23T17:19:07.356Z] WARNING: No swap limit support
+[2019-05-23T17:19:07.356Z] + echo 'Killing all running containers...'
+[2019-05-23T17:19:07.356Z] Killing all running containers...
+[2019-05-23T17:19:07.356Z] ++ docker ps -q
+[2019-05-23T17:19:07.356Z] + ids=648e2c8456b9
+[2019-05-23T17:19:07.356Z] + '[' -n 648e2c8456b9 ']'
+[2019-05-23T17:19:07.356Z] + docker kill 648e2c8456b9
+[2019-05-23T17:19:07.356Z] Error response from daemon: Cannot kill container: 648e2c8456b9: Container 648e2c8456b9e912ae7fffe1da6ea4457eed7050ec8e7e6ac3a0daa95c835807 is not running
+[2019-05-23T17:19:07.408Z] [Pipeline] }
+[2019-05-23T17:19:07.447Z] [Pipeline] // dir
+[2019-05-23T17:19:07.462Z] [Pipeline] }
+[2019-05-23T17:19:07.475Z] [Pipeline] // withEnv
+[2019-05-23T17:19:07.487Z] [Pipeline] }
+[2019-05-23T17:19:07.500Z] [Pipeline] // node
+[2019-05-23T17:19:07.514Z] [Pipeline] }
+[2019-05-23T17:19:07.527Z] [Pipeline] // stage
+[2019-05-23T17:19:07.547Z] [Pipeline] stage
+[2019-05-23T17:19:07.551Z] [Pipeline] { (Declarative: Post Actions)
+[2019-05-23T17:19:07.584Z] [Pipeline] echo
+[2019-05-23T17:19:07.584Z] [FAILURE]
+[2019-05-23T17:19:07.593Z] [Pipeline] step
+[2019-05-23T17:19:07.602Z] Sending e-mails to: ****
+[2019-05-23T17:19:08.742Z] [Pipeline] }
+[2019-05-23T17:19:08.763Z] [Pipeline] // stage
+[2019-05-23T17:19:08.778Z] [Pipeline] }
+[2019-05-23T17:19:08.789Z] [Pipeline] // ansiColor
+[2019-05-23T17:19:08.805Z] [Pipeline] }
+[2019-05-23T17:19:08.815Z] [Pipeline] // timestamps
+[2019-05-23T17:19:08.830Z] [Pipeline] }
+[2019-05-23T17:19:08.843Z] [Pipeline] // timeout
+[2019-05-23T17:19:08.858Z] [Pipeline] }
+[2019-05-23T17:19:08.874Z] [Pipeline] // withEnv
+[2019-05-23T17:19:08.890Z] [Pipeline] }
+[2019-05-23T17:19:08.903Z] [Pipeline] // withCredentials
+[2019-05-23T17:19:08.915Z] [Pipeline] }
+[2019-05-23T17:19:08.930Z] [Pipeline] // withEnv
+[2019-05-23T17:19:08.947Z] [Pipeline] }
+[2019-05-23T17:19:08.967Z] [Pipeline] // node
+[2019-05-23T17:19:08.990Z] [Pipeline] End of Pipeline
+[2019-05-23T17:19:10.665Z] 
+[2019-05-23T17:19:10.665Z] GitHub has been notified of this commit’s build result
+[2019-05-23T17:19:10.665Z] 
+[2019-05-23T17:19:10.665Z] ERROR: script returned exit code 1
+[2019-05-23T17:19:10.665Z] Finished: FAILURE

@@ -126,6 +126,14 @@ def testURL = getBlueoceanTabURL('test')
 def artifactURL = getBlueoceanTabURL('artifact')
 ```
 
+## getBuildInfoJsonFiles
+Grab build related info from the Blueocean REST API and store it on JSON files.
+Then put all togeder in a simple JSON file.
+
+```
+  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+```
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.
@@ -397,6 +405,29 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 * *index*: index name to store data.
 * *url*: ES url to store the data.
 * *secret*: Vault secret that contains the ES credentials.
+
+## sendDataToElasticsearch
+Send the JSON report file to Elastisearch. It returns the response body.
+
+```
+def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field": "value"}')
+```
+
+```
+def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
+  secret: "secret",
+  data: '{"field": "value"}',
+  restCall: '/jenkins-builds/_doc/',
+  contentType: 'application/json',
+  method: 'POST')
+```
+
+* es: URL to Elasticsearch service.
+* secret: Path to the secret in the Vault, it should have `user` and `password` fields.
+* data: JSON data to insert in Elasticsearch.
+* restCall: REST call PATH to use, by default `/jenkins-builds/_doc/`
+* contentType: Content Type header, by default `application/json`
+* method: HTTP method used to send the data, by default `POST`
 
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
