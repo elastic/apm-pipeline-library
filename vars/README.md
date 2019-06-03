@@ -377,6 +377,12 @@ notifyBuildResult()
 ```
 notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
 ```
+* es: Elasticserach URL to send the report.
+* secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
+* to: Array of emails to notify.
+* statsURL: Kibana URL where you can check the stats sent to Elastic search.
+* shouldNotify: boolean value to decide to send or not the email notifications, by default it send
+emails on Failed builds that are not pull request.
 
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.

@@ -20,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 import co.elastic.NotificationManager
 
 class NotifyBuildResultStepTests extends BasePipelineTest {
@@ -32,11 +33,14 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
 
     env.WORKSPACE = "WS"
     env.JOB_NAME = "testJob"
+    env.BUILD_NUMBER = '100'
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     env.JOB_URL = "${env.JENKINS_URL}/job/${env.JOB_NAME}"
     env.NOTIFY_TO = "myName@example.com"
 
     binding.setVariable('env', env)
+    binding.getVariable('currentBuild').result = "FAILURE"
+    binding.getVariable('currentBuild').currentResult = "FAILURE"
 
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
@@ -88,7 +92,58 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "archiveArtifacts"
     }.size()== 1)
-    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
+    })
+  }
+
+  @Test
+  void testPullRequest() throws Exception {
+    env.CHANGE_ID = "123"
+
+    def script = loadScript("vars/notifyBuildResult.groovy")
+    script.call(es: "https://ecs.example.com:9200", secret: "secret")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "getBuildInfoJsonFiles"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "archiveArtifacts"
+    }.size()== 1)
+    assertFalse(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
+    })
+  }
+
+  @Test
+  void testSuccessBuild() throws Exception {
+    binding.getVariable('currentBuild').result = "SUCCESS"
+    binding.getVariable('currentBuild').currentResult = "SUCCESS"
+
+    def script = loadScript("vars/notifyBuildResult.groovy")
+    script.call(es: "https://ecs.example.com:9200", secret: "secret")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "getBuildInfoJsonFiles"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 1)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "archiveArtifacts"
+    }.size()== 1)
+    assertFalse(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
+    })
   }
 
   @Test
@@ -105,7 +160,11 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "archiveArtifacts"
     }.size()== 1)
-    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
+    })
   }
 
   @Test
@@ -122,6 +181,10 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "archiveArtifacts"
     }.size()== 1)
-    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
+    })
   }
 }

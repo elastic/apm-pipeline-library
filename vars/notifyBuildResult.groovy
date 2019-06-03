@@ -30,25 +30,30 @@ def call(Map params = [:]) {
   def es = params.containsKey('es') ? params.es : 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243'
   def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
   def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
-  def statsURL = params.containsKey('statsURL') ? params.to : "ela.st/observabtl-ci-stats"
+  def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
+  def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.containsKey('CHANGE_ID') && currentBuild.currentResult != "SUCCESS"
 
+echo "currentBuild.currentResult=" + currentBuild.currentResult
   node('master'){
     stage('Reporting build status'){
       catchError {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 
-        def notificationManager = new NotificationManager()
-        notificationManager.notifyEmail(
-          build: readJSON(file: "build-info.json"),
-          buildStatus: currentBuild.currentResult,
-          emailRecipients: to,
-          testsSummary: readJSON(file: "tests-summary.json"),
-          changeSet: readJSON(file: "changeSet-info.json"),
-          statsUrl: "${statsURL}",
-          log: readFile(file: "pipeline-log-summary.txt"),
-          testsErrors: readJSON(file: "tests-info.json"),
-          stepsErrors: readJSON(file: "steps-info.json")
-        )
+        if(shouldNotify){
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
+          def notificationManager = new NotificationManager()
+          notificationManager.notifyEmail(
+            build: readJSON(file: "build-info.json"),
+            buildStatus: currentBuild.currentResult,
+            emailRecipients: to,
+            testsSummary: readJSON(file: "tests-summary.json"),
+            changeSet: readJSON(file: "changeSet-info.json"),
+            statsUrl: "${statsURL}",
+            log: readFile(file: "pipeline-log-summary.txt"),
+            testsErrors: readJSON(file: "tests-info.json"),
+            stepsErrors: readJSON(file: "steps-info.json")
+          )
+        }
 
         def datafile = readFile(file: "build-report.json")
         sendDataToElasticsearch(es: es, secret: secret, data: datafile)
