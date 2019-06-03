@@ -79,7 +79,23 @@ git push -f --tags
 
 ## Resources
 
+* [Pipeline User Handbook](https://jenkins.io/doc/book/pipeline/)
+* [Pipeline Development Tools](https://jenkins.io/doc/book/pipeline/development/)
 * [Jenkins Pipeline Unit testing framework](https://github.com/jenkinsci/JenkinsPipelineUnit)
 * [Groovy Testing guide](http://groovy-lang.org/testing.html)
+* [Using Docker with Pipeline](https://jenkins.io/doc/book/pipeline/docker/)
 * [Jenkins World 2017: How to Use Jenkins Less](https://www.youtube.com/watch?v=Zeqc6--0eQw)
 * [Jenkins World 2017: JenkinsPipelineUnit: Test your Continuous Delivery Pipeline](https://www.youtube.com/watch?v=RmrpUtbVR7o)
+* [Pipeline Examples](https://github.com/jenkinsci/pipeline-examples)
+* [Jenkins Pipelines and their dirty secrets](https://medium.com/@Lenkovits/jenkins-pipelines-and-their-dirty-secrets-1-9e535cd603f4)
+* [Introduction to Declarative Pipelines](https://github.com/cloudbees/intro-to-declarative-pipeline)
+* [CD with CloudBees Core Workshop](https://github.com/cloudbees-core-cd-workshop/workshop-exercises)
+
+* [Introducing Blue Ocean: a new user experience for Jenkins](https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/)
+* [Blueocean (BO) documentation](https://jenkins.io/doc/book/blueocean/)
+  * [Dashboard](https://jenkins.io/doc/book/blueocean/dashboard/)
+  * [Activity](https://jenkins.io/doc/book/blueocean/activity/)
+  * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
+
+
+
