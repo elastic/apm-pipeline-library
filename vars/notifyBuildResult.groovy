@@ -31,7 +31,7 @@ def call(Map params = [:]) {
   def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
   def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
   def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
-  def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.containsKey('CHANGE_ID') && currentBuild.currentResult != "SUCCESS"
+  def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
 echo "currentBuild.currentResult=" + currentBuild.currentResult
   node('master'){
