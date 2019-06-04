@@ -47,7 +47,7 @@ pipeline {
     stage('Checkout') {
       steps {
         deleteDir()
-        gitCheckout()
+        gitCheckout(basedir: ".", branch: env.GIT_BRANCH)
       }
     }
     stage('Get Docker images'){
@@ -72,18 +72,8 @@ pipeline {
     }
   }
   post {
-    success {
-      echoColor(text: '[SUCCESS]', colorfg: 'green', colorbg: 'default')
-    }
-    aborted {
-      echoColor(text: '[ABORTED]', colorfg: 'magenta', colorbg: 'default')
-    }
-    failure {
-      echoColor(text: '[FAILURE]', colorfg: 'red', colorbg: 'default')
-      step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${NOTIFY_TO}", sendToIndividuals: false])
-    }
-    unstable {
-      echoColor(text: '[UNSTABLE]', colorfg: 'yellow', colorbg: 'default')
+    always {
+      notifyBuildResult()
     }
   }
 }
