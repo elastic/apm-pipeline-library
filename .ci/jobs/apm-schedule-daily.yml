@@ -1,8 +1,8 @@
 ---
 - job:
-    name: apm-shared/apm-docker-es-pipeline
-    display-name: Update Elastic Stack Docker images Pipeline
-    description: Update Elastic Stack Docker images daily on the Observability docker.elastic.co namespace.
+    name: apm-shared/apm-schedule-daily
+    display-name: Jobs scheduled daily
+    description: Jobs scheduled daily from Monday to Friday
     view: APM-CI
     project-type: pipeline
     parameters:
@@ -11,7 +11,7 @@
         default: master
         description: the Git branch specifier to build
     pipeline-scm:
-      script-path: resources/dockerImagesESLatest.groovy
+      script-path: resources/schedule-daily.groovy
       scm:
       - git:
           url: git@github.com:elastic/apm-pipeline-library.git
@@ -23,3 +23,5 @@
           reference-repo: /var/lib/jenkins/.git-references/apm-pipeline-library.git
           branches:
           - $branch_specifier
+    triggers:
+    - timed: 'H H(4-5) * * 1-5'

@@ -23,5 +23,3 @@
           reference-repo: /var/lib/jenkins/.git-references/apm-pipeline-library.git
           branches:
           - $branch_specifier
-    triggers:
-    - timed: '@daily'
