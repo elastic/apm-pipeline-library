@@ -1,6 +1,6 @@
 ---
 - job:
-    name: apm-ui/apm-apm-ui-pipeline-inline
+    name: apm-ui/apm-ui-pipeline-inline
     display-name: APM UI
     description: APM UI build and tests
     view: APM-CI
