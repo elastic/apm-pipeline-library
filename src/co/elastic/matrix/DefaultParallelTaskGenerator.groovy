@@ -150,6 +150,9 @@ class DefaultParallelTaskGenerator {
   */
   public Map generateParallelTests() {
     results = [:]
+    results.build = [:]
+    results.build.fullName = this.steps.env.JOB_NAME.replace("/","%2F")
+    results.build.id = this.steps.env.BUILD_NUMBER
     results.data = [:]
     results.tag = this.tag
     results.name = this.name
