@@ -83,7 +83,7 @@
         <td colspan="7" style="padding-left: 24px;text-align: left; vertical-align: middle; font-family: Helvetica; font-size: 12px; color: #343B49; letter-spacing: 1px;">
           <strong style="font-family: Helvetica; color: #343B49;">Build Cause:</strong> ${build?.causes?.shortDescription}<br>
           <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong> ${build?.startTime}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build?.durationInMillis/1000/60)} min ${Math.round(build?.durationInMillis/1000)%60} sec - ${build?.durationInMillis}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec - (${build.durationInMillis})<br>
         </td>
       </tr>
       <!--TABLE_BUILD-->
@@ -104,11 +104,11 @@
           <% changeSet?.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Author:</strong> ${c.author.id}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Full Name:</strong>  ${c.author.fullName}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">email:</strong>  ${c.author.email}</br>
+              <strong style="font-family: Helvetica; color: #343B49;">Author:</strong> ${c.author.id != null ? c.author.id : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Full Name:</strong>  ${c.author.fullName != null ? c.author.fullName : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">email:</strong>  ${c.author.email != null ? c.author.email : ''}</br>
               <strong style="font-family: Helvetica; color: #343B49;">Commit:</strong>  <a href="${c.url}">${c.commitId}</a><br>
-              <strong style="font-family: Helvetica; color: #343B49;">Message:</strong>  ${c.msg}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Message:</strong>  ${c.msg != null ? c.msg : ''}<br>
               <strong style="font-family: Helvetica; color: #343B49;">Date:</strong>  ${c.timestamp}<br>
               <hr>
               </td>
