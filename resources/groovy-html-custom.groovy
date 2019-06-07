@@ -83,7 +83,9 @@
         <td colspan="7" style="padding-left: 24px;text-align: left; vertical-align: middle; font-family: Helvetica; font-size: 12px; color: #343B49; letter-spacing: 1px;">
           <strong style="font-family: Helvetica; color: #343B49;">Build Cause:</strong> ${build?.causes?.shortDescription}<br>
           <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong> ${build?.startTime}<br>
-          <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec - (${build.durationInMillis})<br>
+          <% if(build?.durationInMillis >= 0) {%>
+            <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec - (${build.durationInMillis})<br>
+          <%}%>
         </td>
       </tr>
       <!--TABLE_BUILD-->
@@ -104,13 +106,13 @@
           <% changeSet?.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Author:</strong> ${c.author.id != null ? c.author.id : ''}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Full Name:</strong>  ${c.author.fullName != null ? c.author.fullName : ''}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">email:</strong>  ${c.author.email != null ? c.author.email : ''}</br>
-              <strong style="font-family: Helvetica; color: #343B49;">Commit:</strong>  <a href="${c.url}">${c.commitId}</a><br>
-              <strong style="font-family: Helvetica; color: #343B49;">Message:</strong>  ${c.msg != null ? c.msg : ''}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Date:</strong>  ${c.timestamp}<br>
-              <hr>
+                <strong style="font-family: Helvetica; color: #343B49;">Author:</strong> ${c?.author?.id != null ? c?.author?.id : ''}<br>
+                <strong style="font-family: Helvetica; color: #343B49;">Full Name:</strong>  ${ c?.author?.fullName != null ? c?.author?.fullName : ''}<br>
+                <strong style="font-family: Helvetica; color: #343B49;">email:</strong>  ${c?.author?.email != null ? c?.author?.email : ''}</br>
+                <strong style="font-family: Helvetica; color: #343B49;">Commit:</strong>  <a href="${c?.url}">${c?.commitId}</a><br>
+                <strong style="font-family: Helvetica; color: #343B49;">Message:</strong>  ${c?.msg != null ? c?.msg : ''}<br>
+                <strong style="font-family: Helvetica; color: #343B49;">Date:</strong>  ${c?.timestamp}<br>
+                <hr>
               </td>
             </tr>
           <%}%>
@@ -118,7 +120,7 @@
         </td>
       </tr>
       <!--TABLE_CHANGES-->
-      <%stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
+      <% stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
       <tr>
         <td colspan="7" style="height: 32px;${ stepsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
@@ -136,11 +138,13 @@
           <% stepsErrors?.findAll{item -> item?.result == "FAILURE"}.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c.displayName}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c.displayDescription}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c.result}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec</a><br>
-              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c.startTime}</a><br>
+              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.displayName}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c?.displayDescription}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c?.result}<br>
+              <% if(c?.durationInMillis >= 0) {%>
+                <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec</a><br>
+              <%}%>
+              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime}</a><br>
 
               <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
                 <a href="${jenkinsUrl}/${l._links.self.href}">Log</a><br>
@@ -173,7 +177,7 @@
         </td>
       </tr>
       <!--TABLE_TEST-->
-      <%testsErrors = testsErrors?.findAll{item -> item?.status == "FAILED"}%>
+      <% testsErrors = testsErrors?.findAll{item -> item?.status == "FAILED"}%>
       <tr>
         <td colspan="7" style="height: 32px;${ testsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
@@ -191,14 +195,14 @@
           <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c.name}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Status:</strong>  ${c.status}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Age:</strong>  ${c.age}</br>
-              <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${c.duration}</a><br>
+              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.name}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Status:</strong>  ${c?.status}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Age:</strong>  ${c?.age}</br>
+              <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${c?.duration}</a><br>
               <strong style="font-family: Helvetica; color: #343B49;">Error Details:</strong>
-              <div style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 4em;">${c.errorDetails}</div>
+              <div style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 4em;">${c?.errorDetails}</div>
               <strong style="font-family: Helvetica; color: #343B49;">Error StackTrace:</strong>
-              <pre style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 20em;">${c.errorStackTrace}</pre>
+              <pre style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 20em;">${c?.errorStackTrace}</pre>
               <hr>
               </td>
             </tr>
