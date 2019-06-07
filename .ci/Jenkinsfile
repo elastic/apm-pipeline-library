@@ -31,23 +31,27 @@ pipeline {
         */
         stage('Checkout') {
           steps {
-            deleteDir()
-            gitCheckout(basedir: "${BASE_DIR}")
-            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            withGithubNotify(context: 'Checkout') {
+              deleteDir()
+              gitCheckout(basedir: "${BASE_DIR}")
+              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            }
           }
         }
 
         stage('Check Licenses') {
           steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              catchError(
-                  buildResult: 'SUCCESS',
-                  stageResult: 'UNSTABLE',
-                  message: 'Some files does not contain license'
-                  ) {
-                checkLicenses()
+            withGithubNotify(context: 'Check Licenses') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                catchError(
+                    buildResult: 'SUCCESS',
+                    stageResult: 'UNSTABLE',
+                    message: 'Some files does not contain license'
+                    ) {
+                  checkLicenses()
+                }
               }
             }
           }
@@ -57,14 +61,17 @@ pipeline {
         */
         stage('Test') {
           steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            withGithubNotify(context: 'Checkout') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+              }
             }
           }
           post {
             always {
+              archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
               junit(allowEmptyResults: true,
                 keepLongStdio: true,
                 testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
@@ -74,13 +81,15 @@ pipeline {
 
         stage('Check Pipelines') {
           steps {
-            validateDeclarativePipeline '.ci/Jenkinsfile'
-            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-            validateDeclarativePipeline '.ci/dockerImagesESLatest.groovy'
-            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
-            validateDeclarativePipeline '.ci/schedule-daily.groovy'
-            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
-            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+            withGithubNotify(context: 'Check Pipelines') {
+              validateDeclarativePipeline '.ci/Jenkinsfile'
+              validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+              validateDeclarativePipeline '.ci/dockerImagesESLatest.groovy'
+              validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+              validateDeclarativePipeline '.ci/schedule-daily.groovy'
+              validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+              validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+            }
           }
         }
       }
