@@ -18,10 +18,12 @@
 @Library('apm@current') _
 
 pipeline {
-  agent { label 'docker' }
+  agent { label 'master' }
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
+    DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
+    DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -30,12 +32,35 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
-    cron('H H(1-4) * * 1')
+    cron('H H(4-5) * * 1-5')
   }
   stages {
-    stage('Update Elastic Stack images'){
+    stage('Run Tasks'){
       steps {
+        build(job: 'apm-shared/apm-test-pipeline',
+          parameters: [string(name: 'branch_specifier', value: 'master')],
+          propagate: false,
+          wait: false
+        )
 
+        build(job: 'apm-shared/apm-docker-images-pipeline',
+          parameters: [string(name: 'branch_specifier', value: 'master')],
+          propagate: false,
+          wait: false
+        )
+
+        build(job: 'apm-shared/apm-docker-opbeans-pipeline',
+          parameters: [
+            string(name: 'registry', value: 'docker.elastic.co'),
+            string(name: 'tag_prefix', value: 'observability-ci'),
+            string(name: 'version', value: 'daily'),
+            string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
+            booleanParam(name: 'opbeans', value: true),
+            string(name: 'branch_specifier', value: 'master')
+          ],
+          propagate: false,
+          wait: false
+        )
       }
     }
   }

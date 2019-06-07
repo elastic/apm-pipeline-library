@@ -11,7 +11,7 @@
         default: master
         description: the Git branch specifier to build
     pipeline-scm:
-      script-path: resources/dockerImagesOpbeans.groovy
+      script-path: .ci/dockerImagesOpbeans.groovy
       scm:
       - git:
           url: git@github.com:elastic/apm-pipeline-library.git

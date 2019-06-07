@@ -36,6 +36,22 @@ pipeline {
             stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           }
         }
+
+        stage('Check Licenses') {
+          steps {
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              catchError(
+                  buildResult: 'SUCCESS',
+                  stageResult: 'UNSTABLE',
+                  message: 'Some files does not contain license'
+                  ) {
+                checkLicenses()
+              }
+            }
+          }
+        }
         /**
          Checkout the code and stash it, to use it on other stages.
         */
@@ -44,7 +60,6 @@ pipeline {
             deleteDir()
             unstash 'source'
             dir("${BASE_DIR}"){
-              //checkLicenses()
               sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
             }
           }
@@ -54,6 +69,18 @@ pipeline {
                 keepLongStdio: true,
                 testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
             }
+          }
+        }
+
+        stage('Check Pipelines') {
+          steps {
+            validateDeclarativePipeline '.ci/Jenkinsfile'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/dockerImagesESLatest.groovy'
+            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/schedule-daily.groovy'
+            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
         }
       }

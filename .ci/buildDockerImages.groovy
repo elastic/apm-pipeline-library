@@ -200,24 +200,7 @@ pipeline {
   }
   post {
     always {
-      node('master'){
-        log(level: "INFO", text: "=====SUMARY=====")
-        script {
-          results.each{ k, v ->
-            level = "INFO"
-            if(!v){
-              level = "ERROR"
-              currentBuild.result = "FAILURE"
-            }
-            log(level: "INFO", text: "${k}")
-          }
-        }
-      }
-    }
-    post {
-      always {
-        notifyBuildResult()
-      }
+      notifyBuildResult()
     }
   }
 }
