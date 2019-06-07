@@ -1,4 +1,19 @@
-#!groovy
+// Licensed to Elasticsearch B.V. under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Elasticsearch B.V. licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 
 package co.elastic;
 
@@ -18,8 +33,15 @@ def emailTemplate(params) {
 
 /**
  * This method send an email generated with data from Jenkins
+ * @param build
  * @param buildStatus String with job result
  * @param emailRecipients Array with emails: emailRecipients = []
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param statsUrl URL to access to the stats
+ * @param log String that contains the log
+ * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  */
 def notifyEmail(Map params = [:]) {
     def build = params.containsKey('build') ? params.build : error('notifyEmail: build parameter it is not valid')
@@ -32,40 +54,36 @@ def notifyEmail(Map params = [:]) {
     def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
 
-    try {
+    catchError(buildResult: 'SUCCESS', message: 'notifyEmail: Error sending the email') {
+      def icon = "✅"
+      def statusSuccess = true
 
-        def icon = "✅"
-        def statusSuccess = true
+      if(buildStatus != "SUCCESS") {
+          icon = "❌"
+          statusSuccess = false
+      }
 
-        if(buildStatus != "SUCCESS") {
-            icon = "❌"
-            statusSuccess = false
-        }
+      def jobName = env.JOB_NAME.replace("/","%2F")
+      def boURL = "${env.JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}"
 
-        def jobName = env.JOB_NAME.replace("/","%2F")
-        def boURL = "${env.JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}"
+      def body = emailTemplate([
+          "jobUrl": boURL,
+          "build": build,
+          "jenkinsText": env.JOB_NAME,
+          "jenkinsUrl": env.JENKINS_URL,
+          "statusSuccess": statusSuccess,
+          "testsSummary": testsSummary,
+          "changeSet": changeSet,
+          "statsUrl": statsUrl,
+          "log": log,
+          "stepsErrors": stepsErrors,
+          "testsErrors": testsErrors
+      ]);
 
-        def body = emailTemplate([
-            "jobUrl": boURL,
-            "build": build,
-            "jenkinsText": env.JOB_NAME,
-            "jenkinsUrl": env.JENKINS_URL,
-            "statusSuccess": statusSuccess,
-            "testsSummary": testsSummary,
-            "changeSet": changeSet,
-            "statsUrl": statsUrl,
-            "log": log,
-            "stepsErrors": stepsErrors,
-            "testsErrors": testsErrors
-        ]);
-
-        mail(to: emailRecipients.join(","),
-          subject: "${icon} ${buildStatus} ${env.JOB_NAME}#${env.BRANCH_NAME} ${env.BUILD_NUMBER}",
-          body: body,
-          mimeType: 'text/html'
-        );
-
-    } catch (e){
-      log(level: 'ERROR', text: "notifyEmail: Error sending the email - ${e}")
+      mail(to: emailRecipients.join(","),
+        subject: "${icon} ${buildStatus} ${env.JOB_NAME}#${env.BRANCH_NAME} ${env.BUILD_NUMBER}",
+        body: body,
+        mimeType: 'text/html'
+      );
     }
 }

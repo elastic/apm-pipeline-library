@@ -27,21 +27,16 @@ def call(jobURL, buildNumber){
   restURLJob = "${env.JENKINS_URL}/blue/rest/organizations/jenkins/pipelines/${restURLJob}"
   def restURLBuild = "${restURLJob}/runs/${buildNumber}"
 
-  sh(label: "Get Build info", script: """
-    curl -sSL -o job-info.json ${restURLJob}
-    curl -sSL -o build-info.json ${restURLBuild}
-    curl -sSL -o tests-summary.json ${restURLBuild}/blueTestSummary
-    curl -sSL -o tests-info.json ${restURLBuild}/tests
-    curl -sSL -o changeSet-info.json ${restURLBuild}/changeSet
-    curl -sSL -o artifacts-info.json ${restURLBuild}/artifacts
-    curl -sSL -o steps-info.json ${restURLBuild}/steps
-    curl -sSL -o pipeline-log.txt ${restURLBuild}/log
-    """)
+  downloadJSONFile("${restURLJob}", "job-info.json")
+  downloadJSONFile("${restURLBuild}", "build-info.json")
+  downloadJSONFile("${restURLBuild}/blueTestSummary", "tests-summary.json")
+  downloadJSONFile("${restURLBuild}/tests", "tests-info.json")
+  downloadJSONFile("${restURLBuild}/changeSet", "changeSet-info.json")
+  downloadJSONFile("${restURLBuild}/artifacts", "artifacts-info.json")
+  downloadJSONFile("${restURLBuild}/steps", "steps-info.json")
+  downloadJSONFile("${restURLBuild}/log", "pipeline-log.txt")
 
   sh(label: "Console lg sumary", script: "tail -n 100 pipeline-log.txt > pipeline-log-summary.txt")
-  //sh(label: "Get Tests failed", script: "cat tests-info.json|jq '.[]|select(.status==\"FAILED\")|[.]' > tests-errors.json")
-  //sh(label: "Get steps failed", script: "cat steps-info.json|jq '.[]|select(.result==\"FAILURE\")|[.]' > steps-errors.json")
-
 
   def json = [:]
   json.job = readJSON(file: "job-info.json")
@@ -53,9 +48,21 @@ def call(jobURL, buildNumber){
   json.steps = readJSON(file: "steps-info.json")
   json.log = readFile(file: "pipeline-log.txt")
 
+  /** The build is not finished so we have to fix some values */
   json.build.result = currentBuild.currentResult
   json.build.state = "FINISHED"
   json.build.durationInMillis = currentBuild.duration
+  writeJSON(file: "build-info.json" , json: toJSON(json.build), pretty: 2)
 
   writeJSON(file: "build-report.json" , json: toJSON(json), pretty: 2)
+}
+
+def downloadJSONFile(url, file){
+  catchError(buildResult: 'SUCCESS') {
+    sh(label: "Get Build info ${file}", script: "curl -sfSL -o ${file} ${url}")
+  }
+
+  if(!fileExists("${file}")){
+    writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
+  }
 }

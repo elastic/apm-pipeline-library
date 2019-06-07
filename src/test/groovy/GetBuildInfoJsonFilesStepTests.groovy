@@ -47,11 +47,30 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
       def script = loadScript("vars/toJSON.groovy")
       return script.call(m)
     })
+    helper.registerAllowedMethod("toJSON", [String.class], { m ->
+      def script = loadScript("vars/toJSON.groovy")
+      return script.call(m)
+    })
     helper.registerAllowedMethod("writeJSON", [Map.class], { "OK" })
     helper.registerAllowedMethod("readFile", [Map.class], { m ->
       File f = new File("src/test/resources/${m.file}")
       return f.getText()
     })
+    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod("fileExists", [String.class], { return true })
   }
 
   def readJSON(params){
@@ -67,6 +86,22 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript("vars/getBuildInfoJsonFiles.groovy")
+    script.call("http://jenkins.example.com/job/myJob", "1")
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testFailedToDownload() throws Exception {
+    def script = loadScript("vars/getBuildInfoJsonFiles.groovy")
+    helper.registerAllowedMethod("fileExists", [String.class], { return false })
+    helper.registerAllowedMethod("sh", [Map.class], { m ->
+      if(m.label == "Get Build info tests-info.json"){
+        throw new Exception("failed to download")
+      }
+      return "OK"
+    })
+
     script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
     assertJobStatusSuccess()

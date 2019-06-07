@@ -38,6 +38,7 @@ echo "currentBuild.currentResult=" + currentBuild.currentResult
     stage('Reporting build status'){
       catchError {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
         if(shouldNotify){
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
@@ -57,8 +58,6 @@ echo "currentBuild.currentResult=" + currentBuild.currentResult
 
         def datafile = readFile(file: "build-report.json")
         sendDataToElasticsearch(es: es, secret: secret, data: datafile)
-
-        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
       }
     }
   }
