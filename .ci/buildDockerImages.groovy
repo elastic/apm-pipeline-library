@@ -159,21 +159,6 @@ pipeline {
           push: true)
       }
     }
-    stage('Build helm-kubernetes Docker hub image'){
-      agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
-      when{
-        beforeAgent true
-        expression { return params.helm_kubectl }
-      }
-      steps {
-        buildDockerImage(
-          repo: 'https://github.com/dtzar/helm-kubectl.git',
-          tag: "helm-kubectl",
-          version: "latest",
-          push: true)
-      }
-    }
     stage('Build JRuby-jdk Docker images'){
       agent { label 'immutable && docker' }
       options { skipDefaultCheckout() }
