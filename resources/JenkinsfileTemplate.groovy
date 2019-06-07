@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@vcurrent') _
+@Library('apm@current') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -135,6 +135,7 @@ pipeline {
         options { skipDefaultCheckout() }
         steps {
           bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'docker -v'
         }
       }
       stage('windows 2016 check'){
@@ -142,6 +143,7 @@ pipeline {
         options { skipDefaultCheckout() }
         steps {
           bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'docker -v'
         }
       }
     }
