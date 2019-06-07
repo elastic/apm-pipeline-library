@@ -44,7 +44,17 @@ pipeline {
         )
 
         build(job: 'apm-shared/apm-docker-images-pipeline',
-          parameters: [string(name: 'branch_specifier', value: 'master')],
+          parameters: [
+            string(name: 'registry', value: 'docker.elastic.co'),
+            string(name: 'tag_prefix', value: 'observability-ci'),
+            string(name: 'secret', value: 'secret/apm-team/ci/docker-registry/prod'),
+            booleanParam(name: 'python', value: true),
+            booleanParam(name: 'weblogic', value: true),
+            booleanParam(name: 'apm_integration_testing', value: true),
+            booleanParam(name: 'helm_kubectl', value: true),
+            booleanParam(name: 'jruby', value: true),
+            string(name: 'branch_specifier', value: 'master')
+          ],
           propagate: false,
           wait: false
         )
