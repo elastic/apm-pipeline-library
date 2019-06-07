@@ -59,6 +59,20 @@ class NotificationManagerStepTests extends BasePipelineTest {
       def f = new File("mail-out-${env.TEST}.html")
       f.write(m.body)
     })
+    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
   }
 
   def readJSON(params){

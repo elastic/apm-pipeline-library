@@ -114,6 +114,22 @@ class DummyStepTests extends BasePipelineTest {
       def script = loadScript("vars/toJSON.groovy")
       return script.call(s)
     })
+    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+
+    helper.registerAllowedMethod("fileExists", [String.class], { return true })
   }
 
   def readJSON(params){

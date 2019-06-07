@@ -23,6 +23,8 @@ pipeline {
     BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
+    JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
+    REPO = "git@github.com:elastic/apm-pipeline-library.git"
     PIPELINE_LOG_LEVEL='INFO'
   }
   options {
@@ -42,12 +44,17 @@ pipeline {
     string(name: 'version', defaultValue: "daily", description: "")
     string(name: 'elastic_stack', defaultValue: "8.0.0-SNAPSHOT", description: "")
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
+    string(name: 'branch_specifier', defaultValue: "master", description: "")
   }
   stages {
     stage('Checkout') {
       steps {
         deleteDir()
-        gitCheckout(basedir: ".", branch: env.GIT_BRANCH)
+        gitCheckout(basedir: ".",
+          branch: "${params.branch_specifier}",
+          repo: "${REPO}",
+          credentialsId: "${JOB_GIT_CREDENTIALS}"
+        )
       }
     }
     stage('Get Docker images'){

@@ -1,3 +1,20 @@
+// Licensed to Elasticsearch B.V. under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Elasticsearch B.V. licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,6 +49,36 @@
         <td colspan="2" style="height: 10px;"></td>
         <td colspan="3" style="height: 10px;"></td>
         <td colspan="1" style="height: 10px; width: 100px"></td>
+      </tr>
+      <tr>
+        <td colspan="7" style="background-color: #F4F4F4;padding: 0 24px 0 24px;font-family: Helvetica; font-size: 10px; color: #AEAEAE; letter-spacing: 2px; line-height: 16px; margin-bottom: 0; text-transform: uppercase;">
+          Observability
+        </td>
+      </tr>
+      <tr>
+        <td colspan="7" style="background-color: #F4F4F4;text-align: right;padding-right: 67px;">
+          <ul style="list-style-type: none; margin: 0; padding: 0;">
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}" style="text-decoration: none; color: #343B49;">Pipeline</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/tests" style="text-decoration: none; color: #343B49;">Tests</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/changes" style="text-decoration: none; color: #343B49;">Changes</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
+              <a href="${jobUrl}/artifacts" style="text-decoration: none; color: #343B49;">Artifacts</a>
+            </li>
+            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica;">
+              <a href="${statsUrl}" style="text-decoration: none; color: #343B49;">Stats</a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="7" style="background-color: #F4F4F4;margin: 6px;">
+        </td>
       </tr>
     </thead>
     <tbody style="background-color: #F4F4F4;">
@@ -138,13 +185,13 @@
           <% stepsErrors?.findAll{item -> item?.result == "FAILURE"}.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.displayName}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c?.displayDescription}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c?.result}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.displayName ? c?.displayName : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c?.displayDescription ? c?.displayDescription : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c?.result ? c?.result : ''}<br>
               <% if(c?.durationInMillis >= 0) {%>
                 <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec</a><br>
               <%}%>
-              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime}</a><br>
+              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime ? c?.startTime : ''}</a><br>
 
               <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
                 <a href="${jenkinsUrl}/${l._links.self.href}">Log</a><br>
@@ -200,9 +247,9 @@
               <strong style="font-family: Helvetica; color: #343B49;">Age:</strong>  ${c?.age}</br>
               <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${c?.duration}</a><br>
               <strong style="font-family: Helvetica; color: #343B49;">Error Details:</strong>
-              <div style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 4em;">${c?.errorDetails}</div>
+              <div style="font-family:courier;font-size:10px;text-align:left;overflow:auto;max-height: 30em;min-height: 10em;">${c?.errorDetails}</div>
               <strong style="font-family: Helvetica; color: #343B49;">Error StackTrace:</strong>
-              <pre style="font-family: courier;font-size: 10px;text-align:left;overflow: auto;height: 20em;">${c?.errorStackTrace}</pre>
+              <pre style="font-family:courier;font-size:10px;text-align:left;overflow:auto;max-height: 30em;min-height: 10em;">${c?.errorStackTrace}</pre>
               <hr>
               </td>
             </tr>
@@ -232,42 +279,6 @@
         <td colspan="7" style="height: 32px;"></td>
       </tr>
     </tbody>
-
-    <tfoot style="background-color: #F4F4F4;">
-      <tr>
-        <td colspan="7" style="padding: 0 24px 0 24px;font-family: Helvetica; font-size: 10px; color: #AEAEAE; letter-spacing: 2px; line-height: 16px; margin-bottom: 0; text-transform: uppercase;">
-          Observability
-        </td>
-      </tr>
-      <tr>
-        <td colspan="1" style="padding: 0 24px 0 24px;font-family: Helvetica; color: #AEAEAE; letter-spacing: 1px; font-weight: normal; font-size: 12px; line-height: 20px; margin: 8px 0;">
-          Build <strong style="font-family: Helvetica; color: #343B49;">Resources</strong>
-        </td>
-        <td colspan="6" style="text-align: right;padding-right: 67px;">
-          <ul style="list-style-type: none; margin: 0; padding: 0;">
-            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}" style="text-decoration: none; color: #343B49;">Pipeline</a>
-            </li>
-            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}/tests" style="text-decoration: none; color: #343B49;">Tests</a>
-            </li>
-            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}/changes" style="text-decoration: none; color: #343B49;">Changes</a>
-            </li>
-            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}/artifacts" style="text-decoration: none; color: #343B49;">Artifacts</a>
-            </li>
-            <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica;">
-              <a href="${statsUrl}" style="text-decoration: none; color: #343B49;">Stats</a>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="7" style="margin: 6px;">
-        </td>
-      </tr>
-    </tfoot>
   </table>
 </body>
 
