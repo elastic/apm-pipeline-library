@@ -28,14 +28,14 @@ def call(jobURL, buildNumber){
   def restURLBuild = "${restURLJob}/runs/${buildNumber}"
 
   sh(label: "Get Build info", script: """
-    curl -sSL -o job-info.json ${restURLJob}
-    curl -sSL -o build-info.json ${restURLBuild}
-    curl -sSL -o tests-summary.json ${restURLBuild}/blueTestSummary
-    curl -sSL -o tests-info.json ${restURLBuild}/tests
-    curl -sSL -o changeSet-info.json ${restURLBuild}/changeSet
-    curl -sSL -o artifacts-info.json ${restURLBuild}/artifacts
-    curl -sSL -o steps-info.json ${restURLBuild}/steps
-    curl -sSL -o pipeline-log.txt ${restURLBuild}/log
+    curl -sfSL -o job-info.json ${restURLJob}
+    curl -sfSL -o build-info.json ${restURLBuild}
+    curl -sfSL -o tests-summary.json ${restURLBuild}/blueTestSummary
+    curl -sfSL -o tests-info.json ${restURLBuild}/tests
+    curl -sfSL -o changeSet-info.json ${restURLBuild}/changeSet
+    curl -sfSL -o artifacts-info.json ${restURLBuild}/artifacts
+    curl -sfSL -o steps-info.json ${restURLBuild}/steps
+    curl -sfSL -o pipeline-log.txt ${restURLBuild}/log
     """)
 
   sh(label: "Console lg sumary", script: "tail -n 100 pipeline-log.txt > pipeline-log-summary.txt")
