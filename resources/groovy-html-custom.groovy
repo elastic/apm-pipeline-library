@@ -118,9 +118,9 @@
         </td>
       </tr>
       <!--TABLE_CHANGES-->
-      <%stepsErrors = stepsErrors.findAll{item -> item?.result == "FAILURE"}%>
+      <%stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
       <tr>
-        <td colspan="7" style="height: 32px;${ stepsErrors.size() != 0 ? '' : 'display: none;' }"></td>
+        <td colspan="7" style="height: 32px;${ stepsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
       <!--TABLE_STEP_ERRORS-->
       <tr style="background-color: #F4F4F4;${ stepsErrors?.size() != 0 ? '' : 'display: none;' }">
@@ -133,7 +133,7 @@
       <tr>
         <td colspan="7" style="padding-left: 24px;border-collapse: collapse;background-color: #F4F4F4;">
           <table logopacing="0" cellpadding="0" style="text-align: left;font-size: 12px;table-layout: fixed;width: 90%;">
-          <% stepsErrors.findAll{item -> item?.result == "FAILURE"}.each{ c -> %>
+          <% stepsErrors?.findAll{item -> item?.result == "FAILURE"}.each{ c -> %>
             <tr>
               <td>
               <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c.displayName}<br>
@@ -142,7 +142,7 @@
               <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec</a><br>
               <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c.startTime}</a><br>
 
-              <% c.actions.findAll{item -> item?.urlName == "log"}.each{ l ->%>
+              <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
                 <a href="${jenkinsUrl}/${l._links.self.href}">Log</a><br>
               <%}%>
               <hr>
@@ -173,7 +173,7 @@
         </td>
       </tr>
       <!--TABLE_TEST-->
-      <%testsErrors = testsErrors.findAll{item -> item?.status == "FAILED"}%>
+      <%testsErrors = testsErrors?.findAll{item -> item?.status == "FAILED"}%>
       <tr>
         <td colspan="7" style="height: 32px;${ testsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
@@ -188,7 +188,7 @@
       <tr>
         <td colspan="7" style="padding-left: 24px;border-collapse: collapse;background-color: #F4F4F4;">
           <table logopacing="0" cellpadding="0" style="text-align: left;font-size: 12px;table-layout: fixed;width: 90%;">
-          <% testsErrors.findAll{item -> item?.status == "FAILED"}.each{ c -> %>
+          <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ c -> %>
             <tr>
               <td>
               <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c.name}<br>
