@@ -33,8 +33,8 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     binding.setVariable('env', env)
 
-    helper.registerAllowedMethod("sh", [Map.class], { "OK" })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
+    helper.registerAllowedMethod("sh", [Map.class], { return 0 })
+    helper.registerAllowedMethod("sh", [String.class], { return 0 })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
       return readJSON(m)
@@ -97,9 +97,9 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("fileExists", [String.class], { return false })
     helper.registerAllowedMethod("sh", [Map.class], { m ->
       if(m.label == "Get Build info tests-info.json"){
-        throw new Exception("failed to download")
+        return 1
       }
-      return "OK"
+      return 0
     })
 
     script.call("http://jenkins.example.com/job/myJob", "1")

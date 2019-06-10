@@ -58,11 +58,9 @@ def call(jobURL, buildNumber){
 }
 
 def downloadJSONFile(url, file){
-  catchError(buildResult: 'SUCCESS') {
-    sh(label: "Get Build info ${file}", script: "curl -sfSL -o ${file} ${url}")
-  }
+  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL -o ${file} ${url}", returnStatus: true)
 
-  if(!fileExists("${file}")){
+  if(ret != 0){
     writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
   }
 }
