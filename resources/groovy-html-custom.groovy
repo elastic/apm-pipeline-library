@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<!--
 // Licensed to Elasticsearch B.V. under one or more contributor
 // license agreements. See the NOTICE file distributed with
 // this work for additional information regarding copyright
@@ -14,8 +16,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-<!DOCTYPE html>
+-->
 <html lang="en">
 
 <head>
@@ -105,8 +106,13 @@
           <table logopacing="0" cellpadding="0" style="text-align: right;width:90%">
             <tr>
               <td width="64px" height="142px">
-                <a href="${jobUrl}" style="text-decoration: none;border-radius: 50%;background-color: #ffffff;display: inline-block;height: 72px;width: 72px;line-height: 76px;text-align: center">
-                  <img alt="arrow" style="max-height: 100%;max-width: 100%;height: 100px;" src="http://clipart-library.com/images/Bigr66BgT.png">
+                <a href="${jobUrl}" style="text-decoration: none;display: inline-block;height: 72px;width: 72px;line-height: 76px;text-align: center">
+                <img alt="arrow" style="max-height: 100%;max-width: 100%;height: 100px;" src="http://clipart-library.com/images/gTeEKq6Gc.png">
+                <!--
+                <img alt="arrow" style="max-height: 100%;max-width: 100%;height: 100px;" src="http://clipart-library.com/images/Bigr66BgT.png">
+                <img alt="arrow" style="max-height: 100%;max-width: 100%;height: 100px;" src="http://clipart-library.com/images/6Tp5ee47c.png">
+                <img alt="arrow" style="max-height: 100%;max-width: 100%;height: 100px;" src="http://clipart-library.com/images/8iEb9gdyT.png">
+                -->
                 </a>
               </td>
             </tr>
