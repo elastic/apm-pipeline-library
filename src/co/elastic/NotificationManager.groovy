@@ -81,7 +81,7 @@ def notifyEmail(Map params = [:]) {
       ]);
 
       mail(to: emailRecipients.join(","),
-        subject: "${icon} ${buildStatus} ${env.JOB_NAME}#${env.BRANCH_NAME} ${env.BUILD_NUMBER}",
+        subject: "${icon} ${buildStatus} ${env.JOB_NAME}#${env.BRANCH_NAME ? env.BRANCH_NAME : ''} ${env.BUILD_NUMBER}",
         body: body,
         mimeType: 'text/html'
       );
