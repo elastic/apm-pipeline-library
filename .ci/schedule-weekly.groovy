@@ -32,6 +32,8 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  triggers {
     cron('H H(1-4) * * 1')
   }
   stages {
