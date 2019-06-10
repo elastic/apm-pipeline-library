@@ -125,7 +125,6 @@ pipeline {
           repo: 'https://github.com/elastic/curator.git',
           tag: "curator",
           version: "daily",
-          folder: "curator",
           push: true)
       }
     }
