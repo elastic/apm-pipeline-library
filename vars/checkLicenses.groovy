@@ -20,12 +20,23 @@
 
   checkLicenses()
 
+  checkLicenses(ext: '.groovy')
+
+  checkLicenses(skip: true, ext: '.groovy')
+
+  checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor: 'Elastic A.B.')
+
 */
 def call(Map params = [:]) {
-  def ext = params.containsKey('ext') ? params.ext : error('checkLicenses: Missing ext param.')
+  def excludeFlag = params.containsKey('exclude') ? "-exclude ${params.exclude}" : ''
+  def fileExtFlag = params.containsKey('ext') ? "-ext ${params.ext}" : ''
+  def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
+  def licensorFlag = params.containsKey('licensor') ? "-licensor ${params.licensor}" : ''
+  def skipFlag = params.get('skip') ? '-d' : ''
+
   docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
-    sh(label: "Check Licenses", script: """
+    sh(label: 'Check Licenses', script: """
     go get -u github.com/elastic/go-licenser
-    go-licenser -d -ext ${ext}""")
+    go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag}""")
   }
 }

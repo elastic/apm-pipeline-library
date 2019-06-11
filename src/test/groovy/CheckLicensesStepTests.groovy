@@ -52,15 +52,19 @@ class CheckLicensesStepTests extends BasePipelineTest {
     binding.setVariable('env', env)
     binding.setProperty('docker', new Docker())
 
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
     helper.registerAllowedMethod('sh', [Map.class], { m -> println m.script })
   }
 
   @Test
-  void testSuccess() throws Exception {
+  void testSuccessWithoutArgument() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithExtArgument() throws Exception {
     def script = loadScript(scriptName)
     script.call(ext: '.foo')
     printCallStack()
@@ -68,19 +72,34 @@ class CheckLicensesStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testMissingExtArgument() throws Exception {
+  void testSuccessWithExcludeArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
+    script.call(exclude: './bar')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('checkLicenses: Missing ext param.')
-    })
-    assertJobStatusFailure()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithLicenseArgument() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(license: 'Elastic')
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithLicensorArgument() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(licensor: 'Foo S.A.')
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithSkipArgument() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(skip: true)
+    printCallStack()
+    assertJobStatusSuccess()
   }
 }
