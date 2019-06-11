@@ -31,14 +31,14 @@ class CheckLicensesStepTests extends BasePipelineTest {
    */
   class Docker implements Serializable {
 
-      public Image image(String id) {
-          new Image(this, id)
-      }
+    public Image image(String id) {
+      new Image(this, id)
+    }
 
-      public static class Image implements Serializable {
-          private Image(Docker docker, String id) {}
-          public <V> V inside(String args = '', Closure<V> body) {}
-      }
+    public class Image implements Serializable {
+      private Image(Docker docker, String id) {}
+      public <V> V inside(String args = '', Closure<V> body) {}
+    }
   }
 
   @Override
