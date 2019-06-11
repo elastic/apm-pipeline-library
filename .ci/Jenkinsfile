@@ -61,7 +61,7 @@ pipeline {
         */
         stage('Test') {
           steps {
-            withGithubNotify(context: 'Checkout') {
+            withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
               deleteDir()
               unstash 'source'
               dir("${BASE_DIR}"){
