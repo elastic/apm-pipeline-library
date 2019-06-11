@@ -24,7 +24,7 @@ import groovy.text.StreamingTemplateEngine
  */
 def emailTemplate(params) {
 
-    def fileName = "groovy-html-custom.groovy"
+    def fileName = "groovy-html-custom.template"
     def fileContents = libraryResource(fileName)
     def engine = new StreamingTemplateEngine()
 
