@@ -50,7 +50,7 @@ pipeline {
                     stageResult: 'UNSTABLE',
                     message: 'Some files does not contain license'
                     ) {
-                  checkLicenses()
+                  checkLicenses(skip: true, ext: '.groovy')
                 }
               }
             }
