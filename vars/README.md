@@ -38,6 +38,26 @@ def numOfChanges = checkGitChanges(target: env.CHANGE_TARGET, commit: env.GIT_SH
 * commit: branch or commit to compare target to
 * prefix: text to find at the beginning of file changes.
 
+## checkLicenses
+Use the elastic licenser
+
+```
+checkLicenses()
+
+checkLicenses(ext: '.groovy')
+
+checkLicenses(skip: true, ext: '.groovy')
+
+checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor: 'Elastic A.B.')
+
+```
+
+* skip: Skips rewriting files and returns exitcode 1 if any discrepancies are found. Default: false.
+* exclude: path to exclude. (Optional)
+* ext: sets the file extension to scan for. (Optional)
+* license string: sets the license type to check: ASL2, Elastic, Cloud (default "ASL2"). (Optional)
+* licensor: sets the name of the licensor. (Optional)
+
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation
