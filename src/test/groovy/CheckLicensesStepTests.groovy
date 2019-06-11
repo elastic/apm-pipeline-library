@@ -52,14 +52,35 @@ class CheckLicensesStepTests extends BasePipelineTest {
     binding.setVariable('env', env)
     binding.setProperty('docker', new Docker())
 
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
     helper.registerAllowedMethod('sh', [Map.class], { m -> println m.script })
   }
 
   @Test
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
-    script.call()
+    script.call(ext: '.foo')
     printCallStack()
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMissingExtArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('checkLicenses: Missing ext param.')
+    })
+    assertJobStatusFailure()
   }
 }

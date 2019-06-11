@@ -21,10 +21,11 @@
   checkLicenses()
 
 */
-def call() {
+def call(Map params = [:]) {
+  def ext = params.containsKey('ext') ? params.ext : error('checkLicenses: Missing ext param.')
   docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
-    sh(label: "Check Licenses", script: '''
+    sh(label: "Check Licenses", script: """
     go get -u github.com/elastic/go-licenser
-    go-licenser -d -ext .groovy''')
+    go-licenser -d -ext ${ext}""")
   }
 }
