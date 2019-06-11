@@ -50,11 +50,9 @@ class CheckLicensesStepTests extends BasePipelineTest {
     env.BASE_DIR = '/base'
 
     binding.setVariable('env', env)
-    binding.setProperty('WORKSPACE', env.WORKSPACE)
-    binding.setProperty('BASE_DIR', env.BASE_DIR)
     binding.setProperty('docker', new Docker())
 
-    helper.registerAllowedMethod("sh", [Map.class], { m -> println m.script })
+    helper.registerAllowedMethod('sh', [Map.class], { m -> println m.script })
   }
 
   @Test

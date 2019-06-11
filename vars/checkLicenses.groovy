@@ -22,7 +22,7 @@
 
 */
 def call() {
-  docker.image('golang:1.12').inside("-e HOME=${WORKSPACE}/${BASE_DIR}"){
+  docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
     sh(label: "Check Licenses", script: '''
     go get -u github.com/elastic/go-licenser
     go-licenser -d -ext .groovy''')
