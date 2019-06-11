@@ -1,6 +1,6 @@
 # apm-pipeline-library
 
-[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-shared/apm-apm-pipeline-library-mbp/master)](https://apm-ci.elastic.co/job/apm-shared/apm-apm-pipeline-library-mbp/master)
+[![Build Status](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/badge/icon)](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/)
 
 Jenkins pipeline shared library for the project APM
 
@@ -96,6 +96,3 @@ git push -f --tags
   * [Dashboard](https://jenkins.io/doc/book/blueocean/dashboard/)
   * [Activity](https://jenkins.io/doc/book/blueocean/activity/)
   * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
-
-
-
