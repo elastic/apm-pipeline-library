@@ -72,9 +72,7 @@ pipeline {
           sh "cp /var/lib/jenkins/packer_cache* ."
           archiveArtifacts 'packer_cache*'
 
-          if(params.secret != null && "${params.secret}" != ""){
-             dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
-          }
+          dockerLoginElasticRegistry()
           sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
           sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
         }
@@ -91,9 +89,7 @@ pipeline {
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
-            if(params.secret != null && "${params.secret}" != ""){
-               dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
-            }
+            dockerLoginElasticRegistry()
             def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
@@ -121,6 +117,7 @@ pipeline {
         expression { return params.python }
       }
       steps {
+        dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/curator.git',
           tag: "curator",
@@ -136,6 +133,7 @@ pipeline {
         expression { return params.apm_integration_testing }
       }
       steps {
+        dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/apm-integration-testing.git',
           tag: "apm-integration-testing",
@@ -151,6 +149,7 @@ pipeline {
         expression { return params.helm_kubectl }
       }
       steps {
+        dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/dtzar/helm-kubectl.git',
           tag: "helm-kubectl",
@@ -170,15 +169,11 @@ pipeline {
       }
       steps {
         git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
-        script {
-          if(params.secret != null && "${params.secret}" != ""){
-            dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
-          }
-          sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
-          sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
-          sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
-          archiveArtifacts '*.log'
-        }
+        sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
+        sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
+        dockerLoginElasticRegistry()
+        sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
+        archiveArtifacts '*.log'
       }
     }
   }
@@ -186,6 +181,12 @@ pipeline {
     always {
       notifyBuildResult()
     }
+  }
+}
+
+def dockerLoginElasticRegistry(){
+  if(params.secret != null && "${params.secret}" != ""){
+     dockerLogin(secret: "${params.secret}", registry: "${params.registry}")
   }
 }
 
