@@ -101,11 +101,3 @@ pipeline {
     }
   }
 }
-
-def checkLicenses(){
-  docker.image('golang:1.12').inside("-e HOME=${WORKSPACE}/${BASE_DIR}"){
-    sh(label: "Check Licenses", script: '''
-    go get -u github.com/elastic/go-licenser
-    go-licenser -d -ext .groovy''')
-  }
-}
