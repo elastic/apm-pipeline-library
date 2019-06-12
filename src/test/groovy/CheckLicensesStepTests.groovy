@@ -37,7 +37,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
 
     public class Image implements Serializable {
       private Image(Docker docker, String id) {}
-      public <V> V inside(String args = '', Closure<V> body) {}
+      public <V> V inside(String args = '', Closure<V> body) { body() }
     }
   }
 
