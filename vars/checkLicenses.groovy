@@ -58,11 +58,17 @@ def call(Map params = [:]) {
       if (warningsList.size() < 1 || !warningsList[0]?.trim()){
         junitOutput += '<testcase/>'
       } else {
-        warningsList.each { junitOutput += '<testcase name="bar.groovy" classname="folder.x" time="0"/>' }
+        warningsList.each {
+          def rawWarning = it.split(':')[0]
+          def fileName = rawWarning.substring(rawWarning.lastIndexOf('/') + 1)
+          def filePath = (rawWarning - fileName).replaceAll('/', '.').replaceFirst('.$','')
+          junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0"/>
+          <system-out><![CDATA[${it}]]></system-out>
+          """ }
       }
       junitOutput += '</testsuite>'
       writeFile(file: 'test-results.xml', text: junitOutput)
-      junit 'test-results.xml'
+      junit(keepLongStdio: true, testResults: 'test-results.xml')
     }
   }
 }

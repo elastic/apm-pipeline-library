@@ -56,7 +56,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-    helper.registerAllowedMethod('junit', [String.class], { 'OK' })
+    helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
     helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
@@ -151,14 +151,14 @@ class CheckLicensesStepTests extends BasePipelineTest {
   @Test
   void testWarningsWithJunitArgument() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar.java: is missing the license header' })
+    helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
     assertJobStatusSuccess()
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar"')
     })
   }
 
