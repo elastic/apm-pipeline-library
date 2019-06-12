@@ -54,14 +54,14 @@ def call(Map params = [:]) {
       def warnings = readFile(file: testOutput)
       def warningsList = warnings.split('\n')
       def junitOutput = '''<?xml version="1.0" encoding="UTF-8"?>
-      <testsuite name="Licenses" time="0">'''
+      <testsuite name="licenses" time="0">'''
       if (warningsList.size() < 1 || !warningsList[0]?.trim()){
         junitOutput += '<testcase/>'
       } else {
         warningsList.each {
           def rawWarning = it.split(':')[0]
           def fileName = rawWarning.substring(rawWarning.lastIndexOf('/') + 1)
-          def filePath = (rawWarning - fileName).replaceAll('/', '.').replaceFirst('.$','')
+          def filePath = rawWarning.replaceAll('/', '.').replaceFirst('^\\.','')
           junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0"/>
           <error message="${it}"></error>
           """ }

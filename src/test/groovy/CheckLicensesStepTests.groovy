@@ -51,6 +51,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     binding.setVariable('env', env)
     binding.setProperty('docker', new Docker())
 
+    helper.registerAllowedMethod('archive', [String.class], { 'OK' })
     helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
@@ -158,7 +159,21 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar"')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
+    })
+  }
+
+  @Test
+  void testWarningsWithJunitArgumentAndIgnoreFolders() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
+    script.call(skip: true, junit: true)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'writeFile'
+    }.any { call ->
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
     })
   }
 
