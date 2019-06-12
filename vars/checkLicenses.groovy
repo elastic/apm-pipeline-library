@@ -63,7 +63,7 @@ def call(Map params = [:]) {
           def fileName = rawWarning.substring(rawWarning.lastIndexOf('/') + 1)
           def filePath = (rawWarning - fileName).replaceAll('/', '.').replaceFirst('.$','')
           junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0"/>
-          <system-out><![CDATA[${it}]]></system-out>
+          <error message="${it}"></error>
           """ }
       }
       junitOutput += '</testsuite>'
