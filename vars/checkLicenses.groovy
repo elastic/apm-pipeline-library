@@ -31,7 +31,7 @@ def call(Map params = [:]) {
   def excludeFlag = params.containsKey('exclude') ? "-exclude ${params.exclude}" : ''
   def fileExtFlag = params.containsKey('ext') ? "-ext ${params.ext}" : ''
   def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
-  def licensorFlag = params.containsKey('licensor') ? "-licensor ${params.licensor}" : ''
+  def licensorFlag = params.containsKey('licensor') ? "-licensor \"${params.licensor}\"" : ''
   def skipFlag = params.get('skip', false) ? '-d' : ''
 
   docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){

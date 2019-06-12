@@ -69,6 +69,11 @@ class CheckLicensesStepTests extends BasePipelineTest {
     script.call(ext: '.foo')
     printCallStack()
     assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('-ext .foo')
+    })
   }
 
   @Test
@@ -77,6 +82,11 @@ class CheckLicensesStepTests extends BasePipelineTest {
     script.call(exclude: './bar')
     printCallStack()
     assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('-exclude ./bar')
+    })
   }
 
   @Test
@@ -85,6 +95,11 @@ class CheckLicensesStepTests extends BasePipelineTest {
     script.call(license: 'Elastic')
     printCallStack()
     assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('-license Elastic')
+    })
   }
 
   @Test
@@ -93,6 +108,11 @@ class CheckLicensesStepTests extends BasePipelineTest {
     script.call(licensor: 'Foo S.A.')
     printCallStack()
     assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('-licensor "Foo S.A."')
+    })
   }
 
   @Test
@@ -101,5 +121,10 @@ class CheckLicensesStepTests extends BasePipelineTest {
     script.call(skip: true)
     printCallStack()
     assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('-d')
+    })
   }
 }
