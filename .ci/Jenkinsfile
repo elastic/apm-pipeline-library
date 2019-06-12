@@ -50,7 +50,7 @@ pipeline {
                     stageResult: 'UNSTABLE',
                     message: 'Some files does not contain license'
                     ) {
-                  checkLicenses()
+                  checkLicenses(skip: true, ext: '.groovy')
                 }
               }
             }
@@ -99,13 +99,5 @@ pipeline {
     always {
       notifyBuildResult()
     }
-  }
-}
-
-def checkLicenses(){
-  docker.image('golang:1.12').inside("-e HOME=${WORKSPACE}/${BASE_DIR}"){
-    sh(label: "Check Licenses", script: '''
-    go get -u github.com/elastic/go-licenser
-    go-licenser -d -ext .groovy''')
   }
 }
