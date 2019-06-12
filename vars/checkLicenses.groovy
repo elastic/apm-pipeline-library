@@ -67,7 +67,6 @@ def call(Map params = [:]) {
       }
       junitOutput += '</testsuite>'
       writeFile(file: 'test-results.xml', text: junitOutput)
-      archive 'test-results.xml'
       junit(keepLongStdio: true, testResults: 'test-results.xml')
     }
   }
