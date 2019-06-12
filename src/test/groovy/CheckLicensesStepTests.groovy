@@ -145,7 +145,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase/>') && callArgsToString(call).contains('failures="0"')
+      callArgsToString(call).contains('<testcase/>')
     })
   }
 
@@ -159,7 +159,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"') && callArgsToString(call).contains('failures="1"')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
     })
   }
 
@@ -173,7 +173,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"') && callArgsToString(call).contains('failures="1"')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
     })
   }
 

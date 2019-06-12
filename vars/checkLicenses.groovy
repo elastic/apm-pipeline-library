@@ -53,8 +53,7 @@ def call(Map params = [:]) {
     if (junitFlag) {
       def warnings = readFile(file: testOutput)
       def warningsList = warnings.split('\n')
-      def junitOutput = """<?xml version="1.0" encoding="UTF-8"?>
-      <testsuite name="licenses" errors="0" failures="${warningsList.size() < 1 || !warningsList[0]?.trim() ? 0 : warningsList.size()}" tests="${warningsList.size() < 1 || !warningsList[0]?.trim() ? 0 : warningsList.size()}" time="0">"""
+      def junitOutput = '<?xml version="1.0" encoding="UTF-8"?><testsuite name="licenses">'
       if (warningsList.size() < 1 || !warningsList[0]?.trim()){
         junitOutput += '<testcase/>'
       } else {
@@ -62,9 +61,9 @@ def call(Map params = [:]) {
           def rawWarning = it.split(':')[0]
           def fileName = rawWarning.substring(rawWarning.lastIndexOf('/') + 1)
           def filePath = rawWarning.replaceAll('/', '.').replaceFirst('^\\.','')
-          junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0"/>
-          <failure message="${it}"></failure>
-          """ }
+          junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0">
+          <failure message="${it}"></failure></testcase>"""
+        }
       }
       junitOutput += '</testsuite>'
       writeFile(file: 'test-results.xml', text: junitOutput)
