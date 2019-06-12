@@ -145,7 +145,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase/>')
+      callArgsToString(call).contains('<testcase/>') && callArgsToString(call).contains('failures="0"')
     })
   }
 
@@ -159,12 +159,12 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"') && callArgsToString(call).contains('failures="1"')
     })
   }
 
   @Test
-  void testWarningsWithJunitArgumentAndIgnoreFolders() throws Exception {
+  void testWarningsWithJunitArgumentAndHiddenFolders() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
@@ -173,7 +173,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'writeFile'
     }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"') && callArgsToString(call).contains('failures="1"')
     })
   }
 
