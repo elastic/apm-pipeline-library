@@ -58,6 +58,8 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 * license string: sets the license type to check: ASL2, Elastic, Cloud (default "ASL2"). (Optional)
 * licensor: sets the name of the licensor. (Optional)
 
+[Docker pipeline plugin](https://plugins.jenkins.io/docker-workflow)
+
 ## checkoutElasticDocsTools
 Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
 Then you can run build_docs.pl to build the documentation

@@ -16,3 +16,5 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 * ext: sets the file extension to scan for. (Optional)
 * license string: sets the license type to check: ASL2, Elastic, Cloud (default "ASL2"). (Optional)
 * licensor: sets the name of the licensor. (Optional)
+
+[Docker pipeline plugin](https://plugins.jenkins.io/docker-workflow)
