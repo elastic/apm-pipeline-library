@@ -24,6 +24,8 @@
 
   checkLicenses(skip: true, ext: '.groovy')
 
+  checkLicenses(skip: true, junit: true, ext: '.groovy')
+
   checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor: 'Elastic A.B.')
 
 */
@@ -33,10 +35,34 @@ def call(Map params = [:]) {
   def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
   def licensorFlag = params.containsKey('licensor') ? "-licensor \"${params.licensor}\"" : ''
   def skipFlag = params.get('skip', false) ? '-d' : ''
+  def junitFlag = params.get('junit', false)
+  def testOutput = 'test.out'
+
+  if (junitFlag && !params.get('skip')) {
+    error('checkLicenses: skip should be enabled when using the junit flag.')
+  }
 
   docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
-    sh(label: 'Check Licenses', script: """
-    go get -u github.com/elastic/go-licenser
-    go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag}""")
+    catchError {
+      sh(label: 'Check Licenses', script: """
+      go get -u github.com/elastic/go-licenser
+      go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
+    }
+
+    // Potentially supported with https://github.com/elastic/go-licenser/issues/23
+    if (junitFlag) {
+      def warnings = readFile(file: testOutput)
+      def warningsList = warnings.split('\n')
+      def junitOutput = '''<?xml version="1.0" encoding="UTF-8"?>
+      <testsuite name="Licenses" time="0">'''
+      if (warningsList.size() < 1 || !warningsList[0]?.trim()){
+        junitOutput += '<testcase/>'
+      } else {
+        warningsList.each { junitOutput += '<testcase name="bar.groovy" classname="folder.x" time="0"/>' }
+      }
+      junitOutput += '</testsuite>'
+      writeFile(file: 'test-results.xml', text: junitOutput)
+      junit 'test-results.xml'
+    }
   }
 }
