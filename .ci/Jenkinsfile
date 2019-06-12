@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-@Library('apm@current') _
+@Library('apm@test/junit') _
 
 pipeline {
   agent any
@@ -50,7 +50,7 @@ pipeline {
                     stageResult: 'UNSTABLE',
                     message: 'Some files does not contain license'
                     ) {
-                  checkLicenses(skip: true, ext: '.groovy')
+                  checkLicenses(skip: true, junit: true, ext: '.groovy')
                 }
               }
             }
