@@ -18,7 +18,7 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GetBlueoceanDisplayURLStepTests extends BasePipelineTest {
@@ -30,36 +30,31 @@ class GetBlueoceanDisplayURLStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
-    env.BUILD_ID = "4"
-    env.BRANCH_NAME = "PR-60"
+    env.BUILD_NUMBER = "4"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/display/redirect"
+    env.JOB_BASE_NAME = "PR-1"
+    env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/display/redirect"
 
     binding.setVariable('env', env)
-
-    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/"
-
-    helper.registerAllowedMethod("sh", [Map.class], { redirectURL })
-    helper.registerAllowedMethod("powershell", [Map.class], { redirectURL })
-    helper.registerAllowedMethod("isUnix", [], { "OK" })
   }
 
   @Test
-  void testSuccessLinux() throws Exception {
+  void testSuccess() throws Exception {
     def script = loadScript(scriptName)
+    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
     def url = script.call()
     printCallStack()
-    assertTrue(url.contains("${env.BRANCH_NAME}/${env.BUILD_ID}"))
+    assertTrue(url.matches(redirectURL))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testSuccessWindows() throws Exception {
-    helper.registerAllowedMethod("isUnix", [], { false })
+  void testWrongURL() throws Exception {
     def script = loadScript(scriptName)
     def url = script.call()
     printCallStack()
-    assertTrue(url.contains("${env.BRANCH_NAME}/${env.BUILD_ID}"))
+    assertFalse(url.contains("${env.JOB_BASE_NAME}/wrong"))
     assertJobStatusSuccess()
   }
 }
