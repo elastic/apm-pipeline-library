@@ -33,8 +33,8 @@ def call() {
   if (isUnix()) {
     redirect = sh(script: "curl -w '%{url_effective}' -I -L -s -S ${url} -o /dev/null", returnStdout: true)
   } else {
-    redirect = powershell(script: "[System.Net.HttpWebRequest]::Create('${url}').GetResponse().ResponseUri.AbsoluteUri",
-                          returnStdout: true)
+    def jobName = env.JOB_NAME.replace("/","%2F")
+    redirect = "${env.JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
   }
   return redirect
 }
