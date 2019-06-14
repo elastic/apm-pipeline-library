@@ -61,8 +61,18 @@ and should be created in the folder `src/co/elastic`.
 
 Every time there are enough changes, we would release a new version. A version
 has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](https://semver.org/).
-To create a new release we should create a new tar with the version number and point the
-`current` tag to the same version. The `current` tag is used to use the last stable
+To create a new release please use Maven Release Plugin, which uses the `pom.xml` file
+to store the semantic version for this project.
+
+```java
+mvn release:prepare
+```
+
+This command will bump the current SNAPSHOT, commit changes, and push the tag to upstream
+repository, as declared in the [release.properties](./release.properties) file.
+
+Apart from the creation of that tag, we must update the `current` tag, pointing
+to the same version we just created. The `current` tag is used to use the last stable
 library version on pipelines.
 
 ```
