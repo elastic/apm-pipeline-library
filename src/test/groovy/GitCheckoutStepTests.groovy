@@ -111,6 +111,24 @@ class GitCheckoutStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testMergeRemoteRepo() throws Exception {
+    def script = loadScript("vars/gitCheckout.groovy")
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      mergeRemote: "upstream",
+      mergeTarget: "master")
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "log"
+    }.any { call ->
+        callArgsToString(call).contains("options:[mergeTarget:master, mergeRemote:upstream]]]")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testMergeTargetRepo() throws Exception {
     def script = loadScript("vars/gitCheckout.groovy")
     script.scm = "SCM"
@@ -122,7 +140,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"
     }.any { call ->
-        callArgsToString(call).contains("Checkout master")
+        callArgsToString(call).contains("options:[mergeTarget:master, mergeRemote:origin]]]")
     })
     assertJobStatusSuccess()
   }

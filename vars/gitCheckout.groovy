@@ -35,6 +35,7 @@ def call(Map params = [:]){
   def credentialsId =  params?.credentialsId
   def branch =  params?.branch
   def reference = params?.reference
+  def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
 
   def extensions = []
@@ -45,7 +46,7 @@ def call(Map params = [:]){
   }
 
   if(mergeTarget != null){
-    extensions.add([$class: 'PreBuildMerge', options: [mergeTarget: "${mergeTarget}"]])
+    extensions.add([$class: 'PreBuildMerge', options: [mergeTarget: "${mergeTarget}", mergeRemote: "${mergeRemote}"]])
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
