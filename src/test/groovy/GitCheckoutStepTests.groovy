@@ -140,7 +140,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"
     }.any { call ->
-        callArgsToString(call).contains("Checkout master")
+        callArgsToString(call).contains("options:[mergeTarget:master, mergeRemote:origin]]]")
     })
     assertJobStatusSuccess()
   }
