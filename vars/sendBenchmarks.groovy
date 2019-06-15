@@ -47,7 +47,7 @@ def call(Map params = [:]) {
     error "Benchmarks: was not possible to get authentication info to send benchmarks"
   }
 
-  def url = params.containsKey('url') ? params.url : getVaultSecret(secret: secret)?.data.url
+  def url = params.containsKey('url') ? params.url : data.url
   def protocol = getProtocol(url)
   def urlAuth = "${protocol}${user}:${password}@${url}"
 
