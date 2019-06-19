@@ -75,7 +75,8 @@ class WithSecretVaultStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-    helper.registerAllowedMethod("getVaultSecret", [String.class], { s ->
+    helper.registerAllowedMethod("getVaultSecret", [Map.class], { m ->
+      def s = m.secret
       if("secret".equals(s)){
         return [data: [ user: 'username', password: 'user_password']]
       }
