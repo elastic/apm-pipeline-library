@@ -15,6 +15,13 @@
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
 
+  <scm>
+    <connection>scm:git:git@github.com:elastic/apm-pipeline-library.git</connection>
+    <developerConnection>scm:git:git@github.com:elastic/apm-pipeline-library.git</developerConnection>
+    <url>https://github.com/elastic/apm-pipeline-library</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <properties>
     <findbugs.skip>true</findbugs.skip>
     <jenkins.version>2.164</jenkins.version>
