@@ -27,13 +27,12 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 import co.elastic.NotificationManager
 
 def call(Map params = [:]) {
-  def es = params.containsKey('es') ? params.es : 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243'
-  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
+  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+  def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
   def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
   def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
   def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
-echo "currentBuild.currentResult=" + currentBuild.currentResult
   node('master'){
     stage('Reporting build status'){
       catchError {

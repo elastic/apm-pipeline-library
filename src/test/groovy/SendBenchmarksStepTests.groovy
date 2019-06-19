@@ -66,6 +66,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
+    env.PIPELINE_LOG_LEVEL = 'DEBUG'
     binding.setVariable('env', env)
 
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
@@ -83,13 +84,13 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
       def s = v.secret
       if("secret".equals(s) || "secret/apm-team/ci/java-agent-benchmark-cloud".equals(s)){
-        return [data: [ user: 'user', password: 'password']]
+        return [data: [ user: 'user', password: 'password', url: 'https://ec.example.com:9200']]
       }
       if("secretError".equals(s)){
         return [errors: 'Error message']
       }
       if("secretNotValid".equals(s)){
-        return [data: [ user: null, password: null]]
+        return [data: [ user: null, password: null, url: null]]
       }
       return null
     })
@@ -115,8 +116,9 @@ class SendBenchmarksStepTests extends BasePipelineTest {
   void testSecretNotFound() throws Exception {
     def script = loadScript("vars/sendBenchmarks.groovy")
     try{
-      script.call(secret: 'secretNotExists')
+      def ret = script.call(secret: 'secretNotValid')
     } catch(e){
+      println e.toString()
       //NOOP
     }
     printCallStack()
@@ -134,6 +136,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     try {
       script.call(secret: 'secretError')
     } catch(e){
+      println e.toString()
       //NOOP
     }
     printCallStack()
@@ -151,6 +154,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     try {
       script.call(secret: 'secret', url: 'ht://wrong.example.com')
     } catch(e){
+      println e.toString()
       //NOOP
     }
     printCallStack()
