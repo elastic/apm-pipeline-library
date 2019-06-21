@@ -213,5 +213,12 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
         call.methodName == "sendDataToElasticsearch"
     }.size()== 0)
     assertJobStatusSuccess()
+
+    // Then unstable the stage
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "catchError"
+    }.any { call ->
+        callArgsToString(call).contains('buildResult=SUCCESS, stageResult=UNSTABLE')
+    })
   }
 }
