@@ -3,6 +3,7 @@
       "_doc": {
         "properties": {
           "artifacts": {
+            "type": "nested",
             "properties": {
               "_class": {
                 "type": "text",
@@ -781,6 +782,7 @@
             }
           },
           "changeSet": {
+            "type": "nested",
             "properties": {
               "_class": {
                 "type": "text",
@@ -1887,6 +1889,7 @@
             }
           },
           "steps": {
+            "type": "nested",
             "properties": {
               "_class": {
                 "type": "text",
@@ -2068,6 +2071,7 @@
             }
           },
           "test": {
+            "type": "nested",
             "properties": {
               "_class": {
                 "type": "text",
