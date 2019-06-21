@@ -195,7 +195,7 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testFailureBuild() throws Exception {
+  void testWarnError() throws Exception {
     // When a failure
     helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { throw new Exception(s) })
 
