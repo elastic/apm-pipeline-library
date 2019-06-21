@@ -132,7 +132,7 @@ pipeline {
       }
 
       stage('Ubuntu 18.04 test'){
-        agent { label 'ubuntu-1804' }
+        agent { label 'ubuntu-edge' }
         options { skipDefaultCheckout() }
         environment {
           PATH = "${env.PATH}:${env.WORKSPACE}/bin"
