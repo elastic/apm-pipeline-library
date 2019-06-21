@@ -35,7 +35,7 @@ def call(Map params = [:]) {
 
   node('master'){
     stage('Reporting build status'){
-      catchError {
+      warnError(message: "Reporting the build status failed but let's unstable the build.") {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
