@@ -12,6 +12,7 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 ```
 
 * skip: Skips rewriting files and returns exitcode 1 if any discrepancies are found. Default: false.
+* junit: Whether to generate a JUnit report. It does require the skip flag. Default: false.
 * exclude: path to exclude. (Optional)
 * ext: sets the file extension to scan for. (Optional)
 * license string: sets the license type to check: ASL2, Elastic, Cloud (default "ASL2"). (Optional)

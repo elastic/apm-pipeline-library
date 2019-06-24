@@ -73,6 +73,13 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { "OK" })
     helper.registerAllowedMethod("catchError", [Closure.class], { c -> c() })
+    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
     helper.registerAllowedMethod("sendDataToElasticsearch", [Map.class], { "OK" })
 
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
@@ -186,5 +193,33 @@ class NotifyBuildResultStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("notifyBuildResult: Notifying results by email.")
     })
+  }
+
+  @Test
+  void testCatchError() throws Exception {
+    // When a failure
+    helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { throw new Exception(s) })
+
+    // Then the build is Success
+    binding.getVariable('currentBuild').result = "SUCCESS"
+    binding.getVariable('currentBuild').currentResult = "SUCCESS"
+
+    def script = loadScript("vars/notifyBuildResult.groovy")
+    script.call(es: "https://ecs.example.com:9200", secret: "secret")
+    printCallStack()
+
+    // Then no further actions are executed afterwards
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sendDataToElasticsearch"
+    }.size()== 0)
+
+    // Then unstable the stage
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "catchError"
+    }.any { call ->
+        callArgsToString(call).contains('buildResult=SUCCESS, stageResult=UNSTABLE')
+    })
+
+    assertJobStatusSuccess()
   }
 }

@@ -27,15 +27,15 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 import co.elastic.NotificationManager
 
 def call(Map params = [:]) {
-  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
-  def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
-  def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
-  def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
-  def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
-
   node('master'){
     stage('Reporting build status'){
-      catchError {
+      def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
+      def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
+      def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
+      def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
+
+      catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 

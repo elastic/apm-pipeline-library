@@ -49,6 +49,7 @@ def call(Map params = [:]) {
 
   def url = params.containsKey('url') ? params.url : data.url
   def protocol = getProtocol(url)
+  url = url - protocol
   def urlAuth = "${protocol}${user}:${password}@${url}"
 
   log(level: 'INFO', text: "Benchmarks: sending data...")
@@ -93,11 +94,9 @@ def call(Map params = [:]) {
 def getProtocol(url){
   def protocol = "https://"
   if(url.startsWith("https://")){
-    url = url - "https://"
     protocol = "https://"
   } else if (url.startsWith("http://")){
     log(level: 'INFO', text: "Benchmarks: you are using 'http' protocol to access to the service.")
-    url = url - "http://"
     protocol = "http://"
   } else {
     error "Benchmarks: unknow protocol, the url is not http(s)."
