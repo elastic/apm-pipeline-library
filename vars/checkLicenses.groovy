@@ -24,6 +24,8 @@
 
   checkLicenses(skip: true, ext: '.groovy')
 
+  checkLicenses(skip: true, junit: true, ext: '.groovy')
+
   checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor: 'Elastic A.B.')
 
 */
@@ -33,10 +35,39 @@ def call(Map params = [:]) {
   def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
   def licensorFlag = params.containsKey('licensor') ? "-licensor \"${params.licensor}\"" : ''
   def skipFlag = params.get('skip', false) ? '-d' : ''
+  def junitFlag = params.get('junit', false)
+  def testOutput = 'test.out'
+
+  if (junitFlag && !params.get('skip')) {
+    error('checkLicenses: skip should be enabled when using the junit flag.')
+  }
 
   docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
-    sh(label: 'Check Licenses', script: """
-    go get -u github.com/elastic/go-licenser
-    go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag}""")
+    catchError {
+      sh(label: 'Check Licenses', script: """
+      go get -u github.com/elastic/go-licenser
+      go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
+    }
+
+    // Potentially supported with https://github.com/elastic/go-licenser/issues/23
+    if (junitFlag) {
+      def warnings = readFile(file: testOutput)
+      def warningsList = warnings.split('\n')
+      def junitOutput = '<?xml version="1.0" encoding="UTF-8"?><testsuite name="licenses">'
+      if (warningsList.size() < 1 || !warningsList[0]?.trim()){
+        junitOutput += '<testcase/>'
+      } else {
+        warningsList.each {
+          def rawWarning = it.split(':')[0]
+          def fileName = rawWarning.substring(rawWarning.lastIndexOf('/') + 1)
+          def filePath = rawWarning.replaceAll('/', '.').replaceFirst('^\\.','')
+          junitOutput += """<testcase name="${fileName}" classname="${filePath}" time="0">
+          <failure message="${it}"></failure></testcase>"""
+        }
+      }
+      junitOutput += '</testsuite>'
+      writeFile(file: 'test-results.xml', text: junitOutput)
+      junit(keepLongStdio: true, testResults: 'test-results.xml')
+    }
   }
 }
