@@ -25,19 +25,8 @@
 def call(Map params = [:]) {
   def benchFile = params.containsKey('file') ? params.file : 'bench.out'
   def index = params.containsKey('index') ? params.index : 'benchmark-go'
-  def url = params.containsKey('url') ? params.url : "https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243"
   def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
   def archive = params.containsKey('archive') ? params.archive : true
-
-  //apm-server-benchmark-cloud
-  //java-agent-benchmark-cloud
-  //https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243/_bulk
-  //https://5492443829134f71a94c96689e9db66e.europe-west3.gcp.cloud.es.io:9243
-  //curl --user ${CLOUD_USERNAME}:${CLOUD_PASSWORD} -XPOST 'https://1ec92c339f616ca43771bff669cc419c.europe-west3.gcp.cloud.es.io:9243/_bulk' -H 'Content-Type: application/json'  --data-binary @${BULK_UPLOAD_FILE}
-  def props = getVaultSecret(secret: secret)
-  if(props?.errors){
-     error "Benchmarks: Unable to get credentials from the vault: " + props.errors.toString()
-  }
 
   if(archive){
     archiveArtifacts(allowEmptyArchive: true,
@@ -45,26 +34,24 @@ def call(Map params = [:]) {
       onlyIfSuccessful: false)
   }
 
-  def protocol = "https://"
-  if(url.startsWith("https://")){
-    url = url - "https://"
-    protocol = "https://"
-  } else if (url.startsWith("http://")){
-    log(level: 'INFO', text: "Benchmarks: you are using 'http' protocol to access to the service.")
-    url = url - "http://"
-    protocol = "http://"
-  } else {
-    error "Benchmarks: unknow protocol, the url is not http(s)."
+  def props = getVaultSecret(secret: secret)
+  if(props?.errors){
+     error "Benchmarks: Unable to get credentials from the vault: " + props.errors.toString()
   }
 
   def data = props?.data
   def user = data?.user
   def password = data?.password
-  def urlAuth = "${protocol}${user}:${password}@${url}"
 
   if(data == null || user == null || password == null){
     error "Benchmarks: was not possible to get authentication info to send benchmarks"
   }
+
+  def url = params.containsKey('url') ? params.url : data.url
+  def protocol = getProtocol(url)
+  url = url - protocol
+  def urlAuth = "${protocol}${user}:${password}@${url}"
+
   log(level: 'INFO', text: "Benchmarks: sending data...")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'CLOUD_URL', password: "${urlAuth}"],
@@ -102,4 +89,17 @@ def call(Map params = [:]) {
           }
       }
    }
+}
+
+def getProtocol(url){
+  def protocol = "https://"
+  if(url.startsWith("https://")){
+    protocol = "https://"
+  } else if (url.startsWith("http://")){
+    log(level: 'INFO', text: "Benchmarks: you are using 'http' protocol to access to the service.")
+    protocol = "http://"
+  } else {
+    error "Benchmarks: unknow protocol, the url is not http(s)."
+  }
+  return protocol
 }

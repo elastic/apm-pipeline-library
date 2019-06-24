@@ -65,7 +65,7 @@ To create a new release please use Maven Release Plugin, which uses the `pom.xml
 to store the semantic version for this project.
 
 ```java
-mvn release:prepare
+mvn release:prepare release:perform
 ```
 
 This command will bump the current SNAPSHOT, commit changes, and push the tag to upstream
@@ -78,7 +78,7 @@ library version on pipelines.
 ```
 git checkout master
 git pull origin master
-git tag v1.0.18
+git fetch --all
 git tag -f current
 git push -f --tags
 ```

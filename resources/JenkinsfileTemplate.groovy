@@ -130,6 +130,177 @@ pipeline {
           }
         }
       }
+
+      stage('Ubuntu 18.04 test'){
+        agent { label 'ubuntu-edge' }
+        options { skipDefaultCheckout() }
+        environment {
+          PATH = "${env.PATH}:${env.WORKSPACE}/bin"
+          ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+          //see JENKINS-41929
+          PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
+        }
+        stages {
+          /**
+          Checkout the code and stash it, to use it on other stages.
+          */
+          stage('Checkout') {
+            steps {
+              deleteDir()
+              //gitCheckout(basedir: "${BASE_DIR}")
+              gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+                repo: 'git@github.com:elastic/apm-pipeline-library.git',
+                credentialsId: "${JOB_GIT_CREDENTIALS}")
+              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            }
+          }
+          /**
+          Build the project from code..
+          */
+          stage('Build') {
+            steps {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+              }
+            }
+          }
+          /**
+          Execute unit tests.
+          */
+          stage('Test') {
+            steps {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+              }
+            }
+            post {
+              always {
+                junit(allowEmptyResults: true,
+                  keepLongStdio: true,
+                  testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                }
+              }
+            }
+            /**
+            Build the documentation.
+            */
+            stage('Documentation') {
+              when {
+                beforeAgent true
+                allOf {
+                  anyOf {
+                    not {
+                      changeRequest()
+                    }
+                    branch 'master'
+                    branch "\\d+\\.\\d+"
+                    branch "v\\d?"
+                    tag "v\\d+\\.\\d+\\.\\d+*"
+                    expression { return params.Run_As_Master_Branch }
+                  }
+                  expression { return params.doc_ci }
+                }
+              }
+              steps {
+                deleteDir()
+                unstash 'source'
+                dir("${BASE_DIR}"){
+                  buildDocs(docsDir: "resources/docs", archive: true)
+                }
+              }
+            }
+          }
+      }
+
+      stage('Debian 9 test'){
+        agent { label 'debian-9' }
+        options { skipDefaultCheckout() }
+        environment {
+          PATH = "${env.PATH}:${env.WORKSPACE}/bin"
+          ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+          //see JENKINS-41929
+          PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
+        }
+        stages {
+          /**
+          Checkout the code and stash it, to use it on other stages.
+          */
+          stage('Checkout') {
+            steps {
+              deleteDir()
+              //gitCheckout(basedir: "${BASE_DIR}")
+              gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+                repo: 'git@github.com:elastic/apm-pipeline-library.git',
+                credentialsId: "${JOB_GIT_CREDENTIALS}")
+              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+            }
+          }
+          /**
+          Build the project from code..
+          */
+          stage('Build') {
+            steps {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+              }
+            }
+          }
+          /**
+          Execute unit tests.
+          */
+          stage('Test') {
+            steps {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+              }
+            }
+            post {
+              always {
+                junit(allowEmptyResults: true,
+                  keepLongStdio: true,
+                  testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                }
+              }
+            }
+            /**
+            Build the documentation.
+            */
+            stage('Documentation') {
+              when {
+                beforeAgent true
+                allOf {
+                  anyOf {
+                    not {
+                      changeRequest()
+                    }
+                    branch 'master'
+                    branch "\\d+\\.\\d+"
+                    branch "v\\d?"
+                    tag "v\\d+\\.\\d+\\.\\d+*"
+                    expression { return params.Run_As_Master_Branch }
+                  }
+                  expression { return params.doc_ci }
+                }
+              }
+              steps {
+                deleteDir()
+                unstash 'source'
+                dir("${BASE_DIR}"){
+                  buildDocs(docsDir: "resources/docs", archive: true)
+                }
+              }
+            }
+          }
+      }
+
       stage('windows 2012 check'){
         agent { label 'windows-2012r2' }
         options { skipDefaultCheckout() }
