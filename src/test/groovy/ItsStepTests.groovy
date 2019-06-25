@@ -20,16 +20,15 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertNull
 
 class ItsStepTests extends BasePipelineTest {
-  String scriptName = "vars/its.groovy"
-  Map env = [:]
+  String scriptName = 'vars/its.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
@@ -137,6 +136,15 @@ class ItsStepTests extends BasePipelineTest {
     def value = script.ymlFiles('dotnet')
     printCallStack()
     assertTrue(value.equals('tests/versions/dotnet.yml'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testUnexistingKeyInYmlFiles() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.ymlFiles('foo')
+    printCallStack()
+    assertNull(value)
     assertJobStatusSuccess()
   }
 }
