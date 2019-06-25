@@ -87,7 +87,6 @@ def agentYamlVar(String key) {
   if (!key) {
     error 'agentYamlVar: Missing key'
   }
-
   return agentYamlVar[key]
 }
 
@@ -95,7 +94,6 @@ def mapAgentsIDs(String key) {
   if (!key) {
     error 'mapAgentsIDs: Missing key'
   }
-
   return mapAgentsIDs[key]
 }
 

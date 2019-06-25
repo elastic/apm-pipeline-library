@@ -103,4 +103,40 @@ class ItsStepTests extends BasePipelineTest {
     })
     assertJobStatusFailure()
   }
+
+  @Test
+  void testDotnetInAgentYamlVar() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.agentYamlVar('dotnet')
+    printCallStack()
+    assertTrue(value.contains('DOTNET'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testDotnetInMapAgentsIDs() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.mapAgentsIDs('.NET')
+    printCallStack()
+    assertTrue(value.equals('dotnet'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testDotnetInMapAgentsApps() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.mapAgentsApps('.NET')
+    printCallStack()
+    assertTrue(value.equals('dotnet'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testDotnetInYmlFiles() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.ymlFiles('dotnet')
+    printCallStack()
+    assertTrue(value.equals('tests/versions/dotnet.yml'))
+    assertJobStatusSuccess()
+  }
 }
