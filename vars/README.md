@@ -374,6 +374,16 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 def userTrigger = isUserTrigger()
 ```
 
+## its
+Return the value for the given key.
+
+```
+  its.agentYamlVar('.NET')
+  its.mapAgentsApps('Python')
+  its.mapAgentsIDs('All')
+  its.ymlFiles('UI')
+```
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
