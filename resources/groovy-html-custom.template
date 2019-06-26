@@ -60,7 +60,7 @@
         <td colspan="7" style="background-color: #F4F4F4;text-align: right;padding-right: 67px;">
           <ul style="list-style-type: none; margin: 0; padding: 0;">
             <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
-              <a href="${jobUrl}" style="text-decoration: none; color: #343B49;">Pipeline</a>
+              <a href="${jobUrl}/pipeline" style="text-decoration: none; color: #343B49;">Pipeline</a>
             </li>
             <li style="display: inline; letter-spacing: 1px; font-weight: 700; font-size: 12px; line-height: 20px; font-family: Helvetica; padding-right: 24px;">
               <a href="${jobUrl}/tests" style="text-decoration: none; color: #343B49;">Tests</a>
