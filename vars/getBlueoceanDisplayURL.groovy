@@ -29,5 +29,6 @@
 */
 def call() {
   def jobName = env.JOB_NAME.replace("/","%2F")
-  return "${env.JENKINS_URL}/blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/".replace("//","/")
+  def url = env.JENKINS_URL.endsWith('/') ? env.JENKINS_URL : "${env.JENKINS_URL}/"
+  return "${url}blue/organizations/jenkins/${jobName}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
 }
