@@ -87,6 +87,48 @@ git push -f --tags
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
 
+## Local Development
+
+If you'd like to speed up your local development process then you can configure your local environment.
+
+
+### Setup intellij idea
+TODO
+
+### Setup atom
+TODO
+
+### Linting
+
+Run a jenkins local instances as explained below.
+
+Validate whether it works as expected
+
+```bash
+curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:8080/pipeline-model-converter/validate
+```
+
+### Precommit
+
+This particular process will help to evaluate some linting before committing any changes. Therefore you need the pre-commit.
+
+#### Installation.
+
+Follow https://pre-commit.com/#install and `pre-commit install`
+
+#### Enabled hooks
+
+- Check case conflict
+- Check executables have shebangs
+- Check merge conflicts
+- Check json
+- Check yaml
+- Check xml
+- Check bash syntax
+- Ensure neither abstract classes nor traits are used in the shared library.
+- Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
+- Jenkinsfile linter.
+
 ## Resources
 
 * [Pipeline User Handbook](https://jenkins.io/doc/book/pipeline/)
