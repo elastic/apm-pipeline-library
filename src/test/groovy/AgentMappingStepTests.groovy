@@ -22,8 +22,8 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
-class ItsStepTests extends BasePipelineTest {
-  String scriptName = 'vars/its.groovy'
+class AgentMappingStepTests extends BasePipelineTest {
+  String scriptName = 'vars/agentMapping.groovy'
 
   @Override
   @Before

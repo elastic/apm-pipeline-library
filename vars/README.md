@@ -1,4 +1,15 @@
 # Steps Documentation
+## agentMapping
+Return the value for the given key.
+
+```
+  agentMapping.agentEnvVar('dotnet')
+  agentMapping.agentYamlVar('.NET')
+  agentMapping.mapAgentsApps('Python')
+  agentMapping.mapAgentsIDs('All')
+  agentMapping.ymlFiles('UI')
+```
+
 ## base64decode
 Decode a base64 input to string
 
@@ -372,17 +383,6 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
 def userTrigger = isUserTrigger()
-```
-
-## its
-Return the value for the given key.
-
-```
-  its.agentEnvVar('dotnet')
-  its.agentYamlVar('.NET')
-  its.mapAgentsApps('Python')
-  its.mapAgentsIDs('All')
-  its.ymlFiles('UI')
 ```
 
 ## log

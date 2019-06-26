@@ -18,11 +18,11 @@
 /**
   Return the value for the given key.
 
-  its.agentEnvVar(key)
-  its.agentYamlVar(key)
-  its.mapAgentsApps(key)
-  its.mapAgentsIDs(key)
-  its.ymlFiles(key)
+  agentMapping.agentEnvVar(key)
+  agentMapping.agentYamlVar(key)
+  agentMapping.mapAgentsApps(key)
+  agentMapping.mapAgentsIDs(key)
+  agentMapping.ymlFiles(key)
 */
 import groovy.transform.Field
 
