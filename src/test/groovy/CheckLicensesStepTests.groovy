@@ -51,7 +51,16 @@ class CheckLicensesStepTests extends BasePipelineTest {
     binding.setVariable('env', env)
     binding.setProperty('docker', new Docker())
 
+    helper.registerAllowedMethod('archive', [String.class], { 'OK' })
+    helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
+    helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
+    helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
+    helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 
   @Test
@@ -125,5 +134,63 @@ class CheckLicensesStepTests extends BasePipelineTest {
     }.any { call ->
       callArgsToString(call).contains('-d')
     })
+  }
+
+  @Test
+  void testSuccessWithJunitArgument() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(skip: true, junit: true)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'writeFile'
+    }.any { call ->
+      callArgsToString(call).contains('<testcase/>')
+    })
+  }
+
+  @Test
+  void testWarningsWithJunitArgument() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar/file.java: is missing the license header' })
+    script.call(skip: true, junit: true)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'writeFile'
+    }.any { call ->
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
+    })
+  }
+
+  @Test
+  void testWarningsWithJunitArgumentAndHiddenFolders() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
+    script.call(skip: true, junit: true)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'writeFile'
+    }.any { call ->
+      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
+    })
+  }
+
+  @Test
+  void testMissingSkipWhenJunitArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(junit: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('checkLicenses: skip should be enabled when using the junit flag.')
+    })
+    assertJobStatusFailure()
   }
 }
