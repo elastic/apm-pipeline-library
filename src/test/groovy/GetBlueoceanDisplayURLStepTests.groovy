@@ -42,7 +42,7 @@ class GetBlueoceanDisplayURLStepTests extends BasePipelineTest {
   @Test
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
-    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
+    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/".replace("//","/")
     def url = script.call()
     printCallStack()
     assertTrue(url.matches(redirectURL))
