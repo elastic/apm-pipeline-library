@@ -378,6 +378,7 @@ def userTrigger = isUserTrigger()
 Return the value for the given key.
 
 ```
+  its.agentEnvVar('dotnet')
   its.agentYamlVar('.NET')
   its.mapAgentsApps('Python')
   its.mapAgentsIDs('All')

@@ -18,12 +18,28 @@
 /**
   Return the value for the given key.
 
+  its.agentEnvVar(key)
   its.agentYamlVar(key)
   its.mapAgentsApps(key)
   its.mapAgentsIDs(key)
   its.ymlFiles(key)
 */
 import groovy.transform.Field
+
+/**
+  Enviroment variable to put the agent version before run tests.
+*/
+@Field Map agentEnvVar = [
+  'dotnet': 'APM_AGENT_DOTNET_VERSION',
+  'go': 'APM_AGENT_GO_VERSION',
+  'java': 'APM_AGENT_JAVA_VERSION',
+  'nodejs': 'APM_AGENT_NODEJS_VERSION',
+  'python': 'APM_AGENT_PYTHON_VERSION',
+  'ruby': 'APM_AGENT_RUBY_VERSION',
+  'rum': 'APM_AGENT_RUM_VERSION',
+  'server': 'APM_SERVER_BRANCH'
+]
+
 
 /**
   Key which contains the agent versions.
@@ -82,6 +98,13 @@ import groovy.transform.Field
   'rum': 'tests/versions/rum.yml',
   'server': 'tests/versions/apm_server.yml'
 ]
+
+def agentEnvVar(String key) {
+  if (!key) {
+    error 'agentEnvVar: Missing key'
+  }
+  return agentEnvVar[key]
+}
 
 def agentYamlVar(String key) {
   if (!key) {

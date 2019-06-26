@@ -36,6 +36,23 @@ class ItsStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testEmptyArgumentInAgentEnvVar() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.agentEnvVar('')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('agentEnvVar: Missing key')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testEmptyArgumentInAgentYamlVar() throws Exception {
     def script = loadScript(scriptName)
     try {
@@ -101,6 +118,15 @@ class ItsStepTests extends BasePipelineTest {
       callArgsToString(call).contains('ymlFiles: Missing key')
     })
     assertJobStatusFailure()
+  }
+
+  @Test
+  void testDotnetInAgentEnvVar() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.agentEnvVar('dotnet')
+    printCallStack()
+    assertTrue(value.contains('DOTNET'))
+    assertJobStatusSuccess()
   }
 
   @Test
