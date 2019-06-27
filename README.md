@@ -17,6 +17,12 @@ Jenkins pipeline shared library for the project APM
 |   +- co
 |       +- elastic
 |           +- bar.json    # static helper data for org.foo.Bar
++- local                   # to enable jenkins linting locally
+|   +- configs
+|       +- jenkins.yaml
+|   +- docker-compose.yml
+|   +- Dockerfile
+|
 ```
 
 * [Pipeline](https://jenkins.io/doc/book/pipeline/)
@@ -100,12 +106,17 @@ TODO
 
 ### Linting
 
-Run a jenkins local instances as explained below.
-
-Validate whether it works as expected
+Run a jenkins local instance as explained below:
 
 ```bash
-curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:8080/pipeline-model-converter/validate
+cd local
+docker-compose up --build -d
+```
+
+Validate whether it works as expected:
+
+```bash
+curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate
 ```
 
 ### Precommit

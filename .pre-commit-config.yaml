@@ -30,5 +30,5 @@ repos:
         name: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
         files: Jenkinsfile
         language: system
-        entry: sh -c '! curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:8080/pipeline-model-converter/validate | grep -v -i successfully'
+        entry: sh -c '! curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate | grep -v -i successfully'
         verbose: true
