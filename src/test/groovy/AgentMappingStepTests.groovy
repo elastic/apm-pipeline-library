@@ -36,10 +36,10 @@ class AgentMappingStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testEmptyArgumentInAgentEnvVar() throws Exception {
+  void testEmptyArgumentInEnvVar() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.agentEnvVar('')
+      script.envVar('')
     } catch(e){
       //NOOP
     }
@@ -47,16 +47,16 @@ class AgentMappingStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('agentEnvVar: Missing key')
+      callArgsToString(call).contains('envVar: Missing key')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testEmptyArgumentInAgentYamlVar() throws Exception {
+  void testEmptyArgumentInYamlVar() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.agentYamlVar('')
+      script.agentVar('')
     } catch(e){
       //NOOP
     }
@@ -64,16 +64,16 @@ class AgentMappingStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('agentYamlVar: Missing key')
+      callArgsToString(call).contains('agentVar: Missing key')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testEmptyArgumentInMapAgentsIDs() throws Exception {
+  void testEmptyArgumentInID() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.mapAgentsIDs('')
+      script.id('')
     } catch(e){
       //NOOP
     }
@@ -81,16 +81,16 @@ class AgentMappingStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('mapAgentsIDs: Missing key')
+      callArgsToString(call).contains('id: Missing key')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testNullArgumentInMapAgentsApps() throws Exception {
+  void testNullArgumentInApp() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.mapAgentsApps(null)
+      script.app(null)
     } catch(e){
       //NOOP
     }
@@ -98,16 +98,16 @@ class AgentMappingStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('mapAgentsApps: Missing key')
+      callArgsToString(call).contains('app: Missing key')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testNullArgumentInYmlFiles() throws Exception {
+  void testNullArgumentInYamlVersionFile() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.ymlFiles(null)
+      script.yamlVersionFile(null)
     } catch(e){
       //NOOP
     }
@@ -115,60 +115,60 @@ class AgentMappingStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('ymlFiles: Missing key')
+      callArgsToString(call).contains('yamlVersionFile: Missing key')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testDotnetInAgentEnvVar() throws Exception {
+  void testDotnetIntEnvVar() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.agentEnvVar('dotnet')
+    def value = script.envVar('dotnet')
     printCallStack()
     assertTrue(value.contains('DOTNET'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testDotnetInAgentYamlVar() throws Exception {
+  void testDotnetInAgentVar() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.agentYamlVar('dotnet')
+    def value = script.agentVar('dotnet')
     printCallStack()
     assertTrue(value.contains('DOTNET'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testDotnetInMapAgentsIDs() throws Exception {
+  void testDotnetInId() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.mapAgentsIDs('.NET')
+    def value = script.id('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testDotnetInMapAgentsApps() throws Exception {
+  void testDotnetInApp() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.mapAgentsApps('.NET')
+    def value = script.app('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testDotnetInYmlFiles() throws Exception {
+  void testDotnetInYamlVersionFile() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.ymlFiles('dotnet')
+    def value = script.yamlVersionFile('dotnet')
     printCallStack()
     assertTrue(value.equals('tests/versions/dotnet.yml'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testUnexistingKeyInYmlFiles() throws Exception {
+  void testUnexistingKeyInYamlVersionFile() throws Exception {
     def script = loadScript(scriptName)
-    def value = script.ymlFiles('foo')
+    def value = script.yamlVersionFile('foo')
     printCallStack()
     assertNull(value)
     assertJobStatusSuccess()

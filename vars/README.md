@@ -3,11 +3,11 @@
 Return the value for the given key.
 
 ```
-  agentMapping.agentEnvVar('dotnet')
-  agentMapping.agentYamlVar('.NET')
-  agentMapping.mapAgentsApps('Python')
-  agentMapping.mapAgentsIDs('All')
-  agentMapping.ymlFiles('UI')
+  agentMapping.envVar('dotnet')
+  agentMapping.agentVar('.NET')
+  agentMapping.app('Python')
+  agentMapping.id('All')
+  agentMapping.yamlVersionFile('UI')
 ```
 
 ## base64decode

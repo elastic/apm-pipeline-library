@@ -18,18 +18,18 @@
 /**
   Return the value for the given key.
 
-  agentMapping.agentEnvVar(key)
-  agentMapping.agentYamlVar(key)
-  agentMapping.mapAgentsApps(key)
-  agentMapping.mapAgentsIDs(key)
-  agentMapping.ymlFiles(key)
+  agentMapping.envVar(key)
+  agentMapping.agentVar(key)
+  agentMapping.app(key)
+  agentMapping.id(key)
+  agentMapping.yamlVersionFile(key)
 */
 import groovy.transform.Field
 
 /**
   Enviroment variable to put the agent version before run tests.
 */
-@Field Map agentEnvVar = [
+@Field Map mapAgentEnvVar = [
   'dotnet': 'APM_AGENT_DOTNET_VERSION',
   'go': 'APM_AGENT_GO_VERSION',
   'java': 'APM_AGENT_JAVA_VERSION',
@@ -44,7 +44,7 @@ import groovy.transform.Field
 /**
   Key which contains the agent versions.
 */
-@Field Map agentYamlVar = [
+@Field Map mapAgentYamlVar = [
   'dotnet': 'DOTNET_AGENT',
   'go': 'GO_AGENT',
   'java': 'JAVA_AGENT',
@@ -88,7 +88,7 @@ import groovy.transform.Field
 /**
   YAML files to get agent versions and exclusions.
 */
-@Field Map ymlFiles = [
+@Field Map mapYamlFiles = [
   'dotnet': 'tests/versions/dotnet.yml',
   'go': 'tests/versions/go.yml',
   'java': 'tests/versions/java.yml',
@@ -99,37 +99,37 @@ import groovy.transform.Field
   'server': 'tests/versions/apm_server.yml'
 ]
 
-def agentEnvVar(String key) {
+def envVar(String key) {
   if (!key) {
-    error 'agentEnvVar: Missing key'
+    error 'envVar: Missing key'
   }
-  return agentEnvVar[key]
+  return mapAgentEnvVar[key]
 }
 
-def agentYamlVar(String key) {
+def agentVar(String key) {
   if (!key) {
-    error 'agentYamlVar: Missing key'
+    error 'agentVar: Missing key'
   }
-  return agentYamlVar[key]
+  return mapAgentYamlVar[key]
 }
 
-def mapAgentsIDs(String key) {
+def id(String key) {
   if (!key) {
-    error 'mapAgentsIDs: Missing key'
+    error 'id: Missing key'
   }
   return mapAgentsIDs[key]
 }
 
-def mapAgentsApps(String key) {
+def app(String key) {
   if (!key) {
-    error 'mapAgentsApps: Missing key'
+    error 'app: Missing key'
   }
   return mapAgentsApps[key]
 }
 
-def ymlFiles(String key) {
+def yamlVersionFile(String key) {
   if (!key) {
-    error 'ymlFiles: Missing key'
+    error 'yamlVersionFile: Missing key'
   }
-  return ymlFiles[key]
+  return mapYamlFiles[key]
 }
