@@ -37,7 +37,7 @@ def call(Map params = [:]){
   def reference = params?.reference
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
-  def notify = params?.get('githubNotifyIfFirstTimeContributor', false)
+  def notify = params?.get('githubNotifyFirstTimeContributor', false)
 
   def extensions = []
 

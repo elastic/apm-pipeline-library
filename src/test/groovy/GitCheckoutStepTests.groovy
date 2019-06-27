@@ -253,7 +253,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     env.BRANCH_NAME = "BRANCH"
     script.scm = "SCM"
     try{
-      script.call(basedir: 'sub-folder', githubNotifyIfFirstTimeContributor: true)
+      script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
     } catch(e){
       //NOOP
     }
@@ -271,7 +271,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = "BRANCH"
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', githubNotifyIfFirstTimeContributor: true)
+    script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "githubNotify"
