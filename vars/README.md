@@ -237,6 +237,7 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
+* *githubNotifyIfFirstTimeContributor*: Whether to notify the status if first time contributor.
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.

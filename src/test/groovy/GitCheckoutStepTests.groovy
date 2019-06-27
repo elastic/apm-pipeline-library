@@ -22,6 +22,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitCheckoutStepTests extends BasePipelineTest {
+  String scriptName = 'vars/gitCheckout.groovy'
   Map env = [:]
 
   @Override
@@ -41,15 +42,20 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("isUserTrigger", {return false})
     helper.registerAllowedMethod("isCommentTrigger", {return false})
-
     binding.getVariable('currentBuild').getBuildCauses = {
       return null
     }
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if(m.context.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     env.BRANCH_NAME = "BRANCH"
     script.scm = "SCM"
     script.call()
@@ -64,7 +70,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testBaseDir() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     env.BRANCH_NAME = "BRANCH"
     script.scm = "SCM"
     script.call(basedir: 'sub-folder')
@@ -79,7 +85,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testBranch() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -95,7 +101,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testReferenceRepo() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -112,7 +118,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testMergeRemoteRepo() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -130,7 +136,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testMergeTargetRepo() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -147,7 +153,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testErrorBranchIncomplete() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master')
     printCallStack()
@@ -160,7 +166,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testErrorBranchNoCredentials() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git')
@@ -174,7 +180,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
 
   @Test
   void testErrorBranchNoRepo() throws Exception {
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       credentialsId: 'credentials-id')
@@ -190,7 +196,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testUserTriggered() throws Exception {
     helper.registerAllowedMethod("isUserTrigger", {return true})
     helper.registerAllowedMethod("isCommentTrigger", {return true})
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       credentialsId: 'credentials-id')
@@ -205,7 +211,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
   @Test
   void testCommentTriggered() throws Exception {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
-    def script = loadScript("vars/gitCheckout.groovy")
+    def script = loadScript(scriptName)
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', branch: 'master',
       credentialsId: 'credentials-id')
@@ -215,5 +221,63 @@ class GitCheckoutStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("No valid SCM config passed.")
     })
+  }
+
+  @Test
+  void testFirstTimeContributorWithoutNotify() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod("githubPrCheckApproved", [], {
+      updateBuildStatus('FAILURE')
+      throw new Exception('githubPrCheckApproved: The PR is not approved yet')
+    })
+    script.scm = "SCM"
+    try{
+      script.call(basedir: 'sub-folder', branch: 'master',
+        repo: 'git@github.com:elastic/apm-pipeline-library.git',
+        credentialsId: 'credentials-id',
+        reference: "repo")
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testFirstTimeContributorWithNotify() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod("githubPrCheckApproved", [], {
+      updateBuildStatus('FAILURE')
+      throw new Exception('githubPrCheckApproved: The PR is not approved yet')
+    })
+    env.BRANCH_NAME = "BRANCH"
+    script.scm = "SCM"
+    try{
+      script.call(basedir: 'sub-folder', githubNotifyIfFirstTimeContributor: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "githubNotify"
+    }.any { call ->
+        callArgsToString(call).contains('context=First time contributor, description=It requires manual inspection, status=FAILURE')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testWithoutFirstTimeContributorWithNotify() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = "BRANCH"
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', githubNotifyIfFirstTimeContributor: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "githubNotify"
+    }.any { call ->
+        callArgsToString(call).contains('context=First time contributor, status=SUCCESS')
+    })
+    assertJobStatusSuccess()
   }
 }
