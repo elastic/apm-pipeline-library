@@ -1,4 +1,15 @@
 # Steps Documentation
+## agentMapping
+Return the value for the given key.
+
+```
+  agentMapping.envVar('dotnet')
+  agentMapping.agentVar('.NET')
+  agentMapping.app('Python')
+  agentMapping.id('All')
+  agentMapping.yamlVersionFile('UI')
+```
+
 ## base64decode
 Decode a base64 input to string
 
