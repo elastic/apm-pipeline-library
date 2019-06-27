@@ -97,12 +97,15 @@ git push -f --tags
 
 If you'd like to speed up your local development process then you can configure your local environment.
 
-
 ### Setup intellij idea
-TODO
+
+Open the project in IntellijIdea as a groovy project if possible, then start coding.
 
 ### Setup atom
-TODO
+
+If you use atom then install https://atom.io/packages/linter-jenkins. If you click on atom://settings-view/show-package?package=linter-jenkins then you can either install it or configure it.
+
+Then configure the `CURL` method which should point out to `http://0.0.0.0:18080`
 
 ### Linting
 
@@ -153,9 +156,10 @@ Follow https://pre-commit.com/#install and `pre-commit install`
 * [Jenkins Pipelines and their dirty secrets](https://medium.com/@Lenkovits/jenkins-pipelines-and-their-dirty-secrets-1-9e535cd603f4)
 * [Introduction to Declarative Pipelines](https://github.com/cloudbees/intro-to-declarative-pipeline)
 * [CD with CloudBees Core Workshop](https://github.com/cloudbees-core-cd-workshop/workshop-exercises)
-
 * [Introducing Blue Ocean: a new user experience for Jenkins](https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/)
 * [Blueocean (BO) documentation](https://jenkins.io/doc/book/blueocean/)
   * [Dashboard](https://jenkins.io/doc/book/blueocean/dashboard/)
   * [Activity](https://jenkins.io/doc/book/blueocean/activity/)
   * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
+* [IntelliJ Setup for Jenkins Development](http://tdongsi.github.io/blog/2018/02/09/intellij-setup-for-jenkins-shared-library-development/)
+  * [Declarative Pipeline GDSL WiP](https://issues.jenkins-ci.org/browse/JENKINS-40127)
