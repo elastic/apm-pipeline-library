@@ -27,7 +27,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 import co.elastic.NotificationManager
 
 def call(Map params = [:]) {
-  node('master'){
+  node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
       def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
