@@ -37,6 +37,7 @@ def call(Map params = [:]){
   def reference = params?.reference
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
+  def notify = params?.get('githubNotifyFirstTimeContributor', false)
 
   def extensions = []
 
@@ -71,7 +72,15 @@ def call(Map params = [:]){
     }
     githubEnv()
     if(!isUserTrigger() && !isCommentTrigger()){
-      githubPrCheckApproved()
+      try {
+        githubPrCheckApproved()
+        githubNotify(context: 'First time contributor', status: 'SUCCESS', targetUrl: ' ')
+      } catch(err) {
+        if (notify) {
+          githubNotify(context: 'First time contributor', description: 'It requires manual inspection', status: 'FAILURE', targetUrl: ' ')
+        }
+        throw err
+      }
     }
   }
 }
