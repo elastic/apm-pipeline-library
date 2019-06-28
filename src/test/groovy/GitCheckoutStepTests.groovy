@@ -280,4 +280,17 @@ class GitCheckoutStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testWithFirstTimeContributorWithoutNotify() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = "BRANCH"
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: false)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "githubNotify"
+    }.size() == 0 )
+    assertJobStatusSuccess()
+  }
 }

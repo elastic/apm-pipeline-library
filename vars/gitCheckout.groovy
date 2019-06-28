@@ -74,7 +74,9 @@ def call(Map params = [:]){
     if(!isUserTrigger() && !isCommentTrigger()){
       try {
         githubPrCheckApproved()
-        githubNotify(context: 'First time contributor', status: 'SUCCESS', targetUrl: ' ')
+        if (notify) {
+          githubNotify(context: 'First time contributor', status: 'SUCCESS', targetUrl: ' ')
+        }
       } catch(err) {
         if (notify) {
           githubNotify(context: 'First time contributor', description: 'It requires manual inspection', status: 'FAILURE', targetUrl: ' ')
