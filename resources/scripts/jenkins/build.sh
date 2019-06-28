@@ -40,4 +40,4 @@ df -h || true
 
 docker images || true
 
-${PARAM_WITH_DEFAULT_VALUE} || true
+eval "${PARAM_WITH_DEFAULT_VALUE}" || true
