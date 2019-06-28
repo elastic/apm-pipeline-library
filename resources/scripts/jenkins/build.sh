@@ -39,3 +39,5 @@ uname -a || true
 df -h || true
 
 docker images || true
+
+eval "${PARAM_WITH_DEFAULT_VALUE}" || true
