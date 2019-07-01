@@ -103,7 +103,7 @@ pipeline {
               wait: false
             )
 
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.3.0-SNAPSHOT',
+            build(job: 'apm-shared/observability-test-environments-update-mbp/7.1.0-SNAPSHOT',
               parameters: [
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
@@ -113,7 +113,7 @@ pipeline {
               wait: false
             )
 
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.2.0',
+            build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x',
               parameters: [
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
