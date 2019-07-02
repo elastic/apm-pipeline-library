@@ -98,7 +98,7 @@ pipeline {
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )
@@ -108,7 +108,7 @@ pipeline {
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )
@@ -118,7 +118,7 @@ pipeline {
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )
