@@ -96,7 +96,7 @@ pipeline {
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
             dockerLoginElasticRegistry()
-            def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
+            def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replace("-",":")
