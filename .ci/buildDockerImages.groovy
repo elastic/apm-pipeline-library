@@ -61,6 +61,9 @@ pipeline {
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
         HOME = "${env.WORKSPACE}"
       }
+      options {
+        warnError('Cache Weblogic Docker Image failed')
+      }
       when{
         beforeAgent true
         expression { return params.weblogic }
@@ -76,6 +79,9 @@ pipeline {
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
         HOME = "${env.WORKSPACE}"
       }
+      options {
+        warnError('Cache Oracle Instant Client Docker Image failed')
+      }
       when{
         beforeAgent true
         expression { return params.oracle_instant_client }
@@ -86,7 +92,10 @@ pipeline {
     }
     stage('Build agent Python images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent Python images failed')
+      }
       when{
         beforeAgent true
         expression { return params.python }
@@ -117,7 +126,10 @@ pipeline {
     }
     stage('Build Curator image'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Curator image failed')
+      }
       when{
         beforeAgent true
         expression { return params.python }
@@ -133,7 +145,10 @@ pipeline {
     }
     stage('Build Integration test Docker images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Integration test Docker images failed')
+      }
       when{
         beforeAgent true
         expression { return params.apm_integration_testing }
@@ -149,7 +164,10 @@ pipeline {
     }
     stage('Build helm-kubernetes Docker hub image'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build helm-kubernetes Docker hub image failed')
+      }
       when{
         beforeAgent true
         expression { return params.helm_kubectl }
@@ -165,7 +183,10 @@ pipeline {
     }
     stage('Build JRuby-jdk Docker images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build JRuby-jdk Docker images failed')
+      }
       environment {
         TAG_CACHE = "${params.registry}/${params.tag_prefix}"
       }
