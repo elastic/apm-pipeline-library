@@ -248,7 +248,7 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
-* *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor.
+* *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
@@ -369,6 +369,15 @@ it stores the comment owner username in the BUILD_CAUSE_USER environment variabl
 
 ```
 def commentTrigger = isCommentTrigger()
+```
+
+## isGitRegionMatch
+Given the list of regexps, the CHANGE_TARGET and GIT_SHA env variables then it
+evaluates the change list with the regexp list and if any matches then it returns `true` otherwise
+`false`.
+
+```
+  def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
 ```
 
 ## isTimerTrigger
