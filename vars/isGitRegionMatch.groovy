@@ -20,14 +20,14 @@
  evaluates the change list with the regexp and if any matches then it returns `true` otherwise
  `false`.
 
- def match = gitChangeMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
+ def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
 
 */
 def call(Map params = [:]) {
   def regexps =  params.containsKey('regexps') ? params.regexps : error('gitChangeMatch: Missing regexps argument.')
 
   if (regexps.isEmpty()) {
-    error('gitChangeMatch: Missing regexps with values.')
+    error('isGitRegionMatch: Missing regexps with values.')
   }
 
   if (env.CHANGE_TARGET && env.GIT_SHA) {
@@ -35,8 +35,7 @@ def call(Map params = [:]) {
     def match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
     return (match != null)
   } else {
-    // TODO: warning CHANGE_TARGET and GIT_SHA are required to detect changes
-    echo 'gitChangeMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
+    echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
     return false
   }
 }

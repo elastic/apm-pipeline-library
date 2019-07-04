@@ -22,8 +22,8 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class GitChangeMatchStepTests extends BasePipelineTest {
-  String scriptName = 'vars/gitChangeMatch.groovy'
+class IsGitRegionMatchStepTests extends BasePipelineTest {
+  String scriptName = 'vars/isGitRegionMatch.groovy'
   Map env = [:]
 
   @Override
@@ -50,7 +50,7 @@ class GitChangeMatchStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('gitChangeMatch: Missing regexps argument.')
+      callArgsToString(call).contains('isGitRegionMatch: Missing regexps argument.')
     })
     assertJobStatusFailure()
   }
@@ -67,7 +67,7 @@ class GitChangeMatchStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('gitChangeMatch: Missing regexps with values.')
+      callArgsToString(call).contains('isGitRegionMatch: Missing regexps with values.')
     })
     assertJobStatusFailure()
   }
@@ -82,7 +82,7 @@ class GitChangeMatchStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'echo'
     }.any { call ->
-      callArgsToString(call).contains('gitChangeMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.')
+      callArgsToString(call).contains('isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.')
     })
     assertJobStatusSuccess()
   }

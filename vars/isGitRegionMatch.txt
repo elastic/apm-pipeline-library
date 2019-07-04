@@ -3,5 +3,5 @@ evaluates the change list with the regexp list and if any matches then it return
 `false`.
 
 ```
-  def match = gitChangeMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
+  def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
 ```
