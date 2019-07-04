@@ -24,7 +24,7 @@
 
 */
 def call(Map params = [:]) {
-  def regexps =  params.containsKey('regexps') ? params.regexps : error('gitChangeMatch: Missing regexps argument.')
+  def regexps =  params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
 
   if (regexps.isEmpty()) {
     error('isGitRegionMatch: Missing regexps with values.')
