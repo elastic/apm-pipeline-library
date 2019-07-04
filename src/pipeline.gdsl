@@ -192,8 +192,11 @@ contributor(nodeCtx) {
 // Errors on:
 // class org.jenkinsci.plugins.workflow.cps.steps.ParallelStep: There's no @DataBoundConstructor on any constructor of class org.jenkinsci.plugins.workflow.cps.steps.ParallelStep
 
+// IMPORTANT: The above section can be changed with the gdsl retrieved from the apm-ci jenkins instance.
 
+// IMPORTANT: The below section does provide support to the Declarative pipeline as stated in
 // https://issues.jenkins-ci.org/browse/JENKINS-40127
+
 //The global script scope
 def cont = context(scope: scriptScope())
 contributor(cont) {
@@ -310,7 +313,6 @@ contributor(closures) {
     method(name: 'envVarsForTool', type: 'Object', namedParams: [parameter(name: 'toolId', type: 'java.lang.String'), parameter(name: 'toolVersion', type: 'java.lang.String'),], doc: 'Fetches the environment variables for a given tool in a list of \'FOO=bar\' strings suitable for the withEnv step.')
     method(name: 'getContext', type: 'Object', params: [type: 'Map'], doc: 'Advanced/Deprecated Get contextual object from internal APIs')
     method(name: 'withContext', type: 'Object', params: [context: 'Object', body: 'Closure'], doc: 'Advanced/Deprecated Use contextual object from internal APIs within a block')
-
   }
 
   //The only thing inside agent can be label
