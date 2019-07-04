@@ -49,8 +49,11 @@ def readSecret(secret){
     string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
     string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
-    def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
-    props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    retry(2) {
+      sleep randomNumber(min: 5, max: 10)
+      def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+      props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    }
     //we do not have permissions to revoke a token.
     //revokeToken(env.VAULT_ADDR, token)
   }

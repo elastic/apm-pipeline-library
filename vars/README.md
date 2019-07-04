@@ -1,4 +1,15 @@
 # Steps Documentation
+## agentMapping
+Return the value for the given key.
+
+```
+  agentMapping.envVar('dotnet')
+  agentMapping.agentVar('.NET')
+  agentMapping.app('Python')
+  agentMapping.id('All')
+  agentMapping.yamlVersionFile('UI')
+```
+
 ## base64decode
 Decode a base64 input to string
 
@@ -237,6 +248,7 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *credentialsId*: the credentials to access to the repository.
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
+* *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor.
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
