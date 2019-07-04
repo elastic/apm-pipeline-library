@@ -71,6 +71,11 @@ class DockerLoginStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "my-user", password: "my-password"]]
       })
+    helper.registerAllowedMethod("retry", [Integer.class, Closure.class], { i, c ->
+      c.call()
+    })
+    helper.registerAllowedMethod("randomNumber", [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod("sleep", [Integer.class], { 'OK' })
   }
 
   @Test
