@@ -122,15 +122,23 @@ class GithubApiCallStepTests extends BasePipelineTest {
   void testRequestError() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       return """{
+        "Code": "404",
         "message": "Not Found",
         "documentation_url": "https://developer.github.com/v3"
       }"""
     })
     def script = loadScript("vars/githubApiCall.groovy")
-    def ret = script.call(token: "dummy", url: "http://error")
+    try {
+      script.call(token: "dummy", url: "http://error")
+    } catch(e) {
+      println e.toString()
+    }
     printCallStack()
-    assertTrue(ret instanceof Map)
-    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains('makeGithubApiCall: The REST API call http://error return the message : Not Found')
+    })
   }
 
   @Test
@@ -139,10 +147,17 @@ class GithubApiCallStepTests extends BasePipelineTest {
       throw new Exception('Failure')
     })
     def script = loadScript("vars/githubApiCall.groovy")
-    def ret = script.call(token: "dummy", url: "http://error")
+    try{
+      script.call(token: "dummy", url: "http://error")
+    } catch(e) {
+      println e.toString()
+    }
     printCallStack()
-    assertTrue(ret.message == "java.lang.Exception: Failure")
-    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains('makeGithubApiCall: The REST API call http://error return the message : java.lang.Exception: Failure')
+    })
   }
 
   @Test
