@@ -31,18 +31,23 @@ def call(Map params = [:]){
   def dockerUser = data.containsKey('user') ? data.user : error("dockerLogin: No valid user in secret.")
   def dockerPassword = data.containsKey('password') ? data.password : error("dockerLogin: No valid password in secret.")
 
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'DOCKER_USER', password: dockerUser],
-    [var: 'DOCKER_PASSWORD', password: dockerPassword],
-    ]]) {
+  wrap([$class: 'MaskPasswordsBuildWrapper',
+    varPasswordPairs: [
+      [var: 'DOCKER_USER', password: dockerUser],
+      [var: 'DOCKER_PASSWORD', password: dockerPassword],
+  ]]) {
     withEnv([
       "DOCKER_USER=${dockerUser}",
-      "DOCKER_PASSWORD=${dockerPassword}"]) {
+      "DOCKER_PASSWORD=${dockerPassword}"
+    ]) {
+      retry(3) {
+        sleep randomNumber(min: 5, max: 10)
         sh(label: "Docker login", script: """
         set +x
         host ${registry} 2>&1 > /dev/null
         docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
         """)
+      }
     }
   }
 }
