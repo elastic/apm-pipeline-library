@@ -80,6 +80,11 @@ class GetVaultSecretStepTests extends BasePipelineTest {
       def script = loadScript("vars/toJSON.groovy")
       return script.call(s)
       })
+    helper.registerAllowedMethod("retry", [Integer.class, Closure.class], { i, c ->
+      c.call()
+    })
+    helper.registerAllowedMethod("randomNumber", [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod("sleep", [Integer.class], { 'OK' })
   }
 
   @Test
