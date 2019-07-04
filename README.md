@@ -37,6 +37,8 @@ the Maven wrapper available in .mvn folder.
 
 `./mvnw test -Dtest=CLASS#TEST_NAME`
 
+In order to build the release notes it is need tho install [gren](https://github.com/github-tools/github-release-notes#installation)
+
 ## Create a new step
 
 We have several steps created that can be used on our Jenkins pipelines,
