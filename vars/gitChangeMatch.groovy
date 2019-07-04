@@ -24,7 +24,11 @@
 
 */
 def call(Map params = [:]) {
-  def regexps =  params.containsKey('regexps') ? params.regexps : error('Missing regexps params')
+  def regexps =  params.containsKey('regexps') ? params.regexps : error('gitChangeMatch: Missing regexps argument.')
+
+  if (regexps.isEmpty()) {
+    error('gitChangeMatch: Missing regexps with values.')
+  }
 
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
@@ -32,6 +36,7 @@ def call(Map params = [:]) {
     return (match != null)
   } else {
     // TODO: warning CHANGE_TARGET and GIT_SHA are required to detect changes
+    echo 'gitChangeMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
     return false
   }
 }
