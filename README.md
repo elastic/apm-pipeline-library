@@ -43,6 +43,8 @@ the Maven wrapper available in .mvn folder.
 
 `./mvnw test -Dtest=CLASS#TEST_NAME`
 
+In order to build the release notes it is need tho install [gren](https://github.com/github-tools/github-release-notes#installation)
+
 ## Create a new step
 
 We have several steps created that can be used on our Jenkins pipelines,
@@ -81,13 +83,17 @@ Apart from the creation of that tag, we must update the `current` tag, pointing
 to the same version we just created. The `current` tag is used to use the last stable
 library version on pipelines.
 
-```
+```bash
 git checkout master
 git pull origin master
 git fetch --all
 git tag -f current
 git push -f --tags
 ```
+
+Finally update the Release notes and Changelog
+
+`./resources/scripts/jenkins/release-notes.sh`
 
 ## Upgrade repository maven wrapper
 
