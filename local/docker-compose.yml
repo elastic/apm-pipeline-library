@@ -1,0 +1,33 @@
+---
+version: "3.7"
+services:
+  jenkins:
+    build: .
+    container_name: jenkins-lint
+    environment:
+      CASC_JENKINS_CONFIG: /var/jenkins_home/casc_configs
+      JAVA_OPTS: >-
+        -Djenkins.install.runSetupWizard=false
+        -Dhudson.model.UsageStatistics.disabled=true
+    volumes:
+      - type: volume
+        source: jenkins_home
+        target: /var/jenkins_home
+      - type: bind
+        source: ./configs/jenkins.yaml
+        target: /var/jenkins_home/casc_configs/jenkins.yaml
+        read_only: true
+    ports:
+      - "18080:8080"
+      - "50000:50000"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 250M
+        reservations:
+          cpus: '0.25'
+          memory: 100M
+
+volumes:
+  jenkins_home:
