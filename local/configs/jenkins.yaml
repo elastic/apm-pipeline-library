@@ -1,0 +1,16 @@
+jenkins:
+  systemMessage: "Configured automatically with JCasC plugin\n\n"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  labelString: flyweight
+  mode: EXCLUSIVE
+  numExecutors: 5
+  remotingSecurity:
+    enabled: false
+  scmCheckoutRetryCount: 2
+
+unclassified:
+  location:
+    adminAddress: robots@elastic.co
+    url: http://jenkins-lint.localhost/

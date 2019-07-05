@@ -1,0 +1,34 @@
+repos:
+-   repo: git://github.com/pre-commit/pre-commit-hooks
+    sha: v2.2.3
+    hooks:
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-yaml
+    -   id: check-xml
+
+-   repo: local
+    hooks:
+    -   id: check-bash-syntax
+        name: Check Shell scripts syntax corectness
+        language: system
+        entry: bash -n
+        files: \.sh$
+    -   id: forbid-abstract-classes-and-traits
+        name: Ensure neither abstract classes nor traits are used
+        language: pygrep
+        entry: "^(abstract|trait) "
+        files: ^src/.*\.groovy$
+    -   id: force-JsonSlurperClassic
+        name: Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
+        language: pygrep
+        entry: JsonSlurper[^C]
+        files: \.groovy$
+    -   id: Jenkinsfile-linter
+        name: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
+        files: Jenkinsfile
+        language: system
+        entry: sh -c '! curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate | grep -v -i successfully'
+        verbose: true
