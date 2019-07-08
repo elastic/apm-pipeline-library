@@ -17,6 +17,12 @@ Jenkins pipeline shared library for the project APM
 |   +- co
 |       +- elastic
 |           +- bar.json    # static helper data for org.foo.Bar
++- local                   # to enable jenkins linting locally
+|   +- configs
+|       +- jenkins.yaml
+|   +- docker-compose.yml
+|   +- Dockerfile
+|
 ```
 
 * [Pipeline](https://jenkins.io/doc/book/pipeline/)
@@ -36,6 +42,8 @@ the Maven wrapper available in .mvn folder.
 `./mvnw test`
 
 `./mvnw test -Dtest=CLASS#TEST_NAME`
+
+In order to build the release notes it is need tho install [gren](https://github.com/github-tools/github-release-notes#installation)
 
 ## Create a new step
 
@@ -75,7 +83,7 @@ Apart from the creation of that tag, we must update the `current` tag, pointing
 to the same version we just created. The `current` tag is used to use the last stable
 library version on pipelines.
 
-```
+```bash
 git checkout master
 git pull origin master
 git fetch --all
@@ -83,9 +91,63 @@ git tag -f current
 git push -f --tags
 ```
 
+Finally update the Release notes and Changelog
+
+`./resources/scripts/jenkins/release-notes.sh`
+
 ## Upgrade repository maven wrapper
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
+
+## Local Development
+
+If you'd like to speed up your local development process then you can configure your local environment.
+
+### Setup intellij idea
+
+Open the project in IntellijIdea as a groovy project if possible, then start coding.
+
+### Setup atom
+
+If you use atom then install https://atom.io/packages/linter-jenkins. If you click on atom://settings-view/show-package?package=linter-jenkins then you can either install it or configure it.
+
+Then configure the `CURL` method which should point out to `http://0.0.0.0:18080`
+
+### Linting
+
+Run a jenkins local instance as explained below:
+
+```bash
+cd local
+docker-compose up --build -d
+```
+
+Validate whether it works as expected:
+
+```bash
+curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate
+```
+
+### Precommit
+
+This particular process will help to evaluate some linting before committing any changes. Therefore you need the pre-commit.
+
+#### Installation.
+
+Follow https://pre-commit.com/#install and `pre-commit install`
+
+#### Enabled hooks
+
+- Check case conflict
+- Check executables have shebangs
+- Check merge conflicts
+- Check json
+- Check yaml
+- Check xml
+- Check bash syntax
+- Ensure neither abstract classes nor traits are used in the shared library.
+- Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
+- Jenkinsfile linter.
 
 ## Resources
 
@@ -100,9 +162,10 @@ git push -f --tags
 * [Jenkins Pipelines and their dirty secrets](https://medium.com/@Lenkovits/jenkins-pipelines-and-their-dirty-secrets-1-9e535cd603f4)
 * [Introduction to Declarative Pipelines](https://github.com/cloudbees/intro-to-declarative-pipeline)
 * [CD with CloudBees Core Workshop](https://github.com/cloudbees-core-cd-workshop/workshop-exercises)
-
 * [Introducing Blue Ocean: a new user experience for Jenkins](https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/)
 * [Blueocean (BO) documentation](https://jenkins.io/doc/book/blueocean/)
   * [Dashboard](https://jenkins.io/doc/book/blueocean/dashboard/)
   * [Activity](https://jenkins.io/doc/book/blueocean/activity/)
   * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
+* [IntelliJ Setup for Jenkins Development](http://tdongsi.github.io/blog/2018/02/09/intellij-setup-for-jenkins-shared-library-development/)
+  * [Declarative Pipeline GDSL WiP](https://issues.jenkins-ci.org/browse/JENKINS-40127)

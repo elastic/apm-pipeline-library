@@ -52,6 +52,7 @@ pipeline {
             string(name: 'secret', value: 'secret/apm-team/ci/docker-registry/prod'),
             booleanParam(name: 'python', value: true),
             booleanParam(name: 'weblogic', value: true),
+            booleanParam(name: 'oracle_instant_client', value: true),
             booleanParam(name: 'apm_integration_testing', value: true),
             booleanParam(name: 'helm_kubectl', value: true),
             booleanParam(name: 'jruby', value: true),
@@ -77,7 +78,7 @@ pipeline {
     }
   }
   post {
-    always {
+    cleanup {
       notifyBuildResult()
     }
   }

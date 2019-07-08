@@ -53,7 +53,7 @@ def call(Map params = [:]){
     if(ret instanceof List && ret.size() == 0){
       log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return 0 elements")
     } else if(ret instanceof Map && ret.containsKey('message')){
-      log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return the message : ${ret.message}")
+      error("makeGithubApiCall: The REST API call ${url} return the message : ${ret.message}")
     }
     return ret
   }

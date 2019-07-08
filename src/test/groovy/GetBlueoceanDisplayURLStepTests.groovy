@@ -50,6 +50,17 @@ class GetBlueoceanDisplayURLStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testSuccessWithADifferentJenkinsURL() throws Exception {
+    def script = loadScript(scriptName)
+    env.JENKINS_URL = "http://jenkins/"
+    def redirectURL = "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
+    def url = script.call()
+    printCallStack()
+    assertTrue(url.matches(redirectURL))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testWrongURL() throws Exception {
     def script = loadScript(scriptName)
     def url = script.call()

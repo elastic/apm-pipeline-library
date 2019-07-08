@@ -48,6 +48,7 @@ pipeline {
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
+    booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'jruby', defaultValue: "false", description: "")
@@ -56,31 +57,45 @@ pipeline {
     stage('Cache Weblogic Docker Image'){
       agent { label 'immutable && docker' }
       environment {
+        IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
         HOME = "${env.WORKSPACE}"
+      }
+      options {
+        warnError('Cache Weblogic Docker Image failed')
       }
       when{
         beforeAgent true
         expression { return params.weblogic }
       }
       steps {
-        script{
-          dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-          sh(label: 'pull Docker image', script: "docker pull store/oracle/weblogic:12.2.1.3-dev")
-          sh "export"
-          sh "ls -la ${JENKINS_HOME}"
-          sh "cp /var/lib/jenkins/packer_cache* ."
-          archiveArtifacts 'packer_cache*'
-
-          dockerLoginElasticRegistry()
-          sh(label: 're-tag Docker image', script: "docker tag store/oracle/weblogic:12.2.1.3-dev ${TAG_CACHE}")
-          sh(label: "push Docker image to ${TAG_CACHE}", script: "docker push ${TAG_CACHE}")
-        }
+        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
+      }
+    }
+    stage('Cache Oracle Instant Client Docker Image'){
+      agent { label 'immutable && docker' }
+      environment {
+        IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
+        HOME = "${env.WORKSPACE}"
+      }
+      options {
+        warnError('Cache Oracle Instant Client Docker Image failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.oracle_instant_client }
+      }
+      steps {
+        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
       }
     }
     stage('Build agent Python images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent Python images failed')
+      }
       when{
         beforeAgent true
         expression { return params.python }
@@ -90,7 +105,7 @@ pipeline {
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
             dockerLoginElasticRegistry()
-            def pythonVersions = readYaml(file: 'tests/.jenkins_python.yml')['PYTHON_VERSION']
+            def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replace("-",":")
@@ -111,7 +126,10 @@ pipeline {
     }
     stage('Build Curator image'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Curator image failed')
+      }
       when{
         beforeAgent true
         expression { return params.python }
@@ -127,7 +145,10 @@ pipeline {
     }
     stage('Build Integration test Docker images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Integration test Docker images failed')
+      }
       when{
         beforeAgent true
         expression { return params.apm_integration_testing }
@@ -143,7 +164,10 @@ pipeline {
     }
     stage('Build helm-kubernetes Docker hub image'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build helm-kubernetes Docker hub image failed')
+      }
       when{
         beforeAgent true
         expression { return params.helm_kubectl }
@@ -159,7 +183,10 @@ pipeline {
     }
     stage('Build JRuby-jdk Docker images'){
       agent { label 'immutable && docker' }
-      options { skipDefaultCheckout() }
+      options {
+        skipDefaultCheckout()
+        warnError('Build JRuby-jdk Docker images failed')
+      }
       environment {
         TAG_CACHE = "${params.registry}/${params.tag_prefix}"
       }
@@ -178,7 +205,7 @@ pipeline {
     }
   }
   post {
-    always {
+    cleanup {
       notifyBuildResult()
     }
   }
@@ -215,4 +242,12 @@ def buildDockerImage(args){
       }
     }
   }
+}
+
+def pushDockerImageFromStore(imageTag, cacheTag){
+  dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+  sh(label: 'pull Docker image', script: "docker pull ${imageTag}")
+  dockerLoginElasticRegistry()
+  sh(label: 're-tag Docker image', script: "docker tag ${imageTag} ${cacheTag}")
+  sh(label: "push Docker image to ${cacheTag}", script: "docker push ${cacheTag}")
 }
