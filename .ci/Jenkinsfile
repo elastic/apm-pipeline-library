@@ -81,6 +81,7 @@ pipeline {
               unstash 'source'
               dir("${BASE_DIR}"){
                 sh '''
+                  env | sort
                   curl https://pre-commit.com/install-local.py | python -
                   git diff-tree --no-commit-id --name-only -r ${GIT_COMMIT} | xargs pre-commit run --files
                 '''

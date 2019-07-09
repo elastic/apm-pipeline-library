@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 set +e
 
 if [ -z ${JENKINS_URL} ] ; then
