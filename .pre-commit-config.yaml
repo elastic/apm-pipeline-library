@@ -1,6 +1,6 @@
 repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: v2.2.3
+    rev: v2.2.3
     hooks:
     -   id: check-case-conflict
     -   id: check-executables-have-shebangs
@@ -10,23 +10,23 @@ repos:
     -   id: check-xml
     -   id: end-of-file-fixer
 
-- repo: https://github.com/detailyang/pre-commit-shell.git
-  sha: master
-  hooks:
+-   repo: https://github.com/detailyang/pre-commit-shell.git
+    rev: master
+    hooks:
     -   id: shell-lint
         name: "Shellscript: lint"
         stages: [commit]
         types: [shell]
         exclude: ^mvnw$
 
-- repo: https://github.com/adrienverge/yamllint.git
-  sha: master
-  hooks:
-    - id: yamllint
-      name: "Yaml: lint"
-      stages: [commit]
-      types: [yaml]
-      exclude: ^.pre-commit-config.yaml$
+-   repo: https://github.com/adrienverge/yamllint.git
+    rev: master
+    hooks:
+    -   id: yamllint
+        name: "Yaml: lint"
+        stages: [commit]
+        types: [yaml]
+        exclude: ^.pre-commit-config.yaml$
 
 -   repo: local
     hooks:
