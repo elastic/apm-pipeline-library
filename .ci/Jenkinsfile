@@ -33,6 +33,9 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
+  parameters {
+    booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
+  }
   stages {
     stage('Initializing'){
       agent { label 'linux && immutable' }
@@ -124,6 +127,18 @@ pipeline {
               validateDeclarativePipeline '.ci/schedule-weekly.groovy'
               validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
             }
+          }
+        }
+        stage('Release') {
+          when {
+            expression {
+              return params.make_release
+            }
+          }
+          steps {
+            sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode')
+            sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
+            gitCreateTag(tag: 'current')
           }
         }
       }
