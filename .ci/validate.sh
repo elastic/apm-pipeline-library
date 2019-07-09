@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set +e
 
-JENKINS_URL=http://0.0.0.0:18080
+if [ -z ${JENKINS_URL} ] ; then
+  JENKINS_URL=http://0.0.0.0:18080
+fi
 
 for file in "$@"; do
   curl --silent -X POST -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully
