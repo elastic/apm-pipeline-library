@@ -27,7 +27,8 @@ repos:
         entry: JsonSlurper[^C]
         files: \.groovy$
     -   id: Jenkinsfile-linter
-        name: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
+        name: Jenkinsfile-linter
+        description: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
         files: ^.ci/(.*\.groovy|Jenkinsfile)$
         entry: .ci/validate.sh
         language: script
