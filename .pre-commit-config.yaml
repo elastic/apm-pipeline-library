@@ -8,6 +8,25 @@ repos:
     -   id: check-merge-conflict
     -   id: check-yaml
     -   id: check-xml
+    -   id: end-of-file-fixer
+
+- repo: https://github.com/detailyang/pre-commit-shell.git
+  sha: master
+  hooks:
+    -   id: shell-lint
+        name: "Shellscript: lint"
+        stages: [commit]
+        types: [shell]
+        exclude: ^mvnw$
+
+- repo: https://github.com/adrienverge/yamllint.git
+  sha: master
+  hooks:
+    - id: yamllint
+      name: "Yaml: lint"
+      stages: [commit]
+      types: [yaml]
+      exclude: ^.pre-commit-config.yaml$
 
 -   repo: local
     hooks:
@@ -32,3 +51,25 @@ repos:
         language: system
         entry: sh -c '! curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate | grep -v -i successfully'
         verbose: true
+    -   id: forbid-unicode-non-breaking-spaces
+        name: Detect unicode non-breaking space character U+00A0 aka M-BM-
+        language: system
+        entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
+        files: ''
+    -   id: remove-unicode-non-breaking-spaces
+        name: Remove unicode non-breaking space character U+00A0 aka M-BM-
+        language: system
+        entry: perl -pi* -e 's/\xc2\xa0/ /g && ($t = 1) && print STDERR $_; END{{exit
+            $t}}'
+        files: ''
+    -   id: forbid-en-dashes
+        name: Detect the EXTREMELY confusing unicode character U+2013
+        language: system
+        entry: perl -ne 'print if $m = /\xe2\x80\x93/; $t ||= $m; END{{exit $t}}'
+        files: ''
+    -   id: remove-en-dashes
+        name: Remove the EXTREMELY confusing unicode character U+2013
+        language: system
+        entry: perl -pi* -e 's/\xe2\x80\x93/-/g && ($t = 1) && print STDERR $_; END{{exit
+            $t}}'
+        files: ''
