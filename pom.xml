@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.elastic</groupId>
     <artifactId>jenkins-library</artifactId>
-    <version>1.1.16-SNAPSHOT</version>
+    <version>1.1.16</version>
     <name>APM Pipeline Shared Library</name>
     <description>Pipeline Shared Library containing utility steps.</description>
     <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -13,7 +12,7 @@
         <connection>scm:git:git@github.com:elastic/apm-pipeline-library.git</connection>
         <developerConnection>scm:git:git@github.com:elastic/apm-pipeline-library.git</developerConnection>
         <url>https://github.com/elastic/apm-pipeline-library</url>
-        <tag>HEAD</tag>
+        <tag>v1.1.16</tag>
     </scm>
 
     <properties>
