@@ -17,7 +17,7 @@
 
 @Library('apm@current') _
 
-pipel
+pipe
   agent { label 'docker' }
   environment {
     BASE_DIR="src"
