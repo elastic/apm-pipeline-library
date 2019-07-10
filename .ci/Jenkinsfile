@@ -71,6 +71,24 @@ pipeline {
             }
           }
         }
+        stage('Check pre-commit') {
+          environment {
+            HOME = "${env.WORKSPACE}"
+          }
+          steps {
+            withGithubNotify(context: 'Check pre-commit') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh '''
+                  env | sort
+                  curl https://pre-commit.com/install-local.py | python -
+                  git diff-tree --no-commit-id --name-only -r ${GIT_BASE_COMMIT} | xargs pre-commit run --files
+                '''
+              }
+            }
+          }
+        }
         /**
          Checkout the code and stash it, to use it on other stages.
         */
