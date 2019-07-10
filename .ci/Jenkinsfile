@@ -83,7 +83,7 @@ pipeline {
                 sh '''
                   env | sort
                   curl https://pre-commit.com/install-local.py | python -
-                  git diff-tree --no-commit-id --name-only -r ${GIT_COMMIT} | xargs pre-commit run --files
+                  git diff-tree --no-commit-id --name-only -r ${GIT_BASE_COMMIT} | xargs pre-commit run --files
                 '''
               }
             }
