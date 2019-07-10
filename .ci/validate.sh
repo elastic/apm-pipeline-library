@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 set +e
 
 if [ -z "${JENKINS_URL}" ] ; then
@@ -10,8 +9,7 @@ else
 fi
 
 for file in "$@"; do
-  curl --silent -X POST -H "${JENKINS_CRUMB}" -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully
-  if [ $? -eq 0 ] ; then
+  if curl --silent -X POST -H "${JENKINS_CRUMB}" -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully ; then
     echo "ERROR: jenkinslint failed for the file '${file}'"
     exit_status=1
   fi
