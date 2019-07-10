@@ -95,7 +95,7 @@ Finally update the Release notes and Changelog
 
 `./resources/scripts/jenkins/release-notes.sh`
 
-## Upgrade repository maven wrapper
+## Upgrade repository maven wrapper
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
 
