@@ -95,7 +95,7 @@ Finally update the Release notes and Changelog
 
 `./resources/scripts/jenkins/release-notes.sh`
 
-## Upgrade repository maven wrapper
+## Upgrade repository maven wrapper
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
 
@@ -136,6 +136,10 @@ This particular process will help to evaluate some linting before committing any
 
 Follow https://pre-commit.com/#install and `pre-commit install`
 
+Some hooks might require some extra tools such as:
+- [shellcheck](https://github.com/koalaman/shellcheck#installing)
+- [yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html)
+
 #### Enabled hooks
 
 - Check case conflict
@@ -145,9 +149,16 @@ Follow https://pre-commit.com/#install and `pre-commit install`
 - Check yaml
 - Check xml
 - Check bash syntax
+- End-of-file-fixer
 - Ensure neither abstract classes nor traits are used in the shared library.
 - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
 - Jenkinsfile linter.
+- yamllint
+- shellcheck
+- Detect unicode non-breaking space character U+00A0 aka M-BM-
+- Remove unicode non-breaking space character U+00A0 aka M-BM-
+- Detect the EXTREMELY confusing unicode character U+2013
+- Remove the EXTREMELY confusing unicode character U+2013
 
 ## Resources
 
