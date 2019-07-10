@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.16 (10/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: add more precommit hooks [#119](https://github.com/elastic/apm-pipeline-library/pull/119)
+-  pre-commit: lint pipelines which are stored in the .ci folder and add pre-commit stage in the CI [#118](https://github.com/elastic/apm-pipeline-library/pull/118)
+-  feat: download 7.3.0 Elastic Stack Docker images [#116](https://github.com/elastic/apm-pipeline-library/pull/116)
+-  Simplify POM [#90](https://github.com/elastic/apm-pipeline-library/pull/90)
+
+#### 🐛 Bug Fixes
+
+-  fix: notify gh check when it's triggered as a cron type [#117](https://github.com/elastic/apm-pipeline-library/pull/117)
+
+#### 🙈 No user affected
+
+-  feat: enforce the user and update CHANGELOG.md with latest release [#114](https://github.com/elastic/apm-pipeline-library/pull/114)
+
+---
+
 ## v1.1.15 (05/07/2019)
 *No changelog for this release.*
 
@@ -379,18 +398,18 @@
 
 #### 🚀 Enhancements
 
--  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
--  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
+-  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
+-  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 
 #### 🐛 Bug Fixes
 
+-  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 -  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 -  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
--  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 
 #### 📚 Documentation
 
