@@ -27,8 +27,9 @@ repos:
         entry: JsonSlurper[^C]
         files: \.groovy$
     -   id: Jenkinsfile-linter
-        name: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
-        files: Jenkinsfile
-        language: system
-        entry: sh -c '! curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pipeline-model-converter/validate | grep -v -i successfully'
+        name: Check syntax of the Jenkinsfiles
+        description: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
+        files: ^.ci/(.*\.groovy|Jenkinsfile)$
+        entry: .ci/validate.sh
+        language: script
         verbose: true
