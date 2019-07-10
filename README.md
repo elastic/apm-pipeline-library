@@ -106,3 +106,4 @@ git push -f --tags
   * [Dashboard](https://jenkins.io/doc/book/blueocean/dashboard/)
   * [Activity](https://jenkins.io/doc/book/blueocean/activity/)
   * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
+* [Command line tool to run Jenkinsfile locally](https://github.com/jenkinsci/jenkinsfile-runner)
