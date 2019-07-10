@@ -2,15 +2,15 @@
 set -x
 set +e
 
-if [ -z ${JENKINS_URL} ] ; then
+if [ -z "${JENKINS_URL}" ] ; then
   JENKINS_URL=http://0.0.0.0:18080
 else
-  CRUMB=$(curl --silent ${JENKINS_URL}/crumbIssuer/api/xml?xpath=concat\(//crumbRequestField,%22:%22,//crumb\))
-  FLAG="-H \"${CRUMB}\""
+  # See https://jenkins.io/doc/book/pipeline/development/#linter
+  JENKINS_CRUMB=$(curl --silent "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
 fi
 
 for file in "$@"; do
-  curl --silent -X POST ${FLAG} -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully
+  curl --silent -X POST -H "${JENKINS_CRUMB}" -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully
   if [ $? -eq 0 ] ; then
     echo "ERROR: jenkinslint failed for the file '${file}'"
     exit_status=1
