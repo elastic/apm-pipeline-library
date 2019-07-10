@@ -73,6 +73,22 @@ pipeline {
                 )
               }
             }
+            stage('7.3.0'){
+              steps {
+                build(job: 'apm-shared/apm-docker-es-pipeline',
+                  parameters: [
+                    string(name: 'registry', value: 'docker.elastic.co'),
+                    string(name: 'tag_prefix', value: 'observability-ci'),
+                    string(name: 'version', value: '7.3.0'),
+                    string(name: 'elastic_stack', value: '7.3.0'),
+                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
+                    string(name: 'branch_specifier', value: 'master')
+                  ],
+                  propagate: false,
+                  wait: true
+                )
+              }
+            }
             stage('7.2.0'){
               steps {
                 build(job: 'apm-shared/apm-docker-es-pipeline',
