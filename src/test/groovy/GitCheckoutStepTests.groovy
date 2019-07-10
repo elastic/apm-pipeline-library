@@ -293,4 +293,18 @@ class GitCheckoutStepTests extends BasePipelineTest {
     }.size() == 0 )
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testWithFirstTimeContributorWithNotifyAndCommentTrigger() throws Exception {
+    helper.registerAllowedMethod("isCommentTrigger", {return true})
+    def script = loadScript(scriptName)
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "githubNotify"
+    }.any { call ->
+        callArgsToString(call).contains('context=First time contributor, status=SUCCESS')
+    })
+  }
 }
