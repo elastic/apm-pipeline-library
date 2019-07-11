@@ -76,7 +76,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
   }
 
   def readJSON(params){
-    def jsonSlurper = new groovy.json.JsonSlurper()
+    def jsonSlurper = new groovy.json.JsonSlurperClassic()
     def jsonText = params.text
     if(params.file){
       File f = new File("src/test/resources/${params.file}")
@@ -172,6 +172,8 @@ class NotificationManagerStepTests extends BasePipelineTest {
       )
     } catch(e){
       //NOOP
+      println e.toString()
+      e.printStackTrace(System.out);
     }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -200,6 +202,8 @@ class NotificationManagerStepTests extends BasePipelineTest {
       )
     } catch(e){
       //NOOP
+      println e.toString()
+      e.printStackTrace(System.out);
     }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -228,6 +232,8 @@ class NotificationManagerStepTests extends BasePipelineTest {
       )
     } catch(e){
       //NOOP
+      println e.toString()
+      e.printStackTrace(System.out);
     }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
