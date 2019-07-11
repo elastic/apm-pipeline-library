@@ -58,12 +58,15 @@ class NotificationManagerStepTests extends BasePipelineTest {
       println("Writting mail-out.html file with the email result")
       def f = new File("mail-out-${env.TEST}.html")
       f.write(m.body)
+      println f.toString()
     })
     helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
       try{
         c()
       } catch(e){
         //NOOP
+        println e.toString()
+        e.printStackTrace(System.out);
       }
     })
     helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
@@ -71,7 +74,13 @@ class NotificationManagerStepTests extends BasePipelineTest {
         c()
       } catch(e){
         //NOOP
+        println e.toString()
+        e.printStackTrace(System.out);
       }
+    })
+
+    helper.registerAllowedMethod("getBlueoceanDisplayURL",{
+      return "https://jenkins.example.com/blue/organizations/jenkins/jobname"
     })
   }
 
