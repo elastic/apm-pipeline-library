@@ -73,6 +73,22 @@ pipeline {
                 )
               }
             }
+            stage('7.3.0'){
+              steps {
+                build(job: 'apm-shared/apm-docker-es-pipeline',
+                  parameters: [
+                    string(name: 'registry', value: 'docker.elastic.co'),
+                    string(name: 'tag_prefix', value: 'observability-ci'),
+                    string(name: 'version', value: '7.3.0'),
+                    string(name: 'elastic_stack', value: '7.3.0'),
+                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
+                    string(name: 'branch_specifier', value: 'master')
+                  ],
+                  propagate: false,
+                  wait: true
+                )
+              }
+            }
             stage('7.2.0'){
               steps {
                 build(job: 'apm-shared/apm-docker-es-pipeline',
@@ -98,27 +114,27 @@ pipeline {
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )
 
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.3.0-SNAPSHOT',
+            build(job: 'apm-shared/observability-test-environments-update-mbp/7.1.0-SNAPSHOT',
               parameters: [
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )
 
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.2.0',
+            build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x',
               parameters: [
                 booleanParam(name: 'stop_services', value: true),
                 booleanParam(name: 'start_services', value: true)
               ],
-              quietPeriod: 3600,
+              quietPeriod: 10,
               propagate: false,
               wait: false
             )

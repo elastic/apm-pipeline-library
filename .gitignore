@@ -2,3 +2,4 @@
 *.iml
 release.properties
 target
+jenkins-cli.jar

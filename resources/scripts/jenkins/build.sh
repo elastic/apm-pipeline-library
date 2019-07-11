@@ -27,6 +27,7 @@ git version || true
 mvn --version || true
 node --version || true
 python --version || true
+python3 --version || true
 
 JAVA_HOME="${HUDSON_HOME}/.java/java10"
 PATH="${JAVA_HOME}/bin:${PATH}"
@@ -38,3 +39,5 @@ uname -a || true
 df -h || true
 
 docker images || true
+
+eval "${PARAM_WITH_DEFAULT_VALUE}" || true
