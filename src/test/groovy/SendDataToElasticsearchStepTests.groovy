@@ -36,7 +36,7 @@ class SendDataToElasticsearchStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      def jsonSlurper = new groovy.json.JsonSlurper()
+      def jsonSlurper = new groovy.json.JsonSlurperClassic()
       def object = jsonSlurper.parseText(m.text)
       return object
     })
