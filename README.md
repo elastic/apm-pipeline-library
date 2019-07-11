@@ -180,3 +180,4 @@ Some hooks might require some extra tools such as:
   * [Pipeline Details](https://jenkins.io/doc/book/blueocean/pipeline-run-details/)
 * [IntelliJ Setup for Jenkins Development](http://tdongsi.github.io/blog/2018/02/09/intellij-setup-for-jenkins-shared-library-development/)
   * [Declarative Pipeline GDSL WiP](https://issues.jenkins-ci.org/browse/JENKINS-40127)
+* [Command line tool to run Jenkinsfile locally](https://github.com/jenkinsci/jenkinsfile-runner)
