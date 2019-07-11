@@ -191,13 +191,13 @@
           <% stepsErrors?.findAll{item -> item?.result == "FAILURE"}.each{ c -> %>
             <tr>
               <td>
-              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.displayName ? c?.displayName : ''}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c?.displayDescription ? c?.displayDescription : ''}<br>
-              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c?.result ? c?.result : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Name:</strong> ${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Description:</strong>  ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}<br>
+              <strong style="font-family: Helvetica; color: #343B49;">Result:</strong>  ${c?.result && c?.result != 'null' ? c?.result : ''}<br>
               <% if(c?.durationInMillis >= 0) {%>
                 <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec</a><br>
               <%}%>
-              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime ? c?.startTime : ''}</a><br>
+              <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}</a><br>
 
               <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
                 <a href="${jenkinsUrl}/${l._links.self.href}">Log</a><br>
