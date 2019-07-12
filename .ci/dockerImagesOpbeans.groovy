@@ -125,6 +125,16 @@ pipeline {
               push: true)
           }
         }
+        stage('Opbeans-flask') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
+              tag: "opbeans-flask",
+              version: "${params.version}",
+              push: true)
+          }
+        }
         stage('Opbeans-ruby') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }
