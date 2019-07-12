@@ -136,9 +136,11 @@ pipeline {
             }
           }
           steps {
-            sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode')
-            sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
-            gitCreateTag(tag: 'current')
+            dir("${BASE_DIR}"){
+              sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode')
+              sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
+              gitCreateTag(tag: 'current')
+            }
           }
         }
       }
