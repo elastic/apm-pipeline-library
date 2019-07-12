@@ -128,6 +128,10 @@ pipeline {
         stage('Opbeans-flask') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }
+          /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5 */
+          when {
+            equals expected: true, actual: false
+          }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-flask.git',
               tag: "opbeans-flask",
