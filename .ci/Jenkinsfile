@@ -81,11 +81,10 @@ pipeline {
               unstash 'source'
               sh '''
                 ## Setup dependencies
-                scversion="stable" # or "v0.4.7", or "latest"
-                wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
                 mkdir -p bin
-                cp "shellcheck-${scversion}/shellcheck" bin/
-                shellcheck --version
+                echo 'docker run --rm -v "$PWD/$BASE_DIR:/mnt" koalaman/shellcheck:stable $@' > bin/shellcheck
+                echo 'docker run --rm -v "$PWD/$BASE_DIR:/yaml" sdesbure/yamllint yamllint $@' > bin/yamllint
+                chmod 755 bin/*
               '''
               dir("${BASE_DIR}"){
                 sh '''
