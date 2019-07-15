@@ -139,7 +139,9 @@ pipeline {
             dir("${BASE_DIR}"){
               sh(label: "Checkout branch ${BRANCH_NAME}", script: "git checkout -f ${BRANCH_NAME}")
               sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"')
-              sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
+              withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
+                sh(label: 'Creating Release Notes', script: 'export && ./resources/scripts/jenkins/release-notes.sh')
+              }
               gitCreateTag(tag: 'current')
             }
           }
