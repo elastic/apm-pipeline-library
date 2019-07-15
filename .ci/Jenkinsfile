@@ -84,7 +84,9 @@ pipeline {
                 ## Setup dependencies
                 scversion="stable" # or "v0.4.7", or "latest"
                 wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
-                cp "shellcheck-${scversion}/shellcheck" /usr/bin/
+                ls -l /usr/local/bin
+                echo $PATH
+                cp "shellcheck-${scversion}/shellcheck" /usr/local/bin/
                 shellcheck --version
                 '''
                 sh '''
