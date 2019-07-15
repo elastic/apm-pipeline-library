@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -eo pipefail
+
 if [ -z "${JENKINS_URL}" ] ; then
   JENKINS_URL=http://0.0.0.0:18080
 else
@@ -7,9 +9,9 @@ else
 fi
 
 ## Validate whether the URL is reachable before running anything else
-set -eo pipefail
 curl --silent ${JENKINS_URL}/ > /dev/null
 
+## Iterate for each file without failing fast.
 set +e
 for file in "$@"; do
   if curl --silent -X POST -H "${JENKINS_CRUMB}" -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully ; then
