@@ -74,18 +74,12 @@ pipeline {
         stage('Check pre-commit') {
           environment {
             HOME = "${env.WORKSPACE}"
+            PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
           }
           steps {
             withGithubNotify(context: 'Check pre-commit') {
               deleteDir()
               unstash 'source'
-              sh '''
-                ## Setup dependencies
-                mkdir -p bin
-                echo 'docker run --rm -v "$PWD/$BASE_DIR:/mnt" koalaman/shellcheck:stable $@' > bin/shellcheck
-                echo 'docker run --rm -v "$PWD/$BASE_DIR:/yaml" sdesbure/yamllint yamllint $@' > bin/yamllint
-                chmod 755 bin/*
-              '''
               dir("${BASE_DIR}"){
                 sh '''
                   env | sort
