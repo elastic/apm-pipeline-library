@@ -79,16 +79,15 @@ pipeline {
             withGithubNotify(context: 'Check pre-commit') {
               deleteDir()
               unstash 'source'
-              dir("${BASE_DIR}"){
-                sh '''
+              sh '''
                 ## Setup dependencies
                 scversion="stable" # or "v0.4.7", or "latest"
                 wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
-                ls -l /usr/local/bin
-                echo $PATH
-                cp "shellcheck-${scversion}/shellcheck" /usr/local/bin/
+                mkdir -p bin
+                cp "shellcheck-${scversion}/shellcheck" bin/
                 shellcheck --version
-                '''
+              '''
+              dir("${BASE_DIR}"){
                 sh '''
                   env | sort
                   curl https://pre-commit.com/install-local.py | python -
