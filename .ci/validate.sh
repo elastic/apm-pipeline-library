@@ -6,7 +6,7 @@ else
   JENKINS_CRUMB=$(curl --silent "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
 fi
 
-## Validate whether the URL is reachable
+## Validate whether the URL is reachable before running anything else
 set -eo pipefail
 curl --silent ${JENKINS_URL}/ > /dev/null
 
