@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set +e
+set -eo pipefail
 
 if [ -z "${JENKINS_URL}" ] ; then
   JENKINS_URL=http://0.0.0.0:18080
@@ -8,6 +8,11 @@ else
   JENKINS_CRUMB=$(curl --silent "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
 fi
 
+## Validate whether the URL is reachable before running anything else
+curl --silent ${JENKINS_URL}/ > /dev/null
+
+## Iterate for each file without failing fast.
+set +e
 for file in "$@"; do
   if curl --silent -X POST -H "${JENKINS_CRUMB}" -F "jenkinsfile=<${file}" ${JENKINS_URL}/pipeline-model-converter/validate | grep -i -v successfully ; then
     echo "ERROR: jenkinslint failed for the file '${file}'"

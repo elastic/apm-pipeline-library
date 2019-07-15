@@ -49,7 +49,7 @@ repos:
         name: Check syntax of the Jenkinsfiles
         description: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
         files: ^.ci/(.*\.groovy|Jenkinsfile)$
-        entry: .ci/validate.sh
+        entry: .ci/scripts/validate.sh
         language: script
         verbose: true
     -   id: forbid-unicode-non-breaking-spaces

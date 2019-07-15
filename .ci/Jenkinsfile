@@ -74,6 +74,7 @@ pipeline {
         stage('Check pre-commit') {
           environment {
             HOME = "${env.WORKSPACE}"
+            PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
           }
           steps {
             withGithubNotify(context: 'Check pre-commit') {
