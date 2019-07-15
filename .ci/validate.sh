@@ -4,7 +4,7 @@ set +e
 if [ -z "${JENKINS_URL}" ] ; then
   JENKINS_URL=http://0.0.0.0:18080
 else
-  # See https://jenkins.io/doc/book/pipeline/development/#linter
+  #  See https://jenkins.io/doc/book/pipeline/development/#linter
   JENKINS_CRUMB=$(curl --silent "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
 fi
 
