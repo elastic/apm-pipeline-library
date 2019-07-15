@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "Configured automatically with JCasC plugin\n\n"
+  systemMessage: "Configured automatically with JCasC plugin\n"
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: false
