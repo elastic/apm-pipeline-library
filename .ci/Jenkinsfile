@@ -138,7 +138,7 @@ pipeline {
           steps {
             dir("${BASE_DIR}"){
               sh(label: "Checkout branch ${BRANCH_NAME}", script: "git checkout -f ${BRANCH_NAME}")
-              sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode -DskipTests=true')
+              sh(label: 'Performing the Release', script: 'mvn release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"')
               sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
               gitCreateTag(tag: 'current')
             }
