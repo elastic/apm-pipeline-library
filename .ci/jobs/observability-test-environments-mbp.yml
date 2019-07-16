@@ -5,8 +5,6 @@
     description: Job to manage Observability test Environments
     view: APM-CI
     project-type: multibranch
-    number-to-keep: '5'
-    days-to-keep: '1'
     script-path: .ci/Jenkinsfile
     scm:
     - github:
