@@ -13,5 +13,5 @@
     node: linux
     concurrent: true
     publishers:
-    - email:
-        recipients: infra-root+build@elastic.co
+      - email:
+          recipients: infra-root+build@elastic.co
