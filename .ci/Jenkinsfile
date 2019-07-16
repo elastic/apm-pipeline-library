@@ -25,7 +25,7 @@ pipeline {
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'INFO'
     PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.WORKSPACE}/bin:${env.PATH}"
-    HOME = "${env.WORKSPACE}"
+    HOME = "${env.WORKSPACE}/${env.BASE_DIR}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -43,6 +43,7 @@ pipeline {
      Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Checkout') {
           deleteDir()
