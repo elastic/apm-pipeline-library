@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-for i in $(docker images |grep apm-integration-testing-tests-|cut -d " " -f 1)
+REGISTRY="docker.elastic.co/observability-ci"
+IMAGES_PREFIX="apm-integration-testing-tests-"
+
+for i in $(docker images |grep "${IMAGES_PREFIX}"|cut -d " " -f 1)
 do
-  docker tag "$i" "docker.elastic.co/observability-ci/$i"
-  docker push "docker.elastic.co/observability-ci/$i"
+  docker tag "$i" "${REGISTRY}/$i"
+  docker push "${REGISTRY}/$i"
 done
 
 echo "Docker images"
 echo "============="
-for i in $(docker images |grep docker.elastic.co/observability-ci/apm-integration-testing-tests-|cut -d " " -f 1)
+for i in $(docker images |grep "${REGISTRY}/${IMAGES_PREFIX}"|cut -d " " -f 1)
 do
   echo "$i"
 done
