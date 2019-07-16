@@ -24,6 +24,7 @@ repos:
     hooks:
     -   id: yamllint
         name: "Yaml: lint"
+        args: ['-f .ci/.yamlint.conf']
         stages: [commit]
         types: [yaml]
         exclude: ^.pre-commit-config.yaml$
