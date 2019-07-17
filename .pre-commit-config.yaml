@@ -24,10 +24,10 @@ repos:
     hooks:
     -   id: yamllint
         name: "Yaml: lint"
-        args: ['-f .ci/.yamlint.conf']
+        args: ['-c .ci/.yamlint.yml']
         stages: [commit]
         types: [yaml]
-        exclude: ^.pre-commit-config.yaml$
+        exclude: ^(.pre-commit-config.yaml|.ci/.yamlint.yml)$
 
 -   repo: local
     hooks:
