@@ -1,0 +1,10 @@
+Execute a git command against the git repo, using the credentials passed.
+It requires to initialise the pipeline with githubEnv() first.
+
+```
+  gitCmd(credentialsId: 'my_credentials', cmd: 'push', args: '-f')
+```
+
+* credentialsId: the credentials to access the repo.
+* cmd: Git command (tag, push, ...)
+* args: additional arguments passed to `git` command.

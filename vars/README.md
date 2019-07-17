@@ -94,7 +94,7 @@ codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/
 *flags*: a string holding arbitrary flags to pass to the codecov bash script
 *secret*: Vault secret where the CodeCov project token is stored.
 
-It requires to initialise the pipeline with github_enterprise_constructor() first.
+It requires to initialise the pipeline with githubEnv() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
 
@@ -250,21 +250,63 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
 
+## gitCmd
+Execute a git command against the git repo, using the credentials passed.
+It requires to initialise the pipeline with githubEnv() first.
+
+```
+  gitCmd(credentialsId: 'my_credentials', cmd: 'push', args: '-f')
+```
+
+* credentialsId: the credentials to access the repo.
+* cmd: Git command (tag, push, ...)
+* args: additional arguments passed to `git` command.
+
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
+It requires to initialise the pipeline with githubEnv() first.
 
 ```
 gitCreateTag()
 ```
 
+```
+gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
+```
+
+* tag: name of the new tag.
+* credentialsId: the credentials to access the repo.
+
 ## gitDeleteTag
 Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
+It requires to initialise the pipeline with githubEnv() first.
 
 ```
 gitDeleteTag()
 ```
+
+
+```
+gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
+```
+
+* tag: name of the new tag.
+* credentialsId: tthe credentials to access the repo.
+
+## gitPush
+Push changes to the git repo.
+It requires to initialise the pipeline with githubEnv() first.
+
+```
+gitPush()
+```
+
+```
+gitPush(args: '-f', credentialsId: 'my_credentials')
+```
+
+* args: additional arguments passed to `git push` command.
+* credentialsId: the credentials to access the repo.
 
 ## githubApiCall
 
@@ -625,4 +667,3 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
-

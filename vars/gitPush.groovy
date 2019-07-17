@@ -16,16 +16,14 @@
 // under the License.
 
 /**
-  Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
-  It requires to initialise the pipeline with githubEnv() first.
+Push changes to the git repo.
+It requires to initialise the pipeline with githubEnv() first.
 
-  gitDeleteTag()
+  gitPush()
 */
 
 def call(Map params = [:]) {
-  def tag =  params.containsKey('tag') ? params.tag : "${BUILD_TAG}"
+  def args =  params.containsKey('args') ? params.args : ''
   def credentialsId =  params.credentialsId
-  gitCmd(credentialsId: credentialsId, cmd: 'fetch', args: '--tags')
-  gitCmd(credentialsId: credentialsId, cmd: 'tag', args: "-d '${tag}'")
-  gitPush(credentialsId: credentialsId, args: '--tags')
+  gitCmd(credentialsId: credentialsId, cmd: 'push', args: "${args}'")
 }

@@ -16,16 +16,21 @@
 // under the License.
 
 /**
-  Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
-  It requires to initialise the pipeline with githubEnv() first.
+Execute a git command against the git repo, using the credentials passed.
+It requires to initialise the pipeline with githubEnv() first.
 
-  gitDeleteTag()
+  gitCmd(credentialsId: 'my_credentials', cmd: 'push', args: '-f')
 */
 
 def call(Map params = [:]) {
-  def tag =  params.containsKey('tag') ? params.tag : "${BUILD_TAG}"
-  def credentialsId =  params.credentialsId
-  gitCmd(credentialsId: credentialsId, cmd: 'fetch', args: '--tags')
-  gitCmd(credentialsId: credentialsId, cmd: 'tag', args: "-d '${tag}'")
-  gitPush(credentialsId: credentialsId, args: '--tags')
+  def cmd =  params.containsKey('cmd') ? params.args : error('gitCmd: missing git command')
+  def args =  params.containsKey('args') ? params.args : ''
+  def credentialsId =  params.containsKey('credentialsId') ? params.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+  withCredentials([
+    usernamePassword(
+      credentialsId: credentialsId,
+      passwordVariable: 'GIT_PASSWORD',
+      usernameVariable: 'GIT_USERNAME')]) {
+    sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args}")
+  }
 }

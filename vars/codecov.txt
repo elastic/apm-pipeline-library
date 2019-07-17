@@ -8,6 +8,6 @@ codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/
 *flags*: a string holding arbitrary flags to pass to the codecov bash script
 *secret*: Vault secret where the CodeCov project token is stored.
 
-It requires to initialise the pipeline with github_enterprise_constructor() first.
+It requires to initialise the pipeline with githubEnv() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
