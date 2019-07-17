@@ -1,6 +1,38 @@
 # Changelog
 
+## v1.1.17 (17/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
+-  exclude target folder from the pre-commit analysis [#133](https://github.com/elastic/apm-pipeline-library/pull/133)
+-  feat: build, test, and push integration testing Docker images [#129](https://github.com/elastic/apm-pipeline-library/pull/129)
+-  feat: add description to the notification email [#130](https://github.com/elastic/apm-pipeline-library/pull/130)
+
+#### 🐛 Bug Fixes
+
+-  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
+-  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
+-  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
+-  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
+
+#### 📚 Documentation
+
+-  Update readme with cli tool to run Jenkinsfiles locally [#122](https://github.com/elastic/apm-pipeline-library/pull/122)
+
+#### 🙈 No user affected
+
+-  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
+-  chore: temporary pipeline for testing purposes [#121](https://github.com/elastic/apm-pipeline-library/pull/121)
+
+---
+
 ## v1.1.16 (10/07/2019)
+*No changelog for this release.*
+
+---
+
+## current (10/07/2019)
 
 #### 🚀 Enhancements
 
@@ -20,11 +52,6 @@
 ---
 
 ## v1.1.15 (05/07/2019)
-*No changelog for this release.*
-
----
-
-## current (05/07/2019)
 
 #### 🚀 Enhancements
 
@@ -368,8 +395,8 @@
 
 #### 🚀 Enhancements
 
--   [APM-CI] add support to reference repository to gitCheckout [#27](https://github.com/elastic/apm-pipeline-library/pull/27)
 -  Add "flags" param to codecov [#26](https://github.com/elastic/apm-pipeline-library/pull/26)
+-   [APM-CI] add support to reference repository to gitCheckout [#27](https://github.com/elastic/apm-pipeline-library/pull/27)
 
 #### 📚 Documentation
 
@@ -398,24 +425,24 @@
 
 #### 🚀 Enhancements
 
+-  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 -  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
--  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 
 #### 🐛 Bug Fixes
 
--  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 -  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 -  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
+-  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 
 #### 📚 Documentation
 
+-  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 -  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 -  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
--  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 
 #### 🙈 No user affected
 
@@ -423,10 +450,10 @@
 
 #### ⚙️ CI
 
+-  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
+-  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
--  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
--  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
