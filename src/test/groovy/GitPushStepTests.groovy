@@ -21,7 +21,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitCreateTagStepTests extends BasePipelineTest {
+class GitPushStepTests extends BasePipelineTest {
   @Override
   @Before
   void setUp() throws Exception {
@@ -31,12 +31,11 @@ class GitCreateTagStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
-    helper.registerAllowedMethod("gitPush", [Map.class], { return "OK" })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
+    def script = loadScript("vars/gitPush.groovy")
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -44,8 +43,8 @@ class GitCreateTagStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
-    script.call(tag: "my_tag", credentialsId: "my_credentials")
+    def script = loadScript("vars/gitPush.groovy")
+    script.call(args: "-f", credentialsId: "my_credentials")
     printCallStack()
     assertJobStatusSuccess()
   }

@@ -21,32 +21,59 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitCreateTagStepTests extends BasePipelineTest {
+class GitCmdStepTests extends BasePipelineTest {
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable("BUILD_TAG", "tag")
+    binding.setVariable("ORG_NAME", "my_org")
+    binding.setVariable("REPO_NAME", "my_repo")
 
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
-    helper.registerAllowedMethod("gitPush", [Map.class], { return "OK" })
+    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
+      def res = closure.call()
+      return res
+    })
+    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
+      m.each{ k, v ->
+        binding.setVariable("${v}", "defined")
+      }
+    })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
-    script.call()
+    def script = loadScript("vars/gitCmd.groovy")
+    script.call(cmd: 'push')
     printCallStack()
     assertJobStatusSuccess()
   }
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
-    script.call(tag: "my_tag", credentialsId: "my_credentials")
+    def script = loadScript("vars/gitCmd.groovy")
+    script.call(cmd: "push", credentialsId: "my_credentials", args: '-f')
     printCallStack()
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoCmd() throws Exception {
+    def script = loadScript("vars/gitCmd.groovy")
+    try{
+      script.call(credentialsId: "my_credentials", args: '-f')
+    } catch(err){
+      //NOOP
+      println e.toString()
+      e.printStackTrace(System.out);
+    }
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains("gitCmd: missing git command")
+    })
+    printCallStack()
+    assertJobStatusFailure()
   }
 }

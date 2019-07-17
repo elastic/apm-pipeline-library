@@ -1,6 +1,13 @@
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
-It requires to initialise the pipeline with github_enterprise_constructor() first.
+It requires to initialise the pipeline with githubEnv() first.
 
 ```
 gitCreateTag()
 ```
+
+```
+gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
+```
+
+* tag: name of the new tag.
+* credentialsId: the credentials to access the repo.

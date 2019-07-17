@@ -27,23 +27,25 @@ class GitDeleteTagStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     binding.setVariable("BUILD_TAG", "tag")
+
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
-      def res = closure.call()
-      return res
-    })
-    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
-      m.each{ k, v ->
-        binding.setVariable("${v}", "defined")
-      }
-    })
+    helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
+    helper.registerAllowedMethod("gitPush", [Map.class], { return "OK" })
   }
 
   @Test
   void test() throws Exception {
     def script = loadScript("vars/gitDeleteTag.groovy")
     script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testParams() throws Exception {
+    def script = loadScript("vars/gitDeleteTag.groovy")
+    script.call(tag: "my_tag", credentialsId: "my_credentials")
     printCallStack()
     assertJobStatusSuccess()
   }
