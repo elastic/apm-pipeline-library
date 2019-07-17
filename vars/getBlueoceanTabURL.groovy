@@ -46,6 +46,12 @@ def call(String tab) {
     case 'tests':
       url = "${blueoceanBuildURL}tests"
       break
+    case 'cobertura':
+      url = "${env.BUILD_URL}cobertura"
+      break
+    case 'gcs':
+      url = "${env.BUILD_URL}gcsObjects"
+      break
     default:
       error 'getBlueoceanTabURL: Unsupported type'
   }
