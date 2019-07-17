@@ -143,6 +143,7 @@ pipeline {
               git commit -m "docs: update CHANGELOG.md"
             ''')
           }
+          gitPush()
           gitCreateTag(tag: 'current')
         }
       }

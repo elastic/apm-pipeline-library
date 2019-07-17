@@ -169,7 +169,7 @@
       "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$BlueCauseImpl",
       "shortDescription": "Push event to branch develop"
     }],
-    "description": null,
+    "description": "Some description",
     "durationInMillis": 0,
     "enQueueTime": "2019-05-29T12:07:15.094+0000",
     "endTime": null,
