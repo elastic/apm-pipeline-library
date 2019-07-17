@@ -4,7 +4,7 @@ module.exports = {
     "onlyMilestones": false,
     "ignoreCommitsWith": ["chore", "refactor", "style"],
     "ignoreIssuesWith": ["no-release"],
-    "ignoreTagsWith": ["-rc", "-alpha", "-beta", "test"],
+    "ignoreTagsWith": ["-rc", "-alpha", "-beta", "test", "current"],
     "ignoreLabels": ["closed", "automation", "enhancement", "bug", "fix",
       "internal", "feature", "feat", "docs", "chore", "refactor", "ci",
       "perf", "test", "style"],

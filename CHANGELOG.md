@@ -28,11 +28,6 @@
 ---
 
 ## v1.1.16 (10/07/2019)
-*No changelog for this release.*
-
----
-
-## current (10/07/2019)
 
 #### 🚀 Enhancements
 
