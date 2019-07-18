@@ -1,3 +1,5 @@
+[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-shared%2Fapm-pipeline-library-mbp%2Fmaster)](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/) [![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg)](https://github-tools.github.io/github-release-notes/)
+
 # apm-pipeline-library
 
 [![Build Status](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/badge/icon)](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/)
