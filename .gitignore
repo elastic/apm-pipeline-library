@@ -3,3 +3,8 @@
 release.properties
 target
 jenkins-cli.jar
+
+
+# For the BATS testing
+bats-core/
+target/

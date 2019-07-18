@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -uxeo pipefail
 
-gren release --username=elastic --override -c .grenrc.js -t all
+GREN_GITHUB_TOKEN=${GREN_GITHUB_TOKEN:?"missing GREN_GITHUB_TOKEN"}
+
+gren release --token="${GREN_GITHUB_TOKEN}" --override -c .grenrc.js -t all
 # it is generated from scratch to have reverse version order
-gren changelog --username=elastic --override -c .grenrc.js -t all -G
+gren changelog --token="${GREN_GITHUB_TOKEN}" --override -c .grenrc.js -t all -G
