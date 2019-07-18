@@ -6,6 +6,5 @@ rules:
     max: 120
     level: warning
 
-  # don't bother me with this rule
   indentation:
     level: warning
