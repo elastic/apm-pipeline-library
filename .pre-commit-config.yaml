@@ -34,7 +34,7 @@ repos:
         args: ['-c .ci/.yamlint.yml']
         stages: [commit]
         types: [yaml]
-        exclude: ^(.pre-commit-config.yaml|.ci/.yamlint.yml)$
+        exclude: (^.pre-commit-config.yaml$|^.ci/.yamlint.yml$|^target/)
 
 -   repo: local
     hooks:
