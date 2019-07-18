@@ -34,6 +34,7 @@ class GetBlueoceanTabURLStepTests extends BasePipelineTest {
     env.BUILD_ID = "4"
     env.BRANCH_NAME = "PR-60"
     env.JENKINS_URL = "http://jenkins.example.com:8080"
+    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
 
     binding.setVariable('env', env)
 
@@ -113,6 +114,24 @@ class GetBlueoceanTabURLStepTests extends BasePipelineTest {
     def ret = script.call('artifacts')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/artifacts"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithCoberturaTab() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call('cobertura')
+    printCallStack()
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/cobertura"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithGcsTab() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call('gcs')
+    printCallStack()
+    assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/gcsObjects"))
     assertJobStatusSuccess()
   }
 }
