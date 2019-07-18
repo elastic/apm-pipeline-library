@@ -127,7 +127,7 @@ class GetBlueoceanTabURLStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testSuccessWithStorageTab() throws Exception {
+  void testSuccessWithGcsTab() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.call('gcs')
     printCallStack()
