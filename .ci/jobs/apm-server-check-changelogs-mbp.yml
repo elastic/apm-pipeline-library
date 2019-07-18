@@ -5,8 +5,6 @@
     description: APM Server check changelogs MBP
     project-type: multibranch
     view: APM-CI
-    number-to-keep: '5'
-    days-to-keep: '1'
     script-path: .ci/check-changelogs.groovy
     scm:
       - github:

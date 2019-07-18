@@ -6,5 +6,4 @@
     view: APM-CI
     project-type: pipeline
     dsl: 'pipelineApmUI()
-
-      '
+'

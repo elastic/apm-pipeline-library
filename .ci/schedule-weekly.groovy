@@ -27,7 +27,7 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
     disableResume()
@@ -138,7 +138,7 @@ pipeline {
               propagate: false,
               wait: false
             )
-            
+
             build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x-BC',
               parameters: [
                 booleanParam(name: 'stop_services', value: true),
