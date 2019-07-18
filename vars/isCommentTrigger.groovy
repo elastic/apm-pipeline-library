@@ -28,7 +28,7 @@ def call(){
   def ret = triggerCause != null
   log(level: 'DEBUG', text: "isCommentTrigger: ${ret}")
   if(ret){
-    env.COMMENT_TRIGGER = triggerCause.getComment()
+    env.GITHUB_COMMENT = triggerCause.getComment()
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
     def token = getGithubToken()
