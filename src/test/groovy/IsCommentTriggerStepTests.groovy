@@ -88,6 +88,7 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
+    assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
     assertJobStatusSuccess()
   }
 
