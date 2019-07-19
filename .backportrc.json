@@ -1,0 +1,5 @@
+{
+  "upstream": "elastic/apm-pipeline-library",
+  "branches": [{ "name": "develop", "checked": true }],
+  "labels": ["backport", "automation"]
+}
