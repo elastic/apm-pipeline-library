@@ -195,6 +195,24 @@ def token = getGithubToken()
 
 * credentialsId: it is possible to pass a credentials ID as parameter, by default use a hardcoded ID
 
+## getModulesFromCommentTrigger
+If the build was triggered by a comment in GitHub then get the sorted list of
+modules which were referenced in the comment.
+
+Supported format:
+- `jenkins run the tests for the module foo`
+- `jenkins run the tests for the module foo,bar,xyz`
+- `jenkins run the tests for the module _ALL_`
+
+```
+def modules = getModulesFromCommentTrigger()
+def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
+```
+
+
+* *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
+* *delimiter*: the delimiter to use. The default one is the `,`. Optional
+
 ## getVaultSecret
 Get a secret from the Vault.
 You will need some credentials created to use the vault :
