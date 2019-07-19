@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//import org.jenkinsci.plugins.pipeline.github.trigger.IssueCommentCause
-
 /**
   Check it the build was triggered by a comment in GitHub.
 
@@ -30,6 +28,7 @@ def call(){
   def ret = triggerCause != null
   log(level: 'DEBUG', text: "isCommentTrigger: ${ret}")
   if(ret){
+    env.GITHUB_COMMENT = triggerCause.getComment()
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
     def token = getGithubToken()
