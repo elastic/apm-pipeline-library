@@ -164,14 +164,14 @@ pipeline {
         dir("integration-testing-images"){
           git('https://github.com/elastic/apm-integration-testing.git')
           sh(label: 'Test Docker containers', script: 'make -C docker all-tests')
-          sh(label: 'Push Docker images', script: '.ci/scripts/push-integration-test-images.sh')
         }
-        post {	
-          always {	
-            junit(allowEmptyResults: true,	
-              keepLongStdio: true,	
-              testResults: "${BASE_DIR}/**/junit-*.xml")	
-          }	
+        sh(label: 'Push Docker images', script: '.ci/scripts/push-integration-test-images.sh')
+        post {
+          always {
+            junit(allowEmptyResults: true,
+              keepLongStdio: true,
+              testResults: "${BASE_DIR}/**/junit-*.xml")
+          }
         }
       }
     }
