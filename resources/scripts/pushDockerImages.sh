@@ -32,6 +32,8 @@ PREFIX=${2:-}
 PUSH_VERSION=${3:-"daily"}
 REGISTRY=${4:-"docker.elastic.co"}
 
+VERSION=$(curl -s "https://artifacts-api.elastic.co/v1/versions/${VERSION}/builds/latest"|jq .build.version)
+
 for image in elasticsearch/elasticsearch kibana/kibana apm/apm-server beats/auditbeat beats/filebeat beats/heartbeat beats/metricbeat beats/packetbeat
 do
   IMAGE_SHORT=${image#*/}
