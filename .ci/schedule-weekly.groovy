@@ -48,7 +48,7 @@ pipeline {
                     string(name: 'registry', value: 'docker.elastic.co'),
                     string(name: 'tag_prefix', value: 'observability-ci'),
                     string(name: 'version', value: '8.0.0-SNAPSHOT'),
-                    string(name: 'elastic_stack', value: '8.0.0-SNAPSHOT'),
+                    string(name: 'elastic_stack', value: '8.0-SNAPSHOT'),
                     string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
                     string(name: 'branch_specifier', value: 'master')
                   ],
@@ -64,7 +64,7 @@ pipeline {
                     string(name: 'registry', value: 'docker.elastic.co'),
                     string(name: 'tag_prefix', value: 'observability-ci'),
                     string(name: 'version', value: '7.3.0-SNAPSHOT'),
-                    string(name: 'elastic_stack', value: '7.3.0-SNAPSHOT'),
+                    string(name: 'elastic_stack', value: '7.3-SNAPSHOT'),
                     string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
                     string(name: 'branch_specifier', value: 'master')
                   ],
@@ -80,7 +80,7 @@ pipeline {
                     string(name: 'registry', value: 'docker.elastic.co'),
                     string(name: 'tag_prefix', value: 'observability-ci'),
                     string(name: 'version', value: '7.3.0'),
-                    string(name: 'elastic_stack', value: '7.3.0'),
+                    string(name: 'elastic_stack', value: '7.3'),
                     string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
                     string(name: 'branch_specifier', value: 'master')
                   ],
@@ -96,7 +96,7 @@ pipeline {
                     string(name: 'registry', value: 'docker.elastic.co'),
                     string(name: 'tag_prefix', value: 'observability-ci'),
                     string(name: 'version', value: '7.2.0'),
-                    string(name: 'elastic_stack', value: '7.2.0'),
+                    string(name: 'elastic_stack', value: '7.2'),
                     string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
                     string(name: 'branch_specifier', value: 'master')
                   ],
