@@ -43,7 +43,6 @@ pipeline {
   parameters {
     string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
-    booleanParam(name: 'doc_ci', defaultValue: true, description: 'Enable build docs.')
   }
   stages {
     stage('Initializing'){
@@ -97,34 +96,6 @@ pipeline {
               junit(allowEmptyResults: true,
                 keepLongStdio: true,
                 testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-              }
-            }
-          }
-          /**
-          Build the documentation.
-          */
-          stage('Documentation') {
-            when {
-              beforeAgent true
-              allOf {
-                anyOf {
-                  not {
-                    changeRequest()
-                  }
-                  branch 'master'
-                  branch "\\d+\\.\\d+"
-                  branch "v\\d?"
-                  tag "v\\d+\\.\\d+\\.\\d+*"
-                  expression { return params.Run_As_Master_Branch }
-                }
-                expression { return params.doc_ci }
-              }
-            }
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                buildDocs(docsDir: "resources/docs", archive: true)
               }
             }
           }
