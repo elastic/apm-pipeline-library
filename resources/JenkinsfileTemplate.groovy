@@ -100,34 +100,6 @@ pipeline {
               }
             }
           }
-          /**
-          Build the documentation.
-          */
-          stage('Documentation') {
-            when {
-              beforeAgent true
-              allOf {
-                anyOf {
-                  not {
-                    changeRequest()
-                  }
-                  branch 'master'
-                  branch "\\d+\\.\\d+"
-                  branch "v\\d?"
-                  tag "v\\d+\\.\\d+\\.\\d+*"
-                  expression { return params.Run_As_Master_Branch }
-                }
-                expression { return params.doc_ci }
-              }
-            }
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                buildDocs(docsDir: "resources/docs", archive: true)
-              }
-            }
-          }
         }
       }
 

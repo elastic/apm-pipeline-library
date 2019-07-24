@@ -24,20 +24,6 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
-## buildDocs
-Build documentation from asciidoc files.
-
-```
-buildDocs()
-```
-
-```
-buildDocs(docsDir: "docs", archive: true)
-```
-
-* docsDir: relative folder were are the document source files (by default docs is relative to WORKSPACE).
-* archive: if true, archive the tar file with the doc in Jenkins.
-
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.
 
@@ -71,17 +57,6 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 * licensor: sets the name of the licensor. (Optional)
 
 [Docker pipeline plugin](https://plugins.jenkins.io/docker-workflow)
-
-## checkoutElasticDocsTools
-Checkout the tools to build documentation from the  https://github.com/elastic/docs.git repo.
-Then you can run build_docs.pl to build the documentation
-
-```
-checkoutElasticDocsTools(basedir: 'elastic-doc-folder')
-sh """
-elastic-doc-folder/build_docs.pl --chunk=1 ${BUILD_DOCS_ARGS} --doc docs/index.asciidoc -out docs/html
-"""
-```
 
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
