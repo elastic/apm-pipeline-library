@@ -43,7 +43,6 @@ pipeline {
   parameters {
     string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
-    booleanParam(name: 'doc_ci', defaultValue: true, description: 'Enable build docs.')
   }
   stages {
     stage('Initializing'){
