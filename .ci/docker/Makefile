@@ -7,13 +7,29 @@ help: ## Display this help text
 	@grep -E '^[a-zA-Z_-]+[%]?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 bats: ## Install bats in the project itself
+	@echo "Cloning bats-core"
 	@test -e "bats-core" && (cd bats-core ; git checkout ${BATS_VERSION}) || git clone https://github.com/bats-core/bats-core.git --depth=1 --branch ${BATS_VERSION}
 
-prepare-test: bats ## Prepare the bats dependencies
+bats-assert: ##Install bats-assert in the project itself
+	@echo "Clonning bats-assert"
+	@[ -d $(CURDIR)/tests/test_helper/bats-assert ] \
+		|| git clone -n https://github.com/ztombol/bats-assert $(CURDIR)/tests/test_helper/bats-assert
+	@cd $(CURDIR)/tests/test_helper/bats-assert \
+		&& git fetch --all \
+		&& git checkout -B v0.3.0 9f88b4207da750093baabc4e3f41bf68f0dd3630
+
+bats-support: ##Install bats-support in the project itself
+	@echo "Clonning bats-support"
+	@[ -d $(CURDIR)/tests/test_helper/bats-support ] \
+		|| git clone -n https://github.com/ztombol/bats-support $(CURDIR)/tests/test_helper/bats-support
+	@cd $(CURDIR)/tests/test_helper/bats-support \
+		&& git fetch --all \
+		&& git checkout -B v0.3.0 004e707638eedd62e0481e8cdc9223ad471f12ee
+
+prepare-test: bats bats-assert bats-support## Prepare the bats dependencies
+	@echo "Pulling Alpine image"
 	@docker pull node:${LTS_ALPINE}
 	@mkdir -p target
-	@git submodule sync
-	@git submodule update --init --recursive
 
 test-%: prepare-test ## Run the tests for the specific app
 	@DOCKERFILE=$* bats-core/bin/bats --tap tests | tee target/results.tap
