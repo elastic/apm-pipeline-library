@@ -5,5 +5,5 @@ RUN apt-get update -qq -y \
   && rm -rf /var/lib/apt/lists/*
 
 RUN npm install github-release-notes@0.17.0 -g
-
+WORKDIR /app
 ENTRYPOINT [ "/usr/local/bin/gren" ]
