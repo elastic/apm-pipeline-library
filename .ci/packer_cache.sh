@@ -23,6 +23,8 @@ source /usr/local/bin/bash_standard_lib.sh
 
 DOCKER_IMAGES="alpine:3.4
 node:12-slim
+docker.elastic.co/observability-ci/yamllint
+docker.elastic.co/observability-ci/shellcheck
 "
 
 for di in ${DOCKER_IMAGES}

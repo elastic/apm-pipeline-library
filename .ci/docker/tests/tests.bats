@@ -22,7 +22,7 @@ CONTAINER="${DOCKERFILE//\//-}"
 }
 
 @test "${DOCKERFILE} - create test container" {
-	run docker run -d --name $CONTAINER -P ${IMAGE}
+	run docker run -d --name $CONTAINER -P ${IMAGE} ${CMD}
 	assert_success
 }
 
