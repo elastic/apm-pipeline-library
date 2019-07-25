@@ -154,6 +154,7 @@ pipeline {
         expression { return params.apm_integration_testing }
       }
       steps {
+        checkout scm
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/apm-integration-testing.git',
