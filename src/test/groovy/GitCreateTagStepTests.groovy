@@ -39,6 +39,11 @@ class GitCreateTagStepTests extends BasePipelineTest {
     def script = loadScript("vars/gitCreateTag.groovy")
     script.call()
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'gitCmd'
+    }.any { call ->
+        callArgsToString(call).contains('credentialsId=,')
+    })
     assertJobStatusSuccess()
   }
 
