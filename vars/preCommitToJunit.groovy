@@ -25,10 +25,14 @@ def call(Map params = [:]) {
   def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
 
   def content = readFile(file: input)
-
+  echo '-----'
+  echo "${content}"
+  echo '-----'
   def id, status, message = '', inprogress = false
   def data = '<testsuite>'
   content.split('\n').each { line ->
+
+    echo "line -> ${line}"
     def matcher = line =~ '(.+)\\.(Passed|Skipped|Failed)$'
     if (matcher.find()) {
       if (id) {
