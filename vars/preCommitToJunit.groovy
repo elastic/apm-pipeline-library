@@ -22,9 +22,9 @@
 */
 def call(Map params = [:]) {
   def input = params.containsKey('input') ? params.input : error('preCommitToJunit: input parameter is required.')
-  def output = params.containsKey('output') ? params.output : error('preCommitToJunit: input parameter is required.')
+  def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
 
-  def content = readFile(input)
+  def content = readFile(file: input)
 
   def id, status, message = '', inprogress = false
   def data = '<testsuite>'
@@ -47,7 +47,7 @@ def call(Map params = [:]) {
   }
   data += '</testsuite>'
 
-  writeFile file: output, text: data
+  writeFile file: output, text: data, encoding: 'UTF-8'
 }
 
 def toJunit(String name, String status, String message) {
