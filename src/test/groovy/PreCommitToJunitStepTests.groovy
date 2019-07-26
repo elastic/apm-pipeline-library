@@ -106,4 +106,16 @@ class PreCommitToJunitStepTests extends BasePipelineTest {
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
   }
+
+  @Test
+  void testSuccess3() throws Exception {
+    def script = loadScript(scriptName)
+    def file = 'skipped.xml'
+    script.call(input: 'skipped.txt', output: file)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
+                                      new File("${compareWith}/${file}"),
+                                      new File("target/${file}"), 'UTF-8'))
+  }
 }

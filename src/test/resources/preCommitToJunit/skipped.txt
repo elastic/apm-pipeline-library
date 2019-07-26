@@ -1,0 +1,16 @@
+[INFO] Initializing environment for https://github.com/pre-commit/mirrors-isort.
+[INFO] Initializing environment for https://github.com/ambv/black.
+[INFO] Initializing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Installing environment for https://github.com/pre-commit/mirrors-isort.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+[INFO] Installing environment for https://github.com/ambv/black.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+[INFO] Installing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+isort................................................(no files to check)Skipped
+black................................................(no files to check)Skipped
+Flake8...............................................(no files to check)Skipped
+License header check.................................(no files to check)Skipped

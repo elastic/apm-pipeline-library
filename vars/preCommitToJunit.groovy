@@ -25,11 +25,10 @@ def call(Map params = [:]) {
   def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
 
   def content = readFile(file: input)
-
   def id, status, message = '', inprogress = false
   def data = '<testsuite>'
   content.split('\n').each { line ->
-    def matcher = line =~ '(.+)\\.(Passed|Skipped|Failed)$'
+    def matcher = line =~ '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$'
     if (matcher.find()) {
       if (id) {
         data += toJunit(id, status, message)
@@ -52,9 +51,9 @@ def call(Map params = [:]) {
 
 def toJunit(String name, String status, String message) {
   String output = "<testcase classname=\"pre_commit.lint\" name=\"${name}\""
-  if (status?.toLowerCase().equals('skipped')) {
+  if (status?.toLowerCase().contains('skipped')) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${message}]]></system-out></testcase>"
-  } else if (status?.toLowerCase().equals('failed')) {
+  } else if (status?.toLowerCase().contains('failed')) {
     output += "><error message=\"error\"/><system-out><![CDATA[${message}]]></system-out></testcase>"
   } else {
     output += " />"
