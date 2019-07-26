@@ -76,4 +76,30 @@ class GitCmdStepTests extends BasePipelineTest {
     printCallStack()
     assertJobStatusFailure()
   }
+
+  @Test
+  void testParamsWithEmptyCredentials() throws Exception {
+    def script = loadScript("vars/gitCmd.groovy")
+    script.call(cmd: "push", credentialsId: '', args: '-f')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'usernamePassword'
+    }.any { call ->
+        callArgsToString(call).contains('2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testParamsWithAnotherCredentials() throws Exception {
+    def script = loadScript("vars/gitCmd.groovy")
+    script.call(cmd: "push", credentialsId: 'foo', args: '-f')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'usernamePassword'
+    }.any { call ->
+        callArgsToString(call).contains('foo')
+    })
+    assertJobStatusSuccess()
+  }
 }
