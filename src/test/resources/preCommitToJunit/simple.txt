@@ -1,0 +1,4 @@
+Check for case conflicts........................................................................Passed
+Check that executables have shebangs............................................................Skipped
+Detect the EXTREMELY confusing unicode character U+2013.........................................Failed
+hookid: forbid-en-dashes

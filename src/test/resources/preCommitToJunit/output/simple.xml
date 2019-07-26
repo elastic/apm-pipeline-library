@@ -1,0 +1,2 @@
+<testsuite><testcase classname="pre_commit.lint" name="Check for case conflicts" /><testcase classname="pre_commit.lint" name="Check that executables have shebangs"><skipped message="skipped"/><system-out><![CDATA[]]></system-out></testcase><testcase classname="pre_commit.lint" name="Detect the EXTREMELY confusing unicode character U2013"><error message="error"/><system-out><![CDATA[hookid: forbid-en-dashes
+]]></system-out></testcase></testsuite>

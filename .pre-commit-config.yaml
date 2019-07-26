@@ -15,7 +15,7 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: ^target/
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/)
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master

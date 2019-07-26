@@ -464,6 +464,13 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 
+## preCommitToJunit
+Parse the pre-commit log file and generates a junit report
+
+```
+preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
+```
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 
