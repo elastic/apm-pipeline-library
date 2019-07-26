@@ -1,4 +1,4 @@
-FROM node:12-slim
+FROM node:12.7.0-stretch-slim
 
 RUN apt-get update -qq -y \
   && apt-get install -qq -y --no-install-recommends git \
