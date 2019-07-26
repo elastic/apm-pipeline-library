@@ -22,7 +22,13 @@ source /usr/local/bin/bash_standard_lib.sh
 # docker.elastic.co/observability-ci/apm-integration-testing-tests-apm-server
 
 DOCKER_IMAGES="alpine:3.4
+alpine:3.10.1
 node:12-slim
+node:12.7.0-stretch-slim
+python:3.7.4-alpine3.10
+docker.elastic.co/observability-ci/yamllint
+docker.elastic.co/observability-ci/shellcheck
+docker.elastic.co/observability-ci/gren
 "
 
 for di in ${DOCKER_IMAGES}
