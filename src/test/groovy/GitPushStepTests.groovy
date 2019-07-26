@@ -38,6 +38,11 @@ class GitPushStepTests extends BasePipelineTest {
     def script = loadScript("vars/gitPush.groovy")
     script.call()
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'gitCmd'
+    }.any { call ->
+        callArgsToString(call).contains('credentialsId=,')
+    })
     assertJobStatusSuccess()
   }
 
