@@ -1,0 +1,8 @@
+Run the pre-commit for the given commit if provided and generates the JUnit
+report if required
+
+```
+preCommit(junit: false)
+
+preCommit(commit: 'abcdefg')
+```
