@@ -24,6 +24,6 @@ It requires to initialise the pipeline with githubEnv() first.
 
 def call(Map params = [:]) {
   def args =  params.containsKey('args') ? params.args : ''
-  def credentialsId =  params.credentialsId
+  def credentialsId =  params.get('credentialsId', '')
   gitCmd(credentialsId: credentialsId, cmd: 'push', args: "${args}'")
 }

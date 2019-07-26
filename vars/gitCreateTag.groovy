@@ -24,7 +24,7 @@
 
 def call(Map params = [:]) {
   def tag =  params.containsKey('tag') ? params.tag : "${BUILD_TAG}"
-  def credentialsId = params.credentialsId
+  def credentialsId = params.get('credentialsId', '')
   gitCmd(credentialsId: credentialsId, cmd: 'tag', args: "-a '${tag}' -m 'chore: Create tag ${tag}'")
   gitPush(credentialsId: credentialsId, args: '--tags')
 }

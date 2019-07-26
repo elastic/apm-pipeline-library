@@ -39,6 +39,11 @@ class GitDeleteTagStepTests extends BasePipelineTest {
     def script = loadScript("vars/gitDeleteTag.groovy")
     script.call()
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'gitCmd'
+    }.any { call ->
+        callArgsToString(call).contains('credentialsId=,')
+    })
     assertJobStatusSuccess()
   }
 
