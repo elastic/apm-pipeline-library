@@ -1,6 +1,8 @@
 .PHONY: help
 .DEFAULT_GOAL := help
-BATS_VERSION = "v1.1.0"
+BATS_VERSION = c706d1470dd1376687776bbe985ac22d09780327 #v1.1.0
+BATS_ASSERT = 9f88b4207da750093baabc4e3f41bf68f0dd3630 #v0.3.0
+BATS_SUPPORT = 004e707638eedd62e0481e8cdc9223ad471f12ee #v0.3.0
 LTS_ALPINE ?= 12-alpine
 
 help: ## Display this help text
@@ -8,7 +10,11 @@ help: ## Display this help text
 
 bats: ## Install bats in the project itself
 	@echo "Cloning bats-core"
-	@test -e "bats-core" && (cd bats-core ; git checkout ${BATS_VERSION}) || git clone https://github.com/bats-core/bats-core.git --depth=1 --branch ${BATS_VERSION}
+	@[ -d $(CURDIR)/bats-core ] \
+		|| git clone -n https://github.com/bats-core/bats-core.git $(CURDIR)/bats-core
+	@cd $(CURDIR)/bats-core \
+		&& git fetch --all \
+		&& git checkout -B v1.1.0 ${BATS_VERSION}
 
 bats-assert: ##Install bats-assert in the project itself
 	@echo "Clonning bats-assert"
@@ -16,7 +22,7 @@ bats-assert: ##Install bats-assert in the project itself
 		|| git clone -n https://github.com/ztombol/bats-assert $(CURDIR)/tests/test_helper/bats-assert
 	@cd $(CURDIR)/tests/test_helper/bats-assert \
 		&& git fetch --all \
-		&& git checkout -B v0.3.0 9f88b4207da750093baabc4e3f41bf68f0dd3630
+		&& git checkout -B v0.3.0 ${BATS_ASSERT}
 
 bats-support: ##Install bats-support in the project itself
 	@echo "Clonning bats-support"
@@ -24,7 +30,7 @@ bats-support: ##Install bats-support in the project itself
 		|| git clone -n https://github.com/ztombol/bats-support $(CURDIR)/tests/test_helper/bats-support
 	@cd $(CURDIR)/tests/test_helper/bats-support \
 		&& git fetch --all \
-		&& git checkout -B v0.3.0 004e707638eedd62e0481e8cdc9223ad471f12ee
+		&& git checkout -B v0.3.0 ${BATS_SUPPORT}
 
 prepare-test: bats bats-assert bats-support## Prepare the bats dependencies
 	@echo "Pulling Alpine image"
