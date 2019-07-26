@@ -261,7 +261,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "githubNotify"
     }.any { call ->
-        callArgsToString(call).contains('context=First time contributor, description=It requires manual inspection, status=FAILURE')
+        callArgsToString(call).contains('context=CI-approved contributor, description=It requires manual inspection, status=FAILURE')
     })
     assertJobStatusFailure()
   }
@@ -276,7 +276,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "githubNotify"
     }.any { call ->
-        callArgsToString(call).contains('context=First time contributor, status=SUCCESS')
+        callArgsToString(call).contains('context=CI-approved contributor, status=SUCCESS')
     })
     assertJobStatusSuccess()
   }
@@ -304,7 +304,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "githubNotify"
     }.any { call ->
-        callArgsToString(call).contains('context=First time contributor, status=SUCCESS')
+        callArgsToString(call).contains('context=CI-approved contributor, status=SUCCESS')
     })
   }
 }
