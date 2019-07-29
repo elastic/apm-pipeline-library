@@ -19,17 +19,19 @@ import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
-import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class GetGitCommitShaStepTests extends BasePipelineTest {
-  String scriptName = 'vars/getGitCommitSha.groovy'
+class GitChangelogStepTests extends BasePipelineTest {
+  String scriptName = 'vars/gitChangelog.groovy'
+  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod('isUnix', [], { true })
+    binding.setVariable('env', env)
+    helper.registerAllowedMethod('isUnix', [], {true})
+    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
@@ -38,17 +40,15 @@ class GetGitCommitShaStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    String sha = '29480a51'
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod(method('sh', Map.class), { map ->
-      if ('git rev-parse HEAD'.equals(map.script)) {
-          return sha
-      }
-      return "0"
-    })
     String ret = script.call()
     printCallStack()
-    assertTrue(sha.equals(ret))
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "sh"
+    }.any { call ->
+        callArgsToString(call).contains('git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}')
+    })
+    assertTrue(ret.equals('OK'))
   }
 
   @Test
@@ -64,7 +64,7 @@ class GetGitCommitShaStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('getGitCommitSha: windows is not supported yet.')
+      callArgsToString(call).contains('gitChangelog: windows is not supported yet.')
     })
     assertJobStatusFailure()
   }

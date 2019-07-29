@@ -57,6 +57,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
@@ -190,6 +191,24 @@ class CheckLicensesStepTests extends BasePipelineTest {
       call.methodName == 'error'
     }.any { call ->
       callArgsToString(call).contains('checkLicenses: skip should be enabled when using the junit flag.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('checkLicenses: windows is not supported yet.')
     })
     assertJobStatusFailure()
   }
