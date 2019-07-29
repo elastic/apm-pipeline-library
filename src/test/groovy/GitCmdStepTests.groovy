@@ -102,4 +102,17 @@ class GitCmdStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testCmdIsPopulated() throws Exception {
+    def script = loadScript("vars/gitCmd.groovy")
+    script.call(cmd: 'push', credentialsId: 'foo')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'sh'
+    }.any { call ->
+        callArgsToString(call).contains('script=git push')
+    })
+    assertJobStatusSuccess()
+  }
 }
