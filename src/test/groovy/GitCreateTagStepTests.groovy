@@ -59,6 +59,24 @@ class GitCreateTagStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     script.call(tag: "my_tag", credentialsId: "my_credentials")
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'sh'
+    }.any { call ->
+        callArgsToString(call).contains("git tag -a -m 'chore: Create tag my_tag' 'my_tag'")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testPushArgs() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(tag: "my_tag", pushArgs: '-f')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'gitPush'
+    }.any { call ->
+        callArgsToString(call).contains('args=--tags -f')
+    })
     assertJobStatusSuccess()
   }
 }
