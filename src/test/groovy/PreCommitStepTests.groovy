@@ -20,7 +20,6 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
-import org.apache.commons.io.FileUtils
 
 class PreCommitStepTests extends BasePipelineTest {
   String scriptName = 'vars/preCommit.groovy'
