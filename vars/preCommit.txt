@@ -6,3 +6,6 @@ preCommit(junit: false)
 
 preCommit(commit: 'abcdefg')
 ```
+
+* junit: whether to generate the JUnit report. Default: true. Optional
+* commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
