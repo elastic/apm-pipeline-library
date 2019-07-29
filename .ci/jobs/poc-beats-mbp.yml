@@ -14,8 +14,7 @@
           discover-pr-origin: merge-current
           discover-tags: false
           filter-by-name-wildcard:
-            includes: '*'
-            excludes: 'master'
+            includes: 'PR-13073'
           repo: beats
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
