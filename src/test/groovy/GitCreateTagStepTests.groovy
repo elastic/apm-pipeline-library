@@ -22,11 +22,13 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitCreateTagStepTests extends BasePipelineTest {
+  String scriptName = 'vars/gitCreateTag.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable("BUILD_TAG", "tag")
+    binding.setVariable('BUILD_TAG', 'foo')
 
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod('sh', [Map.class], { "OK" })
@@ -36,15 +38,25 @@ class GitCreateTagStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'sh'
+    }.any { call ->
+        callArgsToString(call).contains("git tag -a -m 'chore: Create tag foo' 'foo'")
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'gitPush'
+    }.any { call ->
+        callArgsToString(call).contains('credentialsId=, args=--tags')
+    })
     assertJobStatusSuccess()
   }
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/gitCreateTag.groovy")
+    def script = loadScript(scriptName)
     script.call(tag: "my_tag", credentialsId: "my_credentials")
     printCallStack()
     assertJobStatusSuccess()

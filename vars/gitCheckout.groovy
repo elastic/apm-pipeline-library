@@ -39,6 +39,7 @@ def call(Map params = [:]){
   def mergeTarget = params?.mergeTarget
   def notify = params?.get('githubNotifyFirstTimeContributor', false)
 
+  def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
   if(reference != null){
@@ -75,18 +76,18 @@ def call(Map params = [:]){
       try {
         githubPrCheckApproved()
         if (notify) {
-          githubNotify(context: 'First time contributor', status: 'SUCCESS', targetUrl: ' ')
+          githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
         }
       } catch(err) {
         if (notify) {
-          githubNotify(context: 'First time contributor', description: 'It requires manual inspection', status: 'FAILURE', targetUrl: ' ')
+          githubNotify(context: githubCheckContext, description: 'It requires manual inspection', status: 'FAILURE', targetUrl: ' ')
         }
         throw err
       }
     } else {
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
-        githubNotify(context: 'First time contributor', status: 'SUCCESS', targetUrl: ' ')
+        githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
       }
     }
   }
