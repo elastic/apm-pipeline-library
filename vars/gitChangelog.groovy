@@ -22,6 +22,9 @@
 
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('gitChangelog: windows is not supported yet.')
+  }
   return sh(label: 'Get changelog',
     script: 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}',
     returnStdout: true)

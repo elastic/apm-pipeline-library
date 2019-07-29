@@ -22,6 +22,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class CodecovStepTests extends BasePipelineTest {
+  String scriptName = 'vars/codecov.groovy'
   Map env = [:]
   String url = 'http://github.com/org/repo.git'
 
@@ -70,6 +71,11 @@ class CodecovStepTests extends BasePipelineTest {
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     binding.setVariable('env', env)
 
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
@@ -121,7 +127,7 @@ class CodecovStepTests extends BasePipelineTest {
 
   @Test
   void testNoRepo() throws Exception {
-    def script = loadScript("vars/codecov.groovy")
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -134,7 +140,7 @@ class CodecovStepTests extends BasePipelineTest {
 
   @Test
   void testNoToken() throws Exception {
-    def script = loadScript("vars/codecov.groovy")
+    def script = loadScript(scriptName)
     script.call(repo: "noToken", secret: "secret-bad")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -147,7 +153,7 @@ class CodecovStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/codecov.groovy")
+    def script = loadScript(scriptName)
     script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     printCallStack()
     assertJobStatusSuccess()
@@ -155,7 +161,7 @@ class CodecovStepTests extends BasePipelineTest {
 
   @Test
   void testCache() throws Exception {
-    def script = loadScript("vars/codecov.groovy")
+    def script = loadScript(scriptName)
     script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     printCallStack()
@@ -170,5 +176,23 @@ class CodecovStepTests extends BasePipelineTest {
         callArgsToString(call).contains("Codecov: get the token from cache.")
     })
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('codecov: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }
