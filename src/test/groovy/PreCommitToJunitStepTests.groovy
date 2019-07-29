@@ -84,7 +84,7 @@ class PreCommitToJunitStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testSuccess() throws Exception {
+  void testSuccessWithSimpleCommitStages() throws Exception {
     def script = loadScript(scriptName)
     def file = 'simple.xml'
     script.call(input: 'simple.txt', output: file)
@@ -96,7 +96,7 @@ class PreCommitToJunitStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testSuccess2() throws Exception {
+  void testSuccessWithAllPreCommitStages() throws Exception {
     def script = loadScript(scriptName)
     def file = 'pre-commit.xml'
     script.call(input: 'pre-commit.txt', output: file)
@@ -108,7 +108,7 @@ class PreCommitToJunitStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testSuccess3() throws Exception {
+  void testSuccessWithSkippedPreCommitStages() throws Exception {
     def script = loadScript(scriptName)
     def file = 'skipped.xml'
     script.call(input: 'skipped.txt', output: file)
