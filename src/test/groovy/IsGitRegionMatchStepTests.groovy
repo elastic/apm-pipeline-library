@@ -36,6 +36,7 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('isUnix', [], { true })
   }
 
   @Test
@@ -142,5 +143,23 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
     printCallStack()
     assertFalse(result)
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('isGitRegionMatch: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }

@@ -24,6 +24,9 @@ https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groo
 @Field def tokens = [:]
 
 def call(Map params = [:]){
+  if(!isUnix()){
+    error('codecov: windows is not supported yet.')
+  }
   def repo = params?.repo
   def basedir = params.containsKey('basedir') ? params.basedir : "."
   def flags = params.containsKey("flags") ? params.flags : ""

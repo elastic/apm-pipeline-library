@@ -23,6 +23,9 @@
   dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 */
 def call(Map params = [:]){
+  if(!isUnix()){
+    error('dockerLogin: windows is not supported yet.')
+  }
   def secret = params.containsKey('secret') ? params.secret : error("dockerLogin: No valid secret to looking for.")
   def registry = params.containsKey('registry') ? params.registry : "docker.io"
 

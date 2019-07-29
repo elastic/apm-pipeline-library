@@ -24,6 +24,9 @@
 
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('isGitRegionMatch: windows is not supported yet.')
+  }
   def regexps =  params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
 
   if (regexps.isEmpty()) {

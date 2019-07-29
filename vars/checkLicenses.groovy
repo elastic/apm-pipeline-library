@@ -30,6 +30,9 @@
 
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('checkLicenses: windows is not supported yet.')
+  }
   def excludeFlag = params.containsKey('exclude') ? "-exclude ${params.exclude}" : ''
   def fileExtFlag = params.containsKey('ext') ? "-ext ${params.ext}" : ''
   def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''

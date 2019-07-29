@@ -23,6 +23,9 @@
   sendBenchmarks(file: 'bench.out', index: 'index-name')
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('sendBenchmarks: windows is not supported yet.')
+  }
   def benchFile = params.containsKey('file') ? params.file : 'bench.out'
   def index = params.containsKey('index') ? params.index : 'benchmark-go'
   def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'

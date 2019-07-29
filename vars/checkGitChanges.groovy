@@ -20,7 +20,10 @@
 
   def numOfChanges = checkGitChanges(target: env.CHANGE_TARGET,commit: env.GIT_SHA,prefix: '_beats')
 */
-def call() {
+def call(Map params = [:]) {
+  if(!isUnix()){
+    error('checkGitChanges: windows is not supported yet.')
+  }
   def target =  params.containsKey('target') ? params.target : error("checkGitChanges: not valid target")
   def commit =  params.containsKey('commit') ? params.commit : error("checkGitChanges: not valid commit")
   def regexps =  params.containsKey('regexps') ? params.prefix : error("checkGitChanges: not valid prefix")

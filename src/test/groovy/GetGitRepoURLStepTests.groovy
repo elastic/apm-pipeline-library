@@ -23,16 +23,23 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GetGitRepoURLStepTests extends BasePipelineTest {
+  String scriptName = 'vars/getGitRepoURL.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
   }
 
   @Test
   void test() throws Exception {
     String url = 'http://github.com/org/repo.git'
-    def script = loadScript("vars/getGitRepoURL.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git config --get remote.origin.url'.equals(map.script)) {
           return url
@@ -42,5 +49,23 @@ class GetGitRepoURLStepTests extends BasePipelineTest {
     String ret = script.call()
     printCallStack()
     assertTrue(url.equals(ret))
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('getGitRepoURL: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }

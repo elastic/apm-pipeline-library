@@ -22,6 +22,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
+  String scriptName = 'vars/getBuildInfoJsonFiles.groovy'
   Map env = [:]
 
   @Override
@@ -33,6 +34,7 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
     env.JENKINS_URL = "http://jenkins.example.com:8080"
     binding.setVariable('env', env)
 
+    helper.registerAllowedMethod('isUnix', [], { true })
     helper.registerAllowedMethod("sh", [Map.class], { return 0 })
     helper.registerAllowedMethod("sh", [String.class], { return 0 })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
@@ -41,6 +43,7 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod("error", [String.class], {s ->
       printCallStack()
+      updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
     helper.registerAllowedMethod("toJSON", [Map.class], { m ->
@@ -85,7 +88,7 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/getBuildInfoJsonFiles.groovy")
+    def script = loadScript(scriptName)
     script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
     assertJobStatusSuccess()
@@ -93,7 +96,7 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
 
   @Test
   void testFailedToDownload() throws Exception {
-    def script = loadScript("vars/getBuildInfoJsonFiles.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod("fileExists", [String.class], { return false })
     helper.registerAllowedMethod("sh", [Map.class], { m ->
       if(m.label == "Get Build info tests-info.json"){
@@ -105,5 +108,23 @@ class GetBuildInfoJsonFilesStepTests extends BasePipelineTest {
     script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call('', '')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('getBuildInfoJsonFiles: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }

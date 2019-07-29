@@ -22,6 +22,9 @@
   getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
 */
 def call(jobURL, buildNumber){
+  if(!isUnix()){
+    error('getBuildInfoJsonFiles: windows is not supported yet.')
+  }
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}/blue/rest/organizations/jenkins/pipelines/${restURLJob}"

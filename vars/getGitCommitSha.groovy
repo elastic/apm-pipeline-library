@@ -23,6 +23,9 @@
   def sha = getGitCommitSha()
 */
 def call() {
+  if(!isUnix()){
+    error('getGitCommitSha: windows is not supported yet.')
+  }
   def sha = sh(label: 'Get commit SHA',script: "git rev-parse HEAD", returnStdout: true)?.trim()
   return "${sha}"
 }
