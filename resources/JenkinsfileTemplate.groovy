@@ -305,6 +305,9 @@ pipeline {
        stage('windows 2019 docker immutable check'){
         agent { label 'windows-2019-docker-immutable' }
         options { skipDefaultCheckout() }
+        when {
+          expression { return false }
+        }
         steps {
           bat returnStatus: true, script: 'msbuild'
           bat returnStatus: true, script: 'dotnet --info'
