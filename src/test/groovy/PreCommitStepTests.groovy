@@ -31,7 +31,6 @@ class PreCommitStepTests extends BasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-
     binding.setVariable('env', env)
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
@@ -79,10 +78,37 @@ class PreCommitStepTests extends BasePipelineTest {
   @Test
   void testWithEnvVariable() throws Exception {
     def script = loadScript(scriptName)
-    env.GIT_BASE_COMMIT = '12345'
+    env.GIT_BASE_COMMIT = 'bar'
     script.call()
-
-    assertJobStatusFailure()
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('bar | xargs pre-commit run --files')
+    })
+    assertJobStatusSuccess()
   }
 
+  @Test
+  void testWithAllArguments() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(commit: 'foo', junit: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains('foo | xargs pre-commit run --files')
+    })
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'preCommitToJunit'
+    }.any { call ->
+      callArgsToString(call).contains('input=pre-commit.out, output=pre-commit.out.xml')
+    })
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'junit'
+    }.any { call ->
+      callArgsToString(call).contains('testResults=pre-commit.out.xml')
+    })
+    assertJobStatusSuccess()
+  }
 }

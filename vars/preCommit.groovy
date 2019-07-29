@@ -24,19 +24,20 @@
   preCommit(commit: 'abcdefg')
 */
 def call(Map params = [:]) {
-  def junit = params.get('junit', true)
+  def junitFlag = params.get('junit', true)
   def commit = params.get('commit', env.GIT_BASE_COMMIT)
 
-  def reportFileName = 'pre-commit.out'
-  if (!commit.trim()){
-    error 'preCommit: git commit to compare with is required.'
+  if (!commit?.trim()) {
+    commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')
   }
+
+  def reportFileName = 'pre-commit.out'
 
   sh """
     curl https://pre-commit.com/install-local.py | python -
     git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
   """
-  if(junit) {
+  if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
     junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
   }
