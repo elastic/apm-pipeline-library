@@ -1,0 +1,11 @@
+Run the pre-commit for the given commit if provided and generates the JUnit
+report if required
+
+```
+preCommit(junit: false)
+
+preCommit(commit: 'abcdefg')
+```
+
+* junit: whether to generate the JUnit report. Default: true. Optional
+* commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
