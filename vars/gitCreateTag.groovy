@@ -25,6 +25,7 @@
 def call(Map params = [:]) {
   def tag =  params.containsKey('tag') ? params.tag : "${BUILD_TAG}"
   def credentialsId = params.get('credentialsId', '')
+  def force = params.containsKey('force') && params.force ? "-f" : ""
   sh(label: "create tag", script: "git tag -a -m 'chore: Create tag ${tag}' '${tag}'")
-  gitPush(credentialsId: credentialsId, args: '--tags')
+  gitPush(credentialsId: credentialsId, args: "--tags ${force}")
 }

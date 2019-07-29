@@ -153,7 +153,7 @@ pipeline {
             ''')
           }
           gitPush()
-          gitCreateTag(tag: 'current')
+          gitCreateTag(tag: 'current', force: true)
         }
       }
     }

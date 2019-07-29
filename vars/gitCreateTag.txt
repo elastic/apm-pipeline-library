@@ -6,8 +6,9 @@ gitCreateTag()
 ```
 
 ```
-gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
+gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials', force: true)
 ```
 
 * tag: name of the new tag.
 * credentialsId: the credentials to access the repo.
+* force: force to create the tag.

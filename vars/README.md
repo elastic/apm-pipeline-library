@@ -264,11 +264,12 @@ gitCreateTag()
 ```
 
 ```
-gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
+gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials', force: true)
 ```
 
 * tag: name of the new tag.
 * credentialsId: the credentials to access the repo.
+* force: force to create the tag.
 
 ## gitDeleteTag
 Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
@@ -681,3 +682,4 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
