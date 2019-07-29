@@ -464,6 +464,19 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 
+## preCommit
+Run the pre-commit for the given commit if provided and generates the JUnit
+report if required
+
+```
+preCommit(junit: false)
+
+preCommit(commit: 'abcdefg')
+```
+
+* junit: whether to generate the JUnit report. Default: true. Optional
+* commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
+
 ## preCommitToJunit
 Parse the pre-commit log file and generates a junit report
 
