@@ -8,3 +8,4 @@ jenkins-cli.jar
 # For the BATS testing
 bats-core/
 target/
+.ci/docker/tests/test_helper/

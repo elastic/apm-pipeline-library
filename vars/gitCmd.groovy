@@ -23,6 +23,9 @@ It requires to initialise the pipeline with githubEnv() first.
 */
 
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('gitCmd: windows is not supported yet.')
+  }
   def cmd =  params.containsKey('cmd') ? params.cmd : error('gitCmd: missing git command')
   def args =  params.containsKey('args') ? params.args : ''
   def credentialsId = (params.containsKey('credentialsId') && params.credentialsId.trim()) ? params.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'

@@ -23,7 +23,7 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GithubEnvStepTests extends BasePipelineTest {
-
+  String scriptName = 'vars/githubEnv.groovy'
   String url = 'http://github.com/org/repo.git'
   String sha = '29480a51'
   Map env = [:]
@@ -35,9 +35,11 @@ class GithubEnvStepTests extends BasePipelineTest {
 
     env.GIT_URL = null
     binding.setVariable('env', env)
-  }
-
-  void registerMethods(){
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
         return "${sha} ${sha}"
@@ -55,8 +57,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testNoGitURL() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
@@ -67,8 +68,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testGitUrl() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.GIT_URL = url
     script.call()
     printCallStack()
@@ -80,8 +80,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testChangeTarget() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     script.call()
@@ -94,8 +93,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testMerge() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
           return "${sha} ${sha} ${sha}"
@@ -112,8 +110,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testSshUrl() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.GIT_URL = 'git@github.com:org/repo.git'
     script.call()
     printCallStack()
@@ -125,8 +122,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnNoMergeChangesInPR() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     env.GIT_COMMIT = sha
@@ -141,8 +137,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnNoGitCommit() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     env.GIT_COMMIT = null
@@ -157,8 +152,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnMergeChangesInPR() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.CHANGE_ID = "NotEmpty"
     env.CHANGE_TARGET = "NotEmpty"
     env.GIT_COMMIT = 'different'
@@ -174,8 +168,7 @@ class GithubEnvStepTests extends BasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnBranch() throws Exception {
-    def script = loadScript("vars/githubEnv.groovy")
-    registerMethods()
+    def script = loadScript(scriptName)
     env.CHANGE_ID = null
     env.CHANGE_TARGET = null
     env.GIT_COMMIT = sha
@@ -186,5 +179,23 @@ class GithubEnvStepTests extends BasePipelineTest {
     assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
     assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('githubEnv: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }

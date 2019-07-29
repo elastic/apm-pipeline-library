@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.27 (29/07/2019)
+
+#### 🚀 Enhancements
+
+-  windows is not supported in some steps [#162](https://github.com/elastic/apm-pipeline-library/pull/162)
+-  feat: enable precommit step [#158](https://github.com/elastic/apm-pipeline-library/pull/158)
+
+#### 🙈 No user affected
+
+-  Rename test methods [#161](https://github.com/elastic/apm-pipeline-library/pull/161)
+
+#### ⚙️ CI
+
+-  fix: create and delete tag steps [#160](https://github.com/elastic/apm-pipeline-library/pull/160)
+
+---
+
 ## v1.1.26 (26/07/2019)
 *No changelog for this release.*
 
@@ -353,13 +370,13 @@
 
 #### 🚀 Enhancements
 
+-  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
+-  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
+-  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
--  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
--  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
--  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 
 #### 📚 Documentation
 
