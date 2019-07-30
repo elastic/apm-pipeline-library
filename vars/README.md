@@ -269,6 +269,7 @@ gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
 
 * tag: name of the new tag.
 * credentialsId: the credentials to access the repo.
+* pushArgs: what arguments are passed to the push command
 
 ## gitDeleteTag
 Delete a git TAG named ${BUILD_TAG} and push it to the git repo.
