@@ -306,6 +306,7 @@ pipeline {
         agent { label 'windows-2019-docker-immutable' }
         options { skipDefaultCheckout() }
         when {
+          beforeAgent true
           expression { return false }
         }
         steps {
