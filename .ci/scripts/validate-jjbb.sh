@@ -4,6 +4,11 @@ set -eo pipefail
 
 TMPFOLDER=$(mktemp -q -d /tmp/pre-commit.XXXXXX)
 
+function finish {
+  rm -rf "${TMPFOLDER}"
+}
+trap finish EXIT
+
 echo 'Transform JJBB to JJB'
 docker run -t --rm --user "$(id -u):$(id -g)" \
         -e "VAULT_TOKEN=$(cat ~/.vault-token)" \
