@@ -11,7 +11,14 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
         -v "$(pwd):/jjbb" -w /jjbb docker.elastic.co/infra/jjbb --write-yaml --yaml-output-dir=/tmp
 
 echo 'Validate JJB'
+JJB_REPORT="${TMPFOLDER}/jjb.out"
+set +e
 docker run -t --rm --user "$(id -u):$(id -g)" \
         -v "${TMPFOLDER}:/jjbb" \
         -e HOME=/tmp \
-        widerplan/jenkins-job-builder -l error test /jjbb
+        widerplan/jenkins-job-builder -l error test /jjbb > "${JJB_REPORT}"
+# shellcheck disable=SC2181
+if [ $? -gt 0 ] ; then
+  cat "${JJB_REPORT}"
+  exit 1
+fi
