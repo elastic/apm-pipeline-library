@@ -21,6 +21,9 @@
   githubEnv()
 */
 def call(){
+  if(!isUnix()){
+    error('githubEnv: windows is not supported yet.')
+  }
   if(!env?.GIT_URL){
     env.GIT_URL = getGitRepoURL()
   }

@@ -22,6 +22,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class SendBenchmarksStepTests extends BasePipelineTest {
+  String scriptName = 'vars/sendBenchmarks.groovy'
   Map env = [:]
 
   def wrapInterceptor = { map, closure ->
@@ -69,6 +70,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     binding.setVariable('env', env)
 
+    helper.registerAllowedMethod('isUnix', [], { true })
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
@@ -106,7 +108,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/sendBenchmarks.groovy")
+    def script = loadScript(scriptName)
     script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: 'secret', archive: true)
     printCallStack()
     assertJobStatusSuccess()
@@ -114,7 +116,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
 
   @Test
   void testSecretNotFound() throws Exception {
-    def script = loadScript("vars/sendBenchmarks.groovy")
+    def script = loadScript(scriptName)
     try{
       def ret = script.call(secret: 'secretNotValid')
     } catch(e){
@@ -132,7 +134,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
 
   @Test
   void testSecretError() throws Exception {
-    def script = loadScript("vars/sendBenchmarks.groovy")
+    def script = loadScript(scriptName)
     try {
       script.call(secret: 'secretError')
     } catch(e){
@@ -150,7 +152,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
 
   @Test
   void testWrongProtocol() throws Exception {
-    def script = loadScript("vars/sendBenchmarks.groovy")
+    def script = loadScript(scriptName)
     try {
       script.call(secret: 'secret', url: 'ht://wrong.example.com')
     } catch(e){
@@ -162,6 +164,24 @@ class SendBenchmarksStepTests extends BasePipelineTest {
         call.methodName == "error"
     }.any { call ->
         callArgsToString(call).contains("Benchmarks: unknow protocol, the url is not http(s).")
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('sendBenchmarks: windows is not supported yet.')
     })
     assertJobStatusFailure()
   }

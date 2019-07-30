@@ -16,16 +16,29 @@
 // under the License.
 
 /**
- Return the changes between the parent commit and the current commit.
+  Run the pre-commit for the given commit if provided and generates the JUnit
+  report if required
 
- def changelog = gitChangelog()
+  preCommit(junit: false)
 
+  preCommit(commit: 'abcdefg')
 */
 def call(Map params = [:]) {
-  if(!isUnix()){
-    error('gitChangelog: windows is not supported yet.')
+  def junitFlag = params.get('junit', true)
+  def commit = params.get('commit', env.GIT_BASE_COMMIT)
+
+  if (!commit?.trim()) {
+    commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')
   }
-  return sh(label: 'Get changelog',
-    script: 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}',
-    returnStdout: true)
+
+  def reportFileName = 'pre-commit.out'
+
+  sh """
+    curl https://pre-commit.com/install-local.py | python -
+    git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
+  """
+  if(junitFlag) {
+    preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
+    junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
+  }
 }

@@ -22,6 +22,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class DockerLoginStepTests extends BasePipelineTest {
+  String scriptName = 'vars/dockerLogin.groovy'
   Map env = [:]
 
   def wrapInterceptor = { map, closure ->
@@ -63,6 +64,11 @@ class DockerLoginStepTests extends BasePipelineTest {
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
 
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
     helper.registerAllowedMethod("sh", [Map.class], { m -> println m.script })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
     helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
@@ -80,7 +86,7 @@ class DockerLoginStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/dockerLogin.groovy")
+    def script = loadScript(scriptName)
     script.call(secret: 'secret/team/ci/secret-name')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -93,7 +99,7 @@ class DockerLoginStepTests extends BasePipelineTest {
 
   @Test
   void testRegistry() throws Exception {
-    def script = loadScript("vars/dockerLogin.groovy")
+    def script = loadScript(scriptName)
     script.call(secret: 'secret/team/ci/secret-name', registry: "other.docker.io")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -102,5 +108,23 @@ class DockerLoginStepTests extends BasePipelineTest {
         callArgsToString(call).contains('docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"')
     })
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('dockerLogin: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }
