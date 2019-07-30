@@ -2,9 +2,16 @@
 set -eo pipefail
 ## Further details: https://github.com/elastic/infra/blob/master/flavortown/jjbb/README.md#how-do-i-test-changes-locally
 
-VAULT_TOKEN=$(cat ~/.vault-token) \
-docker run --rm -e VAULT_TOKEN -e HOME=/jjbb \
-        -v "$(pwd)":/jjbb -w /jjbb \
-        --network=host docker.elastic.co/infra/jjbb \
-        --dry-run \
-        --cluster=apm-ci
+TMPFOLDER=$(mktemp -q -d /tmp/pre-commit.XXXXXX)
+
+echo 'Transform JJBB to JJB'
+docker run -t --rm --user "$(id -u):$(id -g)" \
+        -e "VAULT_TOKEN=$(cat ~/.vault-token)" \
+        -v "${TMPFOLDER}:/tmp" \
+        -v "$(pwd):/jjbb" -w /jjbb docker.elastic.co/infra/jjbb --write-yaml --yaml-output-dir=/tmp
+
+echo 'Validate JJB'
+docker run -t --rm --user "$(id -u):$(id -g)" \
+        -v "${TMPFOLDER}:/jjbb" \
+        -e HOME=/tmp \
+        widerplan/jenkins-job-builder -l error test /jjbb
