@@ -28,6 +28,8 @@ mvn --version || true
 node --version || true
 python --version || true
 python3 --version || true
+vault --version || true
+jq --version || true
 
 JAVA_HOME="${HUDSON_HOME}/.java/java10"
 PATH="${JAVA_HOME}/bin:${PATH}"
