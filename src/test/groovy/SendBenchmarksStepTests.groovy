@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse
 class SendBenchmarksStepTests extends BasePipelineTest {
   String scriptName = 'vars/sendBenchmarks.groovy'
   Map env = [:]
+  def URL = 'https://ec.example.com:9200'
 
   def wrapInterceptor = { map, closure ->
     map.each { key, value ->
@@ -87,7 +88,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
       def s = v.secret
       if("secret".equals(s) || "secret/apm-team/ci/java-agent-benchmark-cloud".equals(s)){
-        return [data: [ user: 'user', password: 'password', url: 'https://ec.example.com:9200']]
+        return [data: [ user: 'user', password: 'password', url: "${URL}"]]
       }
       if("secretError".equals(s)){
         return [errors: 'Error message']
@@ -318,7 +319,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'withEnv'
     }.any { call ->
-        callArgsToString(call).contains('URL_=https://https://ec.example.com:9200, USER_=user, PASS_=password')
+        callArgsToString(call).contains("URL_=${URL}, USER_=user, PASS_=password")
     })
     assertJobStatusSuccess()
   }
