@@ -96,6 +96,16 @@ class GitCheckoutStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("Checkout master")
     })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'log'
+    }.any { call ->
+        callArgsToString(call).contains('Reference repo disabled')
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.any { call ->
+        callArgsToString(call).contains('reference=,')
+    })
     assertJobStatusSuccess()
   }
 
@@ -112,6 +122,16 @@ class GitCheckoutStepTests extends BasePipelineTest {
         call.methodName == "log"
     }.any { call ->
         callArgsToString(call).contains("Checkout master")
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'log'
+    }.any { call ->
+        callArgsToString(call).contains('Reference repo enabled')
+    })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.any { call ->
+        callArgsToString(call).contains('reference=repo')
     })
     assertJobStatusSuccess()
   }
