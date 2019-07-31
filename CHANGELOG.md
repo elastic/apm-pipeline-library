@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.28 (31/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
+-  feat: prepareAndRun for the benchmark [#167](https://github.com/elastic/apm-pipeline-library/pull/167)
+-  ci: enable PoC for the metricbeats [#148](https://github.com/elastic/apm-pipeline-library/pull/148)
+-  feat: use preCommit step [#166](https://github.com/elastic/apm-pipeline-library/pull/166)
+
+#### 🐛 Bug Fixes
+
+-  fix: force git push [#164](https://github.com/elastic/apm-pipeline-library/pull/164)
+
+#### ⚙️ CI
+
+-  feat: remove submodules [#149](https://github.com/elastic/apm-pipeline-library/pull/149)
+
+---
+
 ## v1.1.27 (29/07/2019)
 
 #### 🚀 Enhancements
@@ -370,13 +389,13 @@
 
 #### 🚀 Enhancements
 
+-  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
+-  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
--  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
--  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 
 #### 📚 Documentation
 
