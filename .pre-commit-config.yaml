@@ -85,3 +85,10 @@ repos:
         entry: perl -pi* -e 's/\xe2\x80\x93/-/g && ($t = 1) && print STDERR $_; END{{exit
             $t}}'
         exclude: ^target/
+    -   id: jjbb-linter
+        name: Check syntax of the JJBB files
+        description: Check JJBB files
+        files: ^.ci/jobs
+        entry: .ci/scripts/validate-jjbb.sh
+        language: script
+        verbose: true
