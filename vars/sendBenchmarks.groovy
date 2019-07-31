@@ -123,15 +123,13 @@ def prepareAndRun(Map params = [:], Closure body) {
     error "prepareAndRun: was not possible to get authentication info to send benchmarks"
   }
 
-  def protocol = getProtocol(url)
-
   log(level: 'INFO', text: 'sendBenchmark: run script...')
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: urlVar, password: "${protocol}${url}"],
+    [var: urlVar, password: "${url}"],
     [var: userVar, password: "${user}"],
     [var: passVar, password: "${password}"]
     ]]) {
-    withEnv(["${urlVar}=${protocol}${url}", "${userVar}=${user}", "${passVar}=${password}"]){
+    withEnv(["${urlVar}=${url}", "${userVar}=${user}", "${passVar}=${password}"]){
       body()
     }
   }
