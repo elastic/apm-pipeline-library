@@ -164,7 +164,7 @@ Some hooks might require some extra tools such as:
 
 ## pre-commit-hooks
 
-golang hooks for http://pre-commit.com/
+Observability robots hooks for http://pre-commit.com/
 
 ### Using these hooks
 
