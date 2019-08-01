@@ -1,5 +1,5 @@
 repos:
--   repo: git://github.com/pre-commit/pre-commit-hooks
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
     hooks:
     -   id: check-case-conflict
@@ -17,7 +17,7 @@ repos:
     -   id: end-of-file-fixer
         exclude: (^src/test/resources/preCommitToJunit/output|^target/)
 
--   repo: git://github.com/detailyang/pre-commit-shell.git
+-   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
     hooks:
     -   id: shell-lint
@@ -26,7 +26,7 @@ repos:
         types: [shell]
         exclude: (^mvnw$|^target/)
 
--   repo: git://github.com/adrienverge/yamllint.git
+-   repo: https://github.com/adrienverge/yamllint.git
     rev: master
     hooks:
     -   id: yamllint
@@ -36,8 +36,8 @@ repos:
         types: [yaml]
         exclude: (^.pre-commit-config.yaml$|^.ci/.yamlint.yml$|^target/)
 
-- repo: https://github.com/elastic/apm-pipeline-library
-  rev: master
+- repo: https://github.com/v1v/apm-pipeline-library
+  rev: feature/precommit-lib
   hooks:
   -   id: check-bash-syntax
   -   id: forbid-abstract-classes-and-traits
