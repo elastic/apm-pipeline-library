@@ -20,10 +20,12 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
 class SendBenchmarksStepTests extends BasePipelineTest {
   String scriptName = 'vars/sendBenchmarks.groovy'
   Map env = [:]
+  def URL = 'https://ec.example.com:9200'
 
   def wrapInterceptor = { map, closure ->
     map.each { key, value ->
@@ -86,7 +88,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
       def s = v.secret
       if("secret".equals(s) || "secret/apm-team/ci/java-agent-benchmark-cloud".equals(s)){
-        return [data: [ user: 'user', password: 'password', url: 'https://ec.example.com:9200']]
+        return [data: [ user: 'user', password: 'password', url: "${URL}"]]
       }
       if("secretError".equals(s)){
         return [errors: 'Error message']
@@ -182,6 +184,162 @@ class SendBenchmarksStepTests extends BasePipelineTest {
       call.methodName == 'error'
     }.any { call ->
       callArgsToString(call).contains('sendBenchmarks: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingSecretArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.prepareAndRun() {
+
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('prepareAndRun: secret argument is required.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingUrlArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.prepareAndRun(secret: 'secret') {
+
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('prepareAndRun: url_var argument is required.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingUserArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.prepareAndRun(secret: 'secret', url_var: 'URL_') {
+
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('prepareAndRun: user_var argument is required.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingPassArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.prepareAndRun(secret: 'secret', url_var: 'URL_', user_var: 'USER_') {
+
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('prepareAndRun: pass_var argument is required.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testPrepareAndRunWithSecretError() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    try {
+      script.prepareAndRun(secret: 'secretError', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+        isOK = true
+      }
+    } catch(e){
+      println e.toString()
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(isOK)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains("prepareAndRun: Unable to get credentials from the vault: Error message")
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testPrepareAndRunWithSecretNotFound() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    try{
+      script.prepareAndRun(secret: 'secretNotValid', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+        isOK = true
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(isOK)
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains('prepareAndRun: was not possible to get authentication info to send benchmarks')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testPrepareAndRun() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.prepareAndRun(secret: 'secret', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+      isOK = true
+    }
+    assertTrue(isOK)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'withEnv'
+    }.any { call ->
+        callArgsToString(call).contains("URL_=${URL}, USER_=user, PASS_=password")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testPrepareAndRunInWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.prepareAndRun() {
+
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('prepareAndRun: windows is not supported yet.')
     })
     assertJobStatusFailure()
   }

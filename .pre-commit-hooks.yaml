@@ -45,3 +45,9 @@
         $t}}'
     exclude: ^target/
     description: "Remove the EXTREMELY confusing unicode character U+2013"
+-   id: check-jjbb
+    files: ^.ci/jobs
+    entry: .ci/scripts/validate-jjbb.sh
+    language: script
+    verbose: true
+    description: Check JJBB files

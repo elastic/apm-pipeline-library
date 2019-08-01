@@ -16,11 +16,13 @@
 // under the License.
 
 /**
-  Send the becnhmarks to the cloud service.
-  requires Go installed.
+  Send the benchmarks to the cloud service or run the script and prepare the environment
+  to be implemented within the script itself.
 
   sendBenchmarks()
   sendBenchmarks(file: 'bench.out', index: 'index-name')
+
+  sendBenchmarks.prepareAndRun(secret: 'foo', url_var: 'ES_URL', user_var: "ES_USER", pass_var: 'ES_PASS')
 */
 def call(Map params = [:]) {
   if(!isUnix()){
@@ -92,6 +94,45 @@ def call(Map params = [:]) {
           }
       }
    }
+}
+
+/**
+ This will allow to encapsulate the credentials and use them within the script which
+ runs in the body
+*/
+def prepareAndRun(Map params = [:], Closure body) {
+  if(!isUnix()){
+    error('prepareAndRun: windows is not supported yet.')
+  }
+  def secret = params.containsKey('secret') ? params.secret : error('prepareAndRun: secret argument is required.')
+  def urlVar = params.containsKey('url_var') ? params.url_var : error('prepareAndRun: url_var argument is required.')
+  def userVar = params.containsKey('user_var') ? params.user_var : error('prepareAndRun: user_var argument is required.')
+  def passVar = params.containsKey('pass_var') ? params.pass_var : error('prepareAndRun: pass_var argument is required.')
+
+  def props = getVaultSecret(secret: secret)
+  if(props?.errors){
+     error "prepareAndRun: Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def data = props?.data
+  def url = data?.url
+  def user = data?.user
+  def password = data?.password
+
+  if(data == null || user == null || password == null || url == null){
+    error "prepareAndRun: was not possible to get authentication info to send benchmarks"
+  }
+
+  log(level: 'INFO', text: 'sendBenchmark: run script...')
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+    [var: urlVar, password: "${url}"],
+    [var: userVar, password: "${user}"],
+    [var: passVar, password: "${password}"]
+    ]]) {
+    withEnv(["${urlVar}=${url}", "${userVar}=${user}", "${passVar}=${password}"]){
+      body()
+    }
+  }
 }
 
 def getProtocol(url){

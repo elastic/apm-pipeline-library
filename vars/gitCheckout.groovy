@@ -42,10 +42,8 @@ def call(Map params = [:]){
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
-  if(reference != null){
-    extensions.add([$class: 'CloneOption', depth: 5, noTags: false, reference: "${reference}", shallow: true])
-    log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
-  }
+  extensions.add([$class: 'CloneOption', depth: 5, noTags: false, reference: "${reference != null ? reference : '' }", shallow: true])
+  log(level: 'DEBUG', text: "gitCheckout: Reference repo ${reference != null ? 'enabled' : 'disabled' } ${extensions.toString()}")
 
   if(mergeTarget != null){
     extensions.add([$class: 'PreBuildMerge', options: [mergeTarget: "${mergeTarget}", mergeRemote: "${mergeRemote}"]])

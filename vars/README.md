@@ -497,8 +497,12 @@ def i = randomNumber(min: 1, max: 99)
 ```
 
 ## sendBenchmarks
-Send the benchmarks to the cloud service.
-Requires Go installed.
+Send the benchmarks to the cloud service or run the script and prepare the environment
+to be implemented within the script itself.
+
+### sendBenchmarks
+
+Send the file to the specific ES instance. It does require Go to be installed beforehand.
 
 ```
 sendBenchmarks()
@@ -512,6 +516,20 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 * *index*: index name to store data.
 * *url*: ES url to store the data.
 * *secret*: Vault secret that contains the ES credentials.
+
+### sendBenchmarks.prepareAndRun
+
+Run the script and prepare the environment accordingly. It does delegate the sending of the data
+to ES within the script itself rather than within the step.
+
+
+```
+sendBenchmarks.runAndSend(secret: 'foo', url_var: 'ES_URL', user_var: "ES_USER", pass_var: 'ES_PASS')
+```
+* *secret*: Vault secret that contains the ES credentials.
+* *url_var*: the name of the variable with the ES url to be exposed.
+* *user_var*: the name of the variable with the ES user to be exposed.
+* *pass_var*: the name of the variable with the ES password to be exposed.
 
 ## sendDataToElasticsearch
 Send the JSON report file to Elastisearch. It returns the response body.
