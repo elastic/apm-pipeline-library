@@ -40,10 +40,10 @@ repos:
   rev: feature/precommit-lib
   hooks:
   -   id: check-bash-syntax
-  -   id: forbid-abstract-classes-and-traits
-  -   id: force-JsonSlurperClassic
-  -   id: Jenkinsfile-linter
-  -   id: forbid-unicode-non-breaking-spaces
+  -   id: check-abstract-classes-and-trait
+  -   id: check-jsonslurper-class
+  -   id: check-jenkinsfile
+  -   id: check-unicode-non-breaking-spaces
   -   id: remove-unicode-non-breaking-spaces
-  -   id: forbid-en-dashes
+  -   id: check-en-dashes
   -   id: remove-en-dashes

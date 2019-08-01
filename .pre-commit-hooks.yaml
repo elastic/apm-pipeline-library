@@ -1,51 +1,47 @@
 -   id: check-bash-syntax
-    name: Check Shell scripts syntax corectness
     language: system
     entry: bash -n
     files: \.sh$
     exclude: ^target/
-    description: "Runs `bash`, requires bash"
--   id: forbid-abstract-classes-and-traits
-    name: Ensure neither abstract classes nor traits are used
+    description: "Check Shell scripts syntax corectness, requires bash"
+-   id: check-abstract-classes-and-trait
     language: pygrep
     entry: "^(abstract|trait) "
-    files: ^src/.*\.groovy$
+    files: ^(src|vars)/.*\.groovy$
     exclude: ^target/
     description: "Ensure neither abstract classes nor traits are used"
--   id: force-JsonSlurperClassic
-    name: Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
+-   id: check-jsonslurper-class
     language: pygrep
     entry: JsonSlurper[^C]
     files: \.groovy$
     exclude: ^target/
     description: "Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper"
--   id: Jenkinsfile-linter
-    name: Check syntax of the Jenkinsfiles
-    description: Check Jenkinsfile following the scripted-pipeline syntax using Jenkins API
+-   id: check-jenkinsfile
     files: ^.ci/(.*\.groovy|Jenkinsfile)$
     entry: .ci/scripts/validate.sh
     language: script
     verbose: true
     exclude: ^target/
-    description: "Check syntax of the Jenkinsfiles, requires docker and jenkins up and running."
--   id: forbid-unicode-non-breaking-spaces
-    name: Detect unicode non-breaking space character U+00A0 aka M-BM-
+    description: "Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running."
+-   id: check-unicode-non-breaking-spaces
     language: system
     entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
+    exclude: ^target/
+    description: "Detect unicode non-breaking space character U+00A0 aka M-BM-"
 -   id: remove-unicode-non-breaking-spaces
-    name: Remove unicode non-breaking space character U+00A0 aka M-BM-
     language: system
     entry: perl -pi* -e 's/\xc2\xa0/ /g && ($t = 1) && print STDERR $_; END{{exit
         $t}}'
     exclude: ^target/
--   id: forbid-en-dashes
-    name: Detect the EXTREMELY confusing unicode character U+2013
+    description: "Remove unicode non-breaking space character U+00A0 aka M-BM-"
+-   id: check-en-dashes
     language: system
     entry: perl -ne 'print if $m = /\xe2\x80\x93/; $t ||= $m; END{{exit $t}}'
     exclude: ^target/
+    description: "Detect the EXTREMELY confusing unicode character U+2013"
 -   id: remove-en-dashes
-    name: Remove the EXTREMELY confusing unicode character U+2013
     language: system
     entry: perl -pi* -e 's/\xe2\x80\x93/-/g && ($t = 1) && print STDERR $_; END{{exit
         $t}}'
     exclude: ^target/
+    description: "Remove the EXTREMELY confusing unicode character U+2013"

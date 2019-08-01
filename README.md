@@ -170,27 +170,27 @@ golang hooks for http://pre-commit.com/
 
 Add this to your `.pre-commit-config.yaml`
 
-    - repo: git://github.com/elastic/apm-pipeline-library
+    - repo: https://github.com/elastic/apm-pipeline-library
       rev: current
       hooks:
-        - id: check-bash-syntax
-        - id: forbid-abstract-classes-and-traits
-        - id: force-JsonSlurperClassic
-        - id: Jenkinsfile-linter
-        - id: forbid-unicode-non-breaking-spaces
-        - id: remove-unicode-non-breaking-spaces
-        - id: forbid-en-dashes
-        - id: remove-en-dashes
+      -   id: check-bash-syntax
+      -   id: check-abstract-classes-and-trait
+      -   id: check-jsonslurper-class
+      -   id: check-jenkinsfile
+      -   id: check-unicode-non-breaking-spaces
+      -   id: remove-unicode-non-breaking-spaces
+      -   id: check-en-dashes
+      -   id: remove-en-dashes
 
 ### Available hooks
 
-- check-bash-syntax
-- forbid-abstract-classes-and-traits - Ensure neither abstract classes nor traits are used in the shared library.
-- force-JsonSlurperClassic - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
-- Jenkinsfile-linter - Jenkinsfile linter.
-- forbid-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
+- check-bash-syntax - Check Shell scripts syntax corectness, requires bash
+- check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
+- check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
+- check-jenkinsfile - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
+- check-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
 - remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
-- forbid-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
+- check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
 - remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
 
 
