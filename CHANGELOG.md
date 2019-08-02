@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.29 (02/08/2019)
+
+#### 🚀 Enhancements
+
+-  feat: support cloneOptions by default [#170](https://github.com/elastic/apm-pipeline-library/pull/170)
+
+#### 🐛 Bug Fixes
+
+-  fix appended protocol [#169](https://github.com/elastic/apm-pipeline-library/pull/169)
+
+#### 🙈 No user affected
+
+-  pre-commit more test coverage [#171](https://github.com/elastic/apm-pipeline-library/pull/171)
+
+---
+
 ## v1.1.28 (31/07/2019)
 
 #### 🚀 Enhancements
@@ -349,15 +365,15 @@
 
 #### 🚀 Enhancements
 
--   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 -  feat: add build info to the test results object [#65](https://github.com/elastic/apm-pipeline-library/pull/65)
 -  feat: new job for Integrations registry repo [#64](https://github.com/elastic/apm-pipeline-library/pull/64)
+-   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 
 #### 🐛 Bug Fixes
 
+-  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
 -  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
--  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 
 ---
 
