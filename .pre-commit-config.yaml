@@ -34,7 +34,7 @@ repos:
         args: ['-c','.ci/.yamlint.yml']
         stages: [commit]
         types: [yaml]
-        exclude: (^.pre-commit-config.yaml$|^.ci/.yamlint.yml$|^target/)
+        exclude: (^.pre-commit-config.yaml$|^.pre-commit-hooks.yaml$|^.ci/.yamlint.yml$|^target/)
 
 -   repo: git@github.com:v1v/apm-pipeline-library
     rev: feature/precommit-lib
