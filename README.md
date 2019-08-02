@@ -176,7 +176,7 @@ Add this to your `.pre-commit-config.yaml`
       -   id: check-bash-syntax
       -   id: check-abstract-classes-and-trait
       -   id: check-jsonslurper-class
-      -   id: check-jenkinsfile
+      -   id: check-jenkins-pipelines
       -   id: check-unicode-non-breaking-spaces
       -   id: remove-unicode-non-breaking-spaces
       -   id: check-en-dashes
@@ -187,7 +187,7 @@ Add this to your `.pre-commit-config.yaml`
 - check-bash-syntax - Check Shell scripts syntax corectness, requires bash
 - check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
 - check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
-- check-jenkinsfile - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
+- check-jenkins-pipelines - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
 - check-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
 - remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
 - check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013

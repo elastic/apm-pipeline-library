@@ -36,15 +36,15 @@ repos:
         types: [yaml]
         exclude: (^.pre-commit-config.yaml$|^.ci/.yamlint.yml$|^target/)
 
-- repo: https://github.com/v1v/apm-pipeline-library
-  rev: feature/precommit-lib
-  hooks:
-  -   id: check-bash-syntax
-  -   id: check-abstract-classes-and-trait
-  -   id: check-jsonslurper-class
-  -   id: check-jenkinsfile
-  -   id: check-unicode-non-breaking-spaces
-  -   id: remove-unicode-non-breaking-spaces
-  -   id: check-en-dashes
-  -   id: remove-en-dashes
-  -   id: check-jjbb
+-   repo: git@github.com:v1v/apm-pipeline-library
+    rev: feature/precommit-lib
+    hooks:
+    -   id: check-bash-syntax
+    -   id: check-abstract-classes-and-trait
+    -   id: check-jsonslurper-class
+    -   id: check-jenkins-pipelines
+    -   id: check-unicode-non-breaking-spaces
+    -   id: remove-unicode-non-breaking-spaces
+    -   id: check-en-dashes
+    -   id: remove-en-dashes
+    -   id: check-jjbb
