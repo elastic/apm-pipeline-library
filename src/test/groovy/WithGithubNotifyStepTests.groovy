@@ -37,13 +37,16 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
 
     binding.setVariable('env', env)
 
-    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests"
+    def redirectBOURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests"
+    def redirectURL = "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport"
+
 
     helper.registerAllowedMethod("error", [String.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
-    helper.registerAllowedMethod("getBlueoceanTabURL", [String.class], { redirectURL })
+    helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { redirectBOURL })
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { redirectURL })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -111,7 +114,7 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
   void testSuccessWithAllArguments() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(context: 'foo', description: 'bar', tab: 'tests') {
+    script.call(context: 'foo', description: 'bar', tab: 'tests', isBlueOcean: true) {
       isOK = true
     }
     printCallStack()
@@ -138,5 +141,22 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     printCallStack()
     assertFalse(isOK)
     assertJobStatusFailure()
+  }
+
+  @Test
+  void testSuccessWithIsBlueOcean() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.call(context: 'foo', description: 'bar', tab: 'tests', isBlueOcean: false) {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'githubNotify'
+    }.any { call ->
+      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/")
+    })
   }
 }
