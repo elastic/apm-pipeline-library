@@ -21,17 +21,26 @@
   withGithubNotify(context: 'checkName', description: 'Execute something') {
     // block
   }
+
+  withGithubNotify(context: 'checkName', description: 'Execute something', isBlueOcean: false) {
+    // block
+  }
 */
 def call(Map params = [:], Closure body) {
   def context = params.context
   def description = params.containsKey('description') ? params.description : context
   def tab = params.tab ?: 'pipeline'
+  def isBo = params.get('isBlueOcean', false)
 
   if (!context) {
     error 'withGithubNotify: Missing arguments'
   }
 
-  def redirect = getBlueoceanTabURL(tab)
+  if (isBo) {
+    redirect = getBlueoceanTabURL(tab)
+  } else {
+    redirect = getTraditionalPageURL(tab)
+  }
   try {
     notify(context, "${description} ...", 'PENDING', redirect)
     body()
