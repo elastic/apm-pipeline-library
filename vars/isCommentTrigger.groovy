@@ -33,7 +33,7 @@ def call(){
     //Only Elastic users are allowed
     def token = getGithubToken()
     def user = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}")
-    ret = '@elastic'.equals(user?.company)
+    ret = '@elastic'.equals(user?.company?.trim())
   }
   return ret
 }
