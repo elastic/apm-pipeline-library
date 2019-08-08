@@ -188,6 +188,23 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
 
+## getTraditionalPageURL
+Provides the specific traditional URL tab for the current build/run
+
+Tab refers to the kind of available pages in the traditional view. So far:
+* pipeline -> aka the build run (for BO compatibilities)
+* tests
+* changes
+* artifacts
+* cobertura
+* gcs
+
+
+```
+def testURL = getTraditionalPageURL('tests')
+def artifactURL = getTraditionalPageURL('artifacts')
+```
+
 ## getVaultSecret
 Get a secret from the Vault.
 You will need some credentials created to use the vault :
