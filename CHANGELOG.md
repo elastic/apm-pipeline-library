@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.30 (07/08/2019)
+
+#### 🚀 Enhancements
+
+-  fix: support traditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
+
+---
+
 ## v1.1.29 (02/08/2019)
 
 #### 🚀 Enhancements
@@ -371,9 +379,9 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
 -  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
--  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
 
 ---
 
