@@ -23,16 +23,23 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GetGitCommitShaStepTests extends BasePipelineTest {
+  String scriptName = 'vars/getGitCommitSha.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
   }
 
   @Test
   void test() throws Exception {
     String sha = '29480a51'
-    def script = loadScript("vars/getGitCommitSha.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-parse HEAD'.equals(map.script)) {
           return sha
@@ -42,5 +49,23 @@ class GetGitCommitShaStepTests extends BasePipelineTest {
     String ret = script.call()
     printCallStack()
     assertTrue(sha.equals(ret))
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('getGitCommitSha: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
   }
 }

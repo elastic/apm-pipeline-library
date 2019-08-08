@@ -1,5 +1,173 @@
 # Changelog
 
+## v1.1.31 (08/08/2019)
+
+#### 🚀 Enhancements
+
+-  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
+-  feat: pre-commit hooks library [#168](https://github.com/elastic/apm-pipeline-library/pull/168)
+-  add some debug logs to the isGitRegionMatch  [#176](https://github.com/elastic/apm-pipeline-library/pull/176)
+
+#### 🐛 Bug Fixes
+
+-  withEnv in the checkLicenses step [#175](https://github.com/elastic/apm-pipeline-library/pull/175)
+-  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
+
+---
+
+## v1.1.30 (07/08/2019)
+
+#### 🚀 Enhancements
+
+-  fix: support traditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
+
+---
+
+## v1.1.29 (02/08/2019)
+
+#### 🚀 Enhancements
+
+-  feat: support cloneOptions by default [#170](https://github.com/elastic/apm-pipeline-library/pull/170)
+
+#### 🐛 Bug Fixes
+
+-  fix appended protocol [#169](https://github.com/elastic/apm-pipeline-library/pull/169)
+
+#### 🙈 No user affected
+
+-  pre-commit more test coverage [#171](https://github.com/elastic/apm-pipeline-library/pull/171)
+
+---
+
+## v1.1.28 (31/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
+-  feat: prepareAndRun for the benchmark [#167](https://github.com/elastic/apm-pipeline-library/pull/167)
+-  ci: enable PoC for the metricbeats [#148](https://github.com/elastic/apm-pipeline-library/pull/148)
+-  feat: use preCommit step [#166](https://github.com/elastic/apm-pipeline-library/pull/166)
+
+#### 🐛 Bug Fixes
+
+-  fix: force git push [#164](https://github.com/elastic/apm-pipeline-library/pull/164)
+
+#### ⚙️ CI
+
+-  feat: remove submodules [#149](https://github.com/elastic/apm-pipeline-library/pull/149)
+
+---
+
+## v1.1.27 (29/07/2019)
+
+#### 🚀 Enhancements
+
+-  windows is not supported in some steps [#162](https://github.com/elastic/apm-pipeline-library/pull/162)
+-  feat: enable precommit step [#158](https://github.com/elastic/apm-pipeline-library/pull/158)
+
+#### 🙈 No user affected
+
+-  Rename test methods [#161](https://github.com/elastic/apm-pipeline-library/pull/161)
+
+#### ⚙️ CI
+
+-  fix: create and delete tag steps [#160](https://github.com/elastic/apm-pipeline-library/pull/160)
+
+---
+
+## v1.1.26 (26/07/2019)
+*No changelog for this release.*
+
+---
+
+## v1.1.25 (26/07/2019)
+
+#### 🐛 Bug Fixes
+
+-  fix: use cmd param in the gitCmd step [#157](https://github.com/elastic/apm-pipeline-library/pull/157)
+
+---
+
+## v1.1.24 (26/07/2019)
+*No changelog for this release.*
+
+---
+
+## v1.1.23 (26/07/2019)
+*No changelog for this release.*
+
+---
+
+## v1.1.22 (26/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: rename GitHub check as discussed [#155](https://github.com/elastic/apm-pipeline-library/pull/155)
+
+#### 🐛 Bug Fixes
+
+-  fix null pointer exceptions when calling the method from another step [#156](https://github.com/elastic/apm-pipeline-library/pull/156)
+
+---
+
+## v1.1.21 (26/07/2019)
+
+#### 🚀 Enhancements
+
+-  enable junit reporting for the pre-commit stage [#154](https://github.com/elastic/apm-pipeline-library/pull/154)
+
+---
+
+## v1.1.20 (26/07/2019)
+
+#### 🚀 Enhancements
+
+-  feat: preCommitToJunit step [#153](https://github.com/elastic/apm-pipeline-library/pull/153)
+
+#### 🐛 Bug Fixes
+
+-  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
+-  fix: make gren docker image works [#140](https://github.com/elastic/apm-pipeline-library/pull/140)
+-  fix: grab the real version name from artifactory before push [#143](https://github.com/elastic/apm-pipeline-library/pull/143)
+-  fix: use alias to avoid hit erased paths [#141](https://github.com/elastic/apm-pipeline-library/pull/141)
+-  fix: execute .ci/scripts/push-integration-test-images.sh in the correct context [#142](https://github.com/elastic/apm-pipeline-library/pull/142)
+
+#### ⚙️ CI
+
+-  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
+-  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
+-  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
+-  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
+-  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
+
+---
+
+## v1.1.19 (19/07/2019)
+*No changelog for this release.*
+
+---
+
+## v1.1.18 (19/07/2019)
+
+#### 🚀 Enhancements
+
+-  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
+-  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
+-  enable issueCommentTrigger and expose GITHUB_COMMENT environment [#136](https://github.com/elastic/apm-pipeline-library/pull/136)
+-  enable cobertura and gsc tabs with the traditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
+-  ci: release process [#123](https://github.com/elastic/apm-pipeline-library/pull/123)
+
+#### 🐛 Bug Fixes
+
+-  fix net.sf.json.JSONNull.trim() [#138](https://github.com/elastic/apm-pipeline-library/pull/138)
+-  fix: log rotate settings [#131](https://github.com/elastic/apm-pipeline-library/pull/131)
+
+#### 🙈 No user affected
+
+-  disable opbeans-dotnet build images generation [#134](https://github.com/elastic/apm-pipeline-library/pull/134)
+
+---
+
 ## v1.1.17 (17/07/2019)
 
 #### 🚀 Enhancements
@@ -260,13 +428,13 @@
 
 #### 🚀 Enhancements
 
--  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
--  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
+-  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
+-  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 
 #### 📚 Documentation
 
@@ -390,8 +558,8 @@
 
 #### 🚀 Enhancements
 
--  Add "flags" param to codecov [#26](https://github.com/elastic/apm-pipeline-library/pull/26)
 -   [APM-CI] add support to reference repository to gitCheckout [#27](https://github.com/elastic/apm-pipeline-library/pull/27)
+-  Add "flags" param to codecov [#26](https://github.com/elastic/apm-pipeline-library/pull/26)
 
 #### 📚 Documentation
 
@@ -445,10 +613,10 @@
 
 #### ⚙️ CI
 
+-  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
+-  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
 -  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
--  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
--  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)

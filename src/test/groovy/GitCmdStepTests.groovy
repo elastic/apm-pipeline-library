@@ -22,6 +22,8 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitCmdStepTests extends BasePipelineTest {
+  String scriptName = 'vars/gitCmd.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -29,6 +31,11 @@ class GitCmdStepTests extends BasePipelineTest {
     binding.setVariable("ORG_NAME", "my_org")
     binding.setVariable("REPO_NAME", "my_repo")
 
+    helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
     helper.registerAllowedMethod('sh', [String.class], { "OK" })
     helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
@@ -44,7 +51,7 @@ class GitCmdStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitCmd.groovy")
+    def script = loadScript(scriptName)
     script.call(cmd: 'push')
     printCallStack()
     assertJobStatusSuccess()
@@ -60,13 +67,13 @@ class GitCmdStepTests extends BasePipelineTest {
 
   @Test
   void testNoCmd() throws Exception {
-    def script = loadScript("vars/gitCmd.groovy")
+    def script = loadScript(scriptName)
     try{
       script.call(credentialsId: "my_credentials", args: '-f')
     } catch(err){
       //NOOP
-      println e.toString()
-      e.printStackTrace(System.out);
+      println err.toString()
+      err.printStackTrace(System.out);
     }
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
@@ -74,6 +81,63 @@ class GitCmdStepTests extends BasePipelineTest {
         callArgsToString(call).contains("gitCmd: missing git command")
     })
     printCallStack()
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testParamsWithEmptyCredentials() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cmd: "push", credentialsId: '', args: '-f')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'usernamePassword'
+    }.any { call ->
+        callArgsToString(call).contains('2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testParamsWithAnotherCredentials() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cmd: "push", credentialsId: 'foo', args: '-f')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'usernamePassword'
+    }.any { call ->
+        callArgsToString(call).contains('foo')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCmdIsPopulated() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cmd: 'push', credentialsId: 'foo')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'sh'
+    }.any { call ->
+        callArgsToString(call).contains('script=git push')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('gitCmd: windows is not supported yet.')
+    })
     assertJobStatusFailure()
   }
 }

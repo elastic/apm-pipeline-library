@@ -184,7 +184,10 @@ def buildDockerImage(args){
     git "${repo}"
     dir("${folder}"){
       withEnv(env){
-        sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        retry(3) {
+          sleep randomNumber(min: 5, max: 10)
+          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        }
         if(push){
           sh(label: "push docker image", script: "docker push ${image}")
         }

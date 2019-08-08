@@ -1,0 +1,14 @@
+Run the pre-commit for the given commit if provided and generates the JUnit
+report if required
+
+```
+preCommit(junit: false)
+
+preCommit(commit: 'abcdefg')
+
+preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
+```
+
+* junit: whether to generate the JUnit report. Default: true. Optional
+* commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
+* credentialsId: what credentialsId to be loaded to enable git clones from private repos. Default: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba'. Optional

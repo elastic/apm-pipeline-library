@@ -280,11 +280,40 @@ pipeline {
           bat returnStatus: true, script: 'docker -v'
         }
       }
-      stage('windows 2016 check'){
-        agent { label 'windows-2016' }
+      stage('windows 2019 immutable check'){
+        agent { label 'windows-2019-immutable' }
         options { skipDefaultCheckout() }
         steps {
           bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'dotnet --info'
+          bat returnStatus: true, script: 'nuget --help'
+          bat returnStatus: true, script: 'vswhere'
+          bat returnStatus: true, script: 'docker -v'
+        }
+      }
+      stage('windows 2012 immutable check'){
+        agent { label 'windows-2012-r2-immutable' }
+        options { skipDefaultCheckout() }
+        steps {
+          bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'dotnet --info'
+          bat returnStatus: true, script: 'nuget --help'
+          bat returnStatus: true, script: 'vswhere'
+          bat returnStatus: true, script: 'docker -v'
+        }
+      }
+       stage('windows 2019 docker immutable check'){
+        agent { label 'windows-2019-docker-immutable' }
+        options { skipDefaultCheckout() }
+        when {
+          beforeAgent true
+          expression { return false }
+        }
+        steps {
+          bat returnStatus: true, script: 'msbuild'
+          bat returnStatus: true, script: 'dotnet --info'
+          bat returnStatus: true, script: 'nuget --help'
+          bat returnStatus: true, script: 'vswhere'
           bat returnStatus: true, script: 'docker -v'
         }
       }

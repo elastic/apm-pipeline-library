@@ -24,6 +24,9 @@
 
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('isGitRegionMatch: windows is not supported yet.')
+  }
   def regexps =  params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
 
   if (regexps.isEmpty()) {
@@ -33,6 +36,7 @@ def call(Map params = [:]) {
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
     def match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
+    log(level: 'INFO', text: "isGitRegionMatch: '${match ?: 'not' }' matched")
     return (match != null)
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'

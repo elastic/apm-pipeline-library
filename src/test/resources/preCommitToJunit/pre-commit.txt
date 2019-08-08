@@ -1,0 +1,139 @@
+Check for case conflicts........................................................................Passed
+Check that executables have shebangs............................................................Failed
+hookid: check-executables-have-shebangs
+
+src/test/resources/steps-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/steps-info.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/tests-summary.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/tests-summary.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/artifacts-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/artifacts-info.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/build-report.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/build-report.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/changeSet-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/changeSet-info.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/job-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/job-info.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/build-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/build-info.json
+  If it is supposed to be executable, double-check its shebang.
+src/test/resources/tests-info.json: marked executable but has no (or invalid) shebang!
+  If it isn't supposed to be executable, try: chmod -x src/test/resources/tests-info.json
+  If it is supposed to be executable, double-check its shebang.
+
+Check JSON......................................................................................Skipped
+Check for merge conflicts.......................................................................Passed
+Check Yaml......................................................................................Passed
+Check Xml.......................................................................................Passed
+Fix End of Files................................................................................Failed
+hookid: end-of-file-fixer
+
+Files were modified by this hook. Additional output:
+
+Fixing resources/runbld/failure.json
+Fixing .mvn/wrapper/maven-wrapper.properties
+Fixing resources/runbld/build.json
+Fixing resources/runbld/log.json
+Fixing resources/reviewApproved.json
+
+Shellscript: lint...............................................................................Failed
+hookid: shell-lint
+
+In resources/scripts/generateReadme.sh line 33:
+echo "# Steps Documentation" > ${README}
+                               ^-------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/generateReadme.sh line 34:
+for i in ${FOLDER}/*.txt
+         ^-------^ SC2231: Quote expansions in this for loop glob to prevent wordsplitting, e.g. "$dir"/*.txt .
+
+
+In resources/scripts/generateReadme.sh line 37:
+  step=$(basename $i .txt)
+                  ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/generateReadme.sh line 38:
+  echo "## ${step}" >>  ${README}
+  ^-----------------------------^ SC2129: Consider using { cmd1; cmd2; } >> file instead of individual redirects.
+                        ^-------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/generateReadme.sh line 39:
+  cat $i >>  ${README}
+      ^-- SC2086: Double quote to prevent globbing and word splitting.
+             ^-------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/generateReadme.sh line 40:
+  echo "" >> ${README}
+             ^-------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/getDockerImages.sh line 33:
+MANIFEST_JSON=$(curl -sSf https://artifacts-api.elastic.co/v1/versions/${VERSION_ID}/builds/latest/)
+                                                                       ^-----------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/getDockerImages.sh line 38:
+  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.\"${product}\".packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${VERSION_ID}")
+             ^--------------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/getDockerImages.sh line 40:
+  curl ${URL}|docker load
+       ^----^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/getDockerImages.sh line 45:
+  URL=$(echo ${MANIFEST_JSON}|jq -r ".build.projects.beats.packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${VERSION_ID}")
+             ^--------------^ SC2086: Double quote to prevent globbing and word splitting.
+
+
+In resources/scripts/getDockerImages.sh line 47:
+  curl ${URL}|docker load
+       ^----^ SC2086: Double quote to prevent globbing and word splitting.
+
+For more information:
+  https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...
+  https://www.shellcheck.net/wiki/SC2231 -- Quote expansions in this for loop...
+  https://www.shellcheck.net/wiki/SC2129 -- Consider using { cmd1; cmd2; } >>...
+
+In resources/scripts/count-data.sh line 27:
+AssertionError: queried for [{'processor.event': 'transaction'}], expected 1820, got 1726
+                             ^-- SC1083: This { is literal. Check expression (missing ;/\n?) or quote it.
+                                                              ^-- SC1083: This } is literal. Check expression (missing ;/\n?) or quote it.
+
+
+In resources/scripts/count-data.sh line 29:
+es = <tests.fixtures.es.es.<locals>.Elasticsearch object at 0x7ff8047877f0>
+^-- SC1009: The mentioned syntax error was in this simple command.
+                                                                          ^-- SC1073: Couldn't parse this redirection. Fix to allow more checks.
+                                                                           ^-- SC1072:  Fix any mentioned problems and try again.
+
+
+In resources/scripts/jenkins/validateJenkinsfile.sh line 41:
+JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
+              ^-- SC2006: Use $(...) notation instead of legacy backticked `...`.
+
+For more information:
+  https://www.shellcheck.net/wiki/SC1083 -- This { is literal. Check expressi...
+  https://www.shellcheck.net/wiki/SC2006 -- Use $(...) notation instead of le...
+  https://www.shellcheck.net/wiki/SC1072 --  Fix any mentioned problems and t...
+
+Yaml: lint......................................................................................Passed
+Check Shell scripts syntax corectness...........................................................Passed
+Ensure neither abstract classes nor traits are used.............................................Passed
+Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.......................Passed
+Check syntax of the Jenkinsfiles................................................................Passed
+Detect unicode non-breaking space character U+00A0 aka M-BM-....................................Passed
+Remove unicode non-breaking space character U+00A0 aka M-BM-....................................Passed
+Detect the EXTREMELY confusing unicode character U+2013.........................................Failed
+hookid: forbid-en-dashes

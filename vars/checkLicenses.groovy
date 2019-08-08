@@ -30,6 +30,9 @@
 
 */
 def call(Map params = [:]) {
+  if(!isUnix()){
+    error('checkLicenses: windows is not supported yet.')
+  }
   def excludeFlag = params.containsKey('exclude') ? "-exclude ${params.exclude}" : ''
   def fileExtFlag = params.containsKey('ext') ? "-ext ${params.ext}" : ''
   def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
@@ -42,11 +45,13 @@ def call(Map params = [:]) {
     error('checkLicenses: skip should be enabled when using the junit flag.')
   }
 
-  docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
+  docker.image('golang:1.12').inside {
     catchError {
-      sh(label: 'Check Licenses', script: """
-      go get -u github.com/elastic/go-licenser
-      go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
+      withEnv(["HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"]) {
+        sh(label: 'Check Licenses', script: """
+        go get -u github.com/elastic/go-licenser
+        go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
+      }
     }
 
     // Potentially supported with https://github.com/elastic/go-licenser/issues/23
