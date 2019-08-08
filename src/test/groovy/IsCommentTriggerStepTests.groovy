@@ -66,12 +66,13 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   }
 
   Map env = [:]
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
+    script = loadScript('vars/isCommentTrigger.groovy')
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
@@ -83,7 +84,6 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   void test() throws Exception {
     Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    def script = loadScript("vars/isCommentTrigger.groovy")
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -95,7 +95,6 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   @Test
   void testNoCommentTriggered() throws Exception {
     binding.getVariable('currentBuild').rawBuild = new RawBuild(null)
-    def script = loadScript("vars/isCommentTrigger.groovy")
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -107,10 +106,22 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
     Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return [login: 'user', company: '@none']})
-    def script = loadScript("vars/isCommentTrigger.groovy")
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testElasticUserWithExtraSpaces() throws Exception {
+    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {return [login: 'user', company: '@elastic ']})
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
+    assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
     assertJobStatusSuccess()
   }
 }

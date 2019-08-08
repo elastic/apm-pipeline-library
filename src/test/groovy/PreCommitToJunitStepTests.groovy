@@ -118,4 +118,16 @@ class PreCommitToJunitStepTests extends BasePipelineTest {
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
   }
+
+  @Test
+  void testSuccessWithGherkinDefects() throws Exception {
+    def script = loadScript(scriptName)
+    def file = 'gherkin.xml'
+    script.call(input: 'gherkin.txt', output: file)
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
+                                      new File("${compareWith}/${file}"),
+                                      new File("target/${file}"), 'UTF-8'))
+  }
 }

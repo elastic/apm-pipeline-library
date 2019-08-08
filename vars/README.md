@@ -188,6 +188,23 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
 
+## getTraditionalPageURL
+Provides the specific traditional URL tab for the current build/run
+
+Tab refers to the kind of available pages in the traditional view. So far:
+* pipeline -> aka the build run (for BO compatibilities)
+* tests
+* changes
+* artifacts
+* cobertura
+* gcs
+
+
+```
+def testURL = getTraditionalPageURL('tests')
+def artifactURL = getTraditionalPageURL('artifacts')
+```
+
 ## getVaultSecret
 Get a secret from the Vault.
 You will need some credentials created to use the vault :
@@ -473,10 +490,13 @@ report if required
 preCommit(junit: false)
 
 preCommit(commit: 'abcdefg')
+
+preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
 ```
 
 * junit: whether to generate the JUnit report. Default: true. Optional
 * commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
+* credentialsId: what credentialsId to be loaded to enable git clones from private repos. Default: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba'. Optional
 
 ## preCommitToJunit
 Parse the pre-commit log file and generates a junit report
@@ -524,7 +544,7 @@ to ES within the script itself rather than within the step.
 
 
 ```
-sendBenchmarks.runAndSend(secret: 'foo', url_var: 'ES_URL', user_var: "ES_USER", pass_var: 'ES_PASS')
+sendBenchmarks.prepareAndRun(secret: 'foo', url_var: 'ES_URL', user_var: "ES_USER", pass_var: 'ES_PASS')
 ```
 * *secret*: Vault secret that contains the ES credentials.
 * *url_var*: the name of the variable with the ES url to be exposed.

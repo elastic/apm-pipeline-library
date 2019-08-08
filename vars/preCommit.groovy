@@ -22,10 +22,13 @@
   preCommit(junit: false)
 
   preCommit(commit: 'abcdefg')
+
+  preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
 */
 def call(Map params = [:]) {
   def junitFlag = params.get('junit', true)
   def commit = params.get('commit', env.GIT_BASE_COMMIT)
+  def credentialsId = params.get('credentialsId', 'f6c7695a-671e-4f4f-a331-acdce44ff9ba')
 
   if (!commit?.trim()) {
     commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')
@@ -33,10 +36,12 @@ def call(Map params = [:]) {
 
   def reportFileName = 'pre-commit.out'
 
-  sh """
-    curl https://pre-commit.com/install-local.py | python -
-    git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
-  """
+  sshagent([credentialsId]) {
+    sh """
+      curl https://pre-commit.com/install-local.py | python -
+      git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
+    """
+  }
   if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
     junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
