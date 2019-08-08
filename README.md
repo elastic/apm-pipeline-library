@@ -181,6 +181,7 @@ Add this to your `.pre-commit-config.yaml`
       -   id: remove-unicode-non-breaking-spaces
       -   id: check-en-dashes
       -   id: remove-en-dashes
+      -   id: check-gherkin-lint
 
 ### Available hooks
 
@@ -192,7 +193,7 @@ Add this to your `.pre-commit-config.yaml`
 - remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
 - check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
 - remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
-
+- check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
 
 ## Resources
 

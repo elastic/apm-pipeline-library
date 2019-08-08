@@ -60,3 +60,9 @@
     entry: .ci/scripts/validate-jjbb.sh
     language: script
     verbose: true
+-   id: check-gherkin-lint
+    name: Check gherkin lint
+    description: "Check Gherkin feature syntax corectness, requires docker."
+    language: script
+    entry: .ci/scripts/gherkin-lint.sh
+    files: \.feature$
