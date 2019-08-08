@@ -35,7 +35,11 @@ def call(Map params = [:]) {
 
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
+    regexps.each { regexp ->
+      sh(script: "grep '${regexp}' git-diff.txt; echo \$?",returnStatus: true)
+    }
     def match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
+    log(level: 'INFO', text: "isGitRegionMatch: match is '${match}'")
     log(level: 'INFO', text: "isGitRegionMatch: ${match ? '' : 'not' } found match")
     return (match != null)
   } else {
