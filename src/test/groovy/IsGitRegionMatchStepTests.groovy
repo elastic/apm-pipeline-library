@@ -37,6 +37,7 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
       throw new Exception(s)
     })
     helper.registerAllowedMethod('isUnix', [], { true })
+    helper.registerAllowedMethod('log', [Map.class], { true })
   }
 
   @Test
@@ -122,6 +123,39 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt' ])
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: '^foo/**/file.txt' matched")
+    })
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultipleRegexpMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return true
+        } else {
+          if (m.script.contains('^bar/**/file*.txt')) {
+            return 0
+          } else {
+            return 1
+          }
+        }
+      })
+    def result = false
+    result = script.call(regexps: [ '^foo/**/file.txt', '^bar/**/file*.txt' ])
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: '^bar/**/file*.txt' matched")
+    })
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -141,6 +175,11 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
     def result = false
     result = script.call(regexps: [ '^unknown.txt' ])
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: 'not' matched")
+    })
     assertFalse(result)
     assertJobStatusSuccess()
   }
