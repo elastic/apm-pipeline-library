@@ -1,0 +1,62 @@
+-   id: check-bash-syntax
+    name: check-bash-syntax
+    description: "Check Shell scripts syntax corectness, requires bash"
+    language: system
+    entry: bash -n
+    files: \.sh$
+    exclude: ^target/
+-   id: check-abstract-classes-and-trait
+    name: check-abstract-classes-and-trait
+    description: "Ensure neither abstract classes nor traits are used"
+    language: pygrep
+    entry: "^(abstract|trait) "
+    files: ^(src|vars)/.*\.groovy$
+    exclude: ^target/
+-   id: check-jsonslurper-class
+    name: check-jsonslurper-class
+    description: "Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper"
+    language: pygrep
+    entry: JsonSlurper[^C]
+    files: \.groovy$
+    exclude: ^target/
+-   id: check-jenkins-pipelines
+    name: check-jenkins-pipelines
+    description: "Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running."
+    files: ^.ci/(.*\.groovy|Jenkinsfile)$
+    entry: .ci/scripts/validate.sh
+    language: script
+    verbose: true
+    exclude: ^target/
+-   id: check-unicode-non-breaking-spaces
+    name: check-unicode-non-breaking-spaces
+    description: "Detect unicode non-breaking space character U+00A0 aka M-BM-"
+    language: system
+    entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
+    exclude: ^target/
+-   id: remove-unicode-non-breaking-spaces
+    name: remove-unicode-non-breaking-spaces
+    description: "Remove unicode non-breaking space character U+00A0 aka M-BM-"
+    language: system
+    entry: perl -pi* -e 's/\xc2\xa0/ /g && ($t = 1) && print STDERR $_; END{{exit
+        $t}}'
+    exclude: ^target/
+-   id: check-en-dashes
+    name: check-en-dashes
+    description: "Detect the EXTREMELY confusing unicode character U+2013"
+    language: system
+    entry: perl -ne 'print if $m = /\xe2\x80\x93/; $t ||= $m; END{{exit $t}}'
+    exclude: ^target/
+-   id: remove-en-dashes
+    name: remove-en-dashes
+    description: "Remove the EXTREMELY confusing unicode character U+2013"
+    language: system
+    entry: perl -pi* -e 's/\xe2\x80\x93/-/g && ($t = 1) && print STDERR $_; END{{exit
+        $t}}'
+    exclude: ^target/
+-   id: check-jjbb
+    name: check-jjbb
+    description: "Check JJBB files"
+    files: ^.ci/jobs
+    entry: .ci/scripts/validate-jjbb.sh
+    language: script
+    verbose: true

@@ -38,6 +38,7 @@ class PreCommitStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
+    helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
   }
 
   @Test
@@ -91,8 +92,13 @@ class PreCommitStepTests extends BasePipelineTest {
   @Test
   void testWithAllArguments() throws Exception {
     def script = loadScript(scriptName)
-    script.call(commit: 'foo', junit: true)
+    script.call(commit: 'foo', junit: true, credentialsId: 'bar')
     printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sshagent'
+    }.any { call ->
+      callArgsToString(call).contains('[bar]')
+    })
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'sh'
     }.any { call ->
@@ -107,6 +113,19 @@ class PreCommitStepTests extends BasePipelineTest {
       call.methodName == 'junit'
     }.any { call ->
       callArgsToString(call).contains('testResults=pre-commit.out.xml')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithDefaultCredentials() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(commit: 'foo')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sshagent'
+    }.any { call ->
+      callArgsToString(call).contains('[f6c7695a-671e-4f4f-a331-acdce44ff9ba]')
     })
     assertJobStatusSuccess()
   }

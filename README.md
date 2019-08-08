@@ -162,6 +162,38 @@ Some hooks might require some extra tools such as:
 - Detect the EXTREMELY confusing unicode character U+2013
 - Remove the EXTREMELY confusing unicode character U+2013
 
+## pre-commit-hooks
+
+Observability robots hooks for http://pre-commit.com/
+
+### Using these hooks
+
+Add this to your `.pre-commit-config.yaml`
+
+    - repo: https://github.com/elastic/apm-pipeline-library
+      rev: current
+      hooks:
+      -   id: check-bash-syntax
+      -   id: check-abstract-classes-and-trait
+      -   id: check-jsonslurper-class
+      -   id: check-jenkins-pipelines
+      -   id: check-unicode-non-breaking-spaces
+      -   id: remove-unicode-non-breaking-spaces
+      -   id: check-en-dashes
+      -   id: remove-en-dashes
+
+### Available hooks
+
+- check-bash-syntax - Check Shell scripts syntax corectness, requires bash
+- check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
+- check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
+- check-jenkins-pipelines - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
+- check-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
+- remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
+- check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
+- remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
+
+
 ## Resources
 
 * [Pipeline User Handbook](https://jenkins.io/doc/book/pipeline/)
