@@ -80,7 +80,7 @@ pipeline {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
           unstash 'source'
-          dir(BASE_DIR){
+          dir("${BASE_DIR}"){
             preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
           }
         }
