@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
 /**
   Check it the build was triggered by a comment in GitHub.
 
