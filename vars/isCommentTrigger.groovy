@@ -32,8 +32,8 @@ def call(){
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
     def token = getGithubToken()
-    def user = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}")
-    ret = '@elastic'.equals(user?.company?.trim())
+    def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
+    ret = (orgs.find { it.login.equals('elastic') } != null)
   }
   return ret
 }
