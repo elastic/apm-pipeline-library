@@ -24,7 +24,7 @@
 def call(){
   def triggerCause = currentBuild.rawBuild.getCauses().find { it.getClass().getSimpleName().equals('IssueCommentCause') }
   def found = false
-  log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause}")
+  log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause?.getUserLogin()}")
   if (triggerCause != null) {
     log(level: 'DEBUG', text: 'isCommentTrigger: set some environment variables with the comments and so on')
     env.GITHUB_COMMENT = triggerCause.getComment()
