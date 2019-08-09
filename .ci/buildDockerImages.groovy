@@ -176,6 +176,39 @@ pipeline {
         }
       }
     }
+    stage('Build Apm Server test Docker images'){
+      agent { label 'immutable && docker' }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Apm Server Docker images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.apm_integration_testing }
+      }
+      steps {
+        checkout scm
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/apm-server.git',
+          tag: "apm-server",
+          version: "daily",
+          push: true
+        )
+        dir("apm-server-images"){
+          git('https://github.com/elastic/apm-server.git')
+          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
+        }
+        sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/**/junit-*.xml")
+        }
+      }
+    }
     stage('Build helm-kubernetes Docker hub image'){
       agent { label 'immutable && docker' }
       options {
