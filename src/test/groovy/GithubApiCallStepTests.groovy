@@ -101,7 +101,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains('makeGithubApiCall: no valid Github token.')
+        callArgsToString(call).contains('githubApiCall: no valid Github token.')
     })
   }
 
@@ -114,7 +114,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains('makeGithubApiCall: no valid Github REST API URL.')
+        callArgsToString(call).contains('githubApiCall: no valid Github REST API URL.')
     })
   }
 
@@ -137,7 +137,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains('makeGithubApiCall: The REST API call http://error return the message : Not Found')
+        callArgsToString(call).contains('githubApiCall: The REST API call http://error return the message : Not Found')
     })
   }
 
@@ -156,7 +156,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains('makeGithubApiCall: The REST API call http://error return the message : java.lang.Exception: Failure')
+        callArgsToString(call).contains('githubApiCall: The REST API call http://error return the message : java.lang.Exception: Failure')
     })
   }
 
