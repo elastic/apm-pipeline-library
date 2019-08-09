@@ -25,9 +25,8 @@ import com.cloudbees.groovy.cps.NonCPS
 def call(){
   def found = false
   def data = getCommentData()
-  if (data.isEmpty()) {
-    log(level: 'DEBUG', text: 'isCommentTrigger: this trigger is not enabled')
-  } else {
+  log(level: 'DEBUG', text: "isCommentTrigger: ${data.toMapString()}")
+  if (data) {
     log(level: 'DEBUG', text: 'isCommentTrigger: set some environment variables with the comments and so on')
     env.GITHUB_COMMENT = data.comment
     env.BUILD_CAUSE_USER = data.user
@@ -43,11 +42,10 @@ def call(){
 
 @NonCPS
 def getCommentData() {
-  def data = []
+  def data = [:]
   def triggerCause = currentBuild.rawBuild.getCauses().find { it.getClass().getSimpleName().equals('IssueCommentCause') }
   if (triggerCause) {
-    log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause?.getUserLogin()} - ${triggerCause?.getComment()}")
-    data = [ comment: triggerCause?.getComment(), user: triggerCause?.getUserLogin() ]
+    data = [ comment: triggerCause.getComment(), user: triggerCause.getUserLogin() ]
   }
   return data
 }
