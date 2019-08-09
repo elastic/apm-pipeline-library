@@ -25,7 +25,7 @@ def call(){
   def triggerCause = currentBuild.rawBuild.getCauses().find { it.getClass().getSimpleName().equals('IssueCommentCause') }
   def found = false
   log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause}")
-  if(triggerCause){
+  if (triggerCause != null) {
     env.GITHUB_COMMENT = triggerCause.getComment()
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
