@@ -26,12 +26,15 @@ def call(){
   def found = false
   log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause}")
   if (triggerCause != null) {
+    log(level: 'DEBUG', text: 'isCommentTrigger: set some environment variables with the comments and so on')
     env.GITHUB_COMMENT = triggerCause.getComment()
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
     def token = getGithubToken()
     def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
     found = (orgs.find { it.login.equals('elastic') } != null)
+  } else {
+    log(level: 'DEBUG', text: 'isCommentTrigger: this trigger is not enabled')
   }
   return found
 }
