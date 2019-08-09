@@ -25,6 +25,19 @@ class CheckLicensesStepTests extends BasePipelineTest {
   static final String scriptName = 'vars/checkLicenses.groovy'
   Map env = [:]
 
+  def withEnvInterceptor = { list, closure ->
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], fields[1])
+    }
+    def res = closure.call()
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], null)
+    }
+    return res
+  }
+
   /**
    * Mock Docker class from docker-workflow plugin.
    */
@@ -61,6 +74,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], withEnvInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 
@@ -82,6 +96,33 @@ class CheckLicensesStepTests extends BasePipelineTest {
       call.methodName == 'sh'
     }.any { call ->
       callArgsToString(call).contains('-ext .foo')
+    })
+  }
+
+  @Test
+  void testWithEnvAndAllTheEnvironmentVariables() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'withEnv'
+    }.any { call ->
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/${env.BASE_DIR}]")
+    })
+  }
+
+  @Test
+  void testWithEnvAndNoBaseDirVariable() throws Exception {
+    env.BASE_DIR = ''
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'withEnv'
+    }.any { call ->
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/]")
     })
   }
 
