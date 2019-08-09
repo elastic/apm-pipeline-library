@@ -22,19 +22,16 @@
 */
 @NonCPS
 def call(){
-  def triggerCause = currentBuild.rawBuild.getCauses().find { cause ->
-    log(level: 'DEBUG', text: "isCommentTrigger: ${cause.getClass().getSimpleName()}")
-    return cause.getClass().getSimpleName().equals('IssueCommentCause')
-  }
-  def ret = triggerCause != null
-  log(level: 'DEBUG', text: "isCommentTrigger: ${ret}")
-  if(ret){
+  def triggerCause = currentBuild.rawBuild.getCauses().find { it.getClass().getSimpleName().equals('IssueCommentCause') }
+  def found = false
+  log(level: 'DEBUG', text: "isCommentTrigger: ${triggerCause}")
+  if(triggerCause){
     env.GITHUB_COMMENT = triggerCause.getComment()
     env.BUILD_CAUSE_USER = triggerCause.getUserLogin()
     //Only Elastic users are allowed
     def token = getGithubToken()
     def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
-    ret = (orgs.find { it.login.equals('elastic') } != null)
+    found = (orgs.find { it.login.equals('elastic') } != null)
   }
-  return ret
+  return found
 }
