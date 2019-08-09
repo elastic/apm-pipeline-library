@@ -20,6 +20,7 @@
 
   def commentTrigger = isCommentTrigger()
 */
+@NonCPS
 def call(){
   def triggerCause = currentBuild.rawBuild.getCauses().find { cause ->
     log(level: 'DEBUG', text: "isCommentTrigger: ${cause.getClass().getSimpleName()}")
