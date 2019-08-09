@@ -63,7 +63,6 @@ def call(Map params = [:]){
       error "Codecov: was not possible to get the branch ref"
     }
     log(level: 'INFO', text: "Codecov: Sending data...")
-    log(level: 'INFO', text: "Codecov: Sending data...")
     // Set some env variables so codecov detection script works correctly
     wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
       [var: 'CODECOV_TOKEN', password: "${token}"],
@@ -72,7 +71,11 @@ def call(Map params = [:]){
         "ghprbPullId=${env.CHANGE_ID}",
         "GIT_BRANCH=${branchName}",
         "CODECOV_TOKEN=${token}"]) {
-        sh label: 'Send report to Codecov', script: "docker run --rm -t -v \$(pwd):/app docker.elastic.co/observability-ci/codecov ${flags} || true"
+        sh label: 'Send report to Codecov', script: """#!/bin/bash
+        set -x
+        curl -s -o codecov.sh https://codecov.io/bash
+        bash codecov.sh ${flags} || echo "codecov exited with \$?"
+        """
       }
     }
   }
