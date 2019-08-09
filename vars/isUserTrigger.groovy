@@ -22,7 +22,7 @@
 */
 def call(){
   def ret = currentBuild.getBuildCauses()?.any{ it._class == 'hudson.model.Cause$UserIdCause'}
-  log(level: 'DEBUG', text: "isTimerTrigger: ${ret}")
+  log(level: 'DEBUG', text: "isUserTrigger: ${ret}")
   if(ret){
     def buildCause = currentBuild.getBuildCauses().find{ it._class == 'hudson.model.Cause$UserIdCause'}
     env.BUILD_CAUSE_USER = buildCause?.userId
