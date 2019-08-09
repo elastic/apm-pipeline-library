@@ -70,7 +70,12 @@ def call(Map params = [:]){
       error "No valid SCM config passed."
     }
     githubEnv()
-    if(!isUserTrigger() && !isCommentTrigger()){
+    if(isUserTrigger() || isCommentTrigger()){
+      // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
+      if (notify) {
+        githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
+      }
+    } else {
       try {
         githubPrCheckApproved()
         if (notify) {
@@ -81,11 +86,6 @@ def call(Map params = [:]){
           githubNotify(context: githubCheckContext, description: 'It requires manual inspection', status: 'FAILURE', targetUrl: ' ')
         }
         throw err
-      }
-    } else {
-      // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
-      if (notify) {
-        githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
       }
     }
   }
