@@ -76,6 +76,7 @@ def call(Map params = [:]){
         githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
       }
     } else {
+      log(level: 'DEBUG', text: 'Neither a user trigger nor a comment trigger, it is required to evaluate the PR ownership')
       try {
         githubPrCheckApproved()
         if (notify) {
