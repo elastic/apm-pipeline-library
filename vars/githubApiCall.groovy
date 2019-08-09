@@ -27,9 +27,10 @@ import groovy.transform.Field
 
 */
 def call(Map params = [:]){
-  def token =  params.containsKey('token') ? params.token : error('makeGithubApiCall: no valid Github token.')
-  def url =  params.containsKey('url') ? params.url : error('makeGithubApiCall: no valid Github REST API URL.')
+  def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
+  def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
 
+  log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'GITHUB_TOKEN', password: "${token}"],
     ]]) {
@@ -51,9 +52,9 @@ def call(Map params = [:]){
     }
     def ret = toJSON(json)
     if(ret instanceof List && ret.size() == 0){
-      log(level: 'WARN', text: "makeGithubApiCall: The REST API call ${url} return 0 elements")
+      log(level: 'WARN', text: "githubApiCall: The REST API call ${url} return 0 elements")
     } else if(ret instanceof Map && ret.containsKey('message')){
-      error("makeGithubApiCall: The REST API call ${url} return the message : ${ret.message}")
+      error("githubApiCall: The REST API call ${url} return the message : ${ret.message}")
     }
     return ret
   }
