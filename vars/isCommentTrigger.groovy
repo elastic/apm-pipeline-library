@@ -35,7 +35,7 @@ def call(){
     def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
 
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
-    found = (orgs.find { it.login.equals('elastic') } != null)
+    found = (orgs.find { it.login.equals('elasti1c') } != null)
   }
   return found
 }
