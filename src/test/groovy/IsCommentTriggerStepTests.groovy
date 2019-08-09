@@ -77,7 +77,9 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
     binding.setVariable('env', env)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("getGithubToken", {return 'TOKEN'})
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [login: 'user', company: '@elastic']})
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
+    })
   }
 
   @Test
@@ -102,10 +104,10 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testNoElasticUser() throws Exception {
+  void testNoElasticUserWithSomeOrgs() throws Exception {
     Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [login: 'user', company: '@none']})
+    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -113,15 +115,13 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testElasticUserWithExtraSpaces() throws Exception {
-    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
+  void testNoElasticUserWithoutOrgs() throws Exception {
+    Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {return [login: 'user', company: '@elastic ']})
+    helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
     def ret = script.call()
     printCallStack()
-    assertTrue(ret)
-    assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
-    assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
+    assertFalse(ret)
     assertJobStatusSuccess()
   }
 }
