@@ -61,7 +61,7 @@
     language: script
     verbose: true
 -   id: check-gherkin-lint
-    name: Check gherkin lint
+    name: check-gherkin-lint
     description: "Check Gherkin feature syntax corectness, requires docker."
     language: script
     entry: .ci/scripts/gherkin-lint.sh
