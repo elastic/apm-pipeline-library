@@ -35,6 +35,7 @@ class PreCommitStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('dockerLogin', [Map.class], { 'OK' })
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
@@ -117,8 +118,32 @@ class PreCommitStepTests extends BasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  void testWithRegistryAndSecret() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(commit: 'foo', registry: 'bar', secretRegistry: 'mysecret')
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'dockerLogin'
+    }.any { call ->
+      callArgsToString(call).contains('{secret=mysecret, registry=bar}')
+    })
+    assertJobStatusSuccess()
+  }
+
+  void testWithEmptyRegistryAndSecret() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(commit: 'foo', registry: '', secretRegistry: '')
+    printCallStack()
+    assertJobStatusSuccess()
+    assertFalse(helper.callStack.find { call ->
+      call.methodName == 'dockerLogin'
+    })
+    assertJobStatusSuccess()
+  }
+
   @Test
-  void testWithDefaultCredentials() throws Exception {
+  void testWithDefaultParameters() throws Exception {
     def script = loadScript(scriptName)
     script.call(commit: 'foo')
     printCallStack()
@@ -126,6 +151,11 @@ class PreCommitStepTests extends BasePipelineTest {
       call.methodName == 'sshagent'
     }.any { call ->
       callArgsToString(call).contains('[f6c7695a-671e-4f4f-a331-acdce44ff9ba]')
+    })
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'dockerLogin'
+    }.any { call ->
+      callArgsToString(call).contains('{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}')
     })
     assertJobStatusSuccess()
   }
