@@ -42,13 +42,10 @@ def call(secret) {
   return readSecret(secret)
 }
 
-def readSecret(secret){
+def readSecret(secret) {
   def props = null
-  log(level: 'INFO', text: "getVaultSecret: Getting secrets")
-  withCredentials([
-    string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
-    string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
-    string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
+  log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
+  readSecretWrapper() {
     retry(2) {
       sleep randomNumber(min: 5, max: 10)
       def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
@@ -58,6 +55,15 @@ def readSecret(secret){
     //revokeToken(env.VAULT_ADDR, token)
   }
   return props
+}
+
+def readSecretWrapper(body) {
+  withCredentials([
+    string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
+    string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
+    string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
+    body()
+  }
 }
 
 def getVaultToken(addr, roleId, secretId){

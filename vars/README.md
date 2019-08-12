@@ -724,3 +724,19 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
+## withVaultToken
+Wrap the vault token
+
+```
+withVaultToken() {
+  // block
+}
+
+withVaultToken(path: '/foo', tokenFile: '.myfile') {
+  // block
+}
+```
+
+* path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
+* tokenFile: name of the file with the token. (Optional). Default: .vault-token

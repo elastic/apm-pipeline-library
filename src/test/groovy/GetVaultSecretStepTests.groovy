@@ -22,6 +22,8 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GetVaultSecretStepTests extends BasePipelineTest {
+  String scriptName = 'vars/getVaultSecret.groovy'
+
   Map env = [:]
 
   def wrapInterceptor = { map, closure ->
@@ -89,7 +91,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/getVaultSecret.groovy")
+    def script = loadScript(scriptName)
     def jsonValue = script.call("secret")
     assertTrue(jsonValue.plaintext == '12345')
     printCallStack()
@@ -98,7 +100,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
 
   @Test
   void testMap() throws Exception {
-    def script = loadScript("vars/getVaultSecret.groovy")
+    def script = loadScript(scriptName)
     def jsonValue = script.call(secret: "secret/apm-team/ci/secret")
     assertTrue(jsonValue.plaintext == '12345')
     printCallStack()
@@ -107,7 +109,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
 
   @Test
   void testNoSecret() throws Exception {
-    def script = loadScript("vars/getVaultSecret.groovy")
+    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call()
     } catch(e) {
@@ -128,7 +130,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
       }
     })
 
-    def script = loadScript("vars/getVaultSecret.groovy")
+    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call("secret")
     } catch(e) {
@@ -153,7 +155,7 @@ class GetVaultSecretStepTests extends BasePipelineTest {
       }
     })
 
-    def script = loadScript("vars/getVaultSecret.groovy")
+    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call("secret")
     } catch(e) {
@@ -167,4 +169,18 @@ class GetVaultSecretStepTests extends BasePipelineTest {
     })
   }
 
+  @Test
+  void testReadSecretWrapper() throws Exception {
+    def script = loadScript(scriptName)
+    script.readSecretWrapper {
+      // TODO
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'withCredentials'
+    }.any { call ->
+        callArgsToString(call).contains('[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=vault-role-id, variable=VAULT_ROLE_ID}, {credentialsId=vault-secret-id, variable=VAULT_SECRET_ID}]')
+    })
+    assertJobStatusSuccess()
+  }
 }
