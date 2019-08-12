@@ -40,6 +40,7 @@ class PreCommitStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withVaultToken', [Closure.class], { body -> body() })
   }
 
   @Test
