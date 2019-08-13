@@ -213,6 +213,20 @@ class GitCheckoutStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testErrorEmptyBranch() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: '', credentialsId: 'credentials-id',
+                repo: 'git@github.com:elastic/apm-pipeline-library.git')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains('No valid SCM config passed.')
+    })
+  }
+
+  @Test
   void testUserTriggered() throws Exception {
     helper.registerAllowedMethod("isUserTrigger", {return true})
     helper.registerAllowedMethod("isCommentTrigger", {return true})
