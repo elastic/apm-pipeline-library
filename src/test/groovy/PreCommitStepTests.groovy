@@ -75,7 +75,6 @@ class PreCommitStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], withEnvInterceptor)
-    helper.registerAllowedMethod('withVaultToken', [Closure.class], { body -> body() })
   }
 
   @Test
