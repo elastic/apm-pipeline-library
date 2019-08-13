@@ -30,10 +30,8 @@
 def call(Map params = [:]) {
   def dockerImage = params.get('dockerImage')
   if (dockerImage?.trim()) {
-    docker.image(dockerImage).inside {
-      withEnv(["PATH=${env.PATH}:${env.WORKSPACE}/bin"]) {
-        preCommit(params)
-      }
+    docker.image(dockerImage).inside("-e PATH=${env.PATH}:${env.WORKSPACE}/bin") {
+      preCommit(params)
     }
   } else {
     preCommit(params)
@@ -64,7 +62,6 @@ def preCommit(Map params = [:]) {
       }
     }
     sh """
-      env | sort ## for debugging purposes
       curl https://pre-commit.com/install-local.py | python -
       git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
     """
