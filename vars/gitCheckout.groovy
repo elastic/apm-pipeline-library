@@ -65,10 +65,16 @@ def call(Map params = [:]){
           credentialsId: "${credentialsId}",
           url: "${repo}"]]])
     } else {
-      error '''No valid SCM config passed. Please use one of the below options
+      def message = 'No valid SCM config passed. '
+      if (repo || credentialsId || branch) {
+        message += "Please double check the parameters branch=${branch}, repo=${repo} or credentialsId=${credentialsId} are passed."
+      } else {
+        message += "Please double check the environment variable env.BRANCH_NAME=${env.BRANCH_NAME} is correct."
+      }
+      error "${message}"
+      /*
        - with BRANCH_NAME environment variable only
-       - with at least the following parameters: branch, repo and credentialsId
-      '''
+       - with at least the following parameters: branch, repo and credentialsId*/
 
     }
     githubEnv()

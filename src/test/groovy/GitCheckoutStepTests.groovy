@@ -192,9 +192,9 @@ class GitCheckoutStepTests extends BasePipelineTest {
       repo: 'git@github.com:elastic/apm-pipeline-library.git')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
+        call.methodName == 'error'
     }.any { call ->
-        callArgsToString(call).contains("No valid SCM config passed.")
+        callArgsToString(call).contains('branch=master, repo=git@github.com:elastic/apm-pipeline-library.git or credentialsId=null')
     })
   }
 
@@ -206,9 +206,9 @@ class GitCheckoutStepTests extends BasePipelineTest {
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
+        call.methodName == 'error'
     }.any { call ->
-        callArgsToString(call).contains("No valid SCM config passed.")
+        callArgsToString(call).contains('branch=master, repo=null or credentialsId=credentials-id')
     })
   }
 
@@ -222,7 +222,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
     }.any { call ->
-        callArgsToString(call).contains('No valid SCM config passed.')
+        callArgsToString(call).contains('branch=, repo=git@github.com:elastic/apm-pipeline-library.git or credentialsId=credentials-id')
     })
   }
 
@@ -236,9 +236,9 @@ class GitCheckoutStepTests extends BasePipelineTest {
       credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
+        call.methodName == 'error'
     }.any { call ->
-        callArgsToString(call).contains("No valid SCM config passed.")
+        callArgsToString(call).contains('branch=master, repo=null or credentialsId=credentials-id')
     })
   }
 
@@ -253,7 +253,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains("No valid SCM config passed.")
+        callArgsToString(call).contains('branch=master, repo=null or credentialsId=credentials-id')
     })
   }
 
