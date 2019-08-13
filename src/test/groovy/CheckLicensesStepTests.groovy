@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import co.elastic.mock.DockerMock
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
@@ -25,19 +26,6 @@ import static org.junit.Assert.assertTrue
 class CheckLicensesStepTests extends BasePipelineTest {
   static final String scriptName = 'vars/checkLicenses.groovy'
   Map env = [:]
-
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
 
   @Override
   @Before
@@ -60,7 +48,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 

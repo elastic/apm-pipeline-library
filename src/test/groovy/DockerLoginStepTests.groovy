@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -24,37 +25,6 @@ import static org.junit.Assert.assertTrue
 class DockerLoginStepTests extends BasePipelineTest {
   String scriptName = 'vars/dockerLogin.groovy'
   Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
 
   @Override
   @Before
@@ -71,9 +41,9 @@ class DockerLoginStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod("sh", [Map.class], { m -> println m.script })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
+    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "my-user", password: "my-password"]]
       })
