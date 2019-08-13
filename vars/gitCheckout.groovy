@@ -74,10 +74,6 @@ def call(Map params = [:]){
         message += "Please double check the environment variable env.BRANCH_NAME=${env.BRANCH_NAME} is correct."
       }
       error "${message}"
-      /*
-       - with BRANCH_NAME environment variable only
-       - with at least the following parameters: branch, repo and credentialsId*/
-
     }
     githubEnv()
     if(isUserTrigger() || isCommentTrigger()){
