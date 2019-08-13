@@ -9,11 +9,13 @@ function finish {
 }
 trap finish EXIT
 
+IMAGE="docker.elastic.co/infra/jjbb"
+docker pull --quiet "${IMAGE}"
+
 echo 'Transform JJBB to JJB'
 docker run -t --rm --user "$(id -u):$(id -g)" \
-        -e "VAULT_TOKEN=$(cat ~/.vault-token)" \
         -v "${TMPFOLDER}:/tmp" \
-        -v "$(pwd):/jjbb" -w /jjbb docker.elastic.co/infra/jjbb --write-yaml --yaml-output-dir=/tmp
+        -v "$(pwd):/jjbb" -w /jjbb "${IMAGE}" --write-yaml --yaml-output-dir=/tmp
 
 echo 'Validate JJB'
 JJB_REPORT="${TMPFOLDER}/jjb.out"
@@ -22,6 +24,7 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
         -v "${TMPFOLDER}:/jjbb" \
         -e HOME=/tmp \
         widerplan/jenkins-job-builder -l error test /jjbb > "${JJB_REPORT}"
+
 # shellcheck disable=SC2181
 if [ $? -gt 0 ] ; then
   cat "${JJB_REPORT}"
