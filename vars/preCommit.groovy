@@ -64,6 +64,7 @@ def preCommit(Map params = [:]) {
       }
     }
     sh """
+      env | sort ## for debugging purposes
       curl https://pre-commit.com/install-local.py | python -
       git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
     """
