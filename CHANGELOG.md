@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.1.32 (13/08/2019)
+
+#### 🚀 Enhancements
+
+-  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
+-  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
+-  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
+-  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
+-  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
+-  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
+-  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
+-  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
+
+#### 🐛 Bug Fixes
+
+-  fix: PATH env variable is required in the inside method to be expanded [#189](https://github.com/elastic/apm-pipeline-library/pull/189)
+
+#### 🙈 No user affected
+
+-  fix: build all the PRs and all the branches without any PRs [#181](https://github.com/elastic/apm-pipeline-library/pull/181)
+
+---
+
 ## v1.1.31 (08/08/2019)
 
 #### 🚀 Enhancements
@@ -428,13 +451,13 @@
 
 #### 🚀 Enhancements
 
+-  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
+-  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
--  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
--  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 
 #### 📚 Documentation
 
