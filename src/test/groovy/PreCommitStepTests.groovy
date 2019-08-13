@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.DockerMock
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -28,28 +29,13 @@ class PreCommitStepTests extends BasePipelineTest {
 
   Map env = [:]
 
-  /**
-   * Mock Docker class from docker-workflow plugin.
-   */
-  class Docker implements Serializable {
-
-    public Image image(String id) {
-      new Image(this, id)
-    }
-
-    public class Image implements Serializable {
-      private Image(Docker docker, String id) { println "docker.image('${id}').inside()"}
-      public <V> V inside(String args = '', Closure<V> body) { body() }
-    }
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.PATH='/foo'
     env.WORKSPACE='/bar'
-    binding.setProperty('docker', new Docker())
+    binding.setProperty('docker', new DockerMock())
     binding.setVariable('env', env)
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
