@@ -66,7 +66,9 @@ def call(Map params = [:]){
           url: "${repo}"]]])
     } else {
       def message = 'No valid SCM config passed. '
-      if (repo || credentialsId || branch) {
+      if(env.BRANCH_NAME && branch) {
+        message += 'Please use the checkout either with the env.BRANCH_NAME or the gitCheckout(branch: , repo: , credentialsId: ...) format.'
+      } else if (repo || credentialsId || branch) {
         message += "Please double check the parameters branch=${branch}, repo=${repo} or credentialsId=${credentialsId} are passed."
       } else {
         message += "Please double check the environment variable env.BRANCH_NAME=${env.BRANCH_NAME} is correct."

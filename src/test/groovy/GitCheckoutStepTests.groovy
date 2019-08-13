@@ -178,10 +178,39 @@ class GitCheckoutStepTests extends BasePipelineTest {
     script.call(basedir: 'sub-folder', branch: 'master')
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
+        call.methodName == 'error'
     }.any { call ->
-        callArgsToString(call).contains("No valid SCM config passed.")
+        callArgsToString(call).contains('branch=master, repo=null or credentialsId=null')
     })
+  }
+
+  @Test
+  void testErrorBranchAndBranchNameVariable() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'BRANCH'
+    script.scm = 'SCM'
+    script.call(basedir: 'sub-folder', branch: 'master')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains('Please use the checkout either with the env.BRANCH_NAME or the gitCheckout')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testErrorNoBranchAndNoBranchNameVariable() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = 'SCM'
+    script.call(basedir: 'sub-folder')
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains('Please double check the environment variable env.BRANCH_NAME=null')
+    })
+    assertJobStatusFailure()
   }
 
   @Test
