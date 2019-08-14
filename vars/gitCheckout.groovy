@@ -54,9 +54,7 @@ def call(Map params = [:]){
     if(env?.BRANCH_NAME && branch == null){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
       checkout scm
-    } else if (branch && branch != ""
-        && repo
-        && credentialsId){
+    } else if (branch?.trim() && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
       checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
         doGenerateSubmoduleConfigurations: false,
@@ -67,7 +65,15 @@ def call(Map params = [:]){
           credentialsId: "${credentialsId}",
           url: "${repo}"]]])
     } else {
-      error "No valid SCM config passed."
+      def message = 'No valid SCM config passed. '
+      if(env.BRANCH_NAME && branch) {
+        message += 'Please use the checkout either with the env.BRANCH_NAME or the gitCheckout(branch: , repo: , credentialsId: ...) format.'
+      } else if (repo || credentialsId || branch) {
+        message += "Please double check the parameters branch=${branch}, repo=${repo} or credentialsId=${credentialsId} are passed."
+      } else {
+        message += "Please double check the environment variable env.BRANCH_NAME=${env.BRANCH_NAME} is correct."
+      }
+      error "${message}"
     }
     githubEnv()
     if(isUserTrigger() || isCommentTrigger()){
