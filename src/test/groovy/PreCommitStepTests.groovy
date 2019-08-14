@@ -28,6 +28,19 @@ class PreCommitStepTests extends BasePipelineTest {
 
   Map env = [:]
 
+  def withEnvInterceptor = { list, closure ->
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], fields[1])
+    }
+    def res = closure.call()
+    list.forEach {
+      def fields = it.split("=")
+      binding.setVariable(fields[0], null)
+    }
+    return res
+  }
+
   /**
    * Mock Docker class from docker-workflow plugin.
    */
@@ -47,6 +60,7 @@ class PreCommitStepTests extends BasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.BASE_DIR='src'
     env.PATH='/foo'
     env.WORKSPACE='/bar'
     binding.setProperty('docker', new Docker())
@@ -61,6 +75,7 @@ class PreCommitStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], withEnvInterceptor)
   }
 
   @Test
@@ -170,6 +185,11 @@ class PreCommitStepTests extends BasePipelineTest {
     printCallStack()
     assertNull(helper.callStack.find { call ->
       call.methodName == 'dockerLogin'
+    })
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'withEnv'
+    }.any { call ->
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/${env.BASE_DIR}]")
     })
     assertJobStatusSuccess()
   }
