@@ -60,6 +60,7 @@ class PreCommitStepTests extends BasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.BASE_DIR='src'
     env.PATH='/foo'
     env.WORKSPACE='/bar'
     binding.setProperty('docker', new Docker())
@@ -188,7 +189,7 @@ class PreCommitStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'withEnv'
     }.any { call ->
-      callArgsToString(call).contains("[HOME=${env.WORKSPACE}]")
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/${env.BASE_DIR}]")
     })
     assertJobStatusSuccess()
   }

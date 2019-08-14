@@ -31,7 +31,7 @@ def call(Map params = [:]) {
   def dockerImage = params.get('dockerImage')
   if (dockerImage?.trim()) {
     docker.image(dockerImage).inside("-e PATH=${env.PATH}:${env.WORKSPACE}/bin") {
-      withEnv(["HOME=${env.WORKSPACE}"]) {
+      withEnv(["HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"]) {
         preCommit(params)
       }
     }
