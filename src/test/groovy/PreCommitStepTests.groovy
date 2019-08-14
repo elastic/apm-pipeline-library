@@ -20,36 +20,16 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
-import static org.junit.Assert.assertNull
-import static org.junit.Assert.assertFalse
 
 class PreCommitStepTests extends BasePipelineTest {
   String scriptName = 'vars/preCommit.groovy'
 
   Map env = [:]
 
-  /**
-   * Mock Docker class from docker-workflow plugin.
-   */
-  class Docker implements Serializable {
-
-    public Image image(String id) {
-      new Image(this, id)
-    }
-
-    public class Image implements Serializable {
-      private Image(Docker docker, String id) { println "docker.image('${id}').inside()"}
-      public <V> V inside(String args = '', Closure<V> body) { body() }
-    }
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.PATH='/foo'
-    env.WORKSPACE='/bar'
-    binding.setProperty('docker', new Docker())
     binding.setVariable('env', env)
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
@@ -57,7 +37,6 @@ class PreCommitStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { 'OK' })
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('log', [Map.class], { true })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
@@ -139,11 +118,11 @@ class PreCommitStepTests extends BasePipelineTest {
     assertJobStatusSuccess()
   }
 
-  @Test
   void testWithRegistryAndSecret() throws Exception {
     def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: 'bar', secretRegistry: 'mysecret')
     printCallStack()
+    assertJobStatusSuccess()
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'dockerLogin'
     }.any { call ->
@@ -152,34 +131,12 @@ class PreCommitStepTests extends BasePipelineTest {
     assertJobStatusSuccess()
   }
 
-  @Test
   void testWithEmptyRegistryAndSecret() throws Exception {
     def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: '', secretRegistry: '')
     printCallStack()
-    assertNull(helper.callStack.find { call ->
-      call.methodName == 'dockerLogin'
-    })
     assertJobStatusSuccess()
-  }
-
-  @Test
-  void testWithDockerImage() throws Exception {
-    def script = loadScript(scriptName)
-    script.call(commit: 'foo', dockerImage: 'busybox')
-    printCallStack()
-    assertNull(helper.callStack.find { call ->
-      call.methodName == 'dockerLogin'
-    })
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testWithEmptyDockerImage() throws Exception {
-    def script = loadScript(scriptName)
-    script.call(commit: 'foo', dockerImage: '')
-    printCallStack()
-    assertTrue(helper.callStack.any { call ->
+    assertFalse(helper.callStack.find { call ->
       call.methodName == 'dockerLogin'
     })
     assertJobStatusSuccess()
