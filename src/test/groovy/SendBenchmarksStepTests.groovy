@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -26,38 +27,6 @@ class SendBenchmarksStepTests extends BasePipelineTest {
   String scriptName = 'vars/sendBenchmarks.groovy'
   Map env = [:]
   def URL = 'https://ec.example.com:9200'
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
 
   @Override
   @Before
@@ -75,9 +44,9 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { true })
     helper.registerAllowedMethod("sh", [Map.class], { "OK" })
     helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
+    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod("httpRequest", [Map.class], { m -> println "httpRequest: ${m.toString()}" })
     helper.registerAllowedMethod("readFile", [Map.class], { return "{field1: 1, field2: 2}"})
     helper.registerAllowedMethod("base64encode", [Map.class], { return "dXNlcjpwYXNzd29yZA==" })

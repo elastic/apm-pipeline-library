@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -23,25 +24,6 @@ import static org.junit.Assert.assertTrue
 
 class GithubApiCallStepTests extends BasePipelineTest {
   Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
 
   def shInterceptor = {
     return """[{
@@ -69,7 +51,7 @@ class GithubApiCallStepTests extends BasePipelineTest {
     env.WORKSPACE = "WS"
     binding.setVariable('env', env)
 
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
+    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("toJSON", [String.class], { s ->

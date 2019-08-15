@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
+import co.elastic.mock.DockerMock
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -25,34 +27,6 @@ class CheckLicensesStepTests extends BasePipelineTest {
   static final String scriptName = 'vars/checkLicenses.groovy'
   Map env = [:]
 
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
-
-  /**
-   * Mock Docker class from docker-workflow plugin.
-   */
-  class Docker implements Serializable {
-
-    public Image image(String id) {
-      new Image(this, id)
-    }
-
-    public class Image implements Serializable {
-      private Image(Docker docker, String id) {}
-      public <V> V inside(String args = '', Closure<V> body) { body() }
-    }
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
@@ -62,7 +36,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     env.BASE_DIR = 'base'
 
     binding.setVariable('env', env)
-    binding.setProperty('docker', new Docker())
+    binding.setProperty('docker', new DockerMock())
 
     helper.registerAllowedMethod('archive', [String.class], { 'OK' })
     helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
@@ -74,7 +48,7 @@ class CheckLicensesStepTests extends BasePipelineTest {
     helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], withEnvInterceptor)
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 
