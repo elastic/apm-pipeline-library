@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.1.33 (23/08/2019)
+
+#### 🚀 Enhancements
+
+-  add more details to the error when gitCheckout [#190](https://github.com/elastic/apm-pipeline-library/pull/190)
+
+#### 🐛 Bug Fixes
+
+-  HOME is required to be declared when using the preCommit [#193](https://github.com/elastic/apm-pipeline-library/pull/193)
+
+#### 📚 Documentation
+
+- [**question**] fix: checkGitChanges is not used and no UTs [#195](https://github.com/elastic/apm-pipeline-library/pull/195)
+
+#### 🙈 No user affected
+
+-  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
+-  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
+-  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
+
+---
+
 ## v1.1.32 (13/08/2019)
 
 #### 🚀 Enhancements
