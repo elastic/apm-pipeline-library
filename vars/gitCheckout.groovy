@@ -54,7 +54,7 @@ def call(Map params = [:]){
     if(env?.BRANCH_NAME && branch == null){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
       checkout scm
-    } else if (branch?.trim() && repo && credentialsId){
+    } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
       checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
         doGenerateSubmoduleConfigurations: false,
