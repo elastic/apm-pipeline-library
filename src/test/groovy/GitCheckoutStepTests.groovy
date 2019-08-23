@@ -51,6 +51,10 @@ class GitCheckoutStepTests extends BasePipelineTest {
         throw new Exception('Failed')
       }
     })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
   }
 
   @Test
@@ -133,6 +137,11 @@ class GitCheckoutStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains('reference=repo')
     })
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.any { call ->
+        callArgsToString(call).contains('CloneOption, depth=5, noTags=false, reference=repo, shallow=true')
+    })
     assertJobStatusSuccess()
   }
 
@@ -144,7 +153,8 @@ class GitCheckoutStepTests extends BasePipelineTest {
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
       credentialsId: 'credentials-id',
       mergeRemote: "upstream",
-      mergeTarget: "master")
+      mergeTarget: "master",
+      shallow: false)
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"
@@ -161,7 +171,8 @@ class GitCheckoutStepTests extends BasePipelineTest {
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
       credentialsId: 'credentials-id',
-      mergeTarget: "master")
+      mergeTarget: "master",
+      shallow: false)
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "log"
@@ -175,7 +186,11 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorBranchIncomplete() throws Exception {
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master')
+    } catch(e){
+      // NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -189,7 +204,11 @@ class GitCheckoutStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
-    script.call(basedir: 'sub-folder', branch: 'master')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master')
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -203,7 +222,11 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorNoBranchAndNoBranchNameVariable() throws Exception {
     def script = loadScript(scriptName)
     script.scm = 'SCM'
-    script.call(basedir: 'sub-folder')
+    try {
+      script.call(basedir: 'sub-folder')
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -217,8 +240,12 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorBranchNoCredentials() throws Exception {
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master',
-      repo: 'git@github.com:elastic/apm-pipeline-library.git')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  repo: 'git@github.com:elastic/apm-pipeline-library.git')
+    } catch(e){
+      // NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -231,8 +258,12 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorBranchNoRepo() throws Exception {
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master',
-      credentialsId: 'credentials-id')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  credentialsId: 'credentials-id')
+    } catch(e){
+      // NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -245,8 +276,12 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testErrorEmptyBranch() throws Exception {
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: '', credentialsId: 'credentials-id',
-                repo: 'git@github.com:elastic/apm-pipeline-library.git')
+    try {
+      script.call(basedir: 'sub-folder', branch: '', credentialsId: 'credentials-id',
+                  repo: 'git@github.com:elastic/apm-pipeline-library.git')
+    } catch(e){
+      // NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -261,8 +296,12 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master',
-      credentialsId: 'credentials-id')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  credentialsId: 'credentials-id')
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'error'
@@ -276,8 +315,12 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    script.call(basedir: 'sub-folder', branch: 'master',
-      credentialsId: 'credentials-id')
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  credentialsId: 'credentials-id')
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
@@ -361,6 +404,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
   void testWithFirstTimeContributorWithNotifyAndCommentTrigger() throws Exception {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
     def script = loadScript(scriptName)
+    env.BRANCH_NAME = "BRANCH"
     script.scm = "SCM"
     script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
     printCallStack()
@@ -370,4 +414,44 @@ class GitCheckoutStepTests extends BasePipelineTest {
         callArgsToString(call).contains('context=CI-approved contributor, status=SUCCESS')
     })
   }
+
+  @Test
+  void testErrorWithShallowAndMergeTarget() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = "SCM"
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+        repo: 'git@github.com:elastic/apm-pipeline-library.git',
+        credentialsId: 'credentials-id',
+        mergeTarget: "master",
+        shallow: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
+    }.any { call ->
+        callArgsToString(call).contains('It might cause refusing to merge unrelated histories')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testDisabledShallowAndDepth() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = "SCM"
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      shallow: false)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.any { call ->
+        callArgsToString(call).contains('CloneOption, depth=0, noTags=false, reference=, shallow=false')
+    })
+    assertJobStatusSuccess()
+  }
+
 }

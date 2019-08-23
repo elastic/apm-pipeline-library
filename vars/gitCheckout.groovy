@@ -38,11 +38,18 @@ def call(Map params = [:]){
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
   def notify = params?.get('githubNotifyFirstTimeContributor', false)
+  def shallowValue = params?.get('shallow', true)
+  def depthValue = params?.get('depth', 5)
 
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
-  extensions.add([$class: 'CloneOption', depth: 5, noTags: false, reference: "${reference != null ? reference : '' }", shallow: true])
+  if (shallowValue && mergeTarget != null) {
+    // https://issues.jenkins-ci.org/browse/JENKINS-45771
+    error 'It might cause refusing to merge unrelated histories'
+  }
+
+  extensions.add([$class: 'CloneOption', depth: shallowValue ? depthValue : 0, noTags: false, reference: "${reference != null ? reference : '' }", shallow: shallowValue])
   log(level: 'DEBUG', text: "gitCheckout: Reference repo ${reference != null ? 'enabled' : 'disabled' } ${extensions.toString()}")
 
   if(mergeTarget != null){
