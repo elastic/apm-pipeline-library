@@ -18,6 +18,7 @@ email-ext
 embeddable-build-status
 extended-read-permission
 external-monitor-job
+filesystem_scm
 ghprb
 git
 git-client

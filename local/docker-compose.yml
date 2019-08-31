@@ -17,6 +17,14 @@ services:
         source: ./configs/jenkins.yaml
         target: /var/jenkins_home/casc_configs/jenkins.yaml
         read_only: true
+      - type: bind
+        source: ../.
+        target: /var/pipeline-library
+        read_only: true
+      - type: bind
+        source: ./configs/init.groovy.d
+        target: /var/jenkins_home/init.groovy.d
+        read_only: true
     ports:
       - "18080:8080"
       - "50000:50000"
