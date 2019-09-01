@@ -14,14 +14,19 @@ unclassified:
   location:
     adminAddress: robots@elastic.co
     url: http://jenkins-lint.localhost/
-  # TODO: FFSM is not supported yet for the JCasC
-  #globalLibraries:
-  #  libraries:
-  #    - name: "apm"
-  #      retriever:
-  #        modernSCM:
-  #          scm:
-  #            filesystem:
-  #              clearWorkspace: false
-  #              copyHidden: false
-  #              path: "/var/pipeline-library"
+  globalLibraries:
+    libraries:
+      - name: "apm"
+        defaultVersion: "current"
+        implicit: true
+        retriever:
+          legacySCM:
+            scm:
+              filesystem:
+                clearWorkspace: false
+                copyHidden: false
+                path: "/var/pipeline-library"
+                filterSettings:
+                  includeFilter: false
+                  selectors:
+                  - wildcard: "target/**"
