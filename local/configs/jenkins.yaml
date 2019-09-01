@@ -4,11 +4,24 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: false
   labelString: flyweight
-  mode: EXCLUSIVE
+  mode: NORMAL
   numExecutors: 5
   remotingSecurity:
     enabled: false
   scmCheckoutRetryCount: 2
+  nodes:
+  - permanent:
+      labelString: "linux immutable"
+      launcher:
+        jnlp:
+          workDirSettings:
+            disabled: true
+            failIfWorkDirIsMissing: false
+            internalDir: "remoting"
+            workDirPath: "/tmp"
+      name: "local"
+      numExecutors: 1
+      retentionStrategy: "always"
 
 unclassified:
   location:
