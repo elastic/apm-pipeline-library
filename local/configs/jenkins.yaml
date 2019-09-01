@@ -43,3 +43,7 @@ unclassified:
                   includeFilter: false
                   selectors:
                   - wildcard: "target/**"
+jobs:
+  - file: "/var/pipeline-library/src/it/jobs/folder.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/log.dsl"

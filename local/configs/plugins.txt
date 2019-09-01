@@ -30,6 +30,7 @@ google-storage-plugin
 htmlpublisher
 jdk-tool
 jenkins-multijob-plugin
+job-dsl
 junit
 ldap
 leastload
