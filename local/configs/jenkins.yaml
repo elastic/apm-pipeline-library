@@ -21,7 +21,19 @@ jenkins:
             workDirPath: "/tmp"
       name: "local"
       numExecutors: 1
+      remoteFS: "/tmp"
       retentionStrategy: "always"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              description: GitHub user User + Personal Access Token
+              id: pat
+              password: ${VAULT_TOKEN}
+              scope: GLOBAL
+              username: pat
 
 unclassified:
   location:

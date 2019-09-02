@@ -4,8 +4,8 @@ DSL = '''pipeline {
   stages {
     stage('checkout') {
       steps {
-        gitCheckout(basedir: 'sub-folder', branch: 'master', repo: 'https://github.com/octocat/Hello-World.git',
-                    credentialsId: 'v1v-pat')  // TODO: required to create the PAT credentials with the JCasC
+        gitCheckout(basedir: 'sub-folder', branch: 'master', credentialsId: 'pat',
+                    repo: 'https://github.com/octocat/Hello-World.git')
       }
     }
     stage('isTimerTrigger') {
