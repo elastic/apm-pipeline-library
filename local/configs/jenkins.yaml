@@ -33,7 +33,7 @@ credentials:
               id: pat
               password: ${VAULT_TOKEN}
               scope: GLOBAL
-              username: pat
+              username: ${PAT_USER}
 
 unclassified:
   location:
