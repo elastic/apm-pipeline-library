@@ -22,15 +22,13 @@
 */
 def call(){
   def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UserIdCause'}
-  def found = false
   log(level: 'DEBUG', text: "isUserTrigger: ${buildCause?.userId?.toString()}")
-  if (buildCause) {
-    if (buildCause instanceof net.sf.json.JSONNull || buildCause.userId instanceof net.sf.json.JSONNull) {
-      found = false
-    } else if (buildCause?.userId?.trim()) {
-      env.BUILD_CAUSE_USER = buildCause?.userId
-      found = true
-    }
+  if (!buildCause || buildCause.userId instanceof net.sf.json.JSONNull) {
+    return false
   }
-  return found
+  if (buildCause?.userId?.trim()) {
+    env.BUILD_CAUSE_USER = buildCause?.userId
+    return true
+  }
+  return false
 }
