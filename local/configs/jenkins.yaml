@@ -4,7 +4,7 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: false
   labelString: flyweight
-  mode: NORMAL
+  mode: EXCLUSIVE
   numExecutors: 5
   remotingSecurity:
     enabled: false

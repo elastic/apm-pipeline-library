@@ -19,5 +19,3 @@ pipelineJob(NAME) {
     }
   }
 }
-
-queue(NAME)
