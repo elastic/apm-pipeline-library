@@ -46,4 +46,6 @@ unclassified:
 jobs:
   - file: "/var/pipeline-library/src/it/jobs/folder.dsl"
   - file: "/var/pipeline-library/src/it/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/isTimerTrigger.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/isUserTrigger.dsl"
   - file: "/var/pipeline-library/src/it/jobs/log.dsl"
