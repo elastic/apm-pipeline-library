@@ -16,14 +16,15 @@
 // under the License.
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import net.sf.json.JSONNull
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-
 class IsUserTriggerStepTests extends BasePipelineTest {
+  String scriptName = 'vars/isUserTrigger.groovy'
   Map env = [:]
 
   @Override
@@ -49,7 +50,7 @@ class IsUserTriggerStepTests extends BasePipelineTest {
       ]
     }
 
-    def script = loadScript("vars/isUserTrigger.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -68,7 +69,46 @@ class IsUserTriggerStepTests extends BasePipelineTest {
       ]
     }
 
-    def script = loadScript("vars/isUserTrigger.groovy")
+    def script = loadScript(scriptName)
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithUserIdJSONNull() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UserIdCause',
+          shortDescription: 'Started by user admin',
+          userId: JSONNull.getInstance(),
+          userName: 'admin'
+        ]
+      ]
+    }
+
+    def script = loadScript(scriptName)
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithAnonymousUserId() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UserIdCause',
+          shortDescription: 'Started by anonymous user',
+          userName: 'anonymous'
+        ]
+      ]
+    }
+
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
