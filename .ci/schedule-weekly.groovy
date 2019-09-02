@@ -121,22 +121,6 @@ pipeline {
                 )
               }
             }
-            stage('7.2.0'){
-              steps {
-                build(job: 'apm-shared/apm-docker-es-pipeline',
-                  parameters: [
-                    string(name: 'registry', value: 'docker.elastic.co'),
-                    string(name: 'tag_prefix', value: 'observability-ci'),
-                    string(name: 'version', value: '7.2.0'),
-                    string(name: 'elastic_stack', value: '7.2'),
-                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-                    string(name: 'branch_specifier', value: 'master')
-                  ],
-                  propagate: false,
-                  wait: true
-                )
-              }
-            }
           }
         }
         stage('Update k8s Clusters'){
