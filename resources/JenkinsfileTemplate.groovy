@@ -262,10 +262,6 @@ pipeline {
         stage('windows 2019 docker immutable check'){
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
-          when {
-            beforeAgent true
-            expression { return false }
-          }
           steps {
             bat returnStatus: true, script: 'msbuild'
             bat returnStatus: true, script: 'dotnet --info'
@@ -277,10 +273,6 @@ pipeline {
         stage('Mac OS X check'){
           agent { label 'macosx' }
           options { skipDefaultCheckout() }
-          when {
-            beforeAgent true
-            expression { return false }
-          }
           steps {
             deleteDir()
             unstash 'source'
