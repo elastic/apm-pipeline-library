@@ -48,8 +48,15 @@ pipeline {
     stage('Check for modified Dockerfiles') {
       agent { label 'immutable' }
       steps {
+        deleteDir()
+        checkout scm
+        dockerLoginElasticRegistry()
+        dir("${BASE_DIR}/beats"){
+          git('https://github.com/elastic/beats.git')
+        }
+        stash allowEmpty: true, name: 'beats-source', useDefaultExcludes: false
         script {
-          dir("${BASE_DIR}"){
+          dir("${BASE_DIR}/beats"){
             // TODO: replace paths with Beats Dockerfile paths
             def regexps =[
               "^path1/path1.1/path1.1.1/",
@@ -78,8 +85,8 @@ pipeline {
       steps {
         checkout scm
         dockerLoginElasticRegistry()
-        dir("beats-images"){
-          git('https://github.com/elastic/beats.git')
+        unstash 'source'
+        dir("beats"){
           sh(label: 'Test Docker containers', script: 'echo "make -C .ci/docker all-tests"')
         }
         sh(label: 'Push Docker images', script: 'echo "make -C .ci/docker all-push"')
