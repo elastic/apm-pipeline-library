@@ -45,15 +45,35 @@ pipeline {
     booleanParam(name: 'beats_runtime_dependencies', defaultValue: "false", description: "If it's needed to build Beats' runtime dependencies")
   }
   stages {
+    stage('Check for modified Dockerfiles') {
+      agent { label 'immutable' }
+      steps {
+        script {
+          dir("${BASE_DIR}"){
+            // TODO: replace paths with Beats Dockerfile paths
+            def regexps =[
+              "^path1/path1.1/path1.1.1/",
+              "^path2/path2.1/path2.1.1/"
+            ]
+            env.MODULES_UPDATED = isGitRegionMatch(regexps: regexps)
+          }
+        }
+      }
+    }
     stage('Build Beats test Docker images'){
       agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build Beats Docker images failed')
       }
-      when{
+      when {
         beforeAgent true
-        expression { return params.beats_runtime_dependencies }
+        allOf {
+          anyOf {
+            expression { return params.beats_runtime_dependencies }
+            expression { return env.MODULES_UPDATED == "true" }
+          }
+        }
       }
       steps {
         checkout scm
