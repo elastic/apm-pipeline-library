@@ -10,7 +10,7 @@ function finish {
 trap finish EXIT
 
 IMAGE="docker.elastic.co/infra/jjbb"
-docker pull --quiet "${IMAGE}"
+docker pull "${IMAGE}" > /dev/null
 
 echo 'Transform JJBB to JJB'
 docker run -t --rm --user "$(id -u):$(id -g)" \
