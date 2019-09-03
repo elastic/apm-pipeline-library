@@ -274,6 +274,21 @@ pipeline {
             bat returnStatus: true, script: 'docker -v'
           }
         }
+        stage('Mac OS X check'){
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          when {
+            beforeAgent true
+            expression { return false }
+          }
+          steps {
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+            }
+          }
+        }
       }
     }
   }
