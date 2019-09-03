@@ -51,8 +51,7 @@ pipeline {
           agent { label 'linux && immutable' }
           options { skipDefaultCheckout() }
           environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-            ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
             //see JENKINS-41929
             PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
@@ -63,7 +62,6 @@ pipeline {
             stage('Checkout') {
               steps {
                 deleteDir()
-                //gitCheckout(basedir: "${BASE_DIR}")
                 gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
                   repo: 'git@github.com:elastic/apm-pipeline-library.git',
                   credentialsId: "${JOB_GIT_CREDENTIALS}")
@@ -102,14 +100,28 @@ pipeline {
                 }
               }
             }
+            stage('Run on branch or tag'){
+              when {
+                beforeAgent true
+                anyOf {
+                  branch 'master'
+                  branch "v7*"
+                  branch "v8*"
+                  tag pattern: "v\\d+\\.\\d+\\.\\d+*", comparator: "REGEXP"
+                  expression { return params.Run_As_Master_Branch }
+                }
+              }
+              steps {
+                echo "I am a tag or branch"
+              }
+            }
           }
         }
         stage('Ubuntu 18.04 test'){
           agent { label 'ubuntu-edge' }
           options { skipDefaultCheckout() }
           environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-            ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
             //see JENKINS-41929
             PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
@@ -120,7 +132,6 @@ pipeline {
             stage('Checkout') {
               steps {
                 deleteDir()
-                //gitCheckout(basedir: "${BASE_DIR}")
                 gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
                   repo: 'git@github.com:elastic/apm-pipeline-library.git',
                   credentialsId: "${JOB_GIT_CREDENTIALS}")
@@ -155,34 +166,6 @@ pipeline {
                   junit(allowEmptyResults: true,
                     keepLongStdio: true,
                     testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                  }
-                }
-              }
-              /**
-              Build the documentation.
-              */
-              stage('Documentation') {
-                when {
-                  beforeAgent true
-                  allOf {
-                    anyOf {
-                      not {
-                        changeRequest()
-                      }
-                      branch 'master'
-                      branch "\\d+\\.\\d+"
-                      branch "v\\d?"
-                      tag "v\\d+\\.\\d+\\.\\d+*"
-                      expression { return params.Run_As_Master_Branch }
-                    }
-                    expression { return params.doc_ci }
-                  }
-                }
-                steps {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    buildDocs(docsDir: "resources/docs", archive: true)
                   }
                 }
               }
@@ -193,8 +176,7 @@ pipeline {
           agent { label 'debian-9' }
           options { skipDefaultCheckout() }
           environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-            ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
             //see JENKINS-41929
             PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
@@ -205,7 +187,6 @@ pipeline {
             stage('Checkout') {
               steps {
                 deleteDir()
-                //gitCheckout(basedir: "${BASE_DIR}")
                 gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
                   repo: 'git@github.com:elastic/apm-pipeline-library.git',
                   credentialsId: "${JOB_GIT_CREDENTIALS}")
@@ -240,34 +221,6 @@ pipeline {
                   junit(allowEmptyResults: true,
                     keepLongStdio: true,
                     testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                  }
-                }
-              }
-              /**
-              Build the documentation.
-              */
-              stage('Documentation') {
-                when {
-                  beforeAgent true
-                  allOf {
-                    anyOf {
-                      not {
-                        changeRequest()
-                      }
-                      branch 'master'
-                      branch "\\d+\\.\\d+"
-                      branch "v\\d?"
-                      tag "v\\d+\\.\\d+\\.\\d+*"
-                      expression { return params.Run_As_Master_Branch }
-                    }
-                    expression { return params.doc_ci }
-                  }
-                }
-                steps {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    buildDocs(docsDir: "resources/docs", archive: true)
                   }
                 }
               }
