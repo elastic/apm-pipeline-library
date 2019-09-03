@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -e
 IMAGE="docker.elastic.co/observability-ci/yamllint"
-docker pull --quiet "${IMAGE}"
+docker pull "${IMAGE}" > /dev/null
 docker run --rm -t -v "$PWD:/yaml" -u "$(id -u):$(id -g)" "${IMAGE}" --config-file .ci/.yamlint.yml "$@"
