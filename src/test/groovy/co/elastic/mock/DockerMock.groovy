@@ -15,20 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Check it the build was triggered by a user.
+package co.elastic.mock
 
-  def userTrigger = isUserTrigger()
-*/
-def call(){
-  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UserIdCause'}
-  log(level: 'DEBUG', text: "isUserTrigger: ${buildCause?.userId?.toString()}")
-  if (!buildCause || buildCause.userId instanceof net.sf.json.JSONNull) {
-    return false
+/**
+ * Mock Docker class from docker-workflow plugin.
+ */
+class DockerMock implements Serializable {
+
+  public Image image(String id) {
+    new Image(this, id)
   }
-  if (buildCause?.userId?.trim()) {
-    env.BUILD_CAUSE_USER = buildCause?.userId
-    return true
+
+  public class Image implements Serializable {
+    private Image(DockerMock docker, String id) { println "docker.image('${id}').inside()" }
+    public <V> V inside(String args = '', Closure<V> body) { body() }
   }
-  return false
 }

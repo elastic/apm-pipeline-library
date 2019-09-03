@@ -55,6 +55,10 @@ pipeline {
           repo: "${REPO}",
           credentialsId: "${JOB_GIT_CREDENTIALS}"
         )
+        script {
+          currentBuild.displayName = "${params.elastic_stack}"
+          currentBuild.description = "Stack ${params.elastic_stack} - Version ${params.version}"
+        }
       }
     }
     stage('Get Docker images'){

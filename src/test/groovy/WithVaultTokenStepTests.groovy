@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.GetVaultSecretMock
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -25,22 +26,13 @@ class WithVaultTokenStepTests extends BasePipelineTest {
   String scriptName = 'vars/withVaultToken.groovy'
   Map env = [:]
 
-  /**
-   * Mock getVaultSecret step.
-   */
-  class GetVaultSecret implements Serializable {
-
-    public void readSecretWrapper(Closure body) { body() }
-    public String getVaultToken(String a, String b, String c) { return 'token' }
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
     env.WORKSPACE = '/foo'
-    binding.setProperty('getVaultSecret', new GetVaultSecret())
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setVariable('env', env)
 
     helper.registerAllowedMethod('bat', [String.class], { true })

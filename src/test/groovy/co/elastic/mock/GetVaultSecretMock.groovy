@@ -15,20 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Check it the build was triggered by a user.
+package co.elastic.mock
 
-  def userTrigger = isUserTrigger()
-*/
-def call(){
-  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UserIdCause'}
-  log(level: 'DEBUG', text: "isUserTrigger: ${buildCause?.userId?.toString()}")
-  if (!buildCause || buildCause.userId instanceof net.sf.json.JSONNull) {
-    return false
-  }
-  if (buildCause?.userId?.trim()) {
-    env.BUILD_CAUSE_USER = buildCause?.userId
-    return true
-  }
-  return false
+/**
+ * Mock getVaultSecret step.
+ */
+class GetVaultSecretMock implements Serializable {
+  public void readSecretWrapper(Closure body) { body() }
+  public String getVaultToken(String a, String b, String c) { return 'token' }
 }

@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
@@ -24,23 +25,12 @@ import static org.junit.Assert.assertTrue
 class GetGithubTokenStepTests extends BasePipelineTest {
   Map env = [:]
 
-  def withCredentialsInterceptor = { list, closure ->
-    list.forEach {
-      env[it.variable] = "dummyValue"
-    }
-    def res = closure.call()
-    list.forEach {
-      env.remove(it.variable)
-    }
-    return res
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     binding.setVariable('env', env)
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], withCredentialsInterceptor)
+    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
   }
 
   @Test
