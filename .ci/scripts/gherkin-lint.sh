@@ -2,7 +2,7 @@
 set -eo pipefail
 
 IMAGE="gherkin/lint"
-docker pull --quiet "${IMAGE}"
+docker pull "${IMAGE}" > /dev/null
 
 ## Iterate for each file without failing fast.
 set +e

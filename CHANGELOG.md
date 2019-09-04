@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.34 (03/09/2019)
+
+#### 🚀 Enhancements
+
+-  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
+-  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
+
+#### 🐛 Bug Fixes
+
+-  fix: shallow cloning with mergeTarget is not allowed [#196](https://github.com/elastic/apm-pipeline-library/pull/196)
+-  fix: net.sf.json.JSONNull when authentication is disabled [#207](https://github.com/elastic/apm-pipeline-library/pull/207)
+-  fix: build version might differ when using aliases [#208](https://github.com/elastic/apm-pipeline-library/pull/208)
+
+---
+
 ## v1.1.33 (23/08/2019)
 
 #### 🚀 Enhancements
