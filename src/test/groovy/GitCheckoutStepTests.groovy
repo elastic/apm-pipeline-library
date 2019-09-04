@@ -416,25 +416,26 @@ class GitCheckoutStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testErrorWithShallowAndMergeTarget() throws Exception {
+  void testWithShallowAndMergeTarget() throws Exception {
     def script = loadScript(scriptName)
     script.scm = "SCM"
-    try {
-      script.call(basedir: 'sub-folder', branch: 'master',
+    script.call(basedir: 'sub-folder', branch: 'master',
         repo: 'git@github.com:elastic/apm-pipeline-library.git',
         credentialsId: 'credentials-id',
         mergeTarget: "master",
         shallow: true)
-    } catch(e){
-      //NOOP
-    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'error'
+        call.methodName == 'log'
     }.any { call ->
-        callArgsToString(call).contains('It might cause refusing to merge unrelated histories')
+        callArgsToString(call).contains('refusing to merge unrelated histories')
     })
-    assertJobStatusFailure()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.any { call ->
+        callArgsToString(call).contains('CloneOption, depth=0, noTags=false, reference=, shallow=false')
+    })
+    assertJobStatusSuccess()
   }
 
   @Test

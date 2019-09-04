@@ -37,6 +37,12 @@ services:
         reservations:
           cpus: '0.25'
           memory: 100M
+    networks:
+      apm-pipeline-library:
 
 volumes:
   jenkins_home:
+
+networks:
+  apm-pipeline-library:
+    driver: bridge
