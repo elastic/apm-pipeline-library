@@ -108,7 +108,7 @@ pipeline {
             def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
-              def pythonVersion = pythonIn.replace("-",":")
+              def pythonVersion = pythonIn.replaceFirst("-",":")
               tasks["${pythonVersion}"] = {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-python.git',
