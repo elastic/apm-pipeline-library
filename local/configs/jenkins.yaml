@@ -14,3 +14,20 @@ unclassified:
   location:
     adminAddress: robots@elastic.co
     url: http://jenkins-lint.localhost/
+
+## TODO: vault should be in place.
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              description: GitHub user @${github_username} Personal Access Token
+              id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+              scope: GLOBAL
+              secret: ${github_personal_access_token}
+          - usernamePassword:
+              description: GitHub user @${github_username} User + Personal Access Token
+              id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+              password: ${github_personal_access_token}
+              scope: GLOBAL
+              username: ${github_username}
