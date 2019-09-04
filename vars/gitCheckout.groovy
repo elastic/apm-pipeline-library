@@ -46,7 +46,8 @@ def call(Map params = [:]){
 
   if (shallowValue && mergeTarget != null) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
-    error 'It might cause refusing to merge unrelated histories'
+    log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
+    shallowValue = false
   }
 
   extensions.add([$class: 'CloneOption', depth: shallowValue ? depthValue : 0, noTags: false, reference: "${reference != null ? reference : '' }", shallow: shallowValue])
