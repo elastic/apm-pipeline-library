@@ -162,6 +162,18 @@ Some hooks might require some extra tools such as:
 - Detect the EXTREMELY confusing unicode character U+2013
 - Remove the EXTREMELY confusing unicode character U+2013
 
+
+### Validate JJBB files
+
+If the local jenkins instance has been enabled then it's possible to validate whether the JJBB
+files are healthy enough.
+
+```bash
+  sh local/test-jjbb.sh .ci/jobs/apm-docker-images-pipeline.yml
+```
+
+Then open http://localhost:18080
+
 ## pre-commit-hooks
 
 Observability robots hooks for http://pre-commit.com/
