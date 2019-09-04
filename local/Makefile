@@ -1,5 +1,4 @@
 VAULT_TOKEN ?= $(shell cat $${HOME}/.vault-token)
-PAT_USER ?= pat
 LOG_LEVEL ?= CRITICAL
 .DEFAULT_GOAL := help
 
@@ -33,7 +32,6 @@ logs:  ## Follow the log output for all Jenkins-related processes
 master:
 	@env \
 		VAULT_TOKEN=${VAULT_TOKEN} \
-		PAT_USER=${PAT_USER} \
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
@@ -51,7 +49,6 @@ pull:  ## Pull required images for all Jenkins-related processes
 restart:  ## Restart the local Jenkins master and related processes
 	@env \
 		VAULT_TOKEN=${VAULT_TOKEN} \
-		PAT_USER=${PAT_USER} \
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
