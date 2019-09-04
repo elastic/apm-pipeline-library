@@ -27,6 +27,7 @@ github-oauth
 github-scm-trait-notification-context
 github:1.29.2
 google-storage-plugin
+hashicorp-vault-plugin
 htmlpublisher
 jdk-tool
 jenkins-multijob-plugin

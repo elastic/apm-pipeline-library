@@ -53,6 +53,16 @@ credentials:
               password: ${github_personal_access_token}
               scope: GLOBAL
               username: ${github_username}
+          - string:
+              description: Vault id to access secrets.
+              id: vault-role-id
+              scope: GLOBAL
+              secret: ${vault_role_id}
+          - string:
+              description: Vault secret to access secrets.
+              id: vault-secret-id
+              scope: GLOBAL
+              secret: ${vault_secret_id}
 
 unclassified:
   location:
