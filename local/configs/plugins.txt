@@ -18,6 +18,7 @@ email-ext
 embeddable-build-status
 extended-read-permission
 external-monitor-job
+filesystem_scm
 ghprb
 git
 git-client
@@ -26,9 +27,11 @@ github-oauth
 github-scm-trait-notification-context
 github:1.29.2
 google-storage-plugin
+hashicorp-vault-plugin
 htmlpublisher
 jdk-tool
 jenkins-multijob-plugin
+job-dsl
 junit
 ldap
 leastload

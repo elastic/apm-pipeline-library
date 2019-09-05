@@ -9,25 +9,84 @@ jenkins:
   remotingSecurity:
     enabled: false
   scmCheckoutRetryCount: 2
+  nodes:
+  - permanent:
+      labelString: "linux immutable docker"
+      launcher:
+        jnlp:
+          workDirSettings:
+            disabled: true
+            failIfWorkDirIsMissing: false
+            internalDir: "remoting"
+            workDirPath: "/tmp"
+      name: "local"
+      numExecutors: 2
+      remoteFS: "/tmp"
+      retentionStrategy: "always"
 
-unclassified:
-  location:
-    adminAddress: robots@elastic.co
-    url: http://jenkins-lint.localhost/
-
-## TODO: vault should be in place.
 credentials:
   system:
     domainCredentials:
       - credentials:
+          - basicSSHUserPrivateKey:
+              description: GitHub user @${github_username} SSH key
+              id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
+              passphrase: ${github_ssh_key_passphrase}
+              privateKeySource:
+                directEntry:
+                  privateKey: ${github_ssh_key_privatekey}
+              scope: GLOBAL
+              username: ${github_username}
           - string:
               description: GitHub user @${github_username} Personal Access Token
               id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
               scope: GLOBAL
               secret: ${github_personal_access_token}
+          - string:
+              description: Vault URL to access secrets.
+              id: vault-addr
+              scope: GLOBAL
+              secret: ${vault_addr}
           - usernamePassword:
               description: GitHub user @${github_username} User + Personal Access Token
               id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
               password: ${github_personal_access_token}
               scope: GLOBAL
               username: ${github_username}
+          - string:
+              description: Vault id to access secrets.
+              id: vault-role-id
+              scope: GLOBAL
+              secret: ${vault_role_id}
+          - string:
+              description: Vault secret to access secrets.
+              id: vault-secret-id
+              scope: GLOBAL
+              secret: ${vault_secret_id}
+
+unclassified:
+  location:
+    adminAddress: robots@elastic.co
+    url: http://localhost:18080/
+  globalLibraries:
+    libraries:
+      - name: "apm"
+        defaultVersion: "current"
+        implicit: true
+        retriever:
+          legacySCM:
+            scm:
+              filesystem:
+                clearWorkspace: false
+                copyHidden: false
+                path: "/var/pipeline-library"
+                filterSettings:
+                  includeFilter: false
+                  selectors:
+                  - wildcard: "target/**"
+jobs:
+  - file: "/var/pipeline-library/src/it/jobs/folder.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/isTimerTrigger.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/isUserTrigger.dsl"
+  - file: "/var/pipeline-library/src/it/jobs/log.dsl"
