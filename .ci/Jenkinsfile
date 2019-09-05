@@ -95,7 +95,7 @@ pipeline {
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
-            sh './mvnw clean validate test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            sh './mvnw clean verify --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
           }
         }
       }
