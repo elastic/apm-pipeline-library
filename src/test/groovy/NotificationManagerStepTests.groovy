@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class NotificationManagerStepTests extends BasePipelineTest {
+  String scriptName = 'src/main/groovy/co/elastic/NotificationManager.groovy'
   Map env = [:]
 
   @Override
@@ -96,7 +97,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "test"
     script.notifyEmail(
@@ -121,7 +122,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void testMinParams() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testMinParams"
     script.notifyEmail(
@@ -140,7 +141,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void testFAILURE() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testFAILURE"
     script.notifyEmail(
@@ -165,7 +166,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void testNoBuildInfo() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildInfo"
     try{
@@ -195,7 +196,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void testNoBuildStatus() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildStatus"
     try{
@@ -225,7 +226,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
 
   @Test
   void testNoEmailRecipients() throws Exception {
-    def script = loadScript("src/co/elastic/NotificationManager.groovy")
+    def script = loadScript(scriptName)
     def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoEmailRecipients"
     try{
