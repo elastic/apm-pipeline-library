@@ -278,7 +278,7 @@ pipeline {
                 gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
                   repo: 'git@github.com:elastic/apm-pipeline-library.git',
                   credentialsId: "${JOB_GIT_CREDENTIALS}")
-                stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+                stash allowEmpty: true, name: 'source-mac', useDefaultExcludes: false
               }
             }
             stage('build') {
@@ -286,7 +286,7 @@ pipeline {
               options { skipDefaultCheckout() }
               steps {
                 deleteDir()
-                unstash 'source'
+                unstash 'source-mac'
                 dir("${BASE_DIR}"){
                   sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
                 }
