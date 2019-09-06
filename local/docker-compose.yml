@@ -24,7 +24,7 @@ services:
         read_only: true
       - type: bind
         source: ../.
-        target: /var/pipeline-library
+        target: /var/jenkins_home/workflow-libs/pipeline-library
         read_only: true
     ports:
       - "18080:8080"

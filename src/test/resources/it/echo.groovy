@@ -1,9 +1,9 @@
 pipeline {
   agent any
   stages {
-    stage('checkout') {
+    stage('echo') {
       steps {
-        sh 'ls -ltra'
+        echo 'hi'
       }
     }
   }
