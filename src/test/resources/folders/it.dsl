@@ -1,4 +1,4 @@
 folder('it') {
-  displayName('ITs')
+  displayName('IT')
   description('ITs for the APM shared library')
 }

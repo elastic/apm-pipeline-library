@@ -85,8 +85,8 @@ unclassified:
                   selectors:
                   - wildcard: "target/**"
 jobs:
-  - file: "/var/pipeline-library/src/it/jobs/folder.dsl"
-  - file: "/var/pipeline-library/src/it/jobs/gitCheckout.dsl"
-  - file: "/var/pipeline-library/src/it/jobs/isTimerTrigger.dsl"
-  - file: "/var/pipeline-library/src/it/jobs/isUserTrigger.dsl"
-  - file: "/var/pipeline-library/src/it/jobs/log.dsl"
+  - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/log.dsl"
