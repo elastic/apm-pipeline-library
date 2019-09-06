@@ -79,14 +79,14 @@ unclassified:
               filesystem:
                 clearWorkspace: false
                 copyHidden: false
-                path: "/var/pipeline-library"
+                path: "/var/jenkins_home/workflow-libs/pipeline-library"
                 filterSettings:
                   includeFilter: false
                   selectors:
                   - wildcard: "target/**"
 jobs:
-  - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
-  - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
-  - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
-  - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
-  - file: "/var/pipeline-library/src/test/resources/jobs/log.dsl"
+  - file: "/var/jenkins_home/workflow-libs/pipeline-library/src/test/resources/folders/it.dsl"
+  - file: "/var/jenkins_home/workflow-libs/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
+  - file: "/var/jenkins_home/workflow-libs/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
+  - file: "/var/jenkins_home/workflow-libs/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
+  - file: "/var/jenkins_home/workflow-libs/pipeline-library/src/test/resources/jobs/log.dsl"

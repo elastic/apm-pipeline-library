@@ -21,6 +21,9 @@ import jenkins.branch.BranchSource
 import jenkins.scm.impl.mock.MockSCMController
 import jenkins.scm.impl.mock.MockSCMDiscoverBranches
 import jenkins.scm.impl.mock.MockSCMSource
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.junit.Test
 
@@ -28,14 +31,25 @@ import static org.hamcrest.collection.IsEmptyCollection.empty
 import static org.hamcrest.core.IsNot.not
 import static org.junit.Assert.assertThat
 
-class IntegrationTest extends Base {
+class IntegrationTest extends BaseIntegrationTest {
 
   @Test
-  void testWhenBranches() throws Exception {
+  void testLog() throws Exception {
+    WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, 'echo');
+    job.setDefinition(new CpsFlowDefinition(fileContentsFromResources('it/log.groovy')))
+    j.buildAndAssertSuccess(job)
+    WorkflowRun build = job.getLastBuild()
+    j.assertBuildStatusSuccess(build)
+    j.assertLogContains("info message", build)
+    j.assertLogContains("debug message", build)
+  }
+
+  @Test
+  void testEchoMultiBranch() throws Exception {
     MockSCMController controller = MockSCMController.create()
     controller.createRepository("repoFoo")
     controller.createBranch("repoFoo", "master")
-    controller.addFile("repoFoo", "master", "Jenkinsfile", "Jenkinsfile", fileContentsFromResources('whenBranches.groovy').getBytes())
+    controller.addFile("repoFoo", "master", "Jenkinsfile", "Jenkinsfile", fileContentsFromResources('it/echo.groovy').getBytes())
 
     WorkflowMultiBranchProject project = j.createProject(WorkflowMultiBranchProject.class)
     project.getSourcesList().add(new BranchSource(new MockSCMSource(controller, "repoFoo",  new MockSCMDiscoverBranches())))
@@ -44,4 +58,5 @@ class IntegrationTest extends Base {
     j.waitUntilNoActivity()
     assertThat(project.getItems(), not(empty()))
   }
+
 }
