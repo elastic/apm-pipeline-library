@@ -198,8 +198,8 @@ pipeline {
         dir("apm-server-images"){
           git('https://github.com/elastic/apm-server.git')
           sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
+          sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
         }
-        sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
       }
       post {
         always {

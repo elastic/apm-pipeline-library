@@ -26,6 +26,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.junit.Test
+import org.jvnet.hudson.test.recipes.LocalData
 
 import static org.hamcrest.collection.IsEmptyCollection.empty
 import static org.hamcrest.core.IsNot.not
