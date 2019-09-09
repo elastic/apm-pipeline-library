@@ -27,11 +27,27 @@ order to utilize the local Jenkins master:
 
 This particular Jenkins instance got the shared library loaded by default.
 
-## Enable worker
+## Enable local worker
 
 As simple as opening http://localhost:18080/computer/local/ then download http://localhost:18080/jnlpJars/agent.jar
 and `java -jar agent.jar -jnlpUrl http://localhost:18080/computer/local/slave-agent.jnlp `
 
+## Enable linux vagrant worker
+
+As simple as caching the infra vagrant images, see https://github.com/elastic/infra/blob/master/docs/jenkins/testing-demo-builds-locally.md#adding-a-second-larger-disk-to-the-vagrant-vms
+and
+
+```bash
+# cd local/linux
+vagrant up --provision
+open http://localhost:18080
+```
+
+## Enable windows vagrant worker
+TBD
+
+## Enable macosx vagrant worker
+TBD
 
 ## Usage
 
