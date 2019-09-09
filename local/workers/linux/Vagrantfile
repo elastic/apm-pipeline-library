@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "elastic/ubuntu-16.04-x86_64"
+
+  config.vm.network "private_network", ip: "192.168.33.12"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "4096"
+  end
+
+
+  $script = <<-SCRIPT
+  su - vagrant -c 'curl -s https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar'
+  su - vagrant -c 'nohup java -jar swarm-client.jar -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &'
+  SCRIPT
+
+  config.vm.provision "shell", inline: $script
+end
