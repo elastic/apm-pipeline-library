@@ -4,8 +4,14 @@ release.properties
 target
 jenkins-cli.jar
 
+.classpath
+.factorypath
+.project
+.settings
+
 
 # For the BATS testing
 bats-core/
+bin/
 target/
 .ci/docker/tests/test_helper/
