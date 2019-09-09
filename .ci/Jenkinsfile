@@ -109,6 +109,26 @@ pipeline {
       }
     }
 
+    stage('Integration Test') {
+      steps {
+        withGithubNotify(context: 'Integration Test', description: 'ITs', tab: 'tests') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            sh './mvnw clean test-compile failsafe:integration-test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+          }
+        }
+      }
+      post {
+        always {
+          archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
+          junit(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/target/failsafe-reports/TEST-*.xml")
+        }
+      }
+    }
+
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
