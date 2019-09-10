@@ -33,7 +33,7 @@ class Base {
 
     URL url = getClass().getResource("/" + fileName)
     if (url != null) {
-      fileContents = IOUtils.toString(url)
+      fileContents = IOUtils.toString(url, "UTF-8")
     }
 
     assertNotNull("No file contents for file " + fileName, fileContents)
