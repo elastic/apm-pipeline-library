@@ -31,7 +31,7 @@ pipeline {
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2'))
     timestamps()
     ansiColor('xterm')
@@ -165,8 +165,8 @@ pipeline {
         dir("integration-testing-images"){
           git('https://github.com/elastic/apm-integration-testing.git')
           sh(label: 'Test Docker containers', script: 'make -C docker all-tests')
+          sh(label: 'Push Docker images', script: 'make -C docker all-push')
         }
-        sh(label: 'Push Docker images', script: '.ci/scripts/push-integration-test-images.sh')
       }
       post {
         always {
