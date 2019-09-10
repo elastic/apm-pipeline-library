@@ -23,7 +23,7 @@ import org.jvnet.hudson.test.JenkinsRule
 
 import static org.junit.Assert.assertNotNull
 
-class Base {
+class BaseIntegrationTestCase {
 
   @ClassRule
   public static JenkinsRule j = new JenkinsRule()
