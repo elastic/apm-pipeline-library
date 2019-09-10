@@ -123,7 +123,6 @@ pipeline {
           }
           post {
             always {
-              archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
               junit(allowEmptyResults: true,
                 keepLongStdio: true,
                 testResults: "${BASE_DIR}/target/failsafe-reports/TEST-*.xml")
