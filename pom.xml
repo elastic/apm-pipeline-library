@@ -16,6 +16,8 @@
   </scm>
 
   <properties>
+    <cucumber.version>4.7.1</cucumber.version>
+    <junit.version>4.12</junit.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
@@ -30,6 +32,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-groovy</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>2.4.3</version>
@@ -38,7 +52,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -171,7 +185,22 @@
               <sources>
                 <source>src/test/groovy</source>
                 <source>src/it/groovy</source>
+                <source>src/it/java</source>
               </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-resource</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>src/it/resources</directory>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
@@ -182,6 +211,32 @@
         <version>3.0.0-M3</version>
         <configuration>
           <testSourceDirectory>test/groovy</testSourceDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <testSourceDirectory>src/it/groovy</testSourceDirectory>
+          <testSourceDirectory>src/it/java</testSourceDirectory>
+          <includes>
+            <include>Run*Test.java</include>
+          </includes>
         </configuration>
       </plugin>
       <plugin>
