@@ -232,6 +232,8 @@
           </execution>
         </executions>
         <configuration>
+          <testSourceDirectory>src/it/groovy</testSourceDirectory>
+          <testSourceDirectory>src/it/java</testSourceDirectory>
           <includes>
             <include>Run*Test.java</include>
           </includes>
