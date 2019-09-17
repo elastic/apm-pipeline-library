@@ -22,6 +22,10 @@
   rubygemsLogin(secret: 'secret/team/ci/secret-name') {
     sh 'gem push x.y.z'
   }
+
+  rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
+    sh 'gem push x.y.z'
+  }
 */
 def call(Map params = [:], Closure body) {
   if(!isUnix()){
@@ -55,6 +59,46 @@ def call(Map params = [:], Closure body) {
       curl -u "\${${rubyUserVariable}}:\${${rubyPassVariable}}" https://rubygems.org/api/v1/api_key.yaml > ~/.gem/credentials
       chmod 0600 ~/.gem/credentials
       """)
+    }
+  }
+  try {
+    body()
+  } catch (err) {
+    throw err
+  } finally {
+    sh '[ -e ~/.gem/credentials ] && rm ~/.gem/credentials || true'
+  }
+}
+
+def withApi(Map params = [:], Closure body) {
+  if(!isUnix()){
+    error('rubygemsLogin.withApi: windows is not supported yet.')
+  }
+  def secret = params.containsKey('secret') ? params.secret : error('rubygemsLogin.withApi: No valid secret to looking for.')
+
+  def props = getVaultSecret(secret: secret)
+
+  if(props?.errors){
+     error "rubygemsLogin.withApi: Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def data = props?.data
+  def rubyApiKey = data?.apiKey
+
+  if(data == null || rubyApiKey == null){
+    error 'rubygemsLogin.withApi: was not possible to get authentication details.'
+  }
+
+  def rubyApiKeyVariable = 'RUBY_API_KEY'
+
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: rubyApiKeyVariable, password: rubyApiKey]]]) {
+    withEnv(["${rubyApiKeyVariable}=${rubyApiKey}"]) {
+      sh(label: "rubygems login", script: """#!/bin/bash
+      set +x
+      mkdir ~/.gem
+      echo '---' > ~/.gem/credentials
+      echo ":rubygems_api_key: \${${rubyApiKeyVariable}}" >> ~/.gem/credentials
+      chmod 0600 ~/.gem/credentials""")
     }
   }
   try {

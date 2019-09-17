@@ -524,15 +524,20 @@ def i = randomNumber(min: 1, max: 99)
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
-The vault secret contains `user` and `password` fields with the authentication details.
+The vault secret contains `user` and `password` fields with the authentication details. Or if using `withApi` then
+it's required the vault secret with `apiKey`.
 
 ```
 rubygemsLogin(secret: 'secret/team/ci/secret-name') {
   sh 'gem push x.y.z'
 }
+
+rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
+  sh 'gem push x.y.z'
+}
 ```
 
-* secret: Vault secret where the user and password stored.
+* secret: Vault secret where the user, password or apiKey are stored.
 
 ## sendBenchmarks
 Send the benchmarks to the cloud service or run the script and prepare the environment

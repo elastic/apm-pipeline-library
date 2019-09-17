@@ -45,13 +45,13 @@ class RubygemsLoginStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
       def s = v.secret
       if('secret/team/ci/secret-name'.equals(s)){
-        return [data: [ user: 'my-user', password: 'my-password']]
+        return [data: [ user: 'my-user', password: 'my-password', apiKey: 'my-api-key']]
       }
       if('secretError'.equals(s)){
         return [errors: 'Error message']
       }
       if('secretNotValid'.equals(s)){
-        return [data: [ user: null, password: null]]
+        return [data: [ user: null, password: null, apiKey: null]]
       }
       return null
     })
@@ -76,6 +76,24 @@ class RubygemsLoginStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testWindowsWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.withApi() {
+        // NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
+      callArgsToString(call).contains('rubygemsLogin.withApi: windows is not supported yet.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testMissingSecret() throws Exception {
     def script = loadScript(scriptName)
     try{
@@ -94,6 +112,24 @@ class RubygemsLoginStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testMissingSecretWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    try{
+      script.withApi() {
+        // NOOP
+      }
+    } catch(e){
+      println e.toString()
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
+        callArgsToString(call).contains('rubygemsLogin.withApi: No valid secret to looking for.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testSecretNotFound() throws Exception {
     def script = loadScript(scriptName)
     try{
@@ -107,6 +143,25 @@ class RubygemsLoginStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
         callArgsToString(call).contains('rubygemsLogin: was not possible to get authentication details.')
+    })
+    assertJobStatusFailure()
+  }
+
+
+  @Test
+  void testSecretNotFoundWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    try{
+      script.withApi(secret: 'secretNotValid') {
+        // NOOP
+      }
+    } catch(e){
+      println e.toString()
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
+        callArgsToString(call).contains('rubygemsLogin.withApi: was not possible to get authentication details.')
     })
     assertJobStatusFailure()
   }
@@ -130,6 +185,24 @@ class RubygemsLoginStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testSecretErrorWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    try{
+      script.withApi(secret: 'secretError') {
+        // NOOP
+      }
+    } catch(e){
+      println e.toString()
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
+        callArgsToString(call).contains('rubygemsLogin.withApi: Unable to get credentials from the vault')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
@@ -148,10 +221,46 @@ class RubygemsLoginStepTests extends BasePipelineTest {
   }
 
   @Test
+  void testSuccessWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.withApi(secret: 'secret/team/ci/secret-name') {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
+      callArgsToString(call).contains('echo ":rubygems_api_key: \${RUBY_API_KEY}" >> ~/.gem/credentials')
+    })
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
+      callArgsToString(call).contains('rm ~/.gem/credentials')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testWithBodyError() throws Exception {
     def script = loadScript(scriptName)
     try {
       script.call(secret: 'secret/team/ci/secret-name') {
+        updateBuildStatus('FAILURE')
+        throw new Exception('Force error')
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
+      callArgsToString(call).contains('rm ~/.gem/credentials')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testWithBodyErrorWithApi() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.withApi(secret: 'secret/team/ci/secret-name') {
         updateBuildStatus('FAILURE')
         throw new Exception('Force error')
       }
