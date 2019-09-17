@@ -1,0 +1,10 @@
+Login to Rubygems.com with an authentication credentials from a Vault secret.
+The vault secret contains `user` and `password` fields with the authentication details.
+
+```
+rubygemsLogin(secret: 'secret/team/ci/secret-name') {
+  sh 'gem push x.y.z'
+}
+```
+
+* secret: Vault secret where the user and password stored.

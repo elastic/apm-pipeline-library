@@ -522,6 +522,18 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
+## rubygemsLogin
+Login to Rubygems.com with an authentication credentials from a Vault secret.
+The vault secret contains `user` and `password` fields with the authentication details.
+
+```
+rubygemsLogin(secret: 'secret/team/ci/secret-name') {
+  sh 'gem push x.y.z'
+}
+```
+
+* secret: Vault secret where the user and password stored.
+
 ## sendBenchmarks
 Send the benchmarks to the cloud service or run the script and prepare the environment
 to be implemented within the script itself.
