@@ -56,7 +56,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     })
     helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
       def s = v.secret
-      if("secret".equals(s) || "secret/apm-team/ci/java-agent-benchmark-cloud".equals(s)){
+      if("secret".equals(s) || "secret/apm-team/ci/benchmark-cloud".equals(s)){
         return [data: [ user: 'user', password: 'password', url: "${URL}"]]
       }
       if("secretError".equals(s)){

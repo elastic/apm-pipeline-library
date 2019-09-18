@@ -30,7 +30,7 @@ def call(Map params = [:]) {
   }
   def benchFile = params.containsKey('file') ? params.file : 'bench.out'
   def index = params.containsKey('index') ? params.index : 'benchmark-go'
-  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/java-agent-benchmark-cloud'
+  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/benchmark-cloud'
   def archive = params.containsKey('archive') ? params.archive : true
 
   if(archive){
