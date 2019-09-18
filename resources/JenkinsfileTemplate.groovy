@@ -107,7 +107,7 @@ pipeline {
                   branch 'master'
                   branch "v7*"
                   branch "v8*"
-                  tag pattern: "v\\d+\\.\\d+\\.\\d+*", comparator: "REGEXP"
+                  tag pattern: "v\\d+\\.\\d+\\.\\d+.*", comparator: 'REGEXP'
                   expression { return params.Run_As_Master_Branch }
                 }
               }
