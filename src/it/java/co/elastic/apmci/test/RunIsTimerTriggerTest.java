@@ -17,27 +17,12 @@
 
 package co.elastic.apmci.test;
 
-import org.apache.commons.io.IOUtils
-import org.junit.ClassRule;
-import org.jvnet.hudson.test.JenkinsRule
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
 
-import static org.junit.Assert.assertNotNull
+import org.junit.runner.RunWith;
 
-class BaseIntegrationTest {
-
-  @ClassRule
-  public static JenkinsRule j = new JenkinsRule()
-
-  static String fileContentsFromResources(String fileName) throws IOException {
-    String fileContents = null
-
-    URL url = getClass().getResource("/" + fileName)
-    if (url != null) {
-      fileContents = IOUtils.toString(url)
-    }
-
-    assertNotNull("No file contents for file " + fileName, fileContents)
-
-    return fileContents
-  }
+@CucumberOptions(glue = {"co.elastic.apmci.test"} )
+@RunWith(Cucumber.class)
+public class RunIsTimerTriggerTest {
 }

@@ -32,7 +32,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty
 import static org.hamcrest.core.IsNot.not
 import static org.junit.Assert.assertThat
 
-class IntegrationTest extends BaseIntegrationTest {
+class IntegrationTest extends BaseIntegrationTestCase {
 
   @Test
   void testLog() throws Exception {
