@@ -15,46 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class RubygemsLoginStepTests extends BasePipelineTest {
+class RubygemsLoginStepTests extends BaseDeclarativePipelineTest {
   String scriptName = 'vars/rubygemsLogin.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('sh', [Map.class], { true })
-    helper.registerAllowedMethod('sh', [String.class], { true })
-    helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
-
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
-      def s = v.secret
-      if('secret/team/ci/secret-name'.equals(s)){
-        return [data: [ user: 'my-user', password: 'my-password', apiKey: 'my-api-key']]
-      }
-      if('secretError'.equals(s)){
-        return [errors: 'Error message']
-      }
-      if('secretNotValid'.equals(s)){
-        return [data: [ user: null, password: null, apiKey: null]]
-      }
-      return null
-    })
   }
 
   @Test
