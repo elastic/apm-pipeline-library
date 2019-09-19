@@ -1,6 +1,6 @@
 ---
 - job:
-    name: aws/aws-metricbeat
+    name: apm-shared/aws/aws-metricbeat
     display-name: Observability AWS module for Metricbeat
     description: Job to manage Observability AWS environment for Metricbeat
     view: APM-CI
