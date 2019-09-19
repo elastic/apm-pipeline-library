@@ -30,6 +30,7 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
     env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    env.WORKSPACE = 'WS'
 
     registerDeclarativeMethods()
     registerScriptedMethods()
@@ -123,6 +124,11 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
+      def jsonSlurper = new groovy.json.JsonSlurperClassic()
+      def object = jsonSlurper.parseText(m.text)
+      return object
+    })
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
       c.call()
     })
@@ -141,6 +147,7 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
   }
 
   void registerSharedLibraryMethods() {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
@@ -151,9 +158,14 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
       getVaultSecret(s)
     })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
+    helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('toJSON', [String.class], { s ->
+      def script = loadScript('vars/toJSON.groovy')
+      return script.call(s)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
 
