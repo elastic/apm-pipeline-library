@@ -15,48 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.mock.GetVaultSecretMock
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class WithVaultTokenStepTests extends BasePipelineTest {
+class WithVaultTokenStepTests extends BaseDeclarativePipelineTest {
   String scriptName = 'vars/withVaultToken.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
     env.WORKSPACE = '/foo'
-    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod('bat', [String.class], { true })
-    helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
-      c.call()
-    })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('fileExists', [String.class], { true })
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
-      c.call()
-    })
-    helper.registerAllowedMethod('sh', [String.class], { true })
-    helper.registerAllowedMethod('sleep', [Integer.class], { true })
-    helper.registerAllowedMethod('isUnix', [ ], { true })
-    helper.registerAllowedMethod('writeFile', [Map.class], { m ->
-      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
-        writer.write(m.text)
-      }
-    })
   }
 
   @Test
