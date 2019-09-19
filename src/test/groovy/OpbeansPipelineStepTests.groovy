@@ -23,21 +23,17 @@ import static org.junit.Assert.assertTrue
 
 class OpbeansPipelineStepTests extends BaseDeclarativePipelineTest {
   String scriptName = 'vars/opbeansPipeline.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
-    env.WORKSPACE = '/'
-    env.BRANCH_NAME = 'master'
-    binding.setVariable('env', env)
     binding.setProperty('BASE_DIR', '/')
     binding.setProperty('DOCKERHUB_SECRET', 'secret')
     super.setUp()
   }
 
   @Test
-  void test() throws Exception {
+  void test_when_master_branch() throws Exception {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
@@ -54,13 +50,15 @@ class OpbeansPipelineStepTests extends BaseDeclarativePipelineTest {
   }
 
   @Test
-  void testWhenBranchIsFalse() throws Exception {
+  void test_when_no_release() throws Exception {
     def script = loadScript(scriptName)
+    // When the branch doesn't match
     env.BRANCH_NAME = 'foo'
     script.call()
     printCallStack()
-    assertFalse(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Release')
+    // Then no publish shell step
+    assertFalse(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
+      callArgsToString(call).contains('make publish')
     })
     assertJobStatusSuccess()
   }

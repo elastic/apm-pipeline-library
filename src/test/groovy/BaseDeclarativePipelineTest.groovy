@@ -20,12 +20,15 @@ import co.elastic.mock.GetVaultSecretMock
 import co.elastic.TestUtils
 
 class BaseDeclarativePipelineTest extends BasePipelineTest {
+  Map env = [:]
 
   Map env = [:]
 
   @Override
   void setUp() {
     super.setUp()
+    env.BRANCH_NAME = 'master'
+    binding.setVariable('env', env)
 
     env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
@@ -55,26 +58,31 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
     helper.registerAllowedMethod('stage', [Closure.class], null)
-    helper.registerAllowedMethod('stage', [String.class, Closure.class], {stageName, body ->
+    helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
       def stageResult
-      helper.registerAllowedMethod('when', [Closure.class], {
-        helper.registerAllowedMethod('branch', [String.class], {branchName  ->
+      helper.registerAllowedMethod('when', [Closure.class], { bodyWhen ->
+        helper.registerAllowedMethod('branch', [String.class], { branchName  ->
           if(branchName == env.BRANCH_NAME) {
             return true
           }
-          throw new RuntimeException("Stage '${stageName}' skipped due to when expression returned false")
+          throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
         })
+        return bodyWhen()
       })
+
       switch (currentBuild.result) {
         case 'FAILURE':
           break
         default:
           try {
             stageResult = body()
-            stagesExecuted.add(stageName)
           }
-          catch (RuntimeException re) { }
-          catch (Exception e) { throw e }
+          catch (RuntimeException re) {
+            //skip stage due to not met when expression
+          }
+          catch (Exception e) {
+            throw e
+          }
       }
       return stageResult
     })
