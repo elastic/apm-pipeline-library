@@ -1,0 +1,4 @@
+---
+- job:
+    name: aws
+    project-type: folder
