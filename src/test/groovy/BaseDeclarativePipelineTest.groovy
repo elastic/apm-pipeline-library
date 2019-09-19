@@ -16,8 +16,11 @@
 // under the License.
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import co.elastic.mock.GetVaultSecretMock
 
 class BaseDeclarativePipelineTest extends BasePipelineTest {
+
+  Map env = [:]
 
   @Override
   void setUp() {
@@ -26,6 +29,9 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     registerDeclarativeMethods()
     registerScriptedMethods()
     registerSharedLibraryMethods()
+
+    binding.setVariable('env', env)
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
   }
 
   void registerDeclarativeMethods() {
@@ -75,9 +81,12 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
   }
 
   void registerScriptedMethods() {
+    helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
-    helper.registerAllowedMethod('dir', [String.class], null)
+    helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
+      c.call()
+    })
     helper.registerAllowedMethod('environment', [Closure.class], { Closure c ->
 
         def envBefore = [env: binding.getVariable('env')]
@@ -96,16 +105,33 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
         println "Env section - env vars set to: ${envNew.toString()}"
         binding.setVariable('env', envNew)
     })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
+    helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
+      c.call()
+    })
+    helper.registerAllowedMethod('sleep', [Integer.class], null)
     helper.registerAllowedMethod('sh', [String.class], null)
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('writeFile', [Map.class], { m ->
+      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
+        writer.write(m.text)
+      }
+    })
   }
 
   void registerSharedLibraryMethods() {
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
+    helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
 }
