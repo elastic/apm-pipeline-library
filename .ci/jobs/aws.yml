@@ -1,4 +1,4 @@
 ---
 - job:
-    name: aws
+    name: apm-shared/aws
     project-type: folder
