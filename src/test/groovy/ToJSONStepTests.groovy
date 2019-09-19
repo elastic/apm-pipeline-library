@@ -15,30 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import net.sf.json.JSONObject
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class ToJSONStepTests extends BasePipelineTest {
+class ToJSONStepTests extends BaseDeclarativePipelineTest {
+  String scriptName = 'vars/toJSON.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("error", [String.class], {s ->
-      printCallStack()
-      throw new Exception(s)
-      })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/toJSON.groovy")
+    def script = loadScript(scriptName)
     def obj = script.call("{'dummy': 'value'}")
     printCallStack()
     assertTrue(obj instanceof JSONObject)
@@ -47,7 +41,7 @@ class ToJSONStepTests extends BasePipelineTest {
 
   @Test
   void testNoJSON() throws Exception {
-    def script = loadScript("vars/toJSON.groovy")
+    def script = loadScript(scriptName)
     def obj = script.call("")
     printCallStack()
     assertTrue(obj == null)
@@ -56,7 +50,7 @@ class ToJSONStepTests extends BasePipelineTest {
 
   @Test
   void testPOJO() throws Exception {
-    def script = loadScript("vars/toJSON.groovy")
+    def script = loadScript(scriptName)
     def pojo = [p1: 'value', p2: 'value']
     def obj = script.call(pojo)
     printCallStack()
