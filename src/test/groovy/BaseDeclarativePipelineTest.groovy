@@ -170,14 +170,14 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
   }
 
   def getVaultSecret(String s) {
-    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s)){
-      return [data: [ user: 'username', password: 'user_password']]
+    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) || 'secret/team/ci/secret-name'.equals(s)){
+      return [data: [ user: 'username', password: 'user_password', apiKey: 'my-api-key']]
     }
     if('secretError'.equals(s)){
       return [errors: 'Error message']
     }
     if('secretNotValid'.equals(s)){
-      return [data: [ user: null, password: null]]
+      return [data: [ user: null, password: null, apiKey: null]]
     }
     return null
   }
