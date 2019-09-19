@@ -66,7 +66,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
             stageResult = body()
           }
           catch (RuntimeException re) {
-            //skip stage due to not met when expression
+            // skip stage due to when conditional
           }
           catch (Exception e) {
             throw e
