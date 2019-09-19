@@ -22,12 +22,9 @@ import co.elastic.TestUtils
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
-  Map env = [:]
-
   @Override
   void setUp() {
     super.setUp()
-    env.BRANCH_NAME = 'master'
     binding.setVariable('env', env)
 
     env.BUILD_ID = '1'
