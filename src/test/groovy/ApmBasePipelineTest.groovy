@@ -22,10 +22,17 @@ import co.elastic.TestUtils
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
+  Map env = [:]
+
   @Override
   void setUp() {
     super.setUp()
     binding.setVariable('env', env)
+
+    env.BUILD_ID = '1'
+    env.BRANCH_NAME = 'master'
+    env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    env.WORKSPACE = 'WS'
 
     env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
