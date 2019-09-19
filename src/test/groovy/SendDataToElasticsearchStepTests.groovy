@@ -20,7 +20,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class SendDataToElasticsearchStepTests extends BaseDeclarativePipelineTest {
+class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/sendDataToElasticsearch.groovy'
 
   @Override

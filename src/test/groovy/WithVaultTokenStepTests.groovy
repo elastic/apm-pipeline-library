@@ -20,7 +20,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class WithVaultTokenStepTests extends BaseDeclarativePipelineTest {
+class WithVaultTokenStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/withVaultToken.groovy'
 
   @Override

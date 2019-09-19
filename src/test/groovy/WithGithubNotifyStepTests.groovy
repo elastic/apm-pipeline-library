@@ -21,7 +21,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class WithGithubNotifyStepTests extends BaseDeclarativePipelineTest {
+class WithGithubNotifyStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/withGithubNotify.groovy'
 
   @Override

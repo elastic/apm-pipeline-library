@@ -20,7 +20,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class RubygemsLoginStepTests extends BaseDeclarativePipelineTest {
+class RubygemsLoginStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/rubygemsLogin.groovy'
 
   @Override

@@ -21,7 +21,7 @@ import net.sf.json.JSONObject
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class ToJSONStepTests extends BaseDeclarativePipelineTest {
+class ToJSONStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/toJSON.groovy'
 
   @Override

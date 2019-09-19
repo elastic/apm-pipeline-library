@@ -21,7 +21,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class TarStepTests extends BaseDeclarativePipelineTest {
+class TarStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/tar.groovy'
 
   @Override
