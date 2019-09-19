@@ -127,6 +127,7 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
       c.call()
     })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
+    helper.registerAllowedMethod("sh", [Map.class], null)
     helper.registerAllowedMethod('sh', [String.class], null)
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
@@ -144,22 +145,28 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
-      def s = m.secret
-      if('secret'.equals(s)){
-        return [data: [ user: 'username', password: 'user_password']]
-      }
-      if('secretError'.equals(s)){
-        return [errors: 'Error message']
-      }
-      if('secretNotValid'.equals(s)){
-        return [data: [ user: null, password: null]]
-      }
-      return null
+      getVaultSecret(m.secret)
+    })
+    helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
+      getVaultSecret(s)
     })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+  }
+
+  def getVaultSecret(String s) {
+    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s)){
+      return [data: [ user: 'username', password: 'user_password']]
+    }
+    if('secretError'.equals(s)){
+      return [errors: 'Error message']
+    }
+    if('secretNotValid'.equals(s)){
+      return [data: [ user: null, password: null]]
+    }
+    return null
   }
 }
