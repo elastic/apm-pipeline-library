@@ -17,7 +17,7 @@
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 
-class BaseDeclarativePipelineTest extends BasePipelineTest {
+class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
   @Override
