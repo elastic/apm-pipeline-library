@@ -15,29 +15,25 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class TarStepTests extends BasePipelineTest {
+class TarStepTests extends BaseDeclarativePipelineTest {
+  String scriptName = 'vars/tar.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod('sh', [String.class], { "OK" })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("isUnix", [], {true})
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    binding.setVariable('WORKSPACE', "WS")
+    binding.setVariable('WORKSPACE', 'WS')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/tar.groovy")
+    def script = loadScript(scriptName)
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
     printCallStack()
     assertJobStatusSuccess()
@@ -45,7 +41,7 @@ class TarStepTests extends BasePipelineTest {
 
   @Test
   void testError() throws Exception {
-    def script = loadScript("vars/tar.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { throw new Exception("Error") })
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
     printCallStack()
@@ -54,7 +50,7 @@ class TarStepTests extends BasePipelineTest {
 
   @Test
   void testAllowMissing() throws Exception {
-    def script = loadScript("vars/tar.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [String.class], { throw new Exception("Error") })
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true, archive: false)
     printCallStack()
@@ -63,7 +59,7 @@ class TarStepTests extends BasePipelineTest {
 
   @Test
   void testIsNotUnix() throws Exception {
-    def script = loadScript("vars/tar.groovy")
+    def script = loadScript(scriptName)
     helper.registerAllowedMethod("isUnix", [], {false})
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true)
     printCallStack()
