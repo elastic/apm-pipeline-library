@@ -21,7 +21,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class OpbeansPipelineStepTests extends BaseDeclarativePipelineTest {
+class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/opbeansPipeline.groovy'
 
   @Override

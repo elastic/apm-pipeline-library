@@ -19,7 +19,7 @@ import com.lesfurets.jenkins.unit.BasePipelineTest
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.TestUtils
 
-class BaseDeclarativePipelineTest extends BasePipelineTest {
+class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
   Map env = [:]
