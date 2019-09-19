@@ -27,6 +27,10 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
   void setUp() {
     super.setUp()
 
+    env.BUILD_ID = '1'
+    env.BRANCH_NAME = 'master'
+    env.JENKINS_URL = 'http://jenkins.example.com:8080'
+
     registerDeclarativeMethods()
     registerScriptedMethods()
     registerSharedLibraryMethods()
@@ -111,6 +115,12 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
       throw new Exception(s)
     })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if(m.context.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
@@ -131,6 +141,8 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
 
   void registerSharedLibraryMethods() {
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       def s = m.secret
       if('secret'.equals(s)){
