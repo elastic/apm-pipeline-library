@@ -22,17 +22,9 @@ import co.elastic.TestUtils
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
-  Map env = [:]
-
   @Override
   void setUp() {
     super.setUp()
-    binding.setVariable('env', env)
-
-    env.BUILD_ID = '1'
-    env.BRANCH_NAME = 'master'
-    env.JENKINS_URL = 'http://jenkins.example.com:8080'
-    env.WORKSPACE = 'WS'
 
     env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
@@ -106,22 +98,21 @@ class ApmBasePipelineTest extends BasePipelineTest {
       c.call()
     })
     helper.registerAllowedMethod('environment', [Closure.class], { Closure c ->
+      def envBefore = [env: binding.getVariable('env')]
+      println "Env section - original env vars: ${envBefore.toString()}"
+      c.resolveStrategy = Closure.DELEGATE_FIRST
+      c.delegate = envBefore
+      c()
 
-        def envBefore = [env: binding.getVariable('env')]
-        println "Env section - original env vars: ${envBefore.toString()}"
-        c.resolveStrategy = Closure.DELEGATE_FIRST
-        c.delegate = envBefore
-        c()
-
-        def envNew = envBefore.env
-        envBefore.each { k, v ->
-          if (k != 'env') {
-              envNew["$k"] = v
-          }
-
+      def envNew = envBefore.env
+      envBefore.each { k, v ->
+        if (k != 'env') {
+            envNew["$k"] = v
         }
-        println "Env section - env vars set to: ${envNew.toString()}"
-        binding.setVariable('env', envNew)
+
+      }
+      println "Env section - env vars set to: ${envNew.toString()}"
+      binding.setVariable('env', envNew)
     })
     helper.registerAllowedMethod('error', [String.class], { s ->
       updateBuildStatus('FAILURE')
