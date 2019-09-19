@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.36 (19/09/2019)
+
+#### 🚀 Enhancements
+
+-  enable labels when connecting the swarm linux agent [#229](https://github.com/elastic/apm-pipeline-library/pull/229)
+-  rubygemsLogin step [#227](https://github.com/elastic/apm-pipeline-library/pull/227)
+
+#### 🐛 Bug Fixes
+
+-  fix: regex in the tag pattern [#228](https://github.com/elastic/apm-pipeline-library/pull/228)
+
+---
+
 ## v1.1.35 (17/09/2019)
 
 #### 🚀 Enhancements
@@ -287,10 +300,10 @@
 
 #### 🚀 Enhancements
 
+-  Simplify POM [#90](https://github.com/elastic/apm-pipeline-library/pull/90)
 -  feat: add more precommit hooks [#119](https://github.com/elastic/apm-pipeline-library/pull/119)
 -  pre-commit: lint pipelines which are stored in the .ci folder and add pre-commit stage in the CI [#118](https://github.com/elastic/apm-pipeline-library/pull/118)
 -  feat: download 7.3.0 Elastic Stack Docker images [#116](https://github.com/elastic/apm-pipeline-library/pull/116)
--  Simplify POM [#90](https://github.com/elastic/apm-pipeline-library/pull/90)
 
 #### 🐛 Bug Fixes
 
@@ -676,12 +689,12 @@
 
 #### 🚀 Enhancements
 
+-  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 -  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 -  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
--  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 
 #### 🐛 Bug Fixes
 
@@ -691,9 +704,9 @@
 
 #### 📚 Documentation
 
+-  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 -  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
 -  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
--  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 
 #### 🙈 No user affected
 
