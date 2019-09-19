@@ -17,6 +17,7 @@
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.TestUtils
 
 class BaseDeclarativePipelineTest extends BasePipelineTest {
 
@@ -119,6 +120,8 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('sh', [String.class], null)
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
+    helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
       (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
         writer.write(m.text)
@@ -128,6 +131,19 @@ class BaseDeclarativePipelineTest extends BasePipelineTest {
 
   void registerSharedLibraryMethods() {
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
+      def s = m.secret
+      if('secret'.equals(s)){
+        return [data: [ user: 'username', password: 'user_password']]
+      }
+      if('secretError'.equals(s)){
+        return [errors: 'Error message']
+      }
+      if('secretNotValid'.equals(s)){
+        return [data: [ user: null, password: null]]
+      }
+      return null
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)

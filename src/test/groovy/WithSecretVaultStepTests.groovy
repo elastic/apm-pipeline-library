@@ -15,48 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class WithSecretVaultStepTests extends BasePipelineTest {
-  String scriptName = "vars/withSecretVault.groovy"
-  Map env = [:]
+class WithSecretVaultStepTests extends BaseDeclarativePipelineTest {
+  String scriptName = 'vars/withSecretVault.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
-    super.setUp()
-
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], { m ->
-      def s = m.secret
-      if("secret".equals(s)){
-        return [data: [ user: 'username', password: 'user_password']]
-      }
-      if("secretError".equals(s)){
-        return [errors: 'Error message']
-      }
-      if("secretNotValid".equals(s)){
-        return [data: [ user: null, password: null]]
-      }
-      return null
-    })
+    super.setUp()
   }
 
   @Test
