@@ -30,6 +30,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
     env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
     env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    env.JOB_BASE_NAME = 'master'
+    env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/display/redirect"
     env.WORKSPACE = 'WS'
 
     registerDeclarativeMethods()
