@@ -15,29 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class UpdateGithubCommitStatusStepTests extends BasePipelineTest {
-
-  String url = 'http://github.com/org/repo.git'
-  String sha = '29480a51'
+class UpdateGithubCommitStatusStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/updateGithubCommitStatus.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    helper.registerAllowedMethod('getGitRepoURL', [], {return url})
-    helper.registerAllowedMethod('getGitCommitSha', [], {return sha})
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/updateGithubCommitStatus.groovy")
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -45,8 +39,8 @@ class UpdateGithubCommitStatusStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/updateGithubCommitStatus.groovy")
-    script.call(repoUrl: url, commitSha: sha, message: 'Build result.')
+    def script = loadScript(scriptName)
+    script.call(repoUrl: REPO_URL, commitSha: SHA, message: 'Build result.')
     printCallStack()
     assertJobStatusSuccess()
   }
