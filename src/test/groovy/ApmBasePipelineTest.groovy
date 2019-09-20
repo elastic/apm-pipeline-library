@@ -16,6 +16,7 @@
 // under the License.
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.TestUtils
 
@@ -37,6 +38,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
     binding.setVariable('env', env)
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setProperty('docker', new DockerMock())
   }
 
   void registerDeclarativeMethods() {
@@ -91,7 +93,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   void registerScriptedMethods() {
+    helper.registerAllowedMethod('archive', [String.class], null)
     helper.registerAllowedMethod('bat', [String.class], null)
+    helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -127,6 +131,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod("readJSON", [Map.class], { m ->
       def jsonSlurper = new groovy.json.JsonSlurperClassic()
       def object = jsonSlurper.parseText(m.text)
