@@ -164,6 +164,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('sleep', [Integer.class], null)
     helper.registerAllowedMethod("sh", [Map.class], null)
     helper.registerAllowedMethod('sh', [String.class], null)
+    helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
@@ -194,6 +195,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('toJSON', [String.class], { s ->
