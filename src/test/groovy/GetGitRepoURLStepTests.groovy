@@ -15,25 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class GetGitRepoURLStepTests extends BasePipelineTest {
+class GetGitRepoURLStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/getGitRepoURL.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
   }
 
   @Test
