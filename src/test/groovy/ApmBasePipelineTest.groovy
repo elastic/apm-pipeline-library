@@ -177,6 +177,11 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
+      m.each{ k, v ->
+        binding.setVariable("${v}", 'defined')
+      }
+    })
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
