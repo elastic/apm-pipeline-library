@@ -203,10 +203,12 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('gitCmd', [Map.class], null)
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return [:]})
-    helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
+    })
+    helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
