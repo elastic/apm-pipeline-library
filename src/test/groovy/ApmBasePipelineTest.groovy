@@ -184,6 +184,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
         writer.write(m.text)
       }
     })
+    helper.registerAllowedMethod('writeJSON', [Map.class], { "OK" })
   }
 
   void registerSharedLibraryMethods() {
