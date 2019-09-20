@@ -174,6 +174,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod("sh", [Map.class], null)
     helper.registerAllowedMethod('sh', [String.class], null)
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
