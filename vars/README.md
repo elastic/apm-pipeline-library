@@ -766,3 +766,4 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
