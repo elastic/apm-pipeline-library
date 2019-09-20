@@ -220,6 +220,10 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('toJSON', [Map.class], { m ->
+      def script = loadScript('vars/toJSON.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('toJSON', [String.class], { s ->
       def script = loadScript('vars/toJSON.groovy')
       return script.call(s)
