@@ -484,6 +484,13 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 
+## opbeansPipeline
+Opbeans Pipeline
+
+```
+opbeansPipeline()
+```
+
 ## preCommit
 Run the pre-commit for the given commit if provided and generates the JUnit
 report if required
@@ -759,3 +766,4 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+

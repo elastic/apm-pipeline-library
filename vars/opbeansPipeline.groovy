@@ -46,65 +46,63 @@ def call(Map pipelineParams) {
       issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
     }
     stages {
-      stages {
-        /**
-         Checkout the code and stash it, to use it on other stages.
-        */
-        stage('Checkout') {
-          steps {
+      /**
+       Checkout the code and stash it, to use it on other stages.
+      */
+      stage('Checkout') {
+        steps {
+          deleteDir()
+          gitCheckout(basedir: BASE_DIR)
+          stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+        }
+      }
+      /**
+      Build the project from code..
+      */
+      stage('Build') {
+        steps {
+          withGithubNotify(context: 'Build') {
             deleteDir()
-            gitCheckout(basedir: BASE_DIR)
-            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          }
-        }
-        /**
-        Build the project from code..
-        */
-        stage('Build') {
-          steps {
-            withGithubNotify(context: 'Build') {
-              deleteDir()
-              unstash 'source'
-              dir(BASE_DIR){
-                sh 'make build'
-              }
+            unstash 'source'
+            dir(BASE_DIR){
+              sh 'make build'
             }
           }
         }
-        /**
-        Execute unit tests.
-        */
-        stage('Test') {
-          steps {
-            withGithubNotify(context: 'Test', tab: 'tests') {
-              deleteDir()
-              unstash 'source'
-              dir(BASE_DIR){
-                sh "make test"
-              }
-            }
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true,
-                keepLongStdio: true,
-                testResults: "${BASE_DIR}/**/junit-*.xml")
+      }
+      /**
+      Execute unit tests.
+      */
+      stage('Test') {
+        steps {
+          withGithubNotify(context: 'Test', tab: 'tests') {
+            deleteDir()
+            unstash 'source'
+            dir(BASE_DIR){
+              sh "make test"
             }
           }
         }
-        stage('Release') {
-          when {
-            branch 'master'
-            beforeAgent true
+        post {
+          always {
+            junit(allowEmptyResults: true,
+              keepLongStdio: true,
+              testResults: "${BASE_DIR}/**/junit-*.xml")
           }
-          steps {
-            withGithubNotify(context: 'Release') {
-              deleteDir()
-              unstash 'source'
-              dir(BASE_DIR){
-                dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                sh "VERSION=latest make publish"
-              }
+        }
+      }
+      stage('Release') {
+        when {
+          branch 'master'
+          beforeAgent true
+        }
+        steps {
+          withGithubNotify(context: 'Release') {
+            deleteDir()
+            unstash 'source'
+            dir(BASE_DIR){
+              dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+              sh "VERSION=latest make publish"
             }
           }
         }
