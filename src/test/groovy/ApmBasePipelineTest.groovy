@@ -27,8 +27,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
   void setUp() {
     super.setUp()
 
-    env.BUILD_ID = '1'
     env.BRANCH_NAME = 'master'
+    env.BUILD_ID = '1'
+    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JENKINS_URL = 'http://jenkins.example.com:8080'
     env.JOB_BASE_NAME = 'master'
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
@@ -178,6 +179,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
     helper.registerAllowedMethod('getGitRepoURL', [], {return 'http://github.com/org/repo.git'})
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
