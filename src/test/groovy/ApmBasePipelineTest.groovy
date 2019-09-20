@@ -158,6 +158,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getGitRepoURL', [], {return 'http://github.com/org/repo.git'})
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
@@ -166,6 +167,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
       getVaultSecret(s)
     })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
+    helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
@@ -173,6 +175,24 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('toJSON', [String.class], { s ->
       def script = loadScript('vars/toJSON.groovy')
       return script.call(s)
+    })
+    helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], { list, closure ->
+      list.each{ map ->
+        map.each{ key, value ->
+          if('variable'.equals(key)){
+            binding.setVariable("${value}", "defined")
+          }
+        }
+      }
+      def res = closure.call()
+      list.each{ map ->
+        map.each{ key, value ->
+          if('variable'.equals(key)){
+            binding.setVariable("${value}", null)
+          }
+        }
+      }
+      return res
     })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
@@ -186,6 +206,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
     }
     if('secretNotValid'.equals(s)){
       return [data: [ user: null, password: null, apiKey: null]]
+    }
+    if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
+      return [data: [ value: 'codecov-token']]
     }
     return null
   }

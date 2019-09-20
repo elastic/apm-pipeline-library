@@ -15,17 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class CodecovStepTests extends BasePipelineTest {
+class CodecovStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/codecov.groovy'
-  Map env = [:]
-  String url = 'http://github.com/org/repo.git'
 
   @Override
   @Before
@@ -38,20 +34,7 @@ class CodecovStepTests extends BasePipelineTest {
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
-    binding.setVariable('env', env)
 
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("sh", [Map.class], { "OK" })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class],TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("deleteDir", [], { "OK" })
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class],TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod("githubBranchRef", [], {return "master"})
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
     helper.registerAllowedMethod("readJSON", [Map.class], {return [
       head: [
         repo: [
@@ -61,37 +44,6 @@ class CodecovStepTests extends BasePipelineTest {
         ],
         ref: 'refs/'
       ]]})
-    helper.registerAllowedMethod('getGitRepoURL', [], {return url})
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], { m ->
-      if("secret-codecov".startsWith(m.secret)){
-        return [data: [ value: 'codecov-token']]
-      }
-      return null
-    })
-    helper.registerAllowedMethod("getVaultSecret", [String.class], { s ->
-      if("repo-codecov".startsWith(s)){
-        return [data: [ value: 'codecov-token']]
-      }
-      return null
-    })
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
-      list.each{ map ->
-        map.each{ key, value ->
-          if("variable".equals(key)){
-            binding.setVariable("${value}", "defined")
-          }
-        }
-      }
-      def res = closure.call()
-      list.each{ map ->
-        map.each{ key, value ->
-          if("variable".equals(key)){
-            binding.setVariable("${value}", null)
-          }
-        }
-      }
-      return res
-    })
   }
 
   @Test
