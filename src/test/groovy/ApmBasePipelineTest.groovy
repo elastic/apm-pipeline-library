@@ -186,6 +186,10 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('echoColor', [Map.class], { m ->
+      def echoColor = loadScript('vars/echoColor.groovy')
+      echoColor.call(m)
+    })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
     helper.registerAllowedMethod('getGitRepoURL', [], {return 'http://github.com/org/repo.git'})
