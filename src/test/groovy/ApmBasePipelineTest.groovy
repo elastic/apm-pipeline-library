@@ -154,6 +154,12 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('mail', [Map.class], { m ->
+      println('Writting mail-out.html file with the email result')
+      def f = new File("target/mail-out-${env.TEST}.html")
+      f.write(m.body)
+      println f.toString()
+    })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
