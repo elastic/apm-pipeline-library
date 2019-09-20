@@ -25,6 +25,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   String SHA = '29480a51'
   String REPO_URL = 'http://github.com/org/repo.git'
+  String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   @Override
   void setUp() {
@@ -242,14 +243,15 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   def getVaultSecret(String s) {
-    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) || 'secret/team/ci/secret-name'.equals(s)){
-      return [data: [ user: 'username', password: 'user_password', apiKey: 'my-api-key']]
+    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) ||
+       'secret/team/ci/secret-name'.equals(s) || 'secret/apm-team/ci/benchmark-cloud'.equals(s)){
+      return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
     }
     if('secretError'.equals(s)){
       return [errors: 'Error message']
     }
     if('secretNotValid'.equals(s)){
-      return [data: [ user: null, password: null, apiKey: null]]
+      return [data: [ user: null, password: null, url: null, apiKey: null]]
     }
     if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
       return [data: [ value: 'codecov-token']]
