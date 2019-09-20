@@ -15,37 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import org.apache.commons.io.FileUtils
 
-class PreCommitToJunitStepTests extends BasePipelineTest {
-  String scriptName = "vars/preCommitToJunit.groovy"
+class PreCommitToJunitStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/preCommitToJunit.groovy'
   String compareWith = 'src/test/resources/preCommitToJunit/output'
-
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-
     helper.registerAllowedMethod('readFile', [Map.class], { m ->
       return (new File("src/test/resources/preCommitToJunit/${m.file}")).text
-    })
-    helper.registerAllowedMethod('writeFile', [Map.class], { m ->
-      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
-        writer.write(m.text)
-      }
     })
   }
 
