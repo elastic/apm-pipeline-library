@@ -15,24 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class IsTimerTriggerStepTests extends BasePipelineTest {
-  Map env = [:]
+class IsTimerTriggerStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/isTimerTrigger.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
 
   @Test
@@ -46,7 +41,7 @@ class IsTimerTriggerStepTests extends BasePipelineTest {
       ]
     }
 
-    def script = loadScript("vars/isTimerTrigger.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -66,7 +61,7 @@ class IsTimerTriggerStepTests extends BasePipelineTest {
       ]
     }
 
-    def script = loadScript("vars/isTimerTrigger.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
