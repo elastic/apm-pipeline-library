@@ -231,24 +231,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
       def script = loadScript('vars/toJSON.groovy')
       return script.call(s)
     })
-    helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], { list, closure ->
-      list.each{ map ->
-        map.each{ key, value ->
-          if('variable'.equals(key)){
-            binding.setVariable("${value}", "defined")
-          }
-        }
-      }
-      def res = closure.call()
-      list.each{ map ->
-        map.each{ key, value ->
-          if('variable'.equals(key)){
-            binding.setVariable("${value}", null)
-          }
-        }
-      }
-      return res
-    })
+    helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
