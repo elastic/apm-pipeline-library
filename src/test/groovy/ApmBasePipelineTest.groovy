@@ -109,6 +109,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
     helper.registerAllowedMethod('bat', [String.class], null)
+    helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
+    helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
+    helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
     helper.registerAllowedMethod('catchError', [Closure.class], { c ->
       try{
         c()
@@ -128,6 +131,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
       c.call()
     })
+    helper.registerAllowedMethod('emailext', [Map.class], { println("sending email") })
     helper.registerAllowedMethod('environment', [Closure.class], { Closure c ->
       def envBefore = [env: binding.getVariable('env')]
       println "Env section - original env vars: ${envBefore.toString()}"
@@ -203,6 +207,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
@@ -229,6 +234,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
     helper.registerAllowedMethod('toJSON', [Map.class], { m ->
       def script = loadScript('vars/toJSON.groovy')
       return script.call(m)
