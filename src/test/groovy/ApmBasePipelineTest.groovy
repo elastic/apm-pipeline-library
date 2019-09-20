@@ -156,6 +156,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   void registerSharedLibraryMethods() {
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
     helper.registerAllowedMethod('getGitRepoURL', [], {return 'http://github.com/org/repo.git'})
@@ -171,6 +172,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('toJSON', [String.class], { s ->
       def script = loadScript('vars/toJSON.groovy')
