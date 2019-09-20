@@ -15,94 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class DummyStepTests extends BasePipelineTest {
-  Map env = [:]
+class DummyStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/dummy.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod("sh", [Map.class], { "OK" })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
-    helper.registerAllowedMethod("script", [Closure.class], { closure -> closure.call() })
-    helper.registerAllowedMethod("pipeline", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("agent", [String.class], { "OK" })
-    helper.registerAllowedMethod("agent", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("label", [String.class], { "OK" })
-    helper.registerAllowedMethod("stages", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("steps", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("post", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("success", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("aborted", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("failure", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("unstable", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("always", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("dir", [String.class, Closure.class], { path, body -> body() })
-    helper.registerAllowedMethod("when", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("parallel", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("failFast", [Boolean.class], { "OK" })
-    helper.registerAllowedMethod("script", [Closure.class], { body -> body() })
-    helper.registerAllowedMethod("options", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("environment", [Closure.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("deleteDir", [], { "OK" })
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      return readJSON(m)
-    })
-    helper.registerAllowedMethod("error", [String.class], {s ->
-      printCallStack()
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("toJSON", [String.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
-    })
-    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
-      try{
-        c()
-      } catch(e){
-        //NOOP
-      }
-    })
-    helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
-      try{
-        c()
-      } catch(e){
-        //NOOP
-      }
-    })
-
-    helper.registerAllowedMethod("fileExists", [String.class], { return true })
-  }
-
-  def readJSON(params){
-    def jsonSlurper = new groovy.json.JsonSlurperClassic()
-    def jsonText = params.text
-    if(params.file){
-      File f = new File("src/test/resources/${params.file}")
-      jsonText = f.getText()
-    }
-    return jsonSlurper.parseText(jsonText)
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/dummy.groovy")
+    def script = loadScript(scriptName)
     script.call(text: "dummy")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->

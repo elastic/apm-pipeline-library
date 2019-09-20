@@ -42,12 +42,15 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   void registerDeclarativeMethods() {
+    helper.registerAllowedMethod('aborted', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('always', [Closure.class], null)
     helper.registerAllowedMethod('ansiColor', [String.class], null)
     helper.registerAllowedMethod('agent', [Closure.class], null)
     helper.registerAllowedMethod('beforeAgent', [Boolean.class], { true })
     helper.registerAllowedMethod('disableResume', [], null)
     helper.registerAllowedMethod('durabilityHint', [String.class], null)
+    helper.registerAllowedMethod('failure', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('failFast', [Boolean.class], null)
     helper.registerAllowedMethod('issueCommentTrigger', [String.class], null)
     helper.registerAllowedMethod('label', [String.class], null)
     helper.registerAllowedMethod('options', [Closure.class], null)
@@ -55,6 +58,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('post', [Closure.class], null)
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
+    helper.registerAllowedMethod('script', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
       def stageResult
@@ -87,15 +91,30 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('stages', [Closure.class], null)
     helper.registerAllowedMethod('stash', [Map.class], null)
     helper.registerAllowedMethod('steps', [Closure.class], null)
+    helper.registerAllowedMethod('success', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('timeout', [Map.class], null)
     helper.registerAllowedMethod('timestamps', [], null)
     helper.registerAllowedMethod('triggers', [Closure.class], null)
+    helper.registerAllowedMethod('unstable', [Closure.class], { body -> body() })
   }
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
     helper.registerAllowedMethod('bat', [String.class], null)
-    helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
+    helper.registerAllowedMethod('catchError', [Closure.class], { c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -132,10 +151,8 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
-    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      def jsonSlurper = new groovy.json.JsonSlurperClassic()
-      def object = jsonSlurper.parseText(m.text)
-      return object
+    helper.registerAllowedMethod('readJSON', [Map.class], { m ->
+      return readJSON(m)
     })
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
       c.call()
@@ -196,6 +213,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
       }
       return res
     })
+    helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
 
@@ -213,5 +231,15 @@ class ApmBasePipelineTest extends BasePipelineTest {
       return [data: [ value: 'codecov-token']]
     }
     return null
+  }
+
+  def readJSON(params){
+    def jsonSlurper = new groovy.json.JsonSlurperClassic()
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return jsonSlurper.parseText(jsonText)
   }
 }
