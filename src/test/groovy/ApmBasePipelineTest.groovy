@@ -23,6 +23,9 @@ import co.elastic.TestUtils
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
+  String SHA = '29480a51'
+  String REPO_URL = 'http://github.com/org/repo.git'
+
   @Override
   void setUp() {
     super.setUp()
@@ -192,8 +195,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
-    helper.registerAllowedMethod('getGitRepoURL', [], {return 'http://github.com/org/repo.git'})
+    helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
