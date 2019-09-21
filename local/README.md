@@ -47,7 +47,13 @@ open http://localhost:18080
 TBD
 
 ## Enable macosx vagrant worker
-TBD
+
+```bash
+# cd local/macosx
+vagrant up --provision
+# wait for a few minutes...
+open http://localhost:18080
+```
 
 ## Usage
 
