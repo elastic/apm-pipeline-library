@@ -16,11 +16,12 @@ Vagrant.configure("2") do |config|
 
   $script = <<-SCRIPT
   echo 'running brew...'
-  su - vagrant -c 'HOMEBREW_NO_AUTO_UPDATE=1 /usr/local/bin/brew cask install adoptopenjdk'
+  su - vagrant -c 'HOMEBREW_NO_AUTO_UPDATE=1 /usr/local/bin/brew cask install adoptopenjdk/openjdk/adoptopenjdk8'
+  java -version
   echo 'preparing swarm connection to Jenkins'
   su - vagrant -c 'curl https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar'
   echo 'connecting to Jenkins'
-  su - vagrant -c 'java -jar swarm-client.jar -labels "mac macosx immutable" -master http://10.0.2.2:18080 2>&1 &'
+  su - vagrant -c 'nohup java -jar swarm-client.jar -labels "mac macosx immutable" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &'
   SCRIPT
 
   config.vm.provision "shell", inline: $script
