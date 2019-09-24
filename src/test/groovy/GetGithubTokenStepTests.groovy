@@ -15,27 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GetGithubTokenStepTests extends BasePipelineTest {
-  Map env = [:]
+class GetGithubTokenStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/getGithubToken.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/getGithubToken.groovy")
+    def script = loadScript(scriptName)
     def value = script.call()
     printCallStack()
     assertTrue(value == "dummyValue")
@@ -44,7 +40,7 @@ class GetGithubTokenStepTests extends BasePipelineTest {
 
   @Test
   void testCredentialsId() throws Exception {
-    def script = loadScript("vars/getGithubToken.groovy")
+    def script = loadScript(scriptName)
     def value = script.call(credentialsId: "dummy")
     printCallStack()
     assertTrue(value == "dummyValue")

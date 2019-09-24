@@ -15,28 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GithubBranchRefStepTests extends BasePipelineTest {
-  Map env = [:]
+class GithubBranchRefStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/githubBranchRef.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
-    env.WORKSPACE = 'WS'
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
     env.CHANGE_ID = '1'
-    env.BRANCH_NAME = 'master'
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod('getGithubToken', [], {return 'dummy'})
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
       return [
         head: [
@@ -56,7 +50,7 @@ class GithubBranchRefStepTests extends BasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/githubBranchRef.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret == 'username/master')
@@ -66,7 +60,7 @@ class GithubBranchRefStepTests extends BasePipelineTest {
   @Test
   void testNoPR() throws Exception {
     env.CHANGE_ID = null
-    def script = loadScript("vars/githubBranchRef.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret == 'master')
@@ -77,8 +71,12 @@ class GithubBranchRefStepTests extends BasePipelineTest {
   void testEnvError() throws Exception {
     env.ORG_NAME = null
     env.REPO_NAME = null
-    def script = loadScript("vars/githubBranchRef.groovy")
-    def ret = script.call()
+    def script = loadScript(scriptName)
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"

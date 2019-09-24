@@ -15,43 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class DockerLoginStepTests extends BasePipelineTest {
+class DockerLoginStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/dockerLogin.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("sh", [Map.class], { m -> println m.script })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], {
-      return [data: [user: "my-user", password: "my-password"]]
-      })
-    helper.registerAllowedMethod("retry", [Integer.class, Closure.class], { i, c ->
-      c.call()
-    })
-    helper.registerAllowedMethod("randomNumber", [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod("sleep", [Integer.class], { 'OK' })
   }
 
   @Test

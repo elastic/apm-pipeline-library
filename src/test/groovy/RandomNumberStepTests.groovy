@@ -15,27 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class RandomNumberStepTests extends BasePipelineTest {
-  Map env = [:]
+class RandomNumberStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/randomNumber.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/randomNumber.groovy")
+    def script = loadScript(scriptName)
     def i = script.call()
     printCallStack()
     assertTrue(i > 0 && i <= 100)
@@ -44,7 +40,7 @@ class RandomNumberStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/randomNumber.groovy")
+    def script = loadScript(scriptName)
     def i = script.call(max: 2, min: 1)
     printCallStack()
     assertTrue(i >= 1 && i <= 2)
