@@ -489,7 +489,10 @@ Opbeans Pipeline
 
 ```
 opbeansPipeline()
+opbeansPipeline(builds: ['job1', 'folder/job1', 'mbp/PR-1'])
 ```
+
+* builds: What downstream pipelines should be triggered once the release has been done. Default: []
 
 ## preCommit
 Run the pre-commit for the given commit if provided and generates the JUnit

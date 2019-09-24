@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class OpbeansPipelineStepTests extends ApmBasePipelineTest {
@@ -35,6 +36,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   @Test
   void test_when_master_branch() throws Exception {
     def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
     script.call()
     printCallStack()
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
@@ -45,6 +47,32 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     })
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
       callArgsToString(call).contains('Release')
+    })
+    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_when_master_branch_and_empty_builds() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
+    script.call(builds: [])
+    printCallStack()
+    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_when_master_branch_and_builds() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
+    script.call(builds: [ 'folder/foo', 'folder/bar'])
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
+      callArgsToString(call).contains('Downstream')
+    })
+    assertTrue(helper.callStack.findAll { call -> call.methodName == 'build' }.any { call ->
+      callArgsToString(call).contains('folder/foo')
     })
     assertJobStatusSuccess()
   }

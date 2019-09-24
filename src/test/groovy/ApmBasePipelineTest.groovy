@@ -70,12 +70,27 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
       def stageResult
-      helper.registerAllowedMethod('when', [Closure.class], { bodyWhen ->
+      helper.registerAllowedMethod('when', [Closure.class], { Closure bodyWhen ->
         helper.registerAllowedMethod('branch', [String.class], { branchName  ->
           if(branchName == env.BRANCH_NAME) {
             return true
           }
           throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
+        })
+        helper.registerAllowedMethod('allOf', [Closure.class], { Closure cAllOf ->
+          helper.registerAllowedMethod('branch', [String.class], { branchName  ->
+            if(branchName == env.BRANCH_NAME) {
+              return true
+            }
+            throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional (branch)")
+          })
+          helper.registerAllowedMethod('expression', [Closure.class], { Closure cExp ->
+            if(cExp()) {
+              return true
+            }
+            throw new RuntimeException("Stage '${stageName}' skipped due to when conditional (expression)")
+          })
+          return cAllOf()
         })
         return bodyWhen()
       })
@@ -98,7 +113,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('stages', [Closure.class], null)
     helper.registerAllowedMethod('stash', [Map.class], null)
-    helper.registerAllowedMethod('steps', [Closure.class], null)
+    helper.registerAllowedMethod('steps', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('success', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('timeout', [Map.class], null)
     helper.registerAllowedMethod('timestamps', [], null)
