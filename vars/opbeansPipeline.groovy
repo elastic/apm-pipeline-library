@@ -20,11 +20,11 @@
 
   opbeansPipeline()
 
-  opbeansPipeline(builds: ['job1', 'folder/job1', 'mbp/PR-1'])
+  opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 */
 
 def call(Map pipelineParams) {
-  def builds = pipelineParams?.get('builds', [])
+  def builds = pipelineParams?.get('downstreamJobs', [])
   pipeline {
     agent { label 'linux && immutable' }
     environment {

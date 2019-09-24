@@ -53,20 +53,20 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_when_master_branch_and_empty_builds() throws Exception {
+  void test_when_master_branch_and_empty_downstreamJobs() throws Exception {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = 'master'
-    script.call(builds: [])
+    script.call(downstreamJobs: [])
     printCallStack()
     assertNull(helper.callStack.find { call -> call.methodName == 'build' })
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_when_master_branch_and_builds() throws Exception {
+  void test_when_master_branch_and_downstreamJobs() throws Exception {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = 'master'
-    script.call(builds: [ 'folder/foo', 'folder/bar'])
+    script.call(downstreamJobs: [ 'folder/foo', 'folder/bar'])
     printCallStack()
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
       callArgsToString(call).contains('Downstream')
