@@ -44,7 +44,17 @@ open http://localhost:18080
 ```
 
 ## Enable windows vagrant worker
-TBD
+
+```bash
+# cd local/windows/windows-2019
+vagrant up --provision
+
+# cd local/windows/windows-2016
+vagrant up --provision
+
+# wait for a few minutes...
+open http://localhost:18080
+```
 
 ## Enable macosx vagrant worker
 

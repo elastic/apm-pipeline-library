@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "StefanScherer/windows_2019"
+
+  config.vm.network "private_network", ip: "192.168.33.20"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "6144"
+    vb.cpus = 4
+    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "30"]
+  end
+
+  ## https://github.com/hashicorp/vagrant/issues/9138
+  config.winrm.username = 'vagrant\vagrant'
+
+  $script = <<-SCRIPT
+  Write-Host "Installing chocolatey..."
+  Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+  Write-Host "Installing java and docker..."
+  & choco install adoptopenjdk8 docker-for-windows -y --no-progress
+  Write-Host "Downloading swarm..."
+  (New-Object Net.WebClient).DownloadFile('https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar', 'swarm-client.jar')
+  Start-Job { java -jar swarm-client.jar -labels "windows-2019 immutable" -master http://10.0.2.2:18080 }
+  SCRIPT
+#curl https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar
+#start /B "" java -jar swarm-client.jar -labels "windows immutable" -master http://10.0.2.2:18080 &
+  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "true", inline: $script
+
+end
