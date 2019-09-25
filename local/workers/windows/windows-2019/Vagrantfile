@@ -16,5 +16,5 @@ Vagrant.configure("2") do |config|
   ## https://github.com/hashicorp/vagrant/issues/9138
   config.winrm.username = 'vagrant\vagrant'
   config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "true", path: "../setup.ps1"
-  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "true", path: "../swarm.bat"
+  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "false", path: "../swarm.bat"
 end

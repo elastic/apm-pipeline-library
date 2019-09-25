@@ -7,5 +7,3 @@ Write-Host "Installing java..."
 Write-Host "Downloading swarm..."
 (New-Object Net.WebClient).DownloadFile('https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar', 'swarm-client.jar')
 Copy-Item -Path swarm-client.jar -Destination c:\\Users\\vagrant
-
-Write-Host "RDP and run the swarm.bat script"

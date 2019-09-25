@@ -47,6 +47,8 @@ open http://localhost:18080
 
 ### Windows 2019
 
+It does require to open the UI and login.
+
 ```bash
 # cd local/windows/windows-2019
 vagrant up --provision
