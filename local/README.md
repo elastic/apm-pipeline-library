@@ -45,12 +45,27 @@ open http://localhost:18080
 
 ## Enable windows vagrant worker
 
+### Windows 2019
+
 ```bash
 # cd local/windows/windows-2019
 vagrant up --provision
 
+# Login
+run ~/swarm.bat
+
+# wait for a few minutes...
+open http://localhost:18080
+```
+
+### Windows 2016
+
+```
 # cd local/windows/windows-2016
 vagrant up --provision
+
+# Login
+run ~/swarm.bat
 
 # wait for a few minutes...
 open http://localhost:18080

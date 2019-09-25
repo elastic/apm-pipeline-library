@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "private_network", ip: "192.168.33.10"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.gui = false
+    vb.gui = true
     vb.memory = "6144"
     vb.cpus = 2
     vb.customize ["modifyvm", :id, "--cpuexecutioncap", "30"]
@@ -20,8 +20,10 @@ Vagrant.configure("2") do |config|
   & choco install adoptopenjdk8 docker-for-windows -y --no-progress
   Write-Host "Downloading swarm..."
   (New-Object Net.WebClient).DownloadFile('https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar', 'swarm-client.jar')
-  Start-Job { java -jar swarm-client.jar -labels "windows-2016 immutable" -master http://10.0.2.2:18080 }
+  Copy-Item -Path swarm-client.jar -Destination c:\\Users\\vagrant
+  Write-Host "RDP and run the swarm.bat script"
   SCRIPT
 
-  config.vm.provision "shell", inline: $script
+  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "true", inline: $script
+  config.vm.provision "file", source: "../swarm.bat", destination: "c:\\Users\\vagrant"
 end
