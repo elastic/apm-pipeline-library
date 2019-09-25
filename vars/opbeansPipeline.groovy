@@ -97,6 +97,7 @@ def call(Map pipelineParams) {
         }
       }
       stage('Release') {
+        agent { label 'linux && immutable' }
         when {
           branch 'master'
           beforeAgent true
@@ -116,7 +117,7 @@ def call(Map pipelineParams) {
         when {
           allOf {
             branch 'master'
-            expression { return !builds.isEmpty() }
+            expression { return !builds?.isEmpty() }
           }
           beforeAgent true
         }
