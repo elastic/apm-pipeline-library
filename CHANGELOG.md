@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.38 (25/09/2019)
+
+#### 🚀 Enhancements
+
+-  support downstream builds for the opbeans pipeline step [#234](https://github.com/elastic/apm-pipeline-library/pull/234)
+
+#### 🐛 Bug Fixes
+
+-  fix field in the declarative pipeline [#236](https://github.com/elastic/apm-pipeline-library/pull/236)
+-  minor fixes [#235](https://github.com/elastic/apm-pipeline-library/pull/235)
+
+---
+
 ## v1.1.37 (24/09/2019)
 
 #### 🚀 Enhancements
@@ -296,10 +309,10 @@
 
 #### 🐛 Bug Fixes
 
+-  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
 -  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
 -  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 -  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
--  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
 
 #### 📚 Documentation
 
@@ -307,8 +320,8 @@
 
 #### 🙈 No user affected
 
--  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
 -  chore: temporary pipeline for testing purposes [#121](https://github.com/elastic/apm-pipeline-library/pull/121)
+-  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
 
 ---
 
@@ -705,18 +718,18 @@
 
 #### 🚀 Enhancements
 
+-  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 -  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
--  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 
 #### 🐛 Bug Fixes
 
+-  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 -  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 -  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
--  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 
 #### 📚 Documentation
 
@@ -730,10 +743,10 @@
 
 #### ⚙️ CI
 
+-  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
 -  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
--  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
