@@ -97,6 +97,7 @@ def call(Map pipelineParams) {
         }
       }
       stage('Release') {
+        agent { label 'linux && immutable' }
         when {
           branch 'master'
           beforeAgent true
