@@ -23,15 +23,7 @@
   opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 */
 
-import groovy.transform.Field
-
-/**
-This is the list of builds to be triggered.
-*/
-@Field def builds
-
 def call(Map pipelineParams) {
-  builds = pipelineParams?.get('downstreamJobs', [])
   pipeline {
     agent { label 'linux && immutable' }
     environment {
@@ -124,13 +116,13 @@ def call(Map pipelineParams) {
         when {
           allOf {
             branch 'master'
-            expression { return !builds.isEmpty() }
+            expression { return pipelineParams?.downstreamJobs }
           }
           beforeAgent true
         }
         steps {
           script {
-            builds.each { job ->
+            pipelineParams?.downstreamJobs.each { job ->
               build job: "${job}", propagate: false, wait: false
             }
           }
