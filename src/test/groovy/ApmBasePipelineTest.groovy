@@ -28,7 +28,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   @Override
-  void setUp() {
+  void setUp() throws Exception {
     super.setUp()
 
     env.BRANCH_NAME = 'master'
