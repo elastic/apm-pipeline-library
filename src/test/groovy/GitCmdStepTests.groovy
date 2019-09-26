@@ -15,13 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitCmdStepTests extends BasePipelineTest {
+class GitCmdStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/gitCmd.groovy'
 
   @Override
@@ -30,23 +29,6 @@ class GitCmdStepTests extends BasePipelineTest {
     super.setUp()
     binding.setVariable("ORG_NAME", "my_org")
     binding.setVariable("REPO_NAME", "my_repo")
-
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('sh', [String.class], { "OK" })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], { list, closure ->
-      def res = closure.call()
-      return res
-    })
-    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
-      m.each{ k, v ->
-        binding.setVariable("${v}", "defined")
-      }
-    })
   }
 
   @Test
@@ -59,7 +41,7 @@ class GitCmdStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/gitCmd.groovy")
+    def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: "my_credentials", args: '-f')
     printCallStack()
     assertJobStatusSuccess()

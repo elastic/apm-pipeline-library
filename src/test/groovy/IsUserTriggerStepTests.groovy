@@ -15,7 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import net.sf.json.JSONNull
 import org.junit.Before
 import org.junit.Test
@@ -23,18 +22,13 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class IsUserTriggerStepTests extends BasePipelineTest {
+class IsUserTriggerStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/isUserTrigger.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
 
   @Test

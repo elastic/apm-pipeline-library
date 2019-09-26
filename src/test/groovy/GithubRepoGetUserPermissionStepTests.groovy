@@ -21,32 +21,32 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GithubRepoGetUserPermissionStepTests extends BasePipelineTest {
-  Map env = [:]
+class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/githubRepoGetUserPermission.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("githubApiCall", [Map.class], { return [:]})
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/githubRepoGetUserPermission.groovy")
+    def script = loadScript(scriptName)
     def pr = script.call(token: 'token', repo: 'org/repo', user: 1)
     printCallStack()
-    assertTrue(pr instanceof Map)
+    assertTrue(pr instanceof java.util.ArrayList)
     assertJobStatusSuccess()
   }
 
   @Test
   void testErrorNoRepo() throws Exception {
-    def script = loadScript("vars/githubRepoGetUserPermission.groovy")
-    def pr = script.call(token: 'token', user: 1)
+    def script = loadScript(scriptName)
+    try {
+      script.call(token: 'token', user: 1)
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
@@ -57,8 +57,12 @@ class GithubRepoGetUserPermissionStepTests extends BasePipelineTest {
 
   @Test
   void testErrorNoUser() throws Exception {
-    def script = loadScript("vars/githubRepoGetUserPermission.groovy")
-    def pr = script.call(token: 'token', repo: 'org/repo')
+    def script = loadScript(scriptName)
+    try {
+      script.call(token: 'token', repo: 'org/repo')
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"

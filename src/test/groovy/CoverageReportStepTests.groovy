@@ -15,25 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
-import static org.junit.Assert.assertTrue
 
-class CoverageReportStepTests extends BasePipelineTest {
+class CoverageReportStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/coverageReport.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod("publishHTML", [Map.class],  null)
-    helper.registerAllowedMethod("cobertura", [Map.class], null)
-    helper.registerAllowedMethod("githubBranchRef", [], { return "master" })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/coverageReport.groovy")
+    def script = loadScript(scriptName)
     script.call("folder")
     printCallStack()
     assertJobStatusSuccess()

@@ -15,7 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -23,16 +22,13 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertThat
 import static org.hamcrest.CoreMatchers.is
 
-
-class GetModulesFromCommentTriggerStepTests extends BasePipelineTest {
-  String scriptName = "vars/getModulesFromCommentTrigger.groovy"
-  Map env = [:]
+class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/getModulesFromCommentTrigger.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
   }
 
   @Test
