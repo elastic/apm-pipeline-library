@@ -177,6 +177,14 @@
       <version>1.64</version>
       <scope>test</scope>
     </dependency>
+    <!-- jenkins-war-${jenkins.version}.war does not yet exist. Prime your development environment by running `mvn validate`. -->
+    <dependency>
+      <groupId>org.jenkins-ci.main</groupId>
+      <artifactId>jenkins-war</artifactId>
+      <version>${jenkins.version}</version>
+      <scope>test</scope>
+      <type>war</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
