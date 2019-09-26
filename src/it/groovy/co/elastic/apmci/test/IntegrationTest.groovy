@@ -36,7 +36,6 @@ import static org.junit.Assert.assertThat
 class IntegrationTest extends BaseIntegrationTestCase {
 
   @Test
-  @Ignore("Required to install the declarative pipeline in the JenkinsRule")
   void testLog() throws Exception {
     WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, 'echo');
     job.setDefinition(new CpsFlowDefinition(fileContentsFromResources('it/log.groovy')))
