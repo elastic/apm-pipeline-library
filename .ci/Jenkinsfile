@@ -112,6 +112,8 @@ pipeline {
         }
 
         stage('Integration Test') {
+          agent { label 'linux && immutable' }
+          options { skipDefaultCheckout() }
           steps {
             withGithubNotify(context: 'Integration Test', description: 'ITs', tab: 'tests') {
               deleteDir()
