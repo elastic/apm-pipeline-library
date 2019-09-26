@@ -44,7 +44,28 @@ open http://localhost:18080
 ```
 
 ## Enable windows vagrant worker
-TBD
+
+### Windows 2019
+
+It does require to open the UI and login.
+
+```bash
+# cd local/windows/windows-2019
+vagrant up --provision
+
+# wait for a few minutes...
+open http://localhost:18080
+```
+
+### Windows 2016
+
+```bash
+# cd local/windows/windows-2016
+vagrant up --provision
+
+# wait for a few minutes...
+open http://localhost:18080
+```
 
 ## Enable macosx vagrant worker
 

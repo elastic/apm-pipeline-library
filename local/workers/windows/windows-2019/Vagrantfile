@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "StefanScherer/windows_2019"
+
+  config.vm.network "private_network", ip: "192.168.33.20"
+  config.vm.hostname = "windows-2019"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "windows-2019-apm-pipeline-library"
+    vb.gui = false
+    vb.memory = "6144"
+    vb.cpus = 2
+  end
+
+  ## https://github.com/hashicorp/vagrant/issues/9138
+  config.winrm.username = 'vagrant\vagrant'
+  ## https://github.com/hashicorp/vagrant/issues/6430
+  config.winrm.retry_limit = 30
+  config.winrm.retry_delay = 10
+  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "true", path: "../setup.ps1"
+  config.vm.provision "shell", privileged: "false", powershell_elevated_interactive: "false", path: "../swarm.bat"
+end
