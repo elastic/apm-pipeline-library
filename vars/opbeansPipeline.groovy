@@ -17,6 +17,10 @@
 
 /**
   Opbeans Pipeline
+
+  opbeansPipeline()
+
+  opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 */
 
 def call(Map pipelineParams) {
@@ -92,6 +96,7 @@ def call(Map pipelineParams) {
         }
       }
       stage('Release') {
+        agent { label 'linux && immutable' }
         when {
           branch 'master'
           beforeAgent true
@@ -103,6 +108,22 @@ def call(Map pipelineParams) {
             dir(BASE_DIR){
               dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
               sh "VERSION=latest make publish"
+            }
+          }
+        }
+      }
+      stage('Downstream') {
+        when {
+          allOf {
+            branch 'master'
+            expression { return pipelineParams?.downstreamJobs }
+          }
+          beforeAgent true
+        }
+        steps {
+          script {
+            pipelineParams?.downstreamJobs.each { job ->
+              build job: "${job}", propagate: false, wait: false
             }
           }
         }

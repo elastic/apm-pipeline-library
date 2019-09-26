@@ -15,29 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class HttpRequestStepTests extends BasePipelineTest {
+class HttpRequestStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/httpRequest.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("error", [String.class], {s ->
-      printCallStack()
-      throw new Exception(s)
-      })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def body = script.call(url: "https://www.google.com", debug: 'true')
     printCallStack()
     assertTrue(body != null)
@@ -46,7 +40,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testGetWithParams() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def body = script.call(url: "https://www.google.com",
       method: "GET", headers: ["User-Agent": "dummy"], debug: 'true')
     printCallStack()
@@ -57,7 +51,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testPostWithParams() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def body = script.call(url: "https://duckduckgo.com",
       method: "POST",
       headers: ["User-Agent": "dummy"],
@@ -69,7 +63,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testNoURL() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call()
@@ -82,7 +76,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testInvalidURL() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "htttttp://google.com")
@@ -95,7 +89,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testConnectionError() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "https://thisdomaindoesnotexistforsure.com")
@@ -108,7 +102,7 @@ class HttpRequestStepTests extends BasePipelineTest {
 
   @Test
   void testHttpError() throws Exception {
-    def script = loadScript("vars/httpRequest.groovy")
+    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "https://google.com",

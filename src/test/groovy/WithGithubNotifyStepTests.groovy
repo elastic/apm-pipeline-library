@@ -15,44 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class WithGithubNotifyStepTests extends BasePipelineTest {
-  String scriptName = "vars/withGithubNotify.groovy"
-  Map env = [:]
+class WithGithubNotifyStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/withGithubNotify.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.BUILD_ID = "4"
-    env.BRANCH_NAME = "PR-60"
-    env.JENKINS_URL = "http://jenkins.example.com:8080"
-
-    binding.setVariable('env', env)
-
-    def redirectBOURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests"
-    def redirectURL = "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport"
-
-
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { redirectBOURL })
-    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { redirectURL })
-    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
-      if(m.context.equalsIgnoreCase('failed')){
-        updateBuildStatus('FAILURE')
-        throw new Exception('Failed')
-      }
-    })
+    env.BUILD_ID = '4'
+    env.BRANCH_NAME = 'PR-60'
+    env.JENKINS_URL = 'http://jenkins.example.com:8080'
   }
 
   @Test
@@ -100,6 +78,8 @@ class WithGithubNotifyStepTests extends BasePipelineTest {
     script.call(context: 'foo', description: 'bar') {
       isOK = true
     }
+    println "${env.BRANCH_NAME}/${env.BUILD_ID}"
+
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()

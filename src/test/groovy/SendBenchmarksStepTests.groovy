@@ -15,63 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class SendBenchmarksStepTests extends BasePipelineTest {
+class SendBenchmarksStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/sendBenchmarks.groovy'
-  Map env = [:]
-  def URL = 'https://ec.example.com:9200'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
-    env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod("sh", [Map.class], { "OK" })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod("httpRequest", [Map.class], { m -> println "httpRequest: ${m.toString()}" })
-    helper.registerAllowedMethod("readFile", [Map.class], { return "{field1: 1, field2: 2}"})
-    helper.registerAllowedMethod("base64encode", [Map.class], { return "dXNlcjpwYXNzd29yZA==" })
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], { v ->
-      def s = v.secret
-      if("secret".equals(s) || "secret/apm-team/ci/benchmark-cloud".equals(s)){
-        return [data: [ user: 'user', password: 'password', url: "${URL}"]]
-      }
-      if("secretError".equals(s)){
-        return [errors: 'Error message']
-      }
-      if("secretNotValid".equals(s)){
-        return [data: [ user: null, password: null, url: null]]
-      }
-      return null
-    })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/sendBenchmarks.groovy")
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -288,7 +255,7 @@ class SendBenchmarksStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == 'withEnv'
     }.any { call ->
-        callArgsToString(call).contains("URL_=${URL}, USER_=user, PASS_=password")
+        callArgsToString(call).contains("URL_=${EXAMPLE_URL}, USER_=username, PASS_=user_password")
     })
     assertJobStatusSuccess()
   }

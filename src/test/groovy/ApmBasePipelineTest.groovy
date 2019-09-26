@@ -16,28 +16,49 @@
 // under the License.
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import co.elastic.mock.DockerMock
+import co.elastic.mock.GetVaultSecretMock
+import co.elastic.TestUtils
 
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
+  String SHA = '29480a51'
+  String REPO_URL = 'http://github.com/org/repo.git'
+  String EXAMPLE_URL = 'https://ec.example.com:9200'
+
   @Override
   void setUp() {
     super.setUp()
+
     env.BRANCH_NAME = 'master'
-    binding.setVariable('env', env)
+    env.BUILD_ID = '1'
+    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
+    env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    env.JOB_BASE_NAME = 'master'
+    env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}/job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/display/redirect"
+    env.WORKSPACE = 'WS'
 
     registerDeclarativeMethods()
     registerScriptedMethods()
     registerSharedLibraryMethods()
+
+    binding.setVariable('env', env)
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setProperty('docker', new DockerMock())
   }
 
   void registerDeclarativeMethods() {
+    helper.registerAllowedMethod('aborted', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('always', [Closure.class], null)
     helper.registerAllowedMethod('ansiColor', [String.class], null)
     helper.registerAllowedMethod('agent', [Closure.class], null)
     helper.registerAllowedMethod('beforeAgent', [Boolean.class], { true })
     helper.registerAllowedMethod('disableResume', [], null)
     helper.registerAllowedMethod('durabilityHint', [String.class], null)
+    helper.registerAllowedMethod('failure', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('failFast', [Boolean.class], null)
     helper.registerAllowedMethod('issueCommentTrigger', [String.class], null)
     helper.registerAllowedMethod('label', [String.class], null)
     helper.registerAllowedMethod('options', [Closure.class], null)
@@ -45,15 +66,31 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('post', [Closure.class], null)
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
+    helper.registerAllowedMethod('script', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
       def stageResult
-      helper.registerAllowedMethod('when', [Closure.class], { bodyWhen ->
+      helper.registerAllowedMethod('when', [Closure.class], { Closure bodyWhen ->
         helper.registerAllowedMethod('branch', [String.class], { branchName  ->
           if(branchName == env.BRANCH_NAME) {
             return true
           }
           throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
+        })
+        helper.registerAllowedMethod('allOf', [Closure.class], { Closure cAllOf ->
+          helper.registerAllowedMethod('branch', [String.class], { branchName  ->
+            if(branchName == env.BRANCH_NAME) {
+              return true
+            }
+            throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional (branch)")
+          })
+          helper.registerAllowedMethod('expression', [Closure.class], { Closure cExp ->
+            if(cExp()) {
+              return true
+            }
+            throw new RuntimeException("Stage '${stageName}' skipped due to when conditional (expression)")
+          })
+          return cAllOf()
         })
         return bodyWhen()
       })
@@ -76,44 +113,180 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('stages', [Closure.class], null)
     helper.registerAllowedMethod('stash', [Map.class], null)
-    helper.registerAllowedMethod('steps', [Closure.class], null)
+    helper.registerAllowedMethod('steps', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('success', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('timeout', [Map.class], null)
     helper.registerAllowedMethod('timestamps', [], null)
     helper.registerAllowedMethod('triggers', [Closure.class], null)
+    helper.registerAllowedMethod('unstable', [Closure.class], { body -> body() })
   }
 
   void registerScriptedMethods() {
+    helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('bat', [String.class], null)
+    helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
+    helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
+    helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
+    helper.registerAllowedMethod('catchError', [Closure.class], { c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
+    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, c ->
+      try{
+        c()
+      } catch(e){
+        //NOOP
+      }
+    })
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
-    helper.registerAllowedMethod('dir', [String.class], null)
-    helper.registerAllowedMethod('environment', [Closure.class], { Closure c ->
-
-        def envBefore = [env: binding.getVariable('env')]
-        println "Env section - original env vars: ${envBefore.toString()}"
-        c.resolveStrategy = Closure.DELEGATE_FIRST
-        c.delegate = envBefore
-        c()
-
-        def envNew = envBefore.env
-        envBefore.each { k, v ->
-          if (k != 'env') {
-              envNew["$k"] = v
-          }
-
-        }
-        println "Env section - env vars set to: ${envNew.toString()}"
-        binding.setVariable('env', envNew)
+    helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
+      c.call()
     })
+    helper.registerAllowedMethod('emailext', [Map.class], { println("sending email") })
+    helper.registerAllowedMethod('environment', [Closure.class], { Closure c ->
+      def envBefore = [env: binding.getVariable('env')]
+      println "Env section - original env vars: ${envBefore.toString()}"
+      c.resolveStrategy = Closure.DELEGATE_FIRST
+      c.delegate = envBefore
+      c()
+
+      def envNew = envBefore.env
+      envBefore.each { k, v ->
+        if (k != 'env') {
+            envNew["$k"] = v
+        }
+
+      }
+      println "Env section - env vars set to: ${envNew.toString()}"
+      binding.setVariable('env', envNew)
+    })
+    helper.registerAllowedMethod('error', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
+    helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if(m.context.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
+    helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
-    helper.registerAllowedMethod('sh', [String.class], null)
+    helper.registerAllowedMethod('mail', [Map.class], { m ->
+      println('Writting mail-out.html file with the email result')
+      def f = new File("target/mail-out-${env.TEST}.html")
+      f.write(m.body)
+      println f.toString()
+    })
+    helper.registerAllowedMethod('readFile', [Map.class], { '' })
+    helper.registerAllowedMethod('readJSON', [Map.class], { m ->
+      return readJSON(m)
+    })
+    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
+      c.call()
+    })
+    helper.registerAllowedMethod('sleep', [Integer.class], null)
+    helper.registerAllowedMethod("sh", [Map.class], { 'OK' })
+    helper.registerAllowedMethod('sh', [String.class], { 'OK' })
+    helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
+      m.each{ k, v ->
+        binding.setVariable("${v}", 'defined')
+      }
+    })
+    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
+    helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
+    helper.registerAllowedMethod('writeFile', [Map.class], { m ->
+      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
+        writer.write(m.text)
+      }
+    })
+    helper.registerAllowedMethod('writeJSON', [Map.class], { "OK" })
   }
 
   void registerSharedLibraryMethods() {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('echoColor', [Map.class], { m ->
+      def echoColor = loadScript('vars/echoColor.groovy')
+      echoColor.call(m)
+    })
+    helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
+    helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
+    helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
+    helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
+    helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}/job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
+    helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
+      getVaultSecret(m.secret)
+    })
+    helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
+      getVaultSecret(s)
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
+    helper.registerAllowedMethod('gitCmd', [Map.class], null)
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
+    })
+    helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
+    })
+    helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
+    helper.registerAllowedMethod('httpRequest', [Map.class], { true })
+    helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
+    helper.registerAllowedMethod('publishHTML', [Map.class],  null)
+    helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('toJSON', [Map.class], { m ->
+      def script = loadScript('vars/toJSON.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('toJSON', [String.class], { s ->
+      def script = loadScript('vars/toJSON.groovy')
+      return script.call(s)
+    })
+    helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
+    helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+  }
+
+  def getVaultSecret(String s) {
+    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) ||
+       'secret/team/ci/secret-name'.equals(s) || 'secret/apm-team/ci/benchmark-cloud'.equals(s)){
+      return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
+    }
+    if('secretError'.equals(s)){
+      return [errors: 'Error message']
+    }
+    if('secretNotValid'.equals(s)){
+      return [data: [ user: null, password: null, url: null, apiKey: null]]
+    }
+    if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
+      return [data: [ value: 'codecov-token']]
+    }
+    return null
+  }
+
+  def readJSON(params){
+    def jsonSlurper = new groovy.json.JsonSlurperClassic()
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return jsonSlurper.parseText(jsonText)
   }
 }
