@@ -17,16 +17,18 @@
 
 package co.elastic.apmci.test;
 
+import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
+import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
 import org.apache.commons.io.IOUtils
 import org.junit.ClassRule;
-import org.jvnet.hudson.test.JenkinsRule
 
 import static org.junit.Assert.assertNotNull
 
 class BaseIntegrationTestCase {
 
   @ClassRule
-  public static JenkinsRule j = new JenkinsRule()
+  @ConfiguredWithCode("configuration-as-code.yml")
+  public static JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
 
   static String fileContentsFromResources(String fileName) throws IOException {
     String fileContents = null

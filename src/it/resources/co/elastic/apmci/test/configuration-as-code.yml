@@ -1,0 +1,20 @@
+unclassified:
+  location:
+    adminAddress: robots@elastic.co
+    url: http://localhost:18080/
+  globalLibraries:
+    libraries:
+      - name: "apm"
+        defaultVersion: "current"
+        implicit: true
+        retriever:
+          legacySCM:
+            scm:
+              filesystem:
+                clearWorkspace: false
+                copyHidden: false
+                path: "/tmp/apm-pipeline-library"
+                filterSettings:
+                  includeFilter: false
+                  selectors:
+                  - wildcard: "target/**"
