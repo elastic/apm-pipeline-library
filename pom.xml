@@ -17,6 +17,7 @@
 
   <properties>
     <cucumber.version>4.7.1</cucumber.version>
+    <jenkins.version>2.190.1</jenkins.version>
     <junit.version>4.12</junit.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -84,7 +85,7 @@
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-core</artifactId>
-      <version>2.179</version>
+      <version>${jenkins.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
