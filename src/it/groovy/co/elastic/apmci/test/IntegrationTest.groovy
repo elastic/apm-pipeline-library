@@ -25,6 +25,7 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
+import org.junit.Ignore
 import org.junit.Test
 import org.jvnet.hudson.test.recipes.LocalData
 
@@ -35,6 +36,7 @@ import static org.junit.Assert.assertThat
 class IntegrationTest extends BaseIntegrationTestCase {
 
   @Test
+  @Ignore("Required to install the declarative pipeline in the JenkinsRule")
   void testLog() throws Exception {
     WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, 'echo');
     job.setDefinition(new CpsFlowDefinition(fileContentsFromResources('it/log.groovy')))
@@ -46,6 +48,7 @@ class IntegrationTest extends BaseIntegrationTestCase {
   }
 
   @Test
+  @Ignore("Required to install the declarative pipeline in the JenkinsRule")
   void testEchoMultiBranch() throws Exception {
     MockSCMController controller = MockSCMController.create()
     controller.createRepository("repoFoo")
