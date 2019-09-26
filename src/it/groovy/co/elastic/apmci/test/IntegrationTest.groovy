@@ -25,12 +25,11 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
-import org.junit.Ignore
 import org.junit.Test
-import org.jvnet.hudson.test.recipes.LocalData
 
 import static org.hamcrest.collection.IsEmptyCollection.empty
 import static org.hamcrest.core.IsNot.not
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertThat
 
 class IntegrationTest extends BaseIntegrationTestCase {
@@ -47,7 +46,6 @@ class IntegrationTest extends BaseIntegrationTestCase {
   }
 
   @Test
-  @Ignore("Required to install the declarative pipeline in the JenkinsRule")
   void testEchoMultiBranch() throws Exception {
     MockSCMController controller = MockSCMController.create()
     controller.createRepository("repoFoo")
@@ -56,10 +54,17 @@ class IntegrationTest extends BaseIntegrationTestCase {
 
     WorkflowMultiBranchProject project = j.createProject(WorkflowMultiBranchProject.class)
     project.getSourcesList().add(new BranchSource(new MockSCMSource(controller, "repoFoo",  new MockSCMDiscoverBranches())))
-
     project.scheduleBuild2(0)
     j.waitUntilNoActivity()
     assertThat(project.getItems(), not(empty()))
+
+    WorkflowJob job = project.getItem("master")
+    assertEquals(1, project.getItems().size())
+    j.waitUntilNoActivity()
+    WorkflowRun build = job.getLastBuild()
+    assertEquals(1, build.getNumber())
+    j.assertBuildStatusSuccess(build)
+    j.assertLogContains("hi", build)
   }
 
 }
