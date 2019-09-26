@@ -30,17 +30,17 @@ def call(Map params = [:]){
 
   def props = getVaultSecret(secret: secret)
   if(props?.errors){
-     error "notifyBuildResult: Unable to get credentials from the vault: " + props.errors.toString()
+     error "sendDataToElasticsearch: Unable to get credentials from the vault: " + props.errors.toString()
   }
 
   def value = props?.data
   def user = value?.user
   def password = value?.password
   if(data == null || user == null || password == null){
-    error "notifyBuildResult: was not possible to get authentication info to send data."
+    error "sendDataToElasticsearch: was not possible to get authentication info to send data."
   }
 
-  log(level: 'INFO', text: "notifyBuildResult: sending data...")
+  log(level: 'INFO', text: "sendDataToElasticsearch: sending data...")
 
   def messageBase64UrlPad = base64encode(text: "${user}:${password}", encoding: "UTF-8")
   return httpRequest(url: "${es}${restCall}", method: "${method}",

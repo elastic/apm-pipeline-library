@@ -15,41 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import co.elastic.mock.DockerMock
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class CheckLicensesStepTests extends BasePipelineTest {
+class CheckLicensesStepTests extends ApmBasePipelineTest {
   static final String scriptName = 'vars/checkLicenses.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = '/tmp'
     env.BASE_DIR = 'base'
-
-    binding.setVariable('env', env)
-    binding.setProperty('docker', new DockerMock())
-
-    helper.registerAllowedMethod('archive', [String.class], { 'OK' })
-    helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('isUnix', [ ], { true })
-    helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('readFile', [Map.class], { '' })
-    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
-    helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 
   @Test

@@ -21,7 +21,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitDeleteTagStepTests extends BasePipelineTest {
+class GitDeleteTagStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/gitDeleteTag.groovy'
 
   @Override
@@ -29,11 +29,6 @@ class GitDeleteTagStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     binding.setVariable('BUILD_TAG', 'foo')
-
-    helper.registerAllowedMethod('sh', [String.class], { "OK" })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
-    helper.registerAllowedMethod("gitPush", [Map.class], { return "OK" })
   }
 
   @Test

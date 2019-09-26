@@ -15,31 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class PreCommitStepTests extends BasePipelineTest {
+class PreCommitStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/preCommit.groovy'
-
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('dockerLogin', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('preCommitToJunit', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('sh', [String.class], { 'OK' })
-    helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
   }
 
   @Test

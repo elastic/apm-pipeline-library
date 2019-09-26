@@ -15,24 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
-class AgentMappingStepTests extends BasePipelineTest {
+class AgentMappingStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/agentMapping.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
   }
 
   @Test

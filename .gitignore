@@ -18,3 +18,5 @@ target/
 
 # For the vagrant
 .vagrant
+
+mail*.html

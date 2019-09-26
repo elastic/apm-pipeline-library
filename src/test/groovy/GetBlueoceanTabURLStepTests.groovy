@@ -15,36 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class GetBlueoceanTabURLStepTests extends BasePipelineTest {
+class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
   String scriptName = "vars/getBlueoceanTabURL.groovy"
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.BUILD_ID = "4"
-    env.BRANCH_NAME = "PR-60"
-    env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.BUILD_URL = "${env.JENKINS_URL}/job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
-
-    binding.setVariable('env', env)
-
-    def redirectURL = "${env.JENKINS_URL}/blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/"
-
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("getBlueoceanDisplayURL", [], { redirectURL })
   }
 
   @Test

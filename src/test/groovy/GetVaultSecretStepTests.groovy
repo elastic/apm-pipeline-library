@@ -15,24 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.TestUtils
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GetVaultSecretStepTests extends BasePipelineTest {
+class GetVaultSecretStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/getVaultSecret.groovy'
-
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
 
-    binding.setVariable('env', env)
     helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
       if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return "{plaintext: '12345', encrypted: 'SECRET'}"
@@ -41,23 +36,6 @@ class GetVaultSecretStepTests extends BasePipelineTest {
         return "{auth: {client_token: 'TOKEN'}}"
       }
     })
-    helper.registerAllowedMethod("string", [Map.class], { m -> return m })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], TestUtils.wrapInterceptor)
-    helper.registerAllowedMethod("withCredentials", [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println "[${m.level}] ${m.text}"})
-    helper.registerAllowedMethod("error", [String.class], {s ->
-      printCallStack()
-      throw new Exception(s)
-      })
-    helper.registerAllowedMethod("toJSON", [String.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
-      })
-    helper.registerAllowedMethod("retry", [Integer.class, Closure.class], { i, c ->
-      c.call()
-    })
-    helper.registerAllowedMethod("randomNumber", [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod("sleep", [Integer.class], { 'OK' })
   }
 
   @Test

@@ -15,13 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitCreateTagStepTests extends BasePipelineTest {
+class GitCreateTagStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/gitCreateTag.groovy'
 
   @Override
@@ -29,11 +28,6 @@ class GitCreateTagStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     binding.setVariable('BUILD_TAG', 'foo')
-
-    helper.registerAllowedMethod('sh', [String.class], { "OK" })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
-    helper.registerAllowedMethod("gitPush", [Map.class], { return "OK" })
   }
 
   @Test

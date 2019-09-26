@@ -15,14 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class NotificationManagerStepTests extends BasePipelineTest {
+class NotificationManagerStepTests extends ApmBasePipelineTest {
   String scriptName = 'src/main/groovy/co/elastic/NotificationManager.groovy'
   Map env = [:]
 
@@ -30,69 +29,6 @@ class NotificationManagerStepTests extends BasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    env.JOB_NAME = "folder/folder/folder/folder/folder/folder/name-name-name-myJob"
-    env.BRANCH_NAME = "master"
-    env.BUILD_NUMBER = "123"
-    env.JENKINS_URL = "http://jenkins.example.com:8080"
-    env.RUN_DISPLAY_URL = "http://jenkins.example.com:8080/job/folder/job/myJob/display/redirect"
-    env.JOB_BASE_NAME = "myJob"
-
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod("sh", [Map.class], { "OK" })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("log", [Map.class], {m -> println(m.text)})
-    helper.registerAllowedMethod("readJSON", [Map.class], { m ->
-      return readJSON(m)
-    })
-    helper.registerAllowedMethod("error", [String.class], {s ->
-      printCallStack()
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("toJSON", [String.class], { s ->
-      def script = loadScript("vars/toJSON.groovy")
-      return script.call(s)
-    })
-    helper.registerAllowedMethod("mail", [Map.class], { m ->
-      println("Writting mail-out.html file with the email result")
-      def f = new File("mail-out-${env.TEST}.html")
-      f.write(m.body)
-      println f.toString()
-    })
-    helper.registerAllowedMethod("catchError", [Map.class, Closure.class], { m, c ->
-      try{
-        c()
-      } catch(e){
-        //NOOP
-        println e.toString()
-        e.printStackTrace(System.out);
-      }
-    })
-    helper.registerAllowedMethod("catchError", [Closure.class], { m, c ->
-      try{
-        c()
-      } catch(e){
-        //NOOP
-        println e.toString()
-        e.printStackTrace(System.out);
-      }
-    })
-
-    helper.registerAllowedMethod("getBlueoceanDisplayURL",{
-      return "https://jenkins.example.com/blue/organizations/jenkins/jobname"
-    })
-  }
-
-  def readJSON(params){
-    def jsonSlurper = new groovy.json.JsonSlurperClassic()
-    def jsonText = params.text
-    if(params.file){
-      File f = new File("src/test/resources/${params.file}")
-      jsonText = f.getText()
-    }
-    return jsonSlurper.parseText(jsonText)
   }
 
   @Test
@@ -191,7 +127,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("notifyEmail: build parameter it is not valid")
     })
-    assertJobStatusSuccess()
+    assertJobStatusFailure()
   }
 
   @Test
@@ -221,7 +157,7 @@ class NotificationManagerStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("notifyEmail: buildStatus parameter is not valid")
     })
-    assertJobStatusSuccess()
+    assertJobStatusFailure()
   }
 
   @Test
@@ -251,6 +187,6 @@ class NotificationManagerStepTests extends BasePipelineTest {
     }.any { call ->
         callArgsToString(call).contains("notifyEmail: emailRecipients parameter is not valid")
     })
-    assertJobStatusSuccess()
+    assertJobStatusFailure()
   }
 }

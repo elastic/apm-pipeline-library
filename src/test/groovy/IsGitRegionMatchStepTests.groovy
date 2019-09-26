@@ -15,29 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class IsGitRegionMatchStepTests extends BasePipelineTest {
+class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/isGitRegionMatch.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('echo', [String.class], { 'OK' })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('log', [Map.class], { true })
   }
 
   @Test

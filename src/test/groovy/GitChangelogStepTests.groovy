@@ -15,27 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitChangelogStepTests extends BasePipelineTest {
+class GitChangelogStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/gitChangelog.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('isUnix', [], {true})
-    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
   }
 
   @Test

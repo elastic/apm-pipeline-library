@@ -5,10 +5,16 @@ You can configure this jenkins instance as you wish, if so please change:
 * configs/jenkins.yaml using the [JCasC](https://jenkins.io/projects/jcasc/)
 * plugins.txt
 
-
 The current baseline was based on what the @infra provides us.
 
-You can use the [plugins.txt](https://github.com/elastic/infra/blob/master/docker/jenkins/configs/plugins.txt) as a reference.
+## Bump jenkins core version
+
+Please monitor https://github.com/elastic/infra/blob/master/docker/jenkins/docker-compose.yml#L5 if new changes then apply them in the Dockerfile.
+
+
+## Add new plugins
+
+Infra already provides the docker image with the installed plugins. If you need more plugins please change the local/configs/plugins.txt as you wish.
 
 
 ## Prerequisites
@@ -44,10 +50,37 @@ open http://localhost:18080
 ```
 
 ## Enable windows vagrant worker
-TBD
+
+### Windows 2019
+
+It does require to open the UI and login.
+
+```bash
+# cd local/windows/windows-2019
+vagrant up --provision
+
+# wait for a few minutes...
+open http://localhost:18080
+```
+
+### Windows 2016
+
+```bash
+# cd local/windows/windows-2016
+vagrant up --provision
+
+# wait for a few minutes...
+open http://localhost:18080
+```
 
 ## Enable macosx vagrant worker
-TBD
+
+```bash
+# cd local/macosx
+vagrant up --provision
+# wait for a few minutes...
+open http://localhost:18080
+```
 
 ## Usage
 
