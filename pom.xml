@@ -354,13 +354,13 @@
                 <resource>
                   <directory>${basedir}</directory>
                   <includes>
-                    <include>**/*.*</include>
+                    <include>vars/</include>
+                    <include>src/</include>
+                    <include>resources/</include>
                   </includes>
                   <excludes>
+                    <exclude>src/it/**/*.*</exclude>
                     <exclude>src/test/**/*.*</exclude>
-                    <exclude>local/**/*.*</exclude>
-                    <exclude>target/**/*.*</exclude>
-                    <exclude>*.*</exclude>
                   </excludes>
                 </resource>
               </resources>
