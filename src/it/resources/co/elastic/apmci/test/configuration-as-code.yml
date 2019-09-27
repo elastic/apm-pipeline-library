@@ -1,7 +1,8 @@
 unclassified:
   location:
     adminAddress: robots@elastic.co
-    url: http://localhost:18080/
+  globalDefaultFlowDurabilityLevel:
+    durabilityHint: PERFORMANCE_OPTIMIZED
   globalLibraries:
     libraries:
       - name: "apm"
