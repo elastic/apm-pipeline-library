@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.39 (30/09/2019)
+
+#### 🚀 Enhancements
+
+-  enable curl with timeout and connection timeout [#239](https://github.com/elastic/apm-pipeline-library/pull/239)
+-  feat: use infra docker image and simplify the list of plugins [#238](https://github.com/elastic/apm-pipeline-library/pull/238)
+-  feat: enable local windows workers [#237](https://github.com/elastic/apm-pipeline-library/pull/237)
+
+---
+
 ## v1.1.38 (25/09/2019)
 
 #### 🚀 Enhancements
@@ -309,10 +319,10 @@
 
 #### 🐛 Bug Fixes
 
--  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
--  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
 -  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 -  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
+-  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
+-  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
 
 #### 📚 Documentation
 
