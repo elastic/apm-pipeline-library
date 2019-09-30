@@ -61,7 +61,7 @@ def call(jobURL, buildNumber){
 }
 
 def downloadJSONFile(url, file){
-  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL -o ${file} ${url}", returnStatus: true)
+  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}", returnStatus: true)
 
   if(ret != 0){
     writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
