@@ -63,6 +63,16 @@ credentials:
               id: vault-secret-id
               scope: GLOBAL
               secret: ${vault_secret_id}
+          - string:
+              description: Who to notify to.
+              id: notify-to
+              scope: GLOBAL
+              secret: ${notify_to}
+          - string:
+              description: gcs_bucket
+              id: gcs-bucket
+              scope: GLOBAL
+              secret: ${gcs_bucket}
 
 unclassified:
   location:
