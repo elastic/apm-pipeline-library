@@ -116,6 +116,11 @@ pipeline {
               }
             }
           }
+          post {
+               clean {
+                   sh 'docker ps -a || true'
+               }
+          }
         }
         stage('Ubuntu 18.04 test'){
           agent { label 'ubuntu-edge' }
@@ -170,6 +175,11 @@ pipeline {
                 }
               }
             }
+          post {
+               clean {
+                   sh 'docker ps -a || true'
+               }
+          }
         }
 
         stage('Debian 9 test'){
@@ -225,6 +235,11 @@ pipeline {
                 }
               }
             }
+          post {
+               clean {
+                   sh 'docker ps -a || true'
+               }
+          }
         }
         stage('windows 2012 immutable check'){
           agent { label 'windows-2012-r2-immutable' }
