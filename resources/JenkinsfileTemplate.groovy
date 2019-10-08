@@ -116,11 +116,11 @@ pipeline {
               }
             }
           }
-        }
-        post {
-             cleanup {
-                 sh 'docker ps -a || true'
-             }
+          post {
+               cleanup {
+                   sh 'docker ps -a || true'
+               }
+          }
         }
         stage('Ubuntu 18.04 test'){
           agent { label 'ubuntu-edge' }
