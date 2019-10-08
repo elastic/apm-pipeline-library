@@ -117,7 +117,7 @@ pipeline {
             }
           }
           post {
-               clean {
+               cleanup {
                    sh 'docker ps -a || true'
                }
           }
@@ -176,7 +176,7 @@ pipeline {
               }
             }
           post {
-               clean {
+               cleanup {
                    sh 'docker ps -a || true'
                }
           }
@@ -236,7 +236,7 @@ pipeline {
               }
             }
           post {
-               clean {
+               cleanup {
                    sh 'docker ps -a || true'
                }
           }
