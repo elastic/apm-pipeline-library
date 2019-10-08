@@ -117,7 +117,7 @@ pipeline {
             }
           }
           post {
-               cleanup {
+               always {
                    sh 'docker ps -a || true'
                }
           }
