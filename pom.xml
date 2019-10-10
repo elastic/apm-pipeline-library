@@ -23,6 +23,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     <pipeline-model.version>1.3.9</pipeline-model.version>
+    <jcasc.version>1.31</jcasc.version>
   </properties>
 
   <repositories>
@@ -73,7 +74,6 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>2.4.12</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
@@ -88,6 +88,13 @@
     <!-- End for running the tests -->
     <!-- For implementing the ITs -->
     <dependency>
+      <groupId>io.jenkins</groupId>
+      <artifactId>configuration-as-code</artifactId>
+      <classifier>tests</classifier>
+      <version>${jcasc.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-test-harness</artifactId>
       <scope>test</scope>
@@ -97,7 +104,6 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>scm-api</artifactId>
       <classifier>tests</classifier>
-      <version>2.6.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -107,30 +113,104 @@
       <scope>test</scope>
     </dependency>
     <!-- End for implementing the ITs -->
-    <!-- to enable the JenkinsRule with the required installed plugins then add the required dependencies below-->
+    <!-- Required plugins to use the JenkinsRule -->
+    <dependency>
+      <groupId>hudson.plugins.filesystem_scm</groupId>
+      <artifactId>filesystem_scm</artifactId>
+      <version>2.1</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.jenkins</groupId>
       <artifactId>configuration-as-code</artifactId>
-      <classifier>tests</classifier>
-      <version>1.31</version>
+      <version>${jcasc.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>trilead-ssh2</artifactId>
+      <version>build-217-jenkins-16</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.modules</groupId>
+      <artifactId>sshd</artifactId>
+      <version>2.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jdk-tool</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>pipeline-build-step</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>pipeline-input-step</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkinsci.plugins</groupId>
+      <artifactId>pipeline-model-api</artifactId>
+      <version>${pipeline-model.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkinsci.plugins</groupId>
+      <artifactId>pipeline-model-definition</artifactId>
+      <version>${pipeline-model.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkinsci.plugins</groupId>
+      <artifactId>pipeline-model-extensions</artifactId>
+      <version>${pipeline-model.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkinsci.plugins</groupId>
+      <artifactId>pipeline-stage-tags-metadata</artifactId>
+      <version>${pipeline-model.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>scm-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-cps-global-lib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- End of required plugins to use the JenkinsRule -->
     <!-- jenkins-war-${jenkins.version}.war does not yet exist. Prime your development environment by running `mvn validate`. -->
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-war</artifactId>
-      <version>2.190.1</version>
+      <version>${jenkins.version}</version>
       <scope>test</scope>
       <type>war</type>
     </dependency>
   </dependencies>
 
-  <!-- force upper bound dependencies -->
   <dependencyManagement>
     <dependencies>
+      <!-- Use the Jenkins BOM -->
+      <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-2.176.x</artifactId>
+        <version>3</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <!-- force upper bound dependencies -->
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-al</artifactId>
+        <artifactId>groovy-all</artifactId>
         <version>2.4.12</version>
       </dependency>
       <dependency>
@@ -143,6 +223,7 @@
         <artifactId>commons-logging</artifactId>
         <version>1.2</version>
       </dependency>
+      <!-- end force upper bound dependencies -->
     </dependencies>
   </dependencyManagement>
 
@@ -355,4 +436,13 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>debug</id>
+      <properties>
+        <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+      </properties>
+    </profile>
+  </profiles>
 </project>
