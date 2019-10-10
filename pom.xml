@@ -33,6 +33,13 @@
   </repositories>
 
   <dependencies>
+    <!-- Test frameworks -->
+    <dependency>
+      <groupId>com.lesfurets</groupId>
+      <artifactId>jenkins-pipeline-unit</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-groovy</artifactId>
@@ -46,22 +53,17 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>2.4.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- End test frameworks -->
+    <!-- For running the tests -->
     <dependency>
-      <groupId>com.lesfurets</groupId>
-      <artifactId>jenkins-pipeline-unit</artifactId>
-      <version>1.1</version>
-      <scope>test</scope>
+      <groupId>com.cloudbees</groupId>
+      <artifactId>groovy-cps</artifactId>
+      <version>1.30</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -69,14 +71,9 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
-      <groupId>com.cloudbees</groupId>
-      <artifactId>groovy-cps</artifactId>
-      <version>1.30</version>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.19</version>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.4.12</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
@@ -84,14 +81,17 @@
       <version>${jenkins.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.6</version>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.19</version>
     </dependency>
+    <!-- End for running the tests -->
+    <!-- For implementing the ITs -->
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>2.4.12</version>
+      <groupId>org.jenkins-ci.main</groupId>
+      <artifactId>jenkins-test-harness</artifactId>
+      <scope>test</scope>
+      <version>2.55</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -101,17 +101,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-test-harness</artifactId>
-      <scope>test</scope>
-      <version>2.55</version>
-    </dependency>
-    <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-multibranch</artifactId>
       <version>2.16</version>
       <scope>test</scope>
     </dependency>
+    <!-- End for implementing the ITs -->
     <!-- to enable the JenkinsRule with the required installed plugins then add the required dependencies below-->
     <dependency>
       <groupId>io.jenkins</groupId>
@@ -152,18 +147,52 @@
   </dependencyManagement>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.0.0-M3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.0.0-M3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
         <configuration>
           <tagNameFormat>v@{project.version}</tagNameFormat>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
         <configuration>
           <compilerId>groovy-eclipse-compiler</compilerId>
         </configuration>
@@ -181,9 +210,8 @@
         </dependencies>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.codehaus.mojo</groupId> <!-- this is required as it is not resolved otherwise -->
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.12</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -229,17 +257,13 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M3</version>
         <configuration>
           <testSourceDirectory>test/groovy</testSourceDirectory>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.0.0-M3</version>
         <executions>
           <execution>
             <id>integration-test</id>
@@ -270,7 +294,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
         <executions>
           <execution>
             <id>copy-to-tmp-to-run-its-with-jcasc</id>
@@ -301,7 +324,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M2</version>
         <executions>
           <execution>
             <id>display-info</id>
