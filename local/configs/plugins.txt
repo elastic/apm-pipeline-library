@@ -1,5 +1,2 @@
-configuration-as-code
-configuration-as-code-support
 filesystem_scm
-hashicorp-vault-plugin
 job-dsl
