@@ -14,7 +14,7 @@
           discover-tags: false
           filter-by-name-wildcard:
             includes: 'PR-48109'
-          notification-context: 'apm-ci'
+          notification-context: 'apm-ci/end2end'
           repo: kibana
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
