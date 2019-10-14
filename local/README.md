@@ -82,6 +82,15 @@ vagrant up --provision
 open http://localhost:18080
 ```
 
+> In the case `OpenSSL SSL_read: SSL_ERROR_SYSCALL` error appears, please run:
+```bash
+# add the vagrant box without SSL certificates
+vagrant box add AndrewDryga/vagrant-box-osx --insecure
+vagrant up --provision
+# wait for a few minutes...
+open http://localhost:18080
+```
+
 ## Usage
 
 ### Quickstart
