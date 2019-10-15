@@ -1,7 +1,7 @@
 ---
 - job:
     name: apm-ui/apm-ui-e2e-tests-mbp
-    display-name: APN UI e2e tests Pipeline
+    display-name: APM UI e2e tests Pipeline
     description: Jenkins pipeline to run the end2end tests for the APM UI
     project-type: multibranch
     script-path: .ci/end2end.groovy
