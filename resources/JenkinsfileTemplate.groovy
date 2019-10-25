@@ -249,6 +249,7 @@ pipeline {
 
 def testDockerInside(){
   docker.image('node:12').inside(){
+    echo "Docker inside"
     dir("${BASE_DIR}"){
       withEnv(["HOME=${env.WORKSPACE}"]){
         sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
