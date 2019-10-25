@@ -45,6 +45,18 @@ pipeline {
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
   }
   stages {
+    /**
+    Checkout the code and stash it, to use it on other stages.
+    */
+    stage('Checkout') {
+      steps {
+        deleteDir()
+        gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+          repo: 'git@github.com:elastic/apm-pipeline-library.git',
+          credentialsId: "${JOB_GIT_CREDENTIALS}")
+        stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+      }
+    }
     stage('Workers Checks'){
       parallel {
         stage('linux && immutable check'){
@@ -57,27 +69,11 @@ pipeline {
           }
           stages {
             /**
-            Checkout the code and stash it, to use it on other stages.
-            */
-            stage('Checkout') {
-              steps {
-                deleteDir()
-                gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                  repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                  credentialsId: "${JOB_GIT_CREDENTIALS}")
-                stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-              }
-            }
-            /**
             Build the project from code..
             */
             stage('Build') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-                }
+                buildUnix()
               }
             }
             /**
@@ -85,11 +81,8 @@ pipeline {
             */
             stage('Test') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-                }
+                testUnix()
+                testDockerInside()
               }
               post {
                 always {
@@ -132,27 +125,11 @@ pipeline {
           }
           stages {
             /**
-            Checkout the code and stash it, to use it on other stages.
-            */
-            stage('Checkout') {
-              steps {
-                deleteDir()
-                gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                  repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                  credentialsId: "${JOB_GIT_CREDENTIALS}")
-                stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-              }
-            }
-            /**
             Build the project from code..
             */
             stage('Build') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-                }
+                buildUnix()
               }
             }
             /**
@@ -160,11 +137,8 @@ pipeline {
             */
             stage('Test') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-                }
+                testUnix()
+                testDockerInside()
               }
               post {
                 always {
@@ -192,27 +166,11 @@ pipeline {
           }
           stages {
             /**
-            Checkout the code and stash it, to use it on other stages.
-            */
-            stage('Checkout') {
-              steps {
-                deleteDir()
-                gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                  repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                  credentialsId: "${JOB_GIT_CREDENTIALS}")
-                stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-              }
-            }
-            /**
             Build the project from code..
             */
             stage('Build') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-                }
+                buildUnix()
               }
             }
             /**
@@ -220,11 +178,8 @@ pipeline {
             */
             stage('Test') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-                }
+                testUnix()
+                testDockerInside()
               }
               post {
                 always {
@@ -245,66 +200,37 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            bat returnStatus: true, script: 'msbuild'
-            bat returnStatus: true, script: 'dotnet --info'
-            bat returnStatus: true, script: 'nuget --help'
-            bat returnStatus: true, script: 'vswhere'
-            bat returnStatus: true, script: 'docker -v'
+            checkWindows()
           }
         }
         stage('windows 2016 immutable check'){
           agent { label 'windows-2016-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            bat returnStatus: true, script: 'msbuild'
-            bat returnStatus: true, script: 'dotnet --info'
-            bat returnStatus: true, script: 'nuget --help'
-            bat returnStatus: true, script: 'vswhere'
-            bat returnStatus: true, script: 'docker -v'
+            checkWindows()
           }
         }
         stage('windows 2019 immutable check'){
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            bat returnStatus: true, script: 'msbuild'
-            bat returnStatus: true, script: 'dotnet --info'
-            bat returnStatus: true, script: 'nuget --help'
-            bat returnStatus: true, script: 'vswhere'
-            bat returnStatus: true, script: 'docker -v'
+            checkWindows()
           }
         }
         stage('windows 2019 docker immutable check'){
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            bat returnStatus: true, script: 'msbuild'
-            bat returnStatus: true, script: 'dotnet --info'
-            bat returnStatus: true, script: 'nuget --help'
-            bat returnStatus: true, script: 'vswhere'
-            bat returnStatus: true, script: 'docker -v'
+            checkWindows()
           }
         }
         stage('Mac OS X check'){
           stages {
-            stage('Checkout') {
-              steps {
-                deleteDir()
-                gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                  repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                  credentialsId: "${JOB_GIT_CREDENTIALS}")
-                stash allowEmpty: true, name: 'source-mac', useDefaultExcludes: false
-              }
-            }
             stage('build') {
               agent { label 'macosx' }
               options { skipDefaultCheckout() }
               steps {
-                deleteDir()
-                unstash 'source-mac'
-                dir("${BASE_DIR}"){
-                  sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-                }
+                buildUnix()
               }
             }
           }
@@ -317,4 +243,40 @@ pipeline {
       notifyBuildResult()
     }
   }
+}
+
+
+
+def testDockerInside(){
+  docker.image('node:12').inside(){
+    dir("${BASE_DIR}"){
+      withEnv(["HOME=${env.WORKSPACE}"]){
+        sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
+      }
+    }
+  }
+}
+
+def buildUnix(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+  }
+}
+
+def testUnix(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+  }
+}
+
+def checkWindows(){
+  bat returnStatus: true, script: 'msbuild'
+  bat returnStatus: true, script: 'dotnet --info'
+  bat returnStatus: true, script: 'nuget --help'
+  bat returnStatus: true, script: 'vswhere'
+  bat returnStatus: true, script: 'docker -v'
 }
