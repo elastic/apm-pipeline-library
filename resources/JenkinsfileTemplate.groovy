@@ -224,10 +224,43 @@ pipeline {
             checkWindows()
           }
         }
-        stage('Mac OS X check'){
+        stage('Mac OS X check - 01'){
           stages {
             stage('build') {
               agent { label 'macosx' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('Mac OS X check - 02'){
+          stages {
+            stage('build') {
+              agent { label 'macosx' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('BareMetal worker-854309 check'){
+          stages {
+            stage('build') {
+              agent { label 'worker-854309' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('BareMetal worker-1095690 check'){
+          stages {
+            stage('build') {
+              agent { label 'worker-1095690' }
               options { skipDefaultCheckout() }
               steps {
                 buildUnix()
