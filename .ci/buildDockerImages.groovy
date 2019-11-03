@@ -242,7 +242,7 @@ pipeline {
         expression { return params.jruby }
       }
       steps {
-        git url: 'https://github.com/kuisathaverat/docker-jruby', branch: 'versions'
+        git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
         sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
         sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
         dockerLoginElasticRegistry()
