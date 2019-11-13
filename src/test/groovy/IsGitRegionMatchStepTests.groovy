@@ -124,7 +124,13 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     env.GIT_SHA = 'bar'
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    helper.registerAllowedMethod('sh', [Map.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return 0
+      }
+    })
     def result = true
     result = script.call(regexps: [ '^file.txt' ], isExactMatch: true)
     printCallStack()
@@ -133,7 +139,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testComplexMatch() throws Exception {
+  void testComplexGlobMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -147,31 +153,27 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt' ])
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: matched")
-    })
     assertTrue(result)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testComplexMatchWithExactMatch() throws Exception {
+  void testComplexGlobMatchWithExactMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    helper.registerAllowedMethod('sh', [Map.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return changeset
+        } else {
+          return 0
+        }
+      })
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt' ], isExactMatch: true)
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: matched")
-    })
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -195,11 +197,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt', '^bar/**/file*.txt' ])
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: matched")
-    })
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -213,15 +210,39 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
                       | foo/bar/xxx/file.txt
                     '''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    helper.registerAllowedMethod('sh', [Map.class], { return true })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return (m.script.contains('^foo/**/file.txt') || m.script.contains('^foo/bar/**/file.txt')) ? 0 : 1
+      }
+    })
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: matched")
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultipleRegexpMatchWithExactMatchAndRegexpComparator() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo/bar/xxx/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return (m.script.contains('^foo/.*') || m.script.contains('^foo/bar/.*')) ? 0 : 1
+      }
     })
+    def result = false
+    result = script.call(regexps: [ '^foo/.*', '^foo/bar/.*' ], isExactMatch: true, comparator: 'regexp')
+    printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -238,15 +259,8 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
           return 1
         }
       })
-    def result = false
-    result = script.call(regexps: [ '^unknown.txt' ])
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: not matched")
-    })
-    assertFalse(result)
+    assertFalse(script.call(regexps: [ '^unknown.txt' ]))
     assertJobStatusSuccess()
   }
 
@@ -263,31 +277,8 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     def result = false
     result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: not matched")
-    })
     assertFalse(result)
     assertJobStatusSuccess()
-  }
-
-  @Test
-  void testRegexpWithoutExactMatch() throws Exception {
-    def script = loadScript(scriptName)
-    def result = false
-    try {
-      result = script.call(regexps: [ '^foo/.*' ], isExactMatch: false, comparator: 'regexp')
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: regexp comparator is _ONLY_ supported with isExactMatch.')
-    })
-    assertJobStatusFailure()
   }
 
   @Test

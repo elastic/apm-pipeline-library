@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Given the list of regexps, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+  Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
   evaluates the change list with the regexp list:
 
   - When exact match then all the files should match those patterns then it returns `true` otherwise
@@ -38,29 +38,25 @@ def call(Map params = [:]) {
     error('isGitRegionMatch: Missing regexps with values.')
   }
 
-  if (!isExactMatch && !isGlob(comparator)) {
-    error('isGitRegionMatch: regexp comparator is _ONLY_ supported with isExactMatch.')
-  }
-
   def gitDiffFile = 'git-diff.txt'
-  def match = null
+  def match = false
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
     if (isExactMatch) {
-      match = compareDiffFileWithPattern(readFile(gitDiffFile), patterns, isGlob(comparator))
+      match = isFullPatternMatch(gitDiffFile, patterns, isGlob(comparator))
     } else {
-      match = patterns.find { pattern -> isGrepPatternFound(gitDiffFile, pattern) }
+      match = isPartialPatternMatch(gitDiffFile, patterns, isGlob(comparator))
     }
-    log(level: 'INFO', text: "isGitRegionMatch: ${match ? '' : 'not '}matched")
-
+    log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
   }
-  return (match != null)
+  return match
 }
 
-def compareDiffFileWithPattern(fileContent, patterns, isGlob) {
-  match = true
+def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
+  def fileContent = readFile(gitDiffFile)
+  def match = true
   fileContent.eachLine { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
     if (isGlob) {
@@ -76,8 +72,23 @@ def compareDiffFileWithPattern(fileContent, patterns, isGlob) {
   return match
 }
 
-def isGrepPatternFound(file, pattern) {
+def isPartialPatternMatch(gitDiffFile, patterns, isGlob) {
+  def match = false
+  if (isGlob) {
+    match = patterns.any { pattern -> isGrepPatternFoundInFile(gitDiffFile, pattern) }
+  } else {
+    match = patterns.any { line ==~ it }
+  }
+  return match
+}
+
+def isGrepPatternFoundInFile(file, pattern) {
   return sh(script: "grep '${pattern}' ${file}", returnStatus: true) == 0
+}
+
+def isGrepPatternFound(compareWith, pattern) {
+  log(level: 'DEBUG', text: "isGrepPatternFound: '${compareWith}' with pattern: '${pattern}'")
+  return sh(script: "echo '${compareWith}' | grep '${pattern}'", returnStatus: true) == 0
 }
 
 def isGlob(comparator) {
