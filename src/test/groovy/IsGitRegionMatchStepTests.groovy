@@ -111,7 +111,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
         }
       })
     def result = false
-    result = script.call(regexps: [ '^file.txt' ], isExactMatch: false)
+    result = script.call(regexps: [ '^file.txt' ], isFullMatch: false)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -132,7 +132,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = true
-    result = script.call(regexps: [ '^file.txt' ], isExactMatch: true)
+    result = script.call(regexps: [ '^file.txt' ], isFullMatch: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -172,7 +172,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
         }
       })
     def result = false
-    result = script.call(regexps: [ '^foo/**/file.txt' ], isExactMatch: true)
+    result = script.call(regexps: [ '^foo/**/file.txt' ], isFullMatch: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -218,7 +218,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = false
-    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
+    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isFullMatch: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -241,7 +241,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = false
-    result = script.call(regexps: [ '^foo/.*', '^foo/bar/.*' ], isExactMatch: true, comparator: 'regexp')
+    result = script.call(regexps: [ '^foo/.*', '^foo/bar/.*' ], isFullMatch: true, comparator: 'regexp')
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -275,7 +275,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { return true })
     def result = false
-    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
+    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isFullMatch: true)
     printCallStack()
     assertFalse(result)
     assertJobStatusSuccess()
