@@ -99,7 +99,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testSimpleMatchWithExactMatch() throws Exception {
+  void testSimpleMatchWithoutExactMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -111,14 +111,25 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
         }
       })
     def result = false
-    try {
-      result = script.call(regexps: [ '^file.txt' ], isExactMatch: true)
-    } catch(e){
-      //NOOP
-    }
+    result = script.call(regexps: [ '^file.txt' ], isExactMatch: false)
     printCallStack()
-    assertFalse(result)
-    assertJobStatusFailure()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSimpleMatchWithExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = 'file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { return changeset })
+    def result = true
+    result = script.call(regexps: [ '^file.txt' ], isExactMatch: true)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -139,7 +150,27 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'log'
     }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: '^foo/**/file.txt' matched")
+      callArgsToString(call).contains("isGitRegionMatch: matched")
+    })
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testComplexMatchWithExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = 'foo/anotherfolder/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { return changeset })
+    def result = false
+    result = script.call(regexps: [ '^foo/**/file.txt' ], isExactMatch: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: matched")
     })
     assertTrue(result)
     assertJobStatusSuccess()
@@ -167,7 +198,29 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'log'
     }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: '^bar/**/file*.txt' matched")
+      callArgsToString(call).contains("isGitRegionMatch: matched")
+    })
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultipleRegexpMatchWithExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo/bar/xxx/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { return true })
+    def result = false
+    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: matched")
     })
     assertTrue(result)
     assertJobStatusSuccess()
@@ -191,7 +244,29 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'log'
     }.any { call ->
-      callArgsToString(call).contains("isGitRegionMatch: 'not' matched")
+      callArgsToString(call).contains("isGitRegionMatch: not matched")
+    })
+    assertFalse(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultipleRegexpUnmatchWithExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { return true })
+    def result = false
+    result = script.call(regexps: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isExactMatch: true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("isGitRegionMatch: not matched")
     })
     assertFalse(result)
     assertJobStatusSuccess()

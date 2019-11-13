@@ -41,11 +41,19 @@ def call(Map params = [:]) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
     def match = null
     if (isExactMatch) {
-      error 'to be done'
+      def file = readFile('git-diff.txt')
+      println file
+      match = true
+      file.eachLine { String line ->
+        log(level: 'DEBUG', text: "changeset element: '${line}'")
+        if (!regexps.every { line ==~ it }) {
+          match = false
+        }
+      }
     } else {
       match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
     }
-    log(level: 'INFO', text: "isGitRegionMatch: '${match ?: 'not' }' matched")
+    log(level: 'INFO', text: "isGitRegionMatch: ${match ? '' : 'not '}matched")
     return (match != null)
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
