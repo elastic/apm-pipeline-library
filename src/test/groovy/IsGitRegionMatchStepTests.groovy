@@ -99,6 +99,29 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testSimpleMatchWithExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return 'file.txt'
+        } else {
+          return 0
+        }
+      })
+    def result = false
+    try {
+      result = script.call(regexps: [ '^file.txt' ], isExactMatch: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(result)
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testComplexMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'

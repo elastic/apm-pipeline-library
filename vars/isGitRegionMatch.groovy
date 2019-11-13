@@ -16,18 +16,22 @@
 // under the License.
 
 /**
- Given the list of regexps, the CHANGE_TARGET and GIT_SHA env variables then it
- evaluates the change list with the regexp and if any matches then it returns `true` otherwise
- `false`.
+  Given the list of regexps, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+  evaluates the change list with the regexp list:
 
- def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
+  - When exact match then all the files should match those patterns then it returns `true` otherwise
+  `false`.
+  - Otherwise if any files match any of those patterns then it returns `true` otherwise `false`.
+
+ def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"], isExactMatch: true)
 
 */
 def call(Map params = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def regexps =  params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
+  def regexps = params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
+  def isExactMatch = params.get('isExactMatch', false)
 
   if (regexps.isEmpty()) {
     error('isGitRegionMatch: Missing regexps with values.')
@@ -35,7 +39,12 @@ def call(Map params = [:]) {
 
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
-    def match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
+    def match = null
+    if (isExactMatch) {
+      error 'to be done'
+    } else {
+      match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
+    }
     log(level: 'INFO', text: "isGitRegionMatch: '${match ?: 'not' }' matched")
     return (match != null)
   } else {
