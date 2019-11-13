@@ -15,7 +15,11 @@ evaluates the change list with the regexp list:
   // Any files in the changeset that match with ^_beats or ^apm-server.docker.yml
   def match = isGitRegionMatch(regexps: ["^_beats", "^apm-server.docker.yml"])
   def match = isGitRegionMatch(regexps: ["^_beats", "^apm-server.docker.yml", isExactMatch: false)
+
+  // All the files in the changeset should match with ^_beats*
+  def match = isGitRegionMatch(regexps: ['^_beats*', isExactMatch: true, comparator: 'glob')
 ```
 
 * regexps: list of regex to be matched. Mandatory
 * isExactMatch: whether all the elements in the regexps should match with the changeset. Default: false. Optional
+* comparator: what way to compare the pattern specified to the actual value. Possible values are glob and regexp. glob is the default

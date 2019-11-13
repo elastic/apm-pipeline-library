@@ -30,33 +30,56 @@ def call(Map params = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def regexps = params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
+  def patterns = params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
   def isExactMatch = params.get('isExactMatch', false)
+  def comparator = params.get('comparator', 'glob')
 
-  if (regexps.isEmpty()) {
+  if (patterns.isEmpty()) {
     error('isGitRegionMatch: Missing regexps with values.')
   }
 
+  if (!isExactMatch && !isGlob(comparator)) {
+    error('isGitRegionMatch: regexp comparator is _ONLY_ supported with isExactMatch.')
+  }
+
+  def gitDiffFile = 'git-diff.txt'
+  def match = null
   if (env.CHANGE_TARGET && env.GIT_SHA) {
-    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
-    def match = null
+    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
     if (isExactMatch) {
-      def file = readFile('git-diff.txt')
-      println file
-      match = true
-      file.eachLine { String line ->
-        log(level: 'DEBUG', text: "changeset element: '${line}'")
-        if (!regexps.every { line ==~ it }) {
-          match = false
-        }
-      }
+      match = compareDiffFileWithPattern(readFile(gitDiffFile), patterns, isGlob(comparator))
     } else {
-      match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
+      match = patterns.find { pattern -> isGrepPatternFound(gitDiffFile, pattern) }
     }
     log(level: 'INFO', text: "isGitRegionMatch: ${match ? '' : 'not '}matched")
-    return (match != null)
+
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
-    return false
   }
+  return (match != null)
+}
+
+def compareDiffFileWithPattern(fileContent, patterns, isGlob) {
+  match = true
+  fileContent.eachLine { String line ->
+    log(level: 'DEBUG', text: "changeset element: '${line}'")
+    if (isGlob) {
+      if (!patterns.every { pattern -> isGrepPatternFound(fileContent, pattern) }) {
+        match = false
+      }
+    } else {
+      if (!patterns.every { line ==~ it }) {
+        match = false
+      }
+    }
+  }
+  return match
+}
+
+def isGrepPatternFound(file, pattern) {
+  return sh(script: "grep '${pattern}' ${file}", returnStatus: true) == 0
+}
+
+def isGlob(comparator) {
+  return comparator.equals('glob')
 }

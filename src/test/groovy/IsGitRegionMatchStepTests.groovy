@@ -273,6 +273,24 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testRegexpWithoutExactMatch() throws Exception {
+    def script = loadScript(scriptName)
+    def result = false
+    try {
+      result = script.call(regexps: [ '^foo/.*' ], isExactMatch: false, comparator: 'regexp')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'error'
+    }.any { call ->
+      callArgsToString(call).contains('isGitRegionMatch: regexp comparator is _ONLY_ supported with isExactMatch.')
+    })
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
@@ -288,5 +306,24 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       callArgsToString(call).contains('isGitRegionMatch: windows is not supported yet.')
     })
     assertJobStatusFailure()
+  }
+
+  @Test
+  void testIsGlob() throws Exception {
+    def script = loadScript(scriptName)
+    assertTrue(script.isGlob('glob'))
+    assertFalse(script.isGlob('regexp'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsGrepPatternFound() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      return (m.script.contains('foo') ? 0 : 1)
+    })
+    assertTrue(script.isGrepPatternFound('foo', 'foo'))
+    assertFalse(script.isGrepPatternFound('bar', 'pattern'))
+    assertJobStatusSuccess()
   }
 }
