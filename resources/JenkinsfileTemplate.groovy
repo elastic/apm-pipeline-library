@@ -28,6 +28,14 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS')
+    // Default build rotation for the pipeline.
+    //   When using the downstream pattern for the matrix then the build rotation
+    //   should be less restrictive mainly because the @master is the one normally used
+    //   in this particular pattern and want to ensure the history of builds is big enough
+    //   when debugging. The recommend configuration for that particular setup is
+    //   buildDiscarder(logRotator(numToKeepStr: '100', artifactNumToKeepStr: '100', daysToKeepStr: '30'))
+    //
+    //   Further details: https://github.com/elastic/apm-agent-python/pull/634
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
