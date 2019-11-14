@@ -99,7 +99,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testSimpleMatchWithoutExactMatch() throws Exception {
+  void testSimpleMatchWithoutShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -111,14 +111,14 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
         }
       })
     def result = false
-    result = script.call(patterns: [ '^file.txt' ], isFullMatch: false)
+    result = script.call(patterns: [ '^file.txt' ], shouldMatchAll: false)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testSimpleMatchWithExactMatch() throws Exception {
+  void testSimpleMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -132,7 +132,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = true
-    result = script.call(patterns: [ '^file.txt' ], isFullMatch: true)
+    result = script.call(patterns: [ '^file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -158,7 +158,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testComplexGlobMatchWithExactMatch() throws Exception {
+  void testComplexGlobMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -172,7 +172,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
         }
       })
     def result = false
-    result = script.call(patterns: [ '^foo/**/file.txt' ], isFullMatch: true)
+    result = script.call(patterns: [ '^foo/**/file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -202,7 +202,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testMultiplePatternsMatchWithExactMatch() throws Exception {
+  void testMultiplePatternsMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -218,14 +218,14 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = false
-    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isFullMatch: true)
+    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testMultiplePatternMatchWithExactMatchAndRegexpComparator() throws Exception {
+  void testMultiplePatternMatchWithShouldMatchAllAndRegexpComparator() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -241,7 +241,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       }
     })
     def result = false
-    result = script.call(patterns: [ '^foo/.*', '^foo/bar/.*' ], isFullMatch: true, comparator: 'regexp')
+    result = script.call(patterns: [ '^foo/.*', '^foo/bar/.*' ], shouldMatchAll: true, comparator: 'regexp')
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -265,7 +265,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testMultiplePatternUnmatchWithExactMatch() throws Exception {
+  void testMultiplePatternUnmatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -275,7 +275,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { return true })
     def result = false
-    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], isFullMatch: true)
+    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertFalse(result)
     assertJobStatusSuccess()

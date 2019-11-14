@@ -23,7 +23,7 @@
   `false`.
   - Otherwise if any files match any of those patterns then it returns `true` otherwise `false`.
 
- def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.yml", "^apm-server.docker.yml"], isFullMatch: true)
+ def match = isGitRegionMatch(patterns: ["^_beats", "^_beats/apm-server.yml"], shouldMatchAll: true)
 
 */
 def call(Map params = [:]) {
@@ -31,7 +31,7 @@ def call(Map params = [:]) {
     error('isGitRegionMatch: windows is not supported yet.')
   }
   def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
-  def isFullMatch = params.get('isFullMatch', false)
+  def shouldMatchAll = params.get('shouldMatchAll', false)
   def comparator = params.get('comparator', 'glob')
 
   if (patterns.isEmpty()) {
@@ -42,7 +42,7 @@ def call(Map params = [:]) {
   def match = false
   if (env.CHANGE_TARGET && env.GIT_SHA) {
     def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
-    if (isFullMatch) {
+    if (shouldMatchAll) {
       match = isFullPatternMatch(gitDiffFile, patterns, isGlob(comparator))
     } else {
       match = isPartialPatternMatch(gitDiffFile, patterns, isGlob(comparator))
