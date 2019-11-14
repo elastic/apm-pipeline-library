@@ -27,7 +27,7 @@ def call(jobURL, buildNumber){
   }
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
-  restURLJob = "${env.JENKINS_URL}/blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
   def restURLBuild = "${restURLJob}/runs/${buildNumber}"
 
   downloadJSONFile("${restURLJob}", "job-info.json")
