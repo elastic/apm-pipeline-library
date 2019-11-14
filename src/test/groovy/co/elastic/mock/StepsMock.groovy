@@ -28,17 +28,15 @@ import static org.mockito.Mockito.when
 public class StepsMock implements Serializable {
 
   public RunWrapper build(Map params = [:]) {
-    println "steps.build(job: '${params.job}')"
-    return mockRunWrapper('SUCCESS')
+    return mockRunWrapper(params.job)
   }
 
-  private RunWrapper mockRunWrapper(String result) throws Exception {
+  private RunWrapper mockRunWrapper(String jobName) throws Exception {
     final RunWrapper runWrapper = mock(RunWrapper.class)
-    when(runWrapper.getFullProjectName()).thenReturn("foo/bar")
+    when(runWrapper.getFullProjectName()).thenReturn(jobName)
     when(runWrapper.getNumber()).thenReturn(1)
     when(runWrapper.getDisplayName()).thenReturn("#1")
-    when(runWrapper.getAbsoluteUrl()).thenReturn("http://example:8080/foo/job/bar")
-    when(runWrapper.getCurrentResult()).thenReturn(result)
+    when(runWrapper.getCurrentResult()).thenReturn('SUCCESS')
     return runWrapper
   }
 }

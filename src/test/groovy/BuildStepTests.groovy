@@ -30,11 +30,30 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void testSuccess() throws Exception {
     def script = loadScript(scriptName)
-    def result = script.call(job: 'dummy')
+    def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("${env.JENKINS_URL}/job/foo/1/display/redirect")
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNestedJob() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.call(job: 'nested/foo')
+    printCallStack()
+    assertTrue(result != null)
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("${env.JENKINS_URL}/job/nested/job/foo/1/display/redirect")
+    })
     assertJobStatusSuccess()
   }
 }

@@ -35,14 +35,14 @@ def call(Map params = [:]){
   try {
       buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
   } catch (Exception e) {
-      println getBlueOceanLink(e, job)
+      log(level: 'INFO', text: "${getRedirectLink(e, job)}")
       throw e
   }
-  println getBlueOceanLink(buildInfo, job)
+  log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
   return buildInfo
 }
 
-def getBlueOceanLink(obj, jobName) {
+def getRedirectLink(obj, jobName) {
   def buildNumber
 
   if(obj instanceof Exception) {
@@ -54,8 +54,7 @@ def getBlueOceanLink(obj, jobName) {
   } else if(obj instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
     buildNumber = obj.getNumber()
   } else {
-    return "Can not determine Blue Ocean link!!!"
+    return "Can not determine redirect link!!!"
   }
-
-  return "For detailed information see: ${env.JENKINS_URL}/blue/organizations/jenkins//${jobName}/detail/${jobName}/${buildNumber}/pipeline"
+  return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
 }
