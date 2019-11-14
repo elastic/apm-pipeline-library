@@ -38,7 +38,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'log'
     }.any { call ->
-      callArgsToString(call).contains("${env.JENKINS_URL}/job/foo/1/display/redirect")
+      callArgsToString(call).contains("${env.JENKINS_URL}job/foo/1/display/redirect")
     })
     assertJobStatusSuccess()
   }
@@ -52,7 +52,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'log'
     }.any { call ->
-      callArgsToString(call).contains("${env.JENKINS_URL}/job/nested/job/foo/1/display/redirect")
+      callArgsToString(call).contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect")
     })
     assertJobStatusSuccess()
   }
