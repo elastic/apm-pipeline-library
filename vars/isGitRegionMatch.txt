@@ -1,5 +1,5 @@
-Given the list of regexps, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
-evaluates the change list with the regexp list:
+Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+evaluates the change list with the pattern list:
 
 - When exact match then all the files should match those patterns then it returns `true` otherwise
 `false`.
@@ -7,19 +7,19 @@ evaluates the change list with the regexp list:
 
 ```
   // All the files in the changeset should match with ^_beats
-  def match = isGitRegionMatch(regexps: ["^_beats", isFullMatch: true)
+  def match = isGitRegionMatch(patterns: ["^_beats", isFullMatch: true)
 
   // All the files in the changeset should match with ^_beats and *.py
-  def match = isGitRegionMatch(regexps: ["^_beats", "**/*.py", isFullMatch: true)
+  def match = isGitRegionMatch(patterns: ["^_beats", "**/*.py", isFullMatch: true)
 
   // Any files in the changeset that match with ^_beats or ^apm-server.docker.yml
-  def match = isGitRegionMatch(regexps: ["^_beats", "^apm-server.docker.yml"])
-  def match = isGitRegionMatch(regexps: ["^_beats", "^apm-server.docker.yml", isFullMatch: false)
+  def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml"])
+  def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml", isFullMatch: false)
 
   // All the files in the changeset should match with ^_beats*
-  def match = isGitRegionMatch(regexps: ['^_beats*', isFullMatch: true, comparator: 'glob')
+  def match = isGitRegionMatch(patterns: ['^_beats*', isFullMatch: true, comparator: 'glob')
 ```
 
-* regexps: list of regex to be matched. Mandatory
-* isFullMatch: whether all the elements in the regexps should match with the changeset. Default: false. Optional
-* comparator: what way to compare the pattern specified to the actual value. Possible values are glob and regexp. glob is the default
+* patterns: list of patterns to be matched. Mandatory
+* isFullMatch: whether all the elements in the patterns should match with the changeset. Default: false. Optional
+* comparator: what way to compare the pattern specified to the actual value. Possible values are `glob` and `regexp`. glob is the default

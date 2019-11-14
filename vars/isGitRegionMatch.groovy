@@ -17,25 +17,25 @@
 
 /**
   Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
-  evaluates the change list with the regexp list:
+  evaluates the change list with the pattern list:
 
   - When exact match then all the files should match those patterns then it returns `true` otherwise
   `false`.
   - Otherwise if any files match any of those patterns then it returns `true` otherwise `false`.
 
- def match = isGitRegionMatch(regexps: ["^_beats", "^apm-server.yml", "^apm-server.docker.yml"], isFullMatch: true)
+ def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.yml", "^apm-server.docker.yml"], isFullMatch: true)
 
 */
 def call(Map params = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def patterns = params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
+  def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
   def isFullMatch = params.get('isFullMatch', false)
   def comparator = params.get('comparator', 'glob')
 
   if (patterns.isEmpty()) {
-    error('isGitRegionMatch: Missing regexps with values.')
+    error('isGitRegionMatch: Missing patterns with values.')
   }
 
   def gitDiffFile = 'git-diff.txt'
