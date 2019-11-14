@@ -46,5 +46,5 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
         -w '/jjbb' \
         -v "$(pwd)/local/jenkins_jobs.ini":/etc/jenkins_jobs/jenkins_jobs.ini \
         --network local_apm-pipeline-library \
-        widerplan/jenkins-job-builder -l error update "${BASENAME}"
+        osmman/jenkins-job-builder:3.0.2 -l error update "${BASENAME}"
 printf '\tpassed\n'
