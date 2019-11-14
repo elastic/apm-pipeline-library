@@ -56,4 +56,18 @@ public class BuildStepTests extends ApmBasePipelineTest {
     })
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testException() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.getRedirectLink(new Exception('nested » foo #1'), 'nested/foo')
+    assertTrue(result.contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
+  }
+
+  @Test
+  void testAnotherObject() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.getRedirectLink('AnotherObject', 'foo')
+    assertTrue(result.contains("Can not determine redirect link"))
+  }
 }
