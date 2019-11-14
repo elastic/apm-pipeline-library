@@ -18,6 +18,7 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
 class ApmBasePipelineTest extends BasePipelineTest {
@@ -47,6 +48,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     binding.setVariable('env', env)
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
+    binding.setProperty('steps', new StepsMock())
   }
 
   void registerDeclarativeMethods() {
