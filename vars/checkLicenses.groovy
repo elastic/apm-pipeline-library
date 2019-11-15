@@ -45,13 +45,11 @@ def call(Map params = [:]) {
     error('checkLicenses: skip should be enabled when using the junit flag.')
   }
 
-  docker.image('golang:1.12').inside {
+  docker.image('golang:1.12').inside("-e HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"){
     catchError {
-      withEnv(["HOME=${env.WORKSPACE}/${env.BASE_DIR ?: ''}"]) {
-        sh(label: 'Check Licenses', script: """
-        go get -u github.com/elastic/go-licenser
-        go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
-      }
+      sh(label: 'Check Licenses', script: """
+      go get -u github.com/elastic/go-licenser
+      go-licenser ${skipFlag} ${excludeFlag} ${fileExtFlag} ${licenseFlag} ${licensorFlag} | tee ${testOutput}""")
     }
 
     // Potentially supported with https://github.com/elastic/go-licenser/issues/23
