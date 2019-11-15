@@ -317,4 +317,21 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertFalse(script.isGrepPatternFound('bar', 'pattern'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testIsFullPatternMatchWithMultipleLines() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = ''' foo
+                      | bar
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    script.isFullPatternMatch('whatever', [ 'foo', 'bar' ], true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains("echo 'bar'")
+    })
+    assertJobStatusSuccess()
+  }
 }
