@@ -79,7 +79,10 @@ def isPartialPatternMatch(gitDiffFile, patterns, isGlob) {
   if (isGlob) {
     match = patterns.any { pattern -> isGrepPatternFoundInFile(gitDiffFile, pattern) }
   } else {
-    match = patterns.any { line ==~ it }
+    def fileContent = readFile(gitDiffFile)
+    match = patterns.any { pattern ->
+      fileContent.split('\n').any { line -> line ==~ pattern }
+    }
   }
   return match
 }
