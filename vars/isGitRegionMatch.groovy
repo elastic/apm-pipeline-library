@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
   evaluates the change list with the pattern list:
@@ -56,6 +58,13 @@ def call(Map params = [:]) {
 
 def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
   def fileContent = readFile(gitDiffFile)
+  return lookForPatterns(fileContent, patterns, isGlob)
+}
+
+// Fixes expected to call java.lang.String.eachLine but wound up catching
+//  org.jenkinsci.plugins.workflow.cps.CpsClosure2.call;
+@NonCPS
+def lookForPatterns(fileContent, patterns, isGlob) {
   def match = true
   fileContent.eachLine { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
