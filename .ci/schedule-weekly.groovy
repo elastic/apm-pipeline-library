@@ -37,34 +37,13 @@ pipeline {
     cron('H H(1-4) * * 1')
   }
   stages {
-    stage('Run Tasks'){
-      stages {
-        stage('Update snapshots') {
-          parallel {
-            stage('8.0.0-SNAPSHOT'){
-              steps {
-                grabDockerImages('8.0.0-SNAPSHOT','8.0-SNAPSHOT')
-              }
-            }
-            stage('7.5.0-SNAPSHOT'){
-              steps {
-                grabDockerImages('7.5.0-SNAPSHOT','7.5.0-SNAPSHOT')
-              }
-            }
-            stage('7.4.0'){
-              steps {
-                grabDockerImages('7.4.0','7.4')
-              }
-            }
-          }
-        }
-        stage('Update k8s Clusters'){
-          steps {
-            updateCluster('8.x.x-SNAPSHOT')
-            updateCluster('7.x.x-SNAPSHOT')
-            updateCluster('7.x.x')
-          }
-        }
+    stage('Upgrade clusters') {
+      steps {
+        build(job: 'apm-shared/observability-test-environments-trigger',
+          parameters: [string(name: 'branch_specifier', value: 'master')],
+          propagate: false,
+          wait: true
+        )
       }
     }
   }
@@ -73,31 +52,4 @@ pipeline {
       notifyBuildResult()
     }
   }
-}
-
-def grabDockerImages(versionToStore, versionToGet){
-  build(job: 'apm-shared/apm-docker-es-pipeline',
-    parameters: [
-      string(name: 'registry', value: 'docker.elastic.co'),
-      string(name: 'tag_prefix', value: 'observability-ci'),
-      string(name: 'version', value: versionToStore),
-      string(name: 'elastic_stack', value: versionToGet),
-      string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-      string(name: 'branch_specifier', value: 'master')
-    ],
-    propagate: false,
-    wait: true
-  )
-}
-
-def updateCluster(branch){
-  build(job: "apm-shared/observability-test-environments-update-mbp/${branch}",
-    parameters: [
-      booleanParam(name: 'stop_services', value: true),
-      booleanParam(name: 'start_services', value: true)
-    ],
-    quietPeriod: 10,
-    propagate: false,
-    wait: false
-  )
 }
