@@ -17,11 +17,11 @@
 
 import org.junit.Before
 import org.junit.Test
-import static org.junit.Assert.assertFalse
+import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
-  String scriptName = "vars/getBlueoceanDisplayURL.groovy"
+public class BuildStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/build.groovy'
 
   @Override
   @Before
@@ -32,30 +32,42 @@ class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
   @Test
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
-    def redirectURL = "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
-    def url = script.call()
+    def result = script.call(job: 'foo')
     printCallStack()
-    assertTrue(url.matches(redirectURL))
+    assertTrue(result != null)
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("${env.JENKINS_URL}job/foo/1/display/redirect")
+    })
     assertJobStatusSuccess()
   }
 
   @Test
-  void testSuccessWithADifferentJenkinsURL() throws Exception {
+  void testNestedJob() throws Exception {
     def script = loadScript(scriptName)
-    env.JENKINS_URL = "http://jenkins/"
-    def redirectURL = "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
-    def url = script.call()
+    def result = script.call(job: 'nested/foo')
     printCallStack()
-    assertTrue(url.matches(redirectURL))
+    assertTrue(result != null)
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'log'
+    }.any { call ->
+      callArgsToString(call).contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect")
+    })
     assertJobStatusSuccess()
   }
 
   @Test
-  void testWrongURL() throws Exception {
+  void testException() throws Exception {
     def script = loadScript(scriptName)
-    def url = script.call()
-    printCallStack()
-    assertFalse(url.contains("${env.JOB_BASE_NAME}/wrong"))
-    assertJobStatusSuccess()
+    def result = script.getRedirectLink(new Exception('nested » foo #1'), 'nested/foo')
+    assertTrue(result.contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
+  }
+
+  @Test
+  void testAnotherObject() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.getRedirectLink('AnotherObject', 'foo')
+    assertTrue(result.contains("Can not determine redirect link"))
   }
 }

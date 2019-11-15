@@ -24,6 +24,15 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+## build
+Override the `build` step to highlight in BO the URL to the downstream job.
+
+```
+build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+```
+
+See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.
 
