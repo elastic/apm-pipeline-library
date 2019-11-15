@@ -10,6 +10,21 @@
           name: branch_specifier
           default: master
           description: the Git branch specifier to build
+      - string:
+          name: registry
+          default: docker.elastic.co
+      - string:
+          name: tag_prefix
+          default: observability-ci
+      - string:
+          name: version
+          default: daily
+      - string:
+          name: elastic_stack
+          default: 8.0.0-SNAPSHOT
+      - string:
+          name: secret
+          default: secret/apm-team/ci/docker-registry/prod
     pipeline-scm:
       script-path: .ci/dockerImagesESLatest.groovy
       scm:
