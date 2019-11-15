@@ -62,7 +62,7 @@ def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
     if (isGlob) {
-      if (!patterns.every { pattern -> isGrepPatternFound(fileContent, pattern) }) {
+      if (!patterns.every { pattern -> isGrepPatternFound(line, pattern) }) {
         match = false
       }
     } else {
