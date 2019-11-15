@@ -15,31 +15,87 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
- Given the list of regexps, the CHANGE_TARGET and GIT_SHA env variables then it
- evaluates the change list with the regexp and if any matches then it returns `true` otherwise
- `false`.
+import com.cloudbees.groovy.cps.NonCPS
 
- def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
+/**
+  Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+  evaluates the change list with the pattern list:
+
+  - When exact match then all the files should match those patterns then it returns `true` otherwise
+  `false`.
+  - Otherwise if any files match any of those patterns then it returns `true` otherwise `false`.
+
+ def match = isGitRegionMatch(patterns: ["^_beats", "^_beats/apm-server.yml"], shouldMatchAll: true)
 
 */
 def call(Map params = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def regexps =  params.containsKey('regexps') ? params.regexps : error('isGitRegionMatch: Missing regexps argument.')
+  def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
+  def shouldMatchAll = params.get('shouldMatchAll', false)
+  def comparator = params.get('comparator', 'glob')
 
-  if (regexps.isEmpty()) {
-    error('isGitRegionMatch: Missing regexps with values.')
+  if (patterns.isEmpty()) {
+    error('isGitRegionMatch: Missing patterns with values.')
   }
 
+  def gitDiffFile = 'git-diff.txt'
+  def match = false
   if (env.CHANGE_TARGET && env.GIT_SHA) {
-    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > git-diff.txt", returnStdout: true)
-    def match = regexps.find { regexp -> sh(script: "grep '${regexp}' git-diff.txt",returnStatus: true) == 0 }
-    log(level: 'INFO', text: "isGitRegionMatch: '${match ?: 'not' }' matched")
-    return (match != null)
+    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
+    if (shouldMatchAll) {
+      match = isFullPatternMatch(gitDiffFile, patterns, isGlob(comparator))
+    } else {
+      match = isPartialPatternMatch(gitDiffFile, patterns, isGlob(comparator))
+    }
+    log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
-    return false
   }
+  return match
+}
+
+def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
+  def fileContent = readFile(gitDiffFile)
+  def match = true
+  fileContent.split('\n').each { String line ->
+    log(level: 'DEBUG', text: "changeset element: '${line}'")
+    if (isGlob) {
+      if (!patterns.every { pattern -> isGrepPatternFound(fileContent, pattern) }) {
+        match = false
+      }
+    } else {
+      if (!patterns.every { line ==~ it }) {
+        match = false
+      }
+    }
+  }
+  return match
+}
+
+def isPartialPatternMatch(gitDiffFile, patterns, isGlob) {
+  def match = false
+  if (isGlob) {
+    match = patterns.any { pattern -> isGrepPatternFoundInFile(gitDiffFile, pattern) }
+  } else {
+    def fileContent = readFile(gitDiffFile)
+    match = patterns.any { pattern ->
+      fileContent.split('\n').any { line -> line ==~ pattern }
+    }
+  }
+  return match
+}
+
+def isGrepPatternFoundInFile(file, pattern) {
+  return sh(script: "grep '${pattern}' ${file}", returnStatus: true) == 0
+}
+
+def isGrepPatternFound(compareWith, pattern) {
+  log(level: 'DEBUG', text: "isGrepPatternFound: '${compareWith}' with pattern: '${pattern}'")
+  return sh(script: "echo '${compareWith}' | grep '${pattern}'", returnStatus: true) == 0
+}
+
+def isGlob(comparator) {
+  return comparator.equals('glob')
 }
