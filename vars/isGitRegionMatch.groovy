@@ -58,15 +58,8 @@ def call(Map params = [:]) {
 
 def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
   def fileContent = readFile(gitDiffFile)
-  return lookForPatterns(fileContent, patterns, isGlob)
-}
-
-// Fixes expected to call java.lang.String.eachLine but wound up catching
-//  org.jenkinsci.plugins.workflow.cps.CpsClosure2.call;
-@NonCPS
-def lookForPatterns(fileContent, patterns, isGlob) {
   def match = true
-  fileContent.eachLine { String line ->
+  fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
     if (isGlob) {
       if (!patterns.every { pattern -> isGrepPatternFound(fileContent, pattern) }) {
