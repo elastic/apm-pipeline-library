@@ -437,7 +437,7 @@ def commentTrigger = isCommentTrigger()
 ```
 
 ## isGitRegionMatch
-Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
 evaluates the change list with the pattern list:
 
 - When exact match then all the files should match those patterns then it returns `true` otherwise
@@ -449,22 +449,18 @@ evaluates the change list with the pattern list:
   def match = isGitRegionMatch(patterns: ["^_beats"], shouldMatchAll: true)
 
   // All the entries in the changeset should match with ^_beats and *.py
-  def match = isGitRegionMatch(patterns: ["^_beats", "**/*.py"], shouldMatchAll: true)
+  def match = isGitRegionMatch(patterns: ["^_beats", ".*/.*\\.py"], shouldMatchAll: true)
 
   // Any entries in the changeset that match with ^_beats or ^apm-server.docker.yml
   def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml"])
   def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml"], shouldMatchAll: false)
 
-  // All the entries in the changeset should match with ^_beats/**/*.py
-  def match = isGitRegionMatch(patterns: ['^_beats/**/*.py'], shouldMatchAll: true, comparator: 'glob')
-
   // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
-  def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true, comparator: 'regexp')
+  def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true)
 ```
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
-* comparator: what way to compare the pattern specified to the actual value. Possible values are `glob` and `regexp`. glob is the default
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
