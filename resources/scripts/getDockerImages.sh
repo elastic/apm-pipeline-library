@@ -30,19 +30,20 @@ VERSION_ID=${1}
 #BUILD_ID=$(echo ${JSON}|jq -r .build_id)
 #VERSION_ID=$(echo ${JSON}|jq -r .version)
 #MANIFEST_URL=$(echo ${JSON}|jq -r .manifest_url)
-MANIFEST_JSON=$(curl -sSf https://artifacts-api.elastic.co/v1/versions/"${VERSION_ID}"/builds/latest/)
-BUILD_VERSION=$(echo "${MANIFEST_JSON}"|jq -r ".build.version")
+MANIFEST=metadata.txt
+curl -sSf "https://artifacts-api.elastic.co/v1/versions/${VERSION_ID}/builds/latest/" | jq 'del(.manifests)' > "${MANIFEST}"
+BUILD_VERSION=$(jq -r ".build.version"<"${MANIFEST}")
 
 for product in elasticsearch kibana apm-server
 do
-  URL=$(echo "${MANIFEST_JSON}"|jq -r ".build.projects.\"${product}\".packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${BUILD_VERSION}")
+  URL=$(jq -r ".build.projects.\"${product}\".packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url" <"${MANIFEST}"|grep "${product}-${BUILD_VERSION}")
   echo "Downloading ${product} - ${URL}"
   curl "${URL}"|docker load
 done
 
 for product in auditbeat filebeat heartbeat metricbeat packetbeat
 do
-  URL=$(echo "${MANIFEST_JSON}"|jq -r ".build.projects.beats.packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url"|grep "${product}-${BUILD_VERSION}")
+  URL=$(jq -r ".build.projects.beats.packages[]|select(.type==\"docker\" and (.classifier==\"docker-image\" or .classifier==null) ).url" <"${MANIFEST}"|grep "${product}-${BUILD_VERSION}")
   echo "Downloading ${product} - ${URL}"
   curl "${URL}"|docker load
 done
