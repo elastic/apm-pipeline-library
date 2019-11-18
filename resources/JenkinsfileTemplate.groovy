@@ -18,15 +18,22 @@
 @Library('apm@current') _
 
 pipeline {
+  // Top level agent is required to ensure the MBP does populate the environment
+  // variables accordingly. Otherwise the built-in environment variables won't
+  // be available. It's worthy to use an immutable worker rather than the master
+  // worker to avoid any kind of bottlenecks or performance issues.
   agent { label 'linux && immutable' }
   environment {
-    BASE_DIR="src/github.com/elastic/PROJECT"
+    // Default BASE_DIR should keep the Golang folder layout as a convention
+    // for the rest of the projects/languages independently whether they do need it
+    BASE_DIR = 'src/github.com/elastic/PROJECT'
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
   }
   options {
+    // Let's ensure the pipeline doesn't get stale forever.
     timeout(time: 1, unit: 'HOURS')
     // Default build rotation for the pipeline.
     //   When using the downstream pattern for the matrix then the build rotation
@@ -39,6 +46,8 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
+    // As long as we use ephemeral workers we cannot use the resume. The below couple of
+    // options will help to speed up the performance.
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
@@ -46,10 +55,11 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i).*jenkins\\W+run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
-    string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: "defaultValue", description: "it would not be defined on the first build, see JENKINS-41929.")
+    // Let's use input parameters with capital cases.
+    string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: 'defaultValue', description: 'It would not be defined on the first build, see JENKINS-41929.')
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
   }
   stages {
@@ -57,11 +67,23 @@ pipeline {
     Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
+      options { skipDefaultCheckout() }
       steps {
+        // Just in case the workspace is reset.
         deleteDir()
+
+        // gitCheckout does expose certain env variables besides of gatekeeping whether
+        // the contributor is member from the elastic organisation, it tracks the status
+        // with a GitHub check.
+        // Git reference repos are a good practise to speed up the whole execution time.
         gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
           repo: 'git@github.com:elastic/apm-pipeline-library.git',
-          credentialsId: "${JOB_GIT_CREDENTIALS}")
+          credentialsId: "${JOB_GIT_CREDENTIALS}",
+          githubNotifyFirstTimeContributor: true,
+          reference: '/var/lib/jenkins/apm-pipeline-library.git')
+
+        // This is the way we checkout once using the above step and use the stashed repo
+        // in the following stages.
         stash allowEmpty: true, name: 'source', useDefaultExcludes: false
       }
     }
@@ -153,17 +175,16 @@ pipeline {
                   junit(allowEmptyResults: true,
                     keepLongStdio: true,
                     testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                  }
                 }
               }
             }
+          }
           post {
-               cleanup {
-                   sh 'docker ps -a || true'
-               }
+            cleanup {
+              sh 'docker ps -a || true'
+            }
           }
         }
-
         stage('Debian 9 test'){
           agent { label 'debian-9' }
           options { skipDefaultCheckout() }
@@ -194,14 +215,14 @@ pipeline {
                   junit(allowEmptyResults: true,
                     keepLongStdio: true,
                     testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                  }
                 }
               }
             }
+          }
           post {
-               cleanup {
-                   sh 'docker ps -a || true'
-               }
+            cleanup {
+              sh 'docker ps -a || true'
+            }
           }
         }
         stage('windows 2012 immutable check'){
