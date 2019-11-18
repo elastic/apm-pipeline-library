@@ -27,6 +27,8 @@ import com.cloudbees.groovy.cps.NonCPS
 
  def match = isGitRegionMatch(patterns: ["^_beats", "^_beats/apm-server.yml"], shouldMatchAll: true)
 
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
 */
 def call(Map params = [:]) {
   if(!isUnix()){
@@ -34,7 +36,6 @@ def call(Map params = [:]) {
   }
   def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
   def shouldMatchAll = params.get('shouldMatchAll', false)
-  def comparator = params.get('comparator', 'glob')
 
   if (patterns.isEmpty()) {
     error('isGitRegionMatch: Missing patterns with values.')
@@ -42,60 +43,36 @@ def call(Map params = [:]) {
 
   def gitDiffFile = 'git-diff.txt'
   def match = false
-  if (env.CHANGE_TARGET && env.GIT_SHA) {
-    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
+  if (env.CHANGE_TARGET && env.GIT_BASE_COMMIT) {
+    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
     if (shouldMatchAll) {
-      match = isFullPatternMatch(gitDiffFile, patterns, isGlob(comparator))
+      match = isFullPatternMatch(gitDiffFile, patterns)
     } else {
-      match = isPartialPatternMatch(gitDiffFile, patterns, isGlob(comparator))
+      match = isPartialPatternMatch(gitDiffFile, patterns)
     }
     log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
   } else {
-    echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
+    echo 'isGitRegionMatch: CHANGE_TARGET and GIT_BASE_COMMIT env variables are required to evaluate the changes.'
   }
   return match
 }
 
-def isFullPatternMatch(gitDiffFile, patterns, isGlob) {
+def isFullPatternMatch(gitDiffFile, patterns) {
   def fileContent = readFile(gitDiffFile)
   def match = true
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
-    if (isGlob) {
-      if (!patterns.every { pattern -> isGrepPatternFound(line, pattern) }) {
-        match = false
-      }
-    } else {
-      if (!patterns.every { line ==~ it }) {
-        match = false
-      }
+    if (!patterns.every { line ==~ it }) {
+      match = false
     }
   }
   return match
 }
 
-def isPartialPatternMatch(gitDiffFile, patterns, isGlob) {
-  def match = false
-  if (isGlob) {
-    match = patterns.any { pattern -> isGrepPatternFoundInFile(gitDiffFile, pattern) }
-  } else {
-    def fileContent = readFile(gitDiffFile)
-    match = patterns.any { pattern ->
-      fileContent.split('\n').any { line -> line ==~ pattern }
-    }
+def isPartialPatternMatch(gitDiffFile, patterns) {
+  def fileContent = readFile(gitDiffFile)
+  def match = patterns.any { pattern ->
+    fileContent.split('\n').any { line -> line ==~ pattern }
   }
   return match
-}
-
-def isGrepPatternFoundInFile(file, pattern) {
-  return sh(script: "grep '${pattern}' ${file}", returnStatus: true) == 0
-}
-
-def isGrepPatternFound(compareWith, pattern) {
-  log(level: 'DEBUG', text: "isGrepPatternFound: '${compareWith}' with pattern: '${pattern}'")
-  return sh(script: "echo '${compareWith}' | grep '${pattern}'", returnStatus: true) == 0
-}
-
-def isGlob(comparator) {
-  return comparator.equals('glob')
 }
