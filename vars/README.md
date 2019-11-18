@@ -24,6 +24,15 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+## build
+Override the `build` step to highlight in BO the URL to the downstream job.
+
+```
+build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+```
+
+See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.
 
@@ -259,6 +268,8 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
+* *shallow*: Whether to enable the shallow cloning. Default: true
+* *depth*: Set shallow clone depth,. Default: 5
 
 ## gitCmd
 Execute a git command against the git repo, using the credentials passed.
@@ -426,13 +437,34 @@ def commentTrigger = isCommentTrigger()
 ```
 
 ## isGitRegionMatch
-Given the list of regexps, the CHANGE_TARGET and GIT_SHA env variables then it
-evaluates the change list with the regexp list and if any matches then it returns `true` otherwise
+Given the list of patterns, the CHANGE_TARGET, GIT_SHA env variables and the kind of match then it
+evaluates the change list with the pattern list:
+
+- When exact match then all the files should match those patterns then it returns `true` otherwise
 `false`.
+- Otherwise if any files match any of those patterns then it returns `true` otherwise `false`.
 
 ```
-  def match = isGitRegionMatch(regexps: ["^_beats","^apm-server.yml", "^apm-server.docker.yml"])
+  // All the entries in the changeset should match with ^_beats
+  def match = isGitRegionMatch(patterns: ["^_beats"], shouldMatchAll: true)
+
+  // All the entries in the changeset should match with ^_beats and *.py
+  def match = isGitRegionMatch(patterns: ["^_beats", "**/*.py"], shouldMatchAll: true)
+
+  // Any entries in the changeset that match with ^_beats or ^apm-server.docker.yml
+  def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml"])
+  def match = isGitRegionMatch(patterns: ["^_beats", "^apm-server.docker.yml"], shouldMatchAll: false)
+
+  // All the entries in the changeset should match with ^_beats/**/*.py
+  def match = isGitRegionMatch(patterns: ['^_beats/**/*.py'], shouldMatchAll: true, comparator: 'glob')
+
+  // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
+  def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true, comparator: 'regexp')
 ```
+
+* patterns: list of patterns to be matched. Mandatory
+* shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
+* comparator: what way to compare the pattern specified to the actual value. Possible values are `glob` and `regexp`. glob is the default
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
@@ -482,6 +514,16 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 
+## opbeansPipeline
+Opbeans Pipeline
+
+```
+opbeansPipeline()
+opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
+```
+
+* downstreamJobs: What downstream pipelines should be triggered once the release has been done. Default: []
+
 ## preCommit
 Run the pre-commit for the given commit if provided and generates the JUnit
 report if required
@@ -490,10 +532,17 @@ report if required
 preCommit(junit: false)
 
 preCommit(commit: 'abcdefg')
+
+preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
+
+preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
 ```
 
 * junit: whether to generate the JUnit report. Default: true. Optional
 * commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
+* credentialsId: what credentialsId to be loaded to enable git clones from private repos. Default: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba'. Optional
+* registry: what docker registry to be logged to consume internal docker images. Default: 'docker.elastic.co'. Optional
+* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/apm-team/ci/docker-registry/prod'. Optional
 
 ## preCommitToJunit
 Parse the pre-commit log file and generates a junit report
@@ -512,6 +561,23 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
+## rubygemsLogin
+Login to Rubygems.com with an authentication credentials from a Vault secret.
+The vault secret contains `user` and `password` fields with the authentication details. Or if using `withApi` then
+it's required the vault secret with `apiKey`.
+
+```
+rubygemsLogin(secret: 'secret/team/ci/secret-name') {
+  sh 'gem push x.y.z'
+}
+
+rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
+  sh 'gem push x.y.z'
+}
+```
+
+* secret: Vault secret where the user, password or apiKey are stored.
 
 ## sendBenchmarks
 Send the benchmarks to the cloud service or run the script and prepare the environment
@@ -717,3 +783,20 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
+## withVaultToken
+Wrap the vault token
+
+```
+withVaultToken() {
+  // block
+}
+
+withVaultToken(path: '/foo', tokenFile: '.myfile') {
+  // block
+}
+```
+
+* path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
+* tokenFile: name of the file with the token. (Optional). Default: .vault-token
+

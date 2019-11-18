@@ -6,6 +6,11 @@ services:
     container_name: jenkins-lint
     environment:
       CASC_JENKINS_CONFIG: /var/jenkins_home/casc_configs
+      CASC_VAULT_ENGINE_VERSION: "1"
+      CASC_VAULT_PATHS: |
+        secret/jcasc/localhost/base,secret/jcasc/localhost/apm-ci
+      CASC_VAULT_TOKEN: ${VAULT_TOKEN}
+      CASC_VAULT_URL: ${VAULT_ADDR:-https://secrets.elastic.co:8200}
       JAVA_OPTS: >-
         -Djenkins.install.runSetupWizard=false
         -Dhudson.model.UsageStatistics.disabled=true
@@ -16,6 +21,10 @@ services:
       - type: bind
         source: ./configs/jenkins.yaml
         target: /var/jenkins_home/casc_configs/jenkins.yaml
+        read_only: true
+      - type: bind
+        source: ../.
+        target: /var/pipeline-library
         read_only: true
     ports:
       - "18080:8080"
@@ -28,6 +37,12 @@ services:
         reservations:
           cpus: '0.25'
           memory: 100M
+    networks:
+      apm-pipeline-library:
 
 volumes:
   jenkins_home:
+
+networks:
+  apm-pipeline-library:
+    driver: bridge

@@ -15,79 +15,27 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class GithubPrCheckApprovedStepTests extends BasePipelineTest {
-  Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
-
-  def withCredentialsInterceptor = { list, closure ->
-    list.forEach {
-      env[it.variable] = "dummyValue"
-    }
-    def res = closure.call()
-    list.forEach {
-      env.remove(it.variable)
-    }
-    return res
-  }
+class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/githubPrCheckApproved.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("getGithubToken", [], {return "dummy"})
-    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
-      return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
-      })
   }
 
   @Test
   void testNoPR() throws Exception {
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -105,9 +53,13 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
-    script.call()
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
@@ -143,7 +95,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
               ]
             ]
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call()
     printCallStack()
@@ -177,9 +129,14 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
               ]
             ]
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
-    def ret = script.call()
+    def ret = false
+    try {
+      ret = script.call()
+    } catch(e){
+      //NOOP
+    }
     printCallStack()
     assertFalse(ret)
     assertJobStatusFailure()
@@ -201,7 +158,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call()
     printCallStack()
@@ -225,7 +182,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call()
     printCallStack()
@@ -257,7 +214,7 @@ class GithubPrCheckApprovedStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
-    def script = loadScript("vars/githubPrCheckApproved.groovy")
+    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call()
     printCallStack()

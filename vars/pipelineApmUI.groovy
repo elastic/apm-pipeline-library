@@ -312,7 +312,8 @@ def checkoutKibana(){
     gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier,
       repo: "${GIT_URL}",
       credentialsId: "${JOB_GIT_CREDENTIALS}",
-      reference: "/var/lib/jenkins/.git-references/kibana.git")
+      reference: "/var/lib/jenkins/.git-references/kibana.git",
+      shallow: false)
 //    stash allowEmpty: true, name: 'source', excludes: "${BASE_DIR}/.git,node/**", useDefaultExcludes: false
 //  }
 

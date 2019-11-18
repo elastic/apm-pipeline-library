@@ -15,32 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class IsGitRegionMatchStepTests extends BasePipelineTest {
+class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/isGitRegionMatch.groovy'
-  Map env = [:]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('echo', [String.class], { 'OK' })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('isUnix', [], { true })
   }
 
   @Test
-  void testWithoutRegexps() throws Exception {
+  void testWithoutpatterns() throws Exception {
     def script = loadScript(scriptName)
     try {
       script.call()
@@ -51,16 +42,16 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: Missing regexps argument.')
+      callArgsToString(call).contains('isGitRegionMatch: Missing patterns argument.')
     })
     assertJobStatusFailure()
   }
 
   @Test
-  void testWithEmptyRegexps() throws Exception {
+  void testWithEmptypatterns() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(regexps: [])
+      script.call(patterns: [])
     } catch(e){
       //NOOP
     }
@@ -68,7 +59,7 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'error'
     }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: Missing regexps with values.')
+      callArgsToString(call).contains('isGitRegionMatch: Missing patterns with values.')
     })
     assertJobStatusFailure()
   }
@@ -77,7 +68,7 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
   void testWithoutEnvVariables() throws Exception {
     def script = loadScript(scriptName)
     def result = true
-    result = script.call(regexps: [ 'foo' ])
+    result = script.call(patterns: [ 'foo' ])
     printCallStack()
     assertFalse(result)
     assertTrue(helper.callStack.findAll { call ->
@@ -101,14 +92,54 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
         }
       })
     def result = false
-    result = script.call(regexps: [ '^file.txt' ])
+    result = script.call(patterns: [ '^file.txt' ])
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testComplexMatch() throws Exception {
+  void testSimpleMatchWithoutShouldMatchAll() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return 'file.txt'
+        } else {
+          return 0
+        }
+      })
+    def result = false
+    result = script.call(patterns: [ '^file.txt' ], shouldMatchAll: false)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSimpleMatchWithShouldMatchAll() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = 'file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return 0
+      }
+    })
+    def result = true
+    result = script.call(patterns: [ '^file.txt' ], shouldMatchAll: true)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testComplexGlobMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
     env.GIT_SHA = 'bar'
@@ -120,7 +151,97 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
         }
       })
     def result = false
-    result = script.call(regexps: [ '^foo/**/file.txt' ])
+    result = script.call(patterns: [ '^foo/**/file.txt' ])
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testComplexGlobMatchWithShouldMatchAll() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = 'foo/anotherfolder/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return changeset
+        } else {
+          return 0
+        }
+      })
+    def result = false
+    result = script.call(patterns: [ '^foo/**/file.txt' ], shouldMatchAll: true)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultiplePatternMatch() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        if (m.script.contains('git diff')) {
+          return true
+        } else {
+          if (m.script.contains('^bar/**/file*.txt')) {
+            return 0
+          } else {
+            return 1
+          }
+        }
+      })
+    def result = false
+    result = script.call(patterns: [ '^foo/**/file.txt', '^bar/**/file*.txt' ])
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultiplePatternsMatchWithShouldMatchAll() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo/bar/xxx/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return (m.script.contains('^foo/**/file.txt') || m.script.contains('^foo/bar/**/file.txt')) ? 0 : 1
+      }
+    })
+    def result = false
+    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], shouldMatchAll: true)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultiplePatternMatchWithShouldMatchAllAndRegexpComparator() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo/bar/xxx/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('git diff')) {
+        return changeset
+      } else {
+        return (m.script.contains('^foo/.*') || m.script.contains('^foo/bar/.*')) ? 0 : 1
+      }
+    })
+    def result = false
+    result = script.call(patterns: [ '^foo/.*', '^foo/bar/.*' ], shouldMatchAll: true, comparator: 'regexp')
     printCallStack()
     assertTrue(result)
     assertJobStatusSuccess()
@@ -138,8 +259,23 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
           return 1
         }
       })
+    printCallStack()
+    assertFalse(script.call(patterns: [ '^unknown.txt' ]))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testMultiplePatternUnmatchWithShouldMatchAll() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_TARGET = 'foo'
+    env.GIT_SHA = 'bar'
+    def changeset = ''' foo/bar/file.txt
+                      | foo
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { return true })
     def result = false
-    result = script.call(regexps: [ '^unknown.txt' ])
+    result = script.call(patterns: [ '^foo/**/file.txt', '^foo/bar/**/file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertFalse(result)
     assertJobStatusSuccess()
@@ -161,5 +297,41 @@ class IsGitRegionMatchStepTests extends BasePipelineTest {
       callArgsToString(call).contains('isGitRegionMatch: windows is not supported yet.')
     })
     assertJobStatusFailure()
+  }
+
+  @Test
+  void testIsGlob() throws Exception {
+    def script = loadScript(scriptName)
+    assertTrue(script.isGlob('glob'))
+    assertFalse(script.isGlob('regexp'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsGrepPatternFound() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      return (m.script.contains('foo') ? 0 : 1)
+    })
+    assertTrue(script.isGrepPatternFound('foo', 'foo'))
+    assertFalse(script.isGrepPatternFound('bar', 'pattern'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsFullPatternMatchWithMultipleLines() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = ''' foo
+                      | bar
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    script.isFullPatternMatch('whatever', [ 'foo', 'bar' ], true)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'sh'
+    }.any { call ->
+      callArgsToString(call).contains("echo 'bar'")
+    })
+    assertJobStatusSuccess()
   }
 }

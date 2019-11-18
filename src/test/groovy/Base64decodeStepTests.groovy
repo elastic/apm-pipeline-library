@@ -15,15 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import java.util.Base64
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class Base64decodeStepTests extends BasePipelineTest {
-  Map env = [:]
+class Base64decodeStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/base64decode.groovy'
   def text = "dummy"
   def encoding = "UTF-8"
 
@@ -31,16 +30,11 @@ class Base64decodeStepTests extends BasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/base64decode.groovy")
+    def script = loadScript(scriptName)
     def result = script.call(input: "ZHVtbXk=")
     printCallStack()
     assertTrue(text == result)
@@ -49,7 +43,7 @@ class Base64decodeStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/base64decode.groovy")
+    def script = loadScript(scriptName)
     def result = script.call(input: "ZHVtbXk=", encoding: "UTF-8")
     printCallStack()
     assertTrue(text == result)

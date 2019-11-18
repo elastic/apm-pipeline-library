@@ -27,7 +27,7 @@ def call(jobURL, buildNumber){
   }
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
-  restURLJob = "${env.JENKINS_URL}/blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
   def restURLBuild = "${restURLJob}/runs/${buildNumber}"
 
   downloadJSONFile("${restURLJob}", "job-info.json")
@@ -61,7 +61,7 @@ def call(jobURL, buildNumber){
 }
 
 def downloadJSONFile(url, file){
-  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL -o ${file} ${url}", returnStatus: true)
+  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}", returnStatus: true)
 
   if(ret != 0){
     writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)

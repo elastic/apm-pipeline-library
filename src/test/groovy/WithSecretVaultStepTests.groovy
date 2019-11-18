@@ -15,79 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class WithSecretVaultStepTests extends BasePipelineTest {
-  String scriptName = "vars/withSecretVault.groovy"
-  Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
+class WithSecretVaultStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/withSecretVault.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
-    super.setUp()
-
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
-    helper.registerAllowedMethod("error", [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], { m ->
-      def s = m.secret
-      if("secret".equals(s)){
-        return [data: [ user: 'username', password: 'user_password']]
-      }
-      if("secretError".equals(s)){
-        return [errors: 'Error message']
-      }
-      if("secretNotValid".equals(s)){
-        return [data: [ user: null, password: null]]
-      }
-      return null
-    })
+    super.setUp()
   }
 
   @Test

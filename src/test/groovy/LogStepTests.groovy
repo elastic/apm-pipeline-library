@@ -15,31 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class LogStepTests extends BasePipelineTest {
-  Map env = [:]
+class LogStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/log.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("echoColor", [Map.class], { m ->
-      def echoColor = loadScript("vars/echoColor.groovy")
-      echoColor.call(m)
-    })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     script.call(text: "message")
     printCallStack()
@@ -54,7 +46,7 @@ class LogStepTests extends BasePipelineTest {
 
   @Test
   void testDebug() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     script.call(level: 'DEBUG', text: "message")
     printCallStack()
@@ -69,7 +61,7 @@ class LogStepTests extends BasePipelineTest {
 
   @Test
   void testInfo() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     script.call(level: 'INFO', text: "message")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -83,7 +75,7 @@ class LogStepTests extends BasePipelineTest {
 
   @Test
   void testWarn() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'WARN'
     script.call(level: 'WARN', text: "message")
     printCallStack()
@@ -98,7 +90,7 @@ class LogStepTests extends BasePipelineTest {
 
   @Test
   void testError() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'ERROR'
     script.call(level: 'ERROR', text: "message")
     printCallStack()
@@ -113,7 +105,7 @@ class LogStepTests extends BasePipelineTest {
 
   @Test
   void testLevel() throws Exception {
-    def script = loadScript("vars/log.groovy")
+    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'WARN'
     script.call(level: 'DEBUG', text: "messageDEBUG")
     script.call(level: 'INFO', text: "messageINFO")

@@ -31,7 +31,7 @@ pipeline {
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2'))
     timestamps()
     ansiColor('xterm')
@@ -108,7 +108,7 @@ pipeline {
             def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
-              def pythonVersion = pythonIn.replace("-",":")
+              def pythonVersion = pythonIn.replaceFirst("-",":")
               tasks["${pythonVersion}"] = {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-python.git',
@@ -165,8 +165,41 @@ pipeline {
         dir("integration-testing-images"){
           git('https://github.com/elastic/apm-integration-testing.git')
           sh(label: 'Test Docker containers', script: 'make -C docker all-tests')
+          sh(label: 'Push Docker images', script: 'make -C docker all-push')
         }
-        sh(label: 'Push Docker images', script: '.ci/scripts/push-integration-test-images.sh')
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/**/junit-*.xml")
+        }
+      }
+    }
+    stage('Build Apm Server test Docker images'){
+      agent { label 'immutable && docker' }
+      options {
+        skipDefaultCheckout()
+        warnError('Build Apm Server Docker images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.apm_integration_testing }
+      }
+      steps {
+        checkout scm
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/apm-server.git',
+          tag: "apm-server",
+          version: "daily",
+          push: true
+        )
+        dir("apm-server-images"){
+          git('https://github.com/elastic/apm-server.git')
+          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
+          sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+        }
       }
       post {
         always {

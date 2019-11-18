@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.31-SNAPSHOT</version>
+  <version>1.1.41-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -59,7 +59,48 @@
       <version>3.1.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-support</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.28.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- force upper bound dependencies -->
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-al</artifactId>
+        <version>2.4.12</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <!-- bom -->
+      <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-2.176.x</artifactId>
+        <version>3</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <scriptSourceDirectory>vars</scriptSourceDirectory>
     <testSourceDirectory>src</testSourceDirectory>
@@ -140,6 +181,38 @@
         <configuration>
           <skip>true</skip>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M2</version>
+        <executions>
+          <execution>
+            <id>display-info</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>display-info</goal>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.5.4,)</version>
+                  <message>3.5.4 required to at least look at .mvn/ if it exists.</message>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[1.8.0,)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

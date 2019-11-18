@@ -15,6 +15,7 @@
           discover-tags: false
           filter-by-name-wildcard:
             includes: 'PR-13073'
+          notification-context: 'apm-ci'
           repo: beats
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken

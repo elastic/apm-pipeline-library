@@ -21,6 +21,7 @@ set +x
 echo "dummy script"
 
 docker --version || true
+docker-compose --version || true
 java -version || true
 go version || true
 git version || true

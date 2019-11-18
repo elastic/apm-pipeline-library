@@ -9,3 +9,8 @@ jenkins-cli.jar
 bats-core/
 target/
 .ci/docker/tests/test_helper/
+
+# For the vagrant
+.vagrant
+
+mail*.html

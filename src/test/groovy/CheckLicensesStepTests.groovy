@@ -15,53 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class CheckLicensesStepTests extends BasePipelineTest {
+class CheckLicensesStepTests extends ApmBasePipelineTest {
   static final String scriptName = 'vars/checkLicenses.groovy'
-  Map env = [:]
-
-  /**
-   * Mock Docker class from docker-workflow plugin.
-   */
-  class Docker implements Serializable {
-
-    public Image image(String id) {
-      new Image(this, id)
-    }
-
-    public class Image implements Serializable {
-      private Image(Docker docker, String id) {}
-      public <V> V inside(String args = '', Closure<V> body) { body() }
-    }
-  }
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = '/tmp'
     env.BASE_DIR = 'base'
-
-    binding.setVariable('env', env)
-    binding.setProperty('docker', new Docker())
-
-    helper.registerAllowedMethod('archive', [String.class], { 'OK' })
-    helper.registerAllowedMethod('catchError', [Closure.class], { s -> s() })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod('isUnix', [ ], { true })
-    helper.registerAllowedMethod('junit', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('readFile', [Map.class], { '' })
-    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('writeFile', [Map.class], { 'OK' })
   }
 
   @Test
@@ -82,6 +48,33 @@ class CheckLicensesStepTests extends BasePipelineTest {
       call.methodName == 'sh'
     }.any { call ->
       callArgsToString(call).contains('-ext .foo')
+    })
+  }
+
+  @Test
+  void testWithEnvAndAllTheEnvironmentVariables() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'withEnv'
+    }.any { call ->
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/${env.BASE_DIR}]")
+    })
+  }
+
+  @Test
+  void testWithEnvAndNoBaseDirVariable() throws Exception {
+    env.BASE_DIR = ''
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(helper.callStack.findAll { call ->
+      call.methodName == 'withEnv'
+    }.any { call ->
+      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/]")
     })
   }
 

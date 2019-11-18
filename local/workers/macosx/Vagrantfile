@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# https://app.vagrantup.com/AndrewDryga/boxes/vagrant-box-osx
+Vagrant.configure("2") do |config|
+  config.vm.box = "AndrewDryga/vagrant-box-osx"
+  config.vm.box_version = "0.3.1"
+
+  config.vm.network "private_network", ip: "192.168.33.11"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "4096"
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "30"]
+  end
+
+  $script = <<-SCRIPT
+  echo 'running brew...'
+  su - vagrant -c 'HOMEBREW_NO_AUTO_UPDATE=1 /usr/local/bin/brew cask install adoptopenjdk/openjdk/adoptopenjdk8'
+  java -version
+  echo 'preparing swarm connection to Jenkins'
+  su - vagrant -c 'curl https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar'
+  echo 'connecting to Jenkins'
+  su - vagrant -c 'nohup java -jar swarm-client.jar -labels "mac macosx immutable" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &'
+  SCRIPT
+
+  config.vm.provision "shell", inline: $script
+end

@@ -15,7 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
@@ -23,8 +22,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 import hudson.model.Cause;
 
-
-class IsCommentTriggerStepTests extends BasePipelineTest {
+class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   class IssueCommentCause extends Cause {
     private final String userLogin
     private final String comment
@@ -65,7 +63,6 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
     }
   }
 
-  Map env = [:]
   def script
 
   @Override
@@ -73,11 +70,6 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/isCommentTrigger.groovy')
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("getGithubToken", {return 'TOKEN'})
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [login: 'user', company: '@elastic']})
   }
 
   @Test
@@ -102,10 +94,10 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testNoElasticUser() throws Exception {
+  void testNoElasticUserWithSomeOrgs() throws Exception {
     Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [login: 'user', company: '@none']})
+    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -113,15 +105,13 @@ class IsCommentTriggerStepTests extends BasePipelineTest {
   }
 
   @Test
-  void testElasticUserWithExtraSpaces() throws Exception {
-    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
+  void testNoElasticUserWithoutOrgs() throws Exception {
+    Cause cause = new IssueCommentCause("admin","Started by a comment")
     binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {return [login: 'user', company: '@elastic ']})
+    helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
     def ret = script.call()
     printCallStack()
-    assertTrue(ret)
-    assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
-    assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
+    assertFalse(ret)
     assertJobStatusSuccess()
   }
 }

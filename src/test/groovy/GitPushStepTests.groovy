@@ -15,27 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class GitPushStepTests extends BasePipelineTest {
+class GitPushStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/gitPush.groovy'
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     binding.setVariable("BUILD_TAG", "tag")
-
-    helper.registerAllowedMethod('sh', [String.class], { "OK" })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod("gitCmd", [Map.class], { return "OK" })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript("vars/gitPush.groovy")
+    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -48,7 +45,7 @@ class GitPushStepTests extends BasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript("vars/gitPush.groovy")
+    def script = loadScript(scriptName)
     script.call(args: "-f", credentialsId: "my_credentials")
     printCallStack()
     assertJobStatusSuccess()

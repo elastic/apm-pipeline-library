@@ -28,6 +28,14 @@ pipeline {
   }
   options {
     timeout(time: 1, unit: 'HOURS')
+    // Default build rotation for the pipeline.
+    //   When using the downstream pattern for the matrix then the build rotation
+    //   should be less restrictive mainly because the @master is the one normally used
+    //   in this particular pattern and want to ensure the history of builds is big enough
+    //   when debugging. The recommended configuration for that particular setup is:
+    //   buildDiscarder(logRotator(numToKeepStr: '100', artifactNumToKeepStr: '100', daysToKeepStr: '30'))
+    //
+    //   Further details: https://github.com/elastic/apm-agent-python/pull/634
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
@@ -45,282 +53,272 @@ pipeline {
     booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
   }
   stages {
-    stage('Initializing'){
-      agent { label 'linux && immutable' }
-      options { skipDefaultCheckout() }
-      environment {
-        PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-        ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
-        //see JENKINS-41929
-        PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
+    /**
+    Checkout the code and stash it, to use it on other stages.
+    */
+    stage('Checkout') {
+      steps {
+        deleteDir()
+        gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+          repo: 'git@github.com:elastic/apm-pipeline-library.git',
+          credentialsId: "${JOB_GIT_CREDENTIALS}")
+        stash allowEmpty: true, name: 'source', useDefaultExcludes: false
       }
-      stages {
-        /**
-        Checkout the code and stash it, to use it on other stages.
-        */
-        stage('Checkout') {
-          steps {
-            deleteDir()
-            //gitCheckout(basedir: "${BASE_DIR}")
-            gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-              repo: 'git@github.com:elastic/apm-pipeline-library.git',
-              credentialsId: "${JOB_GIT_CREDENTIALS}")
-            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+    }
+    stage('Workers Checks'){
+      parallel {
+        stage('linux && immutable check'){
+          agent { label 'linux && immutable' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+            //see JENKINS-41929
+            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
-        }
-        /**
-        Build the project from code..
-        */
-        stage('Build') {
-          steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+          stages {
+            /**
+            Build the project from code..
+            */
+            stage('Build') {
+              steps {
+                buildUnix()
+              }
             }
-          }
-        }
-        /**
-        Execute unit tests.
-        */
-        stage('Test') {
-          steps {
-            deleteDir()
-            unstash 'source'
-            dir("${BASE_DIR}"){
-              sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+            /**
+            Execute unit tests.
+            */
+            stage('Test') {
+              steps {
+                testUnix()
+                testDockerInside()
+              }
+              post {
+                always {
+                  junit(allowEmptyResults: true,
+                    keepLongStdio: true,
+                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml"
+                  )
+                }
+              }
+            }
+            stage('Run on branch or tag'){
+              when {
+                beforeAgent true
+                anyOf {
+                  branch 'master'
+                  branch "v7*"
+                  branch "v8*"
+                  tag pattern: "v\\d+\\.\\d+\\.\\d+.*", comparator: 'REGEXP'
+                  expression { return params.Run_As_Master_Branch }
+                }
+              }
+              steps {
+                echo "I am a tag or branch"
+              }
             }
           }
           post {
-            always {
-              junit(allowEmptyResults: true,
-                keepLongStdio: true,
-                testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-              }
-            }
+               always {
+                   sh 'docker ps -a || true'
+               }
           }
         }
-      }
-
-      stage('Ubuntu 18.04 test'){
-        agent { label 'ubuntu-edge' }
-        options { skipDefaultCheckout() }
-        environment {
-          PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-          ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
-          //see JENKINS-41929
-          PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
-        }
-        stages {
-          /**
-          Checkout the code and stash it, to use it on other stages.
-          */
-          stage('Checkout') {
-            steps {
-              deleteDir()
-              //gitCheckout(basedir: "${BASE_DIR}")
-              gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                credentialsId: "${JOB_GIT_CREDENTIALS}")
-              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-            }
+        stage('Ubuntu 18.04 test'){
+          agent { label 'ubuntu-edge' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+            //see JENKINS-41929
+            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
-          /**
-          Build the project from code..
-          */
-          stage('Build') {
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-              }
-            }
-          }
-          /**
-          Execute unit tests.
-          */
-          stage('Test') {
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-              }
-            }
-            post {
-              always {
-                junit(allowEmptyResults: true,
-                  keepLongStdio: true,
-                  testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                }
+          stages {
+            /**
+            Build the project from code..
+            */
+            stage('Build') {
+              steps {
+                buildUnix()
               }
             }
             /**
-            Build the documentation.
+            Execute unit tests.
             */
-            stage('Documentation') {
-              when {
-                beforeAgent true
-                allOf {
-                  anyOf {
-                    not {
-                      changeRequest()
-                    }
-                    branch 'master'
-                    branch "\\d+\\.\\d+"
-                    branch "v\\d?"
-                    tag "v\\d+\\.\\d+\\.\\d+*"
-                    expression { return params.Run_As_Master_Branch }
-                  }
-                  expression { return params.doc_ci }
-                }
-              }
+            stage('Test') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  buildDocs(docsDir: "resources/docs", archive: true)
+                testUnix()
+                testDockerInside()
+              }
+              post {
+                always {
+                  junit(allowEmptyResults: true,
+                    keepLongStdio: true,
+                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  }
                 }
               }
             }
+          post {
+               cleanup {
+                   sh 'docker ps -a || true'
+               }
           }
-      }
-
-      stage('Debian 9 test'){
-        agent { label 'debian-9' }
-        options { skipDefaultCheckout() }
-        environment {
-          PATH = "${env.PATH}:${env.WORKSPACE}/bin"
-          ELASTIC_DOCS = "${env.WORKSPACE}/elastic/docs"
-          //see JENKINS-41929
-          PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
         }
-        stages {
-          /**
-          Checkout the code and stash it, to use it on other stages.
-          */
-          stage('Checkout') {
-            steps {
-              deleteDir()
-              //gitCheckout(basedir: "${BASE_DIR}")
-              gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-                repo: 'git@github.com:elastic/apm-pipeline-library.git',
-                credentialsId: "${JOB_GIT_CREDENTIALS}")
-              stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-            }
+
+        stage('Debian 9 test'){
+          agent { label 'debian-9' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+            //see JENKINS-41929
+            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
-          /**
-          Build the project from code..
-          */
-          stage('Build') {
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-              }
-            }
-          }
-          /**
-          Execute unit tests.
-          */
-          stage('Test') {
-            steps {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-              }
-            }
-            post {
-              always {
-                junit(allowEmptyResults: true,
-                  keepLongStdio: true,
-                  testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
-                }
+          stages {
+            /**
+            Build the project from code..
+            */
+            stage('Build') {
+              steps {
+                buildUnix()
               }
             }
             /**
-            Build the documentation.
+            Execute unit tests.
             */
-            stage('Documentation') {
-              when {
-                beforeAgent true
-                allOf {
-                  anyOf {
-                    not {
-                      changeRequest()
-                    }
-                    branch 'master'
-                    branch "\\d+\\.\\d+"
-                    branch "v\\d?"
-                    tag "v\\d+\\.\\d+\\.\\d+*"
-                    expression { return params.Run_As_Master_Branch }
-                  }
-                  expression { return params.doc_ci }
-                }
-              }
+            stage('Test') {
               steps {
-                deleteDir()
-                unstash 'source'
-                dir("${BASE_DIR}"){
-                  buildDocs(docsDir: "resources/docs", archive: true)
+                testUnix()
+                testDockerInside()
+              }
+              post {
+                always {
+                  junit(allowEmptyResults: true,
+                    keepLongStdio: true,
+                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  }
                 }
               }
             }
+          post {
+               cleanup {
+                   sh 'docker ps -a || true'
+               }
           }
-      }
-
-      stage('windows 2012 check'){
-        agent { label 'windows-2012r2' }
-        options { skipDefaultCheckout() }
-        steps {
-          bat returnStatus: true, script: 'msbuild'
-          bat returnStatus: true, script: 'docker -v'
         }
-      }
-      stage('windows 2019 immutable check'){
-        agent { label 'windows-2019-immutable' }
-        options { skipDefaultCheckout() }
-        steps {
-          bat returnStatus: true, script: 'msbuild'
-          bat returnStatus: true, script: 'dotnet --info'
-          bat returnStatus: true, script: 'nuget --help'
-          bat returnStatus: true, script: 'vswhere'
-          bat returnStatus: true, script: 'docker -v'
+        stage('windows 2012 immutable check'){
+          agent { label 'windows-2012-r2-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            checkWindows()
+          }
         }
-      }
-      stage('windows 2012 immutable check'){
-        agent { label 'windows-2012-r2-immutable' }
-        options { skipDefaultCheckout() }
-        steps {
-          bat returnStatus: true, script: 'msbuild'
-          bat returnStatus: true, script: 'dotnet --info'
-          bat returnStatus: true, script: 'nuget --help'
-          bat returnStatus: true, script: 'vswhere'
-          bat returnStatus: true, script: 'docker -v'
+        stage('windows 2016 immutable check'){
+          agent { label 'windows-2016-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            checkWindows()
+          }
         }
-      }
-       stage('windows 2019 docker immutable check'){
-        agent { label 'windows-2019-docker-immutable' }
-        options { skipDefaultCheckout() }
-        when {
-          beforeAgent true
-          expression { return false }
+        stage('windows 2019 immutable check'){
+          agent { label 'windows-2019-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            checkWindows()
+          }
         }
-        steps {
-          bat returnStatus: true, script: 'msbuild'
-          bat returnStatus: true, script: 'dotnet --info'
-          bat returnStatus: true, script: 'nuget --help'
-          bat returnStatus: true, script: 'vswhere'
-          bat returnStatus: true, script: 'docker -v'
+        stage('windows 2019 docker immutable check'){
+          agent { label 'windows-2019-docker-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            checkWindows()
+          }
         }
-      }
-    }
-    post {
-      cleanup {
-        notifyBuildResult()
+        stage('Mac OS X check - 01'){
+          stages {
+            stage('build') {
+              agent { label 'macosx' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('Mac OS X check - 02'){
+          stages {
+            stage('build') {
+              agent { label 'macosx' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('BareMetal worker-854309 check'){
+          stages {
+            stage('build') {
+              agent { label 'worker-854309' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
+        stage('BareMetal worker-1095690 check'){
+          stages {
+            stage('build') {
+              agent { label 'worker-1095690' }
+              options { skipDefaultCheckout() }
+              steps {
+                buildUnix()
+              }
+            }
+          }
+        }
       }
     }
   }
+  post {
+    cleanup {
+      notifyBuildResult()
+    }
+  }
+}
+
+
+
+def testDockerInside(){
+  docker.image('node:12').inside(){
+    echo "Docker inside"
+    dir("${BASE_DIR}"){
+      withEnv(["HOME=${env.WORKSPACE}"]){
+        sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
+      }
+    }
+  }
+}
+
+def buildUnix(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+  }
+}
+
+def testUnix(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+  }
+}
+
+def checkWindows(){
+  bat returnStatus: true, script: 'msbuild'
+  bat returnStatus: true, script: 'dotnet --info'
+  bat returnStatus: true, script: 'nuget --help'
+  bat returnStatus: true, script: 'vswhere'
+  bat returnStatus: true, script: 'docker -v'
+}

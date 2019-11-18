@@ -37,119 +37,13 @@ pipeline {
     cron('H H(1-4) * * 1')
   }
   stages {
-    stage('Run Tasks'){
-      stages {
-        stage('Update snapshots') {
-          parallel {
-            stage('8.0.0-SNAPSHOT'){
-              steps {
-                build(job: 'apm-shared/apm-docker-es-pipeline',
-                  parameters: [
-                    string(name: 'registry', value: 'docker.elastic.co'),
-                    string(name: 'tag_prefix', value: 'observability-ci'),
-                    string(name: 'version', value: '8.0.0-SNAPSHOT'),
-                    string(name: 'elastic_stack', value: '8.0-SNAPSHOT'),
-                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-                    string(name: 'branch_specifier', value: 'master')
-                  ],
-                  propagate: false,
-                  wait: true
-                )
-              }
-            }
-            stage('7.3.0-SNAPSHOT'){
-              steps {
-                build(job: 'apm-shared/apm-docker-es-pipeline',
-                  parameters: [
-                    string(name: 'registry', value: 'docker.elastic.co'),
-                    string(name: 'tag_prefix', value: 'observability-ci'),
-                    string(name: 'version', value: '7.3.0-SNAPSHOT'),
-                    string(name: 'elastic_stack', value: '7.3-SNAPSHOT'),
-                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-                    string(name: 'branch_specifier', value: 'master')
-                  ],
-                  propagate: false,
-                  wait: true
-                )
-              }
-            }
-            stage('7.3.0'){
-              steps {
-                build(job: 'apm-shared/apm-docker-es-pipeline',
-                  parameters: [
-                    string(name: 'registry', value: 'docker.elastic.co'),
-                    string(name: 'tag_prefix', value: 'observability-ci'),
-                    string(name: 'version', value: '7.3.0'),
-                    string(name: 'elastic_stack', value: '7.3'),
-                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-                    string(name: 'branch_specifier', value: 'master')
-                  ],
-                  propagate: false,
-                  wait: true
-                )
-              }
-            }
-            stage('7.2.0'){
-              steps {
-                build(job: 'apm-shared/apm-docker-es-pipeline',
-                  parameters: [
-                    string(name: 'registry', value: 'docker.elastic.co'),
-                    string(name: 'tag_prefix', value: 'observability-ci'),
-                    string(name: 'version', value: '7.2.0'),
-                    string(name: 'elastic_stack', value: '7.2'),
-                    string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
-                    string(name: 'branch_specifier', value: 'master')
-                  ],
-                  propagate: false,
-                  wait: true
-                )
-              }
-            }
-          }
-        }
-        stage('Update k8s Clusters'){
-          steps {
-            build(job: 'apm-shared/observability-test-environments-update-mbp/8.x.x-SNAPSHOT',
-              parameters: [
-                booleanParam(name: 'stop_services', value: true),
-                booleanParam(name: 'start_services', value: true)
-              ],
-              quietPeriod: 10,
-              propagate: false,
-              wait: false
-            )
-
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x-SNAPSHOT',
-              parameters: [
-                booleanParam(name: 'stop_services', value: true),
-                booleanParam(name: 'start_services', value: true)
-              ],
-              quietPeriod: 10,
-              propagate: false,
-              wait: false
-            )
-
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x',
-              parameters: [
-                booleanParam(name: 'stop_services', value: true),
-                booleanParam(name: 'start_services', value: true)
-              ],
-              quietPeriod: 10,
-              propagate: false,
-              wait: false
-            )
-
-            build(job: 'apm-shared/observability-test-environments-update-mbp/7.x.x-BC',
-              parameters: [
-                booleanParam(name: 'stop_services', value: true),
-                booleanParam(name: 'start_services', value: true)
-              ],
-              quietPeriod: 10,
-              propagate: false,
-              wait: false
-            )
-          }
-        }
+    stage('Upgrade clusters') {
+      steps {
+        build(job: 'apm-shared/observability-test-environments-trigger',
+          parameters: [string(name: 'branch_specifier', value: 'master')],
+          propagate: false,
+          wait: true
+        )
       }
     }
   }

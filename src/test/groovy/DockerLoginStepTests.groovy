@@ -15,73 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
-class DockerLoginStepTests extends BasePipelineTest {
+class DockerLoginStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/dockerLogin.groovy'
-  Map env = [:]
-
-  def wrapInterceptor = { map, closure ->
-    map.each { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", "${it.password}")
-        }
-      }
-    }
-    def res = closure.call()
-    map.forEach { key, value ->
-      if("varPasswordPairs".equals(key)){
-        value.each{ it ->
-          binding.setVariable("${it.var}", null)
-        }
-      }
-    }
-    return res
-  }
-  def withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
-    }
-    def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
-    }
-    return res
-  }
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.WORKSPACE = "WS"
-    binding.setVariable('env', env)
-
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    helper.registerAllowedMethod("sh", [Map.class], { m -> println m.script })
-    helper.registerAllowedMethod("sh", [String.class], { "OK" })
-    helper.registerAllowedMethod("wrap", [Map.class, Closure.class], wrapInterceptor)
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
-    helper.registerAllowedMethod("withEnv", [List.class, Closure.class], withEnvInterceptor)
-    helper.registerAllowedMethod("getVaultSecret", [Map.class], {
-      return [data: [user: "my-user", password: "my-password"]]
-      })
-    helper.registerAllowedMethod("retry", [Integer.class, Closure.class], { i, c ->
-      c.call()
-    })
-    helper.registerAllowedMethod("randomNumber", [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod("sleep", [Integer.class], { 'OK' })
   }
 
   @Test

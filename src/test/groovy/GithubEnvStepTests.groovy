@@ -15,18 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
-class GithubEnvStepTests extends BasePipelineTest {
+class GithubEnvStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubEnv.groovy'
-  String url = 'http://github.com/org/repo.git'
-  String sha = '29480a51'
-  Map env = [:]
 
   @Override
   @Before
@@ -34,25 +30,16 @@ class GithubEnvStepTests extends BasePipelineTest {
     super.setUp()
 
     env.GIT_URL = null
-    binding.setVariable('env', env)
-    helper.registerAllowedMethod('isUnix', [], { true })
-    helper.registerAllowedMethod('error', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
-        return "${sha} ${sha}"
+        return "${SHA} ${SHA}"
       } else if('git rev-parse HEAD^'.equals(map.script)){
         return "previousCommit"
       } else if(map.script.startsWith("git branch -r --contains")){
-        return "${sha}"
+        return "${SHA}"
       }
       return ""
     })
-    helper.registerAllowedMethod('getGitRepoURL', [], {return url})
-    helper.registerAllowedMethod('getGitCommitSha', [], {return sha})
-    helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
   }
 
   @Test
@@ -62,19 +49,19 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
 
   @Test
   void testGitUrl() throws Exception {
     def script = loadScript(scriptName)
-    env.GIT_URL = url
+    env.GIT_URL = REPO_URL
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
 
@@ -87,7 +74,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
 
@@ -96,7 +83,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
-          return "${sha} ${sha} ${sha}"
+          return "${SHA} ${SHA} ${SHA}"
       }
       return ""
     })
@@ -104,7 +91,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('merge'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
 
@@ -116,7 +103,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
   }
 
@@ -125,14 +112,14 @@ class GithubEnvStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
-    env.GIT_COMMIT = sha
+    env.GIT_COMMIT = SHA
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test
@@ -145,9 +132,9 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test
@@ -160,7 +147,7 @@ class GithubEnvStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
     println(binding.getVariable('env').GIT_BASE_COMMIT)
     assertTrue('previousCommit'.equals(binding.getVariable('env').GIT_BASE_COMMIT))
@@ -171,14 +158,14 @@ class GithubEnvStepTests extends BasePipelineTest {
     def script = loadScript(scriptName)
     env.CHANGE_ID = null
     env.CHANGE_TARGET = null
-    env.GIT_COMMIT = sha
+    env.GIT_COMMIT = SHA
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_SHA))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('commit'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
-    assertTrue(sha.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test

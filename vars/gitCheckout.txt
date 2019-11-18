@@ -27,3 +27,5 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
+* *shallow*: Whether to enable the shallow cloning. Default: true
+* *depth*: Set shallow clone depth,. Default: 5

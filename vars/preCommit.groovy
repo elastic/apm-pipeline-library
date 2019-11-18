@@ -22,10 +22,17 @@
   preCommit(junit: false)
 
   preCommit(commit: 'abcdefg')
+
+  preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
+
+  preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
 */
 def call(Map params = [:]) {
   def junitFlag = params.get('junit', true)
   def commit = params.get('commit', env.GIT_BASE_COMMIT)
+  def credentialsId = params.get('credentialsId', 'f6c7695a-671e-4f4f-a331-acdce44ff9ba')
+  def registry = params.get('registry', 'docker.elastic.co')
+  def secretRegistry = params.get('secretRegistry', 'secret/apm-team/ci/docker-registry/prod')
 
   if (!commit?.trim()) {
     commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')
@@ -33,10 +40,16 @@ def call(Map params = [:]) {
 
   def reportFileName = 'pre-commit.out'
 
-  sh """
-    curl https://pre-commit.com/install-local.py | python -
-    git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
-  """
+  sshagent([credentialsId]) {
+
+    if (registry && secretRegistry) {
+      dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
+    }
+    sh """
+      curl https://pre-commit.com/install-local.py | python -
+      git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
+    """
+  }
   if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
     junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
