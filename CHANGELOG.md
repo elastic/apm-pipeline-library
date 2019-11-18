@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.41 (18/11/2019)
+
+#### 🐛 Bug Fixes
+
+-  fixes isGitRegionMatch to be used only with gitCheckout and minor changes [#264](https://github.com/elastic/apm-pipeline-library/pull/264)
+-  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
+
+#### ⚙️ CI
+
+-  Move pipelines to the obs-test-environments repo [#262](https://github.com/elastic/apm-pipeline-library/pull/262)
+
+---
+
 ## v1.1.40 (15/11/2019)
 
 #### 🚀 Enhancements
@@ -302,11 +315,11 @@
 
 #### ⚙️ CI
 
--  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 -  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
 -  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
 -  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
 -  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
+-  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 
 ---
 
