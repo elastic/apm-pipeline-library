@@ -27,6 +27,8 @@ import com.cloudbees.groovy.cps.NonCPS
 
  def match = isGitRegionMatch(patterns: ["^_beats", "^_beats/apm-server.yml"], shouldMatchAll: true)
 
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
 */
 def call(Map params = [:]) {
   if(!isUnix()){
@@ -42,8 +44,8 @@ def call(Map params = [:]) {
 
   def gitDiffFile = 'git-diff.txt'
   def match = false
-  if (env.CHANGE_TARGET && env.GIT_SHA) {
-    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_SHA} > ${gitDiffFile}", returnStdout: true)
+  if (env.CHANGE_TARGET && env.GIT_BASE_COMMIT) {
+    def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
     if (shouldMatchAll) {
       match = isFullPatternMatch(gitDiffFile, patterns, isGlob(comparator))
     } else {
@@ -51,7 +53,7 @@ def call(Map params = [:]) {
     }
     log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
   } else {
-    echo 'isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.'
+    echo 'isGitRegionMatch: CHANGE_TARGET and GIT_BASE_COMMIT env variables are required to evaluate the changes.'
   }
   return match
 }

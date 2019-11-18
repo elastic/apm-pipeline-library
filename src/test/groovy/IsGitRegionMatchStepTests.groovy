@@ -74,7 +74,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
       call.methodName == 'echo'
     }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: CHANGE_TARGET and GIT_SHA env variables are required to evaluate the changes.')
+      callArgsToString(call).contains('isGitRegionMatch: CHANGE_TARGET and GIT_BASE_COMMIT env variables are required to evaluate the changes.')
     })
     assertJobStatusSuccess()
   }
@@ -83,7 +83,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testSimpleMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
         if (m.script.contains('git diff')) {
           return 'file.txt'
@@ -102,7 +102,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testSimpleMatchWithoutShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
         if (m.script.contains('git diff')) {
           return 'file.txt'
@@ -121,7 +121,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testSimpleMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -142,7 +142,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testComplexGlobMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
         if (m.script.contains('git diff')) {
           return 'foo/anotherfolder/file.txt'
@@ -161,7 +161,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testComplexGlobMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -182,7 +182,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testMultiplePatternMatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
         if (m.script.contains('git diff')) {
           return true
@@ -205,7 +205,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testMultiplePatternsMatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     def changeset = ''' foo/bar/file.txt
                       | foo/bar/xxx/file.txt
                     '''.stripMargin().stripIndent()
@@ -228,7 +228,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testMultiplePatternMatchWithShouldMatchAllAndRegexpComparator() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     def changeset = ''' foo/bar/file.txt
                       | foo/bar/xxx/file.txt
                     '''.stripMargin().stripIndent()
@@ -251,7 +251,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testSimpleUnmatch() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
         if (m.script.contains('git diff')) {
           return 'file.txt'
@@ -268,7 +268,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testMultiplePatternUnmatchWithShouldMatchAll() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_TARGET = 'foo'
-    env.GIT_SHA = 'bar'
+    env.GIT_BASE_COMMIT = 'bar'
     def changeset = ''' foo/bar/file.txt
                       | foo
                     '''.stripMargin().stripIndent()
