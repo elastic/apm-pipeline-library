@@ -70,6 +70,11 @@ pipeline {
           sh(label: 'Get Docker images', script: "./resources/scripts/getDockerImages.sh ${params.elastic_stack}")
         }
       }
+      post {
+        always {
+          archiveArtifacts(allowEmptyArchive: true, artifacts: 'metadata.txt')
+        }
+      }
     }
     stage('Push Docker images'){
       steps {
