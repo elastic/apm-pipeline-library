@@ -20,7 +20,8 @@
 pipeline {
   agent { label 'linux && immutable' }
   environment {
-    BASE_DIR="src/github.com/elastic/apm-pipeline-library"
+    REPO = 'apm-pipeline-library'
+    BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'INFO'
