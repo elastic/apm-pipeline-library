@@ -37,13 +37,9 @@ pipeline {
     cron('H H(1-4) * * 1')
   }
   stages {
-    stage('Upgrade clusters') {
+    stage('Job') {
       steps {
-        build(job: 'apm-shared/observability-test-environments-trigger',
-          parameters: [string(name: 'branch_specifier', value: 'master')],
-          propagate: false,
-          wait: true
-        )
+        echo 'TBD'
       }
     }
   }
