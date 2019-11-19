@@ -17,11 +17,16 @@
 
 @Library('apm@current') _
 
+// Global variables can be only set usinig the @Field pattern
+import groovy.transform.Field
+@Field def variable
+
 pipeline {
   // Top level agent is required to ensure the MBP does populate the environment
   // variables accordingly. Otherwise the built-in environment variables won't
   // be available. It's worthy to use an immutable worker rather than the master
   // worker to avoid any kind of bottlenecks or performance issues.
+  // NOTE: ephemeral workers cannot be allocated when using `||` see https://github.com/elastic/infra/issues/13823
   agent { label 'linux && immutable' }
   environment {
     // Default BASE_DIR should keep the Golang folder layout as a convention
@@ -67,6 +72,11 @@ pipeline {
     Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
+      // NOTE: If not agent is set then it will use the top level one, the suggested
+      // approach will be to reduce the number of workers and reuse as much as possible.
+
+      // It's not required to use the default checkout as we do use our specific
+      // git checkout implementation, see below.
       options { skipDefaultCheckout() }
       steps {
         // Just in case the workspace is reset.
@@ -85,6 +95,9 @@ pipeline {
         // This is the way we checkout once using the above step and use the stashed repo
         // in the following stages.
         stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+
+        // Set the global variable
+        script { variable = 'foo' }
       }
     }
     stage('Workers Checks'){
