@@ -31,7 +31,7 @@ def call(Map params = [:]) {
     stage('Reporting build status'){
       def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
       def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
-      def to = params.containsKey('to') ? params.to : ["${env.NOTIFY_TO}"]
+      def to = params.containsKey('to') ? params.to : [ customisedEmail(env.NOTIFY_TO)]
       def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
       def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
@@ -60,4 +60,25 @@ def call(Map params = [:]) {
       }
     }
   }
+}
+
+def customisedEmail(String email) {
+  if (email) {
+    // default name should be the REPO env variable.
+    def suffix = env.REPO
+
+    // If JOB_NAME then let's get its parent folder name
+    if (env.JOB_NAME) {
+      def folders = env.JOB_NAME.split("/")
+      if (folders?.length > 0) {
+        suffix = folders[0]
+      }
+    }
+    if (suffix?.trim()) {
+      return email.replace('@', "+${suffix}@")
+    } else {
+      return email
+    }
+  }
+  return ''
 }
