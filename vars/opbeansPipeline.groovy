@@ -141,6 +141,7 @@ def call(Map pipelineParams) {
           anyOf {
             branch 'master'
             tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
+            branch 'PR-29'
           }
           beforeAgent true
         }
