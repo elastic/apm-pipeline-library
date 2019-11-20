@@ -27,7 +27,8 @@ def call(Map pipelineParams) {
   pipeline {
     agent { label 'linux && immutable' }
     environment {
-      BASE_DIR = 'src/github.com/elastic'
+      REPO = 'opbeans-go'
+      BASE_DIR = "src/github.com/elastic/${env.REPO?.trim() ?: 'foo'}"
       NOTIFY_TO = credentials('notify-to')
       JOB_GCS_BUCKET = credentials('gcs-bucket')
       JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
@@ -35,6 +36,11 @@ def call(Map pipelineParams) {
       PIPELINE_LOG_LEVEL = 'INFO'
       PATH = "${env.PATH}:${env.WORKSPACE}/bin"
       HOME = "${env.WORKSPACE}"
+      DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+      REGISTRY = 'docker.elastic.co'
+      STAGING_IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
+      GITHUB_CHECK_ITS_NAME = 'Integration Tests'
+      ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
     }
     options {
       timeout(time: 1, unit: 'HOURS')
@@ -83,7 +89,7 @@ def call(Map pipelineParams) {
             deleteDir()
             unstash 'source'
             dir(BASE_DIR){
-              sh "make test"
+              sh 'make test'
             }
           }
         }
@@ -95,21 +101,21 @@ def call(Map pipelineParams) {
           }
         }
       }
-      stage('Release') {
-        agent { label 'linux && immutable' }
-        when {
-          branch 'master'
-          beforeAgent true
-        }
+      stage('Staging') {
         steps {
-          withGithubNotify(context: 'Release') {
+          withGithubNotify(context: 'Staging') {
             deleteDir()
             unstash 'source'
             dir(BASE_DIR){
-              dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-              sh "VERSION=latest make publish"
+              dockerLogin(secret: "${DOCKER_REGISTRY_SECRET}", registry: "${REGISTRY}")
+              sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.STAGING_IMAGE} make publish", label: "push docker image to ${env.STAGING_IMAGE}"
             }
           }
+        }
+      }
+      stage('Integration Tests') {
+        steps {
+          runBuildITs("${env.REPO}", "${env.STAGING_IMAGE}")
         }
       }
       stage('Downstream') {
@@ -128,11 +134,83 @@ def call(Map pipelineParams) {
           }
         }
       }
+      stage('Release') {
+        agent { label 'linux && immutable' }
+        options { skipDefaultCheckout() }
+        when {
+          anyOf {
+            branch 'master'
+            tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
+          }
+          beforeAgent true
+        }
+        stages {
+          stage('Publish') {
+            steps {
+              withGithubNotify(context: 'Publish') {
+                deleteDir()
+                unstash 'source'
+                dir(BASE_DIR){
+                  dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+                  sh "VERSION=${env.BRANCH_NAME.equals('master') ? 'latest' : env.BRANCH_NAME} make publish"
+                }
+              }
+            }
+          }
+          stage('Release Notes') {
+            when {
+              expression { return false }
+            }
+            steps {
+              echo 'TBD'
+            }
+          }
+        }
+      }
     }
     post {
       always {
         notifyBuildResult()
       }
     }
+  }
+}
+
+def runBuildITs(String repo, String stagingDockerImage) {
+  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(),
+        wait: env.CHANGE_ID?.trim() ? false : true,
+        parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
+                     string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
+                     string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
+                     string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
+                     string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
+  githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
+}
+
+def generateBuildOpts(String repo, String stagingDockerImage) {
+  switch(repo) {
+    case 'opbeans-go':
+      opts = "--with-opbeans-go --opbeans-go-branch ${env.GIT_BASE_COMMIT} --opbeans-go-repo ${getForkedRepoOrElasticRepo(repo)}"
+      break;
+    case 'opbeans-java':
+      opts = "--with-opbeans-java --opbeans-java-image ${stagingDockerImage} --opbeans-java-version ${env.GIT_BASE_COMMIT}"
+      break;
+   default:
+      opts = ''
+    break;
+  }
+  return opts.toString()
+}
+
+def waitIfNotPR() {
+  return env.CHANGE_ID?.trim() ? false : true
+}
+
+def getForkedRepoOrElasticRepo(String repo) {
+  // See https://issues.jenkins-ci.org/browse/JENKINS-58450
+  if (env.CHANGE_FORK?.contains('/')) {
+    return env.CHANGE_FORK
+  } else {
+    return "${env.CHANGE_FORK?.trim() ?: 'elastic' }/${repo}".toString()
   }
 }

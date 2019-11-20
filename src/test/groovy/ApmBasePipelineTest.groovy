@@ -63,12 +63,13 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('failFast', [Boolean.class], null)
     helper.registerAllowedMethod('issueCommentTrigger', [String.class], null)
     helper.registerAllowedMethod('label', [String.class], null)
-    helper.registerAllowedMethod('options', [Closure.class], null)
+    helper.registerAllowedMethod('options', [Closure.class], { body -> body() })
     helper.registerAllowedMethod('pipeline', [Closure.class], null)
     helper.registerAllowedMethod('post', [Closure.class], null)
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
     helper.registerAllowedMethod('script', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('skipDefaultCheckout', [], null)
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
       def stageResult
@@ -76,6 +77,21 @@ class ApmBasePipelineTest extends BasePipelineTest {
         helper.registerAllowedMethod('branch', [String.class], { branchName  ->
           if(branchName == env.BRANCH_NAME) {
             return true
+          }
+          throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
+        })
+        helper.registerAllowedMethod('tag', [String.class], { tagName  ->
+          // Default comparator = EQUALS in this particular implementation
+          if(tagName == env.BRANCH_NAME) {
+            return true
+          }
+          throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
+        })
+        helper.registerAllowedMethod('tag', [Map.class], { m  ->
+          if (m.comparator.equals('REGEXP')) {
+            if (env.BRANCH_NAME ==~ m.pattern) {
+              return true
+            }
           }
           throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional")
         })
@@ -93,6 +109,23 @@ class ApmBasePipelineTest extends BasePipelineTest {
             throw new RuntimeException("Stage '${stageName}' skipped due to when conditional (expression)")
           })
           return cAllOf()
+        })
+        helper.registerAllowedMethod('anyOf', [Closure.class], { Closure cAnyOf ->
+          helper.registerAllowedMethod('branch', [String.class], { branchName  ->
+            if(branchName == env.BRANCH_NAME) {
+              return true
+            }
+          })
+          helper.registerAllowedMethod('tag', [Map.class], { m  ->
+            if (m.comparator.equals('REGEXP')) {
+              if (env.BRANCH_NAME ==~ m.pattern) {
+                return true
+              }
+              throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional (branch)")
+            }
+          })
+          println 'foooo'
+          return cAnyOf()
         })
         return bodyWhen()
       })
@@ -128,7 +161,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
     helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
-    helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
+    helper.registerAllowedMethod('build', [Map.class], null)
     helper.registerAllowedMethod('catchError', [Closure.class], { c ->
       try{
         c()
@@ -193,12 +226,13 @@ class ApmBasePipelineTest extends BasePipelineTest {
       c.call()
     })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
-    helper.registerAllowedMethod("sh", [Map.class], { 'OK' })
+    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
     helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->
         binding.setVariable("${v}", 'defined')
