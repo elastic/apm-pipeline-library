@@ -109,7 +109,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     printCallStack()
     // Then publish shell step
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('VERSION=v1.0 make publish')
+      callArgsToString(call).contains('VERSION=agent-v1.0 make publish')
     })
     assertJobStatusSuccess()
   }
