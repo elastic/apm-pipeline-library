@@ -54,7 +54,6 @@ def getRedirectLink(obj, jobName) {
   } else if(obj instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
     buildNumber = obj.getNumber()
   } else {
-    log(level: 'INFO', text: "wrapper class: ${obj?.getClass()}")
     return "Can not determine redirect link!!!"
   }
   return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
