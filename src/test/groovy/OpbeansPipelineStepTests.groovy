@@ -31,6 +31,8 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     binding.setProperty('BASE_DIR', '/')
     binding.setProperty('DOCKERHUB_SECRET', 'secret')
+    env.GIT_BASE_COMMIT = '1'
+    env.REPO_NAME = 'opbeans-xyz'
     super.setUp()
   }
 
@@ -49,7 +51,9 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
       callArgsToString(call).contains('Release')
     })
-    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
+    assertTrue((helper.callStack.findAll { call -> call.methodName == 'build' } -
+               helper.callStack.findAll { call -> call.methodName == 'build' }.findAll { call ->
+                  callArgsToString(call).contains('job=apm-integration-tests-selector-mbp/master')}).isEmpty())
     assertJobStatusSuccess()
   }
 
@@ -59,8 +63,9 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [])
     printCallStack()
-    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
-    assertJobStatusSuccess()
+    assertTrue((helper.callStack.findAll { call -> call.methodName == 'build' } -
+               helper.callStack.findAll { call -> call.methodName == 'build' }.findAll { call ->
+                  callArgsToString(call).contains('job=apm-integration-tests-selector-mbp/master')}).isEmpty())
   }
 
   @Test
@@ -146,7 +151,6 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   @Test
   void test_generateBuildOpts_with_go() throws Exception {
     def script = loadScript(scriptName)
-    env.GIT_BASE_COMMIT = '1'
     def result = script.generateBuildOpts('opbeans-go', '')
     assertEquals(result, '--with-opbeans-go --opbeans-go-branch 1 --opbeans-go-repo elastic/opbeans-go')
     assertJobStatusSuccess()
@@ -156,7 +160,6 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   void test_generateBuildOpts_with_go_and_forked_repo() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_FORK = 'user'
-    env.GIT_BASE_COMMIT = '1'
     def result = script.generateBuildOpts('opbeans-go', '')
     assertEquals(result, '--with-opbeans-go --opbeans-go-branch 1 --opbeans-go-repo user/opbeans-go')
     assertJobStatusSuccess()
@@ -165,7 +168,6 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   @Test
   void test_generateBuildOpts_with_java() throws Exception {
     def script = loadScript(scriptName)
-    env.GIT_BASE_COMMIT = '1'
     def result = script.generateBuildOpts('opbeans-java', 'foo')
     assertEquals(result, '--with-opbeans-java --opbeans-java-image foo --opbeans-java-version 1')
     assertJobStatusSuccess()

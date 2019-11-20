@@ -111,20 +111,24 @@ class ApmBasePipelineTest extends BasePipelineTest {
           return cAllOf()
         })
         helper.registerAllowedMethod('anyOf', [Closure.class], { Closure cAnyOf ->
+          def result = false
           helper.registerAllowedMethod('branch', [String.class], { branchName  ->
             if(branchName == env.BRANCH_NAME) {
-              return true
+              result = true
+              return result
             }
           })
           helper.registerAllowedMethod('tag', [Map.class], { m  ->
             if (m.comparator.equals('REGEXP')) {
               if (env.BRANCH_NAME ==~ m.pattern) {
-                return true
+                result = true
+                return result
               }
+            }
+            if (!result) {
               throw new RuntimeException("Stage \"${stageName}\" skipped due to when conditional (branch)")
             }
           })
-          println 'foooo'
           return cAnyOf()
         })
         return bodyWhen()
