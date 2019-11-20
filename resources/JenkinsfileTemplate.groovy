@@ -29,9 +29,11 @@ pipeline {
   // NOTE: ephemeral workers cannot be allocated when using `||` see https://github.com/elastic/infra/issues/13823
   agent { label 'linux && immutable' }
   environment {
+    // Forced the REPO name to help with some limitations: https://issues.jenkins-ci.org/browse/JENKINS-58450
+    REPO = 'apm-pipeline-library'
     // Default BASE_DIR should keep the Golang folder layout as a convention
     // for the rest of the projects/languages independently whether they do need it
-    BASE_DIR = 'src/github.com/elastic/PROJECT'
+    BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
@@ -87,10 +89,10 @@ pipeline {
         // with a GitHub check.
         // Git reference repos are a good practise to speed up the whole execution time.
         gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
-          repo: 'git@github.com:elastic/apm-pipeline-library.git',
+          repo: "git@github.com:elastic/${env.REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}",
           githubNotifyFirstTimeContributor: true,
-          reference: '/var/lib/jenkins/apm-pipeline-library.git')
+          reference: "/var/lib/jenkins/${env.REPO}.git")
 
         // This is the way we checkout once using the above step and use the stashed repo
         // in the following stages.
