@@ -86,12 +86,12 @@ pipeline {
 
         // gitCheckout does expose certain env variables besides of gatekeeping whether
         // the contributor is member from the elastic organisation, it tracks the status
-        // with a GitHub check.
+        // with a GitHub check when using a Multibranch Pipeline!
         // Git reference repos are a good practise to speed up the whole execution time.
         gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
           repo: "git@github.com:elastic/${env.REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}",
-          githubNotifyFirstTimeContributor: true,
+          githubNotifyFirstTimeContributor: false,
           reference: "/var/lib/jenkins/${env.REPO}.git")
 
         // This is the way we checkout once using the above step and use the stashed repo
