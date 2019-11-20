@@ -135,8 +135,6 @@ def call(Map pipelineParams) {
         }
       }
       stage('Release') {
-        agent { label 'linux && immutable' }
-        options { skipDefaultCheckout() }
         when {
           anyOf {
             branch 'master'
