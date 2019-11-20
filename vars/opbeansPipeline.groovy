@@ -27,8 +27,7 @@ def call(Map pipelineParams) {
   pipeline {
     agent { label 'linux && immutable' }
     environment {
-      REPO = 'opbeans-go'
-      BASE_DIR = "src/github.com/elastic/${env.REPO?.trim() ?: 'foo'}"
+      BASE_DIR = 'src/github.com/elastic'
       NOTIFY_TO = credentials('notify-to')
       JOB_GCS_BUCKET = credentials('gcs-bucket')
       JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
@@ -38,7 +37,7 @@ def call(Map pipelineParams) {
       HOME = "${env.WORKSPACE}"
       DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
       REGISTRY = 'docker.elastic.co'
-      STAGING_IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
+      STAGING_IMAGE = "${env.REGISTRY}/observability-ci/"
       GITHUB_CHECK_ITS_NAME = 'Integration Tests'
       ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
     }
@@ -108,14 +107,15 @@ def call(Map pipelineParams) {
             unstash 'source'
             dir(BASE_DIR){
               dockerLogin(secret: "${DOCKER_REGISTRY_SECRET}", registry: "${REGISTRY}")
-              sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.STAGING_IMAGE} make publish", label: "push docker image to ${env.STAGING_IMAGE}"
+              sh label: "push docker image to ${env.STAGING_IMAGE}/${env.REPO_NAME}",
+                 script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.STAGING_IMAGE}/${env.REPO_NAME} make publish"
             }
           }
         }
       }
       stage('Integration Tests') {
         steps {
-          runBuildITs("${env.REPO}", "${env.STAGING_IMAGE}")
+          runBuildITs("${env.REPO_NAME}", "${env.STAGING_IMAGE}/${env.REPO_NAME}")
         }
       }
       stage('Downstream') {
@@ -182,7 +182,7 @@ def runBuildITs(String repo, String stagingDockerImage) {
         parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
                      string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
                      string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
-                     string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
+                     string(name: 'GITHUB_CHECK_REPO', value: repo),
                      string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
   githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
 }
