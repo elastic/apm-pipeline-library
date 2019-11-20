@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.42 (20/11/2019)
+
+#### 🚀 Enhancements
+
+-  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
+-  feat: cluster management with the repo itself [#266](https://github.com/elastic/apm-pipeline-library/pull/266)
+
+#### 📚 Documentation
+
+-  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
+-  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
+
+#### ⚙️ CI
+
+-  [jjbb] check_paths_for_matches.py not required anymore [#268](https://github.com/elastic/apm-pipeline-library/pull/268)
+
+---
+
 ## v1.1.41 (18/11/2019)
 
 #### 🐛 Bug Fixes
@@ -609,13 +627,13 @@
 
 #### 🚀 Enhancements
 
+-  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
+-  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
--  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
--  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 
 #### 📚 Documentation
 
