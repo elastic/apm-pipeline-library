@@ -37,7 +37,7 @@ def call(Map pipelineParams) {
       HOME = "${env.WORKSPACE}"
       DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
       REGISTRY = 'docker.elastic.co'
-      STAGING_IMAGE = "${env.REGISTRY}/observability-ci/"
+      STAGING_IMAGE = "${env.REGISTRY}/observability-ci"
       GITHUB_CHECK_ITS_NAME = 'Integration Tests'
       ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
     }
