@@ -1,3 +1,10 @@
+System Requirements:
+
+- Docker >= 19.x.x
+- Docker Compose >= 1.25.0
+- Vagrant >= 2.2.4
+- VirtualBox >= 6
+
 # Jenkins linting
 
 You can configure this jenkins instance as you wish, if so please change:
