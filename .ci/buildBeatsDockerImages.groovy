@@ -22,6 +22,8 @@ pipeline {
   environment {
     REPO = 'beats'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
+    DOCKER_REGISTRY = 'docker.elastic.co'
+    DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
     GOPATH = "${env.WORKSPACE}"
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
@@ -43,8 +45,6 @@ pipeline {
     cron '@daily'
   }
   parameters {
-    string(name: 'DOCKER_REGISTRY', defaultValue: "docker.elastic.co", description: "")
-    string(name: 'DOCKER_REGISTRY_SECRET', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "false", description: "If it's needed to build Beats' test images")
   }
   stages {
@@ -63,7 +63,8 @@ pipeline {
         expression { return params.BUILD_TEST_IMAGES }
       }
       steps {
-        dockerLoginElasticRegistry()
+        dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
+
         dir("${BASE_DIR}/metricbeat"){
           sh(label: 'Define Python Env', script: 'make python-env')
           // TODO: we are building just MySQL, which is the only one ready
@@ -77,11 +78,5 @@ pipeline {
     cleanup {
       notifyBuildResult()
     }
-  }
-}
-
-def dockerLoginElasticRegistry(){
-  if(params.DOCKER_REGISTRY_SECRET != null && "${params.DOCKER_REGISTRY_SECRET}" != ""){
-     dockerLogin(secret: "${params.DOCKER_REGISTRY_SECRET}", registry: "${params.DOCKER_REGISTRY}")
   }
 }
