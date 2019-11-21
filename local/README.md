@@ -1,11 +1,13 @@
-System Requirements:
+# Local Development for Jenkins CI
+
+## System Requirements
 
 - Docker >= 19.x.x
 - Docker Compose >= 1.25.0
 - Vagrant >= 2.2.4
 - VirtualBox >= 6
 
-# Jenkins linting
+## Jenkins linting
 
 You can configure this jenkins instance as you wish, if so please change:
 
@@ -14,17 +16,17 @@ You can configure this jenkins instance as you wish, if so please change:
 
 The current baseline was based on what the @infra provides us.
 
-## Bump jenkins core version
+### Bump jenkins core version
 
 Please monitor https://github.com/elastic/infra/blob/master/docker/jenkins/docker-compose.yml#L5 if new changes then apply them in the Dockerfile.
 
 
-## Add new plugins
+### Add new plugins
 
 Infra already provides the docker image with the installed plugins. If you need more plugins please change the local/configs/plugins.txt as you wish.
 
 
-## Prerequisites
+### Prerequisites
 
 You'll need the following software installed and configured on your machine in
 order to utilize the local Jenkins master:
@@ -36,16 +38,16 @@ order to utilize the local Jenkins master:
   After installation, authenticate with our secrets server by following the
   [directions](https://github.com/elastic/infra/blob/master/docs/vault/README.md#github-auth).
 
-## APM Pipeline shared library
+### APM Pipeline shared library
 
 This particular Jenkins instance got the shared library loaded by default.
 
-## Enable local worker
+### Enable local worker
 
 As simple as opening http://localhost:18080/computer/local/ then download http://localhost:18080/jnlpJars/agent.jar
 and `java -jar agent.jar -jnlpUrl http://localhost:18080/computer/local/slave-agent.jnlp `
 
-## Enable linux vagrant worker
+### Enable linux vagrant worker
 
 As simple as caching the infra vagrant images, see https://github.com/elastic/infra/blob/master/docs/jenkins/testing-demo-builds-locally.md#adding-a-second-larger-disk-to-the-vagrant-vms
 and
@@ -56,9 +58,9 @@ vagrant up --provision
 open http://localhost:18080
 ```
 
-## Enable windows vagrant worker
+### Enable windows vagrant worker
 
-### Windows 2019
+#### Windows 2019
 
 It does require to open the UI and login.
 
@@ -70,7 +72,7 @@ vagrant up --provision
 open http://localhost:18080
 ```
 
-### Windows 2016
+#### Windows 2016
 
 ```bash
 # cd local/windows/windows-2016
@@ -98,9 +100,9 @@ vagrant up --provision
 open http://localhost:18080
 ```
 
-## Usage
+### Usage
 
-### Quickstart
+#### Quickstart
 
 1. Build docker image by running:
 
