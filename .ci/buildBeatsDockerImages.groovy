@@ -27,6 +27,7 @@ pipeline {
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
+    PYTHON_EXE='python2.7'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -64,6 +65,7 @@ pipeline {
       steps {
         dockerLoginElasticRegistry()
         dir("${BASE_DIR}/metricbeat"){
+          sh(label: 'Define Python Env', script: 'make python-env')
           // TODO: we are building just MySQL, which is the only one ready
           sh(label: 'Build Docker Images', script: 'MODULE=mysql mage compose:buildSupportedVersions')
           sh(label: 'Push Docker Images', script: 'MODULE=mysql mage compose:pushSupportedVersions')
