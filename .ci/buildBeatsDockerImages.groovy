@@ -48,17 +48,20 @@ pipeline {
     booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "false", description: "If it's needed to build Beats' test images")
   }
   stages {
-    stage('Install dependencies') {
-      steps {
-        dir("${env.WORKSPACE}"){
-          sh(label: 'Install mage', script: './.ci/scripts/install-mage.sh')
-        }
-      }
-    }
     stage('Checkout') {
       steps {
         dir("${BASE_DIR}"){
           git("https://github.com/elastic/${REPO}.git")
+        }
+      }
+    }
+    stage('Install dependencies') {
+      when {
+        expression { return params.BUILD_TEST_IMAGES }
+      }
+      steps {
+        dir("${env.WORKSPACE}"){
+          sh(label: 'Install mage', script: './.ci/scripts/install-mage.sh')
         }
       }
     }
