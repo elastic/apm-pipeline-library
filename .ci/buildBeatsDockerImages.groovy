@@ -61,7 +61,7 @@ pipeline {
       }
       steps {
         dir("${env.WORKSPACE}"){
-          sh(label: 'Install mage', script: './.ci/scripts/install-mage.sh')
+          sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
         }
       }
     }
