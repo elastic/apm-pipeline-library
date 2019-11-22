@@ -48,6 +48,13 @@ pipeline {
     booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "false", description: "If it's needed to build Beats' test images")
   }
   stages {
+    stage('Install dependencies') {
+      steps {
+        dir("${env.WORKSPACE}"){
+          sh(label: 'Install mage', script: './.ci/scripts/install-mage.sh')
+        }
+      }
+    }
     stage('Checkout') {
       steps {
         dir("${BASE_DIR}"){
