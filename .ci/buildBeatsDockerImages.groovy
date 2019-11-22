@@ -55,6 +55,14 @@ pipeline {
         }
       }
     }
+    stage('Install dependencies') {
+      when {
+        expression { return params.BUILD_TEST_IMAGES }
+      }
+      steps {
+        sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
+      }
+    }
     stage('Release Beats Test Docker images'){
       options {
         warnError('Release Beats Docker images failed')
