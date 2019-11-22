@@ -60,9 +60,7 @@ pipeline {
         expression { return params.BUILD_TEST_IMAGES }
       }
       steps {
-        dir("${env.WORKSPACE}"){
-          sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
-        }
+        sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
       }
     }
     stage('Release Beats Test Docker images'){
