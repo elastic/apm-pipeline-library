@@ -1,4 +1,4 @@
 ---
 - job:
-    name: observability-robots
+    name: apm-shared
     project-type: folder

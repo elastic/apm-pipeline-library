@@ -1,6 +1,6 @@
 ---
 - job:
-    name: observability-robots/apm-pipeline-library-mbp
+    name: apm-shared/apm-pipeline-library-mbp
     display-name: APM Pipeline Library
     description: Jenkins pipeline shared library for the project APM
     view: APM-CI

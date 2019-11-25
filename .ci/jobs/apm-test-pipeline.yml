@@ -1,6 +1,6 @@
 ---
 - job:
-    name: observability-robots/apm-test-pipeline
+    name: apm-shared/apm-test-pipeline
     display-name: Tests Pipeline
     description: Pipeline to make feature tests
     view: APM-CI
