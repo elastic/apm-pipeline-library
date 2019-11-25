@@ -1,6 +1,6 @@
 ---
 - job:
-    name: apm-shared/apm-schedule-daily
+    name: observability-robots/apm-schedule-daily
     display-name: Jobs scheduled daily
     description: Jobs scheduled daily from Monday to Friday
     view: APM-CI

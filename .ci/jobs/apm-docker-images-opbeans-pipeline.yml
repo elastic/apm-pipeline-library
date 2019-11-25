@@ -1,6 +1,6 @@
 ---
 - job:
-    name: apm-shared/apm-docker-opbeans-pipeline
+    name: observability-robots/apm-docker-opbeans-pipeline
     display-name: Build OpBeans Docker images Pipeline
     description: Build OpBeans Docker images daily
     view: APM-CI
