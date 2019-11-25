@@ -31,10 +31,12 @@ def call(Map params = [:]){
   def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
   def pr = githubPrInfo(token: token, repo: repoName, pr: env.CHANGE_ID)
   def reviews = githubPrReviews(token: token, repo: repoName, pr: env.CHANGE_ID)
+  def user = pr?.user?.login
+  def userType = pr?.user?.type
 
-  log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${pr?.user.login} - Author Association: ${pr?.author_association}")
+  log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${user} - Author Association: ${pr?.author_association}")
 
-  approved = isPrApproved(reviews) || hasWritePermission(token, repoName, pr?.user.login) || isAuthorizedBot(pr?.user.login, pr?.user.type)
+  approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
 
   if(!approved){
     error("githubPrCheckApproved: The PR is not approved yet")
@@ -54,7 +56,7 @@ def isPrApproved(reviews){
 
   reviews.each{ r ->
     if(r?.state == 'APPROVED' && (r?.author_association == "MEMBER" || r?.author_association == "COLLABORATOR")){
-      log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${r?.user.login} - Author Association: ${r.author_association} : ${r.state}")
+      log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${r?.user?.login} - Author Association: ${r.author_association} : ${r.state}")
       ret = true
       return
     }

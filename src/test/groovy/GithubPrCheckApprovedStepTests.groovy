@@ -221,4 +221,34 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     assertTrue(ret)
     assertJobStatusSuccess()
   }
+
+
+    @Test
+    void testAPIContractViolationOnUserObject() throws Exception {
+      helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+        return [
+          "permission": "write"
+        ]
+      })
+      helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+        return [title: 'dummy PR', author_association: 'MEMBER']
+        })
+      helper.registerAllowedMethod("githubPrReviews", [Map.class], {
+        return []
+        })
+      def script = loadScript(scriptName)
+      env.CHANGE_ID = 1
+      try {
+        script.call()
+      } catch(e){
+        //NOOP
+      }
+      printCallStack()
+      assertTrue(helper.callStack.findAll { call ->
+          call.methodName == "error"
+      }.any { call ->
+          callArgsToString(call).contains("githubPrCheckApproved: The PR is not approved yet")
+      })
+      assertJobStatusFailure()
+    }
 }
