@@ -36,7 +36,7 @@ def call(Map params = [:]){
 
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${user} - Author Association: ${pr?.author_association}")
 
-  approved = user != null || isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType)
+  approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
 
   if(!approved){
     error("githubPrCheckApproved: The PR is not approved yet")
