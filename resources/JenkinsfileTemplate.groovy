@@ -59,6 +59,8 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
+    // Enable authorization at the Pipeline level, in this case, _ONLY_ authenticated users can access to this particular
+    // pipeline
     authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: [
       'com.cloudbees.plugins.credentials.CredentialsProvider.Create:authenticated',
       'com.cloudbees.plugins.credentials.CredentialsProvider.Delete:authenticated',
