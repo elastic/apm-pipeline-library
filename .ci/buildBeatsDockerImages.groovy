@@ -45,7 +45,7 @@ pipeline {
     cron '@daily'
   }
   parameters {
-    booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "true", description: "If it's needed to build Beats' test images")
+    booleanParam(name: "RELEASE_TEST_IMAGES", defaultValue: "true", description: "If it's needed to build & push Beats' test images")
   }
   stages {
     stage('Checkout') {
@@ -57,7 +57,7 @@ pipeline {
     }
     stage('Install dependencies') {
       when {
-        expression { return params.BUILD_TEST_IMAGES }
+        expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
         sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
@@ -68,7 +68,7 @@ pipeline {
         warnError('Release Beats Docker images failed')
       }
       when {
-        expression { return params.BUILD_TEST_IMAGES }
+        expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
