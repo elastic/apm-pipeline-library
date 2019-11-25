@@ -45,7 +45,7 @@ pipeline {
     cron '@daily'
   }
   parameters {
-    booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "false", description: "If it's needed to build Beats' test images")
+    booleanParam(name: "BUILD_TEST_IMAGES", defaultValue: "true", description: "If it's needed to build Beats' test images")
   }
   stages {
     stage('Checkout') {
