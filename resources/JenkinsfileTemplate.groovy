@@ -59,6 +59,27 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
+    // Enable authorization at the Pipeline level, in this case, _ONLY_ authenticated users can access to this particular
+    // pipeline
+    authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: [
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Create:authenticated',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Delete:authenticated',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:authenticated',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Update:authenticated',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.View:authenticated',
+      'hudson.model.Item.Build:authenticated',
+      'hudson.model.Item.Cancel:authenticated',
+      'hudson.model.Item.Configure:authenticated',
+      'hudson.model.Item.Delete:authenticated',
+      'hudson.model.Item.Discover:authenticated',
+      'hudson.model.Item.Move:authenticated',
+      'hudson.model.Item.Read:authenticated',
+      'hudson.model.Item.Workspace:authenticated',
+      'hudson.model.Run.Delete:authenticated',
+      'hudson.model.Run.Replay:authenticated',
+      'hudson.model.Run.Update:authenticated',
+      'hudson.scm.SCM.Tag:authenticated'
+    ])
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
