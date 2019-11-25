@@ -1,4 +1,4 @@
 ---
 - job:
-    name: apm-shared-1
+    name: apm-shared
     project-type: folder
