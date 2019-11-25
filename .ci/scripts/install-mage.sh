@@ -8,7 +8,15 @@ set -euxo pipefail
 #   - GO_VERSION - that's the version which will be installed and enabled. v1.12.7 by default
 #
 
-GO_VERSION="${1:-1.12.7}"
+GO_VERSION="1.12.7"
+
+if [ -f ".go_version" ]; then
+  GO_VERSION=$(cat .go_version)
+fi
+
+if [ -n "$1" ]; then
+  GO_VERSION="${1}"
+fi
 
 # Install Go using the same travis approach
 echo "Installing ${GO_VERSION} with gimme."
