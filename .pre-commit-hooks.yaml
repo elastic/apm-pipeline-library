@@ -21,8 +21,8 @@
     exclude: ^target/
 -   id: check-jenkins-pipelines
     name: check-jenkins-pipelines
-    description: "Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running."
-    files: ^.ci/(.*\.groovy|Jenkinsfile)$
+    description: "Check the syntax of the Jenkinsfiles, set JENKINS_URL env variable to use another Jenkins instance."
+    files: ^(.ci/(.*\.groovy|Jenkinsfile)|Jenkinsfile)$
     entry: .ci/scripts/validate.sh
     language: script
     verbose: true
