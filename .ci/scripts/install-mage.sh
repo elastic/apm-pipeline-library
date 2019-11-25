@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -exo pipefail
 
 #
 # Install the given go version using the gimme script.
