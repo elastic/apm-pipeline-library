@@ -83,9 +83,8 @@ pipeline {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
 
         dir("${BASE_DIR}/metricbeat"){
-          // TODO: we are building just MySQL, which is the only one ready
-          sh(label: 'Build Docker Image', script: "MODULE='mysql' mage compose:buildSupportedVersions")
-          sh(label: 'Push Docker Image', script: "MODULE='mysql' mage compose:pushSupportedVersions")
+          sh(label: 'Build Docker Image', script: "mage compose:buildSupportedVersions")
+          sh(label: 'Push Docker Image', script: "mage compose:pushSupportedVersions")
         }
       }
     }
