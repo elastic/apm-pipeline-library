@@ -152,4 +152,45 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     })
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testResponseNull() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], {
+      return null
+    })
+    def script = loadScript(scriptName)
+    try {
+      script.call(token: "dummy", url: "http://error")
+    } catch(e) {
+      println e.toString()
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains('githubApiCall: somethign happened with the toJson')
+    })
+  }
+
+  @Test
+  void testToJSONFailed() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], {
+      throw new Exception('Failure')
+    })
+    helper.registerAllowedMethod('toJSON', [String.class], { s ->
+      return null
+    })
+    def script = loadScript(scriptName)
+    try {
+      script.call(token: "dummy", url: "http://error")
+    } catch(e) {
+      println e.toString()
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains('githubApiCall: somethign happened with the toJson')
+    })
+  }
 }
