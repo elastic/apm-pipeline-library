@@ -66,7 +66,6 @@ pipeline {
       }
       steps {
         sh(label: 'Install virtualenv', script: 'pip install --user virtualenv')
-        sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
       }
     }
     stage('Release Beats Test Docker images'){
@@ -82,8 +81,7 @@ pipeline {
         dir("${BASE_DIR}/metricbeat"){
           sh(label: 'Define Python Env', script: 'make python-env')
           // TODO: we are building just MySQL, which is the only one ready
-          sh(label: 'Build Docker Images', script: 'MODULE=mysql mage compose:buildSupportedVersions')
-          sh(label: 'Push Docker Images', script: 'MODULE=mysql mage compose:pushSupportedVersions')
+          sh(label: 'Release Docker Images', script: ".ci/script/release-metricbeat-module.sh 'mysql' '${env.GO_VERSION}'")
         }
       }
     }
