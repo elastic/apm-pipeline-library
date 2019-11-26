@@ -31,7 +31,6 @@ pipeline {
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     NOTIFY_TO = credentials('notify-to')
-    PATH = "${env.GOPATH}/bin:${env.GOROOT}/bin:${env.PATH}"
     PIPELINE_LOG_LEVEL='INFO'
     PYTHON_EXE='python2.7'
   }
