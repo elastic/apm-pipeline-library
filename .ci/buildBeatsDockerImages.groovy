@@ -65,6 +65,7 @@ pipeline {
         expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
+        sh(label: 'Install virtualenv', script: 'pip install --user virtualenv')
         sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
       }
     }
