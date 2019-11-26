@@ -168,7 +168,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
     }.any { call ->
-        callArgsToString(call).contains('githubApiCall: somethign happened with the toJson')
+        callArgsToString(call).contains('githubApiCall: something happened with the toJson')
     })
   }
 
