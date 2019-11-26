@@ -26,10 +26,12 @@ pipeline {
     DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
     GO_VERSION = "${params.GO_VERSION.trim()}"
     GOPATH = "${env.WORKSPACE}"
+    GOROOT = "${env.HOME}/.gimme/versions/go${env.GO_VERSION}.linux.amd64"
     HOME = "${env.WORKSPACE}"
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     NOTIFY_TO = credentials('notify-to')
+    PATH = "${env.GOPATH}/bin:${env.GOROOT}/bin:${env.PATH}"
     PIPELINE_LOG_LEVEL='INFO'
     PYTHON_EXE='python2.7'
   }
@@ -64,6 +66,10 @@ pipeline {
       }
       steps {
         sh(label: 'Install virtualenv', script: 'pip install --user virtualenv')
+        sh(label: 'Install Go', script: ".ci/scripts/install-go.sh ${env.GO_VERSION}")
+        dir("${BASE_DIR}/metricbeat"){
+          sh(label: 'Install Mage', script: "make mage")
+        }
       }
     }
     stage('Release Beats Test Docker images'){
@@ -77,9 +83,9 @@ pipeline {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
 
         dir("${BASE_DIR}/metricbeat"){
-          sh(label: 'Define Python Env', script: 'make python-env')
           // TODO: we are building just MySQL, which is the only one ready
-          sh(label: 'Release Docker Images', script: ".ci/scripts/release-metricbeat-module.sh 'mysql' '${env.GO_VERSION}'")
+          sh(label: 'Build Docker Image', script: "MODULE='mysql' mage compose:buildSupportedVersions")
+          sh(label: 'Push Docker Image', script: "MODULE='mysql' mage compose:pushSupportedVersions")
         }
       }
     }
