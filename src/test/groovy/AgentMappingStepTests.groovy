@@ -39,11 +39,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('envVar: Missing key')
-    })
+    assertTrue(assertAny('error', 'envVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -56,11 +52,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('agentVar: Missing key')
-    })
+    assertTrue(assertAny('error', 'agentVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -73,11 +65,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('id: Missing key')
-    })
+    assertTrue(assertAny('error', 'id: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -90,11 +78,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('app: Missing key')
-    })
+    assertTrue(assertAny('error', 'app: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -107,11 +91,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('yamlVersionFile: Missing key')
-    })
+    assertTrue(assertAny('error', 'yamlVersionFile: Missing key'))
     assertJobStatusFailure()
   }
 
