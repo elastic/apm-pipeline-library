@@ -24,6 +24,7 @@ pipeline {
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     DOCKER_REGISTRY = 'docker.elastic.co'
     DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    GO_VERSION = "${params.GO_VERSION.trim()}"
     GOPATH = "${env.WORKSPACE}"
     HOME = "${env.WORKSPACE}"
     JOB_GCS_BUCKET = credentials('gcs-bucket')
@@ -46,6 +47,7 @@ pipeline {
     cron '@daily'
   }
   parameters {
+    string(name: 'GO_VERSION', defaultValue: '1.12.7', description: "Go version to use.")
     booleanParam(name: "RELEASE_TEST_IMAGES", defaultValue: "true", description: "If it's needed to build & push Beats' test images")
   }
   stages {
@@ -61,7 +63,7 @@ pipeline {
         expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
-        sh(label: 'Install mage', script: '.ci/scripts/install-mage.sh')
+        sh(label: 'Install virtualenv', script: 'pip install --user virtualenv')
       }
     }
     stage('Release Beats Test Docker images'){
@@ -77,8 +79,7 @@ pipeline {
         dir("${BASE_DIR}/metricbeat"){
           sh(label: 'Define Python Env', script: 'make python-env')
           // TODO: we are building just MySQL, which is the only one ready
-          sh(label: 'Build Docker Images', script: 'MODULE=mysql mage compose:buildSupportedVersions')
-          sh(label: 'Push Docker Images', script: 'MODULE=mysql mage compose:pushSupportedVersions')
+          sh(label: 'Release Docker Images', script: ".ci/scripts/release-metricbeat-module.sh 'mysql' '${env.GO_VERSION}'")
         }
       }
     }
