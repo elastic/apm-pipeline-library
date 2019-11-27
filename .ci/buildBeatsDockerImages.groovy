@@ -98,6 +98,26 @@ pipeline {
         }
       }
     }
+    stage('Release X-Pack Beats Test Docker images'){
+      options {
+        warnError('Release X-Pack Beats Docker images failed')
+      }
+      environment {
+        GOROOT = "${env.HOME}/.gimme/versions/go${env.GO_VERSION}.linux.amd64"
+        PATH = "${env.GOROOT}/bin:${env.PATH}"
+      }
+      when {
+        expression { return params.RELEASE_TEST_IMAGES }
+      }
+      steps {
+        dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
+
+        dir("${BASE_DIR}/x-pack/metricbeat"){
+          sh(label: 'Build Docker Image', script: "mage compose:buildSupportedVersions")
+          sh(label: 'Push Docker Image', script: "mage compose:pushSupportedVersions")
+        }
+      }
+    }
   }
   post {
     cleanup {
