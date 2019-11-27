@@ -20,7 +20,7 @@ import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
-import hudson.model.Cause;
+import hudson.model.Cause
 
 class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   class IssueCommentCause extends Cause {
@@ -45,24 +45,6 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
     }
   }
 
-  class RawBuild {
-    private final Cause cause
-
-    public RawBuild(Cause cause){
-      this.cause = cause
-    }
-
-    public Cause getCause(String clazz) {
-      return cause
-    }
-
-    public List<Cause> getCauses(){
-      List<Cause> list = new ArrayList()
-      list.add(cause)
-      return list
-    }
-  }
-
   def script
 
   @Override
@@ -74,8 +56,14 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
+    binding.getVariable('currentBuild').getBuildCauses = { String s ->
+      Cause cause = new IssueCommentCause("admin","Started by a comment")
+      List<Cause> result = new ArrayList()
+      if(s.equals('IssueCommentCause')){
+        result.add(cause);
+      }
+      return result
+    }
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -86,7 +74,11 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoCommentTriggered() throws Exception {
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(null)
+    Closure<List<Cause>> getBuildCauses = { String s ->
+      List<Cause> result = new ArrayList()
+      return result
+    }
+    binding.getVariable('currentBuild').getBuildCauses = getBuildCauses
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -95,8 +87,14 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoElasticUserWithSomeOrgs() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
+    binding.getVariable('currentBuild').getBuildCauses = { String s ->
+      Cause cause = new IssueCommentCause("admin","Started by a comment")
+      List<Cause> result = new ArrayList()
+      if(s.equals('IssueCommentCause')){
+        result.add(cause);
+      }
+      return result
+    }
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
     def ret = script.call()
     printCallStack()
@@ -106,8 +104,14 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoElasticUserWithoutOrgs() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
+    binding.getVariable('currentBuild').getBuildCauses = { String s ->
+      Cause cause = new IssueCommentCause("admin","Started by a comment")
+      List<Cause> result = new ArrayList()
+      if(s.equals('IssueCommentCause')){
+        result.add(cause);
+      }
+      return result
+    }
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
     def ret = script.call()
     printCallStack()

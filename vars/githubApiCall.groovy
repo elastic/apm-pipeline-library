@@ -55,6 +55,8 @@ def call(Map params = [:]){
       log(level: 'WARN', text: "githubApiCall: The REST API call ${url} return 0 elements")
     } else if(ret instanceof Map && ret.containsKey('message')){
       error("githubApiCall: The REST API call ${url} return the message : ${ret.message}")
+    } else if (ret == null ) {
+      error ("githubApiCall: something happened with the toJson")
     }
     return ret
   }
