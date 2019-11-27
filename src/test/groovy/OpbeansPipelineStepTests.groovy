@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
@@ -39,16 +38,10 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Build')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Test')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Release')
-    })
-    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
+    assertTrue(assertMethodCallContainsPattern('stage', 'Build'))
+    assertTrue(assertMethodCallContainsPattern('stage', 'Test'))
+    assertTrue(assertMethodCallContainsPattern('stage', 'Release'))
+    assertNull(assertMethodCall('build'))
     assertJobStatusSuccess()
   }
 
@@ -58,7 +51,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [])
     printCallStack()
-    assertNull(helper.callStack.find { call -> call.methodName == 'build' })
+    assertNull(assertMethodCall('build'))
     assertJobStatusSuccess()
   }
 
@@ -68,12 +61,8 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [ 'folder/foo', 'folder/bar'])
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Downstream')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'build' }.any { call ->
-      callArgsToString(call).contains('folder/foo')
-    })
+    assertTrue(assertMethodCallContainsPattern('stage', 'Downstream'))
+    assertTrue(assertMethodCallContainsPattern('build', 'folder/foo'))
     assertJobStatusSuccess()
   }
 
@@ -85,9 +74,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     // Then no publish shell step
-    assertFalse(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('make publish')
-    })
+    assertFalse(assertMethodCallContainsPattern('sh', 'make publish'))
     assertJobStatusSuccess()
   }
 

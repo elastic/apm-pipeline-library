@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import org.apache.commons.io.FileUtils
 
@@ -44,11 +43,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('preCommitToJunit: input parameter is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'preCommitToJunit: input parameter is required.'))
     assertJobStatusFailure()
   }
 
@@ -61,11 +56,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('preCommitToJunit: output parameter is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'preCommitToJunit: output parameter is required.'))
     assertJobStatusFailure()
   }
 
@@ -75,10 +66,10 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
     def file = 'simple.xml'
     script.call(input: 'simple.txt', output: file)
     printCallStack()
-    assertJobStatusSuccess()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -91,6 +82,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -99,10 +91,10 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
     def file = 'skipped.xml'
     script.call(input: 'skipped.txt', output: file)
     printCallStack()
-    assertJobStatusSuccess()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -111,9 +103,9 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
     def file = 'gherkin.xml'
     script.call(input: 'gherkin.txt', output: file)
     printCallStack()
-    assertJobStatusSuccess()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
+    assertJobStatusSuccess()
   }
 }

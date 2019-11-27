@@ -302,4 +302,16 @@ class ApmBasePipelineTest extends BasePipelineTest {
       callArgsToString(call).contains(pattern)
     }
   }
+
+  def assertMethodCall(String methodName) {
+    return helper.callStack.find { call ->
+      call.methodName == methodName
+    }
+  }
+
+  def assertMethodCallOccurrences(String methodName, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.size() == compare
+  }
 }
