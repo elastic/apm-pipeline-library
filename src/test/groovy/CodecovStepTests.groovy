@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class CodecovStepTests extends ApmBasePipelineTest {
@@ -51,11 +50,7 @@ class CodecovStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("Codecov: No repository specified.")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'Codecov: No repository specified.'))
     assertJobStatusSuccess()
   }
 
@@ -64,11 +59,7 @@ class CodecovStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(repo: "noToken", secret: "secret-bad")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("Codecov: Repository not found: noToken")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'Codecov: Repository not found: noToken'))
     assertJobStatusSuccess()
   }
 
@@ -86,16 +77,8 @@ class CodecovStepTests extends ApmBasePipelineTest {
     script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("Codecov: get the token from Vault.")
-    })
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("Codecov: get the token from cache.")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'Codecov: get the token from Vault.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Codecov: get the token from cache.'))
     assertJobStatusSuccess()
   }
 
@@ -109,11 +92,7 @@ class CodecovStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('codecov: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'codecov: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

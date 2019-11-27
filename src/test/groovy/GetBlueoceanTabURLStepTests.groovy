@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -39,11 +38,7 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('getBlueoceanTabURL: Unsupported type')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getBlueoceanTabURL: Unsupported type'))
     assertJobStatusFailure()
   }
 
@@ -56,11 +51,7 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('getBlueoceanTabURL: Unsupported type')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getBlueoceanTabURL: Unsupported type'))
     assertJobStatusFailure()
   }
 

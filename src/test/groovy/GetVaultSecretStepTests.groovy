@@ -64,11 +64,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
     } catch(e) {
       //NOOP
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("getVaultSecret: No valid secret to looking for.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getVaultSecret: No valid secret to looking for'))
   }
 
   @Test
@@ -86,11 +82,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("getVaultSecret: Unable to get the token.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getVaultSecret: Unable to get the token.'))
   }
 
   @Test
@@ -111,11 +103,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("getVaultSecret: Unable to get the secret.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getVaultSecret: Unable to get the secret.'))
   }
 
   @Test
@@ -125,11 +113,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       // TODO
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'withCredentials'
-    }.any { call ->
-        callArgsToString(call).contains('[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=vault-role-id, variable=VAULT_ROLE_ID}, {credentialsId=vault-secret-id, variable=VAULT_SECRET_ID}]')
-    })
+    assertTrue(assertMethodCallContainsPattern('withCredentials', '[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=vault-role-id, variable=VAULT_ROLE_ID}, {credentialsId=vault-secret-id, variable=VAULT_SECRET_ID}]'))
     assertJobStatusSuccess()
   }
 }
