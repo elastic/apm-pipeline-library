@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.1.43 (27/11/2019)
+
+#### 🚀 Enhancements
+
+-  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
+-  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
+-  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
+-  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
+-  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
+-  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
+
+#### 🐛 Bug Fixes
+
+-  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
+-  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
+-  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
+-  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
+-  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
+
+#### 📚 Documentation
+
+-  refactor: simplify asserts with some helper functions [#293](https://github.com/elastic/apm-pipeline-library/pull/293)
+-  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
+
+#### ⚙️ CI
+
+-  (#213) Build Metricbeat's test Docker images in a daily manner [#274](https://github.com/elastic/apm-pipeline-library/pull/274)
+
+---
+
 ## v1.1.42 (20/11/2019)
 
 #### 🚀 Enhancements
@@ -180,14 +210,14 @@
 
 #### 🚀 Enhancements
 
+-  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
+-  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
+-  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 -  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
 -  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
--  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
--  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
--  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 
 #### 🐛 Bug Fixes
 
@@ -627,13 +657,13 @@
 
 #### 🚀 Enhancements
 
+-  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
+-  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
+-  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
--  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
--  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
--  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 
 #### 📚 Documentation
 
