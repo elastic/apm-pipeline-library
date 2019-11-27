@@ -140,11 +140,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: something happened with the toJson')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJson'))
   }
 
   @Test
@@ -162,10 +158,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: something happened with the toJson')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJso'))
   }
 }
