@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -47,11 +46,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       stepsErrors: readJSON(file: "steps-errors.json")
     )
     printCallStack()
-    assertFalse(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: Error sending the email -")
-    })
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyEmail: Error sending the email -'))
     assertJobStatusSuccess()
   }
 
@@ -66,11 +61,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       emailRecipients: ["me@example.com"]
     )
     printCallStack()
-    assertFalse(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: Error sending the email -")
-    })
+    assertFalse(assertMethodCallContainsPattern('log', 'Error sending the email -'))
     assertJobStatusSuccess()
   }
 
@@ -91,11 +82,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       stepsErrors: readJSON(file: "steps-errors.json")
     )
     printCallStack()
-    assertFalse(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: Error sending the email -")
-    })
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyEmail: Error sending the email -'))
     assertJobStatusSuccess()
   }
 
@@ -121,11 +108,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       e.printStackTrace(System.out);
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: build parameter it is not valid")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: build parameter it is not valid'))
     assertJobStatusFailure()
   }
 
@@ -151,11 +134,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       e.printStackTrace(System.out);
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: buildStatus parameter is not valid")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: buildStatus parameter is not valid'))
     assertJobStatusFailure()
   }
 
@@ -181,11 +160,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       e.printStackTrace(System.out);
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("notifyEmail: emailRecipients parameter is not valid")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: emailRecipients parameter is not valid'))
     assertJobStatusFailure()
   }
 }

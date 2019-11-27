@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GithubApiCallStepTests extends ApmBasePipelineTest {
@@ -67,11 +66,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: no valid Github token.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: no valid Github token'))
   }
 
   @Test
@@ -84,11 +79,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: no valid Github REST API URL.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: no valid Github REST API URL.'))
   }
 
   @Test
@@ -107,11 +98,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: The REST API call http://error return the message : Not Found')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: The REST API call http://error return the message : Not Found'))
   }
 
   @Test
@@ -126,11 +113,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubApiCall: The REST API call http://error return the message : java.lang.Exception: Failure')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: The REST API call http://error return the message : java.lang.Exception: Failure'))
   }
 
   @Test
@@ -140,16 +123,8 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     def ret0 = script.call(url: "dummy", token: "dummy")
     def ret1 = script.call(url: "dummy", token: "dummy")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("githubApiCall: get the JSON from GitHub.")
-    })
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("githubApiCall: get the JSON from cache.")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from GitHub.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from cache.'))
     assertJobStatusSuccess()
   }
 }

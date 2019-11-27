@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
@@ -34,9 +33,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field":"value"}')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "httpRequest"
-    }.size() == 1)
+    assertTrue(assertMethodCallOccurrences('httpRequest', 1))
     assertJobStatusSuccess()
   }
 

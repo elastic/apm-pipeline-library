@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GithubBranchRefStepTests extends ApmBasePipelineTest {
@@ -78,10 +77,6 @@ class GithubBranchRefStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubBranchRef: Environment not initialized, try to call githubEnv step before')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubBranchRef: Environment not initialized, try to call githubEnv step before'))
   }
 }

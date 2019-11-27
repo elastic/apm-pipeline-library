@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GithubPrReviewsStepTests extends ApmBasePipelineTest {
@@ -47,11 +46,7 @@ class GithubPrReviewsStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubPrReviews: no valid repository.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrReviews: no valid repository.'))
   }
 
   @Test
@@ -63,10 +58,6 @@ class GithubPrReviewsStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubPrReviews: no valid PR ID.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrReviews: no valid PR ID.'))
   }
 }

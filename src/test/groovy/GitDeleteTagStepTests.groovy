@@ -15,10 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitDeleteTagStepTests extends ApmBasePipelineTest {
@@ -36,21 +34,9 @@ class GitDeleteTagStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'gitCmd'
-    }.any { call ->
-        callArgsToString(call).contains("cmd=fetch, args=--tags")
-    })
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'sh'
-    }.any { call ->
-        callArgsToString(call).contains("git tag -d 'foo'")
-    })
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'gitPush'
-    }.any { call ->
-        callArgsToString(call).contains('credentialsId=, args=--tags')
-    })
+    assertTrue(assertMethodCallContainsPattern('gitCmd', 'cmd=fetch, args=--tags'))
+    assertTrue(assertMethodCallContainsPattern('sh', "git tag -d 'foo'"))
+    assertTrue(assertMethodCallContainsPattern('gitPush', 'credentialsId=, args=--tags'))
     assertJobStatusSuccess()
   }
 

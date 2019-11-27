@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
@@ -41,11 +40,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: Missing patterns argument.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: Missing patterns argument.'))
     assertJobStatusFailure()
   }
 
@@ -58,11 +53,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: Missing patterns with values.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: Missing patterns with values.'))
     assertJobStatusFailure()
   }
 
@@ -74,11 +65,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: [ 'foo' ])
     printCallStack()
     assertFalse(result)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'echo'
-    }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: CHANGE_TARGET and GIT_BASE_COMMIT env variables are required to evaluate the changes.')
-    })
+    assertTrue(assertMethodCallContainsPattern('echo', 'isGitRegionMatch: CHANGE_TARGET and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 
@@ -185,11 +172,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('isGitRegionMatch: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }
