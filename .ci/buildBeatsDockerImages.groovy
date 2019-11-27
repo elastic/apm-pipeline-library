@@ -63,59 +63,37 @@ pipeline {
       }
     }
     stage('Install dependencies') {
-      environment {
-        GOROOT = "${env.HOME}/.gimme/versions/go${env.GO_VERSION}.linux.amd64"
-        PATH = "${env.GOROOT}/bin:${env.PATH}"
-      }
       when {
         expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
         sh(label: 'Install virtualenv', script: 'pip install --user virtualenv')
-        sh(label: 'Install Go', script: ".ci/scripts/install-go.sh '${GO_VERSION}'")
-        dir("${BASE_DIR}/metricbeat"){
-          sh(label: 'Install Mage', script: "make mage")
-        }
       }
     }
     stage('Release Beats Test Docker images'){
       options {
         warnError('Release Beats Docker images failed')
       }
-      environment {
-        GOROOT = "${env.HOME}/.gimme/versions/go${env.GO_VERSION}.linux.amd64"
-        PATH = "${env.GOROOT}/bin:${env.PATH}"
-      }
       when {
         expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
 
-        dir("${BASE_DIR}/metricbeat"){
-          sh(label: 'Build Docker Image', script: "mage compose:buildSupportedVersions")
-          sh(label: 'Push Docker Image', script: "mage compose:pushSupportedVersions")
-        }
+        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${BASE_DIR}/metricbeat'")
       }
     }
     stage('Release X-Pack Beats Test Docker images'){
       options {
         warnError('Release X-Pack Beats Docker images failed')
       }
-      environment {
-        GOROOT = "${env.HOME}/.gimme/versions/go${env.GO_VERSION}.linux.amd64"
-        PATH = "${env.GOROOT}/bin:${env.PATH}"
-      }
       when {
         expression { return params.RELEASE_TEST_IMAGES }
       }
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
 
-        dir("${BASE_DIR}/x-pack/metricbeat"){
-          sh(label: 'Build Docker Image', script: "mage compose:buildSupportedVersions")
-          sh(label: 'Push Docker Image', script: "mage compose:pushSupportedVersions")
-        }
+        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${BASE_DIR}/x-pack/metricbeat'")
       }
     }
   }

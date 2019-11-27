@@ -9,6 +9,14 @@ set -exo pipefail
 #
 
 readonly GO_VERSION="${1?Please define the Go version to be used}"
+readonly METRICBEAT_DIR="${2?Please define the location of the Metricbeat directory}"
+
+function build_test_images() {
+    local metricbeatDir="${1}"
+
+    cd "${metricbeatDir}"
+    mage compose:buildSupportedVersions
+}
 
 function install_go() {
     local goVersion="${1}"
@@ -18,8 +26,26 @@ function install_go() {
     eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=${goVersion} bash)"
 }
 
+function install_mage() {
+    local metricbeatDir="${1}"
+
+    cd "${metricbeatDir}"
+    make mage
+}
+
+function push_test_images() {
+    local metricbeatDir="${1}"
+
+    cd "${metricbeatDir}"
+    mage compose:pushSupportedVersions
+}
+
 function main() {
     install_go "${GO_VERSION}"
+    install_mage "${METRICBEAT_DIR}"
+
+    build_test_images "${METRICBEAT_DIR}"
+    push_test_images "${METRICBEAT_DIR}"
 }
 
 main "$@"
