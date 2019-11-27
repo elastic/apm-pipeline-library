@@ -10,6 +10,16 @@ set -exo pipefail
 
 readonly GO_VERSION="${1?Please define the Go version to be used}"
 
-# Install Go using the same travis approach
-echo "Installing ${GO_VERSION} with gimme."
-eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=${GO_VERSION} bash)"
+function install_go() {
+    local goVersion="${1}"
+
+    # Install Go using the same travis approach
+    echo "Installing ${goVersion} with gimme."
+    eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=${goVersion} bash)"
+}
+
+function main() {
+    install_go "${GO_VERSION}"
+}
+
+main "$@"
