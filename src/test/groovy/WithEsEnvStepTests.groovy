@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class WithEsEnvStepTests extends ApmBasePipelineTest {
@@ -75,11 +74,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("withEsEnv: was not possible to get authentication info")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withEsEnv: was not possible to get authentication info'))
     assertJobStatusFailure()
   }
 
@@ -94,11 +89,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("withEsEnv: Unable to get credentials from the vault: Error message")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withEsEnv: Unable to get credentials from the vault: Error message'))
     assertJobStatusFailure()
   }
 
@@ -113,11 +104,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("withEsEnv: unknow protocol, the url is not http(s).")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withEsEnv: unknow protocol, the url is not http(s).'))
     assertJobStatusFailure()
   }
 }

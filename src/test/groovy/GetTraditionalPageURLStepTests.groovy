@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -39,11 +38,7 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('getTraditionalPageURL: Unsupported type')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getTraditionalPageURL: Unsupported type'))
     assertJobStatusFailure()
   }
 
@@ -56,11 +51,7 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('getTraditionalPageURL: Unsupported type')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getTraditionalPageURL: Unsupported type'))
     assertJobStatusFailure()
   }
 

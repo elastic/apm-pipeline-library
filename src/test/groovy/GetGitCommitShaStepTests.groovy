@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
@@ -55,11 +54,7 @@ class GetGitCommitShaStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('getGitCommitSha: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getGitCommitSha: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

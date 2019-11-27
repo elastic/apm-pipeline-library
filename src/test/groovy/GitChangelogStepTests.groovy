@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitChangelogStepTests extends ApmBasePipelineTest {
@@ -34,11 +33,7 @@ class GitChangelogStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     String ret = script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "sh"
-    }.any { call ->
-        callArgsToString(call).contains('git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
     assertTrue(ret.equals('OK'))
   }
 
@@ -52,11 +47,7 @@ class GitChangelogStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('gitChangelog: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'gitChangelog: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

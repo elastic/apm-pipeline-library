@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
@@ -34,9 +33,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field":"value"}')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "httpRequest"
-    }.size() == 1)
+    assertTrue(assertMethodCallOccurrences('httpRequest', 1))
     assertJobStatusSuccess()
   }
 
@@ -49,11 +46,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: Elasticsearch URL is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: Elasticsearch URL is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -66,11 +59,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: secret is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: secret is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -83,11 +72,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: data is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: data is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -100,11 +85,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: was not possible to get authentication info to send data.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: was not possible to get authentication info to send data.'))
     assertJobStatusFailure()
   }
 }

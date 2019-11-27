@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class DummyStepTests extends ApmBasePipelineTest {
@@ -34,11 +33,7 @@ class DummyStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(text: "dummy")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("I am a dummy step - dummy")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'I am a dummy step - dummy'))
     assertJobStatusSuccess()
   }
 }

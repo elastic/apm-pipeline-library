@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class PreCommitStepTests extends ApmBasePipelineTest {
@@ -38,11 +37,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('preCommit: git commit to compare with is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'preCommit: git commit to compare with is required.'))
     assertJobStatusFailure()
   }
 
@@ -55,11 +50,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('preCommit: git commit to compare with is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'preCommit: git commit to compare with is required.'))
     assertJobStatusFailure()
   }
 
@@ -69,11 +60,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     env.GIT_BASE_COMMIT = 'bar'
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('bar | xargs pre-commit run --files')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar | xargs pre-commit run --files'))
     assertJobStatusSuccess()
   }
 
@@ -82,26 +69,10 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(commit: 'foo', junit: true, credentialsId: 'bar')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sshagent'
-    }.any { call ->
-      callArgsToString(call).contains('[bar]')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('foo | xargs pre-commit run --files')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'preCommitToJunit'
-    }.any { call ->
-      callArgsToString(call).contains('input=pre-commit.out, output=pre-commit.out.xml')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'junit'
-    }.any { call ->
-      callArgsToString(call).contains('testResults=pre-commit.out.xml')
-    })
+    assertTrue(assertMethodCallContainsPattern('sshagent', '[bar]'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'foo | xargs pre-commit run --files'))
+    assertTrue(assertMethodCallContainsPattern('preCommitToJunit', 'input=pre-commit.out, output=pre-commit.out.xml'))
+    assertTrue(assertMethodCallContainsPattern('junit', 'testResults=pre-commit.out.xml'))
     assertJobStatusSuccess()
   }
 
@@ -109,12 +80,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: 'bar', secretRegistry: 'mysecret')
     printCallStack()
-    assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'dockerLogin'
-    }.any { call ->
-      callArgsToString(call).contains('{secret=mysecret, registry=bar}')
-    })
+    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=mysecret, registry=bar}'))
     assertJobStatusSuccess()
   }
 
@@ -122,10 +88,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: '', secretRegistry: '')
     printCallStack()
-    assertJobStatusSuccess()
-    assertFalse(helper.callStack.find { call ->
-      call.methodName == 'dockerLogin'
-    })
+    assertFalse(assertMethodCall('dockerLogin'))
     assertJobStatusSuccess()
   }
 
@@ -134,16 +97,8 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(commit: 'foo')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sshagent'
-    }.any { call ->
-      callArgsToString(call).contains('[f6c7695a-671e-4f4f-a331-acdce44ff9ba]')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'dockerLogin'
-    }.any { call ->
-      callArgsToString(call).contains('{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}')
-    })
+    assertTrue(assertMethodCallContainsPattern('sshagent', '[f6c7695a-671e-4f4f-a331-acdce44ff9ba]'))
+    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
     assertJobStatusSuccess()
   }
 }

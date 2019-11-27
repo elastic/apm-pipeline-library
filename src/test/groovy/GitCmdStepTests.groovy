@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitCmdStepTests extends ApmBasePipelineTest {
@@ -57,12 +56,8 @@ class GitCmdStepTests extends ApmBasePipelineTest {
       println err.toString()
       err.printStackTrace(System.out);
     }
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("gitCmd: missing git command")
-    })
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'gitCmd: missing git command'))
     assertJobStatusFailure()
   }
 
@@ -71,11 +66,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: '', args: '-f')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'usernamePassword'
-    }.any { call ->
-        callArgsToString(call).contains('2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-    })
+    assertTrue(assertMethodCallContainsPattern('usernamePassword', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'))
     assertJobStatusSuccess()
   }
 
@@ -84,11 +75,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: 'foo', args: '-f')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'usernamePassword'
-    }.any { call ->
-        callArgsToString(call).contains('foo')
-    })
+    assertTrue(assertMethodCallContainsPattern('usernamePassword', 'foo'))
     assertJobStatusSuccess()
   }
 
@@ -97,11 +84,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(cmd: 'push', credentialsId: 'foo')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'sh'
-    }.any { call ->
-        callArgsToString(call).contains('script=git push')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
     assertJobStatusSuccess()
   }
 
@@ -115,11 +98,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('gitCmd: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'gitCmd: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

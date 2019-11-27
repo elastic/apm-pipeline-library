@@ -18,7 +18,6 @@
 import org.junit.Before
 import org.junit.Test
 import net.sf.json.JSONObject
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class ToJSONStepTests extends ApmBasePipelineTest {

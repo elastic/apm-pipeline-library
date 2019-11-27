@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
@@ -178,11 +177,7 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('githubEnv: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubEnv: windows is not supported yet'))
     assertJobStatusFailure()
   }
 }

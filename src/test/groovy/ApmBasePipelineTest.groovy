@@ -21,6 +21,8 @@ import co.elastic.mock.GetVaultSecretMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
+import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+
 class ApmBasePipelineTest extends BasePipelineTest {
   Map env = [:]
 
@@ -328,5 +330,26 @@ class ApmBasePipelineTest extends BasePipelineTest {
       jsonText = f.getText()
     }
     return jsonSlurper.parseText(jsonText)
+  }
+
+  // Asserts helpers
+  def assertMethodCallContainsPattern(String methodName, String pattern) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.any { call ->
+      callArgsToString(call).contains(pattern)
+    }
+  }
+
+  def assertMethodCall(String methodName) {
+    return helper.callStack.find { call ->
+      call.methodName == methodName
+    }
+  }
+
+  def assertMethodCallOccurrences(String methodName, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.size() == compare
   }
 }

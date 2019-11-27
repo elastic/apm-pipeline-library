@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -44,11 +43,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('withGithubNotify: Missing arguments')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withGithubNotify: Missing arguments'))
     assertJobStatusFailure()
   }
 
@@ -63,11 +58,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "error"
-    }.any { call ->
-      callArgsToString(call).contains('withGithubNotify: Missing arguments')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withGithubNotify: Missing arguments'))
     assertJobStatusFailure()
   }
 
@@ -78,16 +69,10 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     script.call(context: 'foo', description: 'bar') {
       isOK = true
     }
-    println "${env.BRANCH_NAME}/${env.BUILD_ID}"
-
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "githubNotify"
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}")
-    })
   }
 
   @Test
@@ -99,12 +84,8 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == "githubNotify"
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}")
-    })
   }
 
   @Test
@@ -132,11 +113,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'githubNotify'
-    }.any { call ->
-      callArgsToString(call).contains("${env.BRANCH_NAME}/${env.BUILD_ID}/")
-    })
   }
 }

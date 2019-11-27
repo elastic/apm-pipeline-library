@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
@@ -62,11 +61,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('getBuildInfoJsonFiles: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'getBuildInfoJsonFiles: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

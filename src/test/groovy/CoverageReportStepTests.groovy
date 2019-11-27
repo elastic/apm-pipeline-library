@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 
 class CoverageReportStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/coverageReport.groovy'

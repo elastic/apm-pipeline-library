@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GitPushStepTests extends ApmBasePipelineTest {
@@ -35,11 +34,7 @@ class GitPushStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'gitCmd'
-    }.any { call ->
-        callArgsToString(call).contains('credentialsId=,')
-    })
+    assertTrue(assertMethodCallContainsPattern('gitCmd', 'credentialsId=,'))
     assertJobStatusSuccess()
   }
 

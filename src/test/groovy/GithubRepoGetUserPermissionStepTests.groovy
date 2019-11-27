@@ -15,10 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
@@ -48,11 +46,7 @@ class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubRepoGetUserPermission: no valid repository.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubRepoGetUserPermission: no valid repository.'))
   }
 
   @Test
@@ -64,10 +58,6 @@ class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubRepoGetUserPermission: no valid username.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubRepoGetUserPermission: no valid username.'))
   }
 }

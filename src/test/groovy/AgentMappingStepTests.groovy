@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
@@ -39,11 +38,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('envVar: Missing key')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'envVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -56,11 +51,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('agentVar: Missing key')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'agentVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -73,11 +64,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('id: Missing key')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'id: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -90,11 +77,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('app: Missing key')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'app: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -107,11 +90,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('yamlVersionFile: Missing key')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'yamlVersionFile: Missing key'))
     assertJobStatusFailure()
   }
 

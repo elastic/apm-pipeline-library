@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -61,11 +60,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("githubPrCheckApproved: The PR is not approved yet")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not approved yet'))
     assertJobStatusFailure()
   }
 
@@ -223,32 +218,28 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
 
-    @Test
-    void testAPIContractViolationOnUserObject() throws Exception {
-      helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-        return [
-          "permission": "write"
-        ]
+  @Test
+  void testAPIContractViolationOnUserObject() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return [
+        "permission": "write"
+      ]
+    })
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [title: 'dummy PR', author_association: 'MEMBER']
       })
-      helper.registerAllowedMethod("githubPrInfo", [Map.class], {
-        return [title: 'dummy PR', author_association: 'MEMBER']
-        })
-      helper.registerAllowedMethod("githubPrReviews", [Map.class], {
-        return []
-        })
-      def script = loadScript(scriptName)
-      env.CHANGE_ID = 1
-      try {
-        script.call()
-      } catch(e){
-        //NOOP
-      }
-      printCallStack()
-      assertTrue(helper.callStack.findAll { call ->
-          call.methodName == "error"
-      }.any { call ->
-          callArgsToString(call).contains("githubPrCheckApproved: The PR is not approved yet")
+    helper.registerAllowedMethod("githubPrReviews", [Map.class], {
+      return []
       })
-      assertJobStatusFailure()
+    def script = loadScript(scriptName)
+    env.CHANGE_ID = 1
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
     }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not approved yet'))
+    assertJobStatusFailure()
+  }
 }

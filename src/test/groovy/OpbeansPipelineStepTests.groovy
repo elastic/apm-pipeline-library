@@ -17,10 +17,8 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
-import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class OpbeansPipelineStepTests extends ApmBasePipelineTest {
@@ -42,18 +40,10 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call()
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Build')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Test')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Release')
-    })
-    assertTrue((helper.callStack.findAll { call -> call.methodName == 'build' } -
-               helper.callStack.findAll { call -> call.methodName == 'build' }.findAll { call ->
-                  callArgsToString(call).contains('job=apm-integration-tests-selector-mbp/master')}).isEmpty())
+    assertTrue(assertMethodCallContainsPattern('stage', 'Build'))
+    assertTrue(assertMethodCallContainsPattern('stage', 'Test'))
+    assertTrue(assertMethodCallContainsPattern('stage', 'Release'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
     assertJobStatusSuccess()
   }
 
@@ -63,9 +53,8 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [])
     printCallStack()
-    assertTrue((helper.callStack.findAll { call -> call.methodName == 'build' } -
-               helper.callStack.findAll { call -> call.methodName == 'build' }.findAll { call ->
-                  callArgsToString(call).contains('job=apm-integration-tests-selector-mbp/master')}).isEmpty())
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -74,15 +63,9 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [ 'folder/foo', 'folder/bar'])
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'stage' }.any { call ->
-      callArgsToString(call).contains('Downstream')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'build' }.any { call ->
-      callArgsToString(call).contains('folder/foo')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('VERSION=latest make publish')
-    })
+    assertTrue(assertMethodCallContainsPattern('stage', 'Downstream'))
+    assertTrue(assertMethodCallContainsPattern('build', 'folder/foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=latest make publish'))
     assertJobStatusSuccess()
   }
 
@@ -94,9 +77,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     // Then no publish shell step
-    assertFalse(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('make publish')
-    })
+    assertFalse(assertMethodCallContainsPattern('sh', 'make publish'))
     assertJobStatusSuccess()
   }
 
@@ -108,9 +89,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     // Then publish shell step
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('VERSION=agent-v1.0 make publish')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=agent-v1.0 make publish'))
     assertJobStatusSuccess()
   }
 

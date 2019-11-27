@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -62,11 +61,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("Benchmarks: was not possible to get authentication info to send benchmarks")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: was not possible to get authentication info to send benchmarks'))
     assertJobStatusFailure()
   }
 
@@ -80,11 +75,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("Benchmarks: Unable to get credentials from the vault: Error message")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: Unable to get credentials from the vault: Error message'))
     assertJobStatusFailure()
   }
 
@@ -98,11 +89,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("Benchmarks: unknow protocol, the url is not http(s).")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: unknow protocol, the url is not http(s).'))
     assertJobStatusFailure()
   }
 
@@ -116,11 +103,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('sendBenchmarks: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendBenchmarks: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 
@@ -135,11 +118,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('prepareAndRun: secret argument is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: secret argument is required.'))
     assertJobStatusFailure()
   }
 
@@ -154,11 +133,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('prepareAndRun: url_var argument is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: url_var argument is required.'))
     assertJobStatusFailure()
   }
 
@@ -173,11 +148,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('prepareAndRun: user_var argument is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: user_var argument is required.'))
     assertJobStatusFailure()
   }
 
@@ -192,11 +163,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('prepareAndRun: pass_var argument is required.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: pass_var argument is required.'))
     assertJobStatusFailure()
   }
 
@@ -214,11 +181,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertFalse(isOK)
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'error'
-    }.any { call ->
-        callArgsToString(call).contains("prepareAndRun: Unable to get credentials from the vault: Error message")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: Unable to get credentials from the vault: Error message'))
     assertJobStatusFailure()
   }
 
@@ -235,11 +198,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertFalse(isOK)
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'error'
-    }.any { call ->
-        callArgsToString(call).contains('prepareAndRun: was not possible to get authentication info to send benchmarks')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: was not possible to get authentication info to send benchmarks'))
     assertJobStatusFailure()
   }
 
@@ -250,13 +209,9 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     script.prepareAndRun(secret: 'secret', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
       isOK = true
     }
-    assertTrue(isOK)
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == 'withEnv'
-    }.any { call ->
-        callArgsToString(call).contains("URL_=${EXAMPLE_URL}, USER_=username, PASS_=user_password")
-    })
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('withEnv', "URL_=${EXAMPLE_URL}, USER_=username, PASS_=user_password"))
     assertJobStatusSuccess()
   }
 
@@ -272,11 +227,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('prepareAndRun: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

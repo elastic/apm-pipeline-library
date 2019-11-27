@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class CheckLicensesStepTests extends ApmBasePipelineTest {
@@ -43,12 +42,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(ext: '.foo')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-ext .foo'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('-ext .foo')
-    })
   }
 
   @Test
@@ -56,12 +51,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/${env.BASE_DIR}]"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'withEnv'
-    }.any { call ->
-      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/${env.BASE_DIR}]")
-    })
   }
 
   @Test
@@ -70,12 +61,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/]"))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'withEnv'
-    }.any { call ->
-      callArgsToString(call).contains("[HOME=${env.WORKSPACE}/]")
-    })
   }
 
   @Test
@@ -83,12 +70,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(exclude: './bar')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-exclude ./bar'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('-exclude ./bar')
-    })
   }
 
   @Test
@@ -96,12 +79,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(license: 'Elastic')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-license Elastic'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('-license Elastic')
-    })
   }
 
   @Test
@@ -109,12 +88,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(licensor: 'Foo S.A.')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-licensor "Foo S.A."'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('-licensor "Foo S.A."')
-    })
   }
 
   @Test
@@ -122,12 +97,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(skip: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-d'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('-d')
-    })
   }
 
   @Test
@@ -135,12 +106,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(skip: true, junit: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase/>'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'writeFile'
-    }.any { call ->
-      callArgsToString(call).contains('<testcase/>')
-    })
   }
 
   @Test
@@ -149,12 +116,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'writeFile'
-    }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
-    })
   }
 
   @Test
@@ -163,12 +126,8 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
     assertJobStatusSuccess()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'writeFile'
-    }.any { call ->
-      callArgsToString(call).contains('<testcase name="file.java" classname="foo.bar.file.java"')
-    })
   }
 
   @Test
@@ -180,11 +139,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('checkLicenses: skip should be enabled when using the junit flag.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'checkLicenses: skip should be enabled when using the junit flag.'))
     assertJobStatusFailure()
   }
 
@@ -198,11 +153,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('checkLicenses: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'checkLicenses: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

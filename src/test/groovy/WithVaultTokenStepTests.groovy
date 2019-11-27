@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class WithVaultTokenStepTests extends ApmBasePipelineTest {
@@ -39,16 +38,8 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'dir'
-    }.any { call ->
-      callArgsToString(call).contains('/foo')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('rm .vault-token')
-    })
+    assertTrue(assertMethodCallContainsPattern('dir', '/foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm .vault-token'))
     assertJobStatusSuccess()
   }
 
@@ -62,11 +53,7 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'bat'
-    }.any { call ->
-      callArgsToString(call).contains('del .vault-token')
-    })
+    assertTrue(assertMethodCallContainsPattern('bat', 'del .vault-token'))
     assertJobStatusSuccess()
   }
 
@@ -79,16 +66,8 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'dir'
-    }.any { call ->
-      callArgsToString(call).contains('/bar')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('rm mytoken')
-    })
+    assertTrue(assertMethodCallContainsPattern('dir', '/bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm mytoken'))
     assertJobStatusSuccess()
   }
 
@@ -103,16 +82,8 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('withVaultToken: error')
-    })
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'sh'
-    }.any { call ->
-      callArgsToString(call).contains('rm .vault-token')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withVaultToken: error'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm .vault-token'))
     assertJobStatusFailure()
   }
 }

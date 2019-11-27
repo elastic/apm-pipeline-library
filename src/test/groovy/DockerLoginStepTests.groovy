@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class DockerLoginStepTests extends ApmBasePipelineTest {
@@ -34,11 +33,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(secret: 'secret/team/ci/secret-name')
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "sh"
-    }.any { call ->
-        callArgsToString(call).contains('docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"'))
     assertJobStatusSuccess()
   }
 
@@ -47,11 +42,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(secret: 'secret/team/ci/secret-name', registry: "other.docker.io")
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "sh"
-    }.any { call ->
-        callArgsToString(call).contains('docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"'))
     assertJobStatusSuccess()
   }
 
@@ -65,11 +56,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'error'
-    }.any { call ->
-      callArgsToString(call).contains('dockerLogin: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'dockerLogin: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

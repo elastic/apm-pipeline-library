@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 public class BuildStepTests extends ApmBasePipelineTest {
@@ -35,11 +34,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("${env.JENKINS_URL}job/foo/1/display/redirect")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 
@@ -49,11 +44,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'nested/foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(helper.callStack.findAll { call ->
-      call.methodName == 'log'
-    }.any { call ->
-      callArgsToString(call).contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 

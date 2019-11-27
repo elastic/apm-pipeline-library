@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class WithSecretVaultStepTests extends ApmBasePipelineTest {
@@ -45,11 +44,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('withSecretVault: Missing variables')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: Missing variables'))
     assertJobStatusFailure()
   }
 
@@ -64,11 +59,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('withSecretVault: Unable to get credentials from the vault: Error message')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: Unable to get credentials from the vault: Error message'))
     assertJobStatusFailure()
   }
 
@@ -83,11 +74,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("withSecretVault: was not possible to get authentication info")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: was not possible to get authentication info'))
     assertJobStatusFailure()
   }
 

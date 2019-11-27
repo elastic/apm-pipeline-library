@@ -17,8 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
-import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class TarStepTests extends ApmBasePipelineTest {
@@ -63,11 +61,7 @@ class TarStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("isUnix", [], {false})
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true)
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "log"
-    }.any { call ->
-        callArgsToString(call).contains("tar step is compatible only with unix systems")
-    })
+    assertTrue(assertMethodCallContainsPattern('log', 'tar step is compatible only with unix systems'))
     assertJobStatusSuccess()
   }
 }

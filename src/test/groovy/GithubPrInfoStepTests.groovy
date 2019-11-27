@@ -15,10 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GithubPrInfoStepTests extends ApmBasePipelineTest {
@@ -48,11 +46,7 @@ class GithubPrInfoStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubPrInfo: no valid repository.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrInfo: no valid repository.'))
   }
 
   @Test
@@ -64,10 +58,6 @@ class GithubPrInfoStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains('githubPrInfo: no valid PR ID.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrInfo: no valid PR ID.'))
   }
 }
