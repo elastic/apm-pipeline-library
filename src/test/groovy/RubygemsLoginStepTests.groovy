@@ -17,7 +17,6 @@
 
 import org.junit.Before
 import org.junit.Test
-import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class RubygemsLoginStepTests extends ApmBasePipelineTest {
@@ -41,9 +40,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-      callArgsToString(call).contains('rubygemsLogin: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 
@@ -59,9 +56,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-      callArgsToString(call).contains('rubygemsLogin.withApi: windows is not supported yet.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin.withApi: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 
@@ -77,9 +72,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin: No valid secret to looking for.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin: No valid secret to looking for.'))
     assertJobStatusFailure()
   }
 
@@ -95,9 +88,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin.withApi: No valid secret to looking for.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin.withApi: No valid secret to looking for.'))
     assertJobStatusFailure()
   }
 
@@ -113,12 +104,9 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin: was not possible to get authentication details.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin: was not possible to get authentication details.'))
     assertJobStatusFailure()
   }
-
 
   @Test
   void testSecretNotFoundWithApi() throws Exception {
@@ -132,9 +120,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin.withApi: was not possible to get authentication details.')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin.withApi: was not possible to get authentication details.'))
     assertJobStatusFailure()
   }
 
@@ -150,9 +136,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin: Unable to get credentials from the vault')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin: Unable to get credentials from the vault'))
     assertJobStatusFailure()
   }
 
@@ -168,9 +152,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'error' }.any { call ->
-        callArgsToString(call).contains('rubygemsLogin.withApi: Unable to get credentials from the vault')
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin.withApi: Unable to get credentials from the vault'))
     assertJobStatusFailure()
   }
 
@@ -183,12 +165,8 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('curl -u "\${RUBY_USER}:\${RUBY_PASS}" https://rubygems.org/api/v1/api_key.yaml')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('rm ~/.gem/credentials')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'curl -u "\${RUBY_USER}:\${RUBY_PASS}" https://rubygems.org/api/v1/api_key.yaml'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm ~/.gem/credentials'))
     assertJobStatusSuccess()
   }
 
@@ -201,12 +179,8 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('echo ":rubygems_api_key: \${RUBY_API_KEY}" >> ~/.gem/credentials')
-    })
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('rm ~/.gem/credentials')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'echo ":rubygems_api_key: \${RUBY_API_KEY}" >> ~/.gem/credentials'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm ~/.gem/credentials'))
     assertJobStatusSuccess()
   }
 
@@ -222,9 +196,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('rm ~/.gem/credentials')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm ~/.gem/credentials'))
     assertJobStatusFailure()
   }
 
@@ -240,9 +212,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call -> call.methodName == 'sh' }.any { call ->
-      callArgsToString(call).contains('rm ~/.gem/credentials')
-    })
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm ~/.gem/credentials'))
     assertJobStatusFailure()
   }
 }

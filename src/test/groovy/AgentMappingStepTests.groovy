@@ -39,7 +39,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'envVar: Missing key'))
+    assertTrue(assertMethodCallContainsPattern('error', 'envVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -52,7 +52,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'agentVar: Missing key'))
+    assertTrue(assertMethodCallContainsPattern('error', 'agentVar: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -65,7 +65,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'id: Missing key'))
+    assertTrue(assertMethodCallContainsPattern('error', 'id: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -78,7 +78,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'app: Missing key'))
+    assertTrue(assertMethodCallContainsPattern('error', 'app: Missing key'))
     assertJobStatusFailure()
   }
 
@@ -91,7 +91,7 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'yamlVersionFile: Missing key'))
+    assertTrue(assertMethodCallContainsPattern('error', 'yamlVersionFile: Missing key'))
     assertJobStatusFailure()
   }
 

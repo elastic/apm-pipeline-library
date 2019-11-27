@@ -49,11 +49,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: Elasticsearch URL is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: Elasticsearch URL is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -66,11 +62,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: secret is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: secret is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -83,11 +75,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: data is not valid.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: data is not valid.'))
     assertJobStatusFailure()
   }
 
@@ -100,11 +88,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(helper.callStack.findAll { call ->
-        call.methodName == "error"
-    }.any { call ->
-        callArgsToString(call).contains("sendDataToElasticsearch: was not possible to get authentication info to send data.")
-    })
+    assertTrue(assertMethodCallContainsPattern('error', 'sendDataToElasticsearch: was not possible to get authentication info to send data.'))
     assertJobStatusFailure()
   }
 }
