@@ -6,6 +6,7 @@ set -exo pipefail
 #
 # Parameters:
 #   - GO_VERSION - that's the version which will be installed and enabled.
+#   - METRICBEAT_DIR - that's the location of the metricbeat directory.
 #
 
 readonly GO_VERSION="${1?Please define the Go version to be used}"
