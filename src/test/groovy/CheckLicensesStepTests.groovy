@@ -42,7 +42,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(ext: '.foo')
     printCallStack()
-    assertTrue(assertAny('sh', '-ext .foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-ext .foo'))
     assertJobStatusSuccess()
   }
 
@@ -51,7 +51,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(assertAny('withEnv', "[HOME=${env.WORKSPACE}/${env.BASE_DIR}]"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/${env.BASE_DIR}]"))
     assertJobStatusSuccess()
   }
 
@@ -61,7 +61,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(assertAny('withEnv', "[HOME=${env.WORKSPACE}/]"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/]"))
     assertJobStatusSuccess()
   }
 
@@ -70,7 +70,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(exclude: './bar')
     printCallStack()
-    assertTrue(assertAny('sh', '-exclude ./bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-exclude ./bar'))
     assertJobStatusSuccess()
   }
 
@@ -79,7 +79,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(license: 'Elastic')
     printCallStack()
-    assertTrue(assertAny('sh', '-license Elastic'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-license Elastic'))
     assertJobStatusSuccess()
   }
 
@@ -88,7 +88,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(licensor: 'Foo S.A.')
     printCallStack()
-    assertTrue(assertAny('sh', '-licensor "Foo S.A."'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-licensor "Foo S.A."'))
     assertJobStatusSuccess()
   }
 
@@ -97,7 +97,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(skip: true)
     printCallStack()
-    assertTrue(assertAny('sh', '-d'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-d'))
     assertJobStatusSuccess()
   }
 
@@ -106,7 +106,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(skip: true, junit: true)
     printCallStack()
-    assertTrue(assertAny('writeFile', '<testcase/>'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase/>'))
     assertJobStatusSuccess()
   }
 
@@ -116,7 +116,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
-    assertTrue(assertAny('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
     assertJobStatusSuccess()
   }
 
@@ -126,7 +126,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
-    assertTrue(assertAny('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase name="file.java" classname="foo.bar.file.java"'))
     assertJobStatusSuccess()
   }
 
@@ -139,7 +139,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'checkLicenses: skip should be enabled when using the junit flag.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'checkLicenses: skip should be enabled when using the junit flag.'))
     assertJobStatusFailure()
   }
 
@@ -153,7 +153,7 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertAny('error', 'checkLicenses: windows is not supported yet.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'checkLicenses: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

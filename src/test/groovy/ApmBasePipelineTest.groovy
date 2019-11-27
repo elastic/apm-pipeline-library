@@ -295,7 +295,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   // Asserts helpers
-  def assertAny(String methodName, String pattern) {
+  def assertMethodCallContainsPattern(String methodName, String pattern) {
     return helper.callStack.findAll { call ->
       call.methodName == methodName
     }.any { call ->

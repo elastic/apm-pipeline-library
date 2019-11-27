@@ -34,7 +34,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(assertAny('log', "${env.JENKINS_URL}job/foo/1/display/redirect"))
+    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 
@@ -44,7 +44,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'nested/foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(assertAny('log', "${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
+    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 
