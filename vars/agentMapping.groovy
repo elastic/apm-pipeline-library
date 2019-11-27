@@ -82,6 +82,7 @@ import groovy.transform.Field
   'Ruby': 'ruby',
   'RUM': 'rum',
   'All': 'all',
+  'Opbeans': '',  // This is required for getting the docker logs
   'UI': 'ui'
 ]
 

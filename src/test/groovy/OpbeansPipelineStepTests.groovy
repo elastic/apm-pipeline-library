@@ -17,8 +17,8 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
-import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class OpbeansPipelineStepTests extends ApmBasePipelineTest {
@@ -29,6 +29,8 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     binding.setProperty('BASE_DIR', '/')
     binding.setProperty('DOCKERHUB_SECRET', 'secret')
+    env.GIT_BASE_COMMIT = '1'
+    env.REPO_NAME = 'opbeans-xyz'
     super.setUp()
   }
 
@@ -41,7 +43,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('stage', 'Build'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Test'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Release'))
-    assertNull(assertMethodCall('build'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
     assertJobStatusSuccess()
   }
 
@@ -51,7 +53,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'master'
     script.call(downstreamJobs: [])
     printCallStack()
-    assertNull(assertMethodCall('build'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
     assertJobStatusSuccess()
   }
 
@@ -63,6 +65,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Downstream'))
     assertTrue(assertMethodCallContainsPattern('build', 'folder/foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=latest make publish'))
     assertJobStatusSuccess()
   }
 
@@ -78,4 +81,83 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_when_tag_release() throws Exception {
+    def script = loadScript(scriptName)
+    // When the tag release does match
+    env.BRANCH_NAME = 'v1.0'
+    script.call()
+    printCallStack()
+    // Then publish shell step
+    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=agent-v1.0 make publish'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getForkedRepoOrElasticRepo() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_FORK = 'user/forked_repo'
+    def result = script.getForkedRepoOrElasticRepo('foo')
+    assertEquals(result, 'user/forked_repo')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getForkedRepoOrElasticRepo_without_change_fork() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.getForkedRepoOrElasticRepo('repo')
+    assertEquals(result, 'elastic/repo')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getForkedRepoOrElasticRepo_with_change_fork() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_FORK = 'user'
+    def result = script.getForkedRepoOrElasticRepo('repo')
+    assertEquals(result, 'user/repo')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildOpts_without_known_repo() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.generateBuildOpts('unknown', '')
+    assertEquals(result, '')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildOpts_with_go() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.generateBuildOpts('opbeans-go', '')
+    assertEquals(result, '--with-opbeans-go --opbeans-go-branch 1 --opbeans-go-repo elastic/opbeans-go')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildOpts_with_go_and_forked_repo() throws Exception {
+    def script = loadScript(scriptName)
+    env.CHANGE_FORK = 'user'
+    def result = script.generateBuildOpts('opbeans-go', '')
+    assertEquals(result, '--with-opbeans-go --opbeans-go-branch 1 --opbeans-go-repo user/opbeans-go')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildOpts_with_java() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.generateBuildOpts('opbeans-java', 'foo')
+    assertEquals(result, '--with-opbeans-java --opbeans-java-image foo --opbeans-java-version 1')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_waitIfNotPR() throws Exception {
+    def script = loadScript(scriptName)
+    assertTrue(script.waitIfNotPR())
+    env.CHANGE_ID = 'PR-1'
+    assertFalse(script.waitIfNotPR())
+    assertJobStatusSuccess()
+  }
 }
