@@ -24,12 +24,12 @@ pipeline {
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     DOCKER_REGISTRY = 'docker.elastic.co'
     DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
-    GO_VERSION = "${params.GO_VERSION.trim()}"
     GOPATH = "${env.WORKSPACE}"
     HOME = "${env.WORKSPACE}"
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     NOTIFY_TO = credentials('notify-to')
+    PATH = "${env.GOPATH}/bin:${env.PATH}"
     PIPELINE_LOG_LEVEL='INFO'
     PYTHON_EXE='python2.7'
   }
@@ -47,7 +47,6 @@ pipeline {
     cron '@daily'
   }
   parameters {
-    string(name: 'GO_VERSION', defaultValue: '1.12.7', description: "Go version to use.")
     booleanParam(name: "RELEASE_TEST_IMAGES", defaultValue: "true", description: "If it's needed to build & push Beats' test images")
   }
   stages {
@@ -55,6 +54,11 @@ pipeline {
       steps {
         dir("${BASE_DIR}"){
           git("https://github.com/elastic/${REPO}.git")
+        }
+        script {
+          dir("${BASE_DIR}"){
+            env.GO_VERSION = readFile(".go-version").trim()
+          }
         }
       }
     }
@@ -76,11 +80,20 @@ pipeline {
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
 
-        dir("${BASE_DIR}/metricbeat"){
-          sh(label: 'Define Python Env', script: 'make python-env')
-          // TODO: we are building just MySQL, which is the only one ready
-          sh(label: 'Release Docker Images', script: ".ci/scripts/release-metricbeat-module.sh 'mysql' '${env.GO_VERSION}'")
-        }
+        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/metricbeat'")
+      }
+    }
+    stage('Release X-Pack Beats Test Docker images'){
+      options {
+        warnError('Release X-Pack Beats Docker images failed')
+      }
+      when {
+        expression { return params.RELEASE_TEST_IMAGES }
+      }
+      steps {
+        dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
+
+        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/x-pack/metricbeat'")
       }
     }
   }
