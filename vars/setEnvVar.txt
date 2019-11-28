@@ -1,0 +1,14 @@
+
+It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+
+```
+  setEnvVar('MY_ENV_VAR', 'value')
+```
+
+  it replaces the following code
+
+```
+  script {
+    env.MY_ENV_VAR = 'value')
+  }
+```
