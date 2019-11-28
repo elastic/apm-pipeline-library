@@ -633,6 +633,22 @@ def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
 * contentType: Content Type header, by default `application/json`
 * method: HTTP method used to send the data, by default `POST`
 
+## setEnvVar
+
+It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+
+```
+  setEnvVar('MY_ENV_VAR', 'value')
+```
+
+  it replaces the following code
+
+```
+  script {
+    env.MY_ENV_VAR = 'value')
+  }
+```
+
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
@@ -717,6 +733,85 @@ updateGithubCommitStatus(message: 'Build result.')
 * *message*: 'Build result.'
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
+
+## whenFalse
+This step replaces those small scripts step blocks to check some condition,
+it simplifies Declarative syntax
+
+```
+whenFalse(variable != 100){
+  echo('Hello world')
+}
+```
+
+it would replace the following code
+
+```
+script{
+  if(variable != 100){
+    echo('Hello world')
+  }
+}
+```
+
+## whenTrue
+This step replaces those small scripts step blocks to check some condition,
+it simplifies Declarative syntax
+
+```
+whenTrue(variable == 100){
+  echo('Hello world')
+}
+```
+
+it would replace the following code
+
+```
+script{
+  if(variable == 100){
+    echo('Hello world')
+  }
+}
+```
+
+## withEnvMask
+This step will define some environment variables and mask their content in the
+console output, it simplifies Declarative syntax
+
+```
+withEnvMask(vars: [
+    [var: "CYPRESS_user", password: user],
+    [var: "CYPRESS_password", password: password],
+    [var: "CYPRESS_kibanaUrl", password: kibanaURL],
+    [var: "CYPRESS_elasticsearchUrl", password: elasticsearchURL],
+    ]){
+      sh(label: "Build tests", script: "npm install")
+      sh(label: "Lint tests", script: "npm run format:ci")
+      sh(label: "Execute Smoke Tests", script: "npm run test")
+  }
+```
+
+this replaces the following code
+
+```
+wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs:[
+    [var: "CYPRESS_user", password: user],
+    [var: "CYPRESS_password", password: password],
+    [var: "CYPRESS_kibanaUrl", password: kibanaURL],
+    [var: "CYPRESS_elasticsearchUrl", password: elasticsearchURL],
+  ]]){
+  withEnv(
+    "CYPRESS_user=${user}",
+    "CYPRESS_password=${password}",
+    "CYPRESS_kibanaUrl=${kibanaURL}",
+    "CYPRESS_elasticsearchUrl=${elasticsearchURL}",
+  ) {
+    sh(label: "Build tests", script: "npm install")
+    sh(label: "Lint tests", script: "npm run format:ci")
+    sh(label: "Execute Smoke Tests", script: "npm run test")
+  }
+}
+```
 
 ## withEsEnv
 Grab a secret from the vault and define some environment variables to access to an URL
