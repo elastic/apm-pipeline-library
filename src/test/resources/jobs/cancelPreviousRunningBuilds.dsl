@@ -5,7 +5,7 @@ DSL = '''pipeline {
     stage('cancelPreviousRunningBuilds') {
       steps {
         sleep randomNumber(min: 5, max: 30)
-        cancelPreviousRunningBuilds
+        cancelPreviousRunningBuilds()
       }
     }
   }

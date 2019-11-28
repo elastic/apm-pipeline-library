@@ -23,6 +23,7 @@ package co.elastic.mock
 public class RunMock implements Serializable {
 
   def building = false
+  def description
 
   public RunMock(Map params = [:]) {
     this.building = params.building
@@ -34,5 +35,9 @@ public class RunMock implements Serializable {
 
   public void doStop() {
     println 'Stopping...'
+  }
+
+  public void setDescription(description) {
+    this.description = description
   }
 }

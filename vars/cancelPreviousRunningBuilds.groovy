@@ -24,18 +24,30 @@
 */
 import com.cloudbees.groovy.cps.NonCPS
 
-@NonCPS
 def call(Map params = [:]) {
   def maxBuildsToSearch = params.get('maxBuildsToSearch', 20)
   log(level: 'INFO', text: "Number of builds to be searched ${maxBuildsToSearch}")
-  def b = currentBuild
+  b = currentBuild
   for (int i=0; i<maxBuildsToSearch; i++) {
-    b = b.getPreviousBuild()
-    if (b == null) break
-    def rawBuild = b.rawBuild
+    b = b.getPreviousBuild();
+    if (b == null) break;
+    rawBuild = getRawBuild(b)
     if (rawBuild.isBuilding()) {
-      rawBuild.doStop()
       log(level: 'INFO', text: "Let's stop on-going build #${b.number}")
+      rawBuild.doStop()
+      setDescription(rawBuild, "Aborted from #${currentBuild.number}")
     }
+    rawBuild = null // make null to keep pipeline serializable
   }
+  b = null // make null to keep pipeline serializable
+}
+
+@NonCPS
+def getRawBuild(b) {
+  return rawBuild = b.rawBuild
+}
+
+@NonCPS
+def setDescription(b, description) {
+  b.setDescription(description)
 }

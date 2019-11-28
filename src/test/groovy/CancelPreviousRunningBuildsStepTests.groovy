@@ -56,7 +56,7 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
     script.call(maxBuildsToSearch: 0)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', '0'))
-    assertFalse(assertMethodCallContainsPattern('log', 'build'))
+    assertFalse(assertMethodCallContainsPattern('log', 'stop'))
   }
 
   @Test
@@ -72,7 +72,7 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testWith2MaxBuilds() throws Exception {
+  void testWith2MaxBuildsToSearch() throws Exception {
     def script = loadScript(scriptName)
     binding.setVariable('currentBuild', build6)
     script.call(maxBuildsToSearch: 2)
