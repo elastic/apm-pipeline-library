@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  This step will definne some enviroment variables and mask their content in the, it simplifies Declarative syntax
+  This step will define some environment variables and mask their content in the console output, it simplifies the Declarative syntax.
   console output
 
   withEnvMask(vars: [
