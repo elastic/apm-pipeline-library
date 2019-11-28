@@ -25,7 +25,7 @@
 import com.cloudbees.groovy.cps.NonCPS
 
 def call(Map params = [:]) {
-  def maxBuildsToSearch = params.get('maxBuildsToSearch', 20)
+  def maxBuildsToSearch = params.get('maxBuildsToSearch', 10)
   log(level: 'INFO', text: "Number of builds to be searched ${maxBuildsToSearch}")
   b = currentBuild
   for (int i=0; i<maxBuildsToSearch; i++) {

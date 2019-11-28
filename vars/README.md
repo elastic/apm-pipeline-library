@@ -33,6 +33,17 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
 
+## cancelPreviousRunningBuilds
+Abort any previously running builds as soon as a new build starts
+
+```
+cancelPreviousRunningBuilds()
+```
+
+See https://issues.jenkins-ci.org/browse/JENKINS-43353
+
+* maxBuildsToSearch: number of previous builds to be searched and aborted if so. Default to 10.
+
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.
 

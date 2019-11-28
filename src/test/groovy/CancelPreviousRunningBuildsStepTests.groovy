@@ -46,7 +46,7 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', '20'))
+    assertTrue(assertMethodCallContainsPattern('log', '10'))
   }
 
   @Test
