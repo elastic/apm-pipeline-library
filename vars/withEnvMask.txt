@@ -1,0 +1,37 @@
+This step will define some environment variables and mask their content in the
+console output, it simplifies Declarative syntax
+
+```
+withEnvMask(vars: [
+    [var: "CYPRESS_user", password: user],
+    [var: "CYPRESS_password", password: password],
+    [var: "CYPRESS_kibanaUrl", password: kibanaURL],
+    [var: "CYPRESS_elasticsearchUrl", password: elasticsearchURL],
+    ]){
+      sh(label: "Build tests", script: "npm install")
+      sh(label: "Lint tests", script: "npm run format:ci")
+      sh(label: "Execute Smoke Tests", script: "npm run test")
+  }
+```
+
+this replaces the following code
+
+```
+wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs:[
+    [var: "CYPRESS_user", password: user],
+    [var: "CYPRESS_password", password: password],
+    [var: "CYPRESS_kibanaUrl", password: kibanaURL],
+    [var: "CYPRESS_elasticsearchUrl", password: elasticsearchURL],
+  ]]){
+  withEnv(
+    "CYPRESS_user=${user}",
+    "CYPRESS_password=${password}",
+    "CYPRESS_kibanaUrl=${kibanaURL}",
+    "CYPRESS_elasticsearchUrl=${elasticsearchURL}",
+  ) {
+    sh(label: "Build tests", script: "npm install")
+    sh(label: "Lint tests", script: "npm run format:ci")
+    sh(label: "Execute Smoke Tests", script: "npm run test")
+  }
+}
+```

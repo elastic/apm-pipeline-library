@@ -1,0 +1,18 @@
+This step replaces those small scripts step blocks to check some condition,
+it simplifies Declarative syntax
+
+```
+whenFalse(variable != 100){
+  echo('Hello world')
+}
+```
+
+it would replace the following code
+
+```
+script{
+  if(variable != 100){
+    echo('Hello world')
+  }
+}
+```
