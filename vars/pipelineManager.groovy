@@ -32,7 +32,7 @@ def call(Map params = [:]) {
   def firstTime = params.get('firstTimeContributor', null)
   if (cancel) {
     def when = cancel.get('when', 'always')
-    if (isWhen(when)) {
+    if (isEnabled(when)) {
       cancelPreviousRunningBuilds(cancel.get('params', [:]))
     } else {
       log(level: 'DEBUG', text: "cancelPreviousRunningBuilds step is not enabled for '${when}'")
@@ -43,7 +43,7 @@ def call(Map params = [:]) {
   }
 }
 
-def isWhen(String when) {
+def isEnabled(String when) {
   def isEnabled = false
 
   switch(when) {

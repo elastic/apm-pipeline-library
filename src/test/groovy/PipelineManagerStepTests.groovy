@@ -74,44 +74,44 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testDefaultAndEmptyWhen() throws Exception {
     def script = loadScript(scriptName)
-    assertFalse(script.isWhen('unknwon'))
-    assertFalse(script.isWhen(''))
-    assertFalse(script.isWhen(null))
+    assertFalse(script.isEnabled('unknwon'))
+    assertFalse(script.isEnabled(''))
+    assertFalse(script.isEnabled(null))
   }
 
   @Test
   void testWhenAlways() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(script.isWhen('ALWAYS'))
+    assertTrue(script.isEnabled('ALWAYS'))
   }
 
   @Test
   void testWhenBranch() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(script.isWhen('BRANCH'))
+    assertTrue(script.isEnabled('BRANCH'))
     env.CHANGE_ID = ''
-    assertTrue(script.isWhen('BRANCH'))
+    assertTrue(script.isEnabled('BRANCH'))
     env.CHANGE_ID = 'PR-1'
-    assertFalse(script.isWhen('BRANCH'))
+    assertFalse(script.isEnabled('BRANCH'))
   }
 
   @Test
   void testWhenPr() throws Exception {
     def script = loadScript(scriptName)
-    assertFalse(script.isWhen('PR'))
+    assertFalse(script.isEnabled('PR'))
     env.CHANGE_ID = ''
-    assertFalse(script.isWhen('PR'))
+    assertFalse(script.isEnabled('PR'))
     env.CHANGE_ID = 'PR-1'
-    assertTrue(script.isWhen('PR'))
+    assertTrue(script.isEnabled('PR'))
   }
 
   @Test
   void testWhenTag() throws Exception {
     def script = loadScript(scriptName)
-    assertFalse(script.isWhen('TAG'))
+    assertFalse(script.isEnabled('TAG'))
     env.TAG_NAME = ''
-    assertFalse(script.isWhen('TAG'))
+    assertFalse(script.isEnabled('TAG'))
     env.TAG_NAME = 'v1.0'
-    assertTrue(script.isWhen('TAG'))
+    assertTrue(script.isEnabled('TAG'))
   }
 }
