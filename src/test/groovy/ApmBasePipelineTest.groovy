@@ -256,6 +256,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   void registerSharedLibraryMethods() {
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
     helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->

@@ -531,6 +531,19 @@ opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 
 * downstreamJobs: What downstream pipelines should be triggered once the release has been done. Default: []
 
+## pipelineManager
+This step adds certain validations which might be required to be done per build, for such it does
+use other steps.
+
+```
+  pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
+                    firstTimeContributor: [ when: 'ALWAYS' ] ])
+```
+
+* key: the name of the step.
+* key.value('when'): what condition should be evaluated to run the above step. Default 'always'. Possible values: 'PR', 'BRANCH', 'TAG' and 'ALWAYS'
+* key.value('params'): the arguments that the step can have.
+
 ## preCommit
 Run the pre-commit for the given commit if provided and generates the JUnit
 report if required
