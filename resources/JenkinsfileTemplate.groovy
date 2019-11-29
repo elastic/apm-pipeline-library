@@ -84,6 +84,10 @@ pipeline {
         // Just in case the workspace is reset.
         deleteDir()
 
+        // Wrapper to trigger certain steps when given certain conditions.
+        // For instance, to cancel all the previous running old builds for the current PR.
+        pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
+
         // gitCheckout does expose certain env variables besides of gatekeeping whether
         // the contributor is member from the elastic organisation, it tracks the status
         // with a GitHub check when using a Multibranch Pipeline!
