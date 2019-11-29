@@ -46,6 +46,24 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testFirstTime() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(firstTimeContributor: [ when: 'ALWAYS' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'firstTimeContributor step is not available yet.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCancelPreviousRunningbuilds() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cancelPreviousRunningbuilds: [ when: 'TAG' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'cancelPreviousRunningbuilds step is not enabled'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testDefaultAndEmptyWhen() throws Exception {
     def script = loadScript(scriptName)
     assertFalse(script.isWhen('unknwon'))

@@ -31,12 +31,15 @@ def call(Map params = [:]) {
   def cancel = params.get('cancelPreviousRunningbuilds', null)
   def firstTime = params.get('firstTimeContributor', null)
   if (cancel) {
-    whenTrue(cancel.get('when', 'always')){
+    def when = cancel.get('when', 'always')
+    if (isWhen(when)) {
       cancelPreviousRunningBuilds(cancel.get('params', [:]))
+    } else {
+      log(level: 'DEBUG', text: "cancelPreviousRunningbuilds step is not enabled for '${when}'")
     }
   }
   if (firstTime) {
-    echo 'TBD'
+    log(level: 'INFO', text: 'firstTimeContributor step is not available yet.')
   }
 }
 
