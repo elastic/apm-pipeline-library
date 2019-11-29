@@ -1,0 +1,11 @@
+This step adds certain validations which might be required to be done per build, for such it does
+use other steps.
+
+```
+  pipelineManager([ cancelPreviousRunningbuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
+                    firstTimeContributor: [ when: 'ALWAYS' ] ])
+```
+
+* key: the name of the step.
+* key.value('when'): what condition should be evaluated to run the above step. Default 'always'. Possible values: 'PR', 'BRANCH', 'TAG' and 'ALWAYS'
+* key.value('params'): the arguments that the step can have.
