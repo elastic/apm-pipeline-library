@@ -64,6 +64,14 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testCancelPreviousRunningBuildsWhenAlways() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cancelPreviousRunningBuilds: [ when: 'ALWAYS' ])
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testDefaultAndEmptyWhen() throws Exception {
     def script = loadScript(scriptName)
     assertFalse(script.isWhen('unknwon'))
