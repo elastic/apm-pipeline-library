@@ -55,11 +55,11 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCancelPreviousRunningbuilds() throws Exception {
+  void testCancelPreviousRunningBuilds() throws Exception {
     def script = loadScript(scriptName)
-    script.call(cancelPreviousRunningbuilds: [ when: 'TAG' ])
+    script.call(cancelPreviousRunningBuilds: [ when: 'TAG' ])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'cancelPreviousRunningbuilds step is not enabled'))
+    assertTrue(assertMethodCallContainsPattern('log', 'cancelPreviousRunningBuilds step is not enabled'))
     assertJobStatusSuccess()
   }
 

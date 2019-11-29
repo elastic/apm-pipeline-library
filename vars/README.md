@@ -536,7 +536,7 @@ This step adds certain validations which might be required to be done per build,
 use other steps.
 
 ```
-  pipelineManager([ cancelPreviousRunningbuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
+  pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
                     firstTimeContributor: [ when: 'ALWAYS' ] ])
 ```
 

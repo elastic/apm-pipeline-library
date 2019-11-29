@@ -19,7 +19,7 @@
   This step adds certains validations which might be required to be done per build, for such it does
   use other steps.
 
-  pipelineManager([ cancelPreviousRunningbuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
+  pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR', params: [ maxBuildsToSearch: 5 ] ],
                     firstTimeContributor: [ when: 'ALWAYS' ] ])
 
   // TODO
@@ -28,14 +28,14 @@
 */
 
 def call(Map params = [:]) {
-  def cancel = params.get('cancelPreviousRunningbuilds', null)
+  def cancel = params.get('cancelPreviousRunningBuilds', null)
   def firstTime = params.get('firstTimeContributor', null)
   if (cancel) {
     def when = cancel.get('when', 'always')
     if (isWhen(when)) {
       cancelPreviousRunningBuilds(cancel.get('params', [:]))
     } else {
-      log(level: 'DEBUG', text: "cancelPreviousRunningbuilds step is not enabled for '${when}'")
+      log(level: 'DEBUG', text: "cancelPreviousRunningBuilds step is not enabled for '${when}'")
     }
   }
   if (firstTime) {
