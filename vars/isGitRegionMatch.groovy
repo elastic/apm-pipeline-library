@@ -43,9 +43,9 @@ def call(Map params = [:]) {
 
   def gitDiffFile = 'git-diff.txt'
   def match = false
-  def previousCommit = (env.CHANGE_TARGET) ?: env.GIT_PREVIOUS_COMMIT
+  def previousCommit = env.CHANGE_TARGET ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT
   if (previousCommit && env.GIT_BASE_COMMIT) {
-    def changes = sh(script: "git diff --name-only origin/${previousCommit}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
+    def changes = sh(script: "git diff --name-only ${previousCommit}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
     if (shouldMatchAll) {
       match = isFullPatternMatch(gitDiffFile, patterns)
     } else {
