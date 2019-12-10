@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.46 (10/12/2019)
+
+#### 🐛 Bug Fixes
+
+-  ci(jenkins): support gitCheckout with customisation [#303](https://github.com/elastic/apm-pipeline-library/pull/303)
+-  fix: use 'origin/BRANCH' only on PRs [#302](https://github.com/elastic/apm-pipeline-library/pull/302)
+
+#### ⚙️ CI
+
+-  ci(jjbb): only PRs for the e2e Kibana UI [#301](https://github.com/elastic/apm-pipeline-library/pull/301)
+
+---
+
 ## v1.1.45 (29/11/2019)
 
 #### 🚀 Enhancements
@@ -221,9 +234,9 @@
 
 #### 🙈 No user affected
 
+-  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 -  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 -  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
--  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 
 ---
 
@@ -231,6 +244,7 @@
 
 #### 🚀 Enhancements
 
+-  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
 -  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
@@ -238,7 +252,6 @@
 -  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
 -  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
 -  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
--  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
 
 #### 🐛 Bug Fixes
 
