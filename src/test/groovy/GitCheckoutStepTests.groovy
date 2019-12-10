@@ -19,6 +19,7 @@ import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitCheckoutStepTests extends BasePipelineTest {
@@ -455,4 +456,43 @@ class GitCheckoutStepTests extends BasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void testIsDefaultSCM() throws Exception {
+    def script = loadScript(scriptName)
+    assertFalse(script.isDefaultSCM(null))
+    env.BRANCH_NAME = 'master'
+    assertTrue(script.isDefaultSCM(null))
+    assertFalse(script.isDefaultSCM('foo'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsDefaultSCMWithCustomisation() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
+    script.scm = [ extensions: [] ]
+    script.call(repo: 'git@github.com:elastic/apm-pipeline-library.git', shallow: false)
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'log'
+    }.any { call ->
+        callArgsToString(call).contains('Checkout SCM master with some customisation')
+    })
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testIsDefaultSCMWithoutCustomisation() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
+    script.scm = [ extensions: [] ]
+    script.call()
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'log'
+    }.any { call ->
+        callArgsToString(call).contains('Checkout SCM master with default customisation from the Item')
+    })
+    assertJobStatusSuccess()
+  }
 }

@@ -37,9 +37,14 @@ def call(Map params = [:]){
   def reference = params?.reference
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
-  def notify = params?.get('githubNotifyFirstTimeContributor', false)
-  def shallowValue = params?.get('shallow', true)
-  def depthValue = params?.get('depth', 5)
+  def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
+  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : true
+  def depthValue = params.containsKey('depth') ? params.get('depth') : 5
+
+  // isCustomised
+  def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
+                   params.containsKey('reference') || params.containsKey('mergeTarget') || params.containsKey('credentialsId') ||
+                   params.containsKey('repo') || params.containsKey('branch')
 
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
@@ -59,8 +64,15 @@ def call(Map params = [:]){
   }
 
   dir("${basedir}"){
-    if(env?.BRANCH_NAME && branch == null){
-      log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME}")
+    if(customised && isDefaultSCM(branch)){
+      log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
+      checkout([$class: 'GitSCM', branches: scm.branches,
+        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+        extensions: extensions,
+        submoduleCfg: scm.submoduleCfg,
+        userRemoteConfigs: scm.userRemoteConfigs])
+    } else if(isDefaultSCM(branch)){
+      log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
       checkout scm
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
@@ -104,4 +116,8 @@ def call(Map params = [:]){
       }
     }
   }
+}
+
+def isDefaultSCM(branch) {
+  return env?.BRANCH_NAME && branch == null
 }
