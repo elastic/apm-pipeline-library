@@ -84,6 +84,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   @Test
   void testSimpleMatchPreviousCommit() throws Exception {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
+    env.remove('CHANGE_TARGET')
     def script = loadScript(scriptName)
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -187,5 +188,50 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: windows is not supported yet.'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void testNoChangerequest() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'foo/anotherfolder/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        assertTrue(m.script.contains('origin/'))
+      })
+    def result = false
+    result = script.call(patterns: [ 'foo' ])
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testChangerequest() throws Exception {
+    env.GIT_PREVIOUS_COMMIT = "foo-1"
+    env.remove('CHANGE_TARGET')
+    def script = loadScript(scriptName)
+    def changeset = 'foo/anotherfolder/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        assertFalse(m.script.contains('origin/'))
+      })
+    def result = false
+    result = script.call(patterns: [ 'foo' ])
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testChangerTargetEmpty() throws Exception {
+    env.CHANGE_TARGET = " "
+    def script = loadScript(scriptName)
+    def changeset = 'foo/anotherfolder/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+        assertFalse(m.script.contains('origin/'))
+      })
+    def result = false
+    result = script.call(patterns: [ 'foo' ])
+    printCallStack()
+    assertJobStatusSuccess()
   }
 }
