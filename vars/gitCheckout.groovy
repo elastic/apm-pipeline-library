@@ -66,9 +66,11 @@ def call(Map params = [:]){
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
-      def newSCM = scm
-      newSCM.extensions = extensions
-      checkout newSCM
+      checkout([$class: 'GitSCM', branches: scm.branches,
+        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+        extensions: extensions,
+        submoduleCfg: scm.submoduleCfg,
+        userRemoteConfigs: scm.userRemoteConfigs])
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
       checkout scm
