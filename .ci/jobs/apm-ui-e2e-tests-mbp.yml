@@ -41,5 +41,6 @@
           timeout: '15'
           use-author: true
           wipe-workspace: 'True'
+          disable-pr-notifications: true
     periodic-folder-trigger: 1d
     prune-dead-branches: true
