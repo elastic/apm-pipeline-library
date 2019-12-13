@@ -126,7 +126,28 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('githubNotify', "targetUrl=https://www.elastic.co"))
+    assertTrue(assertMethodCallContainsPattern('githubNotify', 'targetUrl=https://www.elastic.co'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSuccessWithWrongTab() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], {
+      updateBuildStatus('FAILURE')
+      throw new Exception('getTraditionalPageURL: Unsupported type')
+    })
+    def isOK = false
+    try {
+      script.call(context: 'foo', description: 'bar', tab: 'htt://www.elastic.co') {
+        isOK = true
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(isOK)
+    assertFalse(assertMethodCallContainsPattern('githubNotify', 'targetUrl=htt://www.elastic.co'))
+    assertJobStatusFailure()
   }
 }
