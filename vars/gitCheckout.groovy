@@ -67,7 +67,7 @@ def call(Map params = [:]){
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
-      retry(retryValue) {
+      retryWithSleep(retryValue) {
         checkout([$class: 'GitSCM', branches: scm.branches,
           doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
           extensions: extensions,
@@ -76,12 +76,12 @@ def call(Map params = [:]){
       }
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
-      retry(retryValue) {
+      retryWithSleep(retryValue) {
         checkout scm
       }
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
-      retry(retryValue) {
+      retryWithSleep(retryValue) {
         checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
           doGenerateSubmoduleConfigurations: false,
           extensions: extensions,
@@ -127,4 +127,13 @@ def call(Map params = [:]){
 
 def isDefaultSCM(branch) {
   return env?.BRANCH_NAME && branch == null
+}
+
+def retryWithSleep(int i, body) {
+  def sleepTime = i
+  retry(i) {
+    sleepTime--
+    sleep (i - sleepTime)
+    body()
+  }
 }

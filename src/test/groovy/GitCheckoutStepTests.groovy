@@ -56,6 +56,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { count, c ->
       Exception lastError = null
       while (count-- > 0) {
