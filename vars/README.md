@@ -280,7 +280,8 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
 * *shallow*: Whether to enable the shallow cloning. Default: true
-* *depth*: Set shallow clone depth,. Default: 5
+* *depth*: Set shallow clone depth. Default: 5
+* *retry*: Set the number of retries if there are issues when cloning. Default: 3
 
 ## gitCmd
 Execute a git command against the git repo, using the credentials passed.
