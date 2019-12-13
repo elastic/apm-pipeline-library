@@ -228,8 +228,20 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
     })
-    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { i, c ->
-      c.call()
+    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { count, c ->
+      Exception lastError = null
+      while (count-- > 0) {
+        try {
+          c.call()
+          lastError = null
+          break
+        } catch (error) {
+          lastError = error
+        }
+      }
+      if (lastError) {
+        throw lastError
+      }
     })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })

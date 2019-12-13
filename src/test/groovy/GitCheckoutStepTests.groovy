@@ -56,6 +56,21 @@ class GitCheckoutStepTests extends BasePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { count, c ->
+      Exception lastError = null
+      while (count-- > 0) {
+        try {
+          c.call()
+          lastError = null
+          break
+        } catch (error) {
+          lastError = error
+        }
+      }
+      if (lastError) {
+        throw lastError
+      }
+    })
   }
 
   @Test
@@ -495,4 +510,26 @@ class GitCheckoutStepTests extends BasePipelineTest {
     })
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testRetry() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'BRANCH'
+    script.scm = 'SCM'
+    helper.registerAllowedMethod('checkout', [String.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception(s)
+    })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'checkout'
+    }.size == 3)
+    assertJobStatusFailure()
+  }
+
 }
