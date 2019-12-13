@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.47 (13/12/2019)
+
+#### ⚙️ CI
+
+-  retry when gitCheckout as a workaround when timeouts [#306](https://github.com/elastic/apm-pipeline-library/pull/306)
+
+---
+
 ## v1.1.46 (10/12/2019)
 
 #### 🐛 Bug Fixes
@@ -234,9 +242,9 @@
 
 #### 🙈 No user affected
 
+-  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
 -  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 -  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
--  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
 
 ---
 
