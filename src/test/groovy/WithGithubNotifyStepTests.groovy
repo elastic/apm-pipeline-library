@@ -116,4 +116,17 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testSuccessWithURL() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.call(context: 'foo', description: 'bar', tab: 'https://www.elastic.co') {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('githubNotify', "targetUrl=https://www.elastic.co"))
+    assertJobStatusSuccess()
+  }
 }
