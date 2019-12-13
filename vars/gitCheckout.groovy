@@ -40,6 +40,7 @@ def call(Map params = [:]){
   def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
   def shallowValue = params.containsKey('shallow') ? params.get('shallow') : true
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
+  def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
   // isCustomised
   def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
@@ -66,24 +67,30 @@ def call(Map params = [:]){
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
-      checkout([$class: 'GitSCM', branches: scm.branches,
-        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: extensions,
-        submoduleCfg: scm.submoduleCfg,
-        userRemoteConfigs: scm.userRemoteConfigs])
+      retryWithSleep(retryValue) {
+        checkout([$class: 'GitSCM', branches: scm.branches,
+          doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+          extensions: extensions,
+          submoduleCfg: scm.submoduleCfg,
+          userRemoteConfigs: scm.userRemoteConfigs])
+      }
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
-      checkout scm
+      retryWithSleep(retryValue) {
+        checkout scm
+      }
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
-      checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: extensions,
-        submoduleCfg: [],
-        userRemoteConfigs: [[
-          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
-          credentialsId: "${credentialsId}",
-          url: "${repo}"]]])
+      retryWithSleep(retryValue) {
+        checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
+          doGenerateSubmoduleConfigurations: false,
+          extensions: extensions,
+          submoduleCfg: [],
+          userRemoteConfigs: [[
+            refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
+            credentialsId: "${credentialsId}",
+            url: "${repo}"]]])
+      }
     } else {
       def message = 'No valid SCM config passed. '
       if(env.BRANCH_NAME && branch) {
@@ -120,4 +127,13 @@ def call(Map params = [:]){
 
 def isDefaultSCM(branch) {
   return env?.BRANCH_NAME && branch == null
+}
+
+def retryWithSleep(int i, body) {
+  def sleepTime = i
+  retry(i) {
+    sleepTime--
+    sleep (i - sleepTime)
+    body()
+  }
 }
