@@ -881,7 +881,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 * context: Name of the GH check context. (Mandatory).
 * description: Description of the GH check. If unset then it will use the description.
-* tabs: What kind of details links will be used. Enum type: tests, changes, artifacts and pipeline). Default pipeline.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
