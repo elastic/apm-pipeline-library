@@ -385,6 +385,20 @@ If it is not approved, the method will throw an error.
 githubPrCheckApproved()
 ```
 
+## githubPrComment
+Add a comment in the GitHub.
+
+```
+githubPrComment()
+
+githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+```
+
+* details: URL of the details report to be reported as a comment. Default ''
+
+
+[Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
+
 ## githubPrInfo
 Get the Pull Request details from the Github REST API.
 
