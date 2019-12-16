@@ -1,0 +1,7 @@
+Add a comment in the GitHub.
+
+```
+githubPrComment()
+```
+
+[Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
