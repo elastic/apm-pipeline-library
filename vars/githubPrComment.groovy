@@ -44,9 +44,10 @@ def commentTemplate(Map params = [:]) {
   def header = currentBuild.currentResult == 'SUCCESS' ?
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
+  def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
   return """
     ${header}
-    * [pipeline](${env.BUILD_URL})
+    * [pipeline](${url})
     * Commit: ${env.GIT_BASE_COMMIT}
     ${details}
 

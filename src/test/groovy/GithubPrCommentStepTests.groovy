@@ -69,11 +69,22 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   @Test
   void testCommentTemplateWithDetails() throws Exception {
     def script = loadScript(scriptName)
+    env.RUN_DISPLAY_URL = ''
     def result = script.commentTemplate(details: 'foo')
     printCallStack()
+    assertFalse(result.contains('redirect'))
     assertTrue(result.contains('foo'))
     assertTrue(result.contains('Commit: 1'))
     assertTrue(result.contains('Build Succeeded'))
+  }
+
+  @Test
+  void testCreateBuildInfoWithRunDisplay() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.commentTemplate()
+    printCallStack()
+    assertTrue(result.contains('redirect'))
+    assertJobStatusSuccess()
   }
 
   @Test
