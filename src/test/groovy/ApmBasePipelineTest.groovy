@@ -18,6 +18,7 @@
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
@@ -36,11 +37,11 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
     env.BRANCH_NAME = 'master'
     env.BUILD_ID = '1'
-    env.BUILD_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JENKINS_URL = 'http://jenkins.example.com:8080/'
+    env.BUILD_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JOB_BASE_NAME = 'master'
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
-    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/display/redirect"
+    env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_ID}/display/redirect"
     env.WORKSPACE = 'WS'
 
     registerDeclarativeMethods()
@@ -51,6 +52,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
     binding.setProperty('steps', new StepsMock())
+    binding.setProperty('pullRequest', new PullRequestMock())
   }
 
   void registerDeclarativeMethods() {
