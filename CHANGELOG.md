@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.48 (16/12/2019)
+
+#### 🚀 Enhancements
+
+-  enable github comment for pull requests [#308](https://github.com/elastic/apm-pipeline-library/pull/308)
+-  Enable to customise the GH checks with URLs [#307](https://github.com/elastic/apm-pipeline-library/pull/307)
+
+---
+
 ## v1.1.47 (13/12/2019)
 
 #### ⚙️ CI
@@ -242,9 +251,9 @@
 
 #### 🙈 No user affected
 
+-  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 -  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
 -  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
--  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 
 ---
 
