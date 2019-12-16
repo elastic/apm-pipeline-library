@@ -151,6 +151,10 @@ pipeline {
     }
   }
   post {
+    always {
+      sh 'env | sort'
+      githubPrComment()
+    }
     cleanup {
       notifyBuildResult()
     }
