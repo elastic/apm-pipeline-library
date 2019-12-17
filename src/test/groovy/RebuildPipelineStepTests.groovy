@@ -30,13 +30,36 @@ class RebuildPipelineStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testWithoutParams() throws Exception {
+    def script = loadScript(scriptName)
+    binding.setVariable('params', null)
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "rebuildPipeline: params doesn't exist"))
+    assertFalse(assertMethodCallContainsPattern('build', 'job'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithEmptyParams() throws Exception {
+    def script = loadScript(scriptName)
+    binding.setVariable('params', [:])
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "rebuildPipeline: params doesn't exist"))
+    assertFalse(assertMethodCallContainsPattern('build', 'job'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testWithUnsupportedJob() throws Exception {
     def script = loadScript(scriptName)
     env.JOB_NAME = 'foo'
+    binding.setVariable('params', [ a: 'foo' ])
     script.call()
+    printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'unsupported'))
     assertFalse(assertMethodCallContainsPattern('build', 'job'))
-    printCallStack()
     assertJobStatusSuccess()
   }
 
@@ -44,10 +67,40 @@ class RebuildPipelineStepTests extends ApmBasePipelineTest {
   void testWithSupportedJob() throws Exception {
     def script = loadScript(scriptName)
     env.JOB_NAME = 'apm-agent-python-mbp'
+    binding.setVariable('params', [ a: 'foo' ])
     script.call()
+    printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'unsupported'))
     assertTrue(assertMethodCallContainsPattern('build', 'job=apm-agent-python-mbp'))
-    printCallStack()
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testWithPrevious2BuildSuccess() throws Exception {
+    def script = loadScript(scriptName)
+    def previousBuild = [ previousBuild: [ currentResult: 'SUCCESS' ] ]
+    binding.getVariable('currentBuild').previousBuild = previousBuild
+    env.JOB_NAME = 'apm-agent-python-mbp'
+    binding.setVariable('params', [ a: 'foo' ])
+    script.call()
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'there are more than 2 previous build failures.'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-agent-python-mbp'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithPrevious2BuildFailure() throws Exception {
+    def script = loadScript(scriptName)
+    def previousBuild = [ previousBuild: [ currentResult: 'FAILURE' ] ]
+    binding.getVariable('currentBuild').previousBuild = previousBuild
+    env.JOB_NAME = 'apm-agent-python-mbp'
+    binding.setVariable('params', [ a: 'foo' ])
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'there are more than 2 previous build failures.'))
+    assertFalse(assertMethodCallContainsPattern('build', 'job=apm-agent-python-mbp'))
+    assertJobStatusSuccess()
+  }
+
 }

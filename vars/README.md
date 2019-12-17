@@ -522,6 +522,8 @@ the log level by default is INFO.
 Send an email message with a summary of the build result,
 and send some data to Elastic search.
 
+Besides, if there are checkout environmental issues then it will rebuild the pipeline.
+
 ```
 notifyBuildResult()
 ```
@@ -535,6 +537,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
+* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -595,6 +598,16 @@ def i = randomNumber()
 
 ```
 def i = randomNumber(min: 1, max: 99)
+```
+
+## rebuildPipeline
+Rebuild the pipeline if supported, for such, it does use the built-in env variable
+`JOB_NAME`.
+
+It does require the parameters for the pipeline to be exposed as environment variables.
+
+```
+rebuildPipeline()
 ```
 
 ## rubygemsLogin

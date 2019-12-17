@@ -26,15 +26,15 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 import co.elastic.NotificationManager
 
-def call(Map params = [:]) {
-  def rebuild = params.containsKey('rebuild') ? params.rebuild : true
+def call(Map args = [:]) {
+  def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   node('master || metal || immutable'){
     stage('Reporting build status'){
-      def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
-      def es = params.containsKey('es') ? params.es : getVaultSecret(secret: secret)?.data.url
-      def to = params.containsKey('to') ? params.to : [ customisedEmail(env.NOTIFY_TO)]
-      def statsURL = params.containsKey('statsURL') ? params.statsURL : "ela.st/observabtl-ci-stats"
-      def shouldNotify = params.containsKey('shouldNotify') ? params.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
+      def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
+      def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
+      def statsURL = args.containsKey('statsURL') ? args.statsURL : "ela.st/observabtl-ci-stats"
+      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)

@@ -16,6 +16,20 @@
 // under the License.
 
 def call() {
+
+  // Let's avoid infinite loops
+  if (currentBuild?.previousBuild?.previousBuild?.currentResult == 'FAILURE') {
+    log(level: 'INFO', text: "rebuildPipeline: there are more than 2 previous build failures.")
+    return
+  }
+
+  // Let's ensure the params are passed from the pipeline.
+  if (!params?.find()) {
+    log(level: 'INFO', text: "rebuildPipeline: params doesn't exist")
+    return
+  }
+
+  // Apply the rebuild only for the explicit pipelines.
   switch(env.JOB_NAME?.trim()) {
     case ~/.*apm-agent-python-mbp.*/:
       apmAgentPython()
@@ -28,8 +42,8 @@ def call() {
 
 def apmAgentPython() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
-        parameters: [booleanParam(name: 'Run_As_Master_Branch', value: env.Run_As_Master_Branch),
-                     booleanParam(name: 'bench_ci', value: env.bench_ci),
-                     booleanParam(name: 'tests_ci', value: env.tests_ci),
-                     booleanParam(name: 'package_ci', value: env.package_ci)])
+        parameters: [booleanParam(name: 'Run_As_Master_Branch', value: params.Run_As_Master_Branch),
+                     booleanParam(name: 'bench_ci', value: params.bench_ci),
+                     booleanParam(name: 'tests_ci', value: params.tests_ci),
+                     booleanParam(name: 'package_ci', value: params.package_ci)])
 }
