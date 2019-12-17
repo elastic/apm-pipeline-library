@@ -24,7 +24,7 @@ pipeline {
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
-    PIPELINE_LOG_LEVEL = 'INFO'
+    PIPELINE_LOG_LEVEL = 'DEBUG'
     PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.WORKSPACE}/bin:${env.PATH}"
   }
   options {
@@ -48,12 +48,20 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
+        sh '''
+          echo 'Previous Checkout'
+          env | sort | grep "GIT"
+        '''
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
         }
+        sh '''
+          echo 'After Checkout'
+          env | sort | grep "GIT"
+        '''
       }
     }
 
@@ -152,7 +160,12 @@ pipeline {
   }
   post {
     always {
-      sh 'env | sort'
+      sh '''
+        echo 'Always'
+        git rev-parse HEAD
+        git log -2
+        env | sort | grep "GIT"
+      '''
       githubPrComment()
     }
     cleanup {
