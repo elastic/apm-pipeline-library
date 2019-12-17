@@ -27,6 +27,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 import co.elastic.NotificationManager
 
 def call(Map params = [:]) {
+  def rebuild = params.containsKey('rebuild') ? params.rebuild : true
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
@@ -58,6 +59,17 @@ def call(Map params = [:]) {
         def datafile = readFile(file: "build-report.json")
         sendDataToElasticsearch(es: es, secret: secret, data: datafile)
       }
+    }
+  }
+
+  if (rebuild) {
+    log(level: 'DEBUG', text: 'notifyBuildResult: rebuild is enabled.')
+    // If there is an issue with the default checkout then the env variable
+    // won't be created and let's rebuild
+    if (currentBuild.currentResult == 'FAILURE' && !env.GIT_BUILD_CAUSE?.trim()) {
+      rebuildPipeline()
+    } else {
+      log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
     }
   }
 }
