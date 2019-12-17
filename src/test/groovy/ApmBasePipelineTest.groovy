@@ -167,6 +167,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
     helper.registerAllowedMethod('bat', [String.class], null)
+    helper.registerAllowedMethod('booleanParam', [Map.class], null)
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
     helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
     helper.registerAllowedMethod('build', [Map.class], null)
@@ -306,6 +307,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('rebuildPipeline', [], { true })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
     helper.registerAllowedMethod('toJSON', [Map.class], { m ->
       def script = loadScript('vars/toJSON.groovy')
