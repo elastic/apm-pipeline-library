@@ -16,4 +16,4 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
-* rebuild: Whether to rebuild the pipeline in case environmental issue  URL to send the report. Default true
+* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
