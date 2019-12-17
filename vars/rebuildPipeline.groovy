@@ -18,7 +18,8 @@
 def call() {
 
   // Let's avoid infinite loops
-  if (currentBuild?.previousBuild?.previousBuild?.currentResult == 'FAILURE') {
+  if (currentBuild?.previousBuild?.currentResult == 'FAILURE' &&
+      currentBuild?.previousBuild?.previousBuild?.currentResult == 'FAILURE') {
     log(level: 'INFO', text: "rebuildPipeline: there are more than 2 previous build failures.")
     return
   }

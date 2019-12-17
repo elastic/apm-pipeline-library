@@ -92,7 +92,7 @@ class RebuildPipelineStepTests extends ApmBasePipelineTest {
   @Test
   void testWithPrevious2BuildFailure() throws Exception {
     def script = loadScript(scriptName)
-    def previousBuild = [ previousBuild: [ currentResult: 'FAILURE' ] ]
+    def previousBuild = [ currentResult: 'FAILURE', previousBuild: [ currentResult: 'FAILURE' ] ]
     binding.getVariable('currentBuild').previousBuild = previousBuild
     env.JOB_NAME = 'apm-agent-python-mbp'
     binding.setVariable('params', [ a: 'foo' ])
@@ -103,4 +103,17 @@ class RebuildPipelineStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void testWithPreviousLastBuildSuccess() throws Exception {
+    def script = loadScript(scriptName)
+    def previousBuild = [ currentResult: 'FAILURE', previousBuild: [ currentResult: 'SUCCESS' ] ]
+    binding.getVariable('currentBuild').previousBuild = previousBuild
+    env.JOB_NAME = 'apm-agent-python-mbp'
+    binding.setVariable('params', [ a: 'foo' ])
+    script.call()
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'there are more than 2 previous build failures.'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-agent-python-mbp'))
+    assertJobStatusSuccess()
+  }
 }
