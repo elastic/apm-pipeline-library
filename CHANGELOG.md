@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.49 (17/12/2019)
+
+#### 🚀 Enhancements
+
+-  enable rebuild if checkout issues [#311](https://github.com/elastic/apm-pipeline-library/pull/311)
+
+#### ⚙️ CI
+
+-  ci(jenkins): enable github pr comments [#309](https://github.com/elastic/apm-pipeline-library/pull/309)
+
+---
+
 ## v1.1.48 (16/12/2019)
 
 #### 🚀 Enhancements
