@@ -158,4 +158,43 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm@example.com'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testRebuildWhenEnvIssueAlreadySet() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BUILD_CAUSE = 'pr'
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('rebuildPipeline', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRebuildWhenEnvIssueAlreadySetWithAFailure() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BUILD_CAUSE = 'pr'
+    binding.getVariable('currentBuild').currentResult = 'FAILURE'
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('rebuildPipeline', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRebuildWhenEnvIssueUnset() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('rebuildPipeline', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRebuildWhenEnvIssueUnsetAndFailure() throws Exception {
+    def script = loadScript(scriptName)
+    binding.getVariable('currentBuild').currentResult = 'FAILURE'
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('rebuildPipeline', 1))
+  }
 }

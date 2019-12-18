@@ -103,7 +103,7 @@ def call(Map params = [:]){
       error "${message}"
     }
     githubEnv()
-    if(isUserTrigger() || isCommentTrigger()){
+    if(isUserTrigger() || isCommentTrigger() || isUpstreamTrigger()){
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
         githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
