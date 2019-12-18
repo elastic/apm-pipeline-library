@@ -1,5 +1,46 @@
 # Changelog
 
+## v1.1.51 (18/12/2019)
+
+#### 🚀 Enhancements
+
+-  support upstreamTrigger validation in the 1st time contributors [#315](https://github.com/elastic/apm-pipeline-library/pull/315)
+
+#### 🐛 Bug Fixes
+
+-  revert isCommentTrigger implementation [#316](https://github.com/elastic/apm-pipeline-library/pull/316)
+
+---
+
+## v1.1.50 (18/12/2019)
+
+#### ⚙️ CI
+
+-  enable rebuild for the other main MPBs [#314](https://github.com/elastic/apm-pipeline-library/pull/314)
+
+---
+
+## v1.1.49 (17/12/2019)
+
+#### 🚀 Enhancements
+
+-  enable rebuild if checkout issues [#311](https://github.com/elastic/apm-pipeline-library/pull/311)
+
+#### ⚙️ CI
+
+-  ci(jenkins): enable github pr comments [#309](https://github.com/elastic/apm-pipeline-library/pull/309)
+
+---
+
+## v1.1.48 (16/12/2019)
+
+#### 🚀 Enhancements
+
+-  enable github comment for pull requests [#308](https://github.com/elastic/apm-pipeline-library/pull/308)
+-  Enable to customise the GH checks with URLs [#307](https://github.com/elastic/apm-pipeline-library/pull/307)
+
+---
+
 ## v1.1.47 (13/12/2019)
 
 #### ⚙️ CI
@@ -215,14 +256,14 @@
 
 #### 🚀 Enhancements
 
--  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 -  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
+-  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 
 #### 🐛 Bug Fixes
 
+-  fix: build version might differ when using aliases [#208](https://github.com/elastic/apm-pipeline-library/pull/208)
 -  fix: shallow cloning with mergeTarget is not allowed [#196](https://github.com/elastic/apm-pipeline-library/pull/196)
 -  fix: net.sf.json.JSONNull when authentication is disabled [#207](https://github.com/elastic/apm-pipeline-library/pull/207)
--  fix: build version might differ when using aliases [#208](https://github.com/elastic/apm-pipeline-library/pull/208)
 
 ---
 
@@ -242,9 +283,9 @@
 
 #### 🙈 No user affected
 
+-  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 -  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
 -  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
--  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 
 ---
 
@@ -546,8 +587,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix: add pipeline to the job link, remove double slash from URLs [#96](https://github.com/elastic/apm-pipeline-library/pull/96)
 -  fix: notify on cleanup stage [#94](https://github.com/elastic/apm-pipeline-library/pull/94)
+-  fix: add pipeline to the job link, remove double slash from URLs [#96](https://github.com/elastic/apm-pipeline-library/pull/96)
 
 ---
 

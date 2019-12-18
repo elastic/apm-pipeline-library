@@ -102,3 +102,4 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/log.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/rebuildPipeline.dsl"

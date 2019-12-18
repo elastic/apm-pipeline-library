@@ -385,6 +385,20 @@ If it is not approved, the method will throw an error.
 githubPrCheckApproved()
 ```
 
+## githubPrComment
+Add a comment in the GitHub.
+
+```
+githubPrComment()
+
+githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+```
+
+* details: URL of the details report to be reported as a comment. Default ''
+
+
+[Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
+
 ## githubPrInfo
 Get the Pull Request details from the Github REST API.
 
@@ -481,6 +495,13 @@ Check it the build was triggered by a timer (scheduled job).
 def timmerTrigger = isTimerTrigger()
 ```
 
+## isUpstreamTrigger
+Check if the build was triggered by an upstream job.
+
+```
+def upstreamTrigger = isUpstreamTrigger()
+```
+
 ## isUserTrigger
 Check it the build was triggered by a user.
 it stores the username in the BUILD_CAUSE_USER environment variable.
@@ -508,6 +529,8 @@ the log level by default is INFO.
 Send an email message with a summary of the build result,
 and send some data to Elastic search.
 
+Besides, if there are checkout environmental issues then it will rebuild the pipeline.
+
 ```
 notifyBuildResult()
 ```
@@ -521,6 +544,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
+* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -581,6 +605,16 @@ def i = randomNumber()
 
 ```
 def i = randomNumber(min: 1, max: 99)
+```
+
+## rebuildPipeline
+Rebuild the pipeline if supported, for such, it does use the built-in env variable
+`JOB_NAME`.
+
+It does require the parameters for the pipeline to be exposed as environment variables.
+
+```
+rebuildPipeline()
 ```
 
 ## rubygemsLogin
@@ -881,7 +915,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 * context: Name of the GH check context. (Mandatory).
 * description: Description of the GH check. If unset then it will use the description.
-* tabs: What kind of details links will be used. Enum type: tests, changes, artifacts and pipeline). Default pipeline.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
