@@ -495,6 +495,13 @@ Check it the build was triggered by a timer (scheduled job).
 def timmerTrigger = isTimerTrigger()
 ```
 
+## isUpstreamTrigger
+Check if the build was triggered by an upstream job.
+
+```
+def upstreamTrigger = isUpstreamTrigger()
+```
+
 ## isUserTrigger
 Check it the build was triggered by a user.
 it stores the username in the BUILD_CAUSE_USER environment variable.

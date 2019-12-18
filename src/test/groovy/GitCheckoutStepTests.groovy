@@ -41,6 +41,7 @@ class GitCheckoutStepTests extends BasePipelineTest {
     helper.registerAllowedMethod("githubPrCheckApproved", [], { return true })
     helper.registerAllowedMethod("withEnvWrapper", [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod("log", [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod("isUpstreamTrigger", {return false})
     helper.registerAllowedMethod("isUserTrigger", {return false})
     helper.registerAllowedMethod("isCommentTrigger", {return false})
     binding.getVariable('currentBuild').getBuildCauses = {
@@ -310,7 +311,6 @@ class GitCheckoutStepTests extends BasePipelineTest {
   @Test
   void testUserTriggered() throws Exception {
     helper.registerAllowedMethod("isUserTrigger", {return true})
-    helper.registerAllowedMethod("isCommentTrigger", {return true})
     def script = loadScript(scriptName)
     script.scm = "SCM"
     try {
@@ -341,6 +341,25 @@ class GitCheckoutStepTests extends BasePipelineTest {
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
         call.methodName == "error"
+    }.any { call ->
+        callArgsToString(call).contains('branch=master, repo=null or credentialsId=credentials-id')
+    })
+  }
+
+  @Test
+  void testUpstreamTriggered() throws Exception {
+    helper.registerAllowedMethod('isUpstreamTrigger', {return true})
+    def script = loadScript(scriptName)
+    script.scm = "SCM"
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  credentialsId: 'credentials-id')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(helper.callStack.findAll { call ->
+        call.methodName == 'error'
     }.any { call ->
         callArgsToString(call).contains('branch=master, repo=null or credentialsId=credentials-id')
     })
