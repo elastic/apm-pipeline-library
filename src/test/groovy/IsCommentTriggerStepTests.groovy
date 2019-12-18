@@ -56,12 +56,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      Cause cause = new IssueCommentCause("admin","Started by a comment")
-      List<Cause> result = new ArrayList()
-      if(s.equals('IssueCommentCause')){
-        result.add(cause);
-      }
-      return result
+      return buildIssueCommentCause(s)
     }
     def ret = script.call()
     printCallStack()
@@ -87,12 +82,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoElasticUserWithSomeOrgs() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      Cause cause = new IssueCommentCause("admin","Started by a comment")
-      List<Cause> result = new ArrayList()
-      if(s.equals('IssueCommentCause')){
-        result.add(cause);
-      }
-      return result
+      return buildIssueCommentCause(s)
     }
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
     def ret = script.call()
@@ -104,17 +94,21 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoElasticUserWithoutOrgs() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      Cause cause = new IssueCommentCause("admin","Started by a comment")
-      List<Cause> result = new ArrayList()
-      if(s.equals('IssueCommentCause')){
-        result.add(cause);
-      }
-      return result
+      return buildIssueCommentCause(s)
     }
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
+  }
+
+  def buildIssueCommentCause(String key) {
+    List<Cause> result = new ArrayList()
+    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
+    if(key.contains('IssueCommentCause')){
+      result.add(cause)
+    }
+    return result
   }
 }

@@ -43,7 +43,7 @@ def call(){
 @NonCPS
 def getCommentData() {
   def data = [:]
-  def triggerCause = currentBuild.getBuildCauses('IssueCommentCause')
+  def triggerCause = currentBuild.getBuildCauses('org.jenkinsci.plugins.pipeline.github.trigger.IssueCommentCause')
   if (triggerCause.size() > 0) {
     data = [ comment: triggerCause.get(0).comment, user: triggerCause.get(0).userLogin ]
   }
