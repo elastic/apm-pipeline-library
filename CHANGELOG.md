@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.51 (18/12/2019)
+
+#### 🚀 Enhancements
+
+-  support upstreamTrigger validation in the 1st time contributors [#315](https://github.com/elastic/apm-pipeline-library/pull/315)
+
+#### 🐛 Bug Fixes
+
+-  revert isCommentTrigger implementation [#316](https://github.com/elastic/apm-pipeline-library/pull/316)
+
+---
+
 ## v1.1.50 (18/12/2019)
 
 #### ⚙️ CI
@@ -244,14 +256,14 @@
 
 #### 🚀 Enhancements
 
--  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 -  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
+-  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 
 #### 🐛 Bug Fixes
 
+-  fix: build version might differ when using aliases [#208](https://github.com/elastic/apm-pipeline-library/pull/208)
 -  fix: shallow cloning with mergeTarget is not allowed [#196](https://github.com/elastic/apm-pipeline-library/pull/196)
 -  fix: net.sf.json.JSONNull when authentication is disabled [#207](https://github.com/elastic/apm-pipeline-library/pull/207)
--  fix: build version might differ when using aliases [#208](https://github.com/elastic/apm-pipeline-library/pull/208)
 
 ---
 
@@ -570,13 +582,13 @@
 
 #### 🚀 Enhancements
 
--  [APM-CI] Provide JUnit report for checkLicenses [#77](https://github.com/elastic/apm-pipeline-library/pull/77)
 -  feat: update k8s clusters from CI on Mondays [#93](https://github.com/elastic/apm-pipeline-library/pull/93)
+-  [APM-CI] Provide JUnit report for checkLicenses [#77](https://github.com/elastic/apm-pipeline-library/pull/77)
 
 #### 🐛 Bug Fixes
 
--  fix: add pipeline to the job link, remove double slash from URLs [#96](https://github.com/elastic/apm-pipeline-library/pull/96)
 -  fix: notify on cleanup stage [#94](https://github.com/elastic/apm-pipeline-library/pull/94)
+-  fix: add pipeline to the job link, remove double slash from URLs [#96](https://github.com/elastic/apm-pipeline-library/pull/96)
 
 ---
 
