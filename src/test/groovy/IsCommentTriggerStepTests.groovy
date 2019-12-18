@@ -44,6 +44,24 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
     }
   }
 
+  class RawBuild {
+    private final Cause cause
+
+    public RawBuild(Cause cause){
+      this.cause = cause
+    }
+
+    public Cause getCause(String clazz) {
+      return cause
+    }
+
+    public List<Cause> getCauses(){
+      List<Cause> list = new ArrayList()
+      list.add(cause)
+      return list
+    }
+  }
+
   def script
 
   @Override
@@ -55,9 +73,8 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      return buildIssueCommentCause(s)
-    }
+    Cause cause = new IssueCommentCause("admin","Started by a comment")
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -68,11 +85,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoCommentTriggered() throws Exception {
-    Closure<List<Cause>> getBuildCauses = { String s ->
-      List<Cause> result = new ArrayList()
-      return result
-    }
-    binding.getVariable('currentBuild').getBuildCauses = getBuildCauses
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(null)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -81,9 +94,8 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoElasticUserWithSomeOrgs() throws Exception {
-    binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      return buildIssueCommentCause(s)
-    }
+    Cause cause = new IssueCommentCause("admin","Started by a comment")
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
     def ret = script.call()
     printCallStack()
@@ -93,9 +105,8 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoElasticUserWithoutOrgs() throws Exception {
-    binding.getVariable('currentBuild').getBuildCauses = { String s ->
-      return buildIssueCommentCause(s)
-    }
+    Cause cause = new IssueCommentCause("admin","Started by a comment")
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
     helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
     def ret = script.call()
     printCallStack()
