@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.50 (18/12/2019)
+
+#### ⚙️ CI
+
+-  enable rebuild for the other main MPBs [#314](https://github.com/elastic/apm-pipeline-library/pull/314)
+
+---
+
 ## v1.1.49 (17/12/2019)
 
 #### 🚀 Enhancements
@@ -562,8 +570,8 @@
 
 #### 🚀 Enhancements
 
--  feat: update k8s clusters from CI on Mondays [#93](https://github.com/elastic/apm-pipeline-library/pull/93)
 -  [APM-CI] Provide JUnit report for checkLicenses [#77](https://github.com/elastic/apm-pipeline-library/pull/77)
+-  feat: update k8s clusters from CI on Mondays [#93](https://github.com/elastic/apm-pipeline-library/pull/93)
 
 #### 🐛 Bug Fixes
 
