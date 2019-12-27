@@ -38,6 +38,10 @@ order to utilize the local Jenkins master:
   After installation, authenticate with our secrets server by following the
   [directions](https://github.com/elastic/infra/blob/master/docs/vault/README.md#github-auth).
 
+  You may also need to authenticate to the Elastic Docker repo. You can do so by visiting
+  the [registry authentication page](https://github.com/elastic/infra/blob/master/docs/vault/README.md#github-auth).
+
+
 ### APM Pipeline shared library
 
 This particular Jenkins instance got the shared library loaded by default.
