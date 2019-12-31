@@ -34,17 +34,47 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testMissingArguments() throws Exception {
+  void testMissingSecretArgument() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret', user_var_name: 'foo'){
+      script.withSingleValue(user_var_name: 'foo', pass_var_name: 'pass'){
         //NOOP
       }
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: Missing variables'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: secret is a mandatory parameter.'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingPassArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.withSingleValue(secret: 'secret', user_var_name: 'foo'){
+        //NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: pass_var_name is a mandatory parameter.'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testMissingUserArgument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.withSingleValue(secret: 'secret', pass_var_name: 'pass'){
+        //NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: user_var_name is a mandatory parameter.'))
     assertJobStatusFailure()
   }
 
@@ -52,7 +82,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void testSecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError', user_var_name: 'foo', pass_var_name: 'bar'){
+      script.withSingleValue(secret: 'secretError', user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -67,7 +97,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void testSecretNotFound() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
+      script.withSingleValue(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -79,7 +109,31 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void testWithSingleValue() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.withSingleValue(secret: 'secret', user_var_name: 'foo', pass_var_name: 'bar'){
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithSingleValueParams() throws Exception {
+    def script = loadScript(scriptName)
+    def isOK = false
+    script.withSingleValue(secret: 'secret', user_var_name: 'U1', pass_var_name: 'P1'){
+      isOK = (binding.getVariable('U1') == 'username' && binding.getVariable('P1') == 'user_password')
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithSecretVaultAndSingleValue() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: 'secret', user_var_name: 'foo', pass_var_name: 'bar'){
@@ -91,14 +145,11 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testParams() throws Exception {
+  void testWithSecretVaultAndMultipleValues() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret', user_var_name: 'U1', pass_var_name: 'P1'){
-      if(binding.getVariable("U1") == "username"
-        && binding.getVariable("P1") == "user_password"){
-        isOK = true
-      }
+    script.call(secret: 'secret', data: [ foo: 'var' ]){
+      isOK = true
     }
     printCallStack()
     assertTrue(isOK)

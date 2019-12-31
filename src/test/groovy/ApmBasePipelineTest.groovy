@@ -20,6 +20,7 @@ import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
+import co.elastic.mock.WithSecretVaultMock
 import co.elastic.TestUtils
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
@@ -49,10 +50,11 @@ class ApmBasePipelineTest extends BasePipelineTest {
     registerSharedLibraryMethods()
 
     binding.setVariable('env', env)
-    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
-    binding.setProperty('steps', new StepsMock())
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('pullRequest', new PullRequestMock())
+    binding.setProperty('steps', new StepsMock())
+    binding.setProperty('withSecretVault', new WithSecretVaultMock())
   }
 
   void registerDeclarativeMethods() {
