@@ -56,8 +56,8 @@ def call() {
     case ~/.*apm-agent-rum-mbp.*/:
       apmAgentRum()
       break
-    case ~/.*apm-integration-tests\/PR-.*/:
-      apmIntegrationsLibrary()
+    case ~/.*apm-integration-tests\/.*/:
+      apmIntegrationTests()
       break
     case ~/.*apm-pipeline-library-mbp.*/:
       apmPipelineLibrary()
@@ -129,7 +129,7 @@ def apmAgentRum() {
                      booleanParam(name: 'bench_ci', value: params.bench_ci)])
 }
 
-def apmIntegrationsLibrary() {
+def apmIntegrationTests() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
         parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
                      string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
