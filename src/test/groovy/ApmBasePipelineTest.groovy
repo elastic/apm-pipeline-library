@@ -185,6 +185,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
         //NOOP
       }
     })
+    helper.registerAllowedMethod('checkout', [String.class], null)
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -297,11 +298,16 @@ class ApmBasePipelineTest extends BasePipelineTest {
       return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
     })
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
+    helper.registerAllowedMethod('githubEnv', [], null)
+    helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
+    helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isUpstreamTrigger', { return false })
+    helper.registerAllowedMethod('isUserTrigger', { return false })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
