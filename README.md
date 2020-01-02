@@ -182,17 +182,16 @@ To run the JJBB locally you must ensure that you have an /etc/hosts entry which 
 
 To prepare to test most pipelines, you must first set up the APM jobs folder:
 ```bash
-  sh local/test-jjbb.sh .ci/jobs/apm-shared.yml
+  sh local/test-jjbb.sh -j .ci/jobs/apm-shared.yml
 ```
 
 ```bash
-  sh local/test-jjbb.sh .ci/jobs/apm-docker-images-pipeline.yml
+  sh local/test-jjbb.sh -j .ci/jobs/apm-docker-images-pipeline.yml
 ```
 
 Then open http://localhost:18080
 
-Debugging can be made easier by changing the `-l info` flags in the `test-jjbb.sh` script
-to `-l debug`
+Debugging can be made easier by passing `-ldebug` to `test-jbb.sh`.
 
 ## pre-commit-hooks
 
