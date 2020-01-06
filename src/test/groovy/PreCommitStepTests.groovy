@@ -63,6 +63,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'bar | xargs pre-commit run --files'))
     assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.HOME}"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "PATH=${env.HOME}/bin"))
     assertJobStatusSuccess()
   }
 
@@ -111,6 +112,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     script.call(commit: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.WORKSPACE}"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "PATH=${env.WORKSPACE}/bin"))
     assertJobStatusSuccess()
   }
 }
