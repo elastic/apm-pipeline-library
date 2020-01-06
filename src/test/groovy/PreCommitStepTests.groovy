@@ -26,6 +26,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.HOME = '/home'
   }
 
   @Test
@@ -61,6 +62,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'bar | xargs pre-commit run --files'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.HOME}"))
     assertJobStatusSuccess()
   }
 
@@ -99,6 +101,16 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sshagent', '[f6c7695a-671e-4f4f-a331-acdce44ff9ba]'))
     assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWithoutHome() throws Exception {
+    def script = loadScript(scriptName)
+    env.remove('HOME')
+    script.call(commit: 'foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.WORKSPACE}"))
     assertJobStatusSuccess()
   }
 }
