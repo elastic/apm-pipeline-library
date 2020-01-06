@@ -24,7 +24,7 @@ def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
 
   if (env?.CHANGE_ID) {
-    pullRequest.comment(commentTemplate(details: "${details}"))
+    addOrEditComment(commentTemplate(details: "${details}"))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -55,4 +55,33 @@ def commentTemplate(Map params = [:]) {
     ${toJSON(createBuildInfo()).toString()}
     PIPELINE-->
   """.stripIndent()
+}
+
+def addOrEditComment(String details) {
+  // Get all the comments for the given PR.
+  def comments = getComments()
+
+  // Get the latest comment that was added with this step.
+  def lastComment = getLatestBuildComment(comments)
+
+  if (lastComment) {
+    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${lastComment.id}'.")
+    pullRequest.editComment(lastComment.id, details)
+  } else {
+    log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
+    pullRequest.comment(details)
+  }
+}
+
+def getComments() {
+  def token = getGithubToken()
+  def comments = githubApiCall(token: token, url: "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments")
+
+  return comments
+}
+
+def getLatestBuildComment(comments) {
+  return comments
+    .reverse()
+    .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }
 }
