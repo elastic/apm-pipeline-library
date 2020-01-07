@@ -75,9 +75,6 @@ pipeline {
       }
     }
     stage('Check pre-commit') {
-      environment {
-        HOME = "${env.WORKSPACE}"
-      }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
