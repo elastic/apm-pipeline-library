@@ -45,10 +45,14 @@ def call(Map params = [:]) {
     if (registry && secretRegistry) {
       dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
     }
-    sh """
-      curl https://pre-commit.com/install-local.py | python -
-      git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
-    """
+
+    def newHome = env.HOME ?: env.WORKSPACE
+    withEnv(["HOME=${newHome}", "PATH=${newHome}/bin:${env.PATH}"]) {
+      sh """
+        curl https://pre-commit.com/install-local.py | python -
+        git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
+      """
+    }
   }
   if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
