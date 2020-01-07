@@ -386,13 +386,18 @@ githubPrCheckApproved()
 ```
 
 ## githubPrComment
-Add a comment in the GitHub.
+Add a comment or edit an existing comment in the GitHub.
 
 ```
 githubPrComment()
 
 githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 ```
+
+_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+
+
+Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
 

@@ -56,6 +56,9 @@ def call() {
     case ~/.*apm-agent-rum-mbp.*/:
       apmAgentRum()
       break
+    case ~/.*apm-integration-tests\/.*/:
+      apmIntegrationTests()
+      break
     case ~/.*apm-pipeline-library-mbp.*/:
       apmPipelineLibrary()
       break
@@ -124,6 +127,13 @@ def apmAgentRum() {
                      booleanParam(name: 'saucelab_test', value: params.saucelab_test),
                      booleanParam(name: 'parallel_test', value: params.parallel_test),
                      booleanParam(name: 'bench_ci', value: params.bench_ci)])
+}
+
+def apmIntegrationTests() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
+        parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
+                     string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
+                     booleanParam(name: 'Run_As_Master_Branch', value: params.Run_As_Master_Branch)])
 }
 
 def apmPipelineLibrary() {
