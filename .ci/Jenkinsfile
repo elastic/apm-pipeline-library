@@ -25,7 +25,7 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'DEBUG'
-    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.WORKSPACE}/bin:${env.PATH}"
+    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
