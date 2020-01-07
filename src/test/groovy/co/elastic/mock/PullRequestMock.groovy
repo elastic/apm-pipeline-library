@@ -29,4 +29,8 @@ class PullRequestMock implements Serializable {
   public void comment(String description) {
     this.description = description
   }
+
+  public void editComment(int id, String description) {
+    this.description = description
+  }
 }
