@@ -16,9 +16,14 @@
 // under the License.
 
 /**
-  Add a comment in the GitHub.
+  Add a comment or edit an existing comment in the GitHub.
 
   githubPrComment()
+
+  githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+
+  _NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+
 */
 def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
@@ -58,11 +63,9 @@ def commentTemplate(Map params = [:]) {
 }
 
 def addOrEditComment(String details) {
-  // Get all the comments for the given PR.
-  def comments = getComments()
 
-  // Get the latest comment that was added with this step.
-  def lastComment = getLatestBuildComment(comments)
+  // Get the latest comment that was added with this step, if any.
+  def lastComment = getLatestBuildComment()
 
   if (lastComment) {
     log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${lastComment.id}'.")
@@ -80,7 +83,9 @@ def getComments() {
   return comments
 }
 
-def getLatestBuildComment(comments) {
+def getLatestBuildComment() {
+  // Get all the comments for the given PR.
+  def comments = getComments()
   return comments
     .reverse()
     .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }

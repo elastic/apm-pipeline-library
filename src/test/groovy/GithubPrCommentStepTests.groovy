@@ -140,7 +140,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   @Test
   void testGetLatestBuildComment() throws Exception {
     def script = loadScript(scriptName)
-    def obj = script.getLatestBuildComment(commentInterceptor)
+    def obj = script.getLatestBuildComment()
     printCallStack()
     assertNotNull(obj)
     assertJobStatusSuccess()
