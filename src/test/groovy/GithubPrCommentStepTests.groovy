@@ -147,7 +147,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testAddOrEditCommentForExistingId() throws Exception {
+  void testEditCommentForExistingId() throws Exception {
     def script = loadScript(scriptName)
     def obj = script.addOrEditComment('foo')
     printCallStack()
@@ -156,7 +156,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testAddOrEditCommentForUnexisting() throws Exception {
+  void testAddCommentForUnexisting() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubApiCall', [Map.class], { return [[]]} )
     def obj = script.addOrEditComment('foo')
