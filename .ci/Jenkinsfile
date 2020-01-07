@@ -114,13 +114,15 @@ pipeline {
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
-          validateDeclarativePipeline '.ci/Jenkinsfile'
-          validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-          validateDeclarativePipeline '.ci/dockerImagesESLatest.groovy'
-          validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
-          validateDeclarativePipeline '.ci/schedule-daily.groovy'
-          validateDeclarativePipeline '.ci/schedule-weekly.groovy'
-          validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          dir("${BASE_DIR}"){
+            validateDeclarativePipeline '.ci/Jenkinsfile'
+            validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/schedule-daily.groovy'
+            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          }
         }
       }
     }
@@ -152,7 +154,6 @@ pipeline {
   }
   post {
     always {
-      sh 'env | sort'
       githubPrComment()
     }
     cleanup {
