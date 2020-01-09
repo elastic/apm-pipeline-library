@@ -211,7 +211,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void testGitCheckoutIsNotAnIssue() throws Exception {
     def script = loadScript(scriptName)
     def obj = script.isGitCheckoutIssue()
-    printCallStack()
     assertFalse(obj)
   }
 }
