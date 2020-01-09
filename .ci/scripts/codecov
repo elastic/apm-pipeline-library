@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 set -e
-docker run --rm -t -v "$(pwd):/app" -u "$(id -u):$(id -g)" docker.elastic.co/observability-ci/codecov "$@"
+
+IMAGE="docker.elastic.co/observability-ci/codecov"
+docker pull "${IMAGE}" > /dev/null || true
+
+docker run --rm -t -v "$(pwd):/app" -u "$(id -u):$(id -g)" "${IMAGE}" "$@"

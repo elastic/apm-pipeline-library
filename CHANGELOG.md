@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.53 (09/01/2020)
+
+#### 🚀 Enhancements
+
+-  Add options parser to test-jjbb [#323](https://github.com/elastic/apm-pipeline-library/pull/323)
+
+#### 🐛 Bug Fixes
+
+-  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
+-  ci(jenkins): validate pipelines [#326](https://github.com/elastic/apm-pipeline-library/pull/326)
+
+#### ⚙️ CI
+
+-  ci: bump version of the local jenkins instance [#327](https://github.com/elastic/apm-pipeline-library/pull/327)
+
+---
+
 ## v1.1.52 (07/01/2020)
 
 #### 🚀 Enhancements
@@ -243,12 +260,12 @@
 
 #### 🚀 Enhancements
 
--  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
--  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
--  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
 -  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 -  enable jjbb validation locally [#217](https://github.com/elastic/apm-pipeline-library/pull/217)
 -  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
+-  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
+-  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
+-  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
 
 #### 🐛 Bug Fixes
 
@@ -551,17 +568,17 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: change .jenkins_python.yml file path [#106](https://github.com/elastic/apm-pipeline-library/pull/106)
 -  fix: change cluster job names on the weekly job [#102](https://github.com/elastic/apm-pipeline-library/pull/102)
 -  fix: throw an error when GitHub API call fails [#110](https://github.com/elastic/apm-pipeline-library/pull/110)
--  fix: change .jenkins_python.yml file path [#106](https://github.com/elastic/apm-pipeline-library/pull/106)
 
 #### ⚙️ CI
 
--  ci: Cache Oracle Instant Client Docker Image [#100](https://github.com/elastic/apm-pipeline-library/pull/100)
 -  ci: ignore stage failures and continue [#108](https://github.com/elastic/apm-pipeline-library/pull/108)
 -  feat: retry in case vault is not reachable [#107](https://github.com/elastic/apm-pipeline-library/pull/107)
 -  ci: remove quiet period on cluster updates [#104](https://github.com/elastic/apm-pipeline-library/pull/104)
 -  ci: disable SCM trigger for Observability test environments jobs [#105](https://github.com/elastic/apm-pipeline-library/pull/105)
+-  ci: Cache Oracle Instant Client Docker Image [#100](https://github.com/elastic/apm-pipeline-library/pull/100)
 
 ---
 
