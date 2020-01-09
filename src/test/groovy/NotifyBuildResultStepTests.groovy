@@ -203,7 +203,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     binding.getVariable('currentBuild').currentResult = 'FAILURE'
     def obj = script.isGitCheckoutIssue()
-    printCallStack()
     assertTrue(obj)
   }
 
