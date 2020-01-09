@@ -59,6 +59,9 @@ def call() {
     case ~/.*apm-integration-tests\/.*/:
       apmIntegrationTests()
       break
+    case ~/.*apm-integration-tests-selector-mbp.*/:
+      apmIntegrationTestsSelector()
+      break
     case ~/.*linting-mbp\/.*/:
       apmLinting()
       break
@@ -140,6 +143,16 @@ def apmIntegrationTests() {
         parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
                      string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
                      booleanParam(name: 'Run_As_Master_Branch', value: params.Run_As_Master_Branch)])
+}
+
+def apmIntegrationTestsSelector() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
+        parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
+                     string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
+                     string(name: 'GITHUB_CHECK_REPO', value: params.GITHUB_CHECK_REPO),
+                     string(name: 'GITHUB_CHECK_NAME', value: params.GITHUB_CHECK_NAME),
+                     string(name: 'AGENT_INTEGRATION_TEST', value: params.AGENT_INTEGRATION_TEST),
+                     string(name: 'GITHUB_CHECK_SHA1', value: params.GITHUB_CHECK_SHA1)])
 }
 
 def apmLinting() {
