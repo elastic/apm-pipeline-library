@@ -168,11 +168,30 @@ Some hooks might require some extra tools such as:
 If the local jenkins instance has been enabled then it's possible to validate whether the JJBB
 files are healthy enough.
 
+Prepare test environment by first changing to the local/ directory and running:
 ```bash
-  sh local/test-jjbb.sh .ci/jobs/apm-docker-images-pipeline.yml
+  make start
+```
+Logs for the running Jenkins instance can then be viewed if you wish by running
+```bash
+  make logs
+```
+
+To run the JJBB locally you must ensure that you have an /etc/hosts entry which maps
+`jenkins` to `localhost`.
+
+To prepare to test most pipelines, you must first set up the APM jobs folder:
+```bash
+  sh local/test-jjbb.sh -j .ci/jobs/apm-shared.yml
+```
+
+```bash
+  sh local/test-jjbb.sh -j .ci/jobs/apm-docker-images-pipeline.yml
 ```
 
 Then open http://localhost:18080
+
+Debugging can be made easier by passing `-ldebug` to `test-jbb.sh`.
 
 ## pre-commit-hooks
 

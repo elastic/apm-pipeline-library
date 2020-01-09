@@ -25,7 +25,7 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'DEBUG'
-    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.WORKSPACE}/bin:${env.PATH}"
+    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -75,9 +75,6 @@ pipeline {
       }
     }
     stage('Check pre-commit') {
-      environment {
-        HOME = "${env.WORKSPACE}"
-      }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
@@ -114,13 +111,15 @@ pipeline {
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
-          validateDeclarativePipeline '.ci/Jenkinsfile'
-          validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-          validateDeclarativePipeline '.ci/dockerImagesESLatest.groovy'
-          validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
-          validateDeclarativePipeline '.ci/schedule-daily.groovy'
-          validateDeclarativePipeline '.ci/schedule-weekly.groovy'
-          validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          dir("${BASE_DIR}"){
+            validateDeclarativePipeline '.ci/Jenkinsfile'
+            validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/schedule-daily.groovy'
+            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          }
         }
       }
     }
@@ -152,7 +151,6 @@ pipeline {
   }
   post {
     always {
-      sh 'env | sort'
       githubPrComment()
     }
     cleanup {
