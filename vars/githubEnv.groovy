@@ -63,21 +63,22 @@ def getBaseCommit(){
   def baseCommit = ''
   def latestCommit = getGitCommitSha()
   def previousCommit = sh(label: 'Get previous commit', script: "git rev-parse HEAD^", returnStdout: true)?.trim()
+  def isLatestCommitInRepo = sh(label: 'Check latest commit is in the repo', returnStatus: true, script: "git branch -r --contains ${latestCommit}")
+  log(level: 'DEBUG', text: "latestCommit = ${latestCommit}")
+  log(level: 'DEBUG', text: "previousCommit = ${previousCommit}")
+  log(level: 'DEBUG', text: "isLatestCommitInRepo = ${isLatestCommitInRepo}")
+  log(level: 'DEBUG', text: "GIT_COMMIT = ${env.GIT_COMMIT}")
 
-  if(env?.GIT_COMMIT == null){
-    def isLatestCommitInRepo = sh(label: 'Check latest commit is in the repo', returnStatus: true, script: "git branch -r --contains ${latestCommit}")
-    if(isLatestCommitInRepo){
-      env.GIT_COMMIT = latestCommit
-    }
-  }
-
-  if(env?.CHANGE_ID == null){
-    baseCommit = env.GIT_COMMIT
-  } else if("${env.GIT_COMMIT}".equals("${latestCommit}")){
-    baseCommit = env.GIT_COMMIT
+  if(isLatestCommitInRepo){
+    baseCommit = latestCommit
   } else {
     baseCommit = previousCommit
   }
+
+  if(env?.GIT_COMMIT == null){
+    env.GIT_COMMIT = baseCommit
+  }
+
   env.GIT_BASE_COMMIT = baseCommit
   log(level: 'DEBUG', text: "GIT_BASE_COMMIT = ${env.GIT_BASE_COMMIT}")
   return baseCommit

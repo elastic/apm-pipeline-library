@@ -37,6 +37,7 @@ pipeline {
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
   }
+  stages
   {
     stage('Checkout') {
       options { skipDefaultCheckout() }
@@ -49,17 +50,16 @@ pipeline {
             whenFalse(TARGET_BRANCH == "git_base_commit"
               && GIT_COMMIT != commit
               && GIT_SHA != commit
-              && GIT_BASE_COMIT = commit
+              && GIT_BASE_COMIT == commit
             ){
               error("The values are wrong")
             }
           } else if(env.BRANCH_NAME == "PR-333"){
             def commit = "fdcc03e0df0eccee1d55b0a7d1c2c3e16e79d682"
-            whenFalse(
-              TARGET_BRANCH == "git_base_commit"
-              GIT_COMMIT == commit
-              GIT_SHA == commit
-              GIT_BASE_COMIT == commit
+            whenFalse(TARGET_BRANCH == "git_base_commit"
+              && GIT_COMMIT == commit
+              && GIT_SHA == commit
+              && GIT_BASE_COMIT == commit
             ){
               error("The values are wrong")
             }

@@ -97,6 +97,7 @@ unclassified:
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"

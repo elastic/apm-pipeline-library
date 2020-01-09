@@ -142,6 +142,17 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     env.CHANGE_ID = "NotEmpty"
     env.CHANGE_TARGET = "NotEmpty"
     env.GIT_COMMIT = 'different'
+    env.SHA = 'different'
+    helper.registerAllowedMethod(method('sh', Map.class), { map ->
+      if ('git rev-list HEAD --parents -1'.equals(map.script)) {
+        return "${SHA} ${SHA}"
+      } else if('git rev-parse HEAD^'.equals(map.script)){
+        return "previousCommit"
+      } else if(map.script.startsWith("git branch -r --contains")){
+        return "" //it is not a real commit
+      }
+      return ""
+    })
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
