@@ -42,19 +42,22 @@ def call(Map params = [:]){
   return buildInfo
 }
 
-def getRedirectLink(obj, jobName) {
-  def buildNumber
-
-  if(obj instanceof Exception) {
-    obj.toString().split(" ").each {
+def getRedirectLink(buildInfo, jobName) {
+  if(buildInfo instanceof Exception) {
+    def buildNumber = ''
+    buildInfo.toString().split(" ").each {
       if(it.contains("#")) {
         buildNumber = it.substring(1)
       }
     }
-  } else if(obj instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
-    buildNumber = obj.getNumber()
+    if (buildNumber.trim()) {
+      return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
+    } else {
+      return "Can not determine redirect link!!!"
+    }
+  } else if(buildInfo instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
+    return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
   }
-  return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
 }
