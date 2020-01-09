@@ -197,4 +197,21 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('rebuildPipeline', 1))
   }
+
+  @Test
+  void testGitCheckoutIssue() throws Exception {
+    def script = loadScript(scriptName)
+    binding.getVariable('currentBuild').currentResult = 'FAILURE'
+    def obj = script.isGitCheckoutIssue()
+    printCallStack()
+    assertTrue(obj)
+  }
+
+  @Test
+  void testGitCheckoutIsNotAnIssue() throws Exception {
+    def script = loadScript(scriptName)
+    def obj = script.isGitCheckoutIssue()
+    printCallStack()
+    assertFalse(obj)
+  }
 }
