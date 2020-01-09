@@ -59,6 +59,9 @@ def call() {
     case ~/.*apm-integration-tests\/.*/:
       apmIntegrationTests()
       break
+    case ~/.*linting-mbp\/.*/:
+      apmLinting()
+      break
     case ~/.*apm-pipeline-library-mbp.*/:
       apmPipelineLibrary()
       break
@@ -134,6 +137,10 @@ def apmIntegrationTests() {
         parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
                      string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
                      booleanParam(name: 'Run_As_Master_Branch', value: params.Run_As_Master_Branch)])
+}
+
+def apmLinting() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
 }
 
 def apmPipelineLibrary() {
