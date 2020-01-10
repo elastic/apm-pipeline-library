@@ -59,11 +59,20 @@ def call() {
     case ~/.*apm-integration-tests\/.*/:
       apmIntegrationTests()
       break
+    case ~/.*apm-integration-tests-selector-mbp.*/:
+      apmIntegrationTestsSelector()
+      break
+    case ~/.*linting-mbp\/.*/:
+      apmLinting()
+      break
     case ~/.*apm-pipeline-library-mbp.*/:
       apmPipelineLibrary()
       break
     case ~/.*apm-server-mbp.*/:
       apmServer()
+      break
+    case ~/.*opbeans.*-mbp.*/:
+      opbeans()
       break
     default:
       log(level: 'INFO', text: "rebuildPipeline: unsupported job '${env.JOB_NAME}'")
@@ -136,6 +145,20 @@ def apmIntegrationTests() {
                      booleanParam(name: 'Run_As_Master_Branch', value: params.Run_As_Master_Branch)])
 }
 
+def apmIntegrationTestsSelector() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
+        parameters: [string(name: 'ELASTIC_STACK_VERSION', value: params.ELASTIC_STACK_VERSION),
+                     string(name: 'BUILD_OPTS', value: params.BUILD_OPTS),
+                     string(name: 'GITHUB_CHECK_REPO', value: params.GITHUB_CHECK_REPO),
+                     string(name: 'GITHUB_CHECK_NAME', value: params.GITHUB_CHECK_NAME),
+                     string(name: 'AGENT_INTEGRATION_TEST', value: params.AGENT_INTEGRATION_TEST),
+                     string(name: 'GITHUB_CHECK_SHA1', value: params.GITHUB_CHECK_SHA1)])
+}
+
+def apmLinting() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
+}
+
 def apmPipelineLibrary() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
         parameters: [booleanParam(name: 'make_release', value: params.make_release)])
@@ -155,4 +178,8 @@ def apmServer() {
                      booleanParam(name: 'its_ci', value: params.its_ci),
                      string(name: 'DIAGNOSTIC_INTERVAL', value: params.DIAGNOSTIC_INTERVAL),
                      string(name: 'ES_LOG_LEVEL', value: params.ES_LOG_LEVEL)])
+}
+
+def opbeans() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
 }
