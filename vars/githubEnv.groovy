@@ -63,7 +63,7 @@ def getBaseCommit(){
   def baseCommit = ''
   def latestCommit = getGitCommitSha()
   def previousCommit = sh(label: 'Get previous commit', script: "git rev-parse HEAD^", returnStdout: true)?.trim()
-  def isLatestCommitInRepo = sh(label: 'Check latest commit is in the repo', returnStatus: true, script: "git branch -r --contains ${latestCommit}")
+  def isLatestCommitInRepo = sh(label: 'Check latest commit is in the repo', returnStatus: true, script: "git branch -r --contains ${latestCommit}") == 0
   log(level: 'DEBUG', text: "latestCommit = ${latestCommit}")
   log(level: 'DEBUG', text: "previousCommit = ${previousCommit}")
   log(level: 'DEBUG', text: "isLatestCommitInRepo = ${isLatestCommitInRepo}")

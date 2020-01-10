@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+@Library('apm@git_base_commit') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -37,39 +37,84 @@ pipeline {
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
   }
+  parameters {
+    string(name: 'commmit_PR_332', defaultValue: 'fdcc03e0df0eccee1d55b0a7d1c2c3e16e79d682', description: '')
+    string(name: 'commmit_PR_333', defaultValue: 'a93d2304c08473aa52d64ca38d3f3c6ceeeff2ec', description: '')
+  }
   stages
   {
-    stage('Checkout') {
-      options { skipDefaultCheckout() }
-      steps {
-        deleteDir()
-        gitCheckout(basedir: "${BASE_DIR}")
-        script{
-          if(env.BRANCH_NAME == "PR-332"){
-            def commit = "fdcc03e0df0eccee1d55b0a7d1c2c3e16e79d682"
-            whenFalse(TARGET_BRANCH == "git_base_commit"
-              && GIT_COMMIT != commit
-              && GIT_SHA != commit
-              && GIT_BASE_COMIT == commit
-            ){
-              error("The values are wrong")
+    stage('Test'){
+      stages {
+        stage('PR behind master') {
+          options { skipDefaultCheckout() }
+          steps {
+            ws('pr-332'){
+              deleteDir()
+              script{
+                gitCheckout(basedir: "${BASE_DIR}",
+                  mergeTarget: "git_base_commit",
+                  branch: 'pr/332',
+                  repo: "git@github.com:elastic/${env.REPO}.git",
+                  credentialsId: "${JOB_GIT_CREDENTIALS}",
+                  githubNotifyFirstTimeContributor: false,
+                  reference: "/var/lib/jenkins/${env.REPO}.git")
+                def commit = "${params.commmit_PR_332}"
+                dir("${BASE_DIR}"){
+                  sh('''
+                  git log -3
+                  git branch
+                  git branch -v
+                  export
+                  ''')
+                }
+                whenFalse(!env.GIT_COMMIT.equals(commit)){
+                  error("GIT_COMMIT value is wrong expected different than ${commit} but found ${env.GIT_COMMIT}")
+                }
+                whenFalse(!env.GIT_SHA.equals(commit)){
+                  error("GIT_SHA value is wrong expected different than ${commit} but found ${env.GIT_SHA}")
+                }
+                whenFalse(env.GIT_BASE_COMMIT.equals(commit)){
+                  error("GIT_BASE_COMMIT value is wrong expected ${commit} but found ${env.GIT_BASE_COMMIT}")
+                }
+              }
             }
-          } else if(env.BRANCH_NAME == "PR-333"){
-            def commit = "fdcc03e0df0eccee1d55b0a7d1c2c3e16e79d682"
-            whenFalse(TARGET_BRANCH == "git_base_commit"
-              && GIT_COMMIT == commit
-              && GIT_SHA == commit
-              && GIT_BASE_COMIT == commit
-            ){
-              error("The values are wrong")
-            }
-          } else if(env.BRANCH_NAME == "git_base_commit"){
-            log(level: 'INFO', text: "${env.BRANCH_NAME} ignored")
-          } else {
-            log(level: 'INFO', text: "${env.BRANCH_NAME} ignored")
           }
         }
-        stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+        stage('PR sync with master') {
+          options { skipDefaultCheckout() }
+          steps {
+            ws('pr-333'){
+              deleteDir()
+              script{
+                gitCheckout(basedir: "${BASE_DIR}",
+                  mergeTarget: "git_base_commit",
+                  branch: 'pr/332',
+                  repo: "git@github.com:elastic/${env.REPO}.git",
+                  credentialsId: "${JOB_GIT_CREDENTIALS}",
+                  githubNotifyFirstTimeContributor: false,
+                  reference: "/var/lib/jenkins/${env.REPO}.git")
+                dir("${BASE_DIR}"){
+                  sh('''
+                  git log -3
+                  git branch
+                  git branch -v
+                  export
+                  ''')
+                }
+                commit = "${params.commmit_PR_333}"
+                whenFalse(env.GIT_COMMIT.equals(commit)){
+                  error("GIT_COMMIT value is wrong expected ${commit} but found ${env.GIT_COMMIT}")
+                }
+                whenFalse(env.GIT_SHA.equals(commit)){
+                  error("GIT_SHA value is wrong expected ${commit} but found ${env.GIT_SHA}")
+                }
+                whenFalse(env.GIT_BASE_COMMIT.equals(commit)){
+                  error("GIT_BASE_COMMIT value is wrong expected ${commit} but found ${env.GIT_BASE_COMMIT}")
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
