@@ -67,7 +67,7 @@ def call(Map args = [:]) {
     // If there is an issue with the default checkout then the env variable
     // won't be created and let's rebuild
     if (isGitCheckoutIssue()) {
-      currentBuild.description = "${currentBuild.description} Issue: checkout"
+      currentBuild.description = "Issue: timeout checkout ${currentBuild.description?.trim() ? currentBuild.description : ''}"
       rebuildPipeline()
     } else {
       log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
