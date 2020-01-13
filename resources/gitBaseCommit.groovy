@@ -39,45 +39,71 @@ pipeline {
   }
   stages
   {
-    stage('PR behind master') {
+    stage('Test') {
       options { skipDefaultCheckout() }
       steps {
-        test(332)
-      }
-    }
-    stage('PR sync with master') {
-      options { skipDefaultCheckout() }
-      steps {
-        test(333)
+        sh(label: 'Set git username', script: 'git config user.email "username@example.com"')
+        sh(label: 'Set git email', script: 'git config user.name "username"')
+        // full custom checkout
+        test(basedir: "${BASE_DIR}",
+          mergeTarget: "git_base_commit",
+          branch: "${branch}",
+          repo: "git@github.com:elastic/${env.REPO}.git",
+          credentialsId: "${JOB_GIT_CREDENTIALS}",
+          githubNotifyFirstTimeContributor: false,
+          reference: "/var/lib/jenkins/${env.REPO}.git")
+        // checkout scm
+        test(basedir: "${BASE_DIR}")
+        // checkout scm with extensions
+        test(basedir: "${BASE_DIR}", reference: "/var/lib/jenkins/${env.REPO}.git")
       }
     }
   }
 }
 
-def getRealCommit(repo, changeId){
-  return sh(label: 'Get real commit',
-    script: "git ls-remote -q git@github.com:elastic/${repo}.git refs/pull/${changeId}/head|sed 's/refs\\/pull\\/${changeId}\\/head//'",
-    returnStdout: true
-  ).trim()
+def getRealCommit(repo, ref){
+  def refReplace = ref.replace("/", ".")
+  def gitCmd = "git ls-remote -q https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/elastic/${repo}.git ${ref}|sed 's/${refReplace}//'"
+  withCredentials([
+    usernamePassword(
+      credentialsId: "2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken",
+      passwordVariable: 'GIT_PASSWORD',
+      usernameVariable: 'GIT_USERNAME')
+  ]) {
+    log(level: "INFO", text: "executing: ${gitCmd}")
+    return sh(label: 'Get real commit', script: "${gitCmd}", returnStdout: true).trim()
+  }
 }
 
-def test(changeId){
-  def branch = "pr/${changeId}"
+def getBranch(){
+  def branch = "${env.BRANCH_NAME}"
+  if(env.CHANGE_ID){
+    branch = "pr/${env.CHANGE_ID}"
+  }
+  return branch
+}
+
+def getRef(){
+  def ref = "refs/heads/${env.BRANCH_NAME}"
+  if(env.CHANGE_ID){
+    ref = "refs/pull/${env.CHANGE_ID}/head"
+  }
+  return ref
+}
+
+def test(checkoutParams){
+  def branch = getBranch()
+  def ref = getRef()
+  log(level: "INFO", text: "branch: ${branch}")
+  log(level: "INFO", text: "ref: ${ref}")
+
+  deleteDir()
   ws(branch){
-    deleteDir()
-    script{
-      env.CHANGE_ID = changeId
-      String commit = getRealCommit(env.REPO, changeId)
-      gitCheckout(basedir: "${BASE_DIR}",
-        mergeTarget: "git_base_commit",
-        branch: "${branch}",
-        repo: "git@github.com:elastic/${env.REPO}.git",
-        credentialsId: "${JOB_GIT_CREDENTIALS}",
-        githubNotifyFirstTimeContributor: false,
-        reference: "/var/lib/jenkins/${env.REPO}.git")
-      if(!GIT_BASE_COMMIT.trim().equalsIgnoreCase(commit.trim())){
-        error("GIT_BASE_COMMIT value is wrong expected '${commit}' but found '${env.GIT_BASE_COMMIT}'")
-      }
+    String commit = getRealCommit(env.REPO, ref)
+    log(level: "INFO", text: "commit: ${commit}")
+    gitCheckout(checkoutParams)
+    if(!GIT_BASE_COMMIT.trim().equalsIgnoreCase(commit.trim())){
+      error("GIT_BASE_COMMIT value is wrong expected '${commit}' but found '${env.GIT_BASE_COMMIT}'")
     }
   }
 }
