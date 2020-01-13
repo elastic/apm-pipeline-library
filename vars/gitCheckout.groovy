@@ -73,7 +73,7 @@ def call(Map params = [:]){
           extensions: extensions,
           submoduleCfg: scm.submoduleCfg,
           userRemoteConfigs: scm.userRemoteConfigs])
-          fetchPullRefs()
+        fetchPullRefs()
       }
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
