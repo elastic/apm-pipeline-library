@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.55 (13/01/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: support docker.inside with the precommit step [#338](https://github.com/elastic/apm-pipeline-library/pull/338)
+
+---
+
 ## v1.1.54 (10/01/2020)
 
 #### 🚀 Enhancements
@@ -292,8 +300,8 @@
 
 #### ⚙️ CI
 
--  ci(jenkins): update opbeans Docker images build job [#224](https://github.com/elastic/apm-pipeline-library/pull/224)
 -  Use the new credentials for the benchmark ES stack [#226](https://github.com/elastic/apm-pipeline-library/pull/226)
+-  ci(jenkins): update opbeans Docker images build job [#224](https://github.com/elastic/apm-pipeline-library/pull/224)
 
 ---
 
@@ -575,9 +583,9 @@
 
 #### 🚀 Enhancements
 
+-  feat: setup local development [#97](https://github.com/elastic/apm-pipeline-library/pull/97)
 -  feat: generate release notes and changelog from PRs [#103](https://github.com/elastic/apm-pipeline-library/pull/103)
 -  feat: retry Docker login on failure 3 times [#111](https://github.com/elastic/apm-pipeline-library/pull/111)
--  feat: setup local development [#97](https://github.com/elastic/apm-pipeline-library/pull/97)
 
 #### 🐛 Bug Fixes
 
@@ -945,12 +953,12 @@
 
 #### 🚀 Enhancements
 
+-  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 -  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
--  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 
 #### 🐛 Bug Fixes
 
@@ -960,9 +968,9 @@
 
 #### 📚 Documentation
 
+-  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
 -  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 -  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
--  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
 
 #### 🙈 No user affected
 
