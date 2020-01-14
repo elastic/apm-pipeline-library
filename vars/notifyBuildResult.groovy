@@ -74,8 +74,10 @@ def call(Map args = [:]) {
     // 1) If there is an issue in the upstream with the default checkout then the env variable
     // won't be created.
     // 2) If there is an issue with any of the dowstreamjobs related to the timeout.
-    if (isGitCheckoutIssue() || isAnyDownstreamJobFailedWithTimeout(downstreamJobs)) {
+    if (isGitCheckoutIssue()) {
       currentBuild.description = "Issue: timeout checkout ${currentBuild.description?.trim() ? currentBuild.description : ''}"
+      rebuildPipeline()
+    } else if (isAnyDownstreamJobFailedWithTimeout(downstreamJobs)) {  // description is handled with the analyseDownstreamJobsFailures method
       rebuildPipeline()
     } else {
       log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
@@ -132,7 +134,7 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
                   .each { k, v ->
                     def testResultAction = v.rawBuild.getAction(AbstractTestResultAction.class)
                     if (testResultAction != null) {
-                      description << "${k} got ${testResultAction.failCount} test failure(s)"
+                      description << "${k}#${v.getNumber()} got ${testResultAction.failCount} test failure(s)"
                     }
                   }
     currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"

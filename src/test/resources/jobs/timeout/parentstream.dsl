@@ -6,6 +6,7 @@ import groovy.transform.Field
 
 pipeline {
   agent any
+  environment { PIPELINE_LOG_LEVEL = 'DEBUG' }
   stages {
     stage('timeout') { steps { runBuild('timeout') } }
     stage('failure') { steps { runBuild('failure') } }

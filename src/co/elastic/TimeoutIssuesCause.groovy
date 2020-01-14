@@ -22,13 +22,15 @@ import jenkins.model.CauseOfInterruption
 public final class TimeoutIssuesCause extends CauseOfInterruption {
 
   private final String job
+  private final int buildId
 
-  public TimeoutIssuesCause(String job) {
+  public TimeoutIssuesCause(String job, int buildId) {
     this.job = job
+    this.buildId = buildId
   }
 
   @Override
   public String getShortDescription() {
-    return "${job} got a timeout checkout issue"
+    return "${job}#${buildId} got a timeout checkout issue"
   }
 }
