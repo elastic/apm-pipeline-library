@@ -42,8 +42,6 @@ pipeline {
     stage('Test') {
       options { skipDefaultCheckout() }
       steps {
-        sh(label: 'Set git username', script: 'git config --global user.email "username@example.com"')
-        sh(label: 'Set git email', script: 'git config --global user.name "username"')
         // full custom checkout
         test(basedir: "${BASE_DIR}",
           mergeTarget: "git_base_commit",
