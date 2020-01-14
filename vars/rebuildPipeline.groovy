@@ -74,6 +74,9 @@ def call() {
     case ~/.*opbeans.*-mbp.*/:
       opbeans()
       break
+    case ~/it\/timeout-parentstream/:
+      testing()
+      break
     default:
       log(level: 'INFO', text: "rebuildPipeline: unsupported job '${env.JOB_NAME}'")
       break
@@ -181,5 +184,9 @@ def apmServer() {
 }
 
 def opbeans() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
+}
+
+def testing() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
 }

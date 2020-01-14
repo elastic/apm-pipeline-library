@@ -18,7 +18,7 @@ pipeline {
   }
   post {
     always {
-      notifyBuildResult(downstreamJobs: rubyDownstreamJobs, rebuild: false, shouldNotify: false)
+      notifyBuildResult(downstreamJobs: rubyDownstreamJobs, rebuild: true, shouldNotify: false)
     }
   }
 }
