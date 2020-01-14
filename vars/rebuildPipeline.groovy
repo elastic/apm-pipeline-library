@@ -24,12 +24,6 @@ def call() {
     return
   }
 
-  // Let's ensure the params are passed from the pipeline.
-  if (!params?.find()) {
-    log(level: 'INFO', text: "rebuildPipeline: params doesn't exist")
-    return
-  }
-
   // Apply the rebuild only for the explicit pipelines.
   switch(env.JOB_NAME?.trim()) {
     case ~/.*apm-agent-dotnet-mbp.*/:
