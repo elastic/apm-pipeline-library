@@ -69,9 +69,12 @@ def call(Map args = [:]) {
 
   if (rebuild) {
     log(level: 'DEBUG', text: 'notifyBuildResult: rebuild is enabled.')
-    // If there is an issue with the default checkout then the env variable
-    // won't be created and let's rebuild
-    if (isGitCheckoutIssue()) {
+
+    // Supported scenarios to rebuild in case of a timeout issue:
+    // 1) If there is an issue in the upstream with the default checkout then the env variable
+    // won't be created.
+    // 2) If there is an issue with any of the dowstreamjobs related to the timeout.
+    if (isGitCheckoutIssue() || isAnyDownstreamJobFailedWithTimeout(downstreamJobs)) {
       currentBuild.description = "Issue: timeout checkout ${currentBuild.description?.trim() ? currentBuild.description : ''}"
       rebuildPipeline()
     } else {
@@ -116,7 +119,7 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
 
     // Get all the downstreamJobs that got a TimeoutIssueCause
     downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
-                                v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+                                     v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
                   .collectEntries { name, v ->
                     [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
                   }
@@ -134,4 +137,9 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
                   }
     currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"
   }
+}
+
+def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
+  return downstreamJobs?.any { k, v -> v instanceof FlowInterruptedException &&
+                                       v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
 }
