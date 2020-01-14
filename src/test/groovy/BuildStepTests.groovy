@@ -34,7 +34,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/foo/1/display/redirect"))
+    assertTrue(assertMethodCallContainsPattern('log', "/job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 
@@ -44,15 +44,22 @@ public class BuildStepTests extends ApmBasePipelineTest {
     def result = script.call(job: 'nested/foo')
     printCallStack()
     assertTrue(result != null)
-    assertTrue(assertMethodCallContainsPattern('log', "${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
+    assertTrue(assertMethodCallContainsPattern('log', "/job/nested/job/foo/1/display/redirect"))
     assertJobStatusSuccess()
   }
 
   @Test
   void testException() throws Exception {
     def script = loadScript(scriptName)
-    def result = script.getRedirectLink(new Exception('nested » foo #1'), 'nested/foo')
+    def result = script.getRedirectLink('nested » foo #1', 'nested/foo')
     assertTrue(result.contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
+  }
+
+  @Test
+  void testExceptionWithoutTheFormat() throws Exception {
+    def script = loadScript(scriptName)
+    def result = script.getRedirectLink('nested » foo', 'nested/foo')
+    assertTrue(result.contains("Can not determine redirect link"))
   }
 
   @Test

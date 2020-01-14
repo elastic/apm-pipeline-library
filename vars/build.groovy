@@ -33,28 +33,32 @@ def call(Map params = [:]){
 
   def buildInfo
   try {
-      buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
+    buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
   } catch (Exception e) {
-      log(level: 'INFO', text: "${getRedirectLink(e, job)}")
-      throw e
+    def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
+    log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
+    throw e
   }
   log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
   return buildInfo
 }
 
-def getRedirectLink(obj, jobName) {
-  def buildNumber
-
-  if(obj instanceof Exception) {
-    obj.toString().split(" ").each {
-      if(it.contains("#")) {
+def getRedirectLink(buildInfo, jobName) {
+  if(buildInfo instanceof String) {
+    def buildNumber = ''
+    buildInfo.toString().split(' ').each {
+      if(it.contains('#')) {
         buildNumber = it.substring(1)
       }
     }
-  } else if(obj instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
-    buildNumber = obj.getNumber()
+    if (buildNumber.trim()) {
+      return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
+    } else {
+      return "Can not determine redirect link!!!"
+    }
+  } else if(buildInfo instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
+    return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
   }
-  return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
 }

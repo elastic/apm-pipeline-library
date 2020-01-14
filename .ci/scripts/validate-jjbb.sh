@@ -10,7 +10,7 @@ function finish {
 trap finish EXIT
 
 IMAGE="docker.elastic.co/infra/jjbb"
-docker pull "${IMAGE}" > /dev/null
+docker pull "${IMAGE}" > /dev/null || true
 
 echo 'Transform JJBB to JJB'
 docker run -t --rm --user "$(id -u):$(id -g)" \
@@ -20,10 +20,12 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
 echo 'Validate JJB'
 JJB_REPORT="${TMPFOLDER}/jjb.out"
 set +e
+IMAGE="widerplan/jenkins-job-builder"
+docker pull "${IMAGE}" > /dev/null || true
 docker run -t --rm --user "$(id -u):$(id -g)" \
         -v "${TMPFOLDER}:/jjbb" \
         -e HOME=/tmp \
-        widerplan/jenkins-job-builder -l error test /jjbb > "${JJB_REPORT}"
+        "${IMAGE}" -l error test /jjbb > "${JJB_REPORT}"
 
 # shellcheck disable=SC2181
 if [ $? -gt 0 ] ; then
