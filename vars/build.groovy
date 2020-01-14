@@ -33,20 +33,21 @@ def call(Map params = [:]){
 
   def buildInfo
   try {
-      buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
+    buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
   } catch (Exception e) {
-      log(level: 'INFO', text: "${getRedirectLink(e, job)}")
-      throw e
+    def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
+    log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
+    throw e
   }
   log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
   return buildInfo
 }
 
 def getRedirectLink(buildInfo, jobName) {
-  if(buildInfo instanceof Exception) {
+  if(buildInfo instanceof String) {
     def buildNumber = ''
-    buildInfo.toString().split(" ").each {
-      if(it.contains("#")) {
+    buildInfo.toString().split(' ').each {
+      if(it.contains('#')) {
         buildNumber = it.substring(1)
       }
     }
