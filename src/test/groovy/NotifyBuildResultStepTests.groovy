@@ -212,4 +212,13 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def obj = script.isGitCheckoutIssue()
     assertFalse(obj)
   }
+
+  //TODO
+  /**@Test
+  void testAnalyseDownstreamJobsFailuresWithEmpty() throws Exception {
+    def script = loadScript(scriptName)
+    def obj = script.analyseDownstreamJobsFailures([:])
+    assertTrue('')
+  }**/
+
 }

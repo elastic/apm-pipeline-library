@@ -25,9 +25,12 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 **/
 
 import co.elastic.NotificationManager
+import co.elastic.TimeoutIssuesCause
+import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
+  def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
@@ -73,6 +76,11 @@ def call(Map args = [:]) {
       log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
     }
   }
+
+  // This is the one in charge to notify the parenstream with the likelihood downstream issues, if any
+  if (!downstreamJobs.isEmpty()) {
+    analyseDownstreamJobsFailures(downstreamJobs)
+  }
 }
 
 def customisedEmail(String email) {
@@ -98,4 +106,24 @@ def customisedEmail(String email) {
 
 def isGitCheckoutIssue() {
   return currentBuild.currentResult == 'FAILURE' && !env.GIT_BUILD_CAUSE?.trim()
+}
+
+def analyseDownstreamJobsFailures(downstreamJobs) {
+  if (!downstreamJobs.isEmpty()) {
+    def description = ''
+
+    // Explicitly identify the timeout cause issues
+    downstreamJobs.findAll { k, v -> v instanceof TimeoutIssuesCause }
+                  .each { k,v -> description += v.getShortDescription() + " | " }
+
+    // Explicitly identify the test cause issues
+    downstreamJobs.findAll { k, v -> v instanceof RunWrapper && v.resultIsWorseOrEqualTo('UNSTABLE') }
+                  .each { k, v ->
+                    def testResultAction = v.rawBuild.getAction(AbstractTestResultAction.class)
+                    if (testResultAction != null) {
+                      description += "${k} got ${testResultAction.failCount} test failure(s) | "
+                    }
+                  }
+    currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${desciption}"
+  }
 }
