@@ -6,7 +6,10 @@ import groovy.transform.Field
 
 pipeline {
   agent any
-  environment { PIPELINE_LOG_LEVEL = 'DEBUG' }
+  environment {
+    PIPELINE_LOG_LEVEL = 'DEBUG'
+    GIT_BUILD_CAUSE = 'pr'  // gitCheckout step is not called so let's mimic its behaviour
+  }
   stages {
     stage('timeout') { steps { runBuild('timeout') } }
     stage('failure') { steps { runBuild('failure') } }
