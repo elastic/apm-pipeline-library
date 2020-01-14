@@ -4,7 +4,13 @@ DSL = '''pipeline {
   stages {
     stage('trigger downstream') {
       steps {
-        build job: 'downstream'
+        script {
+          try {
+            build job: 'downstream'
+          } catch(e) {
+            println e.getCauses()[0].getShortDescription()
+          }
+        }
       }
     }
   }
