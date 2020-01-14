@@ -26,6 +26,8 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
+import hudson.tasks.test.AbstractTestResultAction
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
@@ -110,20 +112,26 @@ def isGitCheckoutIssue() {
 
 def analyseDownstreamJobsFailures(downstreamJobs) {
   if (!downstreamJobs.isEmpty()) {
-    def description = ''
+    def description = []
 
-    // Explicitly identify the timeout cause issues
-    downstreamJobs.findAll { k, v -> v instanceof TimeoutIssuesCause }
-                  .each { k,v -> description += v.getShortDescription() + " | " }
+    // Get all the downstreamJobs that got a TimeoutIssueCause
+    downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
+                                v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+                  .collectEntries { name, v ->
+                    [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
+                  }
+                  .each { jobName, issue ->
+                    description << issue
+                  }
 
     // Explicitly identify the test cause issues
     downstreamJobs.findAll { k, v -> v instanceof RunWrapper && v.resultIsWorseOrEqualTo('UNSTABLE') }
                   .each { k, v ->
                     def testResultAction = v.rawBuild.getAction(AbstractTestResultAction.class)
                     if (testResultAction != null) {
-                      description += "${k} got ${testResultAction.failCount} test failure(s) | "
+                      description << "${k} got ${testResultAction.failCount} test failure(s)"
                     }
                   }
-    currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${desciption}"
+    currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"
   }
 }

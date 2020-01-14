@@ -29,6 +29,6 @@ public final class TimeoutIssuesCause extends CauseOfInterruption {
 
   @Override
   public String getShortDescription() {
-    return "Issue: timeout checkout for ${job}"
+    return "${job} got a timeout checkout issue"
   }
 }

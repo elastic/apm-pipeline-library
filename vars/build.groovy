@@ -47,6 +47,7 @@ def call(Map params = [:]){
 
   // Propagate the build error if required
   if (propagate && buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
+    log(level: 'DEBUG', text: "${buildInfo.getProjectName()} with issue '${buildInfo.getDescription()?.trim()}'")
     if (buildInfo.getDescription()?.contains('timeout')) {
       throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName()))
     } else {
