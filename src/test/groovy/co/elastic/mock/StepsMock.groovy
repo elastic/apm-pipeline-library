@@ -42,7 +42,20 @@ public class StepsMock implements Serializable {
     return runWrapper
   }
 
-  private transformJobName(String jobName) {
+  private static transformJobName(String jobName) {
     return jobName.replaceAll("/","/job/")
+  }
+
+  public static RunWrapper mockRunWrapperWithFailure(String jobName, String description = '') throws Exception {
+    final RunWrapper runWrapper = mock(RunWrapper.class)
+    // It ends with the '/'. See https://github.com/jenkinsci/jenkins/blob/ad1ca7101b9b180dc677eef914b1cbd8208d00c8/core/src/main/java/hudson/model/Run.java#L1028
+    when(runWrapper.getAbsoluteUrl()).thenReturn("<jenkins_url>/job/${transformJobName(jobName)}/1/".toString())
+    when(runWrapper.getCurrentResult()).thenReturn('FAILURE')
+    when(runWrapper.getDescription()).thenReturn(description)
+    when(runWrapper.getDisplayName()).thenReturn('#1')
+    when(runWrapper.getFullProjectName()).thenReturn(jobName)
+    when(runWrapper.getNumber()).thenReturn(1)
+    when(runWrapper.getProjectName()).thenReturn(jobName.tokenize('/').last())
+    return runWrapper
   }
 }

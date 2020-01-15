@@ -16,6 +16,7 @@
 // under the License.
 
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 import hudson.model.Result
 import co.elastic.TimeoutIssuesCause
 
@@ -47,12 +48,7 @@ def call(Map params = [:]){
 
   // Propagate the build error if required
   if (propagate && buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
-    log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim()}'")
-    if (buildInfo.getDescription()?.contains('timeout')) {
-      throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
-    } else {
-      throw new FlowInterruptedException(Result.FAILURE)
-    }
+    throwFlowInterruptedException(buildInfo)
   }
   return buildInfo
 }
@@ -70,9 +66,18 @@ def getRedirectLink(buildInfo, jobName) {
     } else {
       return "Can not determine redirect link!!!"
     }
-  } else if(buildInfo instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
+  } else if(buildInfo instanceof RunWrapper) {
     return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
+  }
+}
+
+def throwFlowInterruptedException(buildInfo) {
+  log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim()}'")
+  if (buildInfo.getDescription()?.contains('timeout')) {
+    throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
+  } else {
+    throw new FlowInterruptedException(Result.FAILURE)
   }
 }
