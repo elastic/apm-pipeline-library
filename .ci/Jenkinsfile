@@ -65,11 +65,7 @@ def parallelSteps(prefix, num){
       parallelSteps["${prefix}-step-${i}"] = {
         node('linux && immutable'){
           sh(label: 'configure SSH over HTTPS', script: '''
-            mkdir -p ~/.ssh
-            chmod og-rwx ~/.ssh
-            echo "Host github.com" >> ~/.ssh/config
-            echo "  Hostname ssh.github.com" >> ~/.ssh/config
-            echo "  Port 443" >> ~/.ssh/config
+            git config --global core.sshCommand 'ssh -T -p 443'
           ''')
           checkout scm
         }
