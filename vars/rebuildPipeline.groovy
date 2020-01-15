@@ -69,7 +69,7 @@ def call() {
       opbeans()
       break
     case ~/it\/timeout\/parentstream/:
-      testing()
+      localTesting()
       break
     default:
       log(level: 'INFO', text: "rebuildPipeline: unsupported job '${env.JOB_NAME}'")
@@ -181,6 +181,6 @@ def opbeans() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
 }
 
-def testing() {
+def localTesting() {
   build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false)
 }
