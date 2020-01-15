@@ -68,7 +68,7 @@ def call() {
     case ~/.*opbeans.*-mbp.*/:
       opbeans()
       break
-    case ~/it\/timeout-parentstream/:
+    case ~/it\/timeout\/parentstream/:
       testing()
       break
     default:

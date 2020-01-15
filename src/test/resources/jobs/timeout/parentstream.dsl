@@ -1,4 +1,4 @@
-NAME = 'it/timeout-parentstream'
+NAME = 'it/timeout/parentstream'
 DSL = '''
 import groovy.transform.Field
 
@@ -29,15 +29,15 @@ pipeline {
 def runBuild(String type) {
   def downstreamBuild
   try {
-    downstreamBuild = build(job: 'timeout-downstream', propagate: true, quietPeriod: 0,  wait: true,
+    downstreamBuild = build(job: 'downstream', propagate: true, quietPeriod: 0,  wait: true,
                             parameters: [string(name: 'type', value: "${type}")])
   } catch(e) {
     downstreamBuild = e
     warnError('Test Failures') {
-      error("Downstream job for 'timeout-downstream' with '${type}' failed")
+      error("Downstream job for 'downstream' with '${type}' failed")
     }
   } finally {
-    rubyDownstreamJobs["timeout-downstream-${type}"] = downstreamBuild
+    rubyDownstreamJobs["downstream-${type}"] = downstreamBuild
   }
 }
 '''

@@ -1,4 +1,4 @@
-NAME = 'it/timeout-downstream'
+NAME = 'it/timeout/downstream'
 DSL = '''
 pipeline {
   agent any
