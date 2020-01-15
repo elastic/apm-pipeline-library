@@ -64,10 +64,12 @@ def parallelSteps(prefix, num){
   for (i = 0; i < num; i++) {
       parallelSteps["${prefix}-step-${i}"] = {
         node('linux && immutable'){
-          sh(label: 'configure SSH over HTTPS', script: '''
-            git config --global core.sshCommand 'ssh -T -p 443'
-          ''')
-          checkout scm
+          withEnv(["HOME=${WORKSPACE}"]){
+            sh(label: 'configure SSH over HTTPS', script: '''
+              git config --global core.sshCommand 'ssh -T -p 443'
+            ''')
+            checkout scm
+          }
         }
       }
   }
