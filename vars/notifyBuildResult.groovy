@@ -85,9 +85,7 @@ def call(Map args = [:]) {
   }
 
   // This is the one in charge to notify the parenstream with the likelihood downstream issues, if any
-  if (!downstreamJobs.isEmpty()) {
-    analyseDownstreamJobsFailures(downstreamJobs)
-  }
+  analyseDownstreamJobsFailures(downstreamJobs)
 }
 
 def customisedEmail(String email) {
@@ -116,7 +114,9 @@ def isGitCheckoutIssue() {
 }
 
 def analyseDownstreamJobsFailures(downstreamJobs) {
-  if (!downstreamJobs.isEmpty()) {
+  if (downstreamJobs.isEmpty()) {
+    log(level: 'DEBUG', text: 'notifyBuildResult: there are no downstream jobs to be analysed')
+  } else {
     def description = []
 
     // Get all the downstreamJobs that got a TimeoutIssueCause
@@ -129,15 +129,16 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
                     description << issue
                   }
 
-    // Explicitly identify the test cause issues
+    // Explicitly identify the test cause issues that got failed test cases.
     downstreamJobs.findAll { k, v -> v instanceof RunWrapper && v.resultIsWorseOrEqualTo('UNSTABLE') }
                   .each { k, v ->
-                    def testResultAction = v.rawBuild.getAction(AbstractTestResultAction.class)
-                    if (testResultAction != null) {
+                    def testResultAction = v.getRawBuild().getAction(AbstractTestResultAction.class)
+                    if (testResultAction != null && testResultAction.getFailCount() > 0 ) {
                       description << "${k}#${v.getNumber()} got ${testResultAction.failCount} test failure(s)"
                     }
                   }
     currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"
+    log(level: 'DEBUG', text: "notifyBuildResult: analyseDownstreamJobsFailures just updated the description with '${currentBuild.description?.trim()}'.")
   }
 }
 

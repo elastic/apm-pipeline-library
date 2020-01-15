@@ -17,8 +17,9 @@
 
 package co.elastic.mock
 
+import hudson.model.Run
+import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
-
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -56,6 +57,25 @@ public class StepsMock implements Serializable {
     when(runWrapper.getFullProjectName()).thenReturn(jobName)
     when(runWrapper.getNumber()).thenReturn(1)
     when(runWrapper.getProjectName()).thenReturn(jobName.tokenize('/').last())
+    return runWrapper
+  }
+
+  public static RunWrapper mockRunWrapperWithUnstable(String jobName, int failedTests = 1) throws Exception {
+    final RunWrapper runWrapper = mock(RunWrapper.class)
+    // It ends with the '/'. See https://github.com/jenkinsci/jenkins/blob/ad1ca7101b9b180dc677eef914b1cbd8208d00c8/core/src/main/java/hudson/model/Run.java#L1028
+    when(runWrapper.getAbsoluteUrl()).thenReturn("<jenkins_url>/job/${transformJobName(jobName)}/1/".toString())
+    when(runWrapper.getCurrentResult()).thenReturn('UNSTABLE')
+    when(runWrapper.getDescription()).thenReturn('')
+    when(runWrapper.getDisplayName()).thenReturn('#1')
+    when(runWrapper.getFullProjectName()).thenReturn(jobName)
+    when(runWrapper.getNumber()).thenReturn(1)
+    when(runWrapper.getProjectName()).thenReturn(jobName.tokenize('/').last())
+    when(runWrapper.resultIsWorseOrEqualTo('UNSTABLE')).thenReturn(true)
+    final AbstractTestResultAction testResult = mock(AbstractTestResultAction.class)
+    when(testResult.getFailCount()).thenReturn(failedTests)
+    final Run rawBuild = mock(Run.class)
+    when(rawBuild.getAction(AbstractTestResultAction.class)).thenReturn(testResult)
+    when(runWrapper.getRawBuild()).thenReturn(rawBuild)
     return runWrapper
   }
 }
