@@ -42,6 +42,10 @@ pipeline {
     quietPeriod(10)
     skipDefaultCheckout()
   }
+  parameters {
+    string(name: 'step', defaultValue: '10', description: 'number the request to increment on each iteration')
+    string(name: 'times', defaultValue: "10", description: 'Times to iterate the incremental the test')
+  }
   stages {
     stage('Test') {
       agent { label 'linux && immutable' }
