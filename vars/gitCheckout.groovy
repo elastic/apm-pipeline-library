@@ -64,6 +64,9 @@ def call(Map params = [:]){
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
+  // TODO: to be refactored as it's done also in the githubEnv step
+  setOrgRepoEnvVariables()
+
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
@@ -141,6 +144,24 @@ def retryWithSleep(int i, body) {
 }
 
 def fetchPullRefs(){
-  sh(label: 'Configure fetch refs', script: "git config --add remote.origin.fetch '+refs/pull/*/head:refs/remotes/origin/pr/*'")
-  gitCmd(cmd: 'fetch')
+  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*')
+}
+
+def setOrgRepoEnvVariables() {
+
+  if(!env?.GIT_URL){
+    env.GIT_URL = getGitRepoURL()
+  }
+
+  def tmpUrl = env.GIT_URL
+
+  if (env.GIT_URL.startsWith("git")){
+    tmpUrl = tmpUrl - "git@github.com:"
+  } else {
+    tmpUrl = tmpUrl - "https://github.com/" - "http://github.com/"
+  }
+
+  def parts = tmpUrl.split("/")
+  env.ORG_NAME = parts[0]
+  env.REPO_NAME = parts[1] - ".git"
 }
