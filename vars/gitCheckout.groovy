@@ -149,6 +149,11 @@ def fetchPullRefs(){
 }
 
 def setOrgRepoEnvVariables() {
+
+  if(!env?.GIT_URL){
+    env.GIT_URL = getGitRepoURL()
+  }
+
   def tmpUrl = env.GIT_URL
 
   if (env.GIT_URL.startsWith("git")){
