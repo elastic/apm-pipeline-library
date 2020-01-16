@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.57 (16/01/2020)
+
+#### 🐛 Bug Fixes
+
+-  override customised env variables and fix fetch prs references [#347](https://github.com/elastic/apm-pipeline-library/pull/347)
+
+---
+
 ## v1.1.56 (16/01/2020)
 
 #### 🚀 Enhancements
@@ -257,8 +265,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix field in the declarative pipeline [#236](https://github.com/elastic/apm-pipeline-library/pull/236)
 -  minor fixes [#235](https://github.com/elastic/apm-pipeline-library/pull/235)
+-  fix field in the declarative pipeline [#236](https://github.com/elastic/apm-pipeline-library/pull/236)
 
 ---
 
@@ -569,8 +577,8 @@
 
 #### 🙈 No user affected
 
--  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
 -  chore: temporary pipeline for testing purposes [#121](https://github.com/elastic/apm-pipeline-library/pull/121)
+-  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
 
 ---
 
@@ -967,12 +975,12 @@
 
 #### 🚀 Enhancements
 
+-  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 -  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 -  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
--  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 
 #### 🐛 Bug Fixes
 
