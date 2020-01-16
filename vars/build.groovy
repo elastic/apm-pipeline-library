@@ -74,7 +74,7 @@ def getRedirectLink(buildInfo, jobName) {
 }
 
 def throwFlowInterruptedException(buildInfo) {
-  log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim()}'")
+  log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim() ?: ''}'")
   if (buildInfo.getDescription()?.contains('timeout')) {
     throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
   } else {
