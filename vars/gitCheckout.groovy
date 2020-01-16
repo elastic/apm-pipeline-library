@@ -144,8 +144,7 @@ def retryWithSleep(int i, body) {
 }
 
 def fetchPullRefs(){
-  sh(label: 'Configure fetch refs', script: "git config --add remote.origin.fetch '+refs/pull/*/head:refs/remotes/origin/pr/*'")
-  gitCmd(cmd: 'fetch')
+  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*')
 }
 
 def setOrgRepoEnvVariables() {
