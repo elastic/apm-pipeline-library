@@ -15,11 +15,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.NotificationManager
+import co.elastic.TimeoutIssuesCause
+import co.elastic.mock.StepsMock
+import hudson.model.Result
+import hudson.tasks.test.AbstractTestResultAction
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
 import org.junit.Test
-import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
-import co.elastic.NotificationManager
+import static org.junit.Assert.assertTrue
 
 class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/notifyBuildResult.groovy'
@@ -211,5 +216,48 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def obj = script.isGitCheckoutIssue()
     assertFalse(obj)
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_no_downstreamjobs() throws Exception {
+    def script = loadScript(scriptName)
+    script.analyseDownstreamJobsFailures([:])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: there are no downstream jobs to be analysed'))
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_a_list_of_values() throws Exception {
+    def script = loadScript(scriptName)
+    script.analyseDownstreamJobsFailures([ 'foo': 'bar' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_timeout_in_downstreams() throws Exception {
+    def script = loadScript(scriptName)
+    def downstreamBuildInfo = new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause('foo', 1))
+    script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got a timeout checkout issue'))
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_unstable_in_downstreams_for_test_failures() throws Exception {
+    def script = loadScript(scriptName)
+    def downstreamBuildInfo = StepsMock.mockRunWrapperWithUnstable('foo')
+    script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got 1 test failure(s)'))
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_unstable_in_downstreams_for_something_else() throws Exception {
+    def script = loadScript(scriptName)
+    def downstreamBuildInfo = StepsMock.mockRunWrapperWithUnstable('foo', 0)
+    script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
   }
 }

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.54-SNAPSHOT</version>
+  <version>1.1.60-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -57,6 +57,11 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -216,4 +221,12 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>debug</id>
+      <properties>
+        <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+      </properties>
+    </profile>
+  </profiles>
 </project>

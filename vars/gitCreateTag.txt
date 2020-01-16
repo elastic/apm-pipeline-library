@@ -10,5 +10,6 @@ gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
+* tagArgs: what arguments are passed to the tag command
 * credentialsId: the credentials to access the repo.
 * pushArgs: what arguments are passed to the push command

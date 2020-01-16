@@ -17,3 +17,4 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
+* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.

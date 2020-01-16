@@ -15,18 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Create a git TAG named ${BUILD_TAG} and push it to the git repo.
-  It requires to initialise the pipeline with githubEnv() first.
+package co.elastic
 
-  gitCreateTag()
-*/
+import jenkins.model.CauseOfInterruption
 
-def call(Map params = [:]) {
-  def tag =  params.get('tag', "${BUILD_TAG}")
-  def tagArgs =  params.get('tagArgs', '')
-  def pushArgs = params.get('pushArgs', '')
-  def credentialsId = params.get('credentialsId', '')
-  sh(label: "create tag", script: "git tag -a -m 'chore: Create tag ${tag}' '${tag}' ${tagArgs}")
-  gitPush(credentialsId: credentialsId, args: "--tags ${pushArgs}")
+public final class TimeoutIssuesCause extends CauseOfInterruption {
+
+  private final String job
+  private final int buildId
+
+  public TimeoutIssuesCause(String job, int buildId) {
+    this.job = job
+    this.buildId = buildId
+  }
+
+  @Override
+  public String getShortDescription() {
+    return "${job}#${buildId} got a timeout checkout issue"
+  }
 }

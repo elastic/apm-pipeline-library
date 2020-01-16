@@ -30,28 +30,6 @@ class RebuildPipelineStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testWithoutParams() throws Exception {
-    def script = loadScript(scriptName)
-    binding.setVariable('params', null)
-    script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "rebuildPipeline: params doesn't exist"))
-    assertFalse(assertMethodCallContainsPattern('build', 'job'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testWithEmptyParams() throws Exception {
-    def script = loadScript(scriptName)
-    binding.setVariable('params', [:])
-    script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "rebuildPipeline: params doesn't exist"))
-    assertFalse(assertMethodCallContainsPattern('build', 'job'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void testWithUnsupportedJob() throws Exception {
     def script = loadScript(scriptName)
     env.JOB_NAME = 'foo'
