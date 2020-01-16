@@ -73,11 +73,13 @@ def call(Map params = [:]){
           extensions: extensions,
           submoduleCfg: scm.submoduleCfg,
           userRemoteConfigs: scm.userRemoteConfigs])
+        fetchPullRefs()
       }
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
       retryWithSleep(retryValue) {
         checkout scm
+        fetchPullRefs()
       }
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
@@ -136,4 +138,9 @@ def retryWithSleep(int i, body) {
     sleep (i - sleepTime)
     body()
   }
+}
+
+def fetchPullRefs(){
+  sh(label: 'Configure fetch refs', script: "git config --add remote.origin.fetch '+refs/pull/*/head:refs/remotes/origin/pr/*'")
+  gitCmd(cmd: 'fetch')
 }
