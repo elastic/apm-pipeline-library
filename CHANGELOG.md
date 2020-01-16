@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.56 (16/01/2020)
+
+#### 🚀 Enhancements
+
+-  notify downstream build failure and rebuild if downstream timeouts [#342](https://github.com/elastic/apm-pipeline-library/pull/342)
+-  fix: add ubuntu label and windows-immutable label [#343](https://github.com/elastic/apm-pipeline-library/pull/343)
+
+#### 🐛 Bug Fixes
+
+-  Re-implement GIT_BASE_COMIT calculation [#339](https://github.com/elastic/apm-pipeline-library/pull/339)
+-  fix: failed builds don't return a RunWrapper object [#341](https://github.com/elastic/apm-pipeline-library/pull/341)
+
+---
+
 ## v1.1.55 (13/01/2020)
 
 #### 🐛 Bug Fixes
@@ -201,8 +215,8 @@
 
 #### 🚀 Enhancements
 
--  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
+-  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 -  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
 -  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
@@ -953,24 +967,24 @@
 
 #### 🚀 Enhancements
 
--  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
--  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
--  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
+-  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
+-  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
+-  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 
 #### 🐛 Bug Fixes
 
+-  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 -  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 -  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
--  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 
 #### 📚 Documentation
 
+-  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 -  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
 -  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
--  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 
 #### 🙈 No user affected
 
