@@ -90,6 +90,20 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_throwFlowInterruptedException_with_null_description() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
+    } catch (e) {
+      assertTrue(e instanceof FlowInterruptedException)
+      assertThat(e.getResult().toString(), is('FAILURE'))
+      assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue ''"))
+  }
+
+  @Test
   void test_throwFlowInterruptedException_caused_by_timeout() throws Exception {
     def script = loadScript(scriptName)
     try {
