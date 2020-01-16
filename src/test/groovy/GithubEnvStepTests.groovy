@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue
 
 class GithubEnvStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubEnv.groovy'
+  String SHA1 = "${SHA}11"
 
   @Override
   @Before
@@ -32,10 +33,8 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
         return "${SHA} ${SHA}"
-      } else if('git rev-parse HEAD^'.equals(map.script)){
-        return "previousCommit"
-      } else if(map.script.startsWith("git branch -r --contains")){
-        return "${SHA}"
+      } else if(map.script.startsWith("git rev-parse origin/pr/")){
+        return "${SHA1}"
       }
       return ""
     })
@@ -118,7 +117,7 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
     assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
-    assertTrue(SHA.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA1.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test
@@ -133,7 +132,7 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     assertTrue('repo'.equals(binding.getVariable('env').REPO_NAME))
     assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
-    assertTrue(SHA.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA1.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test
@@ -142,6 +141,7 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     env.CHANGE_ID = "NotEmpty"
     env.CHANGE_TARGET = "NotEmpty"
     env.GIT_COMMIT = 'different'
+    env.SHA = 'different'
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
@@ -149,7 +149,7 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
     assertTrue(SHA.equals(binding.getVariable('env').GIT_SHA))
     assertTrue('pr'.equals(binding.getVariable('env').GIT_BUILD_CAUSE))
     println(binding.getVariable('env').GIT_BASE_COMMIT)
-    assertTrue('previousCommit'.equals(binding.getVariable('env').GIT_BASE_COMMIT))
+    assertTrue(SHA1.equals(binding.getVariable('env').GIT_BASE_COMMIT))
   }
 
   @Test
