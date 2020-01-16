@@ -64,6 +64,11 @@ def call(Map params = [:]){
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
+  // For backward compatibility we use our customised env variable, let's reset them
+  // as it's required when fetching before the githubEnv call.
+  env.ORG_NAME = env.OWNER
+  env.REPO_NAME = env.REPO
+
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
