@@ -69,11 +69,12 @@ def parallelSteps(prefix, num){
             //"GIT_SSH_COMMAND=ssh -T -vvv -p 443"
             ]){
             sh(label: 'configure SSH over HTTPS', script: '''
-              git config --global core.sshCommand 'ssh -T -vvv -p 443'
+              git config --global core.sshCommand 'ssh -T -vvv'
             ''')
             sh(label: 'configure SSH over HTTPS', script: '''
               mkdir -p ~/.ssh
               chmod og-rwx ~/.ssh
+              echo " " >> ~/.ssh/config
               echo "Host github.com" >> ~/.ssh/config
               echo "  Hostname ssh.github.com" >> ~/.ssh/config
               echo "  Port 443" >> ~/.ssh/config
