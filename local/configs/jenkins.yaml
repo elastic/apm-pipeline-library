@@ -99,6 +99,7 @@ unclassified:
     globalConfigEmail: username@example.com
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
+  - file: "/var/pipeline-library/src/test/resources/folders/timeout.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
@@ -109,3 +110,5 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/rebuildPipeline.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/timeout/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/timeout/parentstream.dsl"

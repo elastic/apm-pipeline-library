@@ -15,6 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
+import hudson.model.Result
+import co.elastic.TimeoutIssuesCause
+
 /**
 
   As long as the BO UI view doesn't show the downstream URL in the view let's use
@@ -33,13 +38,18 @@ def call(Map params = [:]){
 
   def buildInfo
   try {
-    buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: propagate, quietPeriod: quietPeriod)
+    buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: false, quietPeriod: quietPeriod)
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
     throw e
   }
   log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
+
+  // Propagate the build error if required
+  if (propagate && buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
+    throwFlowInterruptedException(buildInfo)
+  }
   return buildInfo
 }
 
@@ -56,9 +66,18 @@ def getRedirectLink(buildInfo, jobName) {
     } else {
       return "Can not determine redirect link!!!"
     }
-  } else if(buildInfo instanceof org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper) {
+  } else if(buildInfo instanceof RunWrapper) {
     return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
+  }
+}
+
+def throwFlowInterruptedException(buildInfo) {
+  log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim()}'")
+  if (buildInfo.getDescription()?.contains('timeout')) {
+    throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
+  } else {
+    throw new FlowInterruptedException(Result.FAILURE)
   }
 }
