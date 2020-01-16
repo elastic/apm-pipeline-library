@@ -56,4 +56,13 @@ class GitCreateTagStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('gitPush', 'args=--tags -f'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testTagArgs() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(tag: 'my_tag', tagArgs: '-f')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "git tag -a -m 'chore: Create tag my_tag' 'my_tag' -f"))
+    assertJobStatusSuccess()
+  }
 }

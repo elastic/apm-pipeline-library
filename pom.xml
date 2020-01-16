@@ -221,4 +221,12 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>debug</id>
+      <properties>
+        <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+      </properties>
+    </profile>
+  </profiles>
 </project>

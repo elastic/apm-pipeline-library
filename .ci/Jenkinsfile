@@ -144,7 +144,7 @@ pipeline {
             ''')
           }
           gitPush()
-          gitCreateTag(tag: 'current', pushArgs: '--force')
+          gitCreateTag(tag: 'current', tagArgs: '--force', pushArgs: '--force')
         }
       }
     }
