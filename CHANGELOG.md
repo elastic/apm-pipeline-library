@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.1.58 (16/01/2020)
+
+#### 🚀 Enhancements
+
+-  ci(jenkins): enable tag args and force the tag creation [#348](https://github.com/elastic/apm-pipeline-library/pull/348)
+
+#### 🐛 Bug Fixes
+
+-  fix: null string in the debug log [#349](https://github.com/elastic/apm-pipeline-library/pull/349)
+
+#### 📚 Documentation
+
+-  Add ssh-agent explicitly [#346](https://github.com/elastic/apm-pipeline-library/pull/346)
+
+#### ⚙️ CI
+
+-  test: script to create the git_base_commit PRs [#345](https://github.com/elastic/apm-pipeline-library/pull/345)
+
+---
+
 ## v1.1.57 (16/01/2020)
 
 #### 🐛 Bug Fixes
@@ -265,8 +285,8 @@
 
 #### 🐛 Bug Fixes
 
--  minor fixes [#235](https://github.com/elastic/apm-pipeline-library/pull/235)
 -  fix field in the declarative pipeline [#236](https://github.com/elastic/apm-pipeline-library/pull/236)
+-  minor fixes [#235](https://github.com/elastic/apm-pipeline-library/pull/235)
 
 ---
 
@@ -566,10 +586,10 @@
 
 #### 🐛 Bug Fixes
 
--  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
--  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 -  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
 -  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
+-  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
+-  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 
 #### 📚 Documentation
 
@@ -958,8 +978,8 @@
 
 #### 🚀 Enhancements
 
--  [APM-CI] New steps httpRequest and toJSON [#23](https://github.com/elastic/apm-pipeline-library/pull/23)
 -   allow manual build triggered always [#21](https://github.com/elastic/apm-pipeline-library/pull/21)
+-  [APM-CI] New steps httpRequest and toJSON [#23](https://github.com/elastic/apm-pipeline-library/pull/23)
 
 #### 🐛 Bug Fixes
 
@@ -975,18 +995,18 @@
 
 #### 🚀 Enhancements
 
+-  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
 -  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
--  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 
 #### 🐛 Bug Fixes
 
+-  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 -  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
 -  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
--  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 
 #### 📚 Documentation
 
@@ -1000,10 +1020,10 @@
 
 #### ⚙️ CI
 
+-  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
 -  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
--  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
