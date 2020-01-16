@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.59 (16/01/2020)
+*No changelog for this release.*
+
+---
+
 ## v1.1.58 (16/01/2020)
 
 #### 🚀 Enhancements
