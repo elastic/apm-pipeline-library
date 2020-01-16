@@ -64,10 +64,8 @@ def call(Map params = [:]){
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
-  // For backward compatibility we use our customised env variable, let's reset them
-  // as it's required when fetching before the githubEnv call.
-  env.ORG_NAME = env.OWNER
-  env.REPO_NAME = env.REPO
+  // TODO: to be refactored as it's done also in the githubEnv step
+  setOrgRepoEnvVariables()
 
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
@@ -148,4 +146,18 @@ def retryWithSleep(int i, body) {
 def fetchPullRefs(){
   sh(label: 'Configure fetch refs', script: "git config --add remote.origin.fetch '+refs/pull/*/head:refs/remotes/origin/pr/*'")
   gitCmd(cmd: 'fetch')
+}
+
+def setOrgRepoEnvVariables() {
+  def tmpUrl = env.GIT_URL
+
+  if (env.GIT_URL.startsWith("git")){
+    tmpUrl = tmpUrl - "git@github.com:"
+  } else {
+    tmpUrl = tmpUrl - "https://github.com/" - "http://github.com/"
+  }
+
+  def parts = tmpUrl.split("/")
+  env.ORG_NAME = parts[0]
+  env.REPO_NAME = parts[1] - ".git"
 }
