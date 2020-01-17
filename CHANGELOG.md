@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.60 (17/01/2020)
+
+#### 🚀 Enhancements
+
+-  ci(jenkins): workaround the timeout with a sleep [#351](https://github.com/elastic/apm-pipeline-library/pull/351)
+
+---
+
 ## v1.1.59 (16/01/2020)
 *No changelog for this release.*
 
@@ -591,10 +599,10 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 -  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
 -  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
 -  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
--  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 
 #### 📚 Documentation
 
@@ -983,8 +991,8 @@
 
 #### 🚀 Enhancements
 
--   allow manual build triggered always [#21](https://github.com/elastic/apm-pipeline-library/pull/21)
 -  [APM-CI] New steps httpRequest and toJSON [#23](https://github.com/elastic/apm-pipeline-library/pull/23)
+-   allow manual build triggered always [#21](https://github.com/elastic/apm-pipeline-library/pull/21)
 
 #### 🐛 Bug Fixes
 
