@@ -50,6 +50,9 @@ def call(Map params = [:]){
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
+  // Force the sleep to avoid the timeout when reusing CI Workers.
+  sleep(20)
+
   if (shallowValue && mergeTarget != null) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
     log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
