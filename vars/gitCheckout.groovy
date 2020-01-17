@@ -50,9 +50,6 @@ def call(Map params = [:]){
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
-  // Force the sleep to avoid the timeout when reusing CI Workers.
-  sleep(20)
-
   if (shallowValue && mergeTarget != null) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
     log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
@@ -73,32 +70,26 @@ def call(Map params = [:]){
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
-      retryWithSleep(retryValue) {
-        checkout([$class: 'GitSCM', branches: scm.branches,
-          doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-          extensions: extensions,
-          submoduleCfg: scm.submoduleCfg,
-          userRemoteConfigs: scm.userRemoteConfigs])
-        fetchPullRefs()
-      }
+      checkout([$class: 'GitSCM', branches: scm.branches,
+        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+        extensions: extensions,
+        submoduleCfg: scm.submoduleCfg,
+        userRemoteConfigs: scm.userRemoteConfigs])
+      fetchPullRefs()
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
-      retryWithSleep(retryValue) {
-        checkout scm
-        fetchPullRefs()
-      }
+      checkout scm
+      fetchPullRefs()
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
-      retryWithSleep(retryValue) {
-        checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
-          doGenerateSubmoduleConfigurations: false,
-          extensions: extensions,
-          submoduleCfg: [],
-          userRemoteConfigs: [[
-            refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
-            credentialsId: "${credentialsId}",
-            url: "${repo}"]]])
-      }
+      checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: extensions,
+        submoduleCfg: [],
+        userRemoteConfigs: [[
+          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
+          credentialsId: "${credentialsId}",
+          url: "${repo}"]]])
     } else {
       def message = 'No valid SCM config passed. '
       if(env.BRANCH_NAME && branch) {
@@ -135,15 +126,6 @@ def call(Map params = [:]){
 
 def isDefaultSCM(branch) {
   return env?.BRANCH_NAME && branch == null
-}
-
-def retryWithSleep(int i, body) {
-  def sleepTime = i
-  retry(i) {
-    sleepTime--
-    sleep (i - sleepTime)
-    body()
-  }
 }
 
 def fetchPullRefs(){
