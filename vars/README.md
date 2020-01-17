@@ -78,6 +78,13 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 
 [Docker pipeline plugin](https://plugins.jenkins.io/docker-workflow)
 
+## checkout
+Override the `checkout` step to retry the checkout up to 3 times.
+
+```
+checkout scm
+```
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -308,6 +315,7 @@ gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
+* tagArgs: what arguments are passed to the tag command
 * credentialsId: the credentials to access the repo.
 * pushArgs: what arguments are passed to the push command
 
@@ -550,6 +558,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
+* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
 ## opbeansPipeline
 Opbeans Pipeline
