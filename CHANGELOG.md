@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.61 (20/01/2020)
+
+#### 🚀 Enhancements
+
+-  ci(jenkins): override the built-in checkout step [#352](https://github.com/elastic/apm-pipeline-library/pull/352)
+
+---
+
 ## v1.1.60 (17/01/2020)
 
 #### 🚀 Enhancements
@@ -274,9 +282,9 @@
 
 #### ⚙️ CI
 
+-  ci: bring up to date the 'update clusters' job [#243](https://github.com/elastic/apm-pipeline-library/pull/243)
 -  Revert "fix: use fork to build the images" [#255](https://github.com/elastic/apm-pipeline-library/pull/255)
 -  fix: use fork to build the images [#253](https://github.com/elastic/apm-pipeline-library/pull/253)
--  ci: bring up to date the 'update clusters' job [#243](https://github.com/elastic/apm-pipeline-library/pull/243)
 
 ---
 
@@ -610,8 +618,8 @@
 
 #### 🙈 No user affected
 
--  chore: temporary pipeline for testing purposes [#121](https://github.com/elastic/apm-pipeline-library/pull/121)
 -  disable opbeans-flask as stated in  [#127](https://github.com/elastic/apm-pipeline-library/pull/127)
+-  chore: temporary pipeline for testing purposes [#121](https://github.com/elastic/apm-pipeline-library/pull/121)
 
 ---
 
