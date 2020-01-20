@@ -381,24 +381,4 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'Checkout SCM master with default customisation from the Item'))
     assertJobStatusSuccess()
   }
-
-  @Test
-  void testRetry() throws Exception {
-    def script = loadScript(scriptName)
-    env.BRANCH_NAME = 'BRANCH'
-    script.scm = 'SCM'
-    helper.registerAllowedMethod('checkout', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallOccurrences('checkout',3))
-    assertJobStatusFailure()
-  }
-
 }

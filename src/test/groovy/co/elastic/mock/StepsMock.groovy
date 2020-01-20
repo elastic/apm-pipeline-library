@@ -32,6 +32,10 @@ public class StepsMock implements Serializable {
     return mockRunWrapper(params.job)
   }
 
+  public Object checkout(scm) {
+    throw new Exception('Force a failure')
+  }
+
   private RunWrapper mockRunWrapper(String jobName) throws Exception {
     final RunWrapper runWrapper = mock(RunWrapper.class)
     // It ends with the '/'. See https://github.com/jenkinsci/jenkins/blob/ad1ca7101b9b180dc677eef914b1cbd8208d00c8/core/src/main/java/hudson/model/Run.java#L1028
