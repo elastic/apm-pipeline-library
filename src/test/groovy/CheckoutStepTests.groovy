@@ -36,6 +36,7 @@ class CheckoutStepTests extends ApmBasePipelineTest {
       script.call()
     } catch(e){
       //NOOP
+      println e
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default checkout'))

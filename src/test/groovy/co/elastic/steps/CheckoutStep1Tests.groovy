@@ -15,18 +15,32 @@
 // specific language governing permissions and limitations
 // under the License.
 
+package co.elastic.steps
+
 import co.elastic.steps.CheckoutStep
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
 
-/**
+class CheckoutStep1Tests extends ApmBasePipelineTest {
 
-  As long as we got timeout issues
+  def buildJavascriptApp = null
 
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    buildJavascriptApp = new CheckoutStep()
+  }
 
-  checkout scm
-*/
-
-def call(params) {
-  def checkoutStep = new CheckoutStep()
-  checkoutStep.exec(params)
+  @Test
+  void testRetry() throws Exception {
+    try {
+      buildJavascriptApp.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+  }
 }

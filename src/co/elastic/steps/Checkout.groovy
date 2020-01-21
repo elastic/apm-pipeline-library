@@ -15,18 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.steps.CheckoutStep
+package co.elastic.steps
 
-/**
-
-  As long as we got timeout issues
-
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
-
-  checkout scm
-*/
-
-def call(params) {
-  def checkoutStep = new CheckoutStep()
-  checkoutStep.exec(params)
+class CheckoutStep {
+  def exec(params) {
+    log(level: 'INFO', text: 'Override default checkout')
+    def ret
+    retryWithSleep(3) {
+      ret = steps.checkout(params)
+    }
+    return ret
+  }
+  def retryWithSleep(int i, body) {
+    retry(i) {
+      log(level: 'DEBUG', text: "Let's checkout (${i} tries).")
+      sleep(20)
+      body()
+    }
+  }
 }
