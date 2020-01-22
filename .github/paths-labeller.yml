@@ -4,8 +4,7 @@
   - vars/*"
 - "groovy":
   - vars/*"
-  - src/co/**/*"
-  - src/test/groovy/**/*"
+  - "**/*"
 - "tests":
   - "src/test/*"
 - "automation":
