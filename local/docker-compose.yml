@@ -21,6 +21,9 @@ services:
       - type: bind
         source: ./configs/jenkins.yaml
         target: /var/jenkins_home/casc_configs/jenkins.yaml
+      - type: bind
+        source: ./configs/google.yaml
+        target: /var/jenkins_home/casc_configs/google.yaml
         read_only: true
       - type: bind
         source: ../.
