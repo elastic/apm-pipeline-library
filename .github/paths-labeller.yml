@@ -12,8 +12,6 @@
   - ".github/*"
   - ".mvn/*"
   - "local/*"
-- "jenkins":
-  - "local/**/*"
 - "master":
   - "local/Dockerfile"
   - "local/docker-compose.yml"
