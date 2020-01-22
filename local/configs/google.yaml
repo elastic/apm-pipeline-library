@@ -8,42 +8,43 @@ credentials:
               serviceAccountConfig:
                 json:
                   secretJsonKey: ${google_cloud_secret}
+
 jenkins:
   clouds:
   - computeEngine:
       cloudName: "elastic-observability"
-      credentialsId: "elastic-observability"
-      instanceCapStr: "5"
-      instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
-      projectId: "elastic-observability"
       configurations:
       - bootDiskAutoDelete: true
         bootDiskSizeGb: 10
-        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b/diskTypes/pd-ssd"
-        createSnapshot: false
+        bootDiskSourceImageName: "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1910-eoan-v20200107"
+        bootDiskSourceImageProject: "ubuntu-os-cloud"
+        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b/diskTypes/pd-standard"
         description: "obs11 workers"
+        externalAddress: true
         javaExecPath: "java"
         labelString: "google"
         labels: "google"
         launchTimeoutSeconds: 300
         machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b/machineTypes/g1-small"
-        mode: EXCLUSIVE
+        mode: NORMAL
         namePrefix: "obs11"
         networkConfiguration:
-          sharedVpc:
-            projectId: gce-jenkins-cloud-123456
-            region: us-east1
-            subnetworkShortName: gce-jenkins-cloud
-        networkTags: jenkins-agent
+          autofilled:
+            network: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/networks/default"
+            subnetwork: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-east1/subnetworks/default"
+        networkTags: "obs11"
         numExecutors: 1
         numExecutorsStr: "1"
         oneShot: true
-        preemptible: false
+        preemptible: true
         region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-east1"
         remoteFs: "/tmp"
         retentionTimeMinutes: 1
         retentionTimeMinutesStr: "1"
-        runAsUser: "jenkins"
+        runAsUser: "jenkins-gce"
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
-        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/gke-sdh-issue-research-default-pool-6ce99759"
         zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b"
+      credentialsId: "elastic-observability"
+      instanceCapStr: "5"
+      instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
+      projectId: "elastic-observability"
