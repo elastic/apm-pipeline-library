@@ -21,7 +21,7 @@ import hudson.model.Result
 import co.elastic.TimeoutIssuesCause
 
 /**
-
+ 
   As long as the BO UI view doesn't show the downstream URL in the view let's use
   the suggested snippet from https://issues.jenkins-ci.org/browse/JENKINS-38339
 

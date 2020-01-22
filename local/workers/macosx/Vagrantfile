@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     vb.gui = false
     vb.memory = "4096"
     vb.cpus = 2
-    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "30"]
+    vb.customize ["modifyvm",  :id, "--cpuexecutioncap", "30"]
   end
 
   $script = <<-SCRIPT

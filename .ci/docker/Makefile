@@ -5,7 +5,7 @@ BATS_ASSERT = 9f88b4207da750093baabc4e3f41bf68f0dd3630 #v0.3.0
 BATS_SUPPORT = 004e707638eedd62e0481e8cdc9223ad471f12ee #v0.3.0
 LTS_ALPINE ?= 12-alpine
 
-help: ## Display this help text
+help: ## Display this help text 
 	@grep -E '^[a-zA-Z_-]+[%]?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 bats: ## Install bats in the project itself
