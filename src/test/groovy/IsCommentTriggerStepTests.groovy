@@ -63,6 +63,17 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testNoMembershipWithError() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      throw new Exception('Forced a failure')
+    })
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNoCommentTriggered() throws Exception {
     binding.getVariable('currentBuild').rawBuild = new RawBuildMock(null)
     def ret = script.call()
