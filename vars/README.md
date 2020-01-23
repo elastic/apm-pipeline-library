@@ -360,6 +360,7 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
+* allowEmptyResponse: whether to allow empty responses. Default false
 
 [Github REST API](https://developer.github.com/v3/)
 
