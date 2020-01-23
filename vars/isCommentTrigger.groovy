@@ -32,10 +32,18 @@ def call(){
     env.BUILD_CAUSE_USER = data.user
 
     def token = getGithubToken()
-    def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
-
+    def user = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}")
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
-    found = (orgs.find { it.login.equals('elastic') } != null)
+
+    // Let's support two different validations, the initial one consist on searching for the user's company,
+    // otherwise let's search for all the organisations that the user is belong to.
+    if (user && user.company?.trim()) {
+      found = '@elastic'.equals(user?.company?.trim())
+    } else {
+      log(level: 'DEBUG', text: "Let's fallback with the orgs entrypoint")
+      def orgs = githubApiCall(token: token, url: "https://api.github.com/users/${env.BUILD_CAUSE_USER}/orgs")
+      found = (orgs.find { it?.login?.equals('elastic') } != null)
+    }
   }
   return found
 }

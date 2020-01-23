@@ -68,18 +68,51 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
+    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
     script = loadScript('vars/isCommentTrigger.groovy')
   }
 
   @Test
-  void test() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
+  void testCompany() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [company: '@elastic']
+    })
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
     assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
     assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoCompanyThenFallbackWithoutMatch() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      if (it.url.contains('orgs')){
+        return [[login: 'foo']]
+      } else {
+        return [login: 'foo']
+      }
+    })
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoCompanyThenFallbackWithMatch() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      if (it.url.contains('orgs')){
+        return [[login: 'elastic']]
+      } else {
+        return [login: 'foo']
+      }
+    })
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 
@@ -93,10 +126,14 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testNoElasticUserWithSomeOrgs() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return [[login: 'foo']]})
+  void testNoCompanyThenFallbackWithSomeOrgs() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      if (it.url.contains('orgs')){
+        return [[login: 'foo'], [login: 'bar']]
+      } else {
+        return [login: 'foo']
+      }
+    })
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -104,10 +141,14 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testNoElasticUserWithoutOrgs() throws Exception {
-    Cause cause = new IssueCommentCause("admin","Started by a comment")
-    binding.getVariable('currentBuild').rawBuild = new RawBuild(cause)
-    helper.registerAllowedMethod("githubApiCall", [Map.class], {return []})
+  void testNoCompanyThenFallbackWithoutOrgs() throws Exception {
+        helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      if (it.url.contains('orgs')){
+        return []
+      } else {
+        return [login: 'foo']
+      }
+    })
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
