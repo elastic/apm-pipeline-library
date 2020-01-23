@@ -74,10 +74,8 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCompany() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      return [company: '@elastic']
-    })
+  void testMembership() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{}') })
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -87,68 +85,23 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testNoCompanyThenFallbackWithoutMatch() throws Exception {
+  void testNoMembership() throws Exception {
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      if (it.url.contains('orgs')){
-        return [[login: 'foo']]
-      } else {
-        return [login: 'foo']
-      }
+      return net.sf.json.JSONSerializer.toJSON( """{
+        "Code": "404",
+        "message": "Not Found",
+        "documentation_url": "https://developer.github.com/v3"
+      }""")
     })
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testNoCompanyThenFallbackWithMatch() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      if (it.url.contains('orgs')){
-        return [[login: 'elastic']]
-      } else {
-        return [login: 'foo']
-      }
-    })
-    def ret = script.call()
-    printCallStack()
-    assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
   void testNoCommentTriggered() throws Exception {
     binding.getVariable('currentBuild').rawBuild = new RawBuild(null)
-    def ret = script.call()
-    printCallStack()
-    assertFalse(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testNoCompanyThenFallbackWithSomeOrgs() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      if (it.url.contains('orgs')){
-        return [[login: 'foo'], [login: 'bar']]
-      } else {
-        return [login: 'foo']
-      }
-    })
-    def ret = script.call()
-    printCallStack()
-    assertFalse(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testNoCompanyThenFallbackWithoutOrgs() throws Exception {
-        helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      if (it.url.contains('orgs')){
-        return []
-      } else {
-        return [login: 'foo']
-      }
-    })
     def ret = script.call()
     printCallStack()
     assertFalse(ret)

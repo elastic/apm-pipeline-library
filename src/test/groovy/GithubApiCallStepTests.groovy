@@ -144,6 +144,28 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testEmptyResponseWithAllowedEmptyResponse() throws Exception {
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return ''
+    })
+    def script = loadScript(scriptName)
+    script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled for empty responses'))
+  }
+
+  @Test
+  void testResponseNullWithAllowedEmptyResponse() throws Exception {
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return null
+    })
+    def script = loadScript(scriptName)
+    script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled for empty responses'))
+  }
+
+  @Test
   void testToJSONFailed() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       throw new Exception('Failure')

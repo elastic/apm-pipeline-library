@@ -21,7 +21,7 @@ import groovy.transform.Field
 @Field def cache = [:]
 
 /**
-  Make a REST API call to Github. It manage to hide the call and the token in the console output.
+  Make a REST API call to Github. It hides the call and the token in the console output.
 
   githubApiCall(token: token, url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
 
@@ -29,6 +29,7 @@ import groovy.transform.Field
 def call(Map params = [:]){
   def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
+  def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
 
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -49,6 +50,12 @@ def call(Map params = [:]){
       def obj = [:]
       obj.message = err.toString()
       json = toJSON(obj).toString()
+    }
+
+    // This will allow to transform the empty/null json if there is an empty response and it's allowed.
+    if (allowEmptyResponse && !json?.trim()) {
+      log(level: 'DEBUG', text: 'githubApiCall: allowEmptyResponse is enabled for empty responses')
+      json = '{}'
     }
     def ret = toJSON(json)
     if(ret instanceof List && ret.size() == 0){
