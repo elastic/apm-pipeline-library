@@ -35,9 +35,8 @@ def call(){
     def token = getGithubToken()
 
     try {
-      log(level: 'WARN', text: 'isCommentTrigger: manually hardcoded another user.')
       def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
-                                             url: "https://api.github.com/orgs/elastic/members/${env.BUILD_CAUSE_USER}-foo")
+                                             url: "https://api.github.com/orgs/elastic/members/${env.BUILD_CAUSE_USER}")
       // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
       found = membershipResponse.message?.trim() ? false : true
     } catch(e) {
