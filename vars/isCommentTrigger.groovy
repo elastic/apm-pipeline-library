@@ -34,12 +34,12 @@ def call(){
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
 
-    def isMemberOfElastic
     try {
-      isMemberOfElastic = githubApiCall(token: token, allowEmptyResponse: true,
-                                        url: "https://api.github.com/orgs/elastic/members/${env.BUILD_CAUSE_USER}")
+      log(level: 'WARN', text: 'isCommentTrigger: manually hardcoded another user.')
+      def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
+                                             url: "https://api.github.com/orgs/elastic/members/${env.BUILD_CAUSE_USER}-foo")
       // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
-      found = isMemberOfElastic.message?.trim() ? false : true
+      found = membershipResponse.message?.trim() ? false : true
     } catch(e) {
       // Then it means 404 errorcode.
       // See https://developer.github.com/v3/orgs/members/#response-if-requester-is-an-organization-member-and-user-is-not-a-member
