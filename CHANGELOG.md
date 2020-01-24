@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.63 (24/01/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fixes the foo hardcoded string for testing purposes [#360](https://github.com/elastic/apm-pipeline-library/pull/360)
+
+---
+
 ## v1.1.62 (24/01/2020)
 
 #### 🐛 Bug Fixes
@@ -612,10 +620,10 @@
 
 #### 🚀 Enhancements
 
+-  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
 -  exclude target folder from the pre-commit analysis [#133](https://github.com/elastic/apm-pipeline-library/pull/133)
 -  feat: build, test, and push integration testing Docker images [#129](https://github.com/elastic/apm-pipeline-library/pull/129)
 -  feat: add description to the notification email [#130](https://github.com/elastic/apm-pipeline-library/pull/130)
--  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
 
 #### 🐛 Bug Fixes
 
@@ -1053,10 +1061,10 @@
 
 #### ⚙️ CI
 
+-  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
--  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
