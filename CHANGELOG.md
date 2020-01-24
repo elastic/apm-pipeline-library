@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.62 (24/01/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fixes the isCommentTrigger step when orgs for the user are not available [#359](https://github.com/elastic/apm-pipeline-library/pull/359)
+
+#### 📚 Documentation
+
+-  Update docs with some dependencies when running from scratch [#354](https://github.com/elastic/apm-pipeline-library/pull/354)
+
+---
+
 ## v1.1.61 (20/01/2020)
 
 #### 🚀 Enhancements
@@ -264,13 +276,13 @@
 
 #### 🚀 Enhancements
 
+-  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
+-  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
+-  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
 -  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 -  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
--  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
--  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
--  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 
 #### 🐛 Bug Fixes
 
@@ -600,17 +612,17 @@
 
 #### 🚀 Enhancements
 
--  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
 -  exclude target folder from the pre-commit analysis [#133](https://github.com/elastic/apm-pipeline-library/pull/133)
 -  feat: build, test, and push integration testing Docker images [#129](https://github.com/elastic/apm-pipeline-library/pull/129)
 -  feat: add description to the notification email [#130](https://github.com/elastic/apm-pipeline-library/pull/130)
+-  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
 
 #### 🐛 Bug Fixes
 
+-  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
 -  fix: avoid show 'null' on the email [#126](https://github.com/elastic/apm-pipeline-library/pull/126)
 -  fix: run tests with JDK 11 [#125](https://github.com/elastic/apm-pipeline-library/pull/125)
 -  fix the deploy as it was done previously [#120](https://github.com/elastic/apm-pipeline-library/pull/120)
--  fix: shellcheck and yamllint installations for the pre-commit stage [#128](https://github.com/elastic/apm-pipeline-library/pull/128)
 
 #### 📚 Documentation
 
@@ -1025,15 +1037,15 @@
 
 #### 🐛 Bug Fixes
 
+-  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 -  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 -  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
--  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 
 #### 📚 Documentation
 
+-  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 -  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 -  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
--  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 
 #### 🙈 No user affected
 
