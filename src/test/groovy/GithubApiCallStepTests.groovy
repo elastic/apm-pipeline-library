@@ -151,7 +151,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled for empty responses'))
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
   }
 
   @Test
@@ -162,7 +162,7 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled for empty responses'))
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
   }
 
   @Test
@@ -180,6 +180,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJso'))
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJson'))
   }
 }
