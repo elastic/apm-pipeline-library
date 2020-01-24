@@ -54,7 +54,7 @@ def call(Map params = [:]){
 
     // This will allow to transform the empty/null json if there is an empty response and it's allowed.
     if (allowEmptyResponse && !json?.trim()) {
-      log(level: 'DEBUG', text: 'githubApiCall: allowEmptyResponse is enabled for empty responses')
+      log(level: 'DEBUG', text: 'githubApiCall: allowEmptyResponse is enabled and there is an empty/null response.')
       json = '{}'
     }
     def ret = toJSON(json)
