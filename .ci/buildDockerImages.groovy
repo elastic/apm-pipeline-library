@@ -112,7 +112,7 @@ pipeline {
               tasks["${pythonVersion}"] = {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-python.git',
-                  tag: "apm-agent-python-test",
+                  tag: 'apm-agent-python',
                   version: "${pythonIn}",
                   folder: "tests",
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
