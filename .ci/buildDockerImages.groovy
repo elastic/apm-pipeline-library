@@ -22,7 +22,7 @@ import groovy.transform.Field
 @Field def results = [:]
 
 pipeline {
-  agent none
+  agent { label 'immutable && docker' }
   environment {
     BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
@@ -55,7 +55,6 @@ pipeline {
   }
   stages {
     stage('Cache Weblogic Docker Image'){
-      agent { label 'immutable && docker' }
       environment {
         IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
@@ -69,11 +68,11 @@ pipeline {
         expression { return params.weblogic }
       }
       steps {
+        deleteDir()
         pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
       }
     }
     stage('Cache Oracle Instant Client Docker Image'){
-      agent { label 'immutable && docker' }
       environment {
         IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
         TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
@@ -87,11 +86,11 @@ pipeline {
         expression { return params.oracle_instant_client }
       }
       steps {
+        deleteDir()
         pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
       }
     }
     stage('Build agent Python images'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build agent Python images failed')
@@ -101,6 +100,7 @@ pipeline {
         expression { return params.python }
       }
       steps {
+        deleteDir()
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
@@ -161,7 +161,6 @@ pipeline {
       }
     }
     stage('Build Curator image'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build Curator image failed')
@@ -171,6 +170,7 @@ pipeline {
         expression { return params.python }
       }
       steps {
+        deleteDir()
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/curator.git',
@@ -180,7 +180,6 @@ pipeline {
       }
     }
     stage('Build Integration test Docker images'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build Integration test Docker images failed')
@@ -190,6 +189,7 @@ pipeline {
         expression { return params.apm_integration_testing }
       }
       steps {
+        deleteDir()
         checkout scm
         dockerLoginElasticRegistry()
         buildDockerImage(
@@ -213,7 +213,6 @@ pipeline {
       }
     }
     stage('Build Apm Server test Docker images'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build Apm Server Docker images failed')
@@ -223,6 +222,7 @@ pipeline {
         expression { return params.apm_integration_testing }
       }
       steps {
+        deleteDir()
         checkout scm
         dockerLoginElasticRegistry()
         buildDockerImage(
@@ -246,7 +246,6 @@ pipeline {
       }
     }
     stage('Build helm-kubernetes Docker hub image'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build helm-kubernetes Docker hub image failed')
@@ -256,6 +255,7 @@ pipeline {
         expression { return params.helm_kubectl }
       }
       steps {
+        deleteDir()
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/dtzar/helm-kubectl.git',
@@ -265,7 +265,6 @@ pipeline {
       }
     }
     stage('Build JRuby-jdk Docker images'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build JRuby-jdk Docker images failed')
@@ -278,12 +277,31 @@ pipeline {
         expression { return params.jruby }
       }
       steps {
+        deleteDir()
         git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
         sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
         sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
         dockerLoginElasticRegistry()
         sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
         archiveArtifacts '*.log'
+      }
+    }
+    stage('Build opbot'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.jruby }
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/opbot.git',
+          tag: "opbot",
+          version: "latest",
+          push: true)
       }
     }
   }
@@ -315,7 +333,7 @@ def buildDockerImage(args){
   }
   image += "/${tag}:${version}"
   dir("${tag}-${version}"){
-    git "${repo}"
+    git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "${repo}"
     dir("${folder}"){
       withEnv(env){
         sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
