@@ -125,7 +125,6 @@ pipeline {
       }
     }
     stage('Build agent Ruby images'){
-      agent { label 'immutable && docker' }
       options {
         skipDefaultCheckout()
         warnError('Build agent Ruby images failed')
