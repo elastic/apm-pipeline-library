@@ -143,14 +143,14 @@ pipeline {
             // The ones with the observability-ci tag are already built at the very end
             // of this pipeline.
             rubyVersions.findAll { element -> !element.contains('observability-ci') }.each { version ->
-              def rubyVersion = version.replaceFirst("-",":")
+              def rubyVersion = version.replaceFirst(":","-")
               tasks["${rubyVersion}"] = {
                 buildDockerImage(
                   repo: 'https://github.com/elastic/apm-agent-ruby.git',
                   tag: 'apm-agent-ruby',
-                  version: "${version}",
+                  version: "${rubyVersion}",
                   folder: 'spec',
-                  options: "--build-arg RUBY_IMAGE=${rubyVersion}",
+                  options: "--build-arg RUBY_IMAGE='${version}'",
                   push: true)
               }
             }
