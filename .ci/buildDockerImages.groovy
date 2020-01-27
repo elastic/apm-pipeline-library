@@ -31,8 +31,8 @@ pipeline {
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
   }
   options {
-    timeout(time: 2, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2'))
+    timeout(time: 3, unit: 'HOURS')
+    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     timestamps()
     ansiColor('xterm')
     disableResume()
@@ -47,6 +47,7 @@ pipeline {
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'python', defaultValue: "false", description: "")
+    booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
@@ -116,6 +117,42 @@ pipeline {
                   version: "${pythonIn}",
                   folder: "tests",
                   options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
+                  push: true)
+              }
+            }
+            parallel(tasks)
+          }
+        }
+      }
+    }
+    stage('Build agent Ruby images'){
+      agent { label 'immutable && docker' }
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent Ruby images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.ruby }
+      }
+      steps {
+        dir('apm-agent-ruby'){
+          git 'https://github.com/elastic/apm-agent-ruby.git'
+          script {
+            dockerLoginElasticRegistry()
+            def rubyVersions = readYaml(file: '.ci/.jenkins_ruby.yml')['RUBY_VERSION']
+            def tasks = [:]
+            // The ones with the observability-ci tag are already built at the very end
+            // of this pipeline.
+            rubyVersions.findAll { it -> !it.contains('observability-ci') }.each { version ->
+              def rubyVersion = version.replaceFirst("-",":")
+              tasks["${rubyVersion}"] = {
+                buildDockerImage(
+                  repo: 'https://github.com/elastic/apm-agent-ruby.git',
+                  tag: 'apm-agent-ruby',
+                  version: "${version}",
+                  folder: 'spec',
+                  options: "--build-arg RUBY_IMAGE=${rubyVersion}",
                   push: true)
               }
             }
