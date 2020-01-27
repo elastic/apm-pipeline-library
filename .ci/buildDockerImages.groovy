@@ -142,7 +142,7 @@ pipeline {
             def tasks = [:]
             // The ones with the observability-ci tag are already built at the very end
             // of this pipeline.
-            rubyVersions.findAll { it -> !it.contains('observability-ci') }.each { version ->
+            rubyVersions.findAll { element -> !element.contains('observability-ci') }.each { version ->
               def rubyVersion = version.replaceFirst("-",":")
               tasks["${rubyVersion}"] = {
                 buildDockerImage(
