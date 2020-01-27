@@ -51,6 +51,7 @@ pipeline {
             string(name: 'tag_prefix', value: 'observability-ci'),
             string(name: 'secret', value: 'secret/apm-team/ci/docker-registry/prod'),
             booleanParam(name: 'python', value: true),
+            booleanParam(name: 'ruby', value: true),
             booleanParam(name: 'weblogic', value: true),
             booleanParam(name: 'oracle_instant_client', value: true),
             booleanParam(name: 'apm_integration_testing', value: true),
