@@ -116,4 +116,24 @@ public class BuildStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue 'Issue: checkout timeout'"))
   }
+
+  @Test
+  void test_propagage_failure_with_null_object() throws Exception {
+    def script = loadScript(scriptName)
+    script.propagateFailure(null)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))
+  }
+
+  @Test
+  void test_propagage_failure_with_an_object() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.propagateFailure(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
+    } catch (e) {
+      assertTrue(e instanceof FlowInterruptedException)
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))
+  }
 }
