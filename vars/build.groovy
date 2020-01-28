@@ -84,7 +84,7 @@ def throwFlowInterruptedException(buildInfo) {
 
 def propagateFailure(buildInfo) {
   if (buildInfo) {
-    if (buildInfo?.resultIsWorseOrEqualTo('FAILURE')) {
+    if (buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
       throwFlowInterruptedException(buildInfo)
     }
   } else {
