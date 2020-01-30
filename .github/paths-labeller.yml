@@ -2,6 +2,8 @@
 - "build-steps":
   - resources/*"
   - vars/*"
+- "ci":
+  - ".ci/*"
 - "groovy":
   - vars/*"
   - "**/*"
