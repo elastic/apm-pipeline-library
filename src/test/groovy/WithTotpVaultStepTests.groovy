@@ -74,28 +74,16 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_success() throws Exception {
-    def script = loadScript(scriptName)
-    def isOK = false
-    script.call(secret: 'secret', code_var_name: 'foo'){
-      isOK = true
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_variable_is_created() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret', code_var_name: 'U1'){
-      if(binding.getVariable('U1') == 'username'){
-        isOK = true
-      }
+    script.call(secret: 'secret-totp', code_var_name: 'VAULT_TOTP'){
+      isOK = (binding.getVariable('VAULT_TOTP') == '123456')
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('wrap', 'var=VAULT_TOTP'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'VAULT_TOTP'))
     assertJobStatusSuccess()
   }
 }

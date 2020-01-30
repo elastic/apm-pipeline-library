@@ -342,6 +342,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
     if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
+    if('secret-totp'.equals(s)){
+      return [data: [ code: '123456' ], renewable: false]
+    }
     return null
   }
 

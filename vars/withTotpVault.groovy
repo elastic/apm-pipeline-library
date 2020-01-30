@@ -32,9 +32,8 @@ def call(Map params = [:], Closure body) {
     error "withTotpVault: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
 
-
   def code = props?.data?.code
-  if(code == null){
+  if (code == null) {
     error 'withTotpVault: was not possible to get authentication info.'
   }
 
