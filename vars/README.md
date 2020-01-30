@@ -934,6 +934,24 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
+## withNpmrc
+Wrap the npmrc token
+
+```
+withNpmrc() {
+  // block
+}
+
+withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
+  // block
+}
+```
+
+* path: root folder where the npmrc token will be stored. (Optional). Default: ${HOME} env variable
+* npmrcFile: name of the file with the token. (Optional). Default: .npmrc
+* registry: NPM registry. (Optional). Default: registry.npmjs.org
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/elastic-observability-npmjs'
+
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets

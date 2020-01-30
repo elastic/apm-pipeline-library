@@ -337,13 +337,16 @@ class ApmBasePipelineTest extends BasePipelineTest {
       return [errors: 'Error message']
     }
     if('secretNotValid'.equals(s)){
-      return [data: [ user: null, password: null, url: null, apiKey: null]]
+      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
     }
     if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
     if('secret-totp'.equals(s)){
       return [data: [ code: '123456' ], renewable: false]
+    }
+    if('secret-npmrc'.equals(s) || 'secret/apm-team/ci/elastic-observability-npmjs'.equals(s)){
+      return [data: [ token: 'mytoken' ]]
     }
     return null
   }
