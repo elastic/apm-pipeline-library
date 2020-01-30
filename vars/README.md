@@ -949,6 +949,32 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
 }
 ```
 
+## withTotpVault
+Get the totp code from the vault, define the environment variables which have been
+passed as parameters and mask the secrets
+
+the totp must have this format
+```
+{
+  "request_id": "abcdef4a-f9d6-ce93-2536-32c3bb915ab7",
+  "lease_id": "",
+  "lease_duration": 0,
+  "renewable": false,
+  "data": {
+    "code": "123456"
+  },
+  "warnings": null
+}
+```
+
+The passed data variables will be exported and masked on logs
+
+```
+withTotpVault(secret: 'secret', code_var_name: 'VAULT_TOTP'){
+  //block
+}
+```
+
 ## withVaultToken
 Wrap the vault token
 
