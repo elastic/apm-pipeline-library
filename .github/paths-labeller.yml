@@ -6,7 +6,7 @@
   - ".ci/*"
 - "groovy":
   - vars/*"
-  - "**/*"
+  - "**/*.groovy"
 - "tests":
   - "src/test/*"
 - "automation":
