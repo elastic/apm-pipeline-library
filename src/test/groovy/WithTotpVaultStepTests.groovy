@@ -82,8 +82,7 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('wrap', 'var=VAULT_TOTP'))
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'VAULT_TOTP'))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=VAULT_TOTP'))
     assertJobStatusSuccess()
   }
 }

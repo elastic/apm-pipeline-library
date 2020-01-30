@@ -37,10 +37,7 @@ def call(Map params = [:], Closure body) {
     error 'withTotpVault: was not possible to get authentication info.'
   }
 
-  wrap([$class: 'MaskPasswordsBuildWrapper',
-        varPasswordPairs: [ [var: "${code_var_name}", password: code] ]]) {
-    withEnv(["${code_var_name}=${code}"]) {
-      body()
-    }
+  withEnvMask(vars: [[var: "${code_var_name}", password: code]]) {
+    body()
   }
 }
