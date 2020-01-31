@@ -66,7 +66,7 @@ class CodecovStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
+    script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
     assertJobStatusSuccess()
   }
@@ -74,8 +74,7 @@ class CodecovStepTests extends ApmBasePipelineTest {
   @Test
   void testCache() throws Exception {
     def script = loadScript(scriptName)
-    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
-    script.call(repo: "repo", basedir: "ws", secret: "secret-codecov")
+    script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Codecov: get the token from Vault.'))
     assertTrue(assertMethodCallContainsPattern('log', 'Codecov: get the token from cache.'))
