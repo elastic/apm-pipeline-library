@@ -115,6 +115,28 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testRepo_without_GIT_URL() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = 'SCM'
+    script.call(repo: 'git@github.com:elastic/apm-pipeline-library.git', branch: 'master',
+                credentialsId: 'credentials-id')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRepo_with_GIT_URL() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_URL = 'git@github.com:elastic/apm-pipeline-library.git'
+    script.scm = 'SCM'
+    script.call(repo: env.GIT_URL, branch: 'master', credentialsId: 'credentials-id')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testErrorBranchIncomplete() throws Exception {
     def script = loadScript(scriptName)
     script.scm = 'SCM'
