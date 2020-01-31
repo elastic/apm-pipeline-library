@@ -1,0 +1,5 @@
+Override the `git` step to retry the checkout up to 3 times.
+
+```
+git scm
+```
