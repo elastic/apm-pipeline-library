@@ -37,7 +37,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void testMissingArguments() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret', user_var_name: 'foo'){
+      script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo'){
         //NOOP
       }
     } catch(e){
@@ -52,7 +52,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void testSecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError', user_var_name: 'foo', pass_var_name: 'bar'){
+      script.call(secret: VaultSecret.SECRET_ERROR.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -82,9 +82,10 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret', user_var_name: 'foo', pass_var_name: 'bar'){
+    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
       isOK = true
     }
+
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
@@ -94,7 +95,7 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
   void testParams() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret', user_var_name: 'U1', pass_var_name: 'P1'){
+    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'U1', pass_var_name: 'P1'){
       if(binding.getVariable("U1") == "username"
         && binding.getVariable("P1") == "user_password"){
         isOK = true

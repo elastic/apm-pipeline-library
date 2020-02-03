@@ -31,7 +31,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    script.call(secret: 'secret/team/ci/secret-name')
+    script.call(secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"'))
     assertJobStatusSuccess()
@@ -40,7 +40,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
   @Test
   void testRegistry() throws Exception {
     def script = loadScript(scriptName)
-    script.call(secret: 'secret/team/ci/secret-name', registry: "other.docker.io")
+    script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: "other.docker.io")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"'))
     assertJobStatusSuccess()

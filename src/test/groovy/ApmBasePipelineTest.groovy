@@ -31,6 +31,26 @@ class ApmBasePipelineTest extends BasePipelineTest {
   String REPO_URL = 'http://github.com/org/repo.git'
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
+  enum VaultSecret{
+    BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
+    SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
+    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid')
+
+    VaultSecret(String value) {
+      this.value = value
+    }
+    private final String value
+    String getValue() {
+      value
+    }
+    public String toString() {
+      return getValue()
+    }
+    public boolean equals(String another) {
+      return getValue().equals(another)
+    }
+  }
+
   @Override
   void setUp() {
     super.setUp()
@@ -329,17 +349,16 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   def getVaultSecret(String s) {
-    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) ||
-       'secret/team/ci/secret-name'.equals(s) || 'secret/apm-team/ci/benchmark-cloud'.equals(s)){
+    if(VaultSecret.SECRET.equals(s) || VaultSecret.SECRET_NAME.equals(s) ||  VaultSecret.BENCHMARK.equals(s)){
       return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
     }
-    if('secretError'.equals(s)){
+    if(VaultSecret.SECRET_ERROR.equals(s)){
       return [errors: 'Error message']
     }
-    if('secretNotValid'.equals(s)){
+    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
       return [data: [ user: null, password: null, url: null, apiKey: null]]
     }
-    if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
+    if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
     return null
