@@ -1,0 +1,24 @@
+Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
+passed as parameters and mask the secrets
+
+the TOTP must have this format
+```
+{
+  "request_id": "abcdef4a-f9d6-ce93-2536-32c3bb915ab7",
+  "lease_id": "",
+  "lease_duration": 0,
+  "renewable": false,
+  "data": {
+    "code": "123456"
+  },
+  "warnings": null
+}
+```
+
+The value for code_var_name will be exported as a variable and masked in the logs
+
+```
+withTotpVault(secret: 'secret', code_var_name: 'VAULT_TOTP'){
+  //block
+}
+```

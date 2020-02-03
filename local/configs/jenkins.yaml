@@ -113,3 +113,4 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/rebuildPipeline.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/downstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/parentstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/withTotpVault.dsl"
