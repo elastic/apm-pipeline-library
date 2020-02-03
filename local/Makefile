@@ -1,5 +1,5 @@
 VAULT_TOKEN ?= $(shell cat $${HOME}/.vault-token)
-LOG_LEVEL ?= CRITICAL
+LOG_LEVEL ?= WARNING
 .DEFAULT_GOAL := help
 
 .PHONY: build
