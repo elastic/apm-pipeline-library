@@ -30,16 +30,16 @@ def call(jobURL, buildNumber){
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
   def restURLBuild = "${restURLJob}/runs/${buildNumber}"
 
-  downloadJSONFile("${restURLJob}", "job-info.json")
-  downloadJSONFile("${restURLBuild}", "build-info.json")
-  downloadJSONFile("${restURLBuild}/blueTestSummary", "tests-summary.json")
-  downloadJSONFile("${restURLBuild}/tests", "tests-info.json")
-  downloadJSONFile("${restURLBuild}/changeSet", "changeSet-info.json")
-  downloadJSONFile("${restURLBuild}/artifacts", "artifacts-info.json")
-  downloadJSONFile("${restURLBuild}/steps", "steps-info.json")
-  downloadJSONFile("${restURLBuild}/log", "pipeline-log.txt")
+  bulkDownload(["${restURLJob}": 'job-info.json',
+                "${restURLBuild}": 'build-info.json',
+                "${restURLBuild}/blueTestSummary": 'tests-summary.json',
+                "${restURLBuild}/tests": 'tests-info.json',
+                "${restURLBuild}/changeSet": 'changeSet-info.json',
+                "${restURLBuild}/artifacts": 'artifacts-info.json',
+                "${restURLBuild}/steps": 'steps-info.json',
+                "${restURLBuild}/log": 'pipeline-log.txt'])
 
-  sh(label: "Console lg sumary", script: "tail -n 100 pipeline-log.txt > pipeline-log-summary.txt")
+  sh(label: 'Console log summary', script: 'tail -n 100 pipeline-log.txt > pipeline-log-summary.txt')
 
   def json = [:]
   json.job = readJSON(file: "job-info.json")
@@ -53,11 +53,11 @@ def call(jobURL, buildNumber){
 
   /** The build is not finished so we have to fix some values */
   json.build.result = currentBuild.currentResult
-  json.build.state = "FINISHED"
+  json.build.state = 'FINISHED'
   json.build.durationInMillis = currentBuild.duration
-  writeJSON(file: "build-info.json" , json: toJSON(json.build), pretty: 2)
+  writeJSON(file: 'build-info.json' , json: toJSON(json.build), pretty: 2)
 
-  writeJSON(file: "build-report.json" , json: toJSON(json), pretty: 2)
+  writeJSON(file: 'build-report.json' , json: toJSON(json), pretty: 2)
 }
 
 def downloadJSONFile(url, file){
@@ -65,5 +65,26 @@ def downloadJSONFile(url, file){
 
   if(ret != 0){
     writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
+  }
+}
+
+def bulkDownload(map) {
+  if(map.isEmpty()) {
+    error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
+  }
+  def command = ['status=0']
+  map.each { url, file ->
+    command << "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url} || status=1"
+  }
+  command << 'exit ${status}'
+
+  def ret = sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
+
+  if(ret != 0){
+    map.each { url, file ->
+      if (!fileExists(file)) {
+        writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
+      }
+    }
   }
 }

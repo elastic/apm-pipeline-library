@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
@@ -38,16 +39,16 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void testFailedToDownload() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod("fileExists", [String.class], { return false })
-    helper.registerAllowedMethod("sh", [Map.class], { m ->
-      if(m.label == "Get Build info tests-info.json"){
+    helper.registerAllowedMethod('fileExists', [String.class], { return false })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m.label == 'Get Build info details'){
         return 1
       }
       return 0
     })
-
     script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=job-info.json'))
     assertJobStatusSuccess()
   }
 
@@ -63,5 +64,32 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'getBuildInfoJsonFiles: windows is not supported yet.'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_bulkDownload_with_empty_map() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.bulkDownload([])
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'bulkDownload cannot be executed with empty arguments'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_bulkDownload_with_some_entries_and_failures() throws Exception {
+    def script = loadScript(scriptName)
+    // force to create an empty file for bar
+    helper.registerAllowedMethod('fileExists', [String.class], { return it.equals('file') })
+    script.bulkDownload([ 'foo': 'bar', 'url': 'file' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-o bar foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-o file url'))
+    assertFalse(assertMethodCallContainsPattern('writeJSON', 'file=file'))
+    assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=bar'))
+    assertJobStatusSuccess()
   }
 }
