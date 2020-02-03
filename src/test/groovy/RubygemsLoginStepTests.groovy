@@ -96,7 +96,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSecretNotFound() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(secret: 'secretNotValid') {
+      script.call(secret: VaultSecret.SECRET_NOT_VALID.toString()) {
         // NOOP
       }
     } catch(e){
@@ -112,7 +112,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSecretNotFoundWithApi() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.withApi(secret: 'secretNotValid') {
+      script.withApi(secret: VaultSecret.SECRET_NOT_VALID.toString()) {
         // NOOP
       }
     } catch(e){
@@ -128,7 +128,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSecretError() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(secret: 'secretError') {
+      script.call(secret: VaultSecret.SECRET_ERROR.toString()) {
         // NOOP
       }
     } catch(e){
@@ -144,7 +144,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSecretErrorWithApi() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.withApi(secret: 'secretError') {
+      script.withApi(secret: VaultSecret.SECRET_ERROR.toString()) {
         // NOOP
       }
     } catch(e){
@@ -160,7 +160,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSuccess() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret/team/ci/secret-name') {
+    script.call(secret: VaultSecret.SECRET_NAME.toString()) {
       isOK = true
     }
     printCallStack()
@@ -174,7 +174,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testSuccessWithApi() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.withApi(secret: 'secret/team/ci/secret-name') {
+    script.withApi(secret: VaultSecret.SECRET_NAME.toString()) {
       isOK = true
     }
     printCallStack()
@@ -188,7 +188,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testWithBodyError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret/team/ci/secret-name') {
+      script.call(secret: VaultSecret.SECRET_NAME.toString()) {
         updateBuildStatus('FAILURE')
         throw new Exception('Force error')
       }
@@ -204,7 +204,7 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   void testWithBodyErrorWithApi() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.withApi(secret: 'secret/team/ci/secret-name') {
+      script.withApi(secret: VaultSecret.SECRET_NAME.toString()) {
         updateBuildStatus('FAILURE')
         throw new Exception('Force error')
       }

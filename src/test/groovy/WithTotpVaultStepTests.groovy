@@ -32,7 +32,7 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
   void test_MissingArguments() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret'){
+      script.call(secret: VaultSecret.SECRET.toString()){
         //NOOP
       }
     } catch(e){
@@ -47,7 +47,7 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
   void test_SecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError', code_var_name: 'bar'){
+      script.call(secret: VaultSecret.SECRET_ERROR.toString(), code_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -77,7 +77,7 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
   void test_variable_is_created() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret-totp', code_var_name: 'VAULT_TOTP'){
+    script.call(secret: VaultSecret.SECRET_TOTP.toString(), code_var_name: 'VAULT_TOTP'){
       isOK = (binding.getVariable('VAULT_TOTP') == '123456')
     }
     printCallStack()

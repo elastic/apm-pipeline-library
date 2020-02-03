@@ -46,7 +46,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   @Test
   void testParams() throws Exception {
     def script = loadScript(scriptName)
-    script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: 'secret', archive: true)
+    script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true)
     printCallStack()
     assertJobStatusSuccess()
   }
@@ -55,7 +55,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testSecretNotFound() throws Exception {
     def script = loadScript(scriptName)
     try{
-      def ret = script.call(secret: 'secretNotValid')
+      def ret = script.call(secret: VaultSecret.SECRET_NOT_VALID.toString())
     } catch(e){
       println e.toString()
       //NOOP
@@ -69,7 +69,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testSecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError')
+      script.call(secret: VaultSecret.SECRET_ERROR.toString())
     } catch(e){
       println e.toString()
       //NOOP
@@ -83,7 +83,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testWrongProtocol() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret', url: 'ht://wrong.example.com')
+      script.call(secret: VaultSecret.SECRET.toString(), url: 'ht://wrong.example.com')
     } catch(e){
       println e.toString()
       //NOOP
@@ -126,7 +126,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testMissingUrlArgument() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.prepareAndRun(secret: 'secret') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString()) {
 
       }
     } catch(e){
@@ -141,7 +141,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testMissingUserArgument() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.prepareAndRun(secret: 'secret', url_var: 'URL_') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_') {
 
       }
     } catch(e){
@@ -156,7 +156,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testMissingPassArgument() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.prepareAndRun(secret: 'secret', url_var: 'URL_', user_var: 'USER_') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_') {
 
       }
     } catch(e){
@@ -172,7 +172,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def isOK = false
     try {
-      script.prepareAndRun(secret: 'secretError', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+      script.prepareAndRun(secret: VaultSecret.SECRET_ERROR.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
         isOK = true
       }
     } catch(e){
@@ -190,7 +190,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def isOK = false
     try{
-      script.prepareAndRun(secret: 'secretNotValid', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+      script.prepareAndRun(secret: VaultSecret.SECRET_NOT_VALID.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
         isOK = true
       }
     } catch(e){
@@ -206,7 +206,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testPrepareAndRun() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.prepareAndRun(secret: 'secret', url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
+    script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
       isOK = true
     }
     printCallStack()

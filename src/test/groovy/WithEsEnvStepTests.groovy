@@ -38,7 +38,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: 'secret'){
+    script.call(secret: VaultSecret.SECRET.toString()){
       isOK = true
     }
     printCallStack()
@@ -50,7 +50,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
   void testParams() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(url: 'https://es.example.com', secret: 'secret'){
+    script.call(url: 'https://es.example.com', secret: VaultSecret.SECRET.toString()){
       if(binding.getVariable("CLOUD_URL") == "https://username:user_password@es.example.com"
       && binding.getVariable("CLOUD_ADDR") == "https://es.example.com"
       && binding.getVariable("CLOUD_USERNAME") == "username"
@@ -82,7 +82,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
   void testSecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError'){
+      script.call(secret: VaultSecret.SECRET_ERROR.toString()){
         //NOOP
       }
     } catch(e){
@@ -97,7 +97,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
   void testWrongProtocol() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secret', url: 'ht://wrong.example.com'){
+      script.call(secret: VaultSecret.SECRET.toString(), url: 'ht://wrong.example.com'){
         //NOOP
       }
     } catch(e){

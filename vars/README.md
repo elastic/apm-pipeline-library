@@ -249,6 +249,13 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.
 
+## git
+Override the `git` step to retry the checkout up to 3 times.
+
+```
+git scm
+```
+
 ## gitChangelog
 Return the changes between the parent commit and the current commit.
 

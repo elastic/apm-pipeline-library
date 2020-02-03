@@ -17,10 +17,11 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class DockerLoginStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/dockerLogin.groovy'
+class GitStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/git.groovy'
 
   @Override
   @Before
@@ -29,34 +30,20 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void testRetry() throws Exception {
     def script = loadScript(scriptName)
-    script.call(secret: VaultSecret.SECRET_NAME.toString())
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testRegistry() throws Exception {
-    def script = loadScript(scriptName)
-    script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: "other.docker.io")
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
     try {
       script.call()
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'dockerLogin: windows is not supported yet.'))
-    assertJobStatusFailure()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default git'))
+
+    // The fixed number of retries is 3. This particular test scenario only covers when the
+    // checkout failed three times. Therefore the number of log calls is 4:
+    //   - the three regarding the retry
+    //   - the very first one regarding the `Override default git` log trace.
+    assertTrue(assertMethodCallOccurrences('log', 4))
   }
 }

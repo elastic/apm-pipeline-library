@@ -62,7 +62,7 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
   void testWithAllParameters() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(path: '/bar', npmrcFile: 'mytoken', registry: 'foo-bar', secret: 'secret-npmrc') {
+    script.call(path: '/bar', npmrcFile: 'mytoken', registry: 'foo-bar', secret: VaultSecret.SECRET_NPMRC.toString()) {
       isOK = true
     }
     printCallStack()
@@ -94,7 +94,7 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
   void test_SecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: 'secretError'){
+      script.call(secret: VaultSecret.SECRET_ERROR.toString()){
         //NOOP
       }
     } catch(e){

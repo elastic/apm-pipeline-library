@@ -45,6 +45,21 @@ class GetGitRepoURLStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_no_git_repo() throws Exception {
+    String url = 'http://github.com/org/repo.git'
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod(method('sh', Map.class), { map ->
+      throw new Exception('hudson.AbortException: script returned exit code 1')
+    })
+    try {
+      script.call()
+    } catch(e) {
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'getGitRepoURL: could not fetch the URL details'))
+  }
+
+  @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
