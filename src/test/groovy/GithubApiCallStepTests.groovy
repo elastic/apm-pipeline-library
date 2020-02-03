@@ -144,6 +144,28 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testEmptyResponseWithAllowedEmptyResponse() throws Exception {
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return ''
+    })
+    def script = loadScript(scriptName)
+    script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
+  }
+
+  @Test
+  void testResponseNullWithAllowedEmptyResponse() throws Exception {
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return null
+    })
+    def script = loadScript(scriptName)
+    script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
+  }
+
+  @Test
   void testToJSONFailed() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       throw new Exception('Failure')
@@ -158,6 +180,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
       println e.toString()
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJso'))
+    assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJson'))
   }
 }

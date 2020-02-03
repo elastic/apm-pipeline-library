@@ -15,21 +15,31 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Get the current git repository url from the .git folder.
-  If the checkout was made by Jenkins, you would use the environment variable GIT_URL.
-  In other cases, you probably has to use this step.
+package co.elastic.mock
 
-  def repoUrl = getGitRepoURL()
-*/
-def call() {
-  if(!isUnix()){
-    error('getGitRepoURL: windows is not supported yet.')
+import hudson.model.Cause
+
+/**
+ * Mock IssueCommentCause class. It's required to keep the IssueCommentCause class name!.
+ */
+class IssueCommentCause extends Cause {
+  private final String userLogin
+  private final String comment
+
+  public IssueCommentCause(final String userLogin, final String comment) {
+    this.userLogin = userLogin
+    this.comment = comment
   }
-  try {
-    def repoUrl = sh(label: 'Get repo URL', script: 'git config --get remote.origin.url', returnStdout: true)?.trim()
-    return "${repoUrl}"
-  } catch (e) {
-    error("getGitRepoURL: could not fetch the URL details. ${e}")
+
+  public String getUserLogin() {
+    return userLogin
   }
- }
+
+  public String getComment() {
+    return comment
+  }
+
+  public String getShortDescription(){
+    return String.format("%s commented: %s", userLogin, comment);
+  }
+}

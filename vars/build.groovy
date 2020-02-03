@@ -47,8 +47,8 @@ def call(Map params = [:]){
   log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
 
   // Propagate the build error if required
-  if (propagate && buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
-    throwFlowInterruptedException(buildInfo)
+  if (propagate) {
+    propagateFailure(buildInfo)
   }
   return buildInfo
 }
@@ -79,5 +79,15 @@ def throwFlowInterruptedException(buildInfo) {
     throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
   } else {
     throw new FlowInterruptedException(Result.FAILURE)
+  }
+}
+
+def propagateFailure(buildInfo) {
+  if (buildInfo) {
+    if (buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
+      throwFlowInterruptedException(buildInfo)
+    }
+  } else {
+    log(level: 'DEBUG', text: 'buildInfo is not an object.')
   }
 }

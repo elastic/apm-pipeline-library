@@ -51,6 +51,25 @@ public class TestUtils {
     return res
   }
 
+  public static withEnvMaskInterceptor = { map, closure ->
+    map.each { key, value ->
+      if('vars'.equals(key)){
+        value.each{ it ->
+          binding.setVariable("${it.var}", "${it.password}")
+        }
+      }
+    }
+    def res = closure.call()
+    map.forEach { key, value ->
+      if('vars'.equals(key)){
+        value.each{ it ->
+          binding.setVariable("${it.var}", null)
+        }
+      }
+    }
+    return res
+  }
+
   public static withCredentialsInterceptor = { list, closure ->
     list.forEach {
       env[it.variable] = "dummyValue"

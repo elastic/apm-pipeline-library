@@ -19,90 +19,70 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithSecretVaultStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withSecretVault.groovy'
+class WithTotpVaultStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/withTotpVault.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
-    env.BRANCH_NAME = "branch"
-    env.CHANGE_ID = "29480a51"
-    env.ORG_NAME = "org"
-    env.REPO_NAME = "repo"
-    env.GITHUB_TOKEN = "TOKEN"
     super.setUp()
   }
 
   @Test
-  void testMissingArguments() throws Exception {
+  void test_MissingArguments() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo'){
+      script.call(secret: VaultSecret.SECRET.toString()){
         //NOOP
       }
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: Missing variables'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withTotpVault: Missing code_var_name'))
     assertJobStatusFailure()
   }
 
   @Test
-  void testSecretError() throws Exception {
+  void test_SecretError() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(secret: VaultSecret.SECRET_ERROR.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
+      script.call(secret: VaultSecret.SECRET_ERROR.toString(), code_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: Unable to get credentials from the vault: Error message'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withTotpVault: Unable to get credentials from the vault: Error message'))
     assertJobStatusFailure()
   }
 
   @Test
-  void testSecretNotFound() throws Exception {
+  void test_SecretNotFound() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
+      script.call(secret: 'secretNotExists', code_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withSecretVault: was not possible to get authentication info'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withTotpVault: was not possible to get authentication info'))
     assertJobStatusFailure()
   }
 
   @Test
-  void test() throws Exception {
+  void test_variable_is_created() throws Exception {
     def script = loadScript(scriptName)
     def isOK = false
-    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
-      isOK = true
-    }
-
-    printCallStack()
-    assertTrue(isOK)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testParams() throws Exception {
-    def script = loadScript(scriptName)
-    def isOK = false
-    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'U1', pass_var_name: 'P1'){
-      if(binding.getVariable("U1") == "username"
-        && binding.getVariable("P1") == "user_password"){
-        isOK = true
-      }
+    script.call(secret: VaultSecret.SECRET_TOTP.toString(), code_var_name: 'VAULT_TOTP'){
+      isOK = (binding.getVariable('VAULT_TOTP') == '123456')
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=VAULT_TOTP'))
     assertJobStatusSuccess()
   }
 }
