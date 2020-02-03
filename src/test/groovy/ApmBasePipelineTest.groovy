@@ -32,8 +32,9 @@ class ApmBasePipelineTest extends BasePipelineTest {
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   enum VaultSecret{
-    SECRET('secret'), SECRET_NAME('secret/team/ci/secret-name'), BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
-    SECRET_ERROR('secretError'), SECRET_NOT_VALID('secretNotValid'), SECRET_CODECOV('secret-codecov')
+    BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
+    SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
+    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid')
 
     VaultSecret(String value) {
       this.value = value
