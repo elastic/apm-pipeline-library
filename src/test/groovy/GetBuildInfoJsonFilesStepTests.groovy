@@ -48,7 +48,6 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     })
     script.call("http://jenkins.example.com/job/myJob", "1")
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=job-info.json'))
     assertJobStatusSuccess()
   }
 
@@ -88,8 +87,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-o bar foo'))
     assertTrue(assertMethodCallContainsPattern('sh', '-o file url'))
-    assertFalse(assertMethodCallContainsPattern('writeJSON', 'file=file'))
-    assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar'))
     assertJobStatusSuccess()
   }
 }

@@ -75,16 +75,9 @@ def bulkDownload(map) {
   def command = ['status=0']
   map.each { url, file ->
     command << "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url} || status=1"
+    command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'
 
-  def ret = sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
-
-  if(ret != 0){
-    map.each { url, file ->
-      if (!fileExists(file)) {
-        writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
-      }
-    }
-  }
+  sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
 }
