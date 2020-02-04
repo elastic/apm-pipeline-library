@@ -4,7 +4,7 @@ credentials:
       - credentials:
           ## See https://github.com/jenkinsci/google-oauth-plugin/blob/google-oauth-plugin-1.0.0/src/test/resources/com/google/jenkins/plugins/credentials/oauth/json-service-account-config.yml
           - googleRobotPrivateKey:
-              projectId: 'elastic-observability'
+              projectId: 'elastic-observability1'
               serviceAccountConfig:
                 json:
                   secretJsonKey: ${google_cloud_secret}
@@ -15,36 +15,31 @@ jenkins:
       cloudName: "elastic-observability"
       configurations:
       - bootDiskAutoDelete: true
-        bootDiskSizeGb: 10
-        bootDiskSourceImageName: "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1910-eoan-v20200107"
-        bootDiskSourceImageProject: "ubuntu-os-cloud"
-        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b/diskTypes/pd-standard"
+        bootDiskSizeGb: 50
+        bootDiskSourceImageProject: "elastic-observability"
+        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f/diskTypes/pd-ssd"
         description: "obs11 workers"
         externalAddress: true
         javaExecPath: "java"
-        labelString: "google"
-        labels: "google"
-        launchTimeoutSeconds: 300
-        machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b/machineTypes/g1-small"
+        labels: "linux immutable obs11"
+        launchTimeoutSeconds: 200
+        machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f/machineTypes/g1-small"
         mode: NORMAL
-        namePrefix: "obs11"
+        namePrefix: "obs11-linux"
         networkConfiguration:
           autofilled:
             network: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/networks/default"
-            subnetwork: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-east1/subnetworks/default"
-        networkTags: "obs11"
+            subnetwork: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1/subnetworks/default"
         numExecutors: 1
-        numExecutorsStr: "1"
         oneShot: true
         preemptible: true
-        region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-east1"
-        remoteFs: "/tmp"
-        retentionTimeMinutes: 1
-        retentionTimeMinutesStr: "1"
+        region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1"
+        retentionTimeMinutes: 5
         runAsUser: "jenkins-gce"
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
-        zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-east1-b"
+        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/apm-ci-ubuntu-1804-lts-a075d8a8"
+        zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f"
       credentialsId: "elastic-observability"
-      instanceCapStr: "5"
+      instanceCapStr: "200"
       instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
       projectId: "elastic-observability"
