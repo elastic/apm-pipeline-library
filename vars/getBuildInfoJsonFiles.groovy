@@ -60,14 +60,6 @@ def call(jobURL, buildNumber){
   writeJSON(file: 'build-report.json' , json: toJSON(json), pretty: 2)
 }
 
-def downloadJSONFile(url, file){
-  def ret = sh(label: "Get Build info ${file}", script: "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}", returnStatus: true)
-
-  if(ret != 0){
-    writeJSON(file: "${file}" , json: toJSON("{}"), pretty: 2)
-  }
-}
-
 def bulkDownload(map) {
   if(map.isEmpty()) {
     error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
