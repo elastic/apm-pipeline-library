@@ -16,20 +16,27 @@
 // under the License.
 
 /**
-  Get the current git repository url from the .git folder.
-  If the checkout was made by Jenkins, you would use the environment variable GIT_URL.
-  In other cases, you probably has to use this step.
 
-  def repoUrl = getGitRepoURL()
+  As long as we got timeout issues
+
+  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
+
+  git scm
 */
-def call() {
-  if(!isUnix()){
-    error('getGitRepoURL: windows is not supported yet.')
+def call(params) {
+  log(level: 'INFO', text: 'Override default git')
+
+  def ret
+  retryWithSleep(3) {
+    ret = steps.git(params)
   }
-  try {
-    def repoUrl = sh(label: 'Get repo URL', script: 'git config --get remote.origin.url', returnStdout: true)?.trim()
-    return "${repoUrl}"
-  } catch (e) {
-    error("getGitRepoURL: could not fetch the URL details. ${e}")
+  return ret
+}
+
+def retryWithSleep(int i, body) {
+  retry(i) {
+    log(level: 'DEBUG', text: "Let's git (${i} tries).")
+    sleep(20)
+    body()
   }
- }
+}

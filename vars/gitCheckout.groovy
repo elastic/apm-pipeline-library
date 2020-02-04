@@ -65,7 +65,7 @@ def call(Map params = [:]){
   }
 
   // TODO: to be refactored as it's done also in the githubEnv step
-  setOrgRepoEnvVariables()
+  setOrgRepoEnvVariables(params)
 
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
@@ -132,10 +132,16 @@ def fetchPullRefs(){
   gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*')
 }
 
-def setOrgRepoEnvVariables() {
+def setOrgRepoEnvVariables(params) {
 
   if(!env?.GIT_URL){
-    env.GIT_URL = getGitRepoURL()
+    // This is the support for simple pipelines
+    if(params.repo) {
+      log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo')
+      env.GIT_URL = params.repo
+    } else {
+      env.GIT_URL = getGitRepoURL()
+    }
   }
 
   def tmpUrl = env.GIT_URL

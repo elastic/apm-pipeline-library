@@ -249,6 +249,13 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.
 
+## git
+Override the `git` step to retry the checkout up to 3 times.
+
+```
+git scm
+```
+
 ## gitChangelog
 Return the changes between the parent commit and the current commit.
 
@@ -934,6 +941,24 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
+## withNpmrc
+Wrap the npmrc token
+
+```
+withNpmrc() {
+  // block
+}
+
+withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
+  // block
+}
+```
+
+* path: root folder where the npmrc token will be stored. (Optional). Default: ${HOME} env variable
+* npmrcFile: name of the file with the token. (Optional). Default: .npmrc
+* registry: NPM registry. (Optional). Default: registry.npmjs.org
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/elastic-observability-npmjs'
+
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
@@ -945,6 +970,32 @@ The passed data variables will be exported and masked on logs
 
 ```
 withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: 'my_password_env'){
+  //block
+}
+```
+
+## withTotpVault
+Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
+passed as parameters and mask the secrets
+
+the TOTP must have this format
+```
+{
+  "request_id": "abcdef4a-f9d6-ce93-2536-32c3bb915ab7",
+  "lease_id": "",
+  "lease_duration": 0,
+  "renewable": false,
+  "data": {
+    "code": "123456"
+  },
+  "warnings": null
+}
+```
+
+The value for code_var_name will be exported as a variable and masked in the logs
+
+```
+withTotpVault(secret: 'secret', code_var_name: 'VAULT_TOTP'){
   //block
 }
 ```

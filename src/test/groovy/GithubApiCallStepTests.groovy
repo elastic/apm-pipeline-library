@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
 class GithubApiCallStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubApiCall.groovy'
@@ -54,6 +55,32 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret[0].user.login == "githubusername")
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testData() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def script = loadScript(scriptName)
+    try {
+      script.call(url: "dummy", token: "dummy", data: ["foo": "bar"])
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to POST"))
+  }
+
+  @Test
+  void testNoData() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def script = loadScript(scriptName)
+    try {
+      script.call(url: "dummy", token: "dummy")
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to POST"))
   }
 
   @Test
