@@ -1,0 +1,11 @@
+Create a GitHub release for a project
+```
+githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
+```
+* tagName: The name of the tag. (e.g. 'v1.0.0')
+* releaseName: The name of the release (e.g. 'v1.0.0')
+* body: Text describing the contents of the tag. (e.g. 'Raining Tacos Release')
+* draft: Boolean indicating if the release should be published as a draft. Default: false
+* preRelease: Boolean indicating if the release should be published as a prerelease. Default: false
+
+[GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
