@@ -266,6 +266,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
         }
       }
       if (lastError) {
+        updateBuildStatus('FAILURE')
         throw lastError
       }
     })
