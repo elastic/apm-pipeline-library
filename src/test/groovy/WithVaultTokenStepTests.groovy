@@ -80,9 +80,10 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
       }
     } catch(e){
       //NOOP
+      assertTrue(e instanceof Exception)
+      assertTrue(e.toString().contains('Mock an error'))
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withVaultToken: error'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm .vault-token'))
     assertJobStatusFailure()
   }

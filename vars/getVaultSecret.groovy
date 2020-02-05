@@ -46,10 +46,16 @@ def readSecret(secret) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
   readSecretWrapper() {
-    retry(2) {
-      sleep randomNumber(min: 5, max: 10)
-      def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
-      props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+    retry(3) {
+      try {
+        def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+        props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
+      } catch(e) {
+        // When running in the CI with multiple parallel stages
+        // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
+        sleep randomNumber(min: 2, max: 5)
+        throw e
+      }
     }
     //we do not have permissions to revoke a token.
     //revokeToken(env.VAULT_ADDR, token)
