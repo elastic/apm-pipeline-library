@@ -30,6 +30,10 @@ def call(Map params = [:]){
   def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
   def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
+  def data = params?.data
+  def headers = ["Authorization": "token ${token}",
+                 "User-Agent": "Elastic-Jenkins-APM"]
+  def dryRun = params?.data
 
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -40,7 +44,13 @@ def call(Map params = [:]){
       def key = "${token}#${url}"
       if(cache["${key}"] == null){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
-        json = httpRequest(url: url, headers: ["Authorization": "token ${token}"])
+        if(data) {
+          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to POST")
+          headers.put("Content-Type", "application/json")
+          json = httpRequest(url: url, method: "POST", headers: headers, data: toJSON(data).toString())
+        } else {
+          json = httpRequest(url: url, headers: headers)
+        }
         cache["${key}"] = json
       } else {
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from cache.")
