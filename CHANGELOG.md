@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.66 (05/02/2020)
+
+#### 🚀 Enhancements
+
+- [**groovy**] Speed up builds with less sleeps steps [#376](https://github.com/elastic/apm-pipeline-library/pull/376)
+- [**groovy**] POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
+
+#### ⚙️ CI
+
+- [**groovy**] getBuildInfoJsonFiles step refactored to be `shellish` rather than `groovish` [#373](https://github.com/elastic/apm-pipeline-library/pull/373)
+
+---
+
 ## v1.1.65 (03/02/2020)
 
 #### 🚀 Enhancements
@@ -306,8 +319,8 @@
 
 #### 🐛 Bug Fixes
 
--  fixes isGitRegionMatch to be used only with gitCheckout and minor changes [#264](https://github.com/elastic/apm-pipeline-library/pull/264)
 -  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
+-  fixes isGitRegionMatch to be used only with gitCheckout and minor changes [#264](https://github.com/elastic/apm-pipeline-library/pull/264)
 
 #### ⚙️ CI
 
@@ -319,13 +332,13 @@
 
 #### 🚀 Enhancements
 
+-  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 -  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
 -  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
 -  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
 -  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
--  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 
 #### 🐛 Bug Fixes
 
@@ -609,19 +622,19 @@
 
 #### 🐛 Bug Fixes
 
--  fix: use alias to avoid hit erased paths [#141](https://github.com/elastic/apm-pipeline-library/pull/141)
--  fix: execute .ci/scripts/push-integration-test-images.sh in the correct context [#142](https://github.com/elastic/apm-pipeline-library/pull/142)
 -  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
 -  fix: make gren docker image works [#140](https://github.com/elastic/apm-pipeline-library/pull/140)
 -  fix: grab the real version name from artifactory before push [#143](https://github.com/elastic/apm-pipeline-library/pull/143)
+-  fix: use alias to avoid hit erased paths [#141](https://github.com/elastic/apm-pipeline-library/pull/141)
+-  fix: execute .ci/scripts/push-integration-test-images.sh in the correct context [#142](https://github.com/elastic/apm-pipeline-library/pull/142)
 
 #### ⚙️ CI
 
+-  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 -  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
 -  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
 -  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
 -  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
--  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 
 ---
 
