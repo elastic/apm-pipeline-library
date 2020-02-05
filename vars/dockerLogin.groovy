@@ -44,12 +44,18 @@ def call(Map params = [:]){
       "DOCKER_PASSWORD=${dockerPassword}"
     ]) {
       retry(3) {
-        sleep randomNumber(min: 5, max: 10)
-        sh(label: "Docker login", script: """
-        set +x
-        host ${registry} 2>&1 > /dev/null
-        docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
-        """)
+        try {
+          sh(label: "Docker login", script: """
+            set +x
+            host ${registry} 2>&1 > /dev/null
+            docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
+            """)
+        } catch(e) {
+          // When running in the CI with multiple parallel stages
+          // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
+          sleep randomNumber(min: 5, max: 10)
+          throw e
+        }
       }
     }
   }

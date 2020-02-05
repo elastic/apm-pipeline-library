@@ -36,7 +36,11 @@ def call(params) {
 def retryWithSleep(int i, body) {
   retry(i) {
     log(level: 'DEBUG', text: "Let's git (${i} tries).")
-    sleep(20)
-    body()
+    try {
+      body()
+    } catch(e) {
+      sleep(20)
+      throw e
+    }
   }
 }
