@@ -52,5 +52,31 @@ def call(Map params = [:]){
   // Construct GitHub API URL
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases"
 
+  /* Construct the paramaters for the GitHub API call
+
+  Examnple from documentation:
+  https://developer.github.com/v3/repos/releases/#create-a-release
+
+        {
+        "tag_name": "v1.0.0",
+        "target_commitish": "master",
+        "name": "v1.0.0",
+        "body": "Description of the release",
+        "draft": false,
+        "prerelease": false
+      }
+  */
+
+  def release_params = [
+  "tag_name": tagName,
+  "target_comitish": "master", // Hardcoded currently
+  "name": releaseName,
+  "body": body,
+  "draft": draft,
+  "prerelease": preRelease
+  ]
+
   // Call the GitHub API
-  
+  ret = githubApiCall(token: token, url: apiURL, data: release_params)
+  return ret
+}
