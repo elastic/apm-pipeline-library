@@ -69,7 +69,7 @@ def call(Map params = [:]){
 
   def release_params = [
   "tag_name": tagName,
-  "target_comitish": "master", // Hardcoded currently
+  "target_commitish": "master", // Hardcoded currently
   "name": releaseName,
   "body": body,
   "draft": draft,
