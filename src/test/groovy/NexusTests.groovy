@@ -20,7 +20,7 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class NexusTests extends ApmBasePipelineTest {
-  String scriptName = 'src/co/elatsic/Nexus.groovy'
+  String scriptName = 'src/co/elastic/Nexus.groovy'
 
   @Override
   @Before
@@ -29,13 +29,31 @@ class NexusTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void testAcceptProperty() throws Exception {
     def script = loadScript(scriptName)
-    script.createConnection(
+    def ret = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
       "dummy_pass",
       "/dummy_path"
       )
+      assertTrue(ret.getRequestProperty("Accept") == 'application/json')
   }
+
+  @Test
+  void testURL() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.createConnection(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "/dummy_path"
+      )
+      System.println('FOO')
+      System.println(ret.URL)
+      assertTrue(ret.URL == "http://localhost:9999//dummy_path")
+  }
+
+  
+
 }

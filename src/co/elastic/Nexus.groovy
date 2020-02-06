@@ -20,6 +20,7 @@ package co.elastic;
 import java.net.URL
 import java.net.HttpURLConnection
 import java.security.MessageDigest
+import java.util.Base64
 
 import groovy.json.JsonSlurper
 
