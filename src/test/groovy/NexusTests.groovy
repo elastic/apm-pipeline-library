@@ -16,16 +16,29 @@
 // under the License.
 
 import org.junit.Before
+import org.junit.After
 import org.junit.Test
 import static org.junit.Assert.assertTrue
+import java.net.InetSocketAddress
+import com.sun.net.httpserver.HttpServer
 
 class NexusTests extends ApmBasePipelineTest {
   String scriptName = 'src/co/elastic/Nexus.groovy'
+
+  // Build a small test server
+  def i = new InetSocketAddress('localhost', 9999)
+  def HttpServer ws =  HttpServer.create(i, 100)
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    ws.start()
+  }
+
+  @After
+  void tearDown() throws Exception {
+    ws.stop(0)
   }
 
   @Test
@@ -35,7 +48,7 @@ class NexusTests extends ApmBasePipelineTest {
       "http://localhost:9999",
       "dummy_user",
       "dummy_pass",
-      "/dummy_path"
+      "dummy_path"
       )
       assertTrue(ret.getRequestProperty("Accept") == 'application/json')
   }
@@ -47,13 +60,24 @@ class NexusTests extends ApmBasePipelineTest {
       "http://localhost:9999",
       "dummy_user",
       "dummy_pass",
-      "/dummy_path"
+      "dummy_path"
       )
-      System.println('FOO')
-      System.println(ret.URL)
-      assertTrue(ret.URL == "http://localhost:9999//dummy_path")
+      assertTrue(ret.URL.toString().equals("http://localhost:9999/dummy_path"))
   }
 
-  
+  @Test
+  void testAddData() throws Exception {
+    def script = loadScript(scriptName)
+    def conn = script.createConnection(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "dummy_path"
+      )
+    byte b = 100
+    script.addData(conn, 'POST', b)
+    assertTrue(conn.getRequestMethod().equals('POST'))
+  }
+
 
 }

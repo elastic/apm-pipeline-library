@@ -35,7 +35,7 @@ private static HttpURLConnection createConnection(String baseUrl, String usernam
 }
 
 private static void addData(HttpURLConnection conn, String method, byte[] bytes) {
-    conn.requestMethod = method
+    conn.setRequestMethod(method)
     conn.doOutput = true
     if (method == 'POST') {
         conn.addRequestProperty("Content-Type", "application/json")
