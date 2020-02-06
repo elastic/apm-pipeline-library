@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.67 (06/02/2020)
+
+#### 🚀 Enhancements
+
+- [**groovy**] Git release [#377](https://github.com/elastic/apm-pipeline-library/pull/377)
+
+#### ⚙️ CI
+
+- [**groovy**] sleep in the first checkout since it is the best worst scenario [#378](https://github.com/elastic/apm-pipeline-library/pull/378)
+
+---
+
 ## v1.1.66 (05/02/2020)
 
 #### 🚀 Enhancements
@@ -630,11 +642,11 @@
 
 #### ⚙️ CI
 
+-  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
+-  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
 -  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 -  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
 -  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
--  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
--  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
 
 ---
 
