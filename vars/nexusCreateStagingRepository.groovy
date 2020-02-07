@@ -37,12 +37,12 @@ def call(Map params = [:]) {
       conn = Nexus.createConnection(getStagingURL(url), username, password, "profiles/${stagingProfileId}/start")
       addData(conn, 'POST', data.getBytes('UTF-8'))
       if (is5xxError(conn.responseCode)) {
-          logger.warn("Received a ${conn.responseCode} HTTP response code while trying to create a staging repository in nexus, trying again.")
+          log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to create a staging repository in nexus, trying again.")
           if (conn.getErrorStream()) {
               final String response = conn.getErrorStream().getText('UTF-8')
-              logger.info("Body of the HTTP response: '${response}'")
+              log(level: "INFO", text: "Body of the HTTP response: '${response}'")
           } else {
-              logger.info('The response did not have an error stream.')
+              log(level: "INFO", text: 'The response did not have an error stream.')
           }
       } else {
           break
@@ -62,11 +62,4 @@ def call(Map params = [:]) {
   }
 
   return stagingId
-
-
-
-// TODO? Refactor into utility library
-
-// END TODO
-
 }
