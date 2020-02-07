@@ -24,6 +24,8 @@ import java.util.Base64
 
 import groovy.json.JsonSlurper
 
+def l = loadScript('vars/log.groovy')
+System.println("log: " + l)
 
 private static HttpURLConnection createConnection(String baseUrl, String username, String password, String path) {
     String creds = "${username}:${password}"
@@ -71,8 +73,8 @@ private static void checkResponse(HttpURLConnection conn, int expectedCode) {
 
 // private static void upload(ProgressLogger progressLogger, String baseUrl, String username, String password, String path, File file) {
  private static void upload(String baseUrl, String username, String password, String path, File file) {
-
-    log(level: "INFO", "Uploading ${file.name} to ${path}")
+    // log(level: "INFO", "Uploading ${file.name} to ${path}")
+    System.println("INFO: Uploading ${file.name} to ${path}")
     HttpURLConnection conn
     final int retries = 20
     int attemptNumber = 0
@@ -81,12 +83,15 @@ private static void checkResponse(HttpURLConnection conn, int expectedCode) {
         conn = createConnection(baseUrl, username, password, "${path}/${file.name}")
         addData(conn, 'PUT', file.getBytes())
         if (is5xxError(conn.responseCode)) {
-            log(level: "WARN", message: "Received a ${conn.responseCode} HTTP response code while trying to upload an artifact to nexus, trying again.")
+            System.println("WARN: Received a ${conn.responseCode} HTTP response code while trying to upload an artifact to nexus, trying again.")
+            // log(level: "WARN", message: "Received a ${conn.responseCode} HTTP response code while trying to upload an artifact to nexus, trying again.")
             if (conn.getErrorStream()) {
                 final String response = conn.getErrorStream().getText('UTF-8')
-                log(level: "WARN", "Body of the HTTP response: '${response}'")
+                System.println("WARN: Body of the HTTP response: '${response}'")
+                // log(level: "WARN", "Body of the HTTP response: '${response}'")
             } else {
-                log(level: "WARN", 'The response did not have an error stream.')
+                System.println("WARN: The response did not have an error stream.")
+                // log(level: "WARN", 'The response did not have an error stream.')
             }
         } else {
             break

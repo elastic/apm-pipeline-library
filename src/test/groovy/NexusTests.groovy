@@ -20,6 +20,7 @@ import org.junit.After
 import org.junit.Test
 import org.junit.Rule
 import org.junit.rules.ExpectedException
+import java.io.File
 import static org.junit.Assert.assertTrue
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpContext
@@ -34,6 +35,7 @@ class NexusTests extends ApmBasePipelineTest {
       "foo": "bar"
     }"""
   }
+  File tmpFile = new File("/tmp/foo")
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -41,14 +43,15 @@ class NexusTests extends ApmBasePipelineTest {
   // Build a small test server
   def i = new InetSocketAddress('localhost', 9999)
   def HttpServer ws =  HttpServer.create(i, 100)
-  HttpContext context = ws.createContext("/");
+  HttpContext root_context = ws.createContext("/")
+  HttpContext upload_context = ws.createContext("/up")
 
   @Override
   @Before
   void setUp() throws Exception {
     // System.println(this.handleRequest)
     super.setUp()
-    context.setHandler({ exchange ->
+    root_context.setHandler({ exchange ->
       String response = shInterceptor();
       exchange.responseHeaders.set("Content-Type", "application/json")
       exchange.sendResponseHeaders(200, response.getBytes().length);
@@ -57,6 +60,17 @@ class NexusTests extends ApmBasePipelineTest {
       os.close();
       exchange.Send
       });
+
+    upload_context.setHandler({ exchange ->
+      String response = shInterceptor();
+      exchange.responseHeaders.set("Content-Type", "application/json")
+      exchange.sendResponseHeaders(201, response.getBytes().length);
+      OutputStream os = exchange.getResponseBody();
+      os.write(response.getBytes());
+      os.close();
+      exchange.Send
+      });
+
     ws.start()
   }
 
@@ -153,8 +167,18 @@ class NexusTests extends ApmBasePipelineTest {
       )
     exception.expect(Exception.class)
     script.checkResponse(conn, 900)
+  }
 
-
+  @Test
+  void testUpload() throws Exception {
+    def script = loadScript(scriptName)
+    script.upload(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "up",
+      tmpFile
+      )
   }
 
 }
