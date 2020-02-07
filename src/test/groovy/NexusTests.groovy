@@ -19,20 +19,38 @@ import org.junit.Before
 import org.junit.After
 import org.junit.Test
 import static org.junit.Assert.assertTrue
-import java.net.InetSocketAddress
 import com.sun.net.httpserver.HttpServer
+import com.sun.net.httpserver.HttpContext
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpHandler
 
 class NexusTests extends ApmBasePipelineTest {
   String scriptName = 'src/co/elastic/Nexus.groovy'
 
+  def shInterceptor = {
+    return """[{
+      "foo": "bar"
+    }]"""
+  }
+
   // Build a small test server
   def i = new InetSocketAddress('localhost', 9999)
   def HttpServer ws =  HttpServer.create(i, 100)
+  HttpContext context = ws.createContext("/");
 
   @Override
   @Before
   void setUp() throws Exception {
+    // System.println(this.handleRequest)
     super.setUp()
+    context.setHandler({ exchange ->
+      String response = "Hi there!";
+      exchange.sendResponseHeaders(200, response.getBytes().length);
+      OutputStream os = exchange.getResponseBody();
+      os.write(response.getBytes());
+      os.close();
+      exchange.Send
+      });
     ws.start()
   }
 
@@ -79,5 +97,24 @@ class NexusTests extends ApmBasePipelineTest {
     assertTrue(conn.getRequestMethod().equals('POST'))
   }
 
+  @Test
+  void testGetData() throws Exception {
+    helper.registerAllowedMethod("reader", [Map.class], shInterceptor)
+    def script = loadScript(scriptName)
+    def data
+    try {
+      def conn = script.createConnection(
+        "http://localhost:9999",
+        "dummy_user",
+        "dummy_pass",
+        "dummy_path"
+        )
+         data = script.getData(conn)
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    System.println(data)
+  }
 
 }
