@@ -31,7 +31,7 @@ def call(Map params = [:]){
   String description = params.get('description', '')
   String username = params.get('username', 'admin')
   String password = params.get('password', 'admin_pass')
-  String url = params.get('url', 'http://oss.sonatype.org')
+  String url = params.get('url', 'https://oss.sonatype.org')
   int retries = params.get('retries', 20)
 
   def data = toJSON(['data': ['targetRepositoryId': stagingProfileId, 'description': description]]).toString()
