@@ -22,6 +22,7 @@ import org.junit.Rule
 import org.junit.rules.ExpectedException
 import java.io.File
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpContext
 import com.sun.net.httpserver.HttpExchange
@@ -188,6 +189,40 @@ class NexusTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def ret = script.generateHashFile(filehandle, algorithm)
     assertTrue(ret.toString().equals(filehandle.toString()+".SHA"))
+    def hashFile = new File("/tmp/foo.SHA")
+    assertTrue(hashFile.text.equals("546023ffdeaf21452ab4541786a77e6fe79b8c2b"))
   }
 
+  @Test
+  void testGetSnapshotsUrl() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.getSnapshotsURL('http://oss.sonatype.org')
+    assertTrue(ret.equals("http://oss.sonatype.org/content/repositories/snapshots"))
+  }
+
+  @Test
+  void testgetStagingURL() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.getStagingURL('http://oss.sonatype.org')
+    assertTrue(ret.equals("http://oss.sonatype.org/service/local/staging"))
+  }
+
+  @Test
+  void testGetStagingRepositoryURL() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.getStagingRepositoryURL('http://oss.sonatype.org', 'dummy_id')
+    assertTrue(ret.equals("http://oss.sonatype.org/service/local/repositories/dummy_id/content"))
+  }
+
+  @Test
+  void testIs5xxError() throws Exception {
+    def script = loadScript(scriptName)
+    assertTrue(script.is5xxError(500))
+  }
+
+  @Test
+  void testIsNot5xxError() throws Exception {
+    def script = loadScript(scriptName)
+    assertFalse(script.is5xxError(404))
+  }
 }
