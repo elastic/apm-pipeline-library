@@ -18,6 +18,8 @@
 import org.junit.Before
 import org.junit.After
 import org.junit.Test
+import org.junit.Rule
+import org.junit.rules.ExpectedException
 import static org.junit.Assert.assertTrue
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpContext
@@ -32,6 +34,9 @@ class NexusTests extends ApmBasePipelineTest {
       "foo": "bar"
     }"""
   }
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
   // Build a small test server
   def i = new InetSocketAddress('localhost', 9999)
@@ -119,6 +124,37 @@ class NexusTests extends ApmBasePipelineTest {
     def toJson = loadScript('vars/toJSON.groovy')
     def expected_json = toJson(shInterceptor())
     assertTrue(expected_json.equals(data))
+  }
+
+  @Test
+  void testcheckResponse() throws Exception {
+    def script = loadScript(scriptName)
+    def conn = script.createConnection(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "dummy_path"
+      )
+    try{
+      script.checkResponse(conn, 200)
+    } catch(e) {
+      //NOOP
+    }
+  }
+
+  @Test
+  void testcheckBadResponse() throws Exception {
+    def script = loadScript(scriptName)
+    def conn = script.createConnection(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "dummy_path"
+      )
+    exception.expect(Exception.class)
+    script.checkResponse(conn, 900)
+
+
   }
 
 }
