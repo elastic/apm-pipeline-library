@@ -181,4 +181,13 @@ class NexusTests extends ApmBasePipelineTest {
       )
   }
 
+  @Test
+  void testGenerateHashFile() throws Exception {
+    def filehandle = new File("/tmp/foo")
+    def algorithm = 'SHA'
+    def script = loadScript(scriptName)
+    def ret = script.generateHashFile(filehandle, algorithm)
+    assertTrue(ret.toString().equals(filehandle.toString()+".SHA"))
+  }
+
 }
