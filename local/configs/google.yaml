@@ -4,7 +4,7 @@ credentials:
       - credentials:
           ## See https://github.com/jenkinsci/google-oauth-plugin/blob/google-oauth-plugin-1.0.0/src/test/resources/com/google/jenkins/plugins/credentials/oauth/json-service-account-config.yml
           - googleRobotPrivateKey:
-              projectId: 'elastic-observability1'
+              projectId: 'elastic-observability'
               serviceAccountConfig:
                 json:
                   secretJsonKey: ${google_cloud_secret}
@@ -22,7 +22,7 @@ jenkins:
         externalAddress: true
         javaExecPath: "java"
         labels: "linux immutable obs11"
-        launchTimeoutSeconds: 200
+        launchTimeoutSeconds: 600
         machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f/machineTypes/g1-small"
         mode: NORMAL
         namePrefix: "obs11-linux"
@@ -34,12 +34,12 @@ jenkins:
         oneShot: true
         preemptible: true
         region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1"
-        retentionTimeMinutes: 5
+        retentionTimeMinutes: 10
         runAsUser: "jenkins-gce"
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
         template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/apm-ci-ubuntu-1804-lts-a075d8a8"
         zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f"
       credentialsId: "elastic-observability"
-      instanceCapStr: "200"
+      instanceCapStr: "300"
       instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
       projectId: "elastic-observability"

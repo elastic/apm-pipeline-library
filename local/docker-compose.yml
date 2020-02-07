@@ -14,6 +14,11 @@ services:
       JAVA_OPTS: >-
         -Djenkins.install.runSetupWizard=false
         -Dhudson.model.UsageStatistics.disabled=true
+        -Dhudson.slaves.NodeProvisioner.initialDelay=0
+        -Dhudson.slaves.NodeProvisioner.MARGIN=100
+        -Dhudson.slaves.NodeProvisioner.MARGIN0=1.0
+        -Dhudson.model.LoadStatistics.decay=0.5
+        -Dhudson.model.LoadStatistics.clock=5000
     volumes:
       - type: volume
         source: jenkins_home

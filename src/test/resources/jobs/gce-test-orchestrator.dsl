@@ -3,11 +3,11 @@ DSL = '''
 pipeline {
   agent none
   stages {
-    stage('Test for a while') {
+    /*stage('Test for a while') {
       steps {
         parallelStepsForAWhile()
       }
-    }
+    }*/
     stage('Test in batches') {
       steps {
         buildCall(10, 10)
@@ -22,11 +22,8 @@ pipeline {
 }
 
 def buildCall(num, factor) {
-  for (i = (1 * factor); i < (num * factor); (i++ * factor)) {
-    buildRun(i, false)
-    // Let's wait until all the builds for the first batch are done.
-    sleep 5
-    buildRun(1, true)
+  for (i = 1; i < num; i++) {
+    buildRun(i * factor, false)
   }
 }
 
@@ -39,11 +36,8 @@ def buildRun(i, wait) {
 def parallelStepsForAWhile(){
   for (i = 0; i < 100; i++) {
     buildRun(10, false)
-    sleep 5
-    buildRun(1, true)
   }
 }
-
 '''
 
 pipelineJob(NAME) {

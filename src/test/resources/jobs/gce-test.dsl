@@ -15,6 +15,7 @@ pipeline {
     timestamps()
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+    disableConcurrentBuilds()
   }
   stages {
     stage('Test') {
@@ -55,6 +56,10 @@ def elapsedTime(Closure closure){
 '''
 
 pipelineJob(NAME) {
+  parameters {
+    stringParam('num', '1')
+  }
+  concurrentBuild(false)
   definition {
     cps {
       script(DSL.stripIndent())
