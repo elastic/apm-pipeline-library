@@ -74,7 +74,7 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCreateWithId() throws Exception {
+  void testCreate() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
@@ -84,5 +84,66 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
       description: 'my desc')
     assertTrue(ret.equals('pid'))
   }
+}
 
+class NexusStagingCreate500Tests extends ApmBasePipelineTest {
+  String scriptName = 'vars/nexusCreateStagingRepository.groovy'
+
+  def shInterceptor = {
+    return """{
+      "data": {"stagedRepositoryId": "pid"
+    }
+    }"""
+  }
+
+  // Build a small test server
+  def i = new InetSocketAddress('localhost', 9999)
+  def HttpServer ws =  HttpServer.create(i, 100)
+  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles//start")
+
+  @Override
+  @Before
+  void setUp() throws Exception {
+    // System.println(this.handleRequest)
+    super.setUp()
+
+      profile_start_context.setHandler({ exchange ->
+        String response = shInterceptor();
+        exchange.responseHeaders.set("Content-Type", "application/json")
+        exchange.sendResponseHeaders(500, response.getBytes().length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+        exchange.Send
+        });
+
+    ws.start()
+  }
+
+  @After
+  void tearDown() throws Exception {
+    ws.stop(0)
+  }
+
+  @Test
+  void testCreate500Err() throws Exception {
+    /* This is a little funny because the code under test
+    doesn't deal with a service never returning anything BUT a 500
+    which is what this test does but we don't need to look that far
+    ahead in this case */
+    def script = loadScript(scriptName)
+    def ret
+    try {
+      ret = script.call(
+        url: 'http://localhost:9999',
+        stagingProfileId: 'pid',
+        username: 'admin',
+        password: 'pass',
+        description: 'my desc',
+        retries: 0)
+    } catch (e) {
+      // NOOP
+    }
+    assertTrue(assertMethodCallContainsPattern("log", "Received a 500 HTTP response code while trying to create a staging repository in nexus, trying again."))
+  }
 }

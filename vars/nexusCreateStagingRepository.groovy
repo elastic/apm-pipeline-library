@@ -27,19 +27,18 @@ import co.elastic.Nexus
 import net.sf.json.JSONArray
 
 def call(Map params = [:]){
-  def String stagingProfileId = params.get('id', '')
-  def String description = params.get('description', '')
-  def String username = params.get('username', 'admin')
-  def String password = params.get('password', 'admin_pass')
-  def String url = params.get('url', 'http://oss.sonatype.org')
+  String stagingProfileId = params.get('id', '')
+  String description = params.get('description', '')
+  String username = params.get('username', 'admin')
+  String password = params.get('password', 'admin_pass')
+  String url = params.get('url', 'http://oss.sonatype.org')
+  int retries = params.get('retries', 20)
 
   def data = toJSON(['data': ['targetRepositoryId': stagingProfileId, 'description': description]]).toString()
 
-  final int retries = 20
   int attemptNumber = 0
 
-
-  while (attemptNumber < retries) {
+  while (attemptNumber <= retries) {
       conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/start")
       Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
       if (Nexus.is5xxError(conn.responseCode)) {
@@ -56,7 +55,6 @@ def call(Map params = [:]){
       attemptNumber += 1
       Thread.sleep(1000 * attemptNumber)
   }
-
   Nexus.checkResponse(conn, 201)
   Object response = Nexus.getData(conn)
   String stagingId = response['data']['stagedRepositoryId']
