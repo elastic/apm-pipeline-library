@@ -28,9 +28,9 @@ class NexusTests extends ApmBasePipelineTest {
   String scriptName = 'src/co/elastic/Nexus.groovy'
 
   def shInterceptor = {
-    return """[{
+    return """{
       "foo": "bar"
-    }]"""
+    }"""
   }
 
   // Build a small test server
@@ -44,7 +44,8 @@ class NexusTests extends ApmBasePipelineTest {
     // System.println(this.handleRequest)
     super.setUp()
     context.setHandler({ exchange ->
-      String response = "Hi there!";
+      String response = shInterceptor();
+      exchange.responseHeaders.set("Content-Type", "application/json")
       exchange.sendResponseHeaders(200, response.getBytes().length);
       OutputStream os = exchange.getResponseBody();
       os.write(response.getBytes());
@@ -114,7 +115,10 @@ class NexusTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    System.println(data)
+    // JSON-ify the stub sent by the webserver
+    def toJson = loadScript('vars/toJSON.groovy')
+    def expected_json = toJson(shInterceptor())
+    assertTrue(expected_json.equals(data))
   }
 
 }
