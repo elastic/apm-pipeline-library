@@ -1,4 +1,7 @@
 filesystem_scm
 google-compute-engine
 job-dsl
+metrics
+monitoring
+plot
 ssh-agent

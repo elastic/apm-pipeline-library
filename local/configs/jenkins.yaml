@@ -103,6 +103,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gce-test.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
