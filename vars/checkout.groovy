@@ -34,13 +34,11 @@ def call(params) {
 }
 
 def retryWithSleep(int i, body) {
+  def factor = 0
   retry(i) {
-    log(level: 'DEBUG', text: "Let's checkout (${i} tries).")
-    try {
-      body()
-    } catch(e) {
-      sleep(20)
-      throw e
-    }
+    factor++
+    log(level: 'DEBUG', text: "Let's checkout (${factor} of ${i} tries).")
+    sleep(10 * factor)
+    body()
   }
 }
