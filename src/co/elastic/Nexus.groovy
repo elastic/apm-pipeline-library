@@ -30,7 +30,7 @@ System.println("log: " + l)
 private static HttpURLConnection createConnection(String baseUrl, String username, String password, String path) {
     String creds = "${username}:${password}"
     URL url = new URL("${baseUrl}/${path}")
-    URLConnection conn = (HttpURLConnection)url.openConnection()
+    HttpURLConnection conn = (HttpURLConnection)url.openConnection()
     conn.addRequestProperty("Authorization", "Basic " + new String(Base64.encoder.encode(creds.getBytes())))
     conn.addRequestProperty("Accept", "application/json")
     return conn

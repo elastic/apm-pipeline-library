@@ -24,19 +24,25 @@
 **/
 
 import co.elastic.Nexus
+import net.sf.json.JSONArray
 
-def call(Map params = [:]) {
-  def stagingProfileId = params.get('id')
-  def description = params.get('description')
+def call(Map params = [:]){
+  def String stagingProfileId = params.get('id', '')
+  def String description = params.get('description', '')
+  def String username = params.get('username', 'admin')
+  def String password = params.get('password', 'admin_pass')
+  def String url = params.get('url', 'http://oss.sonatype.org')
+
+  def data = toJSON(['data': ['targetRepositoryId': stagingProfileId, 'description': description]]).toString()
 
   final int retries = 20
   int attemptNumber = 0
 
 
   while (attemptNumber < retries) {
-      conn = Nexus.createConnection(getStagingURL(url), username, password, "profiles/${stagingProfileId}/start")
-      addData(conn, 'POST', data.getBytes('UTF-8'))
-      if (is5xxError(conn.responseCode)) {
+      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/start")
+      Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
+      if (Nexus.is5xxError(conn.responseCode)) {
           log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to create a staging repository in nexus, trying again.")
           if (conn.getErrorStream()) {
               final String response = conn.getErrorStream().getText('UTF-8')
@@ -51,14 +57,14 @@ def call(Map params = [:]) {
       Thread.sleep(1000 * attemptNumber)
   }
 
-  checkResponse(conn, 201)
-  Object response = getData(conn)
+  Nexus.checkResponse(conn, 201)
+  Object response = Nexus.getData(conn)
   String stagingId = response['data']['stagedRepositoryId']
 
-  conn = createConnection(getStagingURL(url), username, password, "repository/${stagingId}")
+  conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
   while (conn.responseCode != 200) {
       Thread.sleep(500)
-      conn = createConnection(getStagingURL(url), username, password, "repository/${stagingId}")
+      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
   }
 
   return stagingId

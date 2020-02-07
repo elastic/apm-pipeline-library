@@ -29,7 +29,8 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
 
   def shInterceptor = {
     return """{
-      "foo": "bar"
+      "data": {"stagedRepositoryId": "pid"
+    }
     }"""
   }
 
@@ -37,6 +38,7 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
   def i = new InetSocketAddress('localhost', 9999)
   def HttpServer ws =  HttpServer.create(i, 100)
   HttpContext root_context = ws.createContext("/")
+  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles//start")
 
   @Override
   @Before
@@ -53,6 +55,16 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
       exchange.Send
       });
 
+      profile_start_context.setHandler({ exchange ->
+        String response = shInterceptor();
+        exchange.responseHeaders.set("Content-Type", "application/json")
+        exchange.sendResponseHeaders(201, response.getBytes().length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+        exchange.Send
+        });
+
     ws.start()
   }
 
@@ -62,8 +74,15 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCreate() throws Exception {
+  void testCreateWithId() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(true)
+    def ret = script.call(
+      url: 'http://localhost:9999',
+      stagingProfileId: 'pid',
+      username: 'admin',
+      password: 'pass',
+      description: 'my desc')
+    assertTrue(ret.equals('pid'))
   }
+
 }
