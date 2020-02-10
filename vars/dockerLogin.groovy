@@ -51,10 +51,11 @@ def call(Map params = [:]){
             docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
             """)
         } else {
-          bat(label: 'Docker Login', script: """
-            @ECHO OFF
-            nslookup ${registry} 2>&1 > NUL
-            docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD% ${registry} 2> NUL
+          bat(label: 'is registry service up?', script: """@ECHO OFF
+            nslookup ${registry} > NUL 2>&1
+          """)
+          bat(label: 'Docker Login', script: """@ECHO OFF
+            docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "${registry}" 2> NUL
           """)
         }
       }
