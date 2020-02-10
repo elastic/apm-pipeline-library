@@ -50,13 +50,19 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
+    script.call(secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'dockerLogin: windows is not supported yet.'))
-    assertJobStatusFailure()
+    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "docker.io"'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRegistryInWindows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: 'other.docker.io')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "other.docker.io"'))
+    assertJobStatusSuccess()
   }
 }

@@ -188,6 +188,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
