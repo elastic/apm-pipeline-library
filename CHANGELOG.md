@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.68 (07/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] dockerLogin step without a previous sleep causes DDoS [#380](https://github.com/elastic/apm-pipeline-library/pull/380)
+
+---
+
 ## v1.1.67 (06/02/2020)
 
 #### 🚀 Enhancements
@@ -331,8 +339,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
 -  fixes isGitRegionMatch to be used only with gitCheckout and minor changes [#264](https://github.com/elastic/apm-pipeline-library/pull/264)
+-  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
 
 #### ⚙️ CI
 
@@ -642,11 +650,11 @@
 
 #### ⚙️ CI
 
+-  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
 -  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
 -  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
 -  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 -  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
--  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
 
 ---
 
