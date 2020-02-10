@@ -52,7 +52,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD% docker.io'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "docker.io"'))
     assertJobStatusSuccess()
   }
 
@@ -62,7 +62,7 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: 'other.docker.io')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD% other.docker.io'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "other.docker.io"'))
     assertJobStatusSuccess()
   }
 }
