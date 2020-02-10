@@ -23,9 +23,6 @@
   dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 */
 def call(Map params = [:]){
-  if(!isUnix()){
-    error('dockerLogin: windows is not supported yet.')
-  }
   def secret = params.containsKey('secret') ? params.secret : error("dockerLogin: No valid secret to looking for.")
   def registry = params.containsKey('registry') ? params.registry : "docker.io"
 
@@ -47,11 +44,19 @@ def call(Map params = [:]){
         // When running in the CI with multiple parallel stages
         // the access could be considered as a DDOS attack.
         sleep randomNumber(min: 5, max: 10)
-        sh(label: "Docker login", script: """
-          set +x
-          host ${registry} 2>&1 > /dev/null
-          docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
+        if (isUnix()) {
+          sh(label: "Docker login", script: """
+            set +x
+            host ${registry} 2>&1 > /dev/null
+            docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
+            """)
+        } else {
+          bat(label: 'Docker Login', script: """
+            @ECHO OFF
+            nslookup ${registry} 2>&1 > NUL
+            docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD% ${registry} 2> NUL
           """)
+        }
       }
     }
   }
