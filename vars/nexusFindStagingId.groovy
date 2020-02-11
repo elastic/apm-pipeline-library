@@ -18,7 +18,7 @@
 /**
   Find a  Nexus staging repository
 
-  nexusFindStagingRepository(
+  nexusFindStagingId(
     url: "https://oss.sonatype.org",
     username: "admin",
     password: "password"
@@ -26,8 +26,8 @@
     description: "My staging area"
     )
 **/
-
 import co.elastic.Nexus
+
 def call(Map params = [:]) {
 
   String url = params.get('url', 'https://oss.sonatype.org')
@@ -36,8 +36,8 @@ def call(Map params = [:]) {
   String password = params.get('password', '')
   String description = params.get('description', '')
 
-  HttpURLConnection conn = Nexus.createConnection(getStagingURL(url), username, password, "profile_repositories/${stagingProfileId}")
-  checkResponse(conn, 200)
+  HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profile_repositories/${stagingProfileId}")
+  Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
   String repositoryId = null
   for (def repository : response['data']) {
