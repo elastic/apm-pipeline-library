@@ -1,0 +1,21 @@
+Find a Nexus staging repository
+
+```
+nexusFindStagingRepository(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "password"
+  stagingProfileId: "comexampleapplication-1010",
+  description: "My staging area"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* description: Description of staging repository
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
