@@ -14,6 +14,18 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
+/**
+  Drop a  Nexus staging repository
+
+  nexusDropStagingRepository(
+    url: "https://oss.sonatype.org",
+    username: "admin",
+    password: "password"
+    stagingProfileId: "comexampleapplication-1010",
+    stagingId: "staging_id"
+    )
+**/
 import co.elastic.Nexus
 import net.sf.json.JSONArray
 
