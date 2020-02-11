@@ -50,6 +50,7 @@ pipeline {
             string(name: 'registry', value: 'docker.elastic.co'),
             string(name: 'tag_prefix', value: 'observability-ci'),
             string(name: 'secret', value: 'secret/apm-team/ci/docker-registry/prod'),
+            booleanParam(name: 'nodejs', value: true),
             booleanParam(name: 'python', value: true),
             booleanParam(name: 'ruby', value: true),
             booleanParam(name: 'weblogic', value: true),
