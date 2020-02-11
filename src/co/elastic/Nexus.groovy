@@ -22,7 +22,7 @@ import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.util.Base64
 
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 
 def l = loadScript('vars/log.groovy')
 System.println("log: " + l)
@@ -51,7 +51,7 @@ private static void addData(HttpURLConnection conn, String method, byte[] bytes)
 private static Object getData(HttpURLConnection conn) {
     Object data = null
     conn.inputStream.withReader('UTF-8') { Reader reader ->
-        data = new JsonSlurper().parse(reader)
+        data = new JsonSlurperClassic().parse(reader)
     }
     return data
 }
