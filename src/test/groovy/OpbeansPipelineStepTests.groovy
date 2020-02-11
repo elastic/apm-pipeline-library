@@ -65,7 +65,7 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Downstream'))
     assertTrue(assertMethodCallContainsPattern('build', 'folder/foo'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=latest make publish'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'make publish'))
     assertJobStatusSuccess()
   }
 

@@ -136,13 +136,7 @@ def call(Map pipelineParams) {
       }
       stage('Release') {
         when {
-          anyOf {
-            branch 'master'
-            tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
-          }
-        }
-        environment {
-          VERSION = "${env.BRANCH_NAME.equals('master') ? 'latest' : 'agent-' + env.BRANCH_NAME}"
+          tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
         }
         stages {
           stage('Publish') {
@@ -152,7 +146,7 @@ def call(Map pipelineParams) {
                 unstash 'source'
                 dir(BASE_DIR){
                   dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                  sh "VERSION=${env.VERSION} make publish"
+                  sh "VERSION=agent-${env.BRANCH_NAME} make publish"
                 }
               }
             }
