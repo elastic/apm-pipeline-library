@@ -27,32 +27,31 @@
     )
 **/
 
-import co.elastic.Nexus.*
-import groovy.json.JsonOutput
+import co.elastic.Nexus
+import net.sf.json.JSONArray
 
 def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
   String username = params.get('username', 'admin')
   String password = params.get('password', 'admin_pass')
-  String stagingId = params.get('stagingProfileId', '')
+  String stagingId = params.get('stagingId', '')
+  String stagingProfileId = params.get('stagingProfileId', '')
   String groupId = params.get('stagingId', '')
-
-  HttpURLConnection conn = createConnection(getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
-  String data = JsonOutput.toJson(['data': ['stagedRepositoryId': stagingId]])
-  addData(conn, 'POST', data.getBytes('UTF-8'))
-  checkResponse(conn, 201)
+  HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
+  String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
+  Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
+  Nexus.checkResponse(conn, 201)
 
   final int activityRetries = 20
   int activityAttempts = 1
-
   // poll repo activity for close action
   while (true) {
       try {
-          conn = createConnection(getStagingURL(url), username, password, "repository/${stagingId}/activity")
-          checkResponse(conn, 200)
+          conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}/activity")
+          Nexus.checkResponse(conn, 200)
       } catch (Exception e) {
           // sometimes nexus just shits itself with a new repository...try again
-          if (is5xxError(conn.responseCode) && activityAttempts < activityRetries) {
+          if (Nexus.is5xxError(conn.responseCode) && activityAttempts < activityRetries) {
               activityAttempts += 1
               // slight backoff between attempts
               final int sleepInSeconds = activityAttempts * 2
@@ -64,7 +63,7 @@ def call(Map params = [:]){
           }
           throw e
       }
-      def response = getData(conn)
+      def response = Nexus.getData(conn)
       def closeActivity = null
       for (def activity : response) {
           if (activity['name'] == 'close') {
@@ -108,11 +107,11 @@ def call(Map params = [:]){
           }
           Exception exception = new Exception(msg.join('\n'))
 
-          conn = createConnection(url, username, password, "profiles/${stagingProfileId}/drop")
-          data = JsonOutput.toJson(['data': ['stagedRepositoryId': stagingId]])
-          addData(conn, 'POST', data.getBytes('UTF-8'))
+          conn = Nexus.createConnection(url, username, password, "profiles/${stagingProfileId}/drop")
+          data = toJSON(['data': ['stagedRepositoryId': stagingId]])
+          Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
           try {
-              checkResponse(conn, 201)
+              Nexus.checkResponse(conn, 201)
           } catch (Exception dropFailure) {
               exception.addSuppressed(dropFailure)
           }
