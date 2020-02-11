@@ -43,7 +43,6 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
   @Override
   @Before
   void setUp() throws Exception {
-    // System.println(this.handleRequest)
     super.setUp()
     root_context.setHandler({ exchange ->
       String response = shInterceptor();
