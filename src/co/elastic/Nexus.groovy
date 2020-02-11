@@ -24,9 +24,6 @@ import java.util.Base64
 
 import groovy.json.JsonSlurperClassic
 
-def l = loadScript('vars/log.groovy')
-System.println("log: " + l)
-
 private static HttpURLConnection createConnection(String baseUrl, String username, String password, String path) {
     String creds = "${username}:${password}"
     URL url = new URL("${baseUrl}/${path}")
@@ -83,14 +80,11 @@ private static void checkResponse(HttpURLConnection conn, int expectedCode) {
         addData(conn, 'PUT', file.getBytes())
         if (is5xxError(conn.responseCode)) {
             System.println("WARN: Received a ${conn.responseCode} HTTP response code while trying to upload an artifact to nexus, trying again.")
-            // log(level: "WARN", message: "Received a ${conn.responseCode} HTTP response code while trying to upload an artifact to nexus, trying again.")
             if (conn.getErrorStream()) {
                 final String response = conn.getErrorStream().getText('UTF-8')
                 System.println("WARN: Body of the HTTP response: '${response}'")
-                // log(level: "WARN", "Body of the HTTP response: '${response}'")
             } else {
                 System.println("WARN: The response did not have an error stream.")
-                // log(level: "WARN", 'The response did not have an error stream.')
             }
         } else {
             break

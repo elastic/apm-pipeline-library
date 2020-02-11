@@ -101,7 +101,5 @@ class nexusCloseStagingRepositoryTests extends ApmBasePipelineTest {
       password: 'pass',
       stagingProfileId: 'dummy_staging_profile_id',
       stagingId: 'dummy_staging_id')
-    // assertTrue(ret.equals('pid'))
-
   }
 }
