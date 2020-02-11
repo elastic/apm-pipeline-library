@@ -71,7 +71,7 @@ private static void checkResponse(HttpURLConnection conn, int expectedCode) {
     }
 }
 
- public static void upload(int baseUrl, boolean username, String password, String path, File file) {
+ public static void upload(String baseUrl, String username, String password, String path, File file) {
     // log(level: "INFO", "Uploading ${file.name} to ${path}")
     System.println("INFO: Uploading ${file.name} to ${path}")
     HttpURLConnection conn

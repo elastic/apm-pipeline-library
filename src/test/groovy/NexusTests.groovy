@@ -51,6 +51,7 @@ class NexusTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     // System.println(this.handleRequest)
+    tmpFile.write("Oh, hello there. This is a test file for NexusTests")
     super.setUp()
     root_context.setHandler({ exchange ->
       String response = shInterceptor();
@@ -184,13 +185,14 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testGenerateHashFile() throws Exception {
-    def filehandle = new File("/tmp/foo")
+    def filehandle = new File("/tmp/nexus_hash_file")
+    filehandle.write("Oh, hello there. This is a test file for NexusTests")
     def algorithm = 'SHA'
     def script = loadScript(scriptName)
     def ret = script.generateHashFile(filehandle, algorithm)
     assertTrue(ret.toString().equals(filehandle.toString()+".SHA"))
-    def hashFile = new File("/tmp/foo.SHA")
-    assertTrue(hashFile.text.equals("546023ffdeaf21452ab4541786a77e6fe79b8c2b"))
+    def hashFile = new File("/tmp/nexus_hash_file.SHA")
+    assertTrue(hashFile.text.equals("e992a461191e8f12364bd1ecd2c8bec1be58cff8"))
   }
 
   @Test
