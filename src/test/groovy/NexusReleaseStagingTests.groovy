@@ -75,6 +75,8 @@ class nexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
       stagingProfileId: 'pid',
       username: 'admin',
       password: 'pass',
-      description: 'my desc')
+      description: 'my desc'
+      )
+    assertTrue(ret)
   }
 }

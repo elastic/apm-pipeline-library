@@ -66,5 +66,7 @@ def call(Map params = [:]) {
   }
 
   Nexus.checkResponse(conn, 201)
+  // Did not get an exception from checking the response so return true
+  return true
 
 }
