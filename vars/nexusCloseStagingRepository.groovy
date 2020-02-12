@@ -122,4 +122,5 @@ def call(Map params = [:]){
       // fall through, check the activities again after waiting a bit
       sleep(1)
   }
+  return true
 }

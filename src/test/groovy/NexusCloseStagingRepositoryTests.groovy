@@ -83,7 +83,6 @@ class nexusCloseStagingRepositoryTests extends ApmBasePipelineTest {
       exchange.Send
       });
 
-
     ws.start()
   }
 
@@ -100,6 +99,9 @@ class nexusCloseStagingRepositoryTests extends ApmBasePipelineTest {
       username: 'admin',
       password: 'pass',
       stagingProfileId: 'dummy_staging_profile_id',
-      stagingId: 'dummy_staging_id')
+      stagingId: 'dummy_staging_id'
+      )
+    assertTrue(ret)
   }
+
 }
