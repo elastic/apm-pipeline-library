@@ -58,7 +58,7 @@ def call(Map params = [:]){
               log(level: "INFO", text: "Encountered the following error: ")
               log(level: "INFO", text: e.message)
               log(level: "INFO", text: "Retrying in '${sleepInSeconds}' seconds...")
-              Thread.sleep(1000 * sleepInSeconds)
+              sleep(sleepInSeconds)
               continue
           }
           throw e
@@ -72,13 +72,13 @@ def call(Map params = [:]){
       }
       if (closeActivity == null) {
           // might not be added to history yet
-          Thread.sleep(1000)
+          sleep(1)
           continue
       }
       List<Object> events = (List)closeActivity['events']
       if (events == null) {
           // close doesn't have any events yet?
-          Thread.sleep(1000)
+          sleep(1)
           continue
       }
       def lastEvent = events[-1]
@@ -120,6 +120,6 @@ def call(Map params = [:]){
       }
 
       // fall through, check the activities again after waiting a bit
-      Thread.sleep(1000)
+      sleep(1)
   }
 }
