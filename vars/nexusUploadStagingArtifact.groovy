@@ -42,7 +42,7 @@ def call(Map params = [:]){
   String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_path')
 
   String stagingURL = Nexus.getStagingURL(url)
-  log(level: "INFO", "Load artifact for staging from " + file_path)
+  log(level: "INFO", text: "Load artifact for staging from " + file_path)
   File fh = new File(file_path)
   log(level: "INFO", text: "Staging " + artifactId)
   log(level: "INFO", text: "1.0")
