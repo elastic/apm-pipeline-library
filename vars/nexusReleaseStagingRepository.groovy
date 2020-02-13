@@ -59,7 +59,7 @@ def call(Map params = [:]) {
           }
 
           attemptNumber += 1
-          Thread.sleep(1000 * attemptNumber)
+         sleep(attemptNumber)
       } else {
           break
       }
