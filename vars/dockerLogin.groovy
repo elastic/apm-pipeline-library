@@ -47,7 +47,9 @@ def call(Map params = [:]){
         if (isUnix()) {
           sh(label: "Docker login", script: """
             set +x
-            host ${registry} 2>&1 > /dev/null
+            if command -v host; then
+              host ${registry} 2>&1 > /dev/null 
+            fi
             docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
             """)
         } else {
