@@ -86,7 +86,6 @@ class nexusFindStagingIdTests extends ApmBasePipelineTest {
       username: 'admin',
       password: 'pass',
       description: 'my desc')
-    System.println(ret)
     assertTrue(ret.equals('my id'))
   }
 }
