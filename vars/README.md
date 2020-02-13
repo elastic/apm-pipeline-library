@@ -367,7 +367,8 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
-* allowEmptyResponse: whether to allow empty responses. Default false
+* allowEmptyResponse: whether to allow empty responses. Default false.
+* data: Data to post to the API. Pass as a Map.
 
 [Github REST API](https://developer.github.com/v3/)
 
@@ -545,6 +546,143 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## nexusCloseStagingRepository
+Close a Nexus staging repository
+
+```
+nexusCreateStagingRepository(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "password"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "staging_id"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier for staging
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusCreateStagingRepository
+Create a Nexus staging repository
+
+```
+nexusCreateStagingRepository(
+  id: my_profile,
+  description: "My new staging repo")
+  username: admin
+  password: admin_pass
+  url: https://oss.sonatype.org
+  retries: 20
+```
+
+* id: The staging identifier to use when creating the repository
+* description: A description of the new staging repository
+* username: Nexus username
+* password: Nexus password
+* url: Nexus URL (default: https://oss.sonatype.org)
+* retries: Number of times to retry the remote API before giving up
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusDropStagingRepository
+Drop a Nexus staging repository
+```
+nexusDropStagingRepository(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "password"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "staging_id"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier for staging
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusFindStagingId
+Find a Nexus staging repository
+
+```
+nexusFindStagingRepository(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "password"
+  stagingProfileId: "comexampleapplication-1010",
+  description: "My staging area"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* description: Description of staging repository
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusReleaseStagingRepository
+Release a Nexus staging repository
+
+```
+nexusReleaseStagingRepository(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "password"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "co.elastic.foo"
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier of staging repository
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusUploadStagingArtifact
+Upload an artifact to the Nexus staging repository
+
+```
+nexusUploadStagingArtifact(
+  url: "https://oss.sonatype.org",
+  username: "admin",
+  password: "pass",
+  stagingId: "comexampleapplication-1010",
+  groupId: "com.example.applications",
+  artifactId: "my_tasty_artifact",
+  version: "v1.0.0"
+  file_path: "/tmp/my_local_artifact"
+```
+
+  For additional information, please read the OSSRH guide from Sonatype:
+  https://central.sonatype.org/pages/releasing-the-deployment.html
+
+  * url: The base URL of the staging repo. (Usually oss.sonatype.org)
+  * username: The username used to authenticate to the staging repository
+  * password: The password used to authenticate to the staging repository
+  * stagingId: The ID for the staging repository.
 
 ## notifyBuildResult
 Send an email message with a summary of the build result,
