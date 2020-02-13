@@ -124,17 +124,15 @@ class NexusTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("reader", [Map.class], shInterceptor)
     def script = loadScript(scriptName)
     def data
-    try {
-      def conn = script.createConnection(
-        "http://localhost:9999",
-        "dummy_user",
-        "dummy_pass",
-        "dummy_path"
-        )
-         data = script.getData(conn)
-    } catch(e) {
-      //NOOP
-    }
+    def conn = script.createConnection(
+      "http://localhost:9999",
+      "dummy_user",
+      "dummy_pass",
+      "dummy_path"
+      )
+
+    data = script.getData(conn)
+
     printCallStack()
     // JSON-ify the stub sent by the webserver
     def toJson = loadScript('vars/toJSON.groovy')
