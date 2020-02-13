@@ -45,6 +45,7 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
+    booleanParam(name: 'nodejs', defaultValue: 'false', description: '')
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
@@ -151,6 +152,40 @@ pipeline {
                   version: "${rubyVersion}",
                   folder: 'spec',
                   options: "--build-arg RUBY_IMAGE='${version}'",
+                  push: true)
+              }
+            }
+            parallel(tasks)
+          }
+        }
+      }
+    }
+    stage('Build agent Node.js images'){
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent Node.js images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.nodejs }
+      }
+      steps {
+        dir('apm-agent-nodejs'){
+          git 'https://github.com/elastic/apm-agent-nodejs.git'
+          script {
+            dockerLoginElasticRegistry()
+            def nodeVersions = readYaml(file: '.ci/.jenkins_nodejs.yml')['NODEJS_VERSION']
+            def tasks = [:]
+            nodeVersions.each { version ->
+              // Versions are double quoted
+              def nodejsVersion = version.replaceFirst('"', '')
+              tasks["${version}"] = {
+                buildDockerImage(
+                  repo: 'https://github.com/elastic/apm-agent-nodejs.git',
+                  tag: 'apm-agent-nodejs',
+                  version: "${nodejsVersion}",
+                  folder: '.ci/docker/node-container',
+                  options: "--build-arg NODE_VERSION='${nodejsVersion}'",
                   push: true)
               }
             }
