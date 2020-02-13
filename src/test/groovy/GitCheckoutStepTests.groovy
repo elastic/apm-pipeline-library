@@ -115,6 +115,38 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testRepo_without_GIT_URL() throws Exception {
+    def script = loadScript(scriptName)
+    def org = 'org'
+    def repo = 'repo'
+    def repoUrl = "git@github.com:${org}/${repo}.git"
+    script.scm = 'SCM'
+    script.call(repo: repoUrl, branch: 'master',
+                credentialsId: 'credentials-id')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
+    assertTrue(repoUrl.equals(binding.getVariable('env').GIT_URL))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRepo_with_GIT_URL() throws Exception {
+    def script = loadScript(scriptName)
+    def org = 'org'
+    def repo = 'repo'
+    env.GIT_URL = "git@github.com:${org}/${repo}.git"
+    script.scm = 'SCM'
+    script.call(repo: env.GIT_URL, branch: 'master', credentialsId: 'credentials-id')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
+    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testErrorBranchIncomplete() throws Exception {
     def script = loadScript(scriptName)
     script.scm = 'SCM'
@@ -381,24 +413,4 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'Checkout SCM master with default customisation from the Item'))
     assertJobStatusSuccess()
   }
-
-  @Test
-  void testRetry() throws Exception {
-    def script = loadScript(scriptName)
-    env.BRANCH_NAME = 'BRANCH'
-    script.scm = 'SCM'
-    helper.registerAllowedMethod('checkout', [String.class], { s ->
-      updateBuildStatus('FAILURE')
-      throw new Exception(s)
-    })
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallOccurrences('checkout',3))
-    assertJobStatusFailure()
-  }
-
 }

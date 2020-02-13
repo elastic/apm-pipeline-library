@@ -1,0 +1,27 @@
+---
+- "build-steps":
+  - resources/*"
+  - vars/*"
+- "ci":
+  - ".ci/*"
+- "groovy":
+  - vars/*"
+  - "**/*.groovy"
+- "tests":
+  - "src/test/*"
+- "automation":
+  - ".ci/*"
+  - ".github/*"
+  - ".mvn/*"
+  - "local/*"
+- "master":
+  - "local/Dockerfile"
+  - "local/docker-compose.yml"
+  - "local/Makefile"
+  - "local/configs/*"
+- "linux":
+  - "local/workers/linux/*"
+- "mac":
+  - "local/workers/macosx/*"
+- "windows":
+  - "local/workers/windows/*"

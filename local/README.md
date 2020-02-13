@@ -6,6 +6,8 @@
 - Docker Compose >= 1.25.0
 - Vagrant >= 2.2.4
 - VirtualBox >= 6
+- Vagrant plugins (`vagrant plugin install vagrant-vbguest vagrant-share vagrant-disksize`)
+- Vault
 
 ## Jenkins linting
 
@@ -40,6 +42,8 @@ order to utilize the local Jenkins master:
 
   You may also need to authenticate to the Elastic Docker repo. You can do so by visiting
   the [registry authentication page](https://github.com/elastic/infra/blob/master/docs/vault/README.md#github-auth).
+
+- You can login at https://docker.elastic.co:7000 using GitHub OAuth to sign in. The [docker registry authentication page](https://github.com/elastic/infra/blob/master/docs/container-registry/accessing-the-docker-registry.md)
 
 ### APM Pipeline shared library
 
@@ -109,20 +113,22 @@ open http://localhost:18080
 
 1. Build docker image by running:
 
-   ```
-   make build
-   ```
+```bash
+make build
+```
 
 2. Start the local Jenkins master service by running:
 
-   ```
-   make start
-   ```
+```bash
+make start
+```
 
 3. Browse to <http://localhost:18080> in your web browser.
 
 When you're done, you can shut down all services by running:
 
-    make stop
+```bash
+make stop
+```
 
 Run `make help` for information on all available commands.

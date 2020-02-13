@@ -24,9 +24,11 @@ docker --version || true
 docker-compose --version || true
 java -version || true
 go version || true
+gvm --version || true
 git version || true
 mvn --version || true
 node --version || true
+npm --version || true
 python --version || true
 python3 --version || true
 vault --version || true

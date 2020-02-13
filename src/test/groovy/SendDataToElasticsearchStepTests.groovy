@@ -31,7 +31,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    script.call(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field":"value"}')
+    script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET.toString(), data: '{"field":"value"}')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('httpRequest', 1))
     assertJobStatusSuccess()
@@ -41,7 +41,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
   void testNoEsURL() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(secret: "secret", data: '{"field":"value"}')
+      script.call(secret: VaultSecret.SECRET.toString(), data: '{"field":"value"}')
     } catch(e){
       //NOOP
     }
@@ -67,7 +67,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
   void testNoData() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(es: "https://ecs.example.com:9200", secret: "secret")
+      script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET.toString())
     } catch(e){
       //NOOP
     }
@@ -80,7 +80,7 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
   void testInvalidSecret() throws Exception {
     def script = loadScript(scriptName)
     try{
-      script.call(es: "https://ecs.example.com:9200", secret: "secretNotValid", data: '{"field":"value"}')
+      script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET_NOT_VALID.toString(), data: '{"field":"value"}')
     } catch(e){
       //NOOP
     }

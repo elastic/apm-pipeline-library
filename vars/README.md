@@ -78,6 +78,13 @@ checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor:
 
 [Docker pipeline plugin](https://plugins.jenkins.io/docker-workflow)
 
+## checkout
+Override the `checkout` step to retry the checkout up to 3 times.
+
+```
+checkout scm
+```
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -242,6 +249,13 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.
 
+## git
+Override the `git` step to retry the checkout up to 3 times.
+
+```
+git scm
+```
+
 ## gitChangelog
 Return the changes between the parent commit and the current commit.
 
@@ -308,6 +322,7 @@ gitCreateTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
+* tagArgs: what arguments are passed to the tag command
 * credentialsId: the credentials to access the repo.
 * pushArgs: what arguments are passed to the push command
 
@@ -352,6 +367,8 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
+* allowEmptyResponse: whether to allow empty responses. Default false.
+* data: Data to post to the API. Pass as a Map.
 
 [Github REST API](https://developer.github.com/v3/)
 
@@ -429,6 +446,63 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 * pr: Pull Request number.
 
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
+
+## githubReleaseCreate
+Create a GitHub release for a project
+```
+githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
+```
+* tagName: The name of the tag. (e.g. 'v1.0.0')
+* releaseName: The name of the release (e.g. 'v1.0.0')
+* body: Text describing the contents of the tag. (e.g. 'Raining Tacos Release')
+* draft: Boolean indicating if the release should be published as a draft. Default: false
+* preRelease: Boolean indicating if the release should be published as a prerelease. Default: false
+
+[GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
+
+Returns a data structure representing the release, similar to the following:
+
+{
+  "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
+  "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
+  "assets_url": "https://api.github.com/repos/octocat/Hello-World/releases/1/assets",
+  "upload_url": "https://uploads.github.com/repos/octocat/Hello-World/releases/1/assets{?name,label}",
+  "tarball_url": "https://api.github.com/repos/octocat/Hello-World/tarball/v1.0.0",
+  "zipball_url": "https://api.github.com/repos/octocat/Hello-World/zipball/v1.0.0",
+  "id": 1,
+  "node_id": "MDc6UmVsZWFzZTE=",
+  "tag_name": "v1.0.0",
+  "target_commitish": "master",
+  "name": "v1.0.0",
+  "body": "Description of the release",
+  "draft": false,
+  "prerelease": false,
+  "created_at": "2013-02-27T19:35:32Z",
+  "published_at": "2013-02-27T19:35:32Z",
+  "author": {
+    "login": "octocat",
+    "id": 1,
+    "node_id": "MDQ6VXNlcjE=",
+    "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/octocat",
+    "html_url": "https://github.com/octocat",
+    "followers_url": "https://api.github.com/users/octocat/followers",
+    "following_url": "https://api.github.com/users/octocat/following{/other_user}",
+    "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
+    "organizations_url": "https://api.github.com/users/octocat/orgs",
+    "repos_url": "https://api.github.com/users/octocat/repos",
+    "events_url": "https://api.github.com/users/octocat/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/octocat/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "assets": [
+
+  ]
+}
 
 ## githubRepoGetUserPermission
 Get a user's permission level on a Github repo.
@@ -550,6 +624,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
+* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -924,6 +999,24 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
+## withNpmrc
+Wrap the npmrc token
+
+```
+withNpmrc() {
+  // block
+}
+
+withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
+  // block
+}
+```
+
+* path: root folder where the npmrc token will be stored. (Optional). Default: ${HOME} env variable
+* npmrcFile: name of the file with the token. (Optional). Default: .npmrc
+* registry: NPM registry. (Optional). Default: registry.npmjs.org
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/elastic-observability-npmjs'
+
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
@@ -935,6 +1028,32 @@ The passed data variables will be exported and masked on logs
 
 ```
 withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: 'my_password_env'){
+  //block
+}
+```
+
+## withTotpVault
+Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
+passed as parameters and mask the secrets
+
+the TOTP must have this format
+```
+{
+  "request_id": "abcdef4a-f9d6-ce93-2536-32c3bb915ab7",
+  "lease_id": "",
+  "lease_duration": 0,
+  "renewable": false,
+  "data": {
+    "code": "123456"
+  },
+  "warnings": null
+}
+```
+
+The value for code_var_name will be exported as a variable and masked in the logs
+
+```
+withTotpVault(secret: 'secret', code_var_name: 'VAULT_TOTP'){
   //block
 }
 ```

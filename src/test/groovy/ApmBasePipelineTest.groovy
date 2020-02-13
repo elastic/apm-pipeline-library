@@ -31,6 +31,28 @@ class ApmBasePipelineTest extends BasePipelineTest {
   String REPO_URL = 'http://github.com/org/repo.git'
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
+  enum VaultSecret{
+    BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
+    SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
+    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'),
+    SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
+    SECRET_TOTP('secret-totp')
+
+    VaultSecret(String value) {
+      this.value = value
+    }
+    private final String value
+    String getValue() {
+      value
+    }
+    public String toString() {
+      return getValue()
+    }
+    public boolean equals(String another) {
+      return getValue().equals(another)
+    }
+  }
+
   @Override
   void setUp() {
     super.setUp()
@@ -166,6 +188,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
@@ -244,6 +267,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
         }
       }
       if (lastError) {
+        updateBuildStatus('FAILURE')
         throw lastError
       }
     })
@@ -324,23 +348,29 @@ class ApmBasePipelineTest extends BasePipelineTest {
       return script.call(s)
     })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
+    helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
   }
 
   def getVaultSecret(String s) {
-    if('secret'.equals(s) || 'java-agent-benchmark-cloud'.equals(s) ||
-       'secret/team/ci/secret-name'.equals(s) || 'secret/apm-team/ci/benchmark-cloud'.equals(s)){
+    if(VaultSecret.SECRET.equals(s) || VaultSecret.SECRET_NAME.equals(s) ||  VaultSecret.BENCHMARK.equals(s)){
       return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
     }
-    if('secretError'.equals(s)){
+    if(VaultSecret.SECRET_ERROR.equals(s)){
       return [errors: 'Error message']
     }
-    if('secretNotValid'.equals(s)){
-      return [data: [ user: null, password: null, url: null, apiKey: null]]
+    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
+      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
     }
-    if('secret-codecov'.equals(s) || 'repo-codecov'.equals(s)){
+    if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]
+    }
+    if(VaultSecret.SECRET_TOTP.equals(s)){
+      return [data: [ code: '123456' ], renewable: false]
+    }
+    if(VaultSecret.SECRET_NPMRC.equals(s) || VaultSecret.SECRET_NPMJS.equals(s)){
+      return [data: [ token: 'mytoken' ]]
     }
     return null
   }

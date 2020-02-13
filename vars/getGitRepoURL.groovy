@@ -26,6 +26,10 @@ def call() {
   if(!isUnix()){
     error('getGitRepoURL: windows is not supported yet.')
   }
-  def repoUrl = sh(label: 'Get repo URL', script: "git config --get remote.origin.url", returnStdout: true)?.trim()
-  return "${repoUrl}"
-}
+  try {
+    def repoUrl = sh(label: 'Get repo URL', script: 'git config --get remote.origin.url', returnStdout: true)?.trim()
+    return "${repoUrl}"
+  } catch (e) {
+    error("getGitRepoURL: could not fetch the URL details. ${e}")
+  }
+ }

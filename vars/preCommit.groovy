@@ -47,8 +47,9 @@ def call(Map params = [:]) {
     }
 
     def newHome = env.HOME ?: env.WORKSPACE
-    withEnv(["HOME=${newHome}", "PATH=${newHome}/bin:${env.PATH}"]) {
+    withEnv(["HOME=${newHome}"]) {
       sh """
+        export PATH=${newHome}/bin:${env.PATH}
         curl https://pre-commit.com/install-local.py | python -
         git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
       """

@@ -64,33 +64,32 @@ def call(Map params = [:]){
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
+  // TODO: to be refactored as it's done also in the githubEnv step
+  setOrgRepoEnvVariables(params)
+
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
-      retryWithSleep(retryValue) {
-        checkout([$class: 'GitSCM', branches: scm.branches,
-          doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-          extensions: extensions,
-          submoduleCfg: scm.submoduleCfg,
-          userRemoteConfigs: scm.userRemoteConfigs])
-      }
+      checkout([$class: 'GitSCM', branches: scm.branches,
+        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+        extensions: extensions,
+        submoduleCfg: scm.submoduleCfg,
+        userRemoteConfigs: scm.userRemoteConfigs])
+      fetchPullRefs()
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
-      retryWithSleep(retryValue) {
-        checkout scm
-      }
+      checkout scm
+      fetchPullRefs()
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
-      retryWithSleep(retryValue) {
-        checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
-          doGenerateSubmoduleConfigurations: false,
-          extensions: extensions,
-          submoduleCfg: [],
-          userRemoteConfigs: [[
-            refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
-            credentialsId: "${credentialsId}",
-            url: "${repo}"]]])
-      }
+      checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: extensions,
+        submoduleCfg: [],
+        userRemoteConfigs: [[
+          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
+          credentialsId: "${credentialsId}",
+          url: "${repo}"]]])
     } else {
       def message = 'No valid SCM config passed. '
       if(env.BRANCH_NAME && branch) {
@@ -129,11 +128,31 @@ def isDefaultSCM(branch) {
   return env?.BRANCH_NAME && branch == null
 }
 
-def retryWithSleep(int i, body) {
-  def sleepTime = i
-  retry(i) {
-    sleepTime--
-    sleep (i - sleepTime)
-    body()
+def fetchPullRefs(){
+  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*')
+}
+
+def setOrgRepoEnvVariables(params) {
+
+  if(!env?.GIT_URL){
+    // This is the support for simple pipelines
+    if(params.repo) {
+      log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo')
+      env.GIT_URL = params.repo
+    } else {
+      env.GIT_URL = getGitRepoURL()
+    }
   }
+
+  def tmpUrl = env.GIT_URL
+
+  if (env.GIT_URL.startsWith("git")){
+    tmpUrl = tmpUrl - "git@github.com:"
+  } else {
+    tmpUrl = tmpUrl - "https://github.com/" - "http://github.com/"
+  }
+
+  def parts = tmpUrl.split("/")
+  env.ORG_NAME = parts[0]
+  env.REPO_NAME = parts[1] - ".git"
 }

@@ -21,7 +21,7 @@ import groovy.transform.Field
 @Field def cache = [:]
 
 /**
-  Make a REST API call to Github. It manage to hide the call and the token in the console output.
+  Make a REST API call to Github. It hides the call and the token in the console output.
 
   githubApiCall(token: token, url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
 
@@ -29,6 +29,11 @@ import groovy.transform.Field
 def call(Map params = [:]){
   def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
+  def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
+  def data = params?.data
+  def headers = ["Authorization": "token ${token}",
+                 "User-Agent": "Elastic-Jenkins-APM"]
+  def dryRun = params?.data
 
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -39,7 +44,13 @@ def call(Map params = [:]){
       def key = "${token}#${url}"
       if(cache["${key}"] == null){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
-        json = httpRequest(url: url, headers: ["Authorization": "token ${token}"])
+        if(data) {
+          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to POST")
+          headers.put("Content-Type", "application/json")
+          json = httpRequest(url: url, method: "POST", headers: headers, data: toJSON(data).toString())
+        } else {
+          json = httpRequest(url: url, headers: headers)
+        }
         cache["${key}"] = json
       } else {
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from cache.")
@@ -49,6 +60,12 @@ def call(Map params = [:]){
       def obj = [:]
       obj.message = err.toString()
       json = toJSON(obj).toString()
+    }
+
+    // This will allow to transform the empty/null json if there is an empty response and it's allowed.
+    if (allowEmptyResponse && !json?.trim()) {
+      log(level: 'DEBUG', text: 'githubApiCall: allowEmptyResponse is enabled and there is an empty/null response.')
+      json = '{}'
     }
     def ret = toJSON(json)
     if(ret instanceof List && ret.size() == 0){
