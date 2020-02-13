@@ -38,7 +38,7 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
   def i = new InetSocketAddress('localhost', 9999)
   def HttpServer ws =  HttpServer.create(i, 100)
   HttpContext root_context = ws.createContext("/")
-  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles//start")
+  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles/pid/start")
 
   @Override
   @Before
@@ -80,6 +80,7 @@ class NexusStagingCreateTests extends ApmBasePipelineTest {
       stagingProfileId: 'pid',
       username: 'admin',
       password: 'pass',
+      stagingId: 'foo',
       description: 'my desc')
     assertTrue(ret.equals('pid'))
   }
@@ -98,7 +99,7 @@ class NexusStagingCreate500Tests extends ApmBasePipelineTest {
   // Build a small test server
   def i = new InetSocketAddress('localhost', 9999)
   def HttpServer ws =  HttpServer.create(i, 100)
-  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles//start")
+  HttpContext profile_start_context = ws.createContext("/service/local/staging/profiles/pid/start")
 
   @Override
   @Before

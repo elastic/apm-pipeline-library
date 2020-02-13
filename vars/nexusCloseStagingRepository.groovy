@@ -32,14 +32,18 @@ import net.sf.json.JSONArray
 
 def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
-  String username = params.get('username', 'admin')
-  String password = params.get('password', 'admin_pass')
-  String stagingId = params.get('stagingId', '')
-  String stagingProfileId = params.get('stagingProfileId', '')
-  String groupId = params.get('stagingId', '')
+  String username = params.containsKey('username') ? params.username : error('Must supply username')
+  String password = params.containsKey('password') ? params.password : error('Must supply password')
+  String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
+  String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
+  String groupId = params.containsKey('stagingId') ? params.groupId : error('Must supply groupId')
+
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
+
   String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
+
   Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
+
   Nexus.checkResponse(conn, 201)
 
   final int activityRetries = 20

@@ -31,10 +31,10 @@ import co.elastic.Nexus
 def call(Map params = [:]) {
 
   String url = params.get('url', 'https://oss.sonatype.org')
-  String stagingProfileId = params.get('stagingProfileId', '')
-  String username = params.get('username', '')
-  String password = params.get('password', '')
-  String description = params.get('description', '')
+  String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
+  String username = params.containsKey('username') ? params.username : error('Must supply username')
+  String password = params.containsKey('password') ? params.password : error('Must supply password')
+  String description = params.containsKey('description') ? params.description : error('Must supply description')
 
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profile_repositories/${stagingProfileId}")
   Nexus.checkResponse(conn, 200)

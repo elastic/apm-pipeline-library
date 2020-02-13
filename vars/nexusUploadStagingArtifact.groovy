@@ -33,13 +33,13 @@ import co.elastic.Nexus
 
 def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
-  String username = params.get('username', 'admin')
-  String password = params.get('password', 'admin_pass')
-  String stagingId = params.get('stagingId', '')
-  String groupId = params.get('groupId', '')
-  String artifactId = params.get('artifactId', '')
-  String version = params.get('version', '')
-  String file_path = params.get('file_path', '')
+  String username = params.containsKey('username') ? params.username : error('Must supply username')
+  String password = params.containsKey('password') ? params.password : error('Must supply password')
+  String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
+  String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply groupId')
+  String artifactId = params.containsKey('artifactId') ? params.groupId : error('Must supply groupId')
+  String version = params.containsKey('version') ? params.version : error('Must supply version')
+  String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_pat')
 
   String stagingURL = Nexus.getStagingURL(url)
 

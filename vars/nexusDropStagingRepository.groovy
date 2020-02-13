@@ -31,10 +31,10 @@ import net.sf.json.JSONArray
 
 def call(Map params = [:]) {
     String url = params.get('url', 'https://oss.sonatype.org')
-    String stagingId = params.get('stagingId', '')
-    String stagingProfileId = params.get('stagingProfileId', '')
-    String username = params.get('username', '')
-    String password = params.get('password', '')
+    String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
+    String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
+    String username = params.containsKey('username') ? params.username : error('Must supply username')
+    String password = params.containsKey('password') ? params.password : error('Must supply password')
 
     String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
     HttpURLConnection conn

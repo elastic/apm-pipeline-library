@@ -57,6 +57,7 @@ class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
         artifactId: 'dummy_artifact',
         version: 'v1.0.0',
         file_path: '/tmp/foo',
+        groupId: 'co.elastic.apm'
         )
     }
   }

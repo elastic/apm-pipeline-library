@@ -19,7 +19,7 @@
   Create a Nexus staging repository
 
   nexusCreateStagingRepository(
-    id: my_profile,
+    stagingProfileId: my_profile,
     description: "My new staging repo")
 **/
 
@@ -27,11 +27,12 @@ import co.elastic.Nexus
 import net.sf.json.JSONArray
 
 def call(Map params = [:]){
-  String stagingProfileId = params.get('id', '')
-  String description = params.get('description', '')
-  String username = params.get('username', 'admin')
-  String password = params.get('password', 'admin_pass')
   String url = params.get('url', 'https://oss.sonatype.org')
+  String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
+  String description = params.containsKey('description') ? params.description : error('Must supply description')
+  String username = params.containsKey('username') ? params.username : error('Must supply username')
+  String password = params.get('password') ? params.password : error('Must supply password')
+
   int retries = params.get('retries', 20)
 
   def data = toJSON(['data': ['targetRepositoryId': stagingProfileId, 'description': description]]).toString()

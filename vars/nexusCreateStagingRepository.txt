@@ -2,7 +2,7 @@ Create a Nexus staging repository
 
 ```
 nexusCreateStagingRepository(
-  id: my_profile,
+  stagingProfileId: my_profile,
   description: "My new staging repo")
   username: admin
   password: admin_pass
@@ -10,7 +10,7 @@ nexusCreateStagingRepository(
   retries: 20
 ```
 
-* id: The staging identifier to use when creating the repository
+* stagingProfileId: The staging identifier to use when creating the repository
 * description: A description of the new staging repository
 * username: Nexus username
 * password: Nexus password
