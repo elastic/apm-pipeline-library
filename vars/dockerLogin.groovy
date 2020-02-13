@@ -50,6 +50,9 @@ def call(Map params = [:]){
             if command -v host; then
               host ${registry} 2>&1 > /dev/null 
             fi
+            if command -v dig; then
+              dig ${registry} 2>&1 > /dev/null 
+            fi
             docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
             """)
         } else {
