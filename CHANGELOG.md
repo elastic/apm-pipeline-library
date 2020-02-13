@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.70 (13/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fix: execute host only if exists [#386](https://github.com/elastic/apm-pipeline-library/pull/386)
+
+#### ⚙️ CI
+
+-  enable daily docker image generation for Node.js [#383](https://github.com/elastic/apm-pipeline-library/pull/383)
+-  [cache] Build node.js docker images [#382](https://github.com/elastic/apm-pipeline-library/pull/382)
+
+---
+
 ## v1.1.69 (10/02/2020)
 
 #### 🚀 Enhancements
@@ -334,8 +347,8 @@
 
 #### 📚 Documentation
 
--  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 -  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
+-  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 
 #### ⚙️ CI
 
@@ -1018,8 +1031,8 @@
 
 #### 🚀 Enhancements
 
--  [APM-CI] add token cache to the codecov step [#41](https://github.com/elastic/apm-pipeline-library/pull/41)
 -  [APM-CI] add cache to GitHub API REST calls [#42](https://github.com/elastic/apm-pipeline-library/pull/42)
+-  [APM-CI] add token cache to the codecov step [#41](https://github.com/elastic/apm-pipeline-library/pull/41)
 
 ---
 
