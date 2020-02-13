@@ -90,7 +90,7 @@ class NexusTests extends ApmBasePipelineTest {
       "dummy_pass",
       "dummy_path"
       )
-      assertTrue(ret.getRequestProperty("Accept") == 'application/json')
+    assertTrue(ret.getRequestProperty("Accept") == 'application/json')
   }
 
   @Test
