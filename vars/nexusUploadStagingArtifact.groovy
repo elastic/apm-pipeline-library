@@ -53,7 +53,7 @@ def call(Map params = [:]){
   File sha1_f = Nexus.generateHashFile(fh, 'sha1')
 
   Nexus.upload(stagingURL, username, password, path, fh)
-  Nexus.upload(stagingURL, username, password, path, new File(fh.path + '.asc'))
+  // Nexus.upload(stagingURL, username, password, path, new File(fh.path + '.asc'))
   //
   // // hack for sonatype since they require sha1 and md5 hashes as well, we generate the extra sha1 and md5 files on the fly here
   Nexus.upload(stagingURL, username, password, path, md5_f)
