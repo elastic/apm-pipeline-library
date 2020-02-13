@@ -45,7 +45,6 @@ def call(Map params = [:]){
   log(level: "INFO", text: "Load artifact for staging from " + file_path)
   File fh = new File(file_path)
   log(level: "INFO", text: "Staging " + artifactId)
-  log(level: "INFO", text: "1.0")
 
   String path = "deployByRepositoryId/${stagingId}/${groupId.replace('.', '/')}/${artifactId}/${version}"
 
