@@ -151,11 +151,8 @@ class NexusTests extends ApmBasePipelineTest {
       "dummy_pass",
       "dummy_path"
       )
-    try{
-      script.checkResponse(conn, 200)
-    } catch(e) {
-      //NOOP
-    }
+    script.checkResponse(conn, 200)
+
   }
 
   @Test

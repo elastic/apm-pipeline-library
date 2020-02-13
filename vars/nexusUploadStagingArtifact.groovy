@@ -39,7 +39,7 @@ def call(Map params = [:]){
   String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply groupId')
   String artifactId = params.containsKey('artifactId') ? params.groupId : error('Must supply groupId')
   String version = params.containsKey('version') ? params.version : error('Must supply version')
-  String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_pat')
+  String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_path')
 
   String stagingURL = Nexus.getStagingURL(url)
 
