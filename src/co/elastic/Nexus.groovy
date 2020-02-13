@@ -90,7 +90,7 @@ private static void checkResponse(HttpURLConnection conn, int expectedCode) {
             break
         }
         attemptNumber += 1
-        Thread.sleep(1000 * attemptNumber)
+       sleep(attemptNumber)
     }
 
     checkResponse(conn, 201)

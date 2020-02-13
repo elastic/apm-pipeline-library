@@ -56,7 +56,7 @@ def call(Map params = [:]) {
             break
         }
         attemptNumber += 1
-        Thread.sleep(1000 * attemptNumber)
+       sleep(attemptNumber)
     }
     Nexus.checkResponse(conn, 201)
 }
