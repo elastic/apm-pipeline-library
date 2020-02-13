@@ -60,8 +60,11 @@ def call(Map params = [:]){
   Object response = Nexus.getData(conn)
   String stagingId = response['data']['stagedRepositoryId']
 
+  // Reset retry counter
+  attemptNumber = 0
+
   conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
-  while (conn.responseCode != 200) {
+  while (conn.responseCode != 200 && attemptNumber <= retries) {
       Thread.sleep(500)
       conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
   }
