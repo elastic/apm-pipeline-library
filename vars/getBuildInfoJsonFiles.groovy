@@ -66,7 +66,7 @@ def bulkDownload(map) {
   }
   def command = ['status=0']
   map.each { url, file ->
-    command << "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url} || status=1"
+    command << "(retry 3 curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'
