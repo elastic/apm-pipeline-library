@@ -82,7 +82,7 @@ To execute all tests, use:
 To run tests and print additional debug output to the console, use the `-Pdebug`
 flag:
 
-`./mvnw test -Pdebug`
+`./mvnw test -Dtest=DummyStepTests -Pdebug`
 
 ## Release a version
 
