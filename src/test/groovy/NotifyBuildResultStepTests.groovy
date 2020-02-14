@@ -47,8 +47,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(es: EXAMPLE_URL, secret: "secret")
-
+      script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     } catch(e){
       println e
     }
@@ -64,7 +63,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     env.CHANGE_ID = "123"
 
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
@@ -78,7 +77,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
@@ -118,7 +117,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
     // Then no further actions are executed afterwards
