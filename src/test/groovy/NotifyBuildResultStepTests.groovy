@@ -55,7 +55,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
   }
 
   @Test
