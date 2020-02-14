@@ -259,6 +259,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def downstreamBuildInfo = StepsMock.mockRunWrapperWithUnstable('foo', 0)
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
   }
 }
