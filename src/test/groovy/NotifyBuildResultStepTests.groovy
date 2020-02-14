@@ -72,6 +72,18 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testFailureBuild() throws Exception {
+    binding.getVariable('currentBuild').result = 'FAILURE'
+    binding.getVariable('currentBuild').currentResult = 'FAILURE'
+
+    def script = loadScript(scriptName)
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
   void testSuccessBuild() throws Exception {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
