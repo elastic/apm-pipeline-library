@@ -23,6 +23,7 @@ import org.junit.rules.ExpectedException
 import java.io.File
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpContext
 import com.sun.net.httpserver.HttpExchange
@@ -149,8 +150,7 @@ class NexusTests extends ApmBasePipelineTest {
       "dummy_pass",
       "dummy_path"
       )
-    script.checkResponse(conn, 200)
-
+    assertNull(script.checkResponse(conn, 200))
   }
 
   @Test
@@ -163,19 +163,20 @@ class NexusTests extends ApmBasePipelineTest {
       "dummy_path"
       )
     exception.expect(Exception.class)
-    script.checkResponse(conn, 900)
+    assertNull(script.checkResponse(conn, 900))
   }
 
   @Test
   void testUpload() throws Exception {
     def script = loadScript(scriptName)
-    script.upload(
+    assertNull(script.upload(
       "http://localhost:9999",
       "dummy_user",
       "dummy_pass",
       "up",
       tmpFile
       )
+    )
   }
 
   @Test
