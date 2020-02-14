@@ -232,7 +232,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.analyseDownstreamJobsFailures([ 'foo': 'bar' ])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
   }
 
   @Test
