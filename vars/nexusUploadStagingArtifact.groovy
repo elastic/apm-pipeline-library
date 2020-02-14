@@ -20,8 +20,7 @@
 
   nexusUploadStagingArtifact(
     url: "https://oss.sonatype.org",
-    username: "admin",
-    password: "pass",
+    secret: "secret/release/nexus",
     stagingId: "comexampleapplication-1010",
     groupId: "com.example.applications",
     artifactId: "my_tasty_artifact",
@@ -33,13 +32,22 @@ import co.elastic.Nexus
 
 def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
-  String username = params.containsKey('username') ? params.username : error('Must supply username')
-  String password = params.containsKey('password') ? params.password : error('Must supply password')
+  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
   String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
   String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply groupId')
   String artifactId = params.containsKey('artifactId') ? params.groupId : error('Must supply artifactId')
   String version = params.containsKey('version') ? params.version : error('Must supply version')
   String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_path')
+
+  def props = getVaultSecret(secret: secret)
+  
+  if(props?.errors){
+     error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def vault_data = props?.data
+  def username = vault_data?.user
+  def password = vault_data?.password
 
   String stagingURL = Nexus.getStagingURL(url)
   log(level: "INFO", text: "Load artifact for staging from " + file_path)

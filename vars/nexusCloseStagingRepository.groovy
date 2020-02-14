@@ -20,8 +20,7 @@
 
   nexusCloseStagingRepository
     url: "https://oss.sonatype.org",
-    username: "admin",
-    password: "password"
+    secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
     )
@@ -32,11 +31,19 @@ import net.sf.json.JSONArray
 
 def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
-  String username = params.containsKey('username') ? params.username : error('Must supply username')
-  String password = params.containsKey('password') ? params.password : error('Must supply password')
+  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
   String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
   String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = params.containsKey('stagingId') ? params.groupId : error('Must supply groupId')
+
+  def props = getVaultSecret(secret: secret)
+  if(props?.errors){
+     error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def vault_data = props?.data
+  def username = vault_data?.user
+  def password = vautl_data?.password
 
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
 

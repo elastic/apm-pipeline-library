@@ -3,8 +3,7 @@ Find a Nexus staging repository
 ```
 nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "password"
+  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
   description: "My staging area"
   )

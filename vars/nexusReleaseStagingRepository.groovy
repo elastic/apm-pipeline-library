@@ -20,8 +20,7 @@
 
   nexusReleaseStagingRepository(
     url: "https://oss.sonatype.org",
-    username: "admin",
-    password: "password"
+    secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "co.elastic.foo"
     )
@@ -34,8 +33,17 @@ def call(Map params = [:]) {
   String url = params.get('url', 'https://oss.sonatype.org')
   String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
   String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
-  String username = params.containsKey('username') ? params.username : error('Must supply username')
-  String password = params.get('password') ? params.password : error('Must supply password')
+  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
+   
+  def props = getVaultSecret(secret: secret)
+  
+  if(props?.errors){
+     error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def vault_data = props?.data
+  def username = vault_data?.user
+  def password = vault_data?.password
 
   String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
   HttpURLConnection conn

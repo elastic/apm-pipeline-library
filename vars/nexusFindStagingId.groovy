@@ -20,8 +20,7 @@
 
   nexusFindStagingId(
     url: "https://oss.sonatype.org",
-    username: "admin",
-    password: "password"
+    secret: "secret/release/nexus"
     stagingProfileId: "comexampleapplication-1010",
     description: "My staging area"
     )
@@ -32,9 +31,18 @@ def call(Map params = [:]) {
 
   String url = params.get('url', 'https://oss.sonatype.org')
   String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
-  String username = params.containsKey('username') ? params.username : error('Must supply username')
-  String password = params.containsKey('password') ? params.password : error('Must supply password')
   String description = params.containsKey('description') ? params.description : error('Must supply description')
+  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
+
+  def props = getVaultSecret(secret: secret)
+
+  if(props?.errors){
+    error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def data = props?.data
+  def username = data?.user
+  def password = data?.password
 
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profile_repositories/${stagingProfileId}")
   Nexus.checkResponse(conn, 200)

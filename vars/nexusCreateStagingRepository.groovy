@@ -21,6 +21,8 @@
   nexusCreateStagingRepository(
     stagingProfileId: my_profile,
     description: "My new staging repo")
+    stagingProfileId: "foo-bar-baz"
+    secret: "secret/release/nexus"
 **/
 
 import co.elastic.Nexus
@@ -30,8 +32,17 @@ def call(Map params = [:]){
   String url = params.get('url', 'https://oss.sonatype.org')
   String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
   String description = params.containsKey('description') ? params.description : error('Must supply description')
-  String username = params.containsKey('username') ? params.username : error('Must supply username')
-  String password = params.get('password') ? params.password : error('Must supply password')
+  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
+  
+  def props = getVaultSecret(secret: secret)
+  
+  if(props?.errors){
+     error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def vault_data = props?.data
+  def username = vault_data?.user
+  def password = vault_data?.password
 
   int retries = params.get('retries', 20)
 

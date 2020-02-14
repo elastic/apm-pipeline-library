@@ -3,8 +3,7 @@ Upload an artifact to the Nexus staging repository
 ```
 nexusUploadStagingArtifact(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "pass",
+  secret: "secret/release/nexus",
   stagingId: "comexampleapplication-1010",
   groupId: "com.example.applications",
   artifactId: "my_tasty_artifact",
@@ -16,8 +15,7 @@ nexusUploadStagingArtifact(
   https://central.sonatype.org/pages/releasing-the-deployment.html
 
   * url: The base URL of the staging repo. (Usually oss.sonatype.org)
-  * username: The username used to authenticate to the staging repository
-  * password: The password used to authenticate to the staging repository
+  * secret: Vault secret to retrieve Nexus credentials
   * stagingId: The ID for the staging repository.
   * groupId: The group ID for the artifacts.
   * artifactId: The ID for the artifact to be uploaded
