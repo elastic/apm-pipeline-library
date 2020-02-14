@@ -59,4 +59,5 @@ def call(Map params = [:]) {
        sleep(attemptNumber)
     }
     Nexus.checkResponse(conn, 201)
+    return true
 }

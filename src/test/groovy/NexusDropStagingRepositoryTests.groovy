@@ -72,6 +72,7 @@ class nexusDropStagingRepositoryTests extends ApmBasePipelineTest {
       username: 'admin',
       password: 'pass'
       )
+    assertTrue(ret)
   }
 
 }
