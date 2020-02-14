@@ -49,7 +49,7 @@ class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
 
     nexusMock.use {
-      script.call(
+      def ret = script.call(
         url: 'http://localhost:9999',
         username: 100,
         password: 'dummy_password',
@@ -59,6 +59,8 @@ class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
         file_path: '/tmp/foo',
         groupId: 'co.elastic.apm'
         )
+
+      assertTrue(ret == 200)
     }
   }
 }
