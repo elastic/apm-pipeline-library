@@ -1,0 +1,5 @@
+Opbeans Selector Pipeline
+
+```
+opbeansSelectorPipeline()
+```
