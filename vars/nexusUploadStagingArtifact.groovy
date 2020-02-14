@@ -60,6 +60,10 @@ def call(Map params = [:]){
   File sha1_f = Nexus.generateHashFile(fh, 'sha1')
 
   Nexus.upload(stagingURL, username, password, path, fh)
+
+  // The *.asc upload has been disabled because it doesn't seem necessary but there is a chance
+  // that oss.sonatype.org will require it so I am keeping it here for the time being just in case
+  // it is needed once we deploy to production.
   // Nexus.upload(stagingURL, username, password, path, new File(fh.path + '.asc'))
   //
   // // hack for sonatype since they require sha1 and md5 hashes as well, we generate the extra sha1 and md5 files on the fly here
