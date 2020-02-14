@@ -73,7 +73,7 @@ To test a step, use the supplied Maven wrapper at the root of the project. For
 example, to run tests contained in `src/test/groovy/DummyStepTests.groovy`,
 execute the following from the directory at the root of this project:
 
-./mvnw test -Dtest=nexusReleaseStagingRepositoryTests
+./mvnw test -Dtest=DummyStepTests
 
 To execute all tests, use:
 
