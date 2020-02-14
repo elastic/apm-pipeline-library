@@ -1,5 +1,46 @@
 # Changelog
 
+## v1.1.70 (13/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fix: execute host only if exists [#386](https://github.com/elastic/apm-pipeline-library/pull/386)
+
+#### ⚙️ CI
+
+-  enable daily docker image generation for Node.js [#383](https://github.com/elastic/apm-pipeline-library/pull/383)
+-  [cache] Build node.js docker images [#382](https://github.com/elastic/apm-pipeline-library/pull/382)
+
+---
+
+## v1.1.69 (10/02/2020)
+
+#### 🚀 Enhancements
+
+- [**groovy**][**master**][**windows**] Support dockerLogin step in Windows [#381](https://github.com/elastic/apm-pipeline-library/pull/381)
+
+---
+
+## v1.1.68 (07/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] dockerLogin step without a previous sleep causes DDoS [#380](https://github.com/elastic/apm-pipeline-library/pull/380)
+
+---
+
+## v1.1.67 (06/02/2020)
+
+#### 🚀 Enhancements
+
+- [**groovy**] Git release [#377](https://github.com/elastic/apm-pipeline-library/pull/377)
+
+#### ⚙️ CI
+
+- [**groovy**] sleep in the first checkout since it is the best worst scenario [#378](https://github.com/elastic/apm-pipeline-library/pull/378)
+
+---
+
 ## v1.1.66 (05/02/2020)
 
 #### 🚀 Enhancements
@@ -306,8 +347,8 @@
 
 #### 📚 Documentation
 
--  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 -  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
+-  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 
 #### ⚙️ CI
 
@@ -319,8 +360,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
 -  fixes isGitRegionMatch to be used only with gitCheckout and minor changes [#264](https://github.com/elastic/apm-pipeline-library/pull/264)
+-  fix grep per line rather than the whole content [#260](https://github.com/elastic/apm-pipeline-library/pull/260)
 
 #### ⚙️ CI
 
@@ -630,11 +671,11 @@
 
 #### ⚙️ CI
 
--  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 -  feat: add docker images to the packer cache [#152](https://github.com/elastic/apm-pipeline-library/pull/152)
 -  fix: used trustworthy Docker images [#151](https://github.com/elastic/apm-pipeline-library/pull/151)
 -  fix: post step is in the wrong place [#147](https://github.com/elastic/apm-pipeline-library/pull/147)
 -  fix: make the checkout of the repo [#146](https://github.com/elastic/apm-pipeline-library/pull/146)
+-  fix: remove documentation stage and related steps [#145](https://github.com/elastic/apm-pipeline-library/pull/145)
 
 ---
 
