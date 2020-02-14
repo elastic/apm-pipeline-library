@@ -28,7 +28,7 @@ def call(jobURL, buildNumber){
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
-  def restURLBuild = "${restURLJob}/runs/${buildNumber}"
+  def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   bulkDownload(["${restURLJob}": 'job-info.json',
                 "${restURLBuild}": 'build-info.json',
