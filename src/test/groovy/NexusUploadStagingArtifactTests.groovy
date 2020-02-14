@@ -44,7 +44,7 @@ class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
 
     nexusMock.demand.getStagingURL(1){ url -> 'http://foo.com' }
     nexusMock.demand.generateHashFile(2){fh, enc -> new File("/tmp/dummy")}
-    nexusMock.demand.upload(4){ url, username, password, path, fh -> 200 }
+    nexusMock.demand.upload(3){ url, username, password, path, fh -> 200 }
 
     def script = loadScript(scriptName)
 
