@@ -19,3 +19,7 @@ nexusUploadStagingArtifact(
   * username: The username used to authenticate to the staging repository
   * password: The password used to authenticate to the staging repository
   * stagingId: The ID for the staging repository.
+  * groupId: The group ID for the artifacts.
+  * artifactId: The ID for the artifact to be uploaded
+  * version: The release version
+  * file_path: The location on local disk where the artifact to be uploaded can be found.
