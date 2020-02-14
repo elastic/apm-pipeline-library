@@ -59,8 +59,8 @@ def call(Map params = [:]){
               activityAttempts += 1
               // slight backoff between attempts
               final int sleepInSeconds = activityAttempts * 2
-              log(level: "INFO", text: "Encountered the following error: ")
-              log(level: "INFO", text: e.message)
+              log(level: "WARN", text: "Encountered the following error: ")
+              log(level: "WARN", text: e.message)
               log(level: "INFO", text: "Retrying in '${sleepInSeconds}' seconds...")
               sleep(sleepInSeconds)
               continue
