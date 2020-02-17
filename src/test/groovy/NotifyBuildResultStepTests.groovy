@@ -46,11 +46,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
-    } catch(e){
-      println e
-    }
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
@@ -61,7 +57,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void testPullRequest() throws Exception {
     env.CHANGE_ID = "123"
-
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
