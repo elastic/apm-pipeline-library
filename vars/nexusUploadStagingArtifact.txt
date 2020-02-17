@@ -1,0 +1,23 @@
+Upload an artifact to the Nexus staging repository
+
+```
+nexusUploadStagingArtifact(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus",
+  stagingId: "comexampleapplication-1010",
+  groupId: "com.example.applications",
+  artifactId: "my_tasty_artifact",
+  version: "v1.0.0"
+  file_path: "/tmp/my_local_artifact"
+```
+
+  For additional information, please read the OSSRH guide from Sonatype:
+  https://central.sonatype.org/pages/releasing-the-deployment.html
+
+  * url: The base URL of the staging repo. (Usually oss.sonatype.org)
+  * secret: Vault secret to retrieve Nexus credentials
+  * stagingId: The ID for the staging repository.
+  * groupId: The group ID for the artifacts.
+  * artifactId: The ID for the artifact to be uploaded
+  * version: The release version
+  * file_path: The location on local disk where the artifact to be uploaded can be found.
