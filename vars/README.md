@@ -636,6 +636,13 @@ opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 
 * downstreamJobs: What downstream pipelines should be triggered once the release has been done. Default: []
 
+## opbeansSelectorPipeline
+Opbeans Selector Pipeline
+
+```
+opbeansSelectorPipeline()
+```
+
 ## pipelineManager
 This step adds certain validations which might be required to be done per build, for such it does
 use other steps.
