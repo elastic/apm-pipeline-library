@@ -32,7 +32,6 @@ def call() {
       PIPELINE_LOG_LEVEL = 'INFO'
       // ? is required for the UTs as the params happens after the env variables are created
       BUILD_OPTS = "${params?.BUILD_OPTS}"
-      DETAILS_ARTIFACT_URL = "${env.BUILD_URL}artifact/${env.DETAILS_ARTIFACT}"
     }
     options {
       timeout(time: 1, unit: 'HOURS')
@@ -60,9 +59,6 @@ def call() {
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
         }
       }
-      /**
-      Build the project from code..
-      */
       stage('Build') {
         options {
           skipDefaultCheckout()
@@ -75,9 +71,6 @@ def call() {
           }
         }
       }
-      /**
-      Execute unit tests.
-      */
       stage('Test') {
         options {
           skipDefaultCheckout()
