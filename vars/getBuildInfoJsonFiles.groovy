@@ -64,9 +64,9 @@ def bulkDownload(map) {
   if(map.isEmpty()) {
     error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
   }
-  def command = ['status=0']
+  def command = ['#!/usr/bin/env bash', 'set -x', 'source /usr/local/bin/bash_standard_lib.sh', 'status=0']
   map.each { url, file ->
-    command << "(retry 3 curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}) || status=1"
+    command << "(retry 3 curl -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}/) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'
