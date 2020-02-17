@@ -1,4 +1,4 @@
-<testsuite><testcase classname="pre_commit.lint" name="Check for case conflicts" /><testcase classname="pre_commit.lint" name="Check that executables have shebangs"><error message="error"/><system-out><![CDATA[hookid: check-executables-have-shebangs
+<?xml version="1.0" encoding="UTF-8"?><testsuite><testcase classname="pre_commit.lint" name="Check for case conflicts" /><testcase classname="pre_commit.lint" name="Check that executables have shebangs"><error message="error"/><system-out><![CDATA[hookid: check-executables-have-shebangs
 
 src/test/resources/steps-info.json: marked executable but has no (or invalid) shebang!
   If it isn't supposed to be executable, try: chmod -x src/test/resources/steps-info.json

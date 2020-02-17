@@ -70,6 +70,7 @@ def call(Map params = [:]) {
   }
   if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
+    archiveArtifacts(allowEmptyArchive: true, artifacts: "${reportFileName}.xml")
     junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
   }
 }
