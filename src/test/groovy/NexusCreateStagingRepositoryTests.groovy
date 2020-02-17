@@ -78,8 +78,7 @@ class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
-      username: 'admin',
-      password: 'pass',
+      secret: "secret/release/nexus",
       stagingId: 'foo',
       description: 'my desc')
     assertTrue(ret.equals('pid'))
@@ -137,8 +136,7 @@ class NexusStagingCreate500Tests extends ApmBasePipelineTest {
       ret = script.call(
         url: 'http://localhost:9999',
         stagingProfileId: 'pid',
-        username: 'admin',
-        password: 'pass',
+        secret: "secret/release/nexus",
         description: 'my desc',
         retries: 0)
     } catch (e) {

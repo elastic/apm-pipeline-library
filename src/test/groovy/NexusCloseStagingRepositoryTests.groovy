@@ -96,8 +96,7 @@ class NexusCloseStagingRepositoryTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
-      username: 'admin',
-      password: 'pass',
+      secret: "secret/release/nexus",
       stagingProfileId: 'dummy_staging_profile_id',
       stagingId: 'dummy_staging_id'
       )

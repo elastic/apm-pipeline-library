@@ -73,8 +73,7 @@ class NexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
-      username: 'admin',
-      password: 'pass',
+      secret: "secret/release/nexus",
       description: 'my desc',
       stagingId: 'co.elastic.foo'
       )
