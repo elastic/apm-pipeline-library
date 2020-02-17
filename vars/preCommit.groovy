@@ -57,7 +57,7 @@ def call(Map params = [:]) {
 
         ## Search for the repo with the scripts to be added to the PATH
         searchFile=\$(find ${newHome}/.cache/pre-commit -type f -name shellcheck)
-        if [ -e "\${searchFile} ] ; then
+        if [ -e "\${searchFile}" ] ; then
           export PATH=\${PATH}:\$(dirname \${searchFile})
         else
           echo 'WARN: PATH has not been configured with the shell scripts that might be required!'
