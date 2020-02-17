@@ -191,8 +191,8 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
-    helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
-    helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
+    helper.registerAllowedMethod('brokenTestsSuspects', { "OK (mocked)" })
+    helper.registerAllowedMethod('brokenBuildSuspects', { "OK (mocked)" })
     helper.registerAllowedMethod('build', [Map.class], null)
     helper.registerAllowedMethod('catchError', [Closure.class], { body ->
       try{
