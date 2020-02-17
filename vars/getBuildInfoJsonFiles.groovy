@@ -64,7 +64,7 @@ def bulkDownload(map) {
   if(map.isEmpty()) {
     error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
   }
-  def command = [ retryShellStep(), 'status=0' ]
+  def command = ['status=0']
   map.each { url, file ->
     command << "(retry 3 curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
@@ -72,36 +72,4 @@ def bulkDownload(map) {
   command << 'exit ${status}'
 
   sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
-}
-
-def retryShellStep() {
-  return '''
-  # retry function
-  # -------------------------------------
-  # Retry a command for a specified number of times until the command exits successfully.
-  # Retry wait period backs off exponentially after each retry.
-  #
-  # The first argument should be the number of retries.
-  # Remainder is treated as the command to execute.
-  # -------------------------------------
-  retry() {
-    local retries=$1
-    shift
-
-    local count=0
-    until "$@"; do
-      exit=$?
-      wait=$((2 ** $count))
-      count=$(($count + 1))
-      if [ $count -lt $retries ]; then
-        printf "Retry %s/%s exited %s, retrying in %s seconds...\n" "$count" "$retries" "$exit" "$wait" >&2
-        sleep $wait
-      else
-        printf "Retry %s/%s exited %s, no more retries left.\n" "$count" "$retries" "$exit" >&2
-        return $exit
-      fi
-    done
-    return 0
-  }
-  '''
 }
