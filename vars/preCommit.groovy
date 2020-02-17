@@ -51,6 +51,19 @@ def call(Map params = [:]) {
       sh """
         export PATH=${newHome}/bin:${env.PATH}
         curl https://pre-commit.com/install-local.py | python -
+
+        ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos
+        pre-commit install --install-hooks
+
+        ## Search for the repo with the scripts to be added to the PATH
+        searchFile=\$(find ${newHome}/.cache/pre-commit -type f -name shellcheck)
+        if [ -e "\${searchFile} ] ; then
+          export PATH=\${PATH}:\$(dirname \${searchFile})
+        else
+          echo 'WARN: PATH has not been configured with the shell scripts that might be required!'
+        fi
+
+        ## Validate the pre-commit for the new changes
         git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
       """
     }
