@@ -50,13 +50,16 @@ def call(Map params = [:]) {
     int attemptNumber = 0
 
     while (attemptNumber < retries) {
-        conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/drop")
+        withEnvMask(vars: [
+            [var: "NEXUS_username", password: username],
+            [var: "NEXUS_password", password: password]    ]){
+                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
+            }
         Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
         if (Nexus.is5xxError(conn.responseCode)) {
             log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to drop a staging repository in nexus, trying again.")
             if (conn.getErrorStream()) {
                 final String response = conn.getErrorStream().getText('UTF-8')
-                log(level: "INFO", "Body of the HTTP response: '${response}'")
             } else {
                 log(level: "INFO", text: 'The response did not have an error stream.')
             }

@@ -44,7 +44,14 @@ def call(Map params = [:]) {
   def username = data?.user
   def password = data?.password
 
-  HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profile_repositories/${stagingProfileId}")
+  def HttpURLConnection conn
+
+  String stagingURL = Nexus.getStagingURL(url)
+  withEnvMask(vars: [
+    [var: "NEXUS_username", password: username],
+    [var: "NEXUS_password", password: password]    ]){
+        conn = Nexus.createConnection(stagingURL, env.NEXUS_username, env.NEXUS_password, "profile_repositories/${stagingProfileId}")
+    }
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
   String repositoryId = null

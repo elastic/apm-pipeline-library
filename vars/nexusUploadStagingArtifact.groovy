@@ -58,8 +58,11 @@ def call(Map params = [:]){
 
   File md5_f = Nexus.generateHashFile(fh, 'md5')
   File sha1_f = Nexus.generateHashFile(fh, 'sha1')
-
-  Nexus.upload(stagingURL, username, password, path, fh)
+  withEnvMask(vars: [
+    [var: "NEXUS_username", password: username],
+    [var: "NEXUS_password", password: password]    ]){
+      Nexus.upload(stagingURL, env.NEXUS_username, env.NEXUS_password, path, fh)
+    }
 
   // The *.asc upload has been disabled because it doesn't seem necessary but there is a chance
   // that oss.sonatype.org will require it so I am keeping it here for the time being just in case

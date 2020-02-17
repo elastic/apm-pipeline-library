@@ -52,16 +52,16 @@ def call(Map params = [:]) {
   int attemptNumber = 0
 
   while (attemptNumber < retries) {
-      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/promote")
+      withEnvMask(vars: [
+        [var: "NEXUS_username", password: username],
+        [var: "NEXUS_password", password: password]    ]){
+            conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/promote")
+        }
       Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
-
-      // retry if we encounter a 5xx error, this has been seen before
-      // https://github.com/elastic/release-manager/issues/563
       if (Nexus.is5xxError(conn.responseCode)) {
           log(level: "WARN", "Received a ${conn.responseCode} HTTP response code while trying to release a staging repository, trying again.")
           if (conn.getErrorStream()) {
               final String response = conn.getErrorStream().getText('UTF-8')
-              log(level: "INFO", "Body of the HTTP response: '${response}'")
           } else {
               log(level: "INFO", text: 'The response did not have an error stream.')
           }

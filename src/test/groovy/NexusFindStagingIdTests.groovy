@@ -83,8 +83,7 @@ class nexusFindStagingIdTests extends ApmBasePipelineTest {
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
-      username: 'admin',
-      password: 'pass',
+      secret: '/nexus/production',
       description: 'my desc')
     assertTrue(ret.equals('my id'))
   }

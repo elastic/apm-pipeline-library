@@ -58,7 +58,11 @@ def call(Map params = [:]){
   // poll repo activity for close action
   while (true) {
       try {
-          conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}/activity")
+          withEnvMask(vars: [
+            [var: "NEXUS_username", password: username],
+            [var: "NEXUS_password", password: password]    ]){
+                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}/activity")
+            }
           Nexus.checkResponse(conn, 200)
       } catch (Exception e) {
           // sometimes nexus just shits itself with a new repository...try again
@@ -66,8 +70,6 @@ def call(Map params = [:]){
               activityAttempts += 1
               // slight backoff between attempts
               final int sleepInSeconds = activityAttempts * 2
-              log(level: "WARN", text: "Encountered the following error: ")
-              log(level: "WARN", text: e.message)
               log(level: "INFO", text: "Retrying in '${sleepInSeconds}' seconds...")
               sleep(sleepInSeconds)
               continue
@@ -117,8 +119,11 @@ def call(Map params = [:]){
               }
           }
           Exception exception = new Exception(msg.join('\n'))
-
-          conn = Nexus.createConnection(url, username, password, "profiles/${stagingProfileId}/drop")
+          withEnvMask(vars: [
+            [var: "NEXUS_username", password: username],
+            [var: "NEXUS_password", password: password]    ]){
+                conn = Nexus.createConnection(url, env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
+            }
           data = toJSON(['data': ['stagedRepositoryId': stagingId]])
           Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
           try {
