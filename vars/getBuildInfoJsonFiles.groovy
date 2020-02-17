@@ -28,7 +28,7 @@ def call(jobURL, buildNumber){
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
-  def restURLBuild = "${restURLJob}/runs/${buildNumber}"
+  def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   bulkDownload(["${restURLJob}": 'job-info.json',
                 "${restURLBuild}": 'build-info.json',
@@ -66,7 +66,7 @@ def bulkDownload(map) {
   }
   def command = ['status=0']
   map.each { url, file ->
-    command << "curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url} || status=1"
+    command << "(retry 3 curl -sfSL --max-time 60 --connect-timeout 10 -o ${file} ${url}) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'

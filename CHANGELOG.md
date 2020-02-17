@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.71 (17/02/2020)
+
+#### ⚙️ CI
+
+-  bump jenkins-pipeline-unit 1.3 [#391](https://github.com/elastic/apm-pipeline-library/pull/391)
+- [**groovy**] fix: getBuildInfoJsonFiles with retry 3 [#389](https://github.com/elastic/apm-pipeline-library/pull/389)
+
+---
+
 ## v1.1.70 (13/02/2020)
 
 #### 🐛 Bug Fixes
@@ -312,20 +321,20 @@
 
 #### 🚀 Enhancements
 
+-  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
 -  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
 -  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
--  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
 
 #### 🐛 Bug Fixes
 
+-  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 -  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
 -  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
 -  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
 -  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
--  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 
 #### 📚 Documentation
 
@@ -347,8 +356,8 @@
 
 #### 📚 Documentation
 
--  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
 -  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
+-  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
 
 #### ⚙️ CI
 
@@ -599,8 +608,8 @@
 
 #### 🚀 Enhancements
 
--  windows is not supported in some steps [#162](https://github.com/elastic/apm-pipeline-library/pull/162)
 -  feat: enable precommit step [#158](https://github.com/elastic/apm-pipeline-library/pull/158)
+-  windows is not supported in some steps [#162](https://github.com/elastic/apm-pipeline-library/pull/162)
 
 #### 🙈 No user affected
 
@@ -965,13 +974,13 @@
 
 #### 🚀 Enhancements
 
+-  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
+-  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
--  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
--  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 
 #### 📚 Documentation
 
