@@ -73,9 +73,8 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFailureBuild() throws Exception {
-    binding.getVariable('currentBuild').result = 'FAILURE'
+    // binding.getVariable('currentBuild').result = 'FAILURE' cannot be used otherwise the stage won't be executed!
     binding.getVariable('currentBuild').currentResult = 'FAILURE'
-
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
