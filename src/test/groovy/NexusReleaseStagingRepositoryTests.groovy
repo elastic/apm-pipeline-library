@@ -24,7 +24,7 @@ import com.sun.net.httpserver.HttpContext
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
-class nexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
+class NexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
   String scriptName = 'vars/nexusReleaseStagingRepository.groovy'
 
   def shInterceptor = {

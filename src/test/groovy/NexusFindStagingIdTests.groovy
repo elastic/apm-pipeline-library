@@ -24,7 +24,7 @@ import com.sun.net.httpserver.HttpContext
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
-class nexusFindStagingIdTests extends ApmBasePipelineTest {
+class NexusFindStagingIdTests extends ApmBasePipelineTest {
   String scriptName = 'vars/nexusFindStagingId.groovy'
 
   def shInterceptor = {
