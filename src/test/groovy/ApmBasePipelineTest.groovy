@@ -220,16 +220,16 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
     helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
     helper.registerAllowedMethod('build', [Map.class], null)
-    helper.registerAllowedMethod('catchError', [Closure.class], { c ->
+    helper.registerAllowedMethod('catchError', [Closure.class], { body ->
       try{
-        c()
+        body()
       } catch(e){
         //NOOP
       }
     })
-    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, c ->
+    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, body ->
       try{
-        c()
+        body()
       } catch(e){
         //NOOP
       }
