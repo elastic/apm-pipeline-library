@@ -26,7 +26,7 @@ def call(Map params = [:]) {
 
   def content = readFile(file: input)
   def id, status, message = '', inprogress = false
-  def data = '<testsuite>'
+  def data = '<?xml version="1.0" encoding="UTF-8"?><testsuite>'
   content.split('\n').each { line ->
     def matcher = line =~ '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$'
     if (matcher.find()) {
@@ -52,11 +52,17 @@ def call(Map params = [:]) {
 def toJunit(String name, String status, String message) {
   String output = "<testcase classname=\"pre_commit.lint\" name=\"${name}\""
   if (status?.toLowerCase().contains('skipped')) {
-    output += "><skipped message=\"skipped\"/><system-out><![CDATA[${message}]]></system-out></testcase>"
+    output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else if (status?.toLowerCase().contains('failed')) {
-    output += "><error message=\"error\"/><system-out><![CDATA[${message}]]></system-out></testcase>"
+    output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else {
     output += " />"
   }
   return output
+}
+
+// See https://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
+def normalise(String message) {
+  String xml10pattern = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff]"
+  return message.replaceAll(xml10pattern, '')
 }

@@ -46,25 +46,19 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.call(es: EXAMPLE_URL, secret: "secret")
-
-    } catch(e){
-      println e
-    }
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
   }
 
   @Test
   void testPullRequest() throws Exception {
     env.CHANGE_ID = "123"
-
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
@@ -73,15 +67,27 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testFailureBuild() throws Exception {
+    // binding.getVariable('currentBuild').result = 'FAILURE' cannot be used otherwise the stage won't be executed!
+    binding.getVariable('currentBuild').currentResult = 'FAILURE'
+    def script = loadScript(scriptName)
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
   void testSuccessBuild() throws Exception {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', "secret=${VaultSecret.SECRET_NAME.toString()}"))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
@@ -94,7 +100,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
@@ -104,8 +110,9 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/apm-team/ci/jenkins-stats-cloud'))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
@@ -118,7 +125,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
     def script = loadScript(scriptName)
-    script.call(es: EXAMPLE_URL, secret: "secret")
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
     // Then no further actions are executed afterwards
@@ -231,7 +238,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.analyseDownstreamJobsFailures([ 'foo': 'bar' ])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
   }
 
   @Test
@@ -258,6 +265,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def downstreamBuildInfo = StepsMock.mockRunWrapperWithUnstable('foo', 0)
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with ''."))
+    assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
   }
 }

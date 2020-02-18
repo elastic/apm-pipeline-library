@@ -67,6 +67,23 @@ Those steps should satisfy the following characteristics:
 In some cases, we need to make complex task, for those cases we can use classes
 and should be created in the folder `src/co/elastic`.
 
+## Test the new step
+
+To test a step, use the supplied Maven wrapper at the root of the project. For
+example, to run tests contained in `src/test/groovy/DummyStepTests.groovy`,
+execute the following from the directory at the root of this project:
+
+`./mvnw test -Dtest=DummyStepTests`
+
+To execute all tests, use:
+
+`./mvnw test`
+
+To run tests and print additional debug output to the console, use the `-Pdebug`
+flag:
+
+`./mvnw test -Dtest=DummyStepTests -Pdebug`
+
 ## Release a version
 
 Every time there are enough changes, we would release a new version. A version
@@ -247,3 +264,4 @@ Add this to your `.pre-commit-config.yaml`
 * [IntelliJ Setup for Jenkins Development](http://tdongsi.github.io/blog/2018/02/09/intellij-setup-for-jenkins-shared-library-development/)
   * [Declarative Pipeline GDSL WiP](https://issues.jenkins-ci.org/browse/JENKINS-40127)
 * [Command line tool to run Jenkinsfile locally](https://github.com/jenkinsci/jenkinsfile-runner)
+* [Autocomplete and embedded library documentation for Visual Studio Code](https://github.com/tabeyti/jenkins-jack)
