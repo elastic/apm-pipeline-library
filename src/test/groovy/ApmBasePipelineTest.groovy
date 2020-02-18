@@ -53,6 +53,11 @@ class ApmBasePipelineTest extends BasePipelineTest {
     }
   }
 
+  public final Collection allowedMockOverrides = [
+    // Add new injectors here
+    'sh',
+  ]
+
   @Override
   void setUp() {
     super.setUp()
@@ -186,6 +191,21 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('unstable', [Closure.class], { body -> body() })
   }
 
+
+  def getScriptedMethods(Map mockInjector) {
+    def defaultMethods = [
+      // Add new injectors here
+      'sh': [[String.class], { 'OK' }]
+    ]
+    mockInjector.each { k, v ->
+      if (defaultMethods.keySet().contains(k) && this.allowedMockOverrides.contains(k)) {
+        defaultMethods[k] = [[String.class], v]
+      }
+    }
+    return defaultMethods
+  }
+
+
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
     helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
@@ -272,8 +292,6 @@ class ApmBasePipelineTest extends BasePipelineTest {
       }
     })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
-    helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
-    helper.registerAllowedMethod('sh', [String.class], { 'OK' })
     helper.registerAllowedMethod('sshagent', [List.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
@@ -292,6 +310,16 @@ class ApmBasePipelineTest extends BasePipelineTest {
       }
     })
     helper.registerAllowedMethod('writeJSON', [Map.class], { "OK" })
+
+    // Controlled via mock injection
+    // Listed here and puprposely commented out for reference
+    // helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
+    // helper.registerAllowedMethod('sh', [String.class], { 'OK' })
+
+    if (!binding.hasVariable('mockInjector')) {
+      binding.setVariable('mockInjector', [:])
+    }
+    getScriptedMethods(binding.getVariable('mockInjector')).each{ k, v -> helper.registerAllowedMethod(k, v[0], v[1])}
   }
 
   void registerSharedLibraryMethods() {
