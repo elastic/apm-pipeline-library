@@ -5,7 +5,7 @@
     description: Jenkins pipeline to run the end2end tests for the APM UI
     project-type: multibranch
     script-path: .ci/end2end.groovy
-    disabled: true
+    disabled: false
     scm:
       - github:
           branch-discovery: no-pr
@@ -41,5 +41,6 @@
           timeout: '15'
           use-author: true
           wipe-workspace: 'True'
+          disable-pr-notifications: true
     periodic-folder-trigger: 1d
     prune-dead-branches: true
