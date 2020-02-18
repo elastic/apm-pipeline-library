@@ -87,6 +87,19 @@ import groovy.transform.Field
 ]
 
 /**
+  translate from human agent name to their opbeans app.
+*/
+@Field Map mapOpbeansApps = [
+  '.NET': 'dotnet',
+  'Go': 'go',
+  'Java': 'java',
+  'Node.js': 'node',
+  'Python': 'python',
+  'Ruby': 'ruby',
+  'RUM': 'rum'
+]
+
+/**
   YAML files to get agent versions and exclusions.
 */
 @Field Map mapYamlFiles = [
@@ -126,6 +139,13 @@ def app(String key) {
     error 'app: Missing key'
   }
   return mapAgentsApps[key]
+}
+
+def opbeansApp(String key) {
+  if (!key) {
+    error 'opbeansApp: Missing key'
+  }
+  return mapOpbeansApps[key]
 }
 
 def yamlVersionFile(String key) {

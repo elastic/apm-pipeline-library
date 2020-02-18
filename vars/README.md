@@ -7,6 +7,7 @@ Return the value for the given key.
   agentMapping.agentVar('.NET')
   agentMapping.app('Python')
   agentMapping.id('All')
+  agentMapping.opbeansApp('Python')
   agentMapping.yamlVersionFile('UI')
 ```
 
@@ -610,16 +611,14 @@ Close a Nexus staging repository
 ```
 nexusCreateStagingRepository(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "password"
+  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
   stagingId: "staging_id"
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
+* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
 
@@ -632,18 +631,16 @@ Create a Nexus staging repository
 
 ```
 nexusCreateStagingRepository(
-  id: my_profile,
-  description: "My new staging repo")
-  username: admin
-  password: admin_pass
-  url: https://oss.sonatype.org
+  stagingProfileId: my_profile,
+  description: "My new staging repo",
+  secret: "secret/release/nexus",
+  url: https://oss.sonatype.org,
   retries: 20
 ```
 
-* id: The staging identifier to use when creating the repository
+* stagingProfileId: The staging identifier to use when creating the repository
 * description: A description of the new staging repository
-* username: Nexus username
-* password: Nexus password
+* secret: Vault secret to retrieve Nexus credentials
 * url: Nexus URL (default: https://oss.sonatype.org)
 * retries: Number of times to retry the remote API before giving up
 
@@ -656,16 +653,14 @@ Drop a Nexus staging repository
 ```
 nexusDropStagingRepository(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "password"
+  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "staging_id"
+  stagingId: "staging_id",
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
+* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
 
@@ -679,8 +674,7 @@ Find a Nexus staging repository
 ```
 nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "password"
+  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
   description: "My staging area"
   )
@@ -702,15 +696,13 @@ Release a Nexus staging repository
 ```
 nexusReleaseStagingRepository(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "password"
+  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
   stagingId: "co.elastic.foo"
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
+* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier of staging repository
 
@@ -724,8 +716,7 @@ Upload an artifact to the Nexus staging repository
 ```
 nexusUploadStagingArtifact(
   url: "https://oss.sonatype.org",
-  username: "admin",
-  password: "pass",
+  secret: "secret/release/nexus",
   stagingId: "comexampleapplication-1010",
   groupId: "com.example.applications",
   artifactId: "my_tasty_artifact",
@@ -737,9 +728,12 @@ nexusUploadStagingArtifact(
   https://central.sonatype.org/pages/releasing-the-deployment.html
 
   * url: The base URL of the staging repo. (Usually oss.sonatype.org)
-  * username: The username used to authenticate to the staging repository
-  * password: The password used to authenticate to the staging repository
+  * secret: Vault secret to retrieve Nexus credentials
   * stagingId: The ID for the staging repository.
+  * groupId: The group ID for the artifacts.
+  * artifactId: The ID for the artifact to be uploaded
+  * version: The release version
+  * file_path: The location on local disk where the artifact to be uploaded can be found.
 
 ## notifyBuildResult
 Send an email message with a summary of the build result,
