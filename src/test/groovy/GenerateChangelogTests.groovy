@@ -30,9 +30,29 @@ class GenerateChangelogTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
+    env.REPO_NAME = "apm-pipeline-library"
     def script = loadScript(scriptName)
     script.call()
-    // printCallStack()
-    // assertTrue(assertMethodCallContainsPattern('echo', "\u001B[31;40m[ERROR]\u001B[0m"))
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "docker run --name tmp_changelog_instance"))
+    assertTrue(assertMethodCallContainsPattern('sh', "-v null:/usr/local/src/your-app ferrarimarco/github-changelog-generator"))
+    assertTrue(assertMethodCallContainsPattern('sh', "-v null:/usr/local/src/your-app ferrarimarco/github-changelog-generator"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--project apm-pipeline-library"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--user elastic"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--token TOKEN, returnStdout=false"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoRepoSetFails() throws Exception {
+    def script = loadScript(scriptName)
+    try{
+      script.call()
+    } catch(e) {
+      // NOOP because we are asserting against the error below this
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "Must provide `repo` argument to this step or set \$REPO_NAME in the environment"))
+    assertJobStatusFailure()
   }
 }
