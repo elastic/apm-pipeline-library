@@ -155,7 +155,7 @@ generateChangelog(
         is not present, the `REPO_NAME` environment variable is
         used.
 
-[Nexus staging documentation](https://github.com/github-changelog-generator/github-changelog-generator)
+[GitHub Changelog Generator documentation](https://github.com/github-changelog-generator/github-changelog-generator)
 
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
