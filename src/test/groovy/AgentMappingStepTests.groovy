@@ -82,6 +82,19 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testNullArgumentInOpbeansApp() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.opbeansApp(null)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'opbeansApp: Missing key'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testNullArgumentInYamlVersionFile() throws Exception {
     def script = loadScript(scriptName)
     try {
@@ -125,6 +138,15 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
   void testDotnetInApp() throws Exception {
     def script = loadScript(scriptName)
     def value = script.app('.NET')
+    printCallStack()
+    assertTrue(value.equals('dotnet'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testDotnetInOpbeansApp() throws Exception {
+    def script = loadScript(scriptName)
+    def value = script.opbeansApp('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
     assertJobStatusSuccess()
