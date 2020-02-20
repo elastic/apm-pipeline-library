@@ -52,7 +52,7 @@ def call(Map params = [:]) {
                 -v ${env.PWD}:/usr/local/src/your-app ferrarimarco/github-changelog-generator \
                 --project ${repo} \
                 --user ${user} \
-                --token ${GITHUB_token} && \
+                --token ${GITHUB_token}
 
                 docker cp tmp_changelog_instance:/usr/local/src/your-app/CHANGELOG.md ${env.WORKSPACE}/CHANGELOG.md && \
                 docker rm -f tmp_changelog_instance
