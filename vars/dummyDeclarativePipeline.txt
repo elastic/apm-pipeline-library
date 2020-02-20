@@ -1,0 +1,5 @@
+A sample of a step implementation as a declarative pipeline.
+
+```
+dummyDeclarativePipeline()
+```
