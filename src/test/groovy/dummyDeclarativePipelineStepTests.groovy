@@ -32,7 +32,6 @@ class DummyDeclarativePipelineStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_defaults() throws Exception {
     def script = loadScript(scriptName)
-    params.BUILD_OPTS = ''
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Checkout'))
