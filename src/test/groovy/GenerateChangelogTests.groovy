@@ -39,7 +39,7 @@ class GenerateChangelogTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "-v null:/usr/local/src/your-app ferrarimarco/github-changelog-generator"))
     assertTrue(assertMethodCallContainsPattern('sh', "--project apm-pipeline-library"))
     assertTrue(assertMethodCallContainsPattern('sh', "--user elastic"))
-    assertTrue(assertMethodCallContainsPattern('sh', "--token TOKEN, returnStdout=false"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--token TOKEN"))
     assertJobStatusSuccess()
   }
 

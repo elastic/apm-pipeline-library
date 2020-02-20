@@ -47,14 +47,16 @@ def call(Map params = [:]) {
 
     withEnvMask(vars: [
         [var: "GITHUB_token", password: token]    ]){
-        def listing = sh script: "docker run --name tmp_changelog_instance \
-                                    -v ${env.PWD}:/usr/local/src/your-app ferrarimarco/github-changelog-generator \
-                                    --project ${repo} \
-                                    --user ${user} \
-                                    --token ${GITHUB_token}", returnStdout:false
-        }
-    sh script: "docker cp tmp_changelog_instance:/usr/local/src/your-app/CHANGELOG.md ${env.WORKSPACE}/CHANGELOG.md && \
-                docker rm -f tmp_changelog_instance"
+            sh """
+                docker run --name tmp_changelog_instance \
+                -v ${env.PWD}:/usr/local/src/your-app ferrarimarco/github-changelog-generator \
+                --project ${repo} \
+                --user ${user} \
+                --token ${GITHUB_token} && \
 
+                docker cp tmp_changelog_instance:/usr/local/src/your-app/CHANGELOG.md ${env.WORKSPACE}/CHANGELOG.md && \
+                docker rm -f tmp_changelog_instance
+                """
+        }
     archiveArtifacts artifacts: "CHANGELOG.md"
 }
