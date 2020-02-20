@@ -147,6 +147,23 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## generateChangelog
+Programatically generate a CHANGELOG
+
+```
+generateChangelog(
+  user: 'elastic',
+  repo: 'apm-pipeline-library
+)
+```
+
+* user: The GitHub user the repo belongs to. (Default: elastic)
+* repo: The GitHub repo to generate the CHANGELOG for. If this
+        is not present, the `REPO_NAME` environment variable is
+        used.
+
+[GitHub Changelog Generator documentation](https://github.com/github-changelog-generator/github-changelog-generator)
+
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
 
