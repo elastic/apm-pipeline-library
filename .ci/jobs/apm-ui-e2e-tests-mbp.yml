@@ -9,11 +9,11 @@
     scm:
       - github:
           branch-discovery: no-pr
-          discover-pr-forks-strategy: false
+          discover-pr-forks-strategy: merge-current
           discover-pr-forks-trust: permission
           discover-pr-origin: merge-current
           discover-tags: false
-          head-filter-regex: 'master' #PR-*
+          head-filter-regex: '(master|PR-58213)' #PR-*
           repo: kibana
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
