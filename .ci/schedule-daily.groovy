@@ -57,7 +57,7 @@ pipeline {
             booleanParam(name: 'oracle_instant_client', value: true),
             booleanParam(name: 'apm_integration_testing', value: true),
             booleanParam(name: 'helm_kubectl', value: true),
-            booleanParam(name: 'jruby', value: true),
+            booleanParam(name: 'opbot', value: true),
             string(name: 'branch_specifier', value: 'master')
           ],
           propagate: false,
