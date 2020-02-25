@@ -75,7 +75,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    helper.registerAllowedMethod("githubApiCall", [Map.class], shInterceptor)
+    helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     script.BUILD_TAG = "dummy_tag"
     def ret = script.call(url: "dummy", token: "dummy")
