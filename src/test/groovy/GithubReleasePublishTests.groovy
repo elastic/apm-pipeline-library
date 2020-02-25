@@ -78,10 +78,23 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     script.BUILD_TAG = "dummy_tag"
-    def ret = script.call(url: "dummy", token: "dummy")
+    def ret = script.call(url: "dummy", token: "dummy", id: 1)
     printCallStack()
     assertTrue(ret.tag_name == "v1.0.0")
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoId() throws Exception {
+    helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
+    def script = loadScript(scriptName)
+    try {
+      script.call(url: "dummy", token: "dummy")
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'id param is required'))
   }
 
   @Test
