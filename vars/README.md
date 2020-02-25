@@ -130,6 +130,13 @@ A sample of a step implemantetion.
 dummy(text: 'hello world')
 ```
 
+## dummyDeclarativePipeline
+A sample of a step implementation as a declarative pipeline.
+
+```
+dummyDeclarativePipeline()
+```
+
 ## echoColor
 Print a text on color on a xterm.
 
