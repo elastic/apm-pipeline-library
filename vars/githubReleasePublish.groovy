@@ -23,7 +23,7 @@ this has no effect.
 
   Example invocation:
 
-    gitHubReleaseCreate(
+    githubReleasePublish(
       id: '1',         // Release ID
     )
 
