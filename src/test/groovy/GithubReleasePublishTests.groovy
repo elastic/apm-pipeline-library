@@ -23,7 +23,7 @@ import net.sf.json.JSONArray
 class GithubReleasePublishTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubReleasePublish.groovy'
 
-  def shInterceptor = { return toJSON([
+  def apiInterceptor = { return toJSON([
       "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
       "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
       "assets_url": "https://api.github.com/repos/octocat/Hello-World/releases/1/assets",
