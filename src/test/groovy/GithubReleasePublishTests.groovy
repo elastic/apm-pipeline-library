@@ -100,7 +100,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
 
   @Test
   void testNoRepo() throws Exception {
-    helper.registerAllowedMethod("githubApiCall", [Map.class], shInterceptor)
+    helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     env.remove("REPO_NAME")  // Will be reset by setUp()
     try {
