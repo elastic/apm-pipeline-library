@@ -95,7 +95,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gitHubReleaseCreate: Environment not initialized. Try to call githubEnv step before'))
+    assertTrue(assertMethodCallContainsPattern('error', 'githubReleasePublish: Environment not initialized. Try to call githubEnv step before'))
   }
 
   @Test
