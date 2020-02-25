@@ -38,7 +38,6 @@ def call(Map params = [:]){
   if(env.ORG_NAME == null || env.REPO_NAME == null){
     error('githubReleasePublish: Environment not initialized. Try to call githubEnv step before')
   }
-  def branchName = env.BRANCH_NAME
 
   def token = getGithubToken()
 
