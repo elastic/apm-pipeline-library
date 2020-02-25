@@ -42,7 +42,7 @@ def call(Map params = [:]){
 
   def token = getGithubToken()
 
-  def id = params?.id
+  def id = params.containsKey('id') ? params.id : error('githubReleasePublish: id param is required.')
 
   // Construct GitHub API URL
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases/${id}"
