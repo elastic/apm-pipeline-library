@@ -56,7 +56,7 @@ def call(Map params = [:]) {
         pre-commit install --install-hooks
 
         ## Search for the repo with the scripts to be added to the PATH
-        searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name "scripts" | grep '.ci/scripts')
+        searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name 'scripts' | grep '.ci/scripts')
         if [ -e "\${searchFile}" ] ; then
           export PATH=\${PATH}:\$(dirname \${searchFile})
         else
