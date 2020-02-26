@@ -57,6 +57,8 @@ def call(Map params = [:]) {
 
         ## Search for the repo with the scripts to be added to the PATH
         set +e
+        ## For debugging purposes only
+        find ${newHome}/.cache/pre-commit -depth 2 -type d
         searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name 'scripts' | grep '.ci/scripts')
         if [ -e "\${searchFile}" ] ; then
           export PATH=\${PATH}:\$(dirname \${searchFile})
