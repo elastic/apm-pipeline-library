@@ -18,8 +18,18 @@
 /**
 Takes a GitHub release that is written as a draft and makes it public.
 
+This script is designed to be used in conjunction with githubReleaseCreate().
+The normal workflow when using the two scripts together is to first create a
+release with githubReleaseCreate() and setting the `draft` flag to `true`. Then,
+once a human reviews the proposed release, this script can then be used to
+make the release public.
+
 If githubReleaseCreate() was called with the `draft` flag set to `false`,
 this has no effect.
+
+The `id` field required by this script is accessible in the return from
+ithubReleaseCreate(). See documentation for that script for more details about
+the data structure of the return.
 
   Example invocation:
 
