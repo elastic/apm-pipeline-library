@@ -117,7 +117,14 @@ open http://localhost:18080
 make build
 ```
 
-2. Start the local Jenkins master service by running:
+2. Ensure you have access to Elastic's secrets infrastructure with Vault:
+```bash
+export VAULT_ADDR="https://secrets.elastic.co:8200"
+export ELASTIC_SECRETS_SERVICE_TOKEN="<Your GitHub token for Vault>"
+vault login -method github token="${ELASTIC_SECRETS_SERVICE_TOKEN}"
+```
+
+3. Start the local Jenkins master service by running:
 
 ```bash
 make start
