@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.75 (27/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fix: if grep fails then the errors [#409](https://github.com/elastic/apm-pipeline-library/pull/409)
+
+#### 📚 Documentation
+
+- [**groovy**] Additional documentation for githubReleasePublish [#408](https://github.com/elastic/apm-pipeline-library/pull/408)
+
+---
+
 ## v1.1.74 (26/02/2020)
 
 #### 🚀 Enhancements
@@ -386,8 +398,8 @@
 
 #### 📚 Documentation
 
--  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
 -  refactor: simplify asserts with some helper functions [#293](https://github.com/elastic/apm-pipeline-library/pull/293)
+-  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
 
 #### ⚙️ CI
 
@@ -598,14 +610,14 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 -  feat: pre-commit hooks library [#168](https://github.com/elastic/apm-pipeline-library/pull/168)
 -  add some debug logs to the isGitRegionMatch  [#176](https://github.com/elastic/apm-pipeline-library/pull/176)
--  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 
 #### 🐛 Bug Fixes
 
--  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
 -  withEnv in the checkLicenses step [#175](https://github.com/elastic/apm-pipeline-library/pull/175)
+-  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
 
 ---
 
