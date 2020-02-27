@@ -56,13 +56,16 @@ def call(Map params = [:]) {
         pre-commit install --install-hooks
 
         ## Search for the repo with the scripts to be added to the PATH
+        set +e
+        ## For debugging purposes only
+        find ${newHome}/.cache/pre-commit -depth 2 -type d
         searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name 'scripts' | grep '.ci/scripts')
         if [ -e "\${searchFile}" ] ; then
           export PATH=\${PATH}:\$(dirname \${searchFile})
         else
           echo 'WARN: PATH has not been configured with the shell scripts that might be required!'
         fi
-
+        set -e
         ## Validate the pre-commit for the new changes
         git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
       """
