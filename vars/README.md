@@ -811,7 +811,7 @@ nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
   secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
-  description: "My staging area"
+  groupId: "co.elastic.apm"
   )
 ```
 
@@ -819,7 +819,7 @@ nexusFindStagingRepository(
 * username: The username to auth to the repository
 * password: The password to auth to the repository
 * stagingProfileId: Identifier for the staging profile
-* description: Description of staging repository
+* groupid: Our group id
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
