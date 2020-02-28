@@ -103,7 +103,7 @@ def call(Map params = [:]){
     }
     githubEnv()
 
-    // Let's see the reason for this particular build, there are 4 different reasons:
+    // Let's see the reason for this particular build, there are 3 different reasons:
     // - An user with run permissions did trigger the build manually.
     // - A GitHub comment
     // - Another pipeline/job did trigger this build but with certain exclusions.
