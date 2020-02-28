@@ -93,7 +93,7 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def caughtException = false
     try {
-      def ret = script.call(
+      script.call(
           url: 'http://localhost:9999',
           stagingProfileId: 'pid',
           secret: '/nexus/production',
