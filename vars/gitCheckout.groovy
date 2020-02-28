@@ -106,7 +106,7 @@ def call(Map params = [:]){
     // Let's see the reason for this particular build, there are 4 different reasons:
     // - An user with run permissions did trigger the build manually.
     // - A GitHub comment
-    // - Another pipeline/job did trigger this build but with certain exclussions.
+    // - Another pipeline/job did trigger this build but with certain exclusions.
     if(isUserTrigger() || isCommentTrigger() || isUpstreamTriggerWithExclussions()){
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
