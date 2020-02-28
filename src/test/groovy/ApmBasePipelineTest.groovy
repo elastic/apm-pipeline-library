@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
+import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.mock.PullRequestMock
@@ -24,8 +24,9 @@ import co.elastic.TestUtils
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 
-class ApmBasePipelineTest extends BasePipelineTest {
+class ApmBasePipelineTest extends DeclarativePipelineTest {
   Map env = [:]
+  Map params = [:]
 
   String SHA = '29480a51'
   String REPO_URL = 'http://github.com/org/repo.git'
@@ -71,6 +72,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     registerSharedLibraryMethods()
 
     binding.setVariable('env', env)
+    binding.setVariable('params', params)
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
     binding.setProperty('steps', new StepsMock())
@@ -83,6 +85,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('ansiColor', [String.class], null)
     helper.registerAllowedMethod('agent', [Closure.class], null)
     helper.registerAllowedMethod('beforeAgent', [Boolean.class], { true })
+    helper.registerAllowedMethod('cleanup', [Closure.class], null)
     helper.registerAllowedMethod('disableResume', [], null)
     helper.registerAllowedMethod('durabilityHint', [String.class], null)
     helper.registerAllowedMethod('failure', [Closure.class], { body -> body() })
@@ -90,6 +93,29 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('issueCommentTrigger', [String.class], null)
     helper.registerAllowedMethod('label', [String.class], null)
     helper.registerAllowedMethod('options', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('parameters', [Closure.class], { Closure parametersBody ->
+      def paramsBefore = [params: binding.getVariable('params')]
+      println "Parameters section - original params vars: ${paramsBefore.toString()}"
+      parametersBody.resolveStrategy = Closure.DELEGATE_FIRST
+      parametersBody.delegate = paramsBefore
+      helper.registerAllowedMethod('string', [Map.class], paramInterceptor)
+      helper.registerAllowedMethod('booleanParam', [Map.class], paramInterceptor)
+      parametersBody()
+
+      def paramsNew = paramsBefore.params
+      paramsBefore.each { k, v ->
+        if (k != 'params') {
+          paramsNew["$k"] = v
+        }
+      }
+      println "Parameters section - params vars set to: ${paramsNew.toString()}"
+      binding.setVariable('params', paramsNew)
+
+      // As long as JENKINS-41929 is open the params need to be transformed to
+      // env variables, so this is the way we enforce that.
+      binding.setVariable('env', env << paramsNew)
+      println "Env section - params vars set to: ${env.toString()}"
+    })
     helper.registerAllowedMethod('pipeline', [Closure.class], null)
     helper.registerAllowedMethod('post', [Closure.class], null)
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)

@@ -52,7 +52,7 @@ pipeline {
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
-    booleanParam(name: 'jruby', defaultValue: "false", description: "")
+    booleanParam(name: 'opbot', defaultValue: "false", description: "")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -130,6 +130,9 @@ pipeline {
         skipDefaultCheckout()
         warnError('Build agent Ruby images failed')
       }
+      environment {
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}"
+      }
       when{
         beforeAgent true
         expression { return params.ruby }
@@ -137,6 +140,13 @@ pipeline {
       steps {
         dir('apm-agent-ruby'){
           git 'https://github.com/elastic/apm-agent-ruby.git'
+          dir('.ci/docker/jruby'){
+            sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE}")
+            sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE}")
+            dockerLoginElasticRegistry()
+            sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE}")
+            archiveArtifacts '*.log'
+          }
           script {
             dockerLoginElasticRegistry()
             def rubyVersions = readYaml(file: '.ci/.jenkins_ruby.yml')['RUBY_VERSION']
@@ -298,35 +308,13 @@ pipeline {
           push: true)
       }
     }
-    stage('Build JRuby-jdk Docker images'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build JRuby-jdk Docker images failed')
-      }
-      environment {
-        TAG_CACHE = "${params.registry}/${params.tag_prefix}"
-      }
-      when{
-        beforeAgent true
-        expression { return params.jruby }
-      }
-      steps {
-        deleteDir()
-        git url: 'https://github.com/elastic/docker-jruby', branch: 'versions'
-        sh(label: 'build docker images', script: "./run.sh --action build --registry ${TAG_CACHE} --exclude 1.7")
-        sh(label: 'test docker images', script: "./run.sh --action test --registry ${TAG_CACHE} --exclude 1.7")
-        dockerLoginElasticRegistry()
-        sh(label: 'push docker images', script: "./run.sh --action push --registry ${TAG_CACHE} --exclude 1.7")
-        archiveArtifacts '*.log'
-      }
-    }
     stage('Build opbot'){
       options {
         skipDefaultCheckout()
       }
       when{
         beforeAgent true
-        expression { return params.jruby }
+        expression { return params.opbot }
       }
       steps {
         deleteDir()

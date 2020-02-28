@@ -5,7 +5,7 @@
     description: Jenkins pipeline to run the end2end tests for the APM UI
     project-type: multibranch
     script-path: .ci/end2end.groovy
-    disabled: true
+    disabled: false
     scm:
       - github:
           branch-discovery: no-pr
@@ -13,9 +13,7 @@
           discover-pr-forks-trust: permission
           discover-pr-origin: merge-current
           discover-tags: false
-          filter-by-name-wildcard:
-            includes: 'PR-*'
-          notification-context: 'apm-ci/end2end'
+          head-filter-regex: '(master|PR-58213)' #PR-*
           repo: kibana
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
@@ -42,5 +40,3 @@
           use-author: true
           wipe-workspace: 'True'
           disable-pr-notifications: true
-    periodic-folder-trigger: 1d
-    prune-dead-branches: true

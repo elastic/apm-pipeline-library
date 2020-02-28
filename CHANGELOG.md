@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.1.75 (27/02/2020)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] fix: if grep fails then the errors [#409](https://github.com/elastic/apm-pipeline-library/pull/409)
+
+#### 📚 Documentation
+
+- [**groovy**] Additional documentation for githubReleasePublish [#408](https://github.com/elastic/apm-pipeline-library/pull/408)
+
+---
+
+## v1.1.74 (26/02/2020)
+
+#### 🚀 Enhancements
+
+- [**groovy**] Automatic CHANGELOG generation [#400](https://github.com/elastic/apm-pipeline-library/pull/400)
+
+#### 🐛 Bug Fixes
+
+- [**groovy**] ci(jenkins): support more generic cases for the pre-commit [#407](https://github.com/elastic/apm-pipeline-library/pull/407)
+
+#### 📚 Documentation
+
+- [**groovy**] ci(jenkins): dummy declarative pipeline with parameters [#401](https://github.com/elastic/apm-pipeline-library/pull/401)
+
+#### ⚙️ CI
+
+- [**groovy**] Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
+-  ci(jenkins): generate jruby images within the apm-agent-ruby [#405](https://github.com/elastic/apm-pipeline-library/pull/405)
+-  [jjbb]: enable e2e kibana tests for the master branch only [#403](https://github.com/elastic/apm-pipeline-library/pull/403)
+-  [packer-cache] Cache jjbb images [#404](https://github.com/elastic/apm-pipeline-library/pull/404)
+
+---
+
 ## v1.1.73 (19/02/2020)
 
 #### 🚀 Enhancements
@@ -346,20 +381,20 @@
 
 #### 🚀 Enhancements
 
+-  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
 -  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
 -  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
--  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 
 #### 🐛 Bug Fixes
 
--  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 -  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
 -  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
 -  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
 -  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
+-  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 
 #### 📚 Documentation
 
@@ -614,10 +649,10 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 -  feat: prepareAndRun for the benchmark [#167](https://github.com/elastic/apm-pipeline-library/pull/167)
 -  ci: enable PoC for the metricbeats [#148](https://github.com/elastic/apm-pipeline-library/pull/148)
 -  feat: use preCommit step [#166](https://github.com/elastic/apm-pipeline-library/pull/166)
--  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 
 #### 🐛 Bug Fixes
 
