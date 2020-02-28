@@ -31,7 +31,7 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
     return """
     {
       "data": [{
-        "description": "my desc",
+        "description": "coelasticapm-1010",
           "type": "open",
           "repositoryId": "my id"
         }]
@@ -84,7 +84,25 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
       secret: '/nexus/production',
-      description: 'my desc')
+      groupId: 'co.elastic.apm')
     assertTrue(ret.equals('my id'))
+  }
+
+  @Test
+  void testFindFail() throws Exception {
+    def script = loadScript(scriptName)
+    def caughtException = false
+    try {
+      script.call(
+          url: 'http://localhost:9999',
+          stagingProfileId: 'pid',
+          secret: '/nexus/production',
+          groupId: 'NOPENOTRIGHT')
+    } catch (e) {
+      // Assert comes later
+      assertTrue(e.message == "Could not find staging repository for 'NOPENOTRIGHT'")
+      caughtException = true
+    }
+    assertTrue(caughtException)
   }
 }
