@@ -26,6 +26,3 @@ pipelineJob(NAME) {
     }
   }
 }
-
-// If required to be triggered automatically
-queue(NAME)
