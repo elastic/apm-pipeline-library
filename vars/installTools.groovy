@@ -20,6 +20,10 @@
 
   installTools([ [ tool: 'python3', version: '3.5'] ])
   installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12.0' ] ])
+
+  installTools([
+    [ tool: 'visualstudio2019enterprise', version: '16.4.0.0', provider: 'choco', extraArgs: '--package-parameters "--includeRecommended"' ]
+  ])
 */
 
 def call(List params = []){
@@ -34,14 +38,25 @@ def call(List params = []){
 private installTool(Map params) {
   def tool = params.containsKey('tool') ? params.tool : error('installTools: missing tool param.')
   def version = params.containsKey('version') ? params.version : error('installTools: missing version param.')
+  def provider = params.containsKey('provider') ? params.provider : ''
+  def extraArgs = params.containsKey('extraArgs') ? params.extraArgs : ''
+
   if(isUnix()) {
     error 'TBD: install in linux'
-  } else {
-    def scriptFile = 'install-with-choco.ps1'
-    def resourceContent = libraryResource('scripts/install-with-choco.ps1')
-    writeFile file: scriptFile, text: resourceContent
-    withEnv(["VERSION=${version}", "TOOL=${tool}"]) {
-      powershell label: "Install ${tool}:${version}", script: ".\\${scriptFile}"
-    }
+  }
+  switch (provider) {
+    case 'choco':
+      powershell label: "Install ${tool}:${version}", script: """choco install ${tool} --no-progress -y --version '${version}' "${extraArgs}" """
+      break
+    case '':
+      def scriptFile = 'install-with-choco.ps1'
+      def resourceContent = libraryResource('scripts/install-with-choco.ps1')
+      writeFile file: scriptFile, text: resourceContent
+      withEnv(["VERSION=${version}", "TOOL=${tool}"]) {
+        powershell label: "Install ${tool}:${version}", script: ".\\${scriptFile}"
+      }
+      break
+    default:
+      error 'installTools: unsupported provider'
   }
 }

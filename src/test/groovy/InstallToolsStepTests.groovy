@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class InstallToolsStepTests extends ApmBasePipelineTest {
@@ -55,6 +56,20 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_unsupported_provider_in_windows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.installTool([ tool: 'python3', provider: 'foo', version: '1' ])
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'installTools: unsupported provider'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_install_tool_in_linux() throws Exception {
     def script = loadScript(scriptName)
     try {
@@ -86,6 +101,18 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=x.y.z, TOOL=foo'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=z.y.x, TOOL=bar'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_install_tool_in_windows_with_all_flags() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.installTool([ tool: 'foo', version: 'x.y.z', provider: 'choco', extraArgs: "--foo 'bar' 'foo'" ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('powershell', 'Install foo:x.y.z'))
+    assertTrue(assertMethodCallContainsPattern('powershell', """script=choco install foo --no-progress -y --version 'x.y.z' "--foo 'bar' 'foo'" """))
+    assertFalse(assertMethodCallContainsPattern('powershell', 'script=.\\install-with-choco.ps1'))
     assertJobStatusSuccess()
   }
 }
