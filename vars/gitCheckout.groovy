@@ -136,7 +136,7 @@ def call(Map params = [:]){
   NOTE: if the upstream was caused by one of the whitelisted triggers then it won't be populated. In other words,
   the rebuild will fail if githubPrCheckApproved, there is no an easy way to do something different.
 */
-def isUpstreamTriggerWithExclussions() {
+def isUpstreamTriggerWithExclusions() {
   def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause'}
   if (buildCause?.upstreamProject?.equals(currentBuild.fullProjectName)) {
     return isUpstreamTrigger() && githubPrCheckApproved()
