@@ -134,7 +134,14 @@ def call(Map params = [:]){
   otherwise, it's required to evaluate who is the owner for this particular PR.
 */
 def isUpstreamTriggerWithExclussions() {
-  return isUpstreamTrigger() && githubPrCheckApproved()
+  def isPreviousBuildTimeOut = currentBuild.previousBuild?.getDescription()?.contains('timeout')
+  def isSecondToLastBuildTimeOut = currentBuild.previousBuild?.previousBuild?.getDescription()?.contains('timeout')
+
+  if (isPreviousBuildTimeOut || isSecondToLastBuildTimeOut) {
+    return isUpstreamTrigger() && githubPrCheckApproved()
+  } else {
+    return isUpstreamTrigger()
+  }
 }
 
 def isDefaultSCM(branch) {
