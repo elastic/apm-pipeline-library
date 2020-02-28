@@ -21,17 +21,16 @@
   nexusFindStagingId(
     url: "https://oss.sonatype.org",
     secret: "secret/release/nexus"
-    stagingProfileId: "comexampleapplication-1010",
-    description: "My staging area"
+    stagingProfileId: "1234-1455-1242",
+    groupId: co.elastic.apm
     )
 **/
 import co.elastic.Nexus
 
 def call(Map params = [:]) {
-
   String url = params.get('url', 'https://oss.sonatype.org')
   String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
-  String description = params.containsKey('description') ? params.description : error('Must supply description')
+  String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply group id')
   String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
 
   def props = getVaultSecret(secret: secret)
@@ -45,7 +44,6 @@ def call(Map params = [:]) {
   def password = data?.password
 
   def HttpURLConnection conn
-
   String stagingURL = Nexus.getStagingURL(url)
   withEnvMask(vars: [
     [var: "NEXUS_username", password: username],
@@ -55,21 +53,27 @@ def call(Map params = [:]) {
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
   String repositoryId = null
+  String mungeGroupId = groupId.replace(".", "")
+
   for (def repository : response['data']) {
-      if (repository['description'] == description) {
+      // We can't look for the description if we didn't actually open the staging repo
+      // because they are automatically generated.
+      // https://central.sonatype.org/pages/releasing-the-deployment.html
+      // This is a workaround to just look for open repos that begin with our groupId
+      if (repository['description'].startsWith(mungeGroupId)) {
           if (repository['type'] != 'open') {
-              throw new Exception("Staging repository ${repository['repositoryId']} for '${description}' is not open. " +
-                      "It should have been kept open when staging the release.")
+               error "Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
+                      "It should have been kept open when staging the release."
           } else if (repositoryId != null) {
-              throw new Exception("Multiple staging repositories exist for '${description}'. " +
-                      "Please drop them manually from the sonatype website.")
+              error "Multiple staging repositories exist for '${groupId}'. " +
+                      "Please drop them manually from the sonatype website."
           } else {
               repositoryId = repository['repositoryId']
           }
       }
   }
   if (repositoryId == null) {
-      throw new Exception("Could not find staging repository for '${description}'")
+      error "Could not find staging repository for '${groupId}'"
   }
   return repositoryId
 }
