@@ -107,7 +107,7 @@ def call(Map params = [:]){
     // - An user with run permissions did trigger the build manually.
     // - A GitHub comment
     // - Another pipeline/job did trigger this build but with certain exclusions.
-    if(isUserTrigger() || isCommentTrigger() || isUpstreamTriggerWithExclussions()){
+    if(isUserTrigger() || isCommentTrigger() || isUpstreamTriggerWithExclusions()){
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
         githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
