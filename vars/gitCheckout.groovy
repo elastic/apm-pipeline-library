@@ -102,7 +102,12 @@ def call(Map params = [:]){
       error "${message}"
     }
     githubEnv()
-    if(isUserTrigger() || isCommentTrigger() || isUpstreamTrigger()){
+
+    // Let's see the reason for this particular build, there are 4 different reasons:
+    // - An user with run permissions did trigger the build manually.
+    // - A GitHub comment
+    // - Another pipeline/job did trigger this build but with certain exclussions.
+    if(isUserTrigger() || isCommentTrigger() || isUpstreamTriggerWithExclussions()){
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
         githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
@@ -122,6 +127,14 @@ def call(Map params = [:]){
       }
     }
   }
+}
+
+/**
+  If another upstream triggered this build but the reason was not related to a timeout issue then it's a valid use case,
+  otherwise, it's required to evaluate who is the owner for this particular PR.
+*/
+def isUpstreamTriggerWithExclussions() {
+  return isUpstreamTrigger() && githubPrCheckApproved()
 }
 
 def isDefaultSCM(branch) {
