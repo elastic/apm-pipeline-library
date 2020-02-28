@@ -130,18 +130,18 @@ def call(Map params = [:]){
 }
 
 /**
-  If another upstream triggered this build but the reason was not related to a timeout issue then it's a valid use case,
-  otherwise, it's required to evaluate who is the owner for this particular PR.
+  If the same project triggered this build (likely related to a timeout issue) then let's verify githubPrCheckApproved,
+  otherwise it's a valid use case.
+
+  NOTE: if the upstream was caused by one of the whitelisted triggers then it won't be populated. In other words,
+  the rebuild will fail if githubPrCheckApproved, there is no an easy way to do something different.
 */
 def isUpstreamTriggerWithExclussions() {
-  def isPreviousBuildTimeOut = currentBuild.previousBuild?.getDescription()?.contains('timeout')
-  def isSecondToLastBuildTimeOut = currentBuild.previousBuild?.previousBuild?.getDescription()?.contains('timeout')
-
-  if (isPreviousBuildTimeOut || isSecondToLastBuildTimeOut) {
+  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause'}
+  if (buildCause?.upstreamProject?.equals(currentBuild.fullProjectName)) {
     return isUpstreamTrigger() && githubPrCheckApproved()
-  } else {
-    return isUpstreamTrigger()
   }
+  return isUpstreamTrigger()
 }
 
 def isDefaultSCM(branch) {

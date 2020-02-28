@@ -413,4 +413,87 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'Checkout SCM master with default customisation from the Item'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_isUpstreamTriggerWithExclussions_with_build_cause_and_approved() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUpstreamTrigger', { return true })
+    helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-1" build number 1',
+          upstreamProject: 'apm-integration-tests/PR-1',
+          upstreamBuild: 1
+        ]
+      ]
+    }
+    binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-1'
+    def ret = script.isUpstreamTriggerWithExclussions()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
+    assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isUpstreamTriggerWithExclussions_with_build_cause_and_not_approved() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUpstreamTrigger', { return true })
+    helper.registerAllowedMethod('githubPrCheckApproved', [], { return false })
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-1" build number 1',
+          upstreamProject: 'apm-integration-tests/PR-1',
+          upstreamBuild: 1
+        ]
+      ]
+    }
+    binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-1'
+    def ret = script.isUpstreamTriggerWithExclussions()
+    printCallStack()
+    assertFalse(ret)
+    assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
+    assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isUpstreamTriggerWithExclussions_with_different_build_cause() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUpstreamTrigger', { return true })
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-1" build number 1',
+          upstreamProject: 'apm-integration-tests/PR-1',
+          upstreamBuild: 1
+        ]
+      ]
+    }
+    binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-2'
+    def ret = script.isUpstreamTriggerWithExclussions()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
+    assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isUpstreamTriggerWithExclussions_with_no_build_cause() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUpstreamTrigger', { return false })
+    def ret = script.isUpstreamTriggerWithExclussions()
+    printCallStack()
+    assertFalse(ret)
+    assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
+    assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 0))
+    assertJobStatusSuccess()
+  }
 }
