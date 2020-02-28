@@ -34,10 +34,8 @@ def call(List params = []){
 private installTool(Map params) {
   def tool = params.containsKey('tool') ? params.tool : error('installTools: missing tool param.')
   def version = params.containsKey('version') ? params.version : error('installTools: missing version param.')
-
-  echo "Tool='${tool}' Version='${version}'"
   if(isUnix()) {
-    echo 'TBD: install in linux'
+    error 'TBD: install in linux'
   } else {
     def scriptFile = 'install-with-choco.ps1'
     def resourceContent = libraryResource('scripts/install-with-choco.ps1')

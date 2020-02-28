@@ -55,22 +55,16 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_install_tool() throws Exception {
+  void test_install_tool_in_linux() throws Exception {
     def script = loadScript(scriptName)
-    script.installTool([ tool: 'foo', version: 'x.y.z' ])
+    try {
+      script.installTool([ tool: 'foo', version: 'x.y.z' ])
+    } catch(e) {
+      // NOOP
+    }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('echo', "Tool='foo' Version='x.y.z'"))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_install_multiple_tools() throws Exception {
-    def script = loadScript(scriptName)
-    script.call([[ tool: 'foo', version: 'x.y.z' ], [ tool: 'bar', version: 'z.y.x' ]])
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('echo', "Tool='foo' Version='x.y.z'"))
-    assertTrue(assertMethodCallContainsPattern('echo', "Tool='bar' Version='z.y.x'"))
-    assertJobStatusSuccess()
+    assertTrue(assertMethodCallContainsPattern('error', 'TBD: install in linux'))
+    assertJobStatusFailure()
   }
 
   @Test
@@ -79,9 +73,19 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { false })
     script.installTool([ tool: 'foo', version: 'x.y.z' ])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('echo', "Tool='foo' Version='x.y.z'"))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=x.y.z, TOOL=foo'))
     assertTrue(assertMethodCallContainsPattern('powershell', 'Install foo:x.y.z, script=.\\install-with-choco.ps1'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_install_multiple_tools_in_windows() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.call([[ tool: 'foo', version: 'x.y.z' ], [ tool: 'bar', version: 'z.y.x' ]])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=x.y.z, TOOL=foo'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=z.y.x, TOOL=bar'))
     assertJobStatusSuccess()
   }
 }
