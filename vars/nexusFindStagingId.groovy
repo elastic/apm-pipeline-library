@@ -62,18 +62,18 @@ def call(Map params = [:]) {
       // This is a workaround to just look for open repos that begin with our groupId
       if (repository['description'].startsWith(mungeGroupId)) {
           if (repository['type'] != 'open') {
-              throw new Exception("Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
-                      "It should have been kept open when staging the release.")
+               error "Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
+                      "It should have been kept open when staging the release."
           } else if (repositoryId != null) {
-              throw new Exception("Multiple staging repositories exist for '${groupId}'. " +
-                      "Please drop them manually from the sonatype website.")
+              error "Multiple staging repositories exist for '${groupId}'. " +
+                      "Please drop them manually from the sonatype website."
           } else {
               repositoryId = repository['repositoryId']
           }
       }
   }
   if (repositoryId == null) {
-      throw new Exception("Could not find staging repository for '${groupId}'")
+      error "Could not find staging repository for '${groupId}'"
   }
   return repositoryId
 }
