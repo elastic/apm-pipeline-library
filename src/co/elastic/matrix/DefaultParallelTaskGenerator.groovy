@@ -172,7 +172,7 @@ class DefaultParallelTaskGenerator {
   */
   public List dumpMatrix(marker){
     if(results.size() == 0){
-      raise Exception("Must generate tests first. Did you run generateParallelTests()?")
+      error("Must generate tests first. Did you run generateParallelTests()?")
     } else {
       dump = []
       results.x.each{ x ->
