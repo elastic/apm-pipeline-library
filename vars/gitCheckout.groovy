@@ -102,7 +102,12 @@ def call(Map params = [:]){
       error "${message}"
     }
     githubEnv()
-    if(isUserTrigger() || isCommentTrigger() || isUpstreamTrigger()){
+
+    // Let's see the reason for this particular build, there are 3 different reasons:
+    // - An user with run permissions did trigger the build manually.
+    // - A GitHub comment
+    // - Another pipeline/job did trigger this build but with certain exclusions.
+    if(isUserTrigger() || isCommentTrigger() || isUpstreamTriggerWithExclusions()){
       // Ensure the GH check gets reset as there is a cornercase where a specific commit got relaunched and this check failed.
       if (notify) {
         githubNotify(context: githubCheckContext, status: 'SUCCESS', targetUrl: ' ')
@@ -122,6 +127,21 @@ def call(Map params = [:]){
       }
     }
   }
+}
+
+/**
+  If the same project triggered this build (likely related to a timeout issue) then let's verify githubPrCheckApproved,
+  otherwise it's a valid use case.
+
+  NOTE: if the upstream was caused by one of the whitelisted triggers then it won't be populated. In other words,
+  the rebuild will fail if githubPrCheckApproved, there is no an easy way to do something different.
+*/
+def isUpstreamTriggerWithExclusions() {
+  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause'}
+  if (buildCause?.upstreamProject?.equals(currentBuild.fullProjectName)) {
+    return isUpstreamTrigger() && githubPrCheckApproved()
+  }
+  return isUpstreamTrigger()
 }
 
 def isDefaultSCM(branch) {
