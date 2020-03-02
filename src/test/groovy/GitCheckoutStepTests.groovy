@@ -415,7 +415,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_isUpstreamTriggerWithExclussions_with_build_cause_and_approved() throws Exception {
+  void test_isUpstreamTriggerWithExclusions_with_build_cause_and_approved() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
@@ -430,7 +430,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
       ]
     }
     binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-1'
-    def ret = script.isUpstreamTriggerWithExclussions()
+    def ret = script.isUpstreamTriggerWithExclusions()
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
@@ -439,7 +439,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_isUpstreamTriggerWithExclussions_with_build_cause_and_not_approved() throws Exception {
+  void test_isUpstreamTriggerWithExclusions_with_build_cause_and_not_approved() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return false })
@@ -454,7 +454,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
       ]
     }
     binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-1'
-    def ret = script.isUpstreamTriggerWithExclussions()
+    def ret = script.isUpstreamTriggerWithExclusions()
     printCallStack()
     assertFalse(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
@@ -463,7 +463,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_isUpstreamTriggerWithExclussions_with_different_build_cause() throws Exception {
+  void test_isUpstreamTriggerWithExclusions_with_different_build_cause() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     binding.getVariable('currentBuild').getBuildCauses = {
@@ -477,7 +477,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
       ]
     }
     binding.getVariable('currentBuild').fullProjectName = 'apm-integration-tests/PR-2'
-    def ret = script.isUpstreamTriggerWithExclussions()
+    def ret = script.isUpstreamTriggerWithExclusions()
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
@@ -486,10 +486,10 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_isUpstreamTriggerWithExclussions_with_no_build_cause() throws Exception {
+  void test_isUpstreamTriggerWithExclusions_with_no_build_cause() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
-    def ret = script.isUpstreamTriggerWithExclussions()
+    def ret = script.isUpstreamTriggerWithExclusions()
     printCallStack()
     assertFalse(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
