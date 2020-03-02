@@ -171,7 +171,7 @@ class DefaultParallelTaskGenerator {
     this method will raise an exception
   */
   public List dumpMatrix(marker){
-    if results.size() == 0 {
+    if(results.size() == 0){
       raise Exception("Must generate tests first. Did you run generateParallelTests()?")
     } else {
       dump = []
