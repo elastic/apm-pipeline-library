@@ -161,6 +161,32 @@ class DefaultParallelTaskGenerator {
     results.excludes = loadExcludeVersions()
     return buildMatrix();
   }
+  /**
+    Dump matrix by building a list where each entry is a string
+    that has the X value and the Y value separated by each other
+    by a marker. For example, where X is "foo" and Y is "bar" and
+    the marker is "-", the entry in the list would by "foo-bar".
+
+    If tests have not already been generated via generateParallelTests()
+    this method will raise an exception
+  */
+  public List dumpMatrix(marker){
+    if(results.size() == 0){
+      error("Must generate tests first. Did you run generateParallelTests()?")
+    } else {
+      dump = []
+      results.x.each{ x ->
+        // def column = buildColumn(x, results.y, results.excludes)
+        yItems.each{ y ->
+          String key = "${x}#${y}"
+          if(!results.excludes.contains(key)){
+            dump.add("${x}${marker}${y}")
+          }
+        }
+      }
+      return dump
+    }
+  }
 
   /**
     build the x,y pairs, remove the excludes and call the method
