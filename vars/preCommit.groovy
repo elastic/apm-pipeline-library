@@ -42,11 +42,12 @@ def call(Map params = [:]) {
 
   sshagent([credentialsId]) {
 
+    if (registry && secretRegistry) {
+      dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
+    }
+
     def newHome = env.HOME ?: env.WORKSPACE
     withEnv(["HOME=${newHome}"]) {
-      if (registry && secretRegistry) {
-        dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
-      }
       sh """
         export PATH=${newHome}/bin:${env.PATH}
         curl https://pre-commit.com/install-local.py | python -
