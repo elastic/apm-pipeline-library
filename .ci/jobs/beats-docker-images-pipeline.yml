@@ -24,4 +24,4 @@
             branches:
               - $branch_specifier
     triggers:
-      - timed: '@daily
+      - timed: '@daily'

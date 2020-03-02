@@ -77,9 +77,6 @@ pipeline {
     stage('Check pre-commit') {
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
-          dockerLogin(secret: 'secret/apm-team/ci/docker-registry/prod', registry: 'docker.elastic.co')
-          sh 'docker images || true'
-          sh 'docker pull docker.elastic.co/infra/jjbb || true'
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
