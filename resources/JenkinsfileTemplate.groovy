@@ -38,6 +38,8 @@ pipeline {
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
+    LANG = "C.UTF-8"
+    LC_ALL = "C.UTF-8"
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
