@@ -32,5 +32,5 @@ try {
   Write-Host("Comparing version numbers could not be done. Use {0} version instead of {1} ..." -f $DefaultVersion,$SemVerVersion)
 }
 
-Write-Host("Installing {0} version: {1} ..." -f $env:TOOL,$Version)
-& choco install $env:TOOL --no-progress -y --version "$Version"
+Write-Host("Installing {0} version: {1} with extraArgs: '{2}' ..." -f $env:TOOL,$Version,$env:EXTRA_ARGS)
+& choco install $env:TOOL --no-progress -y --version "$Version" "$env:EXTRA_ARGS"
