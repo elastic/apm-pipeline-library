@@ -277,6 +277,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       f.write(m.body)
       println f.toString()
     })
+    helper.registerAllowedMethod('powershell', [Map.class], null)
+    helper.registerAllowedMethod('powershell', [String.class], null)
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)

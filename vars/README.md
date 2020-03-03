@@ -647,6 +647,27 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
 
+## installTools
+This step will install the list of tools
+
+```
+installTools([ [ tool: 'python3', version: '3.5'] ])
+installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12.0' ] ])
+```
+
+```
+  installTools([
+    [ tool: 'visualstudio2019enterprise', version: '16.4.0.0', provider: 'choco', extraArgs: '--package-parameters "--includeRecommended"' ]
+  ])
+```
+
+
+* tool: The name of the tool to be installed for the default package manager. Mandatory.
+* version: The version of the tool to be installated. Mandatory.
+* provider: The provider to be used for installing the tools. Default behaviour
+            will detect then one available for the OS. Optional.
+* extraArgs: Allow to use some extra args to extend the provider. Optional.
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
