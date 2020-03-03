@@ -359,6 +359,7 @@ def testUnix(){
 }
 
 def checkWindows(){
+  unstash 'source'
   dir("${BASE_DIR}"){
     bat returnStatus: true, script: 'resources/scripts/jenkins/build.bat'
   }
