@@ -25,7 +25,6 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'DEBUG'
-    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -42,6 +41,14 @@ pipeline {
     booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
   }
   stages {
+
+    stage('windows-2019-docker-immutable check'){
+      agent { label 'windows-2019-docker-immutable' }
+      options { skipDefaultCheckout() }
+      steps {
+        installTools([ [ tool: 'visualstudio2019buildtools', version: '16.4.0.0' ], [tool: 'nodejs', version: '12' ] ])
+      }
+    }
     /**
      Checkout the code and stash it, to use it on other stages.
     */
