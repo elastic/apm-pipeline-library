@@ -50,9 +50,12 @@ private installTool(Map params) {
       break
     case '':
       def scriptFile = 'install-with-choco.ps1'
-      def resourceContent = libraryResource('scripts/install-with-choco.ps1')
-      writeFile file: scriptFile, text: resourceContent
-      withEnv(["VERSION=${version}", "TOOL=${tool}"]) {
+      if (!fileExists(scriptFile)) {
+        def resourceContent = libraryResource('scripts/install-with-choco.ps1')
+        writeFile file: scriptFile, text: resourceContent
+      }
+      extraArgsAux = extraArgs.trim() ? extraArgs : "''"
+      withEnv(["VERSION=${version}", "TOOL=${tool}", "EXTRA_ARGS=${extraArgsAux}"]) {
         powershell label: "Install ${tool}:${version}", script: ".\\${scriptFile}"
       }
       break

@@ -88,7 +88,7 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { false })
     script.installTool([ tool: 'foo', version: 'x.y.z' ])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=x.y.z, TOOL=foo'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "VERSION=x.y.z, TOOL=foo, EXTRA_ARGS=''"))
     assertTrue(assertMethodCallContainsPattern('powershell', 'Install foo:x.y.z, script=.\\install-with-choco.ps1'))
     assertJobStatusSuccess()
   }
@@ -97,10 +97,12 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
   void test_install_multiple_tools_in_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
-    script.call([[ tool: 'foo', version: 'x.y.z' ], [ tool: 'bar', version: 'z.y.x' ]])
+    script.call([[ tool: 'foo', version: 'x.y.z' ], [ tool: 'bar', version: 'z.y.x' ],
+                 [ tool: 'some', version: 'z.y.x', extraArgs: "--foo 'bar' 'foo'" ]])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=x.y.z, TOOL=foo'))
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'VERSION=z.y.x, TOOL=bar'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "VERSION=x.y.z, TOOL=foo, EXTRA_ARGS=''"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "VERSION=z.y.x, TOOL=bar, EXTRA_ARGS=''"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', "VERSION=z.y.x, TOOL=some, EXTRA_ARGS=--foo 'bar' 'foo'"))
     assertJobStatusSuccess()
   }
 
