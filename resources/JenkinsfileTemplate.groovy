@@ -329,8 +329,6 @@ pipeline {
   }
 }
 
-
-
 def testDockerInside(){
   docker.image('node:12').inside(){
     echo "Docker inside"
