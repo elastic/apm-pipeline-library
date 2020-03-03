@@ -263,6 +263,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             checkWindows()
+            installTools([ [tool: 'nodejs', version: '12' ] ])
           }
         }
         stage('windows 2019 docker immutable check'){
