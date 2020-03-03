@@ -38,6 +38,8 @@ pipeline {
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
+    LANG = "C.UTF-8"
+    LC_ALL = "C.UTF-8"
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
@@ -263,6 +265,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             checkWindows()
+            installTools([ [tool: 'nodejs', version: '12' ] ])
           }
         }
         stage('windows 2019 docker immutable check'){
@@ -356,12 +359,7 @@ def testUnix(){
 }
 
 def checkWindows(){
-  bat returnStatus: true, script: 'msbuild'
-  bat returnStatus: true, script: 'dotnet --info'
-  bat returnStatus: true, script: 'nuget --help'
-  bat returnStatus: true, script: 'vswhere'
-  bat returnStatus: true, script: 'docker -v'
-  bat returnStatus: true, script: 'python --version'
-  bat returnStatus: true, script: 'python2 --version'
-  bat returnStatus: true, script: 'python3 --version'
+  dir("${BASE_DIR}"){
+    bat returnStatus: true, script: './resources/scripts/jenkins/build.bat'
+  }
 }
