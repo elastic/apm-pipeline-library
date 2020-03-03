@@ -13,6 +13,7 @@ try {
 } catch {
   ## If the version type accelerator throws an error then let's use the default version
   $SemVerVersion = $DefaultVersion
+  Write-Host("Version type accelerator didn't work. Use {0} version ..." -f $SemVerVersion)
 }
 
 # Compare DefaultVersion with SemVerVersion
@@ -28,7 +29,7 @@ try {
   ## It might not be possible to compare as the versions might be different, so let's use
   ## the defaultVersion
   $Version = $DefaultVersion
-  Write-Host("Comparing version numbers could not be done ... let's use {0} version instead of {1} ..." -f $DefaultVersion,$SemVerVersion)
+  Write-Host("Comparing version numbers could not be done. Use {0} version instead of {1} ..." -f $DefaultVersion,$SemVerVersion)
 }
 
 Write-Host("Installing {0} version: {1} ..." -f $env:TOOL,$Version)
