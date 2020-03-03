@@ -360,6 +360,6 @@ def testUnix(){
 
 def checkWindows(){
   dir("${BASE_DIR}"){
-    bat returnStatus: true, script: './resources/scripts/jenkins/build.bat'
+    bat returnStatus: true, script: 'resources/scripts/jenkins/build.bat'
   }
 }
