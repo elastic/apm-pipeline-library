@@ -357,12 +357,7 @@ def testUnix(){
 }
 
 def checkWindows(){
-  bat returnStatus: true, script: 'msbuild'
-  bat returnStatus: true, script: 'dotnet --info'
-  bat returnStatus: true, script: 'nuget --help'
-  bat returnStatus: true, script: 'vswhere'
-  bat returnStatus: true, script: 'docker -v'
-  bat returnStatus: true, script: 'python --version'
-  bat returnStatus: true, script: 'python2 --version'
-  bat returnStatus: true, script: 'python3 --version'
+  dir("${BASE_DIR}"){
+    bat returnStatus: true, script: './resources/scripts/jenkins/build.bat'
+  }
 }
