@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.77 (03/03/2020)
+
+#### 🚀 Enhancements
+
+-  feat: installTools step [#402](https://github.com/elastic/apm-pipeline-library/pull/402)
+- [**groovy**] Add dumpMatrix() method [#415](https://github.com/elastic/apm-pipeline-library/pull/415)
+
+---
+
 ## v1.1.76 (02/03/2020)
 
 #### 🐛 Bug Fixes
@@ -365,8 +374,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix: use 'origin/BRANCH' only on PRs [#302](https://github.com/elastic/apm-pipeline-library/pull/302)
 -  ci(jenkins): support gitCheckout with customisation [#303](https://github.com/elastic/apm-pipeline-library/pull/303)
+-  fix: use 'origin/BRANCH' only on PRs [#302](https://github.com/elastic/apm-pipeline-library/pull/302)
 
 #### ⚙️ CI
 
@@ -605,14 +614,14 @@
 
 #### 🚀 Enhancements
 
+-  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
+-  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
 -  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
 -  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
 -  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
--  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
--  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 
 #### 🐛 Bug Fixes
 
@@ -965,8 +974,8 @@
 
 #### 🐛 Bug Fixes
 
--  (#80) Fix gitCheckout when the caller passed mergeTarget [#81](https://github.com/elastic/apm-pipeline-library/pull/81)
 -  [APM-CI] Powershell in W2016 returns a different output [#79](https://github.com/elastic/apm-pipeline-library/pull/79)
+-  (#80) Fix gitCheckout when the caller passed mergeTarget [#81](https://github.com/elastic/apm-pipeline-library/pull/81)
 
 ---
 
