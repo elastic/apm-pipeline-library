@@ -40,6 +40,7 @@ pipeline {
     PIPELINE_LOG_LEVEL='INFO'
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
+    PYTHONUTF8 = "1"
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
