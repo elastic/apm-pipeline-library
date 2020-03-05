@@ -177,7 +177,7 @@ class DefaultParallelTaskGenerator {
       def dump = []
       results.x.each{ x ->
         // def column = buildColumn(x, results.y, results.excludes)
-        yItems.each{ y ->
+        x.each{ y ->
           String key = "${x}#${y}"
           if(!results.excludes.contains(key)){
             dump.add("${x}${marker}${y}")
