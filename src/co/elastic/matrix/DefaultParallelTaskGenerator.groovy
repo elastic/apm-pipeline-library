@@ -174,7 +174,7 @@ class DefaultParallelTaskGenerator {
     if(results.size() == 0){
       error("Must generate tests first. Did you run generateParallelTests()?")
     } else {
-      dump = []
+      def dump = []
       results.x.each{ x ->
         // def column = buildColumn(x, results.y, results.excludes)
         yItems.each{ y ->
