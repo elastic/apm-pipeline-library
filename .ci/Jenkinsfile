@@ -122,6 +122,10 @@ pipeline {
       }
     }
     stage('Release') {
+      environment {
+        // gren and other tools are in the .ci/scripts folder.
+        PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
+      }
       when {
         expression {
           return params.make_release
