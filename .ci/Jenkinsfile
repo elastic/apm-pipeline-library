@@ -201,7 +201,7 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            testWindows()
           }
         }
         stage('windows 2016 immutable check'){
