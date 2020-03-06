@@ -150,6 +150,134 @@ pipeline {
         }
       }
     }
+    stage('Workers Checks'){
+      parallel {
+        stage('linux && immutable check'){
+          agent { label 'linux && immutable' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+          }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('Ubuntu 18.04 test'){
+          agent { label 'ubuntu-edge' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+          }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('Debian 9 test'){
+          agent { label 'debian-9' }
+          options { skipDefaultCheckout() }
+          environment {
+            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+          }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('windows 2012 immutable check'){
+          agent { label 'windows-2012-r2-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            checkWindows()
+          }
+        }
+        stage('windows 2016 immutable check'){
+          agent { label 'windows-2016-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            testWindows()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('windows 2019 immutable check'){
+          agent { label 'windows-2019-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            testWindows()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('windows 2019 docker immutable check'){
+          agent { label 'windows-2019-docker-immutable' }
+          options { skipDefaultCheckout() }
+          steps {
+            testWindows()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('Mac OS X check - 01'){
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-854309 check'){
+          agent { label 'worker-854309' }
+          options { skipDefaultCheckout() }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1095690 check'){
+          agent { label 'worker-1095690' }
+          options { skipDefaultCheckout() }
+          steps {
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+      }
+    }
   }
   post {
     always {
@@ -158,5 +286,24 @@ pipeline {
     cleanup {
       notifyBuildResult()
     }
+  }
+}
+
+def testUnix(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: '''
+    pip install testinfra
+    py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml
+    '''
+  }
+}
+
+def testWindows(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    bat returnStatus: true, script: 'echo foo'
   }
 }
