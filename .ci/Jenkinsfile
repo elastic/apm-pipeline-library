@@ -293,8 +293,9 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: '''
+    sh script: '''
     pip install testinfra
+    PATH=${HOME}/.local/bin:${PATH}
     py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml
     '''
   }
