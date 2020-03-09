@@ -19,4 +19,3 @@ def test_nuget_installed(host):
 def test_python_installed(host):
   cmd = host.run("python --version")
   assert cmd.rc == 0
-'
