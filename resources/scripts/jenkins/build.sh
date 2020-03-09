@@ -16,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+set +x
+
 echo "dummy script"
 
 docker --version || true

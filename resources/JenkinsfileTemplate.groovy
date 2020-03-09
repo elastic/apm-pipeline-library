@@ -356,7 +356,7 @@ def buildUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh script: './resources/scripts/jenkins/build.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
   }
 }
 
@@ -372,6 +372,7 @@ def testUnix(){
 }
 
 def checkWindows(){
+  deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
     powershell(script: '.\\resources\\scripts\\jenkins\\build.ps1')
@@ -382,6 +383,6 @@ def checkOldWindows(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    bat(script: '.\\resources\\scripts\\jenkins\\build.bat')
+    bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }
