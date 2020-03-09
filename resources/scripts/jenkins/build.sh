@@ -23,7 +23,15 @@ virtualenv venv
 source venv/bin/activate
 pip install testinfra
 set -x
-py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml
+
+## Run test-infra and trap error to notify when required
+{ py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml; err="$?"; } || true
+### https://docs.pytest.org/en/latest/usage.html#possible-exit-codes
+case "$err" in
+0) echo success ;;
+1) echo fail ;;
+*) exit $err ;;
+esac
 
 echo "dummy script"
 

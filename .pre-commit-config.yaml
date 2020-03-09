@@ -5,7 +5,7 @@ repos:
     -   id: check-case-conflict
         exclude: ^target/
     -   id: check-executables-have-shebangs
-        exclude: (.+.bat$|^target/)
+        exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
         exclude: ^target/
     -   id: check-merge-conflict

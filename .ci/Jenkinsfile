@@ -304,6 +304,6 @@ def testWindows(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    bat returnStatus: true, script: 'echo foo'
+    powershell(script: '.\\resources\\scripts\\jenkins\\build.ps1')
   }
 }
