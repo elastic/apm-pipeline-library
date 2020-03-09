@@ -55,3 +55,7 @@ def test_python3_installed(host):
 def test_vault_installed(host):
   cmd = host.run("vault --version")
   assert cmd.rc == 0, "it is required to be used in all the APM projects"
+
+def test_java10_is_installed(host):
+  hudson_home = host.environment().get('HUDSON_HOME')
+  assert host.file(hudson_home + "/.java/java10").exists, "it is required for the apm-agent-java"
