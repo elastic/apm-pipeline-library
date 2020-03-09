@@ -26,6 +26,7 @@ $env:PYTHON_ENV = "$env:TEMP\python-env"
 exec { python --version }
 
 # Setup test-infra within the virtualenv
+exec { pip install virtualenv }
 exec { virtualenv venv }
 exec { venv\Scripts\activate.bat }
 exec { pip install testinfra }

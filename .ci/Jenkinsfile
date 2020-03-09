@@ -201,14 +201,14 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            testWindows()
+            testOldWindows()
           }
         }
         stage('windows 2016 immutable check'){
           agent { label 'windows-2016-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            testWindows()
+            testOldWindows()
           }
           post {
             always {
@@ -297,6 +297,15 @@ def buildUnix(){
     withEnv(["HOME=${env.WORKSPACE}"]){
       sh script: './resources/scripts/jenkins/build.sh'
     }
+  }
+}
+
+
+def testOldWindows(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    bat(script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }
 
