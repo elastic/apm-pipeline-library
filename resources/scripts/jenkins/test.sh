@@ -16,4 +16,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-echo "dummy script"
+set +x
+pip install virtualenv
+virtualenv venv
+# shellcheck disable=SC1091
+source venv/bin/activate
+pip install testinfra
+set -x
+
+## Run test-infra and trap error to notify when required
+{ py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml; err="$?"; } || true
+### https://docs.pytest.org/en/latest/usage.html#possible-exit-codes
+case "$err" in
+0) echo success ;;
+1) echo fail ;;
+*) exit $err ;;
+esac
