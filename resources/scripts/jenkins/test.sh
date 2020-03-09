@@ -25,7 +25,12 @@ pip install testinfra
 set -x
 
 ## Run test-infra and trap error to notify when required
-{ py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml; err="$?"; } || true
+{ py.test -v \
+    test-infra/test_installed_tools.py \
+    test-infra/test_packer.py \
+    --junit-xml=target/junit-test-infra.xml; \
+  err="$?"; } || true
+
 ### https://docs.pytest.org/en/latest/usage.html#possible-exit-codes
 case "$err" in
 0) echo success ;;
