@@ -670,7 +670,7 @@ installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12
 
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
-it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
+it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
 ```
@@ -719,7 +719,7 @@ def upstreamTrigger = isUpstreamTrigger()
 
 ## isUserTrigger
 Check it the build was triggered by a user.
-it stores the username in the BUILD_CAUSE_USER environment variable.
+it stores the username in the GITHUB_COMMENT_AUTHOR environment variable.
 
 ```
 def userTrigger = isUserTrigger()

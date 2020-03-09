@@ -27,7 +27,7 @@ def call(){
     return false
   }
   if (buildCause?.userId?.trim()) {
-    env.BUILD_CAUSE_USER = buildCause?.userId
+    env.GITHUB_COMMENT_AUTHOR = buildCause?.userId
     return true
   }
   return false

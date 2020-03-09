@@ -24,19 +24,13 @@ import com.cloudbees.groovy.cps.NonCPS
 
 def call(){
   def found = false
-  def data = getCommentData()
-  log(level: 'DEBUG', text: "isCommentTrigger: ${data.toMapString()}")
-  if (data) {
-    log(level: 'DEBUG', text: 'isCommentTrigger: set some environment variables with the comments and so on')
-    env.GITHUB_COMMENT = data.comment
-    env.BUILD_CAUSE_USER = data.user
-
+  if (env.GITHUB_COMMENT_AUTHOR && env.GITHUB_COMMENT) {
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
 
     try {
       def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
-                                             url: "https://api.github.com/orgs/elastic/members/${env.BUILD_CAUSE_USER}")
+                                            url: "https://api.github.com/orgs/elastic/members/${env.GITHUB_COMMENT_AUTHOR}")
       // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
       found = membershipResponse.message?.trim() ? false : true
     } catch(e) {
@@ -46,14 +40,4 @@ def call(){
     }
   }
   return found
-}
-
-@NonCPS
-def getCommentData() {
-  def data = [:]
-  def triggerCause = currentBuild.rawBuild.getCauses().find { it.getClass().getSimpleName().equals('IssueCommentCause') }
-  if (triggerCause) {
-    data = [ comment: triggerCause.getComment(), user: triggerCause.getUserLogin() ]
-  }
-  return data
 }
