@@ -24,6 +24,8 @@ Jenkins pipeline shared library for the project APM
 |       +- jenkins.yaml
 |   +- docker-compose.yml
 |   +- Dockerfile
++- test-infra                  # to validate our CI workers
+|   +- test_<os|generic>.yml   # the specific tests/asserts to run in each worker.
 ```
 
 * [Pipeline](https://jenkins.io/doc/book/pipeline/)
@@ -247,6 +249,13 @@ Add this to your `.pre-commit-config.yaml`
 * check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
 * remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
 * check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
+
+## Test Infra
+
+Our infrastructure testing with testinfra then we can validate whether the CI worker templates have been configured with the expected
+configuration.
+
+This particular implementation uses [testinfra](https://testinfra.readthedocs.io/en/latest/).
 
 ## Resources
 
