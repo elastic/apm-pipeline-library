@@ -159,7 +159,7 @@ pipeline {
             PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
           }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -167,14 +167,14 @@ pipeline {
             }
           }
         }
-        stage('Ubuntu 18.04 test'){
+        stage('Ubuntu 18.04 check'){
           agent { label 'ubuntu-edge' }
           options { skipDefaultCheckout() }
           environment {
             PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
           }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -182,14 +182,14 @@ pipeline {
             }
           }
         }
-        stage('Debian 9 test'){
+        stage('Debian 9 check'){
           agent { label 'debian-9' }
           options { skipDefaultCheckout() }
           environment {
             PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
           }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -220,7 +220,7 @@ pipeline {
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            testWindows()
+            buildUnix()
           }
           post {
             always {
@@ -244,7 +244,7 @@ pipeline {
           agent { label 'macosx' }
           options { skipDefaultCheckout() }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -256,7 +256,7 @@ pipeline {
           agent { label 'worker-854309' }
           options { skipDefaultCheckout() }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -268,7 +268,7 @@ pipeline {
           agent { label 'worker-1095690' }
           options { skipDefaultCheckout() }
           steps {
-            testUnix()
+            buildUnix()
           }
           post {
             always {
@@ -289,13 +289,13 @@ pipeline {
   }
 }
 
-def testUnix(){
+def buildUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
     // Ephemeral workers don't have a HOME env variable.
     withEnv(["HOME=${env.WORKSPACE}"]){
-      sh script: './resources/scripts/jenkins/test.sh'
+      sh script: './resources/scripts/jenkins/build.sh'
     }
   }
 }
