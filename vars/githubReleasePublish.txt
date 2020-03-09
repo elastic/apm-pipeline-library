@@ -1,7 +1,8 @@
 Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
-      id: '1',         // Release ID
+      id: '1',                // Release ID
+      name: 'Release v1.0.0'  // Release name 
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()

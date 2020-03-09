@@ -78,7 +78,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     script.BUILD_TAG = "dummy_tag"
-    def ret = script.call(url: "dummy", token: "dummy", id: 1)
+    def ret = script.call(url: "dummy", token: "dummy", id: 1, name: "Release v1.0.0")
     printCallStack()
     assertTrue(ret.tag_name == "v1.0.0")
     assertJobStatusSuccess()
@@ -89,7 +89,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     try {
-      script.call(url: "dummy", token: "dummy")
+      script.call(url: "dummy", token: "dummy", name: "Release v1.0.0")
     } catch(e) {
       //NOOP
     }
@@ -98,12 +98,25 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testNoName() throws Exception {
+    helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
+    def script = loadScript(scriptName)
+    try {
+      script.call(url: "dummy", token: "dummy", id: 1)
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'name is required'))
+  }
+
+  @Test
   void testNoOrg() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
     env.remove("ORG_NAME")  // Will be reset by setUp()
     try {
-      script.call(url: "dummy", token: "dummy")
+      script.call(url: "dummy", token: "dummy", name: "Release v1.0.0")
     } catch(e) {
       //NOOP
     }

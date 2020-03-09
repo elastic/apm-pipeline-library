@@ -34,7 +34,8 @@ the data structure of the return.
   Example invocation:
 
     githubReleasePublish(
-      id: '1',         // Release ID
+      id: '1',                // Release ID
+      name: 'Release v1.0.0', // Release name 
     )
 
 To learn more about what individual flags mean, please visit the GitHub
@@ -52,6 +53,7 @@ def call(Map params = [:]){
   def token = getGithubToken()
 
   def id = params.containsKey('id') ? params.id : error('githubReleasePublish: id param is required.')
+  def name = params.containsKey('name') ? params.id : error('githubReleasePublish: name is required.')
 
   // Construct GitHub API URL
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases/${id}"
