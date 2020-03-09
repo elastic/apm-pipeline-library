@@ -220,7 +220,7 @@ pipeline {
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            buildUnix()
+            testWindows()
           }
           post {
             always {
