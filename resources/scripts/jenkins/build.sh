@@ -17,6 +17,13 @@
 # under the License.
 
 set +x
+pip install virtualenv
+virtualenv venv
+# shellcheck disable=SC1091
+source venv/bin/activate
+pip install testinfra
+set -x
+py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml
 
 echo "dummy script"
 
