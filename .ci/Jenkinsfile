@@ -294,11 +294,9 @@ def testUnix(){
   unstash 'source'
   dir("${BASE_DIR}"){
     // Ephemeral workers don't have a HOME env variable.
-    withEnv(["HOME=${env.WORKSPACE}"]){
+    withEnv(["HOME=${env.WORKSPACE}", "PATH+PYTHON_DEPS=${env.WORKSPACE}/.local/bin"]){
       sh script: '''
       pip install testinfra
-      env | sort
-      PATH=${HOME}/.local/bin:${PATH}
       py.test -v test-infra/test_generic.py --junit-xml=target/junit-test-infra.xml
       '''
     }
