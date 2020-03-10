@@ -31,7 +31,6 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     PATH = "${env.GOPATH}/bin:${env.PATH}"
     PIPELINE_LOG_LEVEL='INFO'
-    PYTHON_EXE='python2.7'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
