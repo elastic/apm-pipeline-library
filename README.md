@@ -252,8 +252,7 @@ Add this to your `.pre-commit-config.yaml`
 
 ## Test Infra
 
-Our infrastructure testing with testinfra then we can validate whether the CI worker templates have been configured with the expected
-configuration.
+This is how we test the actual state of our CI workers that are configured with Ansible. Therefore, we can validate whether the CI worker templates have been configured with the expected requirements
 
 This particular implementation uses [testinfra](https://testinfra.readthedocs.io/en/latest/).
 
