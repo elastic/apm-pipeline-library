@@ -533,7 +533,8 @@ Returns a data structure representing the release, similar to the following:
 Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
-      id: '1',         // Release ID
+      id: '1',                // Release ID
+      name: 'Release v1.0.0'  // Release name 
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -740,6 +741,23 @@ the log level by default is INFO.
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
 
+## mvnVersion
+Get a project version from Maven
+
+```
+mvnVersion(
+    showQualifiers: true
+)
+```
+ * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
+                       such as additional labels for pre-release or build metadata. Speficially,
+                       this means the IncrementalVersion, BuildNumber, and Qualifier sections from
+                       the Maven version as specified in the Maven versioning guide.
+
+This script should be run from the root of a Maven-based project.
+
+[Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
+[Semantic Versioning Specification](https://semver.org/)
 ## nexusCloseStagingRepository
 Close a Nexus staging repository
 
