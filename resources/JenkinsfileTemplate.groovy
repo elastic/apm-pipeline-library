@@ -138,10 +138,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml"
-                  )
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -162,9 +159,9 @@ pipeline {
             }
           }
           post {
-               always {
-                   sh 'docker ps -a || true'
-               }
+            always {
+              sh 'docker ps -a || true'
+            }
           }
         }
         stage('Ubuntu 18.04 test'){
@@ -194,9 +191,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -234,9 +229,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -251,14 +244,14 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2016 immutable check'){
           agent { label 'windows-2016-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2019 immutable check'){
@@ -268,6 +261,11 @@ pipeline {
             checkWindows()
             installTools([ [tool: 'nodejs', version: '12' ] ])
           }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
         }
         stage('windows 2019 docker immutable check'){
           agent { label 'windows-2019-docker-immutable' }
@@ -275,48 +273,61 @@ pipeline {
           steps {
             checkWindows()
           }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
         }
         stage('Mac OS X check - 01'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('Mac OS X check - 02'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-854309 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-854309' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-854309' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-1095690 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-1095690' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-1095690' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testUnix()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
@@ -335,7 +346,7 @@ def testDockerInside(){
     echo "Docker inside"
     dir("${BASE_DIR}"){
       withEnv(["HOME=${env.WORKSPACE}"]){
-        sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
+        sh(script: './resources/scripts/jenkins/build.sh')
       }
     }
   }
@@ -353,13 +364,25 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+    // Ephemeral workers don't have a HOME env variable.
+    withEnv(["HOME=${env.WORKSPACE}"]){
+      sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+    }
   }
 }
 
 def checkWindows(){
+  deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    bat returnStatus: true, script: 'resources/scripts/jenkins/build.bat'
+    powershell(script: '.\\resources\\scripts\\jenkins\\build.ps1')
+  }
+}
+
+def checkOldWindows(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }
