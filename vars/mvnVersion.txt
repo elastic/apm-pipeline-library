@@ -10,5 +10,7 @@ mvnVersion(
                        this means the IncrementalVersion, BuildNumber, and Qualifier sections from
                        the Maven version as specified in the Maven versioning guide.
 
+This script should be run from the root of a Maven-based project.
+
 [Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
 [Semantic Versioning Specification](https://semver.org/)

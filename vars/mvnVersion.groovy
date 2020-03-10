@@ -19,13 +19,18 @@
 Get a project version from Maven
 
 mvnVersion(
-    showQualifiers: true
-)
+    showQualifiers: true)
 **/
 
 def call(Map params = [:]) {
     def showQualifiers = params.get('showQualifiers', true)
-    def ver = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true)
+    def ver
+    try {
+        ver = sh(script: "./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true)
+    } catch (err) {
+        error "Error executing Maven. Check to ensure that you are in the project root and that `mvnw` and `pom.xml` are present."
+        throw err
+    }
     if (!showQualifiers){
         return ver.replaceAll(/-.*$/, '')
     } else {

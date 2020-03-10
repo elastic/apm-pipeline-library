@@ -44,7 +44,7 @@ class MvnVersionTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout')) 
+    assertTrue(assertMethodCallContainsPattern('sh', './mvnw help:evaluate -Dexpression=project.version -q -DforceStdout')) 
   }
 
   @Test
