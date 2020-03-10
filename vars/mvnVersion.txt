@@ -1,0 +1,14 @@
+Get a project version from Maven
+
+```
+mvnVersion(
+    showQualifiers: true
+)
+```
+ * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
+                       such as additional labels for pre-release or build metadata. Speficially,
+                       this means the IncrementalVersion, BuildNumber, and Qualifier sections from
+                       the Maven version as specified in the Maven versioning guide.
+
+[Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
+[Semantic Versioning Specification](https://semver.org/)
