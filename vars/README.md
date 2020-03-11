@@ -34,6 +34,23 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
 
+## buildStatus
+Fetch the current build status for a given job
+```
+def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']), return_bool: false)
+```
+
+* host: The Jenkins server to connect to. Defaults to `localhost`.
+* job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
+        CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
+       
+            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
+
+        In this case, the corresponding list would be formed as:
+
+            ['apm-agent-java', 'apm-agent-java-mbp', 'master']
+
+* as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -758,6 +775,7 @@ This script should be run from the root of a Maven-based project.
 
 [Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
 [Semantic Versioning Specification](https://semver.org/)
+
 ## nexusCloseStagingRepository
 Close a Nexus staging repository
 
