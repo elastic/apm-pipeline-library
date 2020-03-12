@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
     sh get-docker.sh
   fi
   su - vagrant -c 'curl -s https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar'
-  su - vagrant -c 'nohup java -jar swarm-client.jar -labels "linux docker immutable ubuntu" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &'
+  sudo nohup java -jar swarm-client.jar -labels "linux docker immutable ubuntu" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &
   SCRIPT
 
   config.vm.provision "shell", inline: $script
