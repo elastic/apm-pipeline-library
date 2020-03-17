@@ -40,3 +40,6 @@ for di in ${DOCKER_IMAGES}
 do
 (retry 2 docker pull "${di}") || echo "Error pulling ${di} Docker image, we continue"
 done
+
+## Let's cache the maven dependencies
+ ./mvnw clean test --fail-never
