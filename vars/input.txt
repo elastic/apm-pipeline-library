@@ -1,0 +1,12 @@
+As long as we cannot control the abort then let's use this approach.
+
+It will create a new env variable called INPUT_ABORTED and will be set to true if either the user
+or a timeout happens, otherwise it will be set to false.
+
+```
+input {
+
+}
+
+input(params)
+```
