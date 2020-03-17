@@ -7,7 +7,7 @@ module.exports = {
     "ignoreTagsWith": ["-rc", "-alpha", "-beta", "test", "current"],
     "ignoreLabels": ["closed", "automation", "enhancement", "bug", "fix",
       "internal", "feature", "feat", "docs", "chore", "refactor", "ci",
-      "perf", "test", "style"],
+      "perf", "test", "tests", "style", "groovy", "linux", "master", "mac", "windows"],
     "groupBy": {
         "Enhancements": ["enhancement", "internal", "feature", "feat"],
         "Bug Fixes": ["bug", "fix"],
