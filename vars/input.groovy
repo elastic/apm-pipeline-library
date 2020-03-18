@@ -33,8 +33,8 @@ def call(params) {
   } catch(err) {
     log(level: 'DEBUG', text: "input: catch error ${err}")
     // See https://support.cloudbees.com/hc/en-us/articles/230922148-Pipeline-How-to-add-an-input-step-with-timeout-that-continues-if-timeout-is-reached-using-a-default-value
-    def user = err.getCauses()[0].getUser()
-    if ('SYSTEM' == user.toString()) { // SYSTEM means timeout.
+    def user = err.getCauses()[0]?.getUser()
+    if ('SYSTEM' == user?.toString()) { // SYSTEM means timeout.
       didTimeout = true
     } else {
       userInput = false

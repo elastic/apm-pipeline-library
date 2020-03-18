@@ -17,9 +17,13 @@
 
 package co.elastic.mock
 
+import hudson.model.User
+import hudson.model.Result
 import hudson.model.Run
 import hudson.tasks.test.AbstractTestResultAction
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
+import org.jenkinsci.plugins.workflow.support.steps.input.Rejection
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -38,6 +42,16 @@ public class StepsMock implements Serializable {
 
   public Object git(scm) {
     throw new Exception('Force a failure')
+  }
+
+  public Object input(Map params = [:]) {
+    if (params?.message?.equals('failure-user')) {
+      throw new FlowInterruptedException(Result.ABORTED, new Rejection(new User('user', 'user')))
+    } else if (params?.message?.equals('failure-system')) {
+      throw new FlowInterruptedException(Result.ABORTED, new Rejection(new User('SYSTEM', 'SYSTEM')))
+    } else {
+      return 'whatever'
+    }
   }
 
   private RunWrapper mockRunWrapper(String jobName) throws Exception {
