@@ -16,7 +16,7 @@ pipeline {
           }
           steps { echo 'Unreached. Timeout should be triggered' }
         }
-        stage('When-Tiemout') {
+        stage('When-Timeout') {
           when { expression { return (env.INPUT_ABORTED == 'false') } }
           steps { echo 'Reached when no aborted' }
         }
@@ -68,9 +68,15 @@ pipeline {
     stage('InputStep') {
       stages {
         stage('Approval') {
+          agent none
           steps {
-            input message: 'input step', ok: 'caption', parameters: [choice(choices: ['foo', 'bar'], description: '', name: 'variable')], submitterParameter: 'user_submitter'
-            validateVariable(variable)
+            script {
+              // Scripted approach
+              def ret = input message: 'input step', ok: 'caption', parameters: [choice(choices: ['foo', 'bar'], description: '', name: 'variable')], submitterParameter: 'user_submitter'
+              if (env.INPUT_ABORTED == 'false') {
+                validateVariable(ret.variable)
+              }
+            }
           }
         }
         stage('When-Manual') {
