@@ -179,7 +179,7 @@ def call(Map pipelineParams) {
 def runBuildITs(String repo, String stagingDockerImage) {
   build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(),
         wait: env.CHANGE_ID?.trim() ? false : true,
-        parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
+        parameters: [string(name: 'INTEGRATION_TEST', value: 'Opbeans'),
                      string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
                      string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
                      string(name: 'GITHUB_CHECK_REPO', value: repo),
