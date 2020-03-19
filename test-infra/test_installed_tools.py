@@ -32,18 +32,6 @@ def test_jq_installed(host):
   cmd = host.run("jq --version")
   assert cmd.rc == 0, "it is required for the apm-pipeline-library"
 
-def test_mvn_installed(host):
-  cmd = host.run("mvn --version")
-  assert cmd.rc == 0, "it is required for the apm-agent-java"
-
-def test_node_installed(host):
-  cmd = host.run("node --version")
-  assert cmd.rc == 0, "it is required for the apm-agent-node and apm-agent-rum-js"
-
-def test_npm_installed(host):
-  cmd = host.run("npm --version")
-  assert cmd.rc == 0, "it is required for the apm-agent-node and apm-agent-rum-js"
-
 def test_python_installed(host):
   cmd = host.run("python --version")
   assert cmd.rc == 0, "it is required for the apm-agent-python and apm-integration-testing"
