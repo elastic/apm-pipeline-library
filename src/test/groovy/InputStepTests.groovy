@@ -37,4 +37,32 @@ class InputStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'Override default input'))
     assertFalse(env.INPUT_ABORTED)
   }
+
+  @Test
+  void test_when_timeout() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(message: 'failure-system')
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default input'))
+    assertTrue(assertMethodCallContainsPattern('log', 'input was aborted, timeout reason'))
+    assertTrue(env.INPUT_ABORTED)
+  }
+
+  @Test
+  void test_when_abort_by_user() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(message: 'failure-user')
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default input'))
+    assertTrue(assertMethodCallContainsPattern('log', 'input was aborted by user'))
+    assertTrue(env.INPUT_ABORTED)
+  }
 }

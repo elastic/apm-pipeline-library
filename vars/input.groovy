@@ -35,10 +35,11 @@ def call(params) {
     // See https://support.cloudbees.com/hc/en-us/articles/230922148-Pipeline-How-to-add-an-input-step-with-timeout-that-continues-if-timeout-is-reached-using-a-default-value
     def user = err.getCauses()[0]?.getUser()
     if ('SYSTEM' == user?.toString()) { // SYSTEM means timeout.
+      log(level: 'DEBUG', text: 'input was aborted, timeout reason')
       didTimeout = true
     } else {
       userInput = false
-      log(level: 'DEBUG', text: "Aborted by: [${user}]")
+      log(level: 'DEBUG', text: "input was aborted by ${user}")
     }
   } finally {
     env.INPUT_ABORTED = didTimeout || !userInput

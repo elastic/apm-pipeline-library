@@ -43,7 +43,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * host: The Jenkins server to connect to. Defaults to `localhost`.
 * job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
         CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
-       
+
             https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
 
         In this case, the corresponding list would be formed as:
@@ -51,6 +51,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
             ['apm-agent-java', 'apm-agent-java-mbp', 'master']
 
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -551,7 +552,7 @@ Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0'  // Release name 
+      name: 'Release v1.0.0'  // Release name
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -663,6 +664,20 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
+```
+
+## input
+As long as we cannot control the abort then let's use this approach.
+
+It will create a new env variable called INPUT_ABORTED and will be set to true if either the user
+or a timeout happens, otherwise it will be set to false.
+
+```
+input {
+
+}
+
+input(params)
 ```
 
 ## installTools
