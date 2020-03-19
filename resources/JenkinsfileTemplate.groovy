@@ -133,8 +133,8 @@ pipeline {
             */
             stage('Test') {
               steps {
-                testUnix()
                 testDockerInside()
+                testUnix()
               }
               post {
                 always {
@@ -271,7 +271,7 @@ pipeline {
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkWindows(withExtra: true)
           }
           post {
             always {
@@ -387,11 +387,12 @@ def testMac(){
   }
 }
 
-def checkWindows(){
+def checkWindows(params = [:]){
+  def withExtra = params.containsKey('withExtra') ? params.withExtra : false
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    powershell(script: '.\\resources\\scripts\\jenkins\\build.ps1')
+    powershell(script: ".\\resources\\scripts\\jenkins\\build.ps1 ${withExtra}")
   }
 }
 

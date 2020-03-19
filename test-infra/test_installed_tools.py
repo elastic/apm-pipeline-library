@@ -26,5 +26,8 @@ def test_vault_installed(host):
   assert cmd.rc == 0, "it is required for all the APM projects"
 
 def test_java10_is_installed(host):
-  hudson_home = host.environment().get('HUDSON_HOME')
-  assert host.file(hudson_home + "/.java/java10").exists, "it is required for the apm-agent-java"
+  if host.system_info.type == 'darwin' :
+    pytest.skip("unsupported configuration")
+  else:
+    hudson_home = host.environment().get('HUDSON_HOME')
+    assert host.file(hudson_home + "/.java/java10").exists, "it is required for the apm-agent-java"

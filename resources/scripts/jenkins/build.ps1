@@ -33,3 +33,9 @@ exec { pip install testinfra }
 
 # Run the test-infra
 exec { py.test -v test-infra\test_windows.py --junit-xml=target\junit-test-infra.xml }
+
+# Run the test-infra for the given param
+$extra=$args[0]
+If ($extra -eq 'true') {
+  exec { py.test -v test-infra\test_windows_extra.py --junit-xml=target\junit-test-infra-extra.xml }
+}
