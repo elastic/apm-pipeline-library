@@ -284,7 +284,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildUnix()
-            testUnix()
+            testMac()
           }
           post {
             always {
@@ -297,7 +297,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildUnix()
-            testUnix()
+            testMac()
           }
           post {
             always {
@@ -310,7 +310,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildUnix()
-            testUnix()
+            testBaremetal()
           }
           post {
             always {
@@ -323,7 +323,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             buildUnix()
-            testUnix()
+            testBaremetal()
           }
           post {
             always {
@@ -368,6 +368,22 @@ def testUnix(){
     withEnv(["HOME=${env.WORKSPACE}"]){
       sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
     }
+  }
+}
+
+def testBaremetal(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/test-baremetal.sh'
+  }
+}
+
+def testMac(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/test-mac.sh'
   }
 }
 
