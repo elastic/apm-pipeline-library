@@ -2,3 +2,4 @@ disable-github-multibranch-status
 filesystem_scm
 job-dsl
 ssh-agent
+simple-theme

@@ -97,6 +97,10 @@ unclassified:
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
+  simple-theme-plugin:
+    elements:
+    - cssUrl:
+        url: "https://cdn.rawgit.com/afonsof/jenkins-material-theme/gh-pages/dist/material-blue-grey.css"
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/timeout.dsl"
