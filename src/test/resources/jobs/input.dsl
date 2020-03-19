@@ -86,6 +86,15 @@ pipeline {
       }
     }
   }
+  post {
+    always {
+      script {
+        if (env.INPUT_ABORTED == 'true') {
+          currentBuild.result = 'ABORTED'
+        }
+      }
+    }
+  }
 }
 
 def validateVariable(variable) {
