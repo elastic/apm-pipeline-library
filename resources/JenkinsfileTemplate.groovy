@@ -34,7 +34,8 @@ pipeline {
     // Default BASE_DIR should keep the Golang folder layout as a convention
     // for the rest of the projects/languages independently whether they do need it
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
-    NOTIFY_TO = credentials('notify-to')
+    // Email are stored as credentials to ensure those emails are not exposed.
+    NOTIFY_TO = credentials('notify-to-robots')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
