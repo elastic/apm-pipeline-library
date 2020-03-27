@@ -258,9 +258,20 @@ pipeline {
         stage('windows 2019 immutable check'){
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
-          steps {
-            checkWindows()
-            installTools([ [tool: 'nodejs', version: '12' ] ])
+          stages {
+            stage('Test') {
+              steps {
+                checkWindows()
+              }
+            }
+            stage('Install tools') {
+              options {
+                warnError('installTools failed')
+              }
+              steps {
+                installTools([ [tool: 'nodejs', version: '13' ] ])
+              }
+            }
           }
           post {
             always {
