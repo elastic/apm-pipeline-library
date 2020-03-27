@@ -1,7 +1,7 @@
 ---
 - job:
-    name: apm-tck/apm-tck-update-gherkin-pipeline
-    display-name: APM TCK Update Specs
+    name: apm-shared/apm-update-gherkin-pipeline
+    display-name: APM Update Specs
     description: Send PRs to the subscribed APM Agents if the gherkin files are modified, triggered for the master branch for the elastic/apm project
     project-type: pipeline
     view: APM-CI

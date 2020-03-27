@@ -1,4 +1,0 @@
----
-- job:
-    name: apm-tck
-    project-type: folder
