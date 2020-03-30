@@ -12,3 +12,7 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
+
+To return the response code instead of the body:
+```
+def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
