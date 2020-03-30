@@ -51,6 +51,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
             ['apm-agent-java', 'apm-agent-java-mbp', 'master']
 
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -664,6 +665,10 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 ```
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
+
+To return the response code instead of the body:
+```
+def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
 
 ## installTools
 This step will install the list of tools
