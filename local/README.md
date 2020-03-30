@@ -139,3 +139,12 @@ make stop
 ```
 
 Run `make help` for information on all available commands.
+
+## FAQ
+
+**Adding and validating a new JJBB job or folder to the local instance**
+
+```shell
+$ cd <PIPELINE_ROOT_DIR>
+$ ./local/test-jjbb.sh -j .ci/jobs/file-to-add.yml
+```
