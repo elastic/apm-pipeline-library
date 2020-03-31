@@ -270,6 +270,8 @@ pipeline {
               }
               steps {
                 installTools([ [tool: 'nodejs', version: '13' ] ])
+                installTools([ [tool: 'nodejs-lts', version: '12' ] ])
+                installTools([ [tool: 'nodejs.install', version: '13' ] ])
               }
             }
           }
