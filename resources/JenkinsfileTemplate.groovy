@@ -265,13 +265,28 @@ pipeline {
               }
             }
             stage('Install tools') {
-              options {
-                warnError('installTools failed')
-              }
               steps {
-                installTools([ [tool: 'nodejs', version: '13' ] ])
-                installTools([ [tool: 'nodejs-lts', version: '12.15.0' ] ])
-                installTools([ [tool: 'nodejs.install', version: '13' ] ])
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs', version: '13' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs-lts', version: '12' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs-lts', version: '12.15.0' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs-lts', version: '12.14.0' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs.install', version: '12' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs.install', version: '12.15.0' ] ])
+                }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
+                    installTools([ [tool: 'nodejs.install', version: '12.14.0' ] ])
+                }
               }
             }
           }
