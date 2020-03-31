@@ -47,6 +47,15 @@ class HttpRequestStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+@Test
+void testResponseCodeOnly() throws Exception {
+  def script = loadScript(scriptName)
+  def response_code = script.call(url: "https://www.google.com",
+    response_code_only: true)
+  printCallStack()
+  assertTrue(response_code.equals(200))
+  assertJobStatusSuccess()
+}
 
   @Test
   void testPostWithParams() throws Exception {

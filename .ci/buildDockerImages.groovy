@@ -245,7 +245,9 @@ pipeline {
         dir("integration-testing-images"){
           git('https://github.com/elastic/apm-integration-testing.git')
           sh(label: 'Test Docker containers', script: 'make -C docker all-tests')
-          sh(label: 'Push Docker images', script: 'make -C docker all-push')
+          retry(3){
+            sh(label: 'Push Docker images', script: 'make -C docker all-push')
+          }
         }
       }
       post {
@@ -278,7 +280,9 @@ pipeline {
         dir("apm-server-images"){
           git('https://github.com/elastic/apm-server.git')
           sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
-          sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+          retry(3){
+            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+          }
         }
       }
       post {
@@ -360,7 +364,9 @@ def buildDockerImage(args){
       withEnv(env){
         sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
         if(push){
-          sh(label: "push docker image", script: "docker push ${image}")
+          retry(3){
+            sh(label: "push docker image", script: "docker push ${image}")
+          }
         }
       }
     }
