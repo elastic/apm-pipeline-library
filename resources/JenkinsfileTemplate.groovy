@@ -265,19 +265,11 @@ pipeline {
               }
             }
             stage('Install tools') {
+              options {
+                warnError('installTools failed')
+              }
               steps {
-                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
-                    installTools([ [tool: 'nodejs', version: '13' ] ])
-                }
-                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
-                    installTools([ [provider: 'choco', tool: 'nodejs-lts', version: '12.16.1', extraArgs: '--allow-downgrade' ] ])
-                }
-                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
-                    installTools([ [provider: 'choco',tool: 'nodejs', version: '12.15.0', extraArgs: '--force --allow-downgrade' ] ])
-                }
-                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE', message: 'installTools failed') {
-                    installTools([ [provider: 'choco',tool: 'nodejs.install', version: '12.14.0', extraArgs: '--force --allow-downgrade' ] ])
-                }
+                installTools([ [tool: 'nodejs', version: '13' ] ])
               }
             }
           }
