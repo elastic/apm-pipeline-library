@@ -27,6 +27,7 @@ set -x
 ## Run test-infra and trap error to notify when required
 { py.test -v \
     test-infra/test_installed_tools.py \
+    test-infra/test_installed_tools_docker.py \
     test-infra/test_installed_tools_extra.py \
     test-infra/test_packer.py \
     --junit-xml=target/junit-test-infra.xml; \
