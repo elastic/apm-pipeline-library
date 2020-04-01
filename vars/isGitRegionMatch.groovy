@@ -46,7 +46,7 @@ def call(Map params = [:]) {
   def gitDiffFile = 'git-diff.txt'
   def match = false
   def previousCommit = from
-  if (!from?.trim()) {
+  if (!previousCommit?.trim()) {
     previousCommit = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT
   }
   if (previousCommit && to) {
