@@ -63,7 +63,7 @@ def parallelSteps(prefix, num){
   def parallelSteps = [:]
   for (i = 0; i < num; i++) {
     parallelSteps["${prefix}-step-${i}"] = {
-      node('linux && immutable'){
+      node('startup-script-test'){
         withEnv([
           "HOME=${WORKSPACE}",
 //          "GIT_SSH_COMMAND=ssh -vvv -o StrictHostKeyChecking=no  -F ${WORKSPACE}/.ssh/config"
