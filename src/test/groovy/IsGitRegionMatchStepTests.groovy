@@ -245,6 +245,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: [ '^foo/.*/file.txt' ], from: 'something')
     printCallStack()
     assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('sh', 'something...bar'))
     assertJobStatusSuccess()
   }
 }
