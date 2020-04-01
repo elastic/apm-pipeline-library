@@ -44,7 +44,7 @@ pipeline {
   }
   stages {
     stage('Test') {
-      agent { label 'linux && immutable' }
+      agent { label 'startup-script-test' }
       options { skipDefaultCheckout() }
       steps {
         parallelSteps("test-1", 1)
