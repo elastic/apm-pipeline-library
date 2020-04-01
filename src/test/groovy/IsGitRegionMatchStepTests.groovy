@@ -234,4 +234,17 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testWithFrom() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = ''' foo/bar/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '^foo/.*/file.txt' ], from: 'something')
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
 }
