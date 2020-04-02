@@ -721,10 +721,20 @@ evaluates the change list with the pattern list:
 
   // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
   def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true)
+
+  // All the entries in the changeset should match with ^_beats for the given from and to commits
+  def match = isGitRegionMatch(patterns: ["^_beats"], from: '1', to: 'zzzzz' )
+
+  // Support Simple pipeline with the from and to arguments
+  isGitRegionMatch(from: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}", to: "${env.GIT_COMMIT}", patterns: "^_beats"])
 ```
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).

@@ -36,6 +36,8 @@ def call(Map params = [:]) {
   }
   def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
   def shouldMatchAll = params.get('shouldMatchAll', false)
+  def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
+  def to = params.get('to', env.GIT_BASE_COMMIT)
 
   if (patterns.isEmpty()) {
     error('isGitRegionMatch: Missing patterns with values.')
@@ -43,9 +45,8 @@ def call(Map params = [:]) {
 
   def gitDiffFile = 'git-diff.txt'
   def match = false
-  def previousCommit = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT
-  if (previousCommit && env.GIT_BASE_COMMIT) {
-    def changes = sh(script: "git diff --name-only ${previousCommit}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
+  if (from?.trim() && to?.trim()) {
+    def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
     if (shouldMatchAll) {
       match = isFullPatternMatch(gitDiffFile, patterns)
     } else {
@@ -53,7 +54,7 @@ def call(Map params = [:]) {
     }
     log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
   } else {
-    echo 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'
+    echo 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.'
   }
   return match
 }
