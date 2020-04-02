@@ -8,7 +8,7 @@ build:  ## Build the jenkins image
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
-			build jenkins
+			build --no-cache jenkins
 
 .PHONY: clean
 clean:  ## Reset the environment; stop Jenkins
