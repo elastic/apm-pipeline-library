@@ -14,6 +14,7 @@ build:  ## Build the jenkins image
 clean:  ## Reset the environment; stop Jenkins
 clean:
 	@env \
+		VAULT_TOKEN=${VAULT_TOKEN} \
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
@@ -79,6 +80,7 @@ status:  ## Display the current status of Jenkins-related processes
 .PHONY: stop
 stop:  ## Stop the local Jenkins master and related processes
 	@env \
+		VAULT_TOKEN=${VAULT_TOKEN} \
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
