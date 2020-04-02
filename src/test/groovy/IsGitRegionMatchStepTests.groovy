@@ -248,4 +248,40 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'something...bar'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testWithFromAndTo() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = ''' foo/bar/file.txt
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '^foo/.*/file.txt' ], from: 'something', to: 'else')
+    printCallStack()
+    assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('sh', 'something...else'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testFromAndToWithEmptyValues() throws Exception {
+    def script = loadScript(scriptName)
+    def result = false
+    result = script.call(patterns: [ '^foo/.*/file.txt' ], from: '', to: '')
+    printCallStack()
+    assertFalse(result)
+    assertTrue(assertMethodCallContainsPattern('echo', 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testToWithEmptyValue() throws Exception {
+    def script = loadScript(scriptName)
+    def result = false
+    result = script.call(patterns: [ '^foo/.*/file.txt' ], to: '')
+    printCallStack()
+    assertFalse(result)
+    assertTrue(assertMethodCallContainsPattern('echo', 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertJobStatusSuccess()
+  }
 }

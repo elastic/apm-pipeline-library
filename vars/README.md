@@ -731,8 +731,10 @@ evaluates the change list with the pattern list:
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
-* from: to override the diff from sha. Optional.
-* to: to override the commit to. Optional. Default: GIT_BASE_COMMIT
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
