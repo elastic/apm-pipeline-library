@@ -2,7 +2,7 @@
 - job:
     name: apm-shared/apm-chatops
     display-name: ChatOps
-    description: This ChatOps job process all messages on PRs and make actions based on the message
+    description: This ChatOps job process all messages on PRs and make actions based on the message.
     view: APM-CI
     project-type: pipeline
     parameters:
