@@ -1139,6 +1139,18 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 
+## setupAPMGitEmail
+Configure the git email for the current workspace or globally.
+
+```
+setupAPMGitEmail()
+
+// globally
+setupAPMGitEmail(global: true)
+```
+
+* *global*: to configure the user and email account globally. Optional.
+
 ## tar
 Compress a folder into a tar file.
 
