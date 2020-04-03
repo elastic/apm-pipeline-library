@@ -48,11 +48,14 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         deleteDir()
+        checkout scm
+        /*
         gitCheckout(basedir: "${BASE_DIR}", branch: "${params.branch_specifier}",
           repo: "git@github.com:elastic/${env.REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}",
           githubNotifyFirstTimeContributor: false,
           reference: "/var/lib/jenkins/${env.REPO}.git")
+        */
         matcher()
       }
     }
