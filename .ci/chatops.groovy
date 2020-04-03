@@ -22,7 +22,9 @@ pipeline {
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
+    JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL = 'INFO'
+    BRANCH_NAME = "${params.branch_specifier}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -36,7 +38,7 @@ pipeline {
     issueCommentTrigger('(?i).*(?:/run\\W+)?.*')
   }
   parameters {
-    booleanParam(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
+    string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
   }
   stages {
     /**
@@ -46,7 +48,11 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         deleteDir()
-        gitCheckout(basedir: "${BASE_DIR}")
+        gitCheckout(basedir: "${BASE_DIR}", branch: "${params.branch_specifier}",
+          repo: "git@github.com:elastic/${env.REPO}.git",
+          credentialsId: "${JOB_GIT_CREDENTIALS}",
+          githubNotifyFirstTimeContributor: false,
+          reference: "/var/lib/jenkins/${env.REPO}.git")
         matcher()
       }
     }
