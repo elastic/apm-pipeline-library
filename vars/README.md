@@ -503,8 +503,10 @@ githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
 
 [GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
 
+
 Returns a data structure representing the release, similar to the following:
 
+```
 {
   "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
   "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
@@ -546,6 +548,7 @@ Returns a data structure representing the release, similar to the following:
 
   ]
 }
+```
 
 ## githubReleasePublish
 Takes a GitHub release that is written as a draft and makes it public.
@@ -669,6 +672,7 @@ def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: [
 To return the response code instead of the body:
 ```
 def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
+```
 
 ## installTools
 This step will install the list of tools
