@@ -19,8 +19,8 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class SetupGitEmailStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setupGitEmail.groovy'
+class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/setupAPMGitEmail.groovy'
 
   @Override
   @Before
@@ -54,7 +54,7 @@ class SetupGitEmailStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'setupGitEmail: windows is not supported yet.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'setupAPMGitEmail: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 }

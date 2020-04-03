@@ -20,7 +20,7 @@
 */
 def call(Map params = [:]) {
   if(!isUnix()){
-    error('setupGitEmail: windows is not supported yet.')
+    error('setupAPMGitEmail: windows is not supported yet.')
   }
   def flag = params.containsKey('global') ? (params.global ? '--global' : '') : ''
   sh(label: 'Git config', script: """
