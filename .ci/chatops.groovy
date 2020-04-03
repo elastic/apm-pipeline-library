@@ -56,7 +56,7 @@ pipeline {
 def matcher(){
   switch ("${env.GITHUB_COMMENT}") {
     case ~/\/run/:
-        run()
+        runCmd()
         break
     case ~/\/run-lint/:
         lint()
@@ -75,7 +75,7 @@ def matcher(){
   }
 }
 
-def run(){
+def runCmd(){
   echo "${env.GITHUB_COMMENT}"
 }
 
