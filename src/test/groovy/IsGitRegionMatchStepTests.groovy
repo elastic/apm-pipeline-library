@@ -284,4 +284,19 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('echo', 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testMultiplePatternMatchWithArrayString() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = ''' foo
+                      | bar
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    def String[] patterns = [ '^foo$', '^bar$' ]
+    result = script.call(patterns: patterns)
+    printCallStack()
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
 }
