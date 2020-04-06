@@ -34,7 +34,7 @@ def call(Map params = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def patterns = params.containsKey('patterns') ? params.patterns : error('isGitRegionMatch: Missing patterns argument.')
+  def patterns = params.containsKey('patterns') ? params.patterns.toList() : error('isGitRegionMatch: Missing patterns argument.')
   def shouldMatchAll = params.get('shouldMatchAll', false)
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
   def to = params.get('to', env.GIT_BASE_COMMIT)
