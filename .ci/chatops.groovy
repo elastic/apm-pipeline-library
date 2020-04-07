@@ -35,7 +35,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger('(?i).*(?:/run\\W+)?.*')
+    issueCommentTrigger('(?i)^\\/run(-\\w+)?$')
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
