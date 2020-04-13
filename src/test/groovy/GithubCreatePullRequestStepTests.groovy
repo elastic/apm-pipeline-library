@@ -27,6 +27,8 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.ORG_NAME = 'org'
+    env.REPO_NAME = 'repo'
   }
 
   @Test
@@ -61,14 +63,15 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --message 'foo'"))
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken, passwordVariable=GITHUB_TOKEN, usernameVariable=GITHUB_USER'))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo'"))
     assertFalse(assertMethodCallContainsPattern('sh', '--assign'))
     assertFalse(assertMethodCallContainsPattern('sh', '--reviewer'))
     assertFalse(assertMethodCallContainsPattern('sh', '--labels'))
     assertFalse(assertMethodCallContainsPattern('sh', '--draft'))
     assertFalse(assertMethodCallContainsPattern('sh', '--base'))
     assertFalse(assertMethodCallContainsPattern('sh', '--milestone'))
+    assertTrue(assertMethodCallContainsPattern('sh', "git config remote.origin.url https://github.com/org/repo.git"))
     assertJobStatusSuccess()
   }
 
@@ -77,8 +80,8 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --message 'foo'"))
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, passwordVariable=GITHUB_TOKEN, usernameVariable=GITHUB_USER'))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo'"))
     assertJobStatusSuccess()
   }
 
@@ -87,7 +90,7 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', reviewer: 'r2p2', milestone: 'm1', labels: 'l1', base: 'master', draft: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --message 'foo' --message 'bar' --draft --assign v1v --reviewer r2p2 --labels l1 --milestone m1 --base master"))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo' --message 'bar' --draft --assign v1v --reviewer r2p2 --labels l1 --milestone m1 --base master"))
     assertJobStatusSuccess()
   }
 
@@ -96,10 +99,31 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', reviewer: 'u3,u4', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --message 'foo foo' --message 'bar \n something else'"))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo foo' --message 'bar \n something else'"))
     assertTrue(assertMethodCallContainsPattern('sh', '--assign u1,u2'))
     assertTrue(assertMethodCallContainsPattern('sh', '--reviewer u3,u4'))
     assertTrue(assertMethodCallContainsPattern('sh', '--labels l1,l2'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_sh_error() throws Exception {
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      if(s.script.contains('hub pull-request')) {
+        throw new Exception('Force an error')
+      } else {
+        'OK'
+      }
+    })
+    def script = loadScript(scriptName)
+    try {
+      script.call(title: 'foo')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Force an error'))
+    assertTrue(assertMethodCallContainsPattern('sh', "git config remote.origin.url https://github.com/org/repo.git"))
+    assertJobStatusFailure()
   }
 }
