@@ -1,0 +1,13 @@
+Create an Issue in GitHub as long as the command runs in the git repo.
+
+```
+githubCreateIssue(title: 'Foo')
+githubCreateIssue(title: 'Foo', description: 'Something else to be added', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list of GitHub handles to assign to the created issue. Optional.
+* milestone: Add this issue to a GitHub milestone. Optional
+* labels: Add a comma-separated list of labels to this issue. Optional.
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
