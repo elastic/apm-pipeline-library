@@ -26,11 +26,11 @@ def call(Map params = [:]) {
   if(!isUnix()) {
     error 'githubCreateIssue: windows is not supported yet.'
   }
-  def title = params.containsKey('title') ? "-m ${params.title}" : error('githubCreateIssue: title argument is required.')
-  def description = params.containsKey('description') ? """-m '${params.description}'""" : ''
-  def assign = params.containsKey('assign') ? "-a ${params.assign}" : ''
-  def milestone = params.containsKey('milestone') ? "-M ${params.milestone}" : ''
-  def labels = params.containsKey('labels') ? "-l ${params.labels}" : ''
+  def title = params.containsKey('title') ? """--message '${params.title}'""" : error('githubCreateIssue: title argument is required.')
+  def description = params.containsKey('description') ? """--message '${params.description}'""" : ''
+  def assign = params.containsKey('assign') ? "--assign ${params.assign}" : ''
+  def milestone = params.containsKey('milestone') ? "--milestone ${params.milestone}" : ''
+  def labels = params.containsKey('labels') ? "--labels ${params.labels}" : ''
   def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
     sh(label: 'Create GitHub issue', script: "hub issue create ${title} ${description} ${assign} ${labels} ${milestone}")
