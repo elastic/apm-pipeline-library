@@ -106,6 +106,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/githubCreateIssue.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnv.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnvSCM.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
