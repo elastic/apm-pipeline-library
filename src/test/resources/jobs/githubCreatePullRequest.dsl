@@ -11,8 +11,10 @@ DSL = '''pipeline {
         dir('sub-folder') {
           setupAPMGitEmail(global: true)
           sh '''
+            git checkout -f master
             touch githubCreatePullRequest.txt
-            git commit -a -m 'chore: for testing purposes'
+            git add githubCreatePullRequest.txt
+            git commit -m 'chore: for testing purposes'
           '''
           githubCreatePullRequest(title: 'Foo', description: 'Bar', labels: 'invalid', milestone: 'chore', assigne: 'v1v', draft: true)
         }
