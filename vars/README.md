@@ -422,6 +422,40 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 def ref = githubBranchRef()
 ```
 
+## githubCreateIssue
+Create an Issue in GitHub as long as the command runs in the git repo.
+
+```
+githubCreateIssue(title: 'Foo')
+githubCreateIssue(title: 'Foo', description: 'Something else to be added', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list of GitHub handles to assign to the created issue. Optional.
+* milestone: Add this issue to a GitHub milestone. Optional
+* labels: Add a comma-separated list of labels to this issue. Optional.
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+## githubCreatePullRequest
+Create a Pull Request in GitHub as long as the command runs in the git repo and
+there are commited changes.
+
+```
+githubCreatePullRequest(title: 'Foo')
+githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list of GitHub handles to assign to the created issue. Optional.
+* reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+* milestone: Add this issue to a GitHub milestone. Optional
+* labels: Add a comma-separated list of labels to this issue. Optional.
+* draft: Create the pull request as a draft. Optional. Default: false
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
 
