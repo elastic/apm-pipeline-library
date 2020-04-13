@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GithubCreateIssueStepTests extends ApmBasePipelineTest {
@@ -62,6 +63,9 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo'"))
+    assertFalse(assertMethodCallContainsPattern('sh', '--assign'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--labels'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--milestone'))
     assertJobStatusSuccess()
   }
 
@@ -89,7 +93,9 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '''hub issue create --message 'foo foo' --message 'bar \n something else' --assign u1,u2 --labels l1,l2'''))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo foo' --message 'bar \n something else'"))
+    assertTrue(assertMethodCallContainsPattern('sh', '--assign u1,u2'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--labels l1,l2'))
     assertJobStatusSuccess()
   }
 }
