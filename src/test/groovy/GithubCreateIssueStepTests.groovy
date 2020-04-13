@@ -61,7 +61,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'hub create -m foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'hub issue create -m foo'))
     assertJobStatusSuccess()
   }
 
@@ -71,7 +71,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'hub create -m foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'hub issue create -m foo'))
     assertJobStatusSuccess()
   }
 
@@ -80,7 +80,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', milestone: 'm1', labels: 'automation')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "hub create -m foo -m 'bar' -a v1v -l automation -M m1"))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create -m foo -m 'bar' -a v1v -l automation -M m1"))
     assertJobStatusSuccess()
   }
 
@@ -89,7 +89,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar with some chars \n something else', assign: 'u1,u2,u3', labels: 'l1,l2,l3')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '''hub create -m foo -m 'bar with some chars \n something else' -a u1,u2,u3 -l l1,l2,l3'''))
+    assertTrue(assertMethodCallContainsPattern('sh', '''hub issue create -m foo -m 'bar with some chars \n something else' -a u1,u2,u3 -l l1,l2,l3'''))
     assertJobStatusSuccess()
   }
 }

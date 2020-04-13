@@ -33,6 +33,6 @@ def call(Map params = [:]) {
   def labels = params.containsKey('labels') ? "-l ${params.labels}" : ''
   def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-    sh(label: 'Create GitHub issue', script: "hub create ${title} ${description} ${assign} ${labels} ${milestone}")
+    sh(label: 'Create GitHub issue', script: "hub issue create ${title} ${description} ${assign} ${labels} ${milestone}")
   }
 }
