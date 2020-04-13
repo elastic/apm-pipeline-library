@@ -71,7 +71,8 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('sh', '--draft'))
     assertFalse(assertMethodCallContainsPattern('sh', '--base'))
     assertFalse(assertMethodCallContainsPattern('sh', '--milestone'))
-    assertTrue(assertMethodCallContainsPattern('sh', "git config remote.origin.url https://github.com/org/repo.git"))
+    assertTrue(assertMethodCallContainsPattern('sh', "git config remote.origin.url"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'sed "s#https://#https:'))
     assertJobStatusSuccess()
   }
 
@@ -123,7 +124,8 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'Force an error'))
-    assertTrue(assertMethodCallContainsPattern('sh', "git config remote.origin.url https://github.com/org/repo.git"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'sed "s#.*@#https://#g"'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'git config remote.origin.url'))
     assertJobStatusFailure()
   }
 }

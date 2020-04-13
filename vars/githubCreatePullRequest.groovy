@@ -40,13 +40,21 @@ def call(Map params = [:]) {
   withCredentials([
     usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')
   ]) {
-    sh(label: 'Config remote', script: "git config remote.origin.url https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${env.ORG_NAME}/${env.REPO_NAME}.git")
+    sh(label: 'Config remote with credentials', script: """
+      ## To enable push with https+github-credentials
+      remoteUrl=\$(git config remote.origin.url | sed "s#https://#https://${GITHUB_USER}:${GITHUB_TOKEN}@#g")
+      git config remote.origin.url \${remoteUrl}
+    """)
     try {
       sh(label: 'Create GitHub issue', script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base}")
     } catch(e) {
       error "githubCreatePullRequest: error ${e}"
     } finally {
-      sh(label: 'Config remote', script: "git config remote.origin.url https://github.com/${env.ORG_NAME}/${env.REPO_NAME}.git")
+      sh(label: 'Revert remote url', script: """
+        ## To configure remote url as used to be
+        remoteUrl=\$(git config remote.origin.url | sed "s#.*@#https://#g")
+        git config remote.origin.url \${remoteUrl}
+      """)
     }
   }
 }
