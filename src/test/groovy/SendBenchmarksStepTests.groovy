@@ -33,6 +33,10 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
+
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return "{'errors': false}"
+    })
   }
 
   @Test
@@ -228,6 +232,22 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: windows is not supported yet.'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_response_with_errors() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return "{'errors': 'true'}"
+    })
+    try {
+      script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true)
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: there was a response with an error. Review response'))
     assertJobStatusFailure()
   }
 }
