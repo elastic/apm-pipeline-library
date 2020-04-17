@@ -422,6 +422,44 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 def ref = githubBranchRef()
 ```
 
+## githubCreateIssue
+Create an Issue in GitHub as long as the command runs in the git repo.
+
+```
+githubCreateIssue(title: 'Foo')
+githubCreateIssue(title: 'Foo', description: 'Something else to be added', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) to assign to the created issue. Optional.
+* milestone: The milestone name to add to the created issue. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: Windows is not supported yet.
+
+## githubCreatePullRequest
+Create a Pull Request in GitHub as long as the command runs in the git repo and
+there are commited changes.
+
+```
+githubCreatePullRequest(title: 'Foo')
+githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+* reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+* milestone: The milestone name to add to this pull request. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
+* draft: Create the pull request as a draft. Optional. Default: false
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
+_NOTE_: Windows is not supported yet.
+
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
 
@@ -503,8 +541,10 @@ githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
 
 [GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
 
+
 Returns a data structure representing the release, similar to the following:
 
+```
 {
   "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
   "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
@@ -546,6 +586,7 @@ Returns a data structure representing the release, similar to the following:
 
   ]
 }
+```
 
 ## githubReleasePublish
 Takes a GitHub release that is written as a draft and makes it public.
@@ -669,6 +710,7 @@ def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: [
 To return the response code instead of the body:
 ```
 def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
+```
 
 ## installTools
 This step will install the list of tools
@@ -721,10 +763,20 @@ evaluates the change list with the pattern list:
 
   // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
   def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true)
+
+  // All the entries in the changeset should match with ^_beats for the given from and to commits
+  def match = isGitRegionMatch(patterns: ["^_beats"], from: '1', to: 'zzzzz' )
+
+  // Support Simple pipeline with the from and to arguments
+  isGitRegionMatch(from: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}", to: "${env.GIT_COMMIT}", patterns: "^_beats"])
 ```
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
@@ -1124,6 +1176,18 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 * *state*: Status to report to Github.
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
+
+## setupAPMGitEmail
+Configure the git email for the current workspace or globally.
+
+```
+setupAPMGitEmail()
+
+// globally
+setupAPMGitEmail(global: true)
+```
+
+* *global*: to configure the user and email account globally. Optional.
 
 ## tar
 Compress a folder into a tar file.

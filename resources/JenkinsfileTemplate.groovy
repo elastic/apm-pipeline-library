@@ -269,7 +269,7 @@ pipeline {
                 warnError('installTools failed')
               }
               steps {
-                installTools([ [tool: 'nodejs', version: '13' ] ])
+                installTools([ [tool: 'nodejs', version: '12' ] ])
               }
             }
           }

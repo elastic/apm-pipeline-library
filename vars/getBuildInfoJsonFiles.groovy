@@ -33,7 +33,7 @@ def call(jobURL, buildNumber){
   bulkDownload(["${restURLJob}": 'job-info.json',
                 "${restURLBuild}": 'build-info.json',
                 "${restURLBuild}/blueTestSummary": 'tests-summary.json',
-                "${restURLBuild}/tests": 'tests-info.json',
+                "${restURLBuild}/tests?limit=100000000": 'tests-info.json',
                 "${restURLBuild}/changeSet": 'changeSet-info.json',
                 "${restURLBuild}/artifacts": 'artifacts-info.json',
                 "${restURLBuild}/steps": 'steps-info.json',
