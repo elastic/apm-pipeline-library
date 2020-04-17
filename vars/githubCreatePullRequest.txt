@@ -1,0 +1,19 @@
+Create a Pull Request in GitHub as long as the command runs in the git repo and
+there are commited changes.
+
+```
+githubCreatePullRequest(title: 'Foo')
+githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+* reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+* milestone: The milestone name to add to this pull request. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
+* draft: Create the pull request as a draft. Optional. Default: false
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
+_NOTE_: Windows is not supported yet.
