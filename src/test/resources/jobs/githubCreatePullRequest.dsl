@@ -1,5 +1,6 @@
 NAME = 'it/githubCreatePullRequest'
-DSL = """pipeline {
+DSL = '''
+pipeline {
   agent any
   stages {
     stage('checkout') {
@@ -10,18 +11,14 @@ DSL = """pipeline {
                     basedir: 'sub-folder')
         dir('sub-folder') {
           setupAPMGitEmail(global: true)
-          sh '''
-            git checkout -b githubCreatePullRequest-$(date "+%Y%m%d%H%M%S")
-            touch githubCreatePullRequest.txt
-            git add githubCreatePullRequest.txt
-            git commit -m 'chore: for testing purposes'
-          '''
+          sh(script: git checkout -b githubCreatePullRequest-$(date "+%Y%m%d%H%M%S") && touch githubCreatePullRequest.txt && git add githubCreatePullRequest.txt && git commit -m 'chore: for testing purposes')
           githubCreatePullRequest(title: 'Foo', description: 'Bar', labels: 'invalid', milestone: 'chore', assigne: 'v1v', draft: true)
         }
       }
     }
   }
-}"""
+}
+'''
 
 pipelineJob(NAME) {
   definition {
