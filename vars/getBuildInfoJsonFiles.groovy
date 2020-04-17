@@ -31,25 +31,25 @@ def call(jobURL, buildNumber){
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   bulkDownload(["${restURLJob}": 'job-info.json',
-                "${restURLBuild}": 'build-info.json',
-                "${restURLBuild}/blueTestSummary": 'tests-summary.json',
+                "${restURLBuild}/": 'build-info.json',
+                "${restURLBuild}/blueTestSummary/": 'tests-summary.json',
                 "${restURLBuild}/tests?limit=100000000": 'tests-info.json',
-                "${restURLBuild}/changeSet": 'changeSet-info.json',
-                "${restURLBuild}/artifacts": 'artifacts-info.json',
-                "${restURLBuild}/steps": 'steps-info.json',
-                "${restURLBuild}/log": 'pipeline-log.txt'])
+                "${restURLBuild}/changeSet/": 'changeSet-info.json',
+                "${restURLBuild}/artifacts/": 'artifacts-info.json',
+                "${restURLBuild}/steps/": 'steps-info.json',
+                "${restURLBuild}/log/": 'pipeline-log.txt'])
 
   sh(label: 'Console log summary', script: 'tail -n 100 pipeline-log.txt > pipeline-log-summary.txt')
 
   def json = [:]
-  json.job = readJSON(file: "job-info.json")
-  json.build = readJSON(file: "build-info.json")
-  json.test_summary = readJSON(file: "tests-summary.json")
-  json.test = readJSON(file: "tests-info.json")
-  json.changeSet = readJSON(file: "changeSet-info.json")
-  json.artifacts = readJSON(file: "artifacts-info.json")
-  json.steps = readJSON(file: "steps-info.json")
-  json.log = readFile(file: "pipeline-log.txt")
+  json.job = readJSONOrDefault(file: "job-info.json")
+  json.build = readJSONOrDefault(file: "build-info.json")
+  json.test_summary = readJSONOrDefault(file: "tests-summary.json")
+  json.test = readJSONOrDefault(file: "tests-info.json")
+  json.changeSet = readJSONOrDefault(file: "changeSet-info.json")
+  json.artifacts = readJSONOrDefault(file: "artifacts-info.json")
+  json.steps = readJSONOrDefault(file: "steps-info.json")
+  json.log = readFileOrDefault(file: "pipeline-log.txt")
 
   /** The build is not finished so we have to fix some values */
   json.build.result = currentBuild.currentResult
@@ -66,10 +66,26 @@ def bulkDownload(map) {
   }
   def command = ['#!/usr/bin/env bash', 'set -x', 'source /usr/local/bin/bash_standard_lib.sh', 'status=0']
   map.each { url, file ->
-    command << "(retry 3 curl -L -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}) || status=1"
+    command << "(retry 3 curl -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'
 
   sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
+}
+
+def readJSONOrDefault(map) {
+  try {
+    return readJSON(file: map.file)
+  } catch(e) {
+    return []
+  }
+}
+
+def readFileOrDefault(map) {
+  try {
+    return readFile(file: map.file)
+  } catch(e) {
+    return []
+  }
 }
