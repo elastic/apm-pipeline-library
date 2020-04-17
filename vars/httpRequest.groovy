@@ -62,9 +62,9 @@ def call(Map params = [:]){
       return responseCode
     }
     String body
-    String encoding = con.getContentEncoding();
-    encoding = encoding == null ? "UTF-8" : encoding;
-    if (con.getResponseCode() < 400) {
+    String encoding = con.getContentEncoding()
+    encoding = encoding == null ? "UTF-8" : encoding
+    if (responseCode < 400) {
       body = IOUtils.toString(con.getInputStream(), encoding)
     } else {
       body = "\nMessage: " + con.getResponseMessage()

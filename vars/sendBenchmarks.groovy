@@ -86,11 +86,17 @@ def call(Map params = [:]) {
             def datafile = readFile(file: "${BENCH_FILE}")
             def messageBase64UrlPad = base64encode(text: "${CLOUD_USERNAME}:${CLOUD_PASSWORD}", encoding: "UTF-8")
 
-            httpRequest(url: "${CLOUD_ADDR}/_bulk", method: "POST",
+            def response = httpRequest(url: "${CLOUD_ADDR}/_bulk", method: "POST",
                 headers: [
                     "Content-Type": "application/json",
                     "Authorization": "Basic ${messageBase64UrlPad}"],
                 data: datafile.toString() + "\n")
+            log(level: 'DEBUG', text: "Benchmarks: response ${response}")
+
+            def jsonResponse = toJSON(response)
+            if (jsonResponse.errors) {
+              error "Benchmarks: there was a response with an error. Review response ${response}"
+            }
           }
       }
    }
