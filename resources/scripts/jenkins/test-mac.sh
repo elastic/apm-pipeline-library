@@ -22,6 +22,10 @@ virtualenv venv
 # shellcheck disable=SC1091
 source venv/bin/activate
 pip install testinfra
+
+## Prepare the docker for mac
+docker-machine start default || true
+eval "$(docker-machine env default)"
 set -x
 
 ## Run test-infra and trap error to notify when required
