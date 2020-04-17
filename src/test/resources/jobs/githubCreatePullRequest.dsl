@@ -11,7 +11,7 @@ pipeline {
                     basedir: 'sub-folder')
         dir('sub-folder') {
           setupAPMGitEmail(global: true)
-          sh(script: git checkout -b githubCreatePullRequest-$(date "+%Y%m%d%H%M%S") && touch githubCreatePullRequest.txt && git add githubCreatePullRequest.txt && git commit -m 'chore: for testing purposes')
+          sh(script: 'git checkout -b githubCreatePullRequest-$(date "+%Y%m%d%H%M%S") && touch githubCreatePullRequest.txt && git add githubCreatePullRequest.txt && git commit -m 'chore: for testing purposes')
           githubCreatePullRequest(title: 'Foo', description: 'Bar', labels: 'invalid', milestone: 'chore', assigne: 'v1v', draft: true)
         }
       }
