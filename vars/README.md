@@ -432,10 +432,12 @@ githubCreateIssue(title: 'Foo', description: 'Something else to be added', assig
 
 * title: The issue title. Mandatory
 * description: The issue description. Optional.
-* assign: A comma-separated list of GitHub handles to assign to the created issue. Optional.
-* milestone: Add this issue to a GitHub milestone. Optional
-* labels: Add a comma-separated list of labels to this issue. Optional.
+* assign: A comma-separated list (no spaces around the comma) to assign to the created issue. Optional.
+* milestone: The milestone name to add to the created issue. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: Windows is not supported yet.
 
 ## githubCreatePullRequest
 Create a Pull Request in GitHub as long as the command runs in the git repo and
@@ -448,13 +450,15 @@ githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign:
 
 * title: The issue title. Mandatory
 * description: The issue description. Optional.
-* assign: A comma-separated list of GitHub handles to assign to the created issue. Optional.
+* assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
 * reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
-* milestone: Add this issue to a GitHub milestone. Optional
-* labels: Add a comma-separated list of labels to this issue. Optional.
+* milestone: The milestone name to add to this pull request. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
 * draft: Create the pull request as a draft. Optional. Default: false
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 * base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
+_NOTE_: Windows is not supported yet.
 
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
