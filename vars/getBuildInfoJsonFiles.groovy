@@ -31,13 +31,13 @@ def call(jobURL, buildNumber){
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   bulkDownload(["${restURLJob}": 'job-info.json',
-                "${restURLBuild}": 'build-info.json',
-                "${restURLBuild}/blueTestSummary": 'tests-summary.json',
+                "${restURLBuild}/": 'build-info.json',
+                "${restURLBuild}/blueTestSummary/": 'tests-summary.json',
                 "${restURLBuild}/tests?limit=100000000": 'tests-info.json',
-                "${restURLBuild}/changeSet": 'changeSet-info.json',
-                "${restURLBuild}/artifacts": 'artifacts-info.json',
-                "${restURLBuild}/steps": 'steps-info.json',
-                "${restURLBuild}/log": 'pipeline-log.txt'])
+                "${restURLBuild}/changeSet/": 'changeSet-info.json',
+                "${restURLBuild}/artifacts/": 'artifacts-info.json',
+                "${restURLBuild}/steps/": 'steps-info.json',
+                "${restURLBuild}/log/": 'pipeline-log.txt'])
 
   sh(label: 'Console log summary', script: 'tail -n 100 pipeline-log.txt > pipeline-log-summary.txt')
 
@@ -66,7 +66,7 @@ def bulkDownload(map) {
   }
   def command = ['#!/usr/bin/env bash', 'set -x', 'source /usr/local/bin/bash_standard_lib.sh', 'status=0']
   map.each { url, file ->
-    command << "(retry 3 curl -L -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}) || status=1"
+    command << "(retry 3 curl -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}) || status=1"
     command << """[ -e "${file}" ] || echo "{}" > "${file}" """
   }
   command << 'exit ${status}'
