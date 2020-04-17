@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertEquals
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/getBuildInfoJsonFiles.groovy'
@@ -88,6 +89,34 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', '-o bar foo'))
     assertTrue(assertMethodCallContainsPattern('sh', '-o file url'))
     assertTrue(assertMethodCallContainsPattern('sh', 'bar'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_failed_to_read_json_file() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readJSON', [Map.class], { m ->
+      if (m.file.equals('foo')) {
+        throw new Exception('readJSON: Force failure')
+      }
+    })
+    def ret = script.readJSONOrDefault(file: 'foo')
+    printCallStack()
+    assertEquals(ret, [])
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_failed_to_read_file() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { m ->
+      if (m.file.equals('foo')) {
+        throw new Exception('readFile: Force failure')
+      }
+    })
+    def ret = script.readFileOrDefault(file: 'foo')
+    printCallStack()
+    assertEquals(ret, [])
     assertJobStatusSuccess()
   }
 }
