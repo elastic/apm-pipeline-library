@@ -5,6 +5,11 @@
     description: Send PRs to the subscribed APM Agents if the gherkin files are modified, triggered for the master branch for the elastic/apm project
     project-type: pipeline
     view: APM-CI
+    parameters:
+      - bool:
+          name: DRY_RUN_MODE
+          default: false
+          description: "If true, allows to execute this pipeline in dry run mode, without sending a PR."
     pipeline-scm:
       script-path: .ci/Jenkinsfile
       scm:
