@@ -7,8 +7,8 @@
     view: APM-CI
     parameters:
       - bool:
-          name: Do_Send_PR
-          default: true
+          name: DRY_RUN_MODE
+          default: false
           description: "If false, allows to execute this pipeline in dry run mode, without sending a PR."
     pipeline-scm:
       script-path: .ci/Jenkinsfile
