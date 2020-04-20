@@ -9,7 +9,7 @@
       - bool:
           name: DRY_RUN_MODE
           default: false
-          description: "If false, allows to execute this pipeline in dry run mode, without sending a PR."
+          description: "If true, allows to execute this pipeline in dry run mode, without sending a PR."
     pipeline-scm:
       script-path: .ci/Jenkinsfile
       scm:
