@@ -1,0 +1,9 @@
+Configure the git release context to run the body closure.
+
+```
+withGitRelease() {
+    // block
+}
+```
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
