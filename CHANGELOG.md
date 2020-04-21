@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.1.88 (20/04/2020)
+
+#### 🐛 Bug Fixes
+
+-  revert: limit cause some performance issues [#479](https://github.com/elastic/apm-pipeline-library/pull/479)
+-  fix: limit URL format [#477](https://github.com/elastic/apm-pipeline-library/pull/477)
+
+#### ⚙️ CI
+
+-  jjbb: enable parameters for the simple pipeline [#478](https://github.com/elastic/apm-pipeline-library/pull/478)
+
+---
+
+## v1.1.87 (17/04/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: readXXX should be handled with default if no exist [#476](https://github.com/elastic/apm-pipeline-library/pull/476)
+-  fix: when using limits [#475](https://github.com/elastic/apm-pipeline-library/pull/475)
+
+---
+
 ## v1.1.86 (17/04/2020)
 
 #### 🚀 Enhancements
@@ -592,13 +614,13 @@
 
 #### 🚀 Enhancements
 
+-  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
+-  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
 -  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
 -  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 -  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
--  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
--  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
 
 #### 🐛 Bug Fixes
 
@@ -907,16 +929,16 @@
 
 #### 🚀 Enhancements
 
--  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
--  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 -  enable issueCommentTrigger and expose GITHUB_COMMENT environment [#136](https://github.com/elastic/apm-pipeline-library/pull/136)
 -  enable cobertura and gsc tabs with the traditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
 -  ci: release process [#123](https://github.com/elastic/apm-pipeline-library/pull/123)
+-  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
+-  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 
 #### 🐛 Bug Fixes
 
--  fix net.sf.json.JSONNull.trim() [#138](https://github.com/elastic/apm-pipeline-library/pull/138)
 -  fix: log rotate settings [#131](https://github.com/elastic/apm-pipeline-library/pull/131)
+-  fix net.sf.json.JSONNull.trim() [#138](https://github.com/elastic/apm-pipeline-library/pull/138)
 
 #### 🙈 No user affected
 
@@ -928,10 +950,10 @@
 
 #### 🚀 Enhancements
 
--  feat: add description to the notification email [#130](https://github.com/elastic/apm-pipeline-library/pull/130)
 -  feat: git commands steps [#132](https://github.com/elastic/apm-pipeline-library/pull/132)
 -  exclude target folder from the pre-commit analysis [#133](https://github.com/elastic/apm-pipeline-library/pull/133)
 -  feat: build, test, and push integration testing Docker images [#129](https://github.com/elastic/apm-pipeline-library/pull/129)
+-  feat: add description to the notification email [#130](https://github.com/elastic/apm-pipeline-library/pull/130)
 
 #### 🐛 Bug Fixes
 
@@ -1353,15 +1375,15 @@
 
 #### 🐛 Bug Fixes
 
+-  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 -  Github REST API call error management [#19](https://github.com/elastic/apm-pipeline-library/pull/19)
 -  Trim strings [#10](https://github.com/elastic/apm-pipeline-library/pull/10)
--  wrong user reference [#20](https://github.com/elastic/apm-pipeline-library/pull/20)
 
 #### 📚 Documentation
 
+-  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 -  Update template [#11](https://github.com/elastic/apm-pipeline-library/pull/11)
 -  Jenkinsfile template [#9](https://github.com/elastic/apm-pipeline-library/pull/9)
--  link on main page to the steps documentation [#18](https://github.com/elastic/apm-pipeline-library/pull/18)
 
 #### 🙈 No user affected
 
@@ -1369,10 +1391,10 @@
 
 #### ⚙️ CI
 
+-  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
+-  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
+-  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
--  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
--  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
--  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
