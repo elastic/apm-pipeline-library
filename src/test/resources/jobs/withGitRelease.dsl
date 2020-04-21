@@ -20,12 +20,12 @@ pipeline {
       steps {
         dir('sub-folder') {
           // Ensure the git config is configured as expected beforehand
-          sh "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
+          sh label: 'Pre release validation', script: "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
           withGitRelease() {
-            sh "git config -l | grep '^remote.*.url'"
+            sh label: 'Release validation', script: "git config -l | grep '^remote.*.url' | grep --invert-match 'https://github.com/elastic/apm-pipeline-library.git'"
           }
           // Ensure the git config is reverted as used to be
-          sh "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
+          sh label: 'Post release validation', script: "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
         }
       }
     }
