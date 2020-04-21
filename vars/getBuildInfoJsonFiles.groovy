@@ -38,5 +38,8 @@ def call(jobURL, buildNumber){
     def resourceContent = libraryResource('scripts/generate-build-data.sh')
     writeFile file: scriptFile, text: resourceContent
   }
-  sh(label: 'generate-build-data', returnStatus: true, script: "generate-build-data.sh ${restURLJob} ${restURLBuild}")
+  sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
+    chmod 755 generate-build-data.sh
+    ./generate-build-data.sh ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
+    """)
 }

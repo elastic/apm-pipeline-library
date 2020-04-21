@@ -15,10 +15,12 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#set -x
+set -x
 
 BO_JOB_URL=${1:?'Missing the Blue Ocean Job URL'}
 BO_BUILD_URL=${2:?'Missing the Blue Ocean Build URL'}
+RESULT=${3:?'Missing the build result'}
+DURATION=${4:?'Missing the build duration'}
 
 ## To report the status afterwards
 STATUS=0
@@ -31,11 +33,14 @@ function fetch() {
     file=$1
     url=$2
     
+    CURL_FLAGS="--max-time 60 --connect-timeout 30"
     ## Let's support retry in the CI.
     if [ -n "${JENKINS_URL}" ] ; then
-        (retry 3 "${CURL_COMMAND}" -o "${file}" "${url}") || STATUS=1
+        # shellcheck disable=SC2086
+        (retry 3 curl ${CURL_FLAGS} -o "${file}" "${url}") || STATUS=1
     else
-        ${CURL_COMMAND} -o "${file}" "${url}" || STATUS=1
+        # shellcheck disable=SC2086
+        curl ${CURL_FLAGS} -o "${file}" "${url}" || STATUS=1
     fi
 }
 
@@ -45,6 +50,12 @@ function fetchAndPrepareBuildInfoObject() {
         rm "${output}"
     fi
     fetchAndPrepare "$1" "$2" "$3" "$4" "${output}"
+
+    tmp=$(mktemp)
+    ## TODO: works in macosx but no in linux!
+    jq --arg a "${RESULT}" '.build.result = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
+    jq --arg a "${DURATION}" '.build.durationInMillis = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
+    jq '.build.state = "FINISHED"' "${output}" > "$tmp" && mv "$tmp" "${output}"
 }
 
 function fetchAndPrepareBuildReport() {
@@ -71,8 +82,6 @@ function fetchAndPrepare() {
     fi
 }
 
-CURL_COMMAND="curl -sfS --max-time 60 --connect-timeout 30"
-
 if [ -e '/usr/local/bin/bash_standard_lib.sh' ] ; then
     # shellcheck disable=SC1091
     source /usr/local/bin/bash_standard_lib.sh
@@ -89,7 +98,7 @@ fi
 ### Prepare build info file
 fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "hash"
 ### Remove last ocurrence for the items separator
-sed -i .bck 's/\(.*\),/\1 /' "${BUILD_INFO_OBJECT}"
+sed -i.bck 's/\(.*\),/\1 /' "${BUILD_INFO_OBJECT}"
 echo '{' > "${BUILD_INFO}"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_INFO}"
 echo '}' >> "${BUILD_INFO}"

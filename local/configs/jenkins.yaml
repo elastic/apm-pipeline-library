@@ -98,11 +98,14 @@ unclassified:
     globalConfigName: username
     globalConfigEmail: username@example.com
 jobs:
+  - file: "/var/pipeline-library/src/test/resources/folders/getBuildInfoJsonFiles.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/timeout.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogin.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/success.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
