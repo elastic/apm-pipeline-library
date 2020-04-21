@@ -34,6 +34,9 @@ def call(Map params = [:], Closure body) {
   if(!env.GIT_BASE_COMMIT?.trim()){
     error('withGitRelease: GIT_BASE_COMMIT has not been set, either the `gitCheckout` or `githubEnv` steps have not been executed')
   }
+  if(!env.BRANCH_NAME?.trim()){
+    error('withGitRelease: BRANCH_NAME has not been set, is this a Multibranch Pipeline?')
+  }
 
   withCredentials([usernamePassword(credentialsId: "${credentialsId}",
                                     passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {

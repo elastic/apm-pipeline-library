@@ -100,4 +100,21 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'withGitRelease: GIT_BASE_COMMIT has not been set'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_missing_branch_name() throws Exception {
+    def script = loadScript(scriptName)
+    // When running simple pipelines but no Multibranch Pipelines
+    env.remove('BRANCH_NAME')
+    try {
+      script.call(){
+        //NOOP
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'withGitRelease: BRANCH_NAME has not been set'))
+    assertJobStatusFailure()
+  }
 }
