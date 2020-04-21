@@ -86,22 +86,6 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_missing_github_user() throws Exception {
-    def script = loadScript(scriptName)
-    env.remove('GITHUB_USER')
-    try {
-      script.call(){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGitRelease: GITHUB_USER / GITHUB_TOKEN have not been set'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_missing_base_commit() throws Exception {
     def script = loadScript(scriptName)
     env.remove('GIT_BASE_COMMIT')

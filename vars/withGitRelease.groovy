@@ -25,6 +25,7 @@
   NOTE: This particular implementation requires to checkout with the step gitCheckout
 */
 def call(Map params = [:], Closure body) {
+  def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
   if(!isUnix()){
     error('withGitRelease: windows is not supported yet.')
   }
@@ -33,13 +34,9 @@ def call(Map params = [:], Closure body) {
   if(!env.GIT_BASE_COMMIT?.trim()){
     error('withGitRelease: GIT_BASE_COMMIT has not been set, either the `gitCheckout` or `githubEnv` steps have not been executed')
   }
-  if(!env.GITHUB_USER?.trim() || !env.GITHUB_TOKEN?.trim()){
-    error('withGitRelease: GITHUB_USER / GITHUB_TOKEN have not been set')
-  }
 
-  // Worth to dobule mask the sensitive credentials
-  withEnvMask(vars: [[var: 'GITHUB_USER', password: "${env.GITHUB_USER}"],
-                     [var: 'GITHUB_TOKEN', password: "${env.GITHUB_TOKEN}"]]){
+  withCredentials([usernamePassword(credentialsId: "${credentialsId}",
+                                    passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
     try {                       
       sh(label: 'Setup git release', script: libraryResource('scripts/setup-git-release.sh'))
       body()

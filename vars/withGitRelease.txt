@@ -4,6 +4,14 @@ Configure the git release context to run the body closure.
 withGitRelease() {
     // block
 }
+
+
+withGitRelease(credentialsId: 'some-credentials') {
+    // block
+}
 ```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
