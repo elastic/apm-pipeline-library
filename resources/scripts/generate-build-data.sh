@@ -17,31 +17,38 @@
 # under the License.
 #set -x
 
-restURLJob=$1
-restURLBuild=$2
-RESULT=$3
-DURATION=$4
+BO_JOB_URL=${1:?'Missing the Blue Ocean Job URL'}
+BO_BUILD_URL=${2:?'Missing the Blue Ocean Build URL'}
+
+## To report the status afterwards
+STATUS=0
+BUILD_INFO_OBJECT="build-info-object.json"
+BUILD_INFO="build-info.json"
+BUILD_REPORT="build-report.json"
 
 ### Functions
 function fetch() {
     file=$1
     url=$2
-    #(retry 3 ${CURL_COMMAND} -o "${file}" "${url}") || status=1
-    ${CURL_COMMAND} -o "${file}" "${url}" || status=1
+    
+    ## Let's support retry in the CI.
+    if [ -n "${JENKINS_URL}" ] ; then
+        (retry 3 "${CURL_COMMAND}" -o "${file}" "${url}") || STATUS=1
+    else
+        ${CURL_COMMAND} -o "${file}" "${url}" || STATUS=1
+    fi
 }
 
-function fetchAndPrepareBuildInfo() {
-    output="build-info.json"
+function fetchAndPrepareBuildInfoObject() {
+    output="${BUILD_INFO_OBJECT}"
+    if [ -e "${output}" ] ; then
+        rm "${output}"
+    fi
     fetchAndPrepare "$1" "$2" "$3" "$4" "${output}"
-
-    tmp=$(mktemp)
-    jq --arg a "${RESULT}" '.build.result = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
-    jq --arg a "${DURATION}" '.build.durationInMillis = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
-    jq '.build.state = "FINISHED"' "${output}" > "$tmp" && mv "$tmp" "${output}"
 }
 
 function fetchAndPrepareBuildReport() {
-    fetchAndPrepare $1 $2 $3 $4 "build-report.json"
+    fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
 }
 
 function fetchAndPrepare() {
@@ -53,13 +60,13 @@ function fetchAndPrepare() {
 
     fetch "${file}" "${url}"
 
-    if [ -e ${file} ] ; then
-        echo "\"${key}\": $(cat ${file})," >> ${output}
+    if [ -e "${file}" ] ; then
+        echo "\"${key}\": $(cat "${file}")," >> "${output}"
     else
         if [ "${default}" == 'hash' ] ; then
-            echo "\"${key}\": { }," >> ${output}
+            echo "\"${key}\": { }," >> "${output}"
         else
-            echo "\"${key}\": [ ]," >> ${output}
+            echo "\"${key}\": [ ]," >> "${output}"
         fi
     fi
 }
@@ -67,43 +74,37 @@ function fetchAndPrepare() {
 CURL_COMMAND="curl -sfS --max-time 60 --connect-timeout 30"
 
 if [ -e '/usr/local/bin/bash_standard_lib.sh' ] ; then
+    # shellcheck disable=SC1091
     source /usr/local/bin/bash_standard_lib.sh
 fi
 
-## To report the status afterwards
-status=0
-
-### Query entrypoints
-fetch 'build-info.json' "${restURLBuild}/"
-fetch 'tests-summary.json' "${restURLBuild}/blueTestSummary/"
-fetch 'tests-info.json' "${restURLBuild}/tests/?limit=100000000"
-fetch 'changeSet-info.json' "${restURLBuild}/changeSet/"
-fetch 'artifacts-info.json' "${restURLBuild}/artifacts/"
-fetch 'steps-info.json' "${restURLBuild}/steps/"
-fetch 'pipeline-log.txt' "${restURLBuild}/log/"
-
-### Prepare build info file
-echo '{' > build-info.json
-fetchAndPrepareBuildInfo 'build-data.json' "${restURLBuild}/" "build" "hash"
-echo '}' >> build-info.json
-### Prepare build report file
-echo '{' >> build-report.json
-fetchAndPrepareBuildReport 'job-info.json' "${restURLJob}/" "job" "hash"
-fetchAndPrepareBuildReport 'tests-summary.json' "${restURLBuild}/blueTestSummary/" "test_summary" "list"
-fetchAndPrepareBuildReport 'tests-info.json' "${restURLBuild}/tests/?limit=100000000" "test" "list"
-fetchAndPrepareBuildReport 'changeSet-info.json' "${restURLBuild}/changeSet/" "changeSet" "list"
-fetchAndPrepareBuildReport 'artifacts-info.json' "${restURLBuild}/artifacts/" "artifacts" "list"
-fetchAndPrepareBuildReport 'steps-info.json' "${restURLBuild}/steps/" "steps" "list"
-cat build-info.json | sed '1d;$d' >> build-report.json
-fetchAndPrepareBuildReport 'pipeline-log.txt' "${restURLBuild}/log/" "log" "hash"
-echo '}' >> build-report.json
-
-### Remove last ocurrence for the items separator
-sed -i bck 's/\(.*\),/\1 /' build-report.json
-
+### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
+fetch 'steps-info.json' "${BO_BUILD_URL}/steps/"
+fetch 'pipeline-log.txt' "${BO_BUILD_URL}/log/"
 ### Prepare the log summary
 if [ -e pipeline-log.txt ] ; then
     tail -n 100 pipeline-log.txt > pipeline-log-summary.txt
 fi
 
-exit $status
+### Prepare build info file
+fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "hash"
+### Remove last ocurrence for the items separator
+sed -i .bck 's/\(.*\),/\1 /' "${BUILD_INFO_OBJECT}"
+echo '{' > "${BUILD_INFO}"
+cat "${BUILD_INFO_OBJECT}" >> "${BUILD_INFO}"
+echo '}' >> "${BUILD_INFO}"
+
+### Prepare build report file
+echo '{' > "${BUILD_REPORT}"
+fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "hash"
+fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "list"
+fetchAndPrepareBuildReport 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=100000000" "test" "list"
+fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "list"
+fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "list"
+cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
+echo '}' >> "${BUILD_REPORT}"
+
+### Clean unrequired files
+rm "${BUILD_INFO_OBJECT}" "${BUILD_INFO_OBJECT}.bck"
+
+exit $STATUS

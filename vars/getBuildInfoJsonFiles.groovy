@@ -28,6 +28,9 @@ def call(jobURL, buildNumber){
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  if (!restURLJob.endsWith('/')) {
+    restURLJob += '/'
+  }
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   def scriptFile = 'generate-build-data.sh'
@@ -35,5 +38,5 @@ def call(jobURL, buildNumber){
     def resourceContent = libraryResource('scripts/generate-build-data.sh')
     writeFile file: scriptFile, text: resourceContent
   }
-  sh "generate-build-data.sh ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}"
+  sh(label: 'generate-build-data', returnStatus: true, script: "generate-build-data.sh ${restURLJob} ${restURLBuild}")
 }
