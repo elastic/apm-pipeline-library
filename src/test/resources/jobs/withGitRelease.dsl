@@ -19,10 +19,13 @@ pipeline {
     stage('withGitRelease') {
       steps {
         dir('sub-folder') {
+          // Ensure the git config is configured as expected beforehand
+          sh "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
           withGitRelease() {
             sh "git config -l | grep '^remote.*.url'"
           }
-          sh "git config -l | grep '^remote.*.url'"
+          // Ensure the git config is reverted as used to be
+          sh "git config -l | grep '^remote.*.url' | grep 'https://github.com/elastic/apm-pipeline-library.git'"
         }
       }
     }
