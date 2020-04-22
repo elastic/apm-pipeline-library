@@ -138,7 +138,7 @@ pipeline {
           registry: "docker.elastic.co"
         )
         dir("${BASE_DIR}"){
-          setupAPMGitEmail(global: true)
+          setupAPMGitEmail(global: false)
           sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
           sleep 30 //wait for changes available
           withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
