@@ -29,6 +29,8 @@ BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
+DEFAULT_HASH="{ }"
+DEFAULT_LIST="[ ]"
 
 if [ -e "${UTILS_LIB}" ] ; then
     # shellcheck disable=SC1091,SC1090
@@ -73,13 +75,7 @@ function fetchAndDefault() {
     fetch "$file" "$url"
 
     if [ ! -e "${file}" ] ; then
-        if [ "${default}" == 'hash' ] ; then
-            echo "{ }" > "${file}"
-        elif [ "${default}" == 'list' ] ; then
-            echo "[ ]" > "${file}"
-        else
-            echo "" > "${file}"
-        fi
+        echo "${default}" > "${file}"
     fi
 }
 
@@ -125,26 +121,26 @@ function fetchAndPrepare() {
 }
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
-fetchAndDefault 'steps-info.json' "${BO_BUILD_URL}/steps/" "hash"
-fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" "string"
+fetchAndDefault 'steps-info.json' "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
+fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" '" "'
 ### Prepare the log summary
 if [ -e pipeline-log.txt ] ; then
     tail -n 100 pipeline-log.txt > pipeline-log-summary.txt
 fi
 
 ### Prepare build info file
-fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "hash"
+fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '{' > "${BUILD_INFO}"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_INFO}"
 echo '}' >> "${BUILD_INFO}"
 
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
-fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "hash"
-fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "list"
-fetchAndPrepareBuildReport 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=100000000" "test" "list"
-fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "list"
-fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "list"
+fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
+fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=100000000" "test" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
 echo '}' >> "${BUILD_REPORT}"
 
