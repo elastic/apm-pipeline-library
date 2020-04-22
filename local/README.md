@@ -51,8 +51,12 @@ This particular Jenkins instance got the shared library loaded by default.
 
 ### Enable local worker
 
-As simple as opening http://localhost:18080/computer/local/ then download http://localhost:18080/jnlpJars/agent.jar
-and `java -jar agent.jar -jnlpUrl http://localhost:18080/computer/local/slave-agent.jnlp `
+As simple as opening as running the below command
+
+```bash
+make start-local-worker
+open http://localhost:18080
+```
 
 ### Enable linux vagrant worker
 

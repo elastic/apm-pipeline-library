@@ -22,3 +22,7 @@ out.html
 test-infra/__pycache__
 test-infra/.pytest_cache
 venv
+
+agent.jar
+local.pid
+local.log
