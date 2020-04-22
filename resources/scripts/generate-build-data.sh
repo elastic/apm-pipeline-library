@@ -29,18 +29,20 @@ BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
 
 ### Functions
+
+function curlCommand() {
+    curl --max-time 60 --connect-timeout 30 -o "$1" "$2"
+}
+
 function fetch() {
     file=$1
     url=$2
     
-    CURL_FLAGS="--max-time 60 --connect-timeout 30"
     ## Let's support retry in the CI.
     if [ -n "${JENKINS_URL}" ] ; then
-        # shellcheck disable=SC2086
-        (retry 3 curl ${CURL_FLAGS} -o "${file}" "${url}") || STATUS=1
+        (retry 3 curlCommand "${file}" "${url}") || STATUS=1
     else
-        # shellcheck disable=SC2086
-        curl ${CURL_FLAGS} -o "${file}" "${url}" || STATUS=1
+        curlCommand "${file}" "${url}" || STATUS=1
     fi
 }
 
@@ -49,13 +51,23 @@ function fetchAndPrepareBuildInfoObject() {
     if [ -e "${output}" ] ; then
         rm "${output}"
     fi
-    fetchAndPrepare "$1" "$2" "$3" "$4" "${output}"
 
+    ## Prepare json format for the jq manipulation afterwards
+    echo '{' > "${output}"
+    fetchAndPrepare "$1" "$2" "$3" "$4" "${output}"
+    echo '}' >> "${output}"
+
+    ### Remove last ocurrence for the items separator
+    sed -i 's/\(.*\),/\1 /' "${output}"
+
+    ### Manipulate build result and time
     tmp=$(mktemp)
-    ## TODO: works in macosx but no in linux!
     jq --arg a "${RESULT}" '.build.result = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
     jq --arg a "${DURATION}" '.build.durationInMillis = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
     jq '.build.state = "FINISHED"' "${output}" > "$tmp" && mv "$tmp" "${output}"
+
+    ### Remove the brackets.
+    sed -i '1d;$d' "${output}"
 }
 
 function fetchAndPrepareBuildReport() {
@@ -97,8 +109,6 @@ fi
 
 ### Prepare build info file
 fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "hash"
-### Remove last ocurrence for the items separator
-sed -i.bck 's/\(.*\),/\1 /' "${BUILD_INFO_OBJECT}"
 echo '{' > "${BUILD_INFO}"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_INFO}"
 echo '}' >> "${BUILD_INFO}"
@@ -113,7 +123,7 @@ fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "a
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
 echo '}' >> "${BUILD_REPORT}"
 
-### Clean unrequired files
-rm "${BUILD_INFO_OBJECT}" "${BUILD_INFO_OBJECT}.bck"
+### Clean unrequired file
+rm "${BUILD_INFO_OBJECT}"
 
 exit $STATUS
