@@ -37,6 +37,11 @@ fi
 
 ### Functions
 
+function prettyJson() {
+    tmp=$(mktemp)
+    jq '.' "${1}" > "$tmp" && mv "$tmp" "$1"
+}
+
 function curlCommand() {
     curl --max-time 60 --connect-timeout 30 -o "$1" "$2"
 }
@@ -124,6 +129,12 @@ fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "c
 fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "list"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
 echo '}' >> "${BUILD_REPORT}"
+
+ls -ltrah
+
+### Pretty
+prettyJson "${BUILD_INFO}"
+prettyJson "${BUILD_REPORT}"
 
 ### Clean unrequired file
 rm "${BUILD_INFO_OBJECT}"
