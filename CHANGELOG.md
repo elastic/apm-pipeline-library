@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.89 (22/04/2020)
+
+#### 🚀 Enhancements
+
+-  ci: withGitRelease step for releases [#481](https://github.com/elastic/apm-pipeline-library/pull/481)
+
+#### 🐛 Bug Fixes
+
+-  fix: no HOME then no global [#483](https://github.com/elastic/apm-pipeline-library/pull/483)
+
+#### ⚙️ CI
+
+-  ci(release): update commit user [#482](https://github.com/elastic/apm-pipeline-library/pull/482)
+
+---
+
 ## v1.1.88 (20/04/2020)
 
 #### 🐛 Bug Fixes
@@ -614,13 +630,13 @@
 
 #### 🚀 Enhancements
 
+-  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
 -  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
 -  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
 -  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
 -  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
 -  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
--  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
 
 #### 🐛 Bug Fixes
 
@@ -632,9 +648,9 @@
 
 #### ⚙️ CI
 
+-  fix: use fork to build the images [#253](https://github.com/elastic/apm-pipeline-library/pull/253)
 -  ci: bring up to date the 'update clusters' job [#243](https://github.com/elastic/apm-pipeline-library/pull/243)
 -  Revert "fix: use fork to build the images" [#255](https://github.com/elastic/apm-pipeline-library/pull/255)
--  fix: use fork to build the images [#253](https://github.com/elastic/apm-pipeline-library/pull/253)
 
 ---
 
@@ -929,16 +945,16 @@
 
 #### 🚀 Enhancements
 
+-  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
+-  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 -  enable issueCommentTrigger and expose GITHUB_COMMENT environment [#136](https://github.com/elastic/apm-pipeline-library/pull/136)
 -  enable cobertura and gsc tabs with the traditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
 -  ci: release process [#123](https://github.com/elastic/apm-pipeline-library/pull/123)
--  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
--  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 
 #### 🐛 Bug Fixes
 
--  fix: log rotate settings [#131](https://github.com/elastic/apm-pipeline-library/pull/131)
 -  fix net.sf.json.JSONNull.trim() [#138](https://github.com/elastic/apm-pipeline-library/pull/138)
+-  fix: log rotate settings [#131](https://github.com/elastic/apm-pipeline-library/pull/131)
 
 #### 🙈 No user affected
 
