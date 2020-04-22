@@ -16,8 +16,8 @@ DSL = '''pipeline {
       archiveArtifacts artifacts: '*.json'
       sh """#!/bin/bash -xe
       ## Assert json modifications
-      jq '.build.result' build-info.json | grep 'SUCCESS'
-      jq '.build.state' build-info.json | grep 'FINISHED'
+      jq '.build.result' build-report.json | grep 'SUCCESS'
+      jq '.build.state' build-report.json | grep 'FINISHED'
       jq '.test_summary.total' build-report.json | grep '0'
       ## Assert archive file is there
       grep 'foo.txt' artifacts-info.json

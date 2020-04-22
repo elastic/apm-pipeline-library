@@ -24,7 +24,6 @@ DURATION=${4:?'Missing the build duration'}
 
 ## To report the status afterwards
 STATUS=0
-BUILD_INFO_OBJECT="build-info-object.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
@@ -79,29 +78,21 @@ function fetchAndDefault() {
     fi
 }
 
-function fetchAndPrepareBuildInfoObject() {
-    output="${BUILD_INFO_OBJECT}"
-    if [ -e "${output}" ] ; then
-        rm "${output}"
-    fi
+function fetchAndPrepareBuildInfo() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
 
-    ## Prepare json format for the jq manipulation afterwards
-    echo '{' > "${output}"
-    fetchAndPrepare "$1" "$2" "$3" "$4" "${output}"
-    echo '}' >> "${output}"
-
-    ### Remove last ocurrence for the items separator
-    sedCommand 's/\(.*\),/\1 /' "${output}"
+    fetchAndDefault "${file}" "${url}" "${default}"
 
     ### Manipulate build result and time
     tmp=$(mktemp)
-    jq --arg a "${RESULT}" '.build.result = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
-    jq --arg a "${DURATION}" '.build.durationInMillis = $a' "${output}" > "$tmp" && mv "$tmp" "${output}"
-    jq '.build.state = "FINISHED"' "${output}" > "$tmp" && mv "$tmp" "${output}"
+    jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
+    jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
+    jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
 
-    ### Remove the brackets.
-    # shellcheck disable=SC2016
-    sedCommand '1d;$d' "${output}"
+    echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareBuildReport() {
@@ -128,12 +119,6 @@ if [ -e pipeline-log.txt ] ; then
     tail -n 100 pipeline-log.txt > pipeline-log-summary.txt
 fi
 
-### Prepare build info file
-fetchAndPrepareBuildInfoObject 'build-data.json' "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
-echo '{' > "${BUILD_INFO}"
-cat "${BUILD_INFO_OBJECT}" >> "${BUILD_INFO}"
-echo '}' >> "${BUILD_INFO}"
-
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
 fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
@@ -141,14 +126,11 @@ fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary
 fetchAndPrepareBuildReport 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=100000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
-cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
+fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
 
 ### Pretty
 prettyJson "${BUILD_INFO}"
 prettyJson "${BUILD_REPORT}"
-
-### Clean unrequired file
-rm "${BUILD_INFO_OBJECT}"
 
 exit $STATUS
