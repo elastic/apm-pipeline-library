@@ -36,6 +36,13 @@ if [ -e "${UTILS_LIB}" ] ; then
 fi
 
 ### Functions
+function sedCommand() {
+    flag="-i"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        flag="-i ''"
+    fi
+    sed "${flag}" "$@"
+}
 
 function prettyJson() {
     tmp=$(mktemp)
@@ -58,6 +65,24 @@ function fetch() {
     fi
 }
 
+function fetchAndDefault() {
+    file=$1
+    url=$2
+    default=$3
+
+    fetch "$file" "$url"
+
+    if [ ! -e "${file}" ] ; then
+        if [ "${default}" == 'hash' ] ; then
+            echo "{ }" > "${file}"
+        elif [ "${default}" == 'list' ] ; then
+            echo "[ ]" > "${file}"
+        else
+            echo "" > "${file}"
+        fi
+    fi
+}
+
 function fetchAndPrepareBuildInfoObject() {
     output="${BUILD_INFO_OBJECT}"
     if [ -e "${output}" ] ; then
@@ -70,7 +95,7 @@ function fetchAndPrepareBuildInfoObject() {
     echo '}' >> "${output}"
 
     ### Remove last ocurrence for the items separator
-    sed -i 's/\(.*\),/\1 /' "${output}"
+    sedCommand 's/\(.*\),/\1 /' "${output}"
 
     ### Manipulate build result and time
     tmp=$(mktemp)
@@ -79,7 +104,8 @@ function fetchAndPrepareBuildInfoObject() {
     jq '.build.state = "FINISHED"' "${output}" > "$tmp" && mv "$tmp" "${output}"
 
     ### Remove the brackets.
-    sed -i '1d;$d' "${output}"
+    # shellcheck disable=SC2016
+    sedCommand '1d;$d' "${output}"
 }
 
 function fetchAndPrepareBuildReport() {
@@ -93,22 +119,14 @@ function fetchAndPrepare() {
     default=$4
     output=$5
 
-    fetch "${file}" "${url}"
+    fetchAndDefault "${file}" "${url}" "${default}"
 
-    if [ -e "${file}" ] ; then
-        echo "\"${key}\": $(cat "${file}")," >> "${output}"
-    else
-        if [ "${default}" == 'hash' ] ; then
-            echo "\"${key}\": { }," >> "${output}"
-        else
-            echo "\"${key}\": [ ]," >> "${output}"
-        fi
-    fi
+    echo "\"${key}\": $(cat "${file}")," >> "${output}"
 }
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
-fetch 'steps-info.json' "${BO_BUILD_URL}/steps/"
-fetch 'pipeline-log.txt' "${BO_BUILD_URL}/log/"
+fetchAndDefault 'steps-info.json' "${BO_BUILD_URL}/steps/" "hash"
+fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" "string"
 ### Prepare the log summary
 if [ -e pipeline-log.txt ] ; then
     tail -n 100 pipeline-log.txt > pipeline-log-summary.txt
@@ -129,8 +147,6 @@ fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "c
 fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "list"
 cat "${BUILD_INFO_OBJECT}" >> "${BUILD_REPORT}"
 echo '}' >> "${BUILD_REPORT}"
-
-ls -ltrah
 
 ### Pretty
 prettyJson "${BUILD_INFO}"
