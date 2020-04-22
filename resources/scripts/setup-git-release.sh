@@ -48,13 +48,8 @@ git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG
 git fetch --all
 
 # Pull the git history when repo was cloned with shallow/depth.
-# shellcheck disable=SC2091
-if [ -f "$(git rev-parse --git-dir)/shallow" ]; then
+if [ -f "$(git rev-parse --git-dir)/shallow" ] || [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
     git pull --unshallow
 else
-    if $(git rev-parse --is-shallow-repository); then
-        git pull --unshallow
-    else
-        git  pull
-    fi
+    git pull
 fi
