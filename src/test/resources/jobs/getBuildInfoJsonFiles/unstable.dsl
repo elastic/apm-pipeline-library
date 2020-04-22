@@ -1,11 +1,11 @@
-NAME = 'it/getBuildInfoJsonFiles/success'
+NAME = 'it/getBuildInfoJsonFiles/unstable'
 DSL = '''pipeline {
   agent { label 'local' }
   stages {
-    stage('success') {
+    stage('unstable') {
       steps {
-        writeFile file: 'foo.txt', text: 'bar'
-        archiveArtifacts artifacts: 'foo.txt'
+        writeFile file: 'junit.xml', text: '<?xml version="1.0" encoding="UTF-8"?><testsuite><testcase classname="foo" name="bar"><error message="error"/><system-out><![CDATA[hookid: foo]]></system-out></testcase></testsuite>'
+        junit 'junit.xml'
       }
     }
   }
@@ -16,11 +16,9 @@ DSL = '''pipeline {
       archiveArtifacts artifacts: '*.json'
       sh """#!/bin/bash -xe
       ## Assert json modifications
-      jq '.build.result' build-info.json | grep 'SUCCESS'
+      jq '.build.result' build-info.json | grep 'UNSTABLE'
       jq '.build.state' build-info.json | grep 'FINISHED'
-      jq '.test_summary.total' build-report.json | grep '0'
-      ## Assert archive file is there
-      grep 'foo.txt' artifacts-info.json
+      jq '.test_summary.total' build-report.json | grep '1'
       ## Assert all the files are there
       [ -e 'artifacts-info.json' ] && echo yeah || exit 1
       [ -e 'changeSet-info.json' ] && echo yeah || exit 1

@@ -1,12 +1,13 @@
-NAME = 'it/getBuildInfoJsonFiles/success'
+NAME = 'it/getBuildInfoJsonFiles/connectionRefused'
 DSL = '''pipeline {
-  agent { label 'local' }
+  agent { label 'linux && immutable' }
+  environment {
+    // Force the variable to use unexisting host
+    JENKINS_URL = 'http://wrong/'
+  }
   stages {
-    stage('success') {
-      steps {
-        writeFile file: 'foo.txt', text: 'bar'
-        archiveArtifacts artifacts: 'foo.txt'
-      }
+    stage('connectionRefused') {
+      steps { echo 'hi' }
     }
   }
   post {
@@ -18,9 +19,7 @@ DSL = '''pipeline {
       ## Assert json modifications
       jq '.build.result' build-info.json | grep 'SUCCESS'
       jq '.build.state' build-info.json | grep 'FINISHED'
-      jq '.test_summary.total' build-report.json | grep '0'
-      ## Assert archive file is there
-      grep 'foo.txt' artifacts-info.json
+      jq '.test_summary.total' build-report.json && exit 1 || echo 'expected' 
       ## Assert all the files are there
       [ -e 'artifacts-info.json' ] && echo yeah || exit 1
       [ -e 'changeSet-info.json' ] && echo yeah || exit 1
