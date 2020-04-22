@@ -51,7 +51,7 @@ This particular Jenkins instance got the shared library loaded by default.
 
 ### Enable local worker
 
-As simple as opening as running the below command
+As simple as running the below command
 
 ```bash
 make start-local-worker
