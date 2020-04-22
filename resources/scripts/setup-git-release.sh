@@ -38,14 +38,18 @@ git config user.name "${USER_NAME}"
 git fetch --all
 git checkout "${BRANCH_NAME}"
 
+# Enable upstream with git+https.
+git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG_NAME}/${REPO_NAME}.git"
+git fetch --all
+
+# Pull the git history when repo was cloned with shallow/depth.
+if [ -f "$(git rev-parse --git-dir)/shallow" ] || [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+    git pull --unshallow
+else
+    git pull
+fi
+
 # Ensure the branch points to the original commit to avoid commit injection
 # when running the release pipeline.
 # used GIT_BASE_COMMIT instead GIT_COMMIT to support the MultiBranchPipelines.
 git reset --hard "${GIT_BASE_COMMIT}"
-
-# Enable upstream with git+https.
-git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG_NAME}/${REPO_NAME}.git"
-git fetch upstream
-
-# Pull the git history when repo was cloned with shallow/depth.
-git pull --unshallow
