@@ -60,8 +60,7 @@ As simple as caching the infra vagrant images, see https://github.com/elastic/in
 and
 
 ```bash
-# cd local/linux
-vagrant up --provision
+make start-linux-worker
 open http://localhost:18080
 ```
 

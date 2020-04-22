@@ -69,6 +69,14 @@ start: master
 	@>&2 printf '\n'
 	@>&2 printf 'Jenkins master now running at http://localhost:18080\n'
 
+.PHONY: start-linux-worker
+start-linux-worker:  ## Start the local linux worker
+	VAGRANT_CWD=workers/linux/ vagrant up --provision
+
+.PHONY: stop-linux-worker
+stop-linux-worker:  ## Stop the local linux worker
+	VAGRANT_CWD=workers/linux/ vagrant halt
+
 .PHONY: status
 status:  ## Display the current status of Jenkins-related processes
 	@env \
