@@ -27,6 +27,13 @@ STATUS=0
 BUILD_INFO_OBJECT="build-info-object.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
+UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
+
+
+if [ -e "${UTILS_LIB}" ] ; then
+    # shellcheck disable=SC1091,SC1090
+    source "${UTILS_LIB}"
+fi
 
 ### Functions
 
@@ -39,7 +46,7 @@ function fetch() {
     url=$2
     
     ## Let's support retry in the CI.
-    if [ -n "${JENKINS_URL}" ] ; then
+    if [[ -n "${JENKINS_URL}" && -e "${UTILS_LIB}" ]] ; then
         (retry 3 curlCommand "${file}" "${url}") || STATUS=1
     else
         curlCommand "${file}" "${url}" || STATUS=1
@@ -93,11 +100,6 @@ function fetchAndPrepare() {
         fi
     fi
 }
-
-if [ -e '/usr/local/bin/bash_standard_lib.sh' ] ; then
-    # shellcheck disable=SC1091
-    source /usr/local/bin/bash_standard_lib.sh
-fi
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
 fetch 'steps-info.json' "${BO_BUILD_URL}/steps/"
