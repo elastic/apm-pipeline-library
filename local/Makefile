@@ -71,15 +71,11 @@ start: master
 
 .PHONY: start-linux-worker
 start-linux-worker:  ## Start the local linux worker
-	cd workers/linux && \
-	vagrant up --provision && \
-	cd ..
+	VAGRANT_CWD=workers/linux/ vagrant up --provision
 
 .PHONY: stop-linux-worker
-stop-linux-worker:  ## Start the local linux worker
-	cd workers/linux && \
-	vagrant halt && \
-	cd ..
+stop-linux-worker:  ## Stop the local linux worker
+	VAGRANT_CWD=workers/linux/ vagrant halt
 
 .PHONY: status
 status:  ## Display the current status of Jenkins-related processes

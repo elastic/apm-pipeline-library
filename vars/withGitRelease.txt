@@ -14,4 +14,6 @@ withGitRelease(credentialsId: 'some-credentials') {
 * credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
 
 
-NOTE: This particular implementation requires to checkout with the step gitCheckout
+_NOTE:_
+* This particular implementation requires to checkout with the step gitCheckout
+* Windows agents are not supported.
