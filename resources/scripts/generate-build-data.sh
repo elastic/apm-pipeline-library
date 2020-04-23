@@ -52,7 +52,7 @@ function prettyJson() {
 }
 
 function curlCommand() {
-    curl --max-time 60 --connect-timeout 30 -o "$1" "$2"
+    curl --silent --max-time 60 --connect-timeout 30 -o "$1" "$2"
 }
 
 function fetch() {
@@ -93,7 +93,9 @@ function fetchAndPrepareBuildInfo() {
         tmp=$(mktemp)
         jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
         jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
-        jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
+    else
+        sedCommand "s#\"durationInMillis\":[0-9]*,#\"durationInMillis\":${DURATION},#g" "${file}"
+        sedCommand "s#\"result\":\"[a-zA-Z]*\",#\"result\":\"${RESULT}\",#g" "${file}"
     fi
     echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
 }
