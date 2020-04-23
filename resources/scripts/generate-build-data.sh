@@ -15,7 +15,6 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-set -x
 
 BO_JOB_URL=${1:?'Missing the Blue Ocean Job URL'}
 BO_BUILD_URL=${2:?'Missing the Blue Ocean Build URL'}
@@ -58,6 +57,7 @@ function fetch() {
     file=$1
     url=$2
     
+    echo "INFO: generate-build-data - curl ${url} -o ${file}"
     ## Let's support retry in the CI.
     if [[ -n "${JENKINS_URL}" && -e "${UTILS_LIB}" ]] ; then
         (retry 3 curlCommand "${file}" "${url}") || STATUS=1
@@ -86,7 +86,6 @@ function fetchAndPrepareBuildInfo() {
 
     fetchAndDefault "${file}" "${url}" "${default}"
 
-    ### Manipulate build result and time
     tmp=$(mktemp)
     jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
     jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
