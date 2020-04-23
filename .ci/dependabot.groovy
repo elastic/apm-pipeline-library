@@ -18,28 +18,51 @@
 @Library('apm@current') _
 
 pipeline {
-  agent { label 'master' }
+  agent none
   environment {
     NOTIFY_TO = credentials('notify-to')
+    JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL='INFO'
-    DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
-    DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 5, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
-  triggers {
-    cron('H H(1-4) * * 1')
-  }
   stages {
-    stage('Job') {
-      steps {
-        build(job: 'apm-shared/apm-dependabot-pipeline', propagate: false, wait: false)
+    stage('Run dependabot'){
+      matrix {
+        agent any
+        axes {
+          axis {
+            name 'PROJECT'
+            values 'apm-agent-dotnet', 'apm-agent-go', 'apm-agent-java', 'apm-agent-nodejs', 'apm-agent-ruby', 'apm-agent-rum-js', 'apm-server'
+          }
+        }
+        stages {
+          stage('Dependabot') {
+            environment {
+              ORG_REPO = "elastic/${PROJECT}"
+              CONFIGURATION_FILE = ".ci/dependabot.json"
+            }
+            steps {
+              git "https://github.com/${ORG_REPO}.git"
+              script {
+                if (fileExists("${CONFIGURATION_FILE}")) {
+                  def config = readYaml(file: "${CONFIGURATION_FILE}")
+                  def assign = config.assign
+                  def manager = config.manager
+                  dependabot(project: "${ORG_REPO}", assign: assign, package: manager)
+                } else {
+                  echo "Dependabot not enabled for the project: ${ORG_REPO}."
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
