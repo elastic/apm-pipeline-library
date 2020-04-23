@@ -1,0 +1,18 @@
+Run dependabot and create PRs for the given project using the credentials.
+
+```
+    // Run dependabot for the apm-agent-java repo and assign those PRs to the v1v user
+    dependabot(project: 'elastic/apm-agent-java', assign: 'v1v', package: 'maven')
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7'
+* project: the GitHub project where to run dependabot. The format is org/repo. Mandatory
+* package: the package manager for the given project. Mandatory.
+* assign: a comma-separated list (no spaces around the comma) of GitHub handles to assign to the created pull requests. Optional.
+* dockerImage: the docker image base to be used. Default 'dependabot/dependabot-core'.
+
+_NOTE:_
+* Windows agents are not supported.
+
+
+[dependabot-script](https://github.com/dependabot/dependabot-script)

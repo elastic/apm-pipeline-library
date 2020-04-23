@@ -102,6 +102,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/timeout.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/dependabot.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogin.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
