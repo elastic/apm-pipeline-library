@@ -45,8 +45,10 @@ function sedCommand() {
 }
 
 function prettyJson() {
-    tmp=$(mktemp)
-    jq '.' "${1}" > "$tmp" && mv "$tmp" "$1"
+    if [ -x "$(command -v jq)" ] ; then
+        tmp=$(mktemp)
+        jq '.' "${1}" > "$tmp" && mv "$tmp" "$1"
+    fi
 }
 
 function curlCommand() {
@@ -86,11 +88,13 @@ function fetchAndPrepareBuildInfo() {
 
     fetchAndDefault "${file}" "${url}" "${default}"
 
-    tmp=$(mktemp)
-    jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
-    jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
-    jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
-
+    ### Manipulate build result and time
+    if [ -x "$(command -v jq)" ] ; then
+        tmp=$(mktemp)
+        jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
+        jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
+        jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
+    fi
     echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
 }
 
