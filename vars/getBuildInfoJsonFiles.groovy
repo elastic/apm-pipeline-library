@@ -34,12 +34,10 @@ def call(jobURL, buildNumber){
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   def scriptFile = 'generate-build-data.sh'
-  if (!fileExists(scriptFile)) {
-    def resourceContent = libraryResource('scripts/generate-build-data.sh')
-    writeFile file: scriptFile, text: resourceContent
-  }
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile file: scriptFile, text: resourceContent
   sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
-    chmod 755 generate-build-data.sh
-    ./generate-build-data.sh ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
+    chmod 755 ${scriptFile}
+    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
     """)
 }
