@@ -16,12 +16,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
+if [ -n "${PIPELINE_LOG_LEVEL}" ] && [ "${PIPELINE_LOG_LEVEL}" == "DEBUG" ] ; then
+    set -x
+fi
+
 BO_JOB_URL=${1:?'Missing the Blue Ocean Job URL'}
 BO_BUILD_URL=${2:?'Missing the Blue Ocean Build URL'}
 RESULT=${3:?'Missing the build result'}
 DURATION=${4:?'Missing the build duration'}
-
-echo "INFO: $0 $*"
 
 ## To report the status afterwards
 STATUS=0
