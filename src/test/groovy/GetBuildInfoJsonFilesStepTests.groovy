@@ -46,7 +46,6 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void test_failed_script() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m.label == 'generate-build-data'){
         return 1
@@ -55,7 +54,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     })
     script.call('http://jenkins.example.com/job/myJob', '1')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('writeFile', 'generate-build-data'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
     assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data.sh'))
     assertJobStatusSuccess()
   }
