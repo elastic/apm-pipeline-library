@@ -18,6 +18,7 @@
 import co.elastic.TestUtils
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class DependabotStepTests extends ApmBasePipelineTest {
@@ -34,13 +35,31 @@ class DependabotStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(project: 'elastic/foo', package: 'maven', assign: 'bar')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'Docker pull'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'Install dependencies'))
+    assertTrue(assertMethodCall('dockerLogin'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Run dependabot'))
     assertTrue(assertMethodCallContainsPattern('sh', "GITHUB_ACCESS_TOKEN=${TestUtils.DEFAULT_VALUE}"))
     assertTrue(assertMethodCallContainsPattern('sh', 'PROJECT_PATH=elastic/foo'))
     assertTrue(assertMethodCallContainsPattern('sh', 'PACKAGE_MANAGER=maven'))
     assertTrue(assertMethodCallContainsPattern('sh', 'PULL_REQUESTS_ASSIGNEE=bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/observability-ci/dependabot'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_no_assign() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(project: 'elastic/foo', package: 'maven')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'PULL_REQUESTS_ASSIGNEE= '))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_docker_customisation() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(project: 'elastic/foo', package: 'maven', secretRegistry: '', registry: '', image: 'bar')
+    printCallStack()
+    assertFalse(assertMethodCall('dockerLogin'))
     assertJobStatusSuccess()
   }
 

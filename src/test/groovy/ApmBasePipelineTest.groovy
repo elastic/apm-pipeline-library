@@ -423,7 +423,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
   }
 
   def assertMethodCall(String methodName) {
-    return helper.callStack.find { call ->
+    return helper.callStack.any { call ->
       call.methodName == methodName
     }
   }

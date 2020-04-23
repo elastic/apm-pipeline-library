@@ -30,26 +30,21 @@ def call(Map params = [:]){
   def packageManager = params.containsKey('package') ? "${params.package}" : error('dependabot: package argument is required.')
   def assign = params.containsKey('assign') ? "${params.assign}" : ''
   def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
-  def dockerImage = params.get('image', 'dependabot/dependabot-core')
+  def dockerImage = params.get('image', 'docker.elastic.co/observability-ci/dependabot')
+  def registry = params.get('registry', 'docker.elastic.co')
+  def secretRegistry = params.get('secretRegistry', 'secret/apm-team/ci/docker-registry/prod')
 
-  // TODO: to build the docker image once and used it
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-    sh(label: 'Docker pull', script: "docker pull ${dockerImage}")
-    sh(label: 'Install dependencies', script: """
-      docker run -t -v "\$(pwd):/home/dependabot/dependabot-script" \
-      -w /home/dependabot/dependabot-script \
-      ${dockerImage} \
-      bundle install -j 3 --path vendor
-    """)
+    if (registry && secretRegistry) {
+      dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
+    }
     sh(label: 'Run dependabot', script: """
-      docker run -t -v "\$(pwd):/home/dependabot/dependabot-script" \
-      -w /home/dependabot/dependabot-script \
+      docker run -t --rm \
       -e GITHUB_ACCESS_TOKEN=${env.GITHUB_TOKEN} \
       -e PROJECT_PATH=${project} \
       -e PACKAGE_MANAGER=${packageManager} \
       -e PULL_REQUESTS_ASSIGNEE=${assign} \
-      ${dockerImage} \
-      bundle exec ruby ./generic-update-script.rb
+      ${dockerImage}
     """)
   }
 }

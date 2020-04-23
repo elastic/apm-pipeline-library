@@ -29,6 +29,7 @@ node:12.7.0-stretch-slim
 python:3.7.4-alpine3.10
 docker.elastic.co/infra/jjbb
 docker.elastic.co/observability-ci/codecov
+docker.elastic.co/observability-ci/dependabot
 docker.elastic.co/observability-ci/golang-mage
 docker.elastic.co/observability-ci/gren
 docker.elastic.co/observability-ci/shellcheck

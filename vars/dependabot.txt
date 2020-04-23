@@ -10,6 +10,8 @@ Run dependabot and create PRs for the given project using the credentials.
 * package: the package manager for the given project. Mandatory.
 * assign: a comma-separated list (no spaces around the comma) of GitHub handles to assign to the created pull requests. Optional.
 * dockerImage: the docker image base to be used. Default 'dependabot/dependabot-core'.
+* registry: what docker registry to be logged to consume internal docker images. Default: 'docker.elastic.co'. Optional
+* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/apm-team/ci/docker-registry/prod'. Optional
 
 _NOTE:_
 * Windows agents are not supported.
