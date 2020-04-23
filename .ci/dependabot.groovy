@@ -46,7 +46,7 @@ pipeline {
           stage('Dependabot') {
             environment {
               ORG_REPO = "elastic/${PROJECT}"
-              CONFIGURATION_FILE = ".ci/dependabot.yaml"
+              CONFIGURATION_FILE = ".ci/dependabot.yml"
             }
             steps {
               git "https://github.com/${ORG_REPO}.git"
