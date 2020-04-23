@@ -39,7 +39,7 @@ pipeline {
         axes {
           axis {
             name 'PROJECT'
-            values 'apm-agent-dotnet', 'apm-agent-go', 'apm-agent-java', 'apm-agent-nodejs', 'apm-agent-ruby', 'apm-agent-rum-js', 'apm-server'
+            values 'apm-agent-dotnet', 'apm-agent-go', 'apm-agent-java', 'apm-agent-nodejs', 'apm-agent-python', 'apm-agent-ruby', 'apm-agent-rum-js', 'apm-server', 'opbeans-dotnet', 'opbeans-go', 'opbeans-java', 'opbeans-frontend', 'opbeans-node', 'opbeans-python', 'opbeans-ruby'
           }
         }
         stages {
