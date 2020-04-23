@@ -55,7 +55,9 @@ pipeline {
                   def config = readYaml(file: "${CONFIGURATION_FILE}")
                   def assign = config.assign
                   def manager = config.manager
-                  dependabot(project: "${ORG_REPO}", assign: assign, package: manager)
+                  manager.split(',').each { packageManager ->
+                    dependabot(project: "${ORG_REPO}", assign: assign, package: packageManager)
+                  }
                 } else {
                   echo "Dependabot not enabled for the project: ${ORG_REPO}."
                 }
