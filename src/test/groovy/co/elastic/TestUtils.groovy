@@ -19,6 +19,8 @@ package co.elastic
 
 public class TestUtils {
 
+  static DEFAULT_VALUE = 'dummyValue'
+
   public static withEnvInterceptor = { list, closure ->
     list.forEach {
       def fields = it.split("=")
@@ -72,7 +74,7 @@ public class TestUtils {
 
   public static withCredentialsInterceptor = { list, closure ->
     list.forEach {
-      env[it.variable] = "dummyValue"
+      env[it.variable] = DEFAULT_VALUE
     }
     def res = closure.call()
     list.forEach {

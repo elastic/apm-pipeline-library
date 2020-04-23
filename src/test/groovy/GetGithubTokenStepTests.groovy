@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.TestUtils
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -33,7 +34,7 @@ class GetGithubTokenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def value = script.call()
     printCallStack()
-    assertTrue(value == "dummyValue")
+    assertTrue(value == TestUtils.DEFAULT_VALUE)
     assertJobStatusSuccess()
   }
 
@@ -42,7 +43,7 @@ class GetGithubTokenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def value = script.call(credentialsId: "dummy")
     printCallStack()
-    assertTrue(value == "dummyValue")
+    assertTrue(value == TestUtils.DEFAULT_VALUE)
     assertJobStatusSuccess()
   }
 }
