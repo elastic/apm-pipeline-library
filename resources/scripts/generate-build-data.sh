@@ -49,9 +49,13 @@ function sedCommand() {
 }
 
 function prettyJson() {
+    tmp=$(mktemp)
     if [ -x "$(command -v jq)" ] ; then
-        tmp=$(mktemp)
-        jq '.' "${1}" > "$tmp" && mv "$tmp" "$1"
+        jq '.' "${1}" > "${tmp}" && mv "${tmp}" "{1}"
+    elif [ -x "$(command -v python3)" ] ; then
+        python3 -m json.tool < "${1}" > "${tmp}" && mv "${tmp}" "${1}"
+    else
+        echo 'INFO: pretty cannot be executed'
     fi
 }
 
