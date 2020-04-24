@@ -40,7 +40,7 @@ def call(Map args = [:]) {
       def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
-      def statsURL = args.containsKey('statsURL') ? args.statsURL : "ela.st/observabtl-ci-stats"
+      def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
