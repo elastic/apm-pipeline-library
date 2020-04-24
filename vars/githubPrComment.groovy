@@ -63,24 +63,34 @@ def commentTemplate(Map params = [:]) {
 }
 
 def addOrEditComment(String details) {
+  def commentId = getPreviousCommentId()
 
-  // Get the latest comment that was added with this step, if any.
-  def lastComment = getLatestBuildComment()
-
-  if (lastComment) {
-    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${lastComment.id}'.")
-    pullRequest.editComment(lastComment.id, details)
+  if (commentId?.trim() && commentId.isInteger()) {
+    int value = commentId as Integer
+    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'.")
+    pullRequest.editComment(value, details)
   } else {
     log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
-    pullRequest.comment(details)
+    def comment = pullRequest.comment(details)
+    writeFile(file: "${commentIdFileName()}", text: "${comment?.id}")
+    archiveArtifacts(artifacts: commentIdFileName())
   }
 }
 
 def getComments() {
   def token = getGithubToken()
   def comments = githubApiCall(token: token, url: "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments")
-
   return comments
+}
+
+def getPreviousCommentId() {
+  def data = getLatestBuildComment()
+  if (data && data.id) {
+    // To support reading from a file, then transform to String
+    return "${data.id}"
+  } else {
+    return getBuildCommentFromFile()
+  }
 }
 
 def getLatestBuildComment() {
@@ -89,4 +99,18 @@ def getLatestBuildComment() {
   return comments
     .reverse()
     .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }
+}
+
+// This is another way to get the commit id
+def getBuildCommentFromFile() {
+  copyArtifacts(filter: commentIdFileName(), flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
+  if (fileExists(commentIdFileName())) {
+    return readFile(commentIdFileName())?.trim()
+  } else {
+    return ''
+  }
+}
+
+def commentIdFileName() {
+  return 'comment.id'
 }

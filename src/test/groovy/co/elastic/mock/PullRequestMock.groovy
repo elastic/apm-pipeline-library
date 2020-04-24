@@ -24,10 +24,11 @@ class PullRequestMock implements Serializable {
 
   String description = ''
 
-  public PullRequestMock(Map params = [:]) { }
+  public PullRequestMock() { }
 
-  public void comment(String description) {
+  public Map comment(String description) {
     this.description = description
+    return [ id: 42 ]
   }
 
   public void editComment(int id, String description) {

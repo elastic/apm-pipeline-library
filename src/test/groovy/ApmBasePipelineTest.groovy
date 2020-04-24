@@ -235,6 +235,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
     })
     helper.registerAllowedMethod('checkout', [String.class], null)
+    helper.registerAllowedMethod('copyArtifacts', [Map.class], {true})
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -271,6 +272,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('lastWithArtifacts', [ ], null)
     helper.registerAllowedMethod('mail', [Map.class], { m ->
       println('Writting mail-out.html file with the email result')
       def f = new File("target/mail-out-${env.TEST}.html")
