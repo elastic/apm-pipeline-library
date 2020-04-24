@@ -22,14 +22,17 @@
 
   githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 
+  githubPrComment(message: 'foo bar')
+
   _NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
 
 */
 def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
+  def message = params.containsKey('message') ? params.message : ''
 
   if (env?.CHANGE_ID) {
-    addOrEditComment(commentTemplate(details: "${details}"))
+    addOrEditComment(commentTemplate(details: "${details}", message: message))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -50,16 +53,24 @@ def commentTemplate(Map params = [:]) {
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
   def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
-  return """
-    ${header}
-    * [pipeline](${url})
-    * Commit: ${env.GIT_BASE_COMMIT}
-    ${details}
 
-    <!--PIPELINE
-    ${toJSON(createBuildInfo()).toString()}
-    PIPELINE-->
-  """.stripIndent()
+  def body
+  if (params.message?.trim()) {
+    body = params.message
+  } else {
+    body = """
+      ${header}
+      * [pipeline](${url})
+      * Commit: ${env.GIT_BASE_COMMIT}
+      ${details}
+    """
+  }
+
+  // Ensure the PIPELINE comment does not have any indentation
+  return """${body}
+<!--PIPELINE
+${toJSON(createBuildInfo()).toString()}
+PIPELINE-->""".stripIndent()
 }
 
 def addOrEditComment(String details) {
@@ -98,7 +109,7 @@ def getLatestBuildComment() {
   def comments = getComments()
   return comments
     .reverse()
-    .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }
+    .find { (it.user.login == 'elasticmachine' || it.user.login == 'apmmachine') && it.body =~ /<!--PIPELINE/ }
 }
 
 // This is another way to get the commit id

@@ -180,4 +180,13 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_override_default_message() throws Exception {
+    def script = loadScript(scriptName)
+    def obj = script(message: 'foo')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('commentTemplate', ''))
+    assertJobStatusSuccess()
+  }
 }

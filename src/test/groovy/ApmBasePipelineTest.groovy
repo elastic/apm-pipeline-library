@@ -273,6 +273,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
     helper.registerAllowedMethod('lastWithArtifacts', [ ], null)
+    helper.registerAllowedMethod('libraryResource', [String.class], { path ->
+      File resource = new File("resources/${path}")
+      if (resource.exists()) {
+        return resource.getText()
+      }
+      return ''
+    })
     helper.registerAllowedMethod('mail', [Map.class], { m ->
       println('Writting mail-out.html file with the email result')
       def f = new File("target/mail-out-${env.TEST}.html")

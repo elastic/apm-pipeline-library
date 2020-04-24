@@ -33,21 +33,23 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
+  // For the time being let's disiable the default comment
+  def notifyPRComment = args.containsKey('prComment') ? args.prComment : false
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
-      def statsURL = args.containsKey('statsURL') ? args.statsURL : "ela.st/observabtl-ci-stats"
+      def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
+        def notificationManager = new NotificationManager()
         if(shouldNotify){
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
-          def notificationManager = new NotificationManager()
           notificationManager.notifyEmail(
             build: readJSON(file: "build-info.json"),
             buildStatus: currentBuild.currentResult,
@@ -58,6 +60,20 @@ def call(Map args = [:]) {
             log: readFile(file: "pipeline-log-summary.txt"),
             testsErrors: readJSON(file: "tests-info.json"),
             stepsErrors: readJSON(file: "steps-info.json")
+          )
+        }
+
+        if(notifyPRComment) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          notificationManager.notifyPR(
+            build: readJSON(file: "build-info.json"),
+            buildStatus: currentBuild.currentResult,
+            changeSet: readJSON(file: "changeSet-info.json"),
+            log: readFile(file: "pipeline-log-summary.txt"),
+            statsUrl: "${statsURL}",
+            stepsErrors: readJSON(file: "steps-info.json"),
+            testsErrors: readJSON(file: "tests-info.json"),
+            testsSummary: readJSON(file: "tests-summary.json")
           )
         }
 
