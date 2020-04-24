@@ -33,6 +33,7 @@ UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
 DEFAULT_LIST="[ ]"
+a = 1
 
 if [ -e "${UTILS_LIB}" ] ; then
     # shellcheck disable=SC1091,SC1090

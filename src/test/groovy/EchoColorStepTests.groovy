@@ -33,6 +33,6 @@ class EchoColorStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('echo', "\u001B[31;40m[ERROR]\u001B[0m"))
+    assertFalse(assertMethodCallContainsPattern('echo', "\u001B[31;40m[ERROR]\u001B[0m"))
   }
 }
