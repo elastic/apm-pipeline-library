@@ -66,11 +66,11 @@ def commentTemplate(Map params = [:]) {
     """
   }
 
+  // Ensure the PIPELINE comment does not have any indentation
   return """${body}
-    <!--PIPELINE
-    ${toJSON(createBuildInfo()).toString()}
-    PIPELINE-->
-  """.stripIndent()
+<!--PIPELINE
+${toJSON(createBuildInfo()).toString()}
+PIPELINE-->""".stripIndent()
 }
 
 def addOrEditComment(String details) {

@@ -1,7 +1,7 @@
 ## ${statusSuccess ? ':green_heart: Build Succeeded' : ':broken_heart: Build Failed'} 
 
 <!-- BUILD BADGES-->
-[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20view-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) [![stats](https://img.shields.io/badge/stats-stats%20view-red)](${statsUrl})
+[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20view-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) [![stats](https://img.shields.io/badge/stats-stats%20view-blue)](${statsUrl})
 
 <!-- BUILD SUMMARY-->
 <details><summary>Expand to view the summary</summary>
@@ -13,6 +13,9 @@
 * Start Time: ${build?.startTime}
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec (${build.durationInMillis})
+<%}%>
+<% if(build?.commitId?.trim()) {%>
+* Commit: ${build?.commitId}
 <%}%>
 
 <% if(testsSummary?.total != 0) {%>
