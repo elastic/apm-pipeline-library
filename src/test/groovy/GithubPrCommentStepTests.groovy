@@ -159,9 +159,34 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   void testAddCommentForUnexisting() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubApiCall', [Map.class], { return [[]]} )
-    def obj = script.addOrEditComment('foo')
+    script.addOrEditComment('foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testAddCommentForUnexistingComment_with_file() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return [[]]} )
+    helper.registerAllowedMethod('fileExists', [String.class], { return true} )
+    helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
+    script.addOrEditComment('foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_override_default_message() throws Exception {
+    def script = loadScript(scriptName)
+    def obj = script(message: 'foo')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('commentTemplate', ''))
     assertJobStatusSuccess()
   }
 }
