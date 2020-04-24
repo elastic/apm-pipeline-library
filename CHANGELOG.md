@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.90 (23/04/2020)
+
+#### 🚀 Enhancements
+
+-  refactor getBuildInfoJsonFiles: use script rather than groovy [#480](https://github.com/elastic/apm-pipeline-library/pull/480)
+
+#### 🐛 Bug Fixes
+
+-  ci: jq is not installed in the master [#486](https://github.com/elastic/apm-pipeline-library/pull/486)
+-  fix: unshallow with unshallow [#484](https://github.com/elastic/apm-pipeline-library/pull/484)
+
+#### 📚 Documentation
+
+-  docs: target goal for start/stop-local-worker [#485](https://github.com/elastic/apm-pipeline-library/pull/485)
+
+---
+
 ## v1.1.89 (22/04/2020)
 
 #### 🚀 Enhancements
@@ -302,8 +319,8 @@
 
 #### 🚀 Enhancements
 
--  Speed up builds with less sleeps steps [#376](https://github.com/elastic/apm-pipeline-library/pull/376)
 -  POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
+-  Speed up builds with less sleeps steps [#376](https://github.com/elastic/apm-pipeline-library/pull/376)
 
 #### ⚙️ CI
 
@@ -630,13 +647,13 @@
 
 #### 🚀 Enhancements
 
+-  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
+-  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 -  feat: PR GitHub template [#254](https://github.com/elastic/apm-pipeline-library/pull/254)
 -  Bump jenkins core version for local testing [#247](https://github.com/elastic/apm-pipeline-library/pull/247)
 -  enforce: maven dependencies and validation within the build [#246](https://github.com/elastic/apm-pipeline-library/pull/246)
 -  Configure missing credentials [#244](https://github.com/elastic/apm-pipeline-library/pull/244)
 -  override build step to print the downstream URL [#259](https://github.com/elastic/apm-pipeline-library/pull/259)
--  support exact match in isGitRegionMatch [#257](https://github.com/elastic/apm-pipeline-library/pull/257)
--  bump version from 2.x support to 3.x support in order to use the filter-branch [#256](https://github.com/elastic/apm-pipeline-library/pull/256)
 
 #### 🐛 Bug Fixes
 
@@ -648,9 +665,9 @@
 
 #### ⚙️ CI
 
+-  Revert "fix: use fork to build the images" [#255](https://github.com/elastic/apm-pipeline-library/pull/255)
 -  fix: use fork to build the images [#253](https://github.com/elastic/apm-pipeline-library/pull/253)
 -  ci: bring up to date the 'update clusters' job [#243](https://github.com/elastic/apm-pipeline-library/pull/243)
--  Revert "fix: use fork to build the images" [#255](https://github.com/elastic/apm-pipeline-library/pull/255)
 
 ---
 
@@ -920,11 +937,11 @@
 
 #### 🐛 Bug Fixes
 
--  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
 -  fix: make gren docker image works [#140](https://github.com/elastic/apm-pipeline-library/pull/140)
 -  fix: grab the real version name from artifactory before push [#143](https://github.com/elastic/apm-pipeline-library/pull/143)
 -  fix: use alias to avoid hit erased paths [#141](https://github.com/elastic/apm-pipeline-library/pull/141)
 -  fix: execute .ci/scripts/push-integration-test-images.sh in the correct context [#142](https://github.com/elastic/apm-pipeline-library/pull/142)
+-  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
 
 #### ⚙️ CI
 
