@@ -163,4 +163,70 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: emailRecipients parameter is not valid'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_notify_pr() throws Exception {
+    def script = loadScript(scriptName)
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "test"
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoBuildStatus_notify_pr() throws Exception {
+    def script = loadScript(scriptName)
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testNoBuildStatus"
+    try{
+      script.notifyPR(
+        build: readJSON(file: "build-info.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        log: f.getText(),
+        statsUrl: "https://ecs.example.com/app/kibana",
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json")
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: buildStatus parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void testNoBuildInfo_notify_pr() throws Exception {
+    def script = loadScript(scriptName)
+    def f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "testNoBuildInfo"
+    try {
+      script.notifyPR(
+        buildStatus: "FAILURE",
+        changeSet: readJSON(file: "changeSet-info.json"),
+        log: f.getText(),
+        statsUrl: "https://ecs.example.com/app/kibana",
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"))
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: build parameter it is not valid'))
+    assertJobStatusFailure()
+  }
 }

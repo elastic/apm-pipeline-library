@@ -155,11 +155,8 @@ pipeline {
     }
   }
   post {
-    always {
-      githubPrComment()
-    }
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(prComment: true)
     }
   }
 }

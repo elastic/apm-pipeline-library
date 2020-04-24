@@ -100,7 +100,7 @@ function fetchAndPrepareBuildInfo() {
     if [ -x "$(command -v jq)" ] ; then
         tmp=$(mktemp)
         jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
-        jq --arg a "${DURATION}" '.durationInMillis = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
+        jq --arg a "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}" > "$tmp" && mv "$tmp" "${file}"
         jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
     else
         sedCommand "s#\"durationInMillis\":[0-9]*,#\"durationInMillis\":${DURATION},#g" "${file}"
