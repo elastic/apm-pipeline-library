@@ -32,8 +32,7 @@ def call(Map params = [:]){
   def message = params.containsKey('message') ? params.message : ''
 
   if (env?.CHANGE_ID) {
-    def comment = (message.trim()) ? message : commentTemplate(details: "${details}")
-    addOrEditComment(comment)
+    addOrEditComment(commentTemplate(details: "${details}", message: message))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -54,12 +53,20 @@ def commentTemplate(Map params = [:]) {
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
   def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
-  return """
-    ${header}
-    * [pipeline](${url})
-    * Commit: ${env.GIT_BASE_COMMIT}
-    ${details}
 
+  def body
+  if (params.message?.trim()) {
+    body = params.message
+  } else {
+    body = """
+      ${header}
+      * [pipeline](${url})
+      * Commit: ${env.GIT_BASE_COMMIT}
+      ${details}
+    """
+  }
+
+  return """${body}
     <!--PIPELINE
     ${toJSON(createBuildInfo()).toString()}
     PIPELINE-->
