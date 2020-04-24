@@ -1,0 +1,85 @@
+## ${statusSuccess ? ':green_heart: Build Succeeded' : ':broken_heart: Build Failed'} 
+
+<!-- BUILD BADGES-->
+[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20view-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) [![stats](https://img.shields.io/badge/stats-stats%20view-blue)](${statsUrl})
+
+<!-- BUILD SUMMARY-->
+<details><summary>Expand to view the summary</summary>
+<p>
+
+#### Build stats
+
+* Build Cause: ${build?.causes?.shortDescription}
+* Start Time: ${build?.startTime}
+<% if(build?.durationInMillis >= 0) {%>
+* Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec (${build.durationInMillis})
+<%}%>
+<% if(build?.commitId?.trim()) {%>
+* Commit: ${build?.commitId.split('\\+')[0]}
+<%}%>
+
+<% if(testsSummary?.total != 0) {%>
+#### Test stats :test_tube:
+
+| Test         | Results                  |
+| ------------ | :----------------------: |
+| Failed       | ${testsSummary?.failed}  |
+| Passed       | ${testsSummary?.passed}  |
+| Skipped      | ${testsSummary?.skipped} |
+| Total        | ${testsSummary?.total}   |
+
+<%}%>
+</p>
+</details>
+
+<!-- TEST RESULTS IF ANY-->
+<% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
+  ### Test errors
+  <details><summary>Expand to view the tests failures</summary>
+  <p>
+    <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ test -> %>
+* **Name**: ${test?.name}
+  * Status: ${test?.status}
+  * Age: ${test?.age}
+  * Duration: ${test?.duration}
+  * Error Details: ${test?.errorDetails}
+    <%}%>
+  </p>
+  </details>
+<%}%>
+
+<!-- STEPS ERRORS IF ANY-->
+<% stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
+<% if (stepsErrors?.size() != 0) {%>
+### Steps errors
+
+  <details><summary>Expand to view the steps failures</summary>
+  <p>
+  <% stepsErrors.each{ c -> %>
+  * **Name**: ${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}
+    * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
+    * Result: ${c?.result && c?.result != 'null' ? c?.result : ''}
+    <% if(c?.durationInMillis >= 0) {%>
+    * Duration: ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec<
+    <%}%>
+    * Start Time: ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}
+    <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
+    * [log](${jenkinsUrl}/${l._links.self.href})
+    <%}%>
+  <%}%>
+  </p>
+  </details>
+<%}%>
+
+<!-- LOG OUTPUT-->
+### Log output
+
+<details><summary>Expand to view the last 100 lines of log output</summary>
+<p>
+
+```
+${log}
+```
+
+</p>
+</details>

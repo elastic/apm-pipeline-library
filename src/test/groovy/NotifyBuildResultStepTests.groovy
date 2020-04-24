@@ -52,6 +52,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
   }
 
   @Test
@@ -266,5 +267,14 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
+  }
+
+  @Test
+  void test_notify_pr() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(prComment: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
   }
 }
