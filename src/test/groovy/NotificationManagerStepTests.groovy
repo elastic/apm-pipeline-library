@@ -180,7 +180,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json")
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('libraryResource', 'groovy-markdown-custom.template'))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
     assertJobStatusSuccess()
   }

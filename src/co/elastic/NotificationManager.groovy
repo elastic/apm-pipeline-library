@@ -110,7 +110,7 @@ def notifyPR(Map params = [:]) {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
       def body = buildTemplate([
-        "template": 'groovy-markdown-custom.template',
+        "template": 'github-comment-markdown.template',
         "build": build,
         "changeSet": changeSet,
         "jenkinsText": env.JOB_NAME,
