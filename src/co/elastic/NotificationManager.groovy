@@ -123,7 +123,6 @@ def notifyPR(Map params = [:]) {
         "testsErrors": testsErrors,
         "testsSummary": testsSummary
       ])
-      // TODO: to reuse the github comment
-      pullRequest.comment(body)
+      githubPrComment(message: body)
     }
 }

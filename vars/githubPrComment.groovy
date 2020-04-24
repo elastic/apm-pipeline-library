@@ -22,14 +22,18 @@
 
   githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 
+  githubPrComment(message: 'foo bar')
+
   _NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
 
 */
 def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
+  def message = params.containsKey('message') ? params.message : ''
 
   if (env?.CHANGE_ID) {
-    addOrEditComment(commentTemplate(details: "${details}"))
+    def comment = (message.trim()) ? message : commentTemplate(details: "${details}")
+    addOrEditComment(comment)
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -88,5 +92,5 @@ def getLatestBuildComment() {
   def comments = getComments()
   return comments
     .reverse()
-    .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }
+    .find { (it.user.login == 'elasticmachine' || it.user.login == 'apmmachine') && it.body =~ /<!--PIPELINE/ }
 }
