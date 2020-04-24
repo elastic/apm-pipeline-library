@@ -66,7 +66,7 @@ function curlCommand() {
 function fetch() {
     file=$1
     url=$2
-    
+
     echo "INFO: curl ${url} -o ${file}"
     ## Let's support retry in the CI.
     if [[ -n "${JENKINS_URL}" && -e "${UTILS_LIB}" ]] ; then
@@ -132,7 +132,7 @@ fetchAndDefault 'steps-info.json' "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
 fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" '" "'
 ### Prepare the log summary
 if [ -e pipeline-log.txt ] ; then
-    tail -n 100 pipeline-log.txt > pipeline-log-summary.txt
+    grep -v '\[Pipeline\]'  pipeline-log.txt | tail -n 100 > pipeline-log-summary.txt
 fi
 
 ### Prepare build report file
