@@ -33,10 +33,26 @@ UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
 DEFAULT_LIST="[ ]"
+DEFAULT_STRING='" "'
 
+### Prepare the utils for the context if possible
 if [ -e "${UTILS_LIB}" ] ; then
     # shellcheck disable=SC1091,SC1090
     source "${UTILS_LIB}"
+fi
+
+### Prepare jq for this context
+if [ ! -x "$(command -v jq)" ] ; then
+    tmp=$(mktemp -d)
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        file='jq-osx-amd64'
+    else
+        file='jq-linux64'
+    fi
+    wget -q -O "${tmp}/jq" https://github.com/stedolan/jq/releases/download/jq-1.6/${file}
+    chmod 755 "${tmp}/jq"
+    PATH=${tmp}:${PATH}
 fi
 
 ### Functions
@@ -49,18 +65,12 @@ function sedCommand() {
 }
 
 function prettyJson() {
-    tmp=$(mktemp)
-    if [ -x "$(command -v jq)" ] ; then
-        jq '.' "${1}" > "${tmp}" && mv "${tmp}" "{1}"
-    elif [ -x "$(command -v python3)" ] ; then
-        python3 -m json.tool < "${1}" > "${tmp}" && mv "${tmp}" "${1}"
-    else
-        echo 'INFO: pretty cannot be executed'
-    fi
+    echo "INFO: prettyJson (see ${1})"
+    jqEdit '.' "${1}"
 }
 
 function curlCommand() {
-    curl --silent --max-time 60 --connect-timeout 30 -o "$1" "$2"
+    curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2"
 }
 
 function fetch() {
@@ -86,6 +96,11 @@ function fetchAndDefault() {
     if [ ! -e "${file}" ] ; then
         echo "${default}" > "${file}"
     fi
+
+    ## Apply pretty json
+    if [ "${default}" != "${DEFAULT_STRING}" ] ; then
+        prettyJson "${1}"
+    fi
 }
 
 function fetchAndPrepareBuildInfo() {
@@ -94,25 +109,29 @@ function fetchAndPrepareBuildInfo() {
     key=$3
     default=$4
 
+    echo "INFO: fetchAndPrepareBuildInfo (see ${file})"
     fetchAndDefault "${file}" "${url}" "${default}"
 
-    ### Manipulate build result and time
-    if [ -x "$(command -v jq)" ] ; then
-        tmp=$(mktemp)
-        jq --arg a "${RESULT}" '.result = $a' "${file}" > "$tmp" && mv "$tmp" "${file}"
-        jq --arg a "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}" > "$tmp" && mv "$tmp" "${file}"
-        jq '.state = "FINISHED"' "${file}" > "$tmp" && mv "$tmp" "${file}"
-    else
-        sedCommand "s#\"durationInMillis\":[0-9]*,#\"durationInMillis\":${DURATION},#g" "${file}"
-        sedCommand "s#\"result\":\"[a-zA-Z]*\"#\"result\":\"${RESULT}\"#g" "${file}"
-        sedCommand "s#\"state\":\"[a-zA-Z]*\"#\"state\":\"FINISHED\"#g" "${file}"
-    fi
+    normaliseBuild "${file}"
 
     echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareBuildReport() {
     fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
+}
+
+function fetchAndPrepareTestsInfo() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+
+    echo "INFO: fetchAndPrepareTestsInfo (see ${file})"
+    #fetchAndDefault "${file}" "${url}" "${default}"
+    normaliseTests "${file}"
+
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepare() {
@@ -127,9 +146,78 @@ function fetchAndPrepare() {
     echo "\"${key}\": $(cat "${file}")," >> "${output}"
 }
 
+function normaliseBuild() {
+    file=$1
+    # shellcheck disable=SC2016
+    jqAppend "${RESULT}" '.result = $a' "${file}"
+    # shellcheck disable=SC2016
+    jqAppend "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}"
+    jqEdit '.state = "FINISHED"' "${file}"
+}
+
+function normaliseTests() {
+    file=$1
+    jqEdit 'map(del(._links))' "${file}"
+    jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'map(del(.state))' "${file}"
+    jqEdit 'map(del(.hasStdLog))' "${file}"
+    ## This will help to tidy up the file size quite a lot.
+    ## It might be useful to eexport it but let's go step by step
+    jqEdit 'map(del(.errorStackTrace))' "${file}"
+}
+
+function normaliseSteps() {
+    file=$1
+    jqEdit 'map(del(._links))' "${file}"
+    jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'map(del(.actions))' "${file}"
+}
+
+function fetchAndDefaultStepsInfo() {
+    file=$1
+    url=$2
+    default=$3
+
+    fetchAndDefault "${file}" "${url}" "${default}"
+    normaliseSteps "${file}"
+
+    ### Prepare steps errors report
+    output='steps-error.json'
+    jq 'map(select(.result=="FAILURE"))' "${file}" > "${output}"
+    if ! grep  -q 'result' "${output}" ; then
+        echo "${default}" > "${output}"
+    fi
+}
+
+function fetchAndDefaultTestsErrors() {
+    file=$1
+    url=$2
+    default=$3
+
+    fetchAndDefault "${file}" "${url}" "${default}"
+    normaliseTests "${file}"
+}
+
+function jqEdit() {
+    query=$1
+    file=$2
+    tmp=$(mktemp)
+    jq "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
+}
+
+function jqAppend() {
+    argument=$1
+    query=$2
+    file=$3
+    tmp=$(mktemp)
+    jq --arg a "${argument}" "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
+}
+
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
-fetchAndDefault 'steps-info.json' "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
-fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" '" "'
+fetchAndDefaultStepsInfo 'steps-info.json' "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
+fetchAndDefaultTestsErrors 'tests-errors.json' "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
+fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" "${DEFAULT_STRING}"
+
 ### Prepare the log summary
 if [ -e pipeline-log.txt ] ; then
     grep -v '\[Pipeline\]'  pipeline-log.txt | tail -n 100 > pipeline-log-summary.txt
@@ -139,9 +227,9 @@ fi
 echo '{' > "${BUILD_REPORT}"
 fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
-fetchAndPrepareBuildReport 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=100000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
+fetchAndPrepareTestsInfo 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
 
