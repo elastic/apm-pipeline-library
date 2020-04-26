@@ -47,38 +47,60 @@ def call(Map args = [:]) {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
-        def notificationManager = new NotificationManager()
-        if(shouldNotify){
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
-          notificationManager.notifyEmail(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            emailRecipients: to,
-            testsSummary: readJSON(file: "tests-summary.json"),
-            changeSet: readJSON(file: "changeSet-info.json"),
-            statsUrl: "${statsURL}",
-            log: readFile(file: "pipeline-log-summary.txt"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            stepsErrors: readJSON(file: "steps-info.json")
-          )
+        if(shouldNotify || notifyPRComment) {
+          try {
+            // Read files only once and if timeout then use default values
+            def buildData = {}
+            def changeSet = []
+            def logData = ''
+            def stepsErrors = []
+            def testsErrors = []
+            def testsSummary = []
+            timeout(5) {
+              def buildData = readJSON(file: 'build-info.json'),
+              def changeSet = readJSON(file: 'changeSet-info.json'),
+              def logData = readFile(file: 'pipeline-log-summary.txt'),
+              def stepsErrors = readJSON(file: 'steps-errors.json'),
+              def testsErrors = readJSON(file: 'tests-errors.json"',
+              def testsSummary = readJSON(file: 'tests-summary.json')
+            }
+          } catch(e) {
+            echo 'It was a really slow query, so use what we got so far'
+          }
+          def notificationManager = new NotificationManager()
+          if(shouldNotify){
+            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
+            notificationManager.notifyEmail(
+              build: buildData,
+              buildStatus: currentBuild.currentResult,
+              emailRecipients: to,
+              testsSummary: testsSummary,
+              changeSet: changeSet,
+              statsUrl: "${statsURL}",
+              log: logData,
+              testsErrors: testsErrors,
+              stepsErrors: stepsErrors
+            )
+          }
+          if(notifyPRComment) {
+            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+            notificationManager.notifyPR(
+              build: buildData,
+              buildStatus: currentBuild.currentResult,
+              changeSet: changeSet,
+              log: logData,
+              statsUrl: "${statsURL}",
+              stepsErrors: stepsErrors,
+              testsErrors: testsErrors,
+              testsSummary: testsSummary
+            )
+          }
         }
 
-        if(notifyPRComment) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          notificationManager.notifyPR(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            changeSet: readJSON(file: "changeSet-info.json"),
-            log: readFile(file: "pipeline-log-summary.txt"),
-            statsUrl: "${statsURL}",
-            stepsErrors: readJSON(file: "steps-info.json"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            testsSummary: readJSON(file: "tests-summary.json")
-          )
+        // TODO: allow to use the reporting with a file rather than data
+        timeout(5) {
+          sendDataToElasticsearch(es: es, secret: secret, file: 'build-report.json'))
         }
-
-        def datafile = readFile(file: "build-report.json")
-        sendDataToElasticsearch(es: es, secret: secret, data: datafile)
       }
     }
   }
