@@ -143,6 +143,19 @@ function fetchAndPrepareTestsInfo() {
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
+function fetchAndPrepareArtifactsInfo() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+
+    echo "INFO: fetchAndPrepareArtifactsInfo (see ${file})"
+    fetchAndDefault "${file}" "${url}" "${default}"
+    normaliseArtifacts "${file}"
+
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+}
+
 function fetchAndPrepare() {
     file=$1
     url=$2
@@ -153,6 +166,12 @@ function fetchAndPrepare() {
     fetchAndDefault "${file}" "${url}" "${default}"
 
     echo "\"${key}\": $(cat "${file}")," >> "${output}"
+}
+
+function normaliseArtifacts() {
+    file=$1
+    jqEdit 'map(del(._links))' "${file}"
+    jqEdit 'map(del(._class))' "${file}"
 }
 
 function normaliseBuild() {
@@ -237,7 +256,7 @@ echo '{' > "${BUILD_REPORT}"
 fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
-fetchAndPrepareBuildReport "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
+fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
 fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
