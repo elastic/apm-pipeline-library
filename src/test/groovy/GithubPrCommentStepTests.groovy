@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubPrCommentStepTests extends ApmBasePipelineTest {
@@ -29,7 +30,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
       issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",
       id: 2,
       user: [
-        login: "elasticmachine",
+        login: "machine",
         id: 3,
       ],
       created_at: "2020-01-03T16:16:26Z",
@@ -48,6 +49,21 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
       updated_at: "2020-01-04T16:16:26Z",
       body: "LGTM"
     ],
+  ]
+
+  def commentInterceptorWithSomeoneElse = [
+    [
+      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",
+      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/11",
+      id: 55,
+      user: [
+        login: "achine", // use a similar user to the ones we normally use
+        id: 11,
+      ],
+      created_at: "2020-01-04T16:16:26Z",
+      updated_at: "2020-01-04T16:16:26Z",
+      body: "foo\n\n\n<!--PIPELINE\n{\"commit\":\"1\",\"number\":\"2\",\"status\":\"SUCCESS\",\"url\":\"https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/\"}\nPIPELINE-->\n"
+    ]
   ]
 
   @Override
@@ -138,11 +154,34 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testGetLatestBuildComment() throws Exception {
+  void test_getLatestBuildComment() throws Exception {
     def script = loadScript(scriptName)
     def obj = script.getLatestBuildComment()
     printCallStack()
+    println obj
     assertNotNull(obj)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getLatestBuildComment_with_empty() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return [[]]} )
+    def ret = script.getLatestBuildComment()
+    printCallStack()
+    assertNull(ret)
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', ''))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getLatestBuildComment_with_someone_else() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return commentInterceptorWithSomeoneElse } )
+    def ret = script.getLatestBuildComment()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', ''))
+    assertNull(ret)
     assertJobStatusSuccess()
   }
 

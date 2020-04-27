@@ -105,11 +105,11 @@ def getPreviousCommentId() {
 }
 
 def getLatestBuildComment() {
-  // Get all the comments for the given PR.
+  // Get all the comments for the given PR that were commented with the user with login and the comment <!--PIPELINE
   def comments = getComments()
   return comments
     .reverse()
-    .find { (it.user.login == 'elasticmachine' || it.user.login == 'apmmachine') && it.body =~ /<!--PIPELINE/ }
+    .find { (it.user && it.user.login && it.user.login.endsWith('machine')) && it.body =~ /<!--PIPELINE/ }
 }
 
 // This is another way to get the commit id
