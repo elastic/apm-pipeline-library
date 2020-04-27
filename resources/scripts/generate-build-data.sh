@@ -128,7 +128,7 @@ function fetchAndPrepareTestsInfo() {
     default=$4
 
     echo "INFO: fetchAndPrepareTestsInfo (see ${file})"
-    #fetchAndDefault "${file}" "${url}" "${default}"
+    fetchAndDefault "${file}" "${url}" "${default}"
     normaliseTests "${file}"
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
