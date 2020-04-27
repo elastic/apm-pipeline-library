@@ -27,8 +27,17 @@ DURATION=${4:?'Missing the build duration'}
 
 ## To report the status afterwards
 STATUS=0
+ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
+CHANGESET_INFO="changeSet-info.json"
+JOB_INFO="job-info.json"
+PIPELINE_LOG="pipeline-log.txt"
+STEPS_ERRORS="steps-errors.json"
+STEPS_INFO="steps-info.json"
+TESTS_ERRORS="tests-errors.json"
+TESTS_INFO="tests-info.json"
+TESTS_SUMMARY="tests-summary.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
@@ -182,7 +191,7 @@ function fetchAndDefaultStepsInfo() {
     normaliseSteps "${file}"
 
     ### Prepare steps errors report
-    output='steps-error.json'
+    output="${STEPS_ERRORS}"
     jq 'map(select(.result=="FAILURE"))' "${file}" > "${output}"
     if ! grep  -q 'result' "${output}" ; then
         echo "${default}" > "${output}"
@@ -214,22 +223,22 @@ function jqAppend() {
 }
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
-fetchAndDefaultStepsInfo 'steps-info.json' "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
-fetchAndDefaultTestsErrors 'tests-errors.json' "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
-fetchAndDefault 'pipeline-log.txt' "${BO_BUILD_URL}/log/" "${DEFAULT_STRING}"
+fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
+fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
+fetchAndDefault "${PIPELINE_LOG}" "${BO_BUILD_URL}/log/" "${DEFAULT_STRING}"
 
 ### Prepare the log summary
-if [ -e pipeline-log.txt ] ; then
-    grep -v '\[Pipeline\]'  pipeline-log.txt | tail -n 100 > pipeline-log-summary.txt
+if [ -e "${PIPELINE_LOG}" ] ; then
+    grep -v '\[Pipeline\]' "${PIPELINE_LOG}" | tail -n 100 > pipeline-log-summary.txt
 fi
 
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
-fetchAndPrepareBuildReport 'job-info.json' "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
-fetchAndPrepareBuildReport 'tests-summary.json' "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
-fetchAndPrepareBuildReport 'changeSet-info.json' "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
-fetchAndPrepareBuildReport 'artifacts-info.json' "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
-fetchAndPrepareTestsInfo 'tests-info.json' "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
+fetchAndPrepareBuildReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
+fetchAndPrepareBuildReport "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
+fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
 
