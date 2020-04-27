@@ -73,11 +73,6 @@ function sedCommand() {
     sed "${flag}" "$@"
 }
 
-function prettyJson() {
-    echo "INFO: prettyJson (see ${1})"
-    jqEdit '.' "${1}"
-}
-
 function curlCommand() {
     curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2"
 }
@@ -104,11 +99,6 @@ function fetchAndDefault() {
 
     if [ ! -e "${file}" ] ; then
         echo "${default}" > "${file}"
-    fi
-
-    ## Apply pretty json
-    if [ "${default}" != "${DEFAULT_STRING}" ] ; then
-        prettyJson "${1}"
     fi
 }
 
@@ -260,9 +250,5 @@ fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "a
 fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
-
-### Pretty
-prettyJson "${BUILD_INFO}"
-prettyJson "${BUILD_REPORT}"
 
 exit $STATUS
