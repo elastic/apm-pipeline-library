@@ -48,28 +48,28 @@ def call(Map args = [:]) {
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
         if(shouldNotify || notifyPRComment) {
+          // Read files only once and if timeout then use default values
+          def buildData = {}
+          def changeSet = []
+          def logData = ''
+          def stepsErrors = []
+          def testsErrors = []
+          def testsSummary = []
           try {
-            // Read files only once and if timeout then use default values
-            def buildData = {}
-            def changeSet = []
-            def logData = ''
-            def stepsErrors = []
-            def testsErrors = []
-            def testsSummary = []
             timeout(5) {
-              def buildData = readJSON(file: 'build-info.json'),
-              def changeSet = readJSON(file: 'changeSet-info.json'),
-              def logData = readFile(file: 'pipeline-log-summary.txt'),
-              def stepsErrors = readJSON(file: 'steps-errors.json'),
-              def testsErrors = readJSON(file: 'tests-errors.json"',
-              def testsSummary = readJSON(file: 'tests-summary.json')
+              buildData = readJSON(file: 'build-info.json')
+              changeSet = readJSON(file: 'changeSet-info.json')
+              logData = readFile(file: 'pipeline-log-summary.txt')
+              stepsErrors = readJSON(file: 'steps-errors.json')
+              testsErrors = readJSON(file: 'tests-errors.json"')
+              testsSummary = readJSON(file: 'tests-summary.json')
             }
           } catch(e) {
-            echo 'It was a really slow query, so use what we got so far'
+            log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
           }
           def notificationManager = new NotificationManager()
           if(shouldNotify){
-            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
+            log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
             notificationManager.notifyEmail(
               build: buildData,
               buildStatus: currentBuild.currentResult,
@@ -99,7 +99,7 @@ def call(Map args = [:]) {
 
         // TODO: allow to use the reporting with a file rather than data
         timeout(5) {
-          sendDataToElasticsearch(es: es, secret: secret, file: 'build-report.json'))
+          sendDataToElasticsearch(es: es, secret: secret, file: 'build-report.json')
         }
       }
     }
