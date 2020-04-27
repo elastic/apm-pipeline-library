@@ -223,7 +223,7 @@ function jqAppend() {
 }
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
-fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/" "${DEFAULT_HASH}"
+fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/?limit=10000" "${DEFAULT_HASH}"
 fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
 fetchAndDefault "${PIPELINE_LOG}" "${BO_BUILD_URL}/log/" "${DEFAULT_STRING}"
 
