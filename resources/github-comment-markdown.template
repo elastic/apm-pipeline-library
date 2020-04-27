@@ -21,19 +21,19 @@
 <% if(testsSummary?.total != 0) {%>
 #### Test stats :test_tube:
 
-| Test         | Results                  |
-| ------------ | :----------------------: |
-| Failed       | ${testsSummary?.failed}  |
-| Passed       | ${testsSummary?.passed}  |
-| Skipped      | ${testsSummary?.skipped} |
-| Total        | ${testsSummary?.total}   |
-
+| Test         | Results                         |
+| ------------ | :-----------------------------: |
+| Failed       | ${(testsSummary?.failed) ?: 0}  |
+| Passed       | ${(testsSummary?.passed) ?: 0}  |
+| Skipped      | ${(testsSummary?.skipped) ?: 0} |
+| Total        | ${(testsSummary?.total) ?: 0}   |
 <%}%>
+
 </p>
 </details>
 
 <!-- TEST RESULTS IF ANY-->
-<% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
+<% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
   ### Test errors
   <details><summary>Expand to view the tests failures</summary>
   <p>

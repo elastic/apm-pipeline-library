@@ -111,7 +111,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/apm-team/ci/jenkins-stats-cloud'))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/observability-team/ci/jenkins-stats-cloud'))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
