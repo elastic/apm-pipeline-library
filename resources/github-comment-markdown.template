@@ -33,7 +33,7 @@
 </details>
 
 <!-- TEST RESULTS IF ANY-->
-<% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
+<% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
   ### Test errors
   <details><summary>Expand to view the tests failures</summary>
   <p>
