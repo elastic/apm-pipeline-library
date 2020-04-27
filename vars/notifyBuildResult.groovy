@@ -37,7 +37,7 @@ def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : false
   node('master || metal || immutable'){
     stage('Reporting build status'){
-      def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
