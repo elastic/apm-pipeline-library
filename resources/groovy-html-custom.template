@@ -255,8 +255,6 @@
               <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong>  ${c?.duration}</a><br>
               <strong style="font-family: Helvetica; color: #343B49;">Error Details:</strong>
               <div style="font-family:courier;font-size:10px;text-align:left;overflow:auto;max-height: 30em;min-height: 10em;">${c?.errorDetails}</div>
-              <strong style="font-family: Helvetica; color: #343B49;">Error StackTrace:</strong>
-              <pre style="font-family:courier;font-size:10px;text-align:left;overflow:auto;max-height: 30em;min-height: 10em;">${c?.errorStackTrace}</pre>
               <hr>
               </td>
             </tr>
