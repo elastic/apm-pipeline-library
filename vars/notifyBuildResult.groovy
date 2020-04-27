@@ -97,9 +97,9 @@ def call(Map args = [:]) {
           }
         }
 
-        // TODO: allow to use the reporting with a file rather than data
         timeout(5) {
-          sendDataToElasticsearch(es: es, secret: secret, file: 'build-report.json')
+          def datafile = readFile(file: 'build-report.json')
+          sendDataToElasticsearch(es: es, secret: secret, data: datafile)
         }
       }
     }
