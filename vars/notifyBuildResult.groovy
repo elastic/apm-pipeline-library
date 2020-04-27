@@ -42,7 +42,7 @@ def call(Map args = [:]) {
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
-      catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
@@ -95,7 +95,9 @@ def call(Map args = [:]) {
             )
           }
         }
+      }
 
+      catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         timeout(5) {
           def datafile = readFile(file: 'build-report.json')
           sendDataToElasticsearch(es: es, secret: secret, data: datafile)
