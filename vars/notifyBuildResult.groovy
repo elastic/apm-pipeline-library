@@ -33,8 +33,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
-  // For the time being let's disiable the default comment
-  def notifyPRComment = args.containsKey('prComment') ? args.prComment : false
+  def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
