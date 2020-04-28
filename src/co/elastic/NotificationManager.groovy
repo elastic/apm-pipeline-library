@@ -90,6 +90,7 @@ def notifyEmail(Map params = [:]) {
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param docsUrl URL with the preview docs
  * @param log String that contains the log
  * @param statsUrl URL to access to the stats
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
@@ -100,6 +101,7 @@ def notifyPR(Map params = [:]) {
     def build = params.containsKey('build') ? params.build : error('notifyPR: build parameter it is not valid')
     def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyPR: buildStatus parameter is not valid')
     def changeSet = params.containsKey('changeSet') ? params.changeSet : []
+    def docsUrl = params.get('docsUrl', null)
     def log = params.containsKey('log') ? params.log : null
     def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
     def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
@@ -113,6 +115,7 @@ def notifyPR(Map params = [:]) {
         "template": 'github-comment-markdown.template',
         "build": build,
         "changeSet": changeSet,
+        "docsUrl": docsUrl,
         "jenkinsText": env.JOB_NAME,
         "jenkinsUrl": env.JENKINS_URL,
         "jobUrl": boURL,
