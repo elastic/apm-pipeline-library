@@ -71,6 +71,7 @@
   </details>
 <%}%>
 
+<% if (!statusSuccess) {%>
 <!-- LOG OUTPUT-->
 ### Log output
 
@@ -83,3 +84,5 @@ ${log}
 
 </p>
 </details>
+
+<%}%>
