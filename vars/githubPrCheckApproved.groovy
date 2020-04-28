@@ -39,7 +39,7 @@ def call(Map params = [:]){
   approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
 
   if(!approved){
-    error('githubPrCheckApproved: The PR is not allowed to run in the CI yet. (Only users with write permissions can do so)')
+    error('githubPrCheckApproved: The PR is not allowed to run in the CI yet. (Only users with write permissions can do so.)')
   }
   return approved
 }
