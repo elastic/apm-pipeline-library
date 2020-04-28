@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.91 (28/04/2020)
+
+#### 🚀 Enhancements
+
+-  ci: support comment id as an artifact [#490](https://github.com/elastic/apm-pipeline-library/pull/490)
+-  feat: filter Pipeline flow messages from the log [#489](https://github.com/elastic/apm-pipeline-library/pull/489)
+-  ci(jenkins): enable PR notification [#488](https://github.com/elastic/apm-pipeline-library/pull/488)
+
+#### 🐛 Bug Fixes
+
+-  fix: notifyBuildResult to support big JSON files [#493](https://github.com/elastic/apm-pipeline-library/pull/493)
+
+#### ⚙️ CI
+
+-  ci: support preview docs in the comment [#498](https://github.com/elastic/apm-pipeline-library/pull/498)
+
+---
+
 ## v1.1.90 (23/04/2020)
 
 #### 🚀 Enhancements
@@ -319,8 +337,8 @@
 
 #### 🚀 Enhancements
 
--  POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
 -  Speed up builds with less sleeps steps [#376](https://github.com/elastic/apm-pipeline-library/pull/376)
+-  POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
 
 #### ⚙️ CI
 
@@ -616,8 +634,8 @@
 
 #### 🚀 Enhancements
 
--  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
 -  feat: cluster management with the repo itself [#266](https://github.com/elastic/apm-pipeline-library/pull/266)
+-  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
 
 #### 📚 Documentation
 
@@ -937,11 +955,11 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
 -  fix: make gren docker image works [#140](https://github.com/elastic/apm-pipeline-library/pull/140)
 -  fix: grab the real version name from artifactory before push [#143](https://github.com/elastic/apm-pipeline-library/pull/143)
 -  fix: use alias to avoid hit erased paths [#141](https://github.com/elastic/apm-pipeline-library/pull/141)
 -  fix: execute .ci/scripts/push-integration-test-images.sh in the correct context [#142](https://github.com/elastic/apm-pipeline-library/pull/142)
--  fix: we have to use the raw output of jq [#144](https://github.com/elastic/apm-pipeline-library/pull/144)
 
 #### ⚙️ CI
 
