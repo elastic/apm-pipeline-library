@@ -91,7 +91,8 @@ def call(Map args = [:]) {
               statsUrl: "${statsURL}",
               stepsErrors: stepsErrors,
               testsErrors: testsErrors,
-              testsSummary: testsSummary
+              testsSummary: testsSummary,
+              docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
             )
           }
         }
