@@ -286,7 +286,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubPrCheckApproved', [], {
       updateBuildStatus('FAILURE')
-      throw new Exception('githubPrCheckApproved: The PR is not approved yet')
+      throw new Exception('githubPrCheckApproved: The PR is not allowed to run in the CI yet')
     })
     script.scm = 'SCM'
     try{
@@ -306,7 +306,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubPrCheckApproved', [], {
       updateBuildStatus('FAILURE')
-      throw new Exception('githubPrCheckApproved: The PR is not approved yet')
+      throw new Exception('githubPrCheckApproved: The PR is not allowed to run in the CI yet')
     })
     env.BRANCH_NAME = 'master'
     script.scm = 'SCM'
