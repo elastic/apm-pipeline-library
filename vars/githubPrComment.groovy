@@ -38,15 +38,6 @@ def call(Map params = [:]){
   }
 }
 
-def createBuildInfo() {
-  return [
-    commit: env.GIT_BASE_COMMIT,
-    number: env.BUILD_ID,
-    status: currentBuild.currentResult,
-    url: env.BUILD_URL
-  ]
-}
-
 def commentTemplate(Map params = [:]) {
   def details = params.containsKey('details') ? params.details : ''
   def header = currentBuild.currentResult == 'SUCCESS' ?
@@ -58,19 +49,15 @@ def commentTemplate(Map params = [:]) {
   if (params.message?.trim()) {
     body = params.message
   } else {
-    body = """
+    body = """\
       ${header}
       * [pipeline](${url})
       * Commit: ${env.GIT_BASE_COMMIT}
       ${details}
-    """
+    """.stripIndent()  // stripIdent() requires """/
   }
 
-  // Ensure the PIPELINE comment does not have any indentation
-  return """${body}
-<!--PIPELINE
-${toJSON(createBuildInfo()).toString()}
-PIPELINE-->""".stripIndent()
+  return body
 }
 
 def addOrEditComment(String details) {

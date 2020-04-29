@@ -92,14 +92,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCreateBuildInfoWithoutEnv() throws Exception {
-    def script = loadScript(scriptName)
-    def obj = script.createBuildInfo()
-    printCallStack()
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void testAddCommentForUnexisting() throws Exception {
     def script = loadScript(scriptName)
     script.addOrEditComment('foo')
