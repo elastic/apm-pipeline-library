@@ -40,7 +40,7 @@ def call(Map params = [:], Closure body) {
   }
 
   def user = props?.data?.get(user_key)
-  def password = props?.data?.password
+  def password = props?.data?.get(pass_key)
 
   if(user == null || password == null){
     error "withSecretVault: was not possible to get authentication info"
