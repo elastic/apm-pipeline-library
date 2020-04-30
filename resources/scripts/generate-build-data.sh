@@ -128,7 +128,15 @@ function fetchAndPrepareTestsInfo() {
 
     echo "INFO: fetchAndPrepareTestsInfo (see ${file})"
     fetchAndDefault "${file}" "${url}" "${default}"
-    normaliseTests "${file}"
+
+    ## Tests json response differs when there were tests executed in
+    ## the pipeline, otherwise it returns:
+    ##   { message: "no tests", code: 404, errors: [] }
+    if jq -e 'select(.code==404)' "${file}" > /dev/null ; then
+        echo "${default}" > "${file}"
+    else
+        normaliseTests "${file}"
+    fi
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
@@ -213,7 +221,15 @@ function fetchAndDefaultTestsErrors() {
     default=$3
 
     fetchAndDefault "${file}" "${url}" "${default}"
-    normaliseTests "${file}"
+
+    ## Tests json response differs when there were tests executed in
+    ## the pipeline, otherwise it returns:
+    ##   { message: "no tests", code: 404, errors: [] }
+    if jq -e 'select(.code==404)' "${file}" > /dev/null ; then
+        echo "${default}" > "${file}"
+    else
+        normaliseTests "${file}"
+    fi
 }
 
 function jqEdit() {
