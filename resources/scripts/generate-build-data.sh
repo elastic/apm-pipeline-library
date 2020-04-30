@@ -138,7 +138,7 @@ function fetchAndPrepareTestsInfo() {
     ## Tests json response differs when there were tests executed in
     ## the pipeline, otherwise it returns:
     ##   { message: "no tests", code: 404, errors: [] }
-    if jq -e 'select(.code==404)' "${file}" > /dev/null ; then
+    if jq -e 'select(.code==404)' "${file}" > /dev/null 2>&1 ; then
         echo "${default}" > "${file}"
     else
         normaliseTests "${file}"
@@ -251,7 +251,7 @@ function fetchAndDefaultTestsErrors() {
     ## Tests json response differs when there were tests executed in
     ## the pipeline, otherwise it returns:
     ##   { message: "no tests", code: 404, errors: [] }
-    if jq -e 'select(.code==404)' "${file}" > /dev/null ; then
+    if jq -e 'select(.code==404)' "${file}" > /dev/null 2>&1 ; then
         echo "${default}" > "${file}"
     else
         normaliseTests "${file}"
