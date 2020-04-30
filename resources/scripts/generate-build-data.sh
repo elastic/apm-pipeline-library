@@ -44,6 +44,12 @@ DEFAULT_HASH="{ }"
 DEFAULT_LIST="[ ]"
 DEFAULT_STRING='" "'
 
+### To manipulate the steps
+BASE_URL="${JENKINS_URL}"
+if [ -z "${JENKINS_URL}" ] ; then
+    BASE_URL=${BO_JOB_URL//\/blue\/rest\/*/}
+fi
+
 ### Prepare the utils for the context if possible
 if [ -e "${UTILS_LIB}" ] ; then
     # shellcheck disable=SC1091,SC1090
@@ -205,14 +211,34 @@ function fetchAndDefaultStepsInfo() {
     default=$3
 
     fetchAndDefault "${file}" "${url}" "${default}"
-    normaliseSteps "${file}"
 
     ### Prepare steps errors report
     output="${STEPS_ERRORS}"
     jq 'map(select(.result=="FAILURE"))' "${file}" > "${output}"
     if ! grep  -q 'result' "${output}" ; then
         echo "${default}" > "${output}"
+    else
+         ### Update the displayDescription for those steps with a failure and an empty displayDescription.
+         ###    For instance, when using theh pipeline step `error('foo')`
+         ###    then the 'foo' message is not shown in the BlueOcean restAPI.
+         ###
+        if jq -e 'map(select(.type=="STEP" and .result=="FAILURE" and .displayDescription==null))' "${output}" > /dev/null ; then
+            tmp=$(mktemp)
+            for href in $(jq -r 'map(select(.type=="STEP" and .result=="FAILURE" and .displayDescription==null) | ._links.self.href) | .[]' "${output}"); do
+                id=$(basename "${href}")
+                new=$(curl -s "${BASE_URL}${href}log/" | head -c 100)
+                curlCommand "${tmp}" "${BASE_URL}${href}log/"
+                if [ -e "${tmp}" ] ; then
+                    new=$(head -c 100 "${tmp}")
+                    jq --arg id "${id}" --arg new "${new}" '(.[] | select(.result=="FAILURE" and .displayDescription==null and .id==$id) | .displayDescription) |= $new' "${output}" > "$tmp" && mv "$tmp" "${output}"
+                fi
+            done
+        fi
     fi
+
+    ## Normalise later on
+    normaliseSteps "${file}"
+    normaliseSteps "${output}"
 }
 
 function fetchAndDefaultTestsErrors() {
