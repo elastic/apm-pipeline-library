@@ -54,8 +54,7 @@ class GenerateBuildDataIntegrationTests {
 
     // Tests were not executed
     JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
-    assertFalse(obj.isEmpty())
-    assertEquals("Error code 404", "404", obj.get("code").toString())
+    assertTrue(obj.isEmpty())
 
     obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -63,8 +62,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("test_summary").isEmpty())
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
-    assertFalse(obj.get("test").isEmpty())
-    assertEquals("Error code 404", "404", ((JSONObject)obj.get("test")).get("code").toString())
+    assertTrue(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
   }
 
@@ -76,8 +74,7 @@ class GenerateBuildDataIntegrationTests {
 
     // Tests were not executed
     JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
-    assertFalse(obj.isEmpty())
-    assertEquals("Error code 404", "404", obj.get("code").toString())
+    assertTrue(obj.isEmpty())
 
     obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -85,7 +82,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("test_summary").isEmpty())
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
-    assertFalse(obj.get("test").isEmpty())
+    assertTrue(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
   }
 
