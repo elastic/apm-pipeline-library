@@ -26,7 +26,7 @@
 def call(Map params = [:], Closure body) {
   def secret = params?.secret
   def user_variable = params?.user_var_name
-  def user_key = params.containsKey('user_key') ? params.user_key : 'username'
+  def user_key = params.containsKey('user_key') ? params.user_key : 'user'
   def pass_variable = params?.pass_var_name
   def pass_key = params.containsKey('pass_key') ? params.pass_key : 'password'
 
