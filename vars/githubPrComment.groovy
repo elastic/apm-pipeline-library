@@ -24,7 +24,7 @@
 
   githubPrComment(message: 'foo bar')
 
-  _NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+  _NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 */
 def call(Map params = [:]){
@@ -38,15 +38,6 @@ def call(Map params = [:]){
   }
 }
 
-def createBuildInfo() {
-  return [
-    commit: env.GIT_BASE_COMMIT,
-    number: env.BUILD_ID,
-    status: currentBuild.currentResult,
-    url: env.BUILD_URL
-  ]
-}
-
 def commentTemplate(Map params = [:]) {
   def details = params.containsKey('details') ? params.details : ''
   def header = currentBuild.currentResult == 'SUCCESS' ?
@@ -58,23 +49,19 @@ def commentTemplate(Map params = [:]) {
   if (params.message?.trim()) {
     body = params.message
   } else {
-    body = """
+    body = """\
       ${header}
       * [pipeline](${url})
       * Commit: ${env.GIT_BASE_COMMIT}
       ${details}
-    """
+    """.stripIndent()  // stripIdent() requires """/
   }
 
-  // Ensure the PIPELINE comment does not have any indentation
-  return """${body}
-<!--PIPELINE
-${toJSON(createBuildInfo()).toString()}
-PIPELINE-->""".stripIndent()
+  return body
 }
 
 def addOrEditComment(String details) {
-  def commentId = getPreviousCommentId()
+  def commentId = getCommentFromFile()
 
   if (commentId?.trim() && commentId.isInteger()) {
     int value = commentId as Integer
@@ -88,32 +75,7 @@ def addOrEditComment(String details) {
   }
 }
 
-def getComments() {
-  def token = getGithubToken()
-  def comments = githubApiCall(token: token, url: "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments")
-  return comments
-}
-
-def getPreviousCommentId() {
-  def data = getLatestBuildComment()
-  if (data && data.id) {
-    // To support reading from a file, then transform to String
-    return "${data.id}"
-  } else {
-    return getBuildCommentFromFile()
-  }
-}
-
-def getLatestBuildComment() {
-  // Get all the comments for the given PR.
-  def comments = getComments()
-  return comments
-    .reverse()
-    .find { (it.user.login == 'elasticmachine' || it.user.login == 'apmmachine') && it.body =~ /<!--PIPELINE/ }
-}
-
-// This is another way to get the commit id
-def getBuildCommentFromFile() {
+def getCommentFromFile() {
   copyArtifacts(filter: commentIdFileName(), flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
   if (fileExists(commentIdFileName())) {
     return readFile(commentIdFileName())?.trim()
