@@ -1,0 +1,23 @@
+{
+  "id" : "b502bfa7-b12d-42d8-83bf-d32783df3c7a",
+  "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_success_runs_1_tests",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/success/runs/1/tests/?limit=10000000",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "body" : "{\n  \"message\" : \"no tests\",\n  \"code\" : 404,\n  \"errors\" : [ ]\n}",
+    "headers" : {
+      "Date" : "Thu, 30 Apr 2020 11:45:34 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "7f9ea7cf",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "application/json",
+      "Server" : "Jetty(9.4.27.v20200227)"
+    }
+  },
+  "uuid" : "b502bfa7-b12d-42d8-83bf-d32783df3c7a",
+  "persistent" : true,
+  "insertionIndex" : 20
+}

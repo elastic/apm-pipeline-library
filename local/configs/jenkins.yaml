@@ -106,6 +106,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/connectionRefused.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/error.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/success.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/unstable.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
