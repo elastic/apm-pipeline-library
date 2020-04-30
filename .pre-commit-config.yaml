@@ -48,5 +48,7 @@ repos:
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
+        exclude: ^src/test/resources/mappings/
     -   id: remove-en-dashes
+        exclude: ^src/test/resources/mappings/
     -   id: check-jjbb
