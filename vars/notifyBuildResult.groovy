@@ -104,6 +104,10 @@ def call(Map args = [:]) {
           sendDataToElasticsearch(es: es, secret: secret, data: datafile)
         }
       }
+
+      catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
+        deleteDir()
+      }
     }
   }
 
