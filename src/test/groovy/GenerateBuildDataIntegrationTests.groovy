@@ -16,6 +16,7 @@
 // under the License.
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import net.sf.json.JSONArray
 import net.sf.json.JSONObject
 import net.sf.json.JSONSerializer
 import org.junit.Rule
@@ -104,6 +105,23 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+  }
+
+  @Test
+  public void errorBuild() {
+    String jobUrl = this.URL + "/error/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Tests were not executed
+    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    assertTrue(obj.isEmpty())
+
+    JSONArray errors = JSONSerializer.toJSON(new File("target/steps-errors.json").text)
+    assertFalse("There are steps errors", errors.isEmpty())
+    obj = errors.get(0)
+    assertEquals("Log transformation happens successfully", "foo", obj.get("displayDescription"))
+    assertEquals("It was an error signal", "Error signal", obj.get("displayName"))
   }
 
   Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
