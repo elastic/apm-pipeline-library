@@ -62,17 +62,27 @@ def commentTemplate(Map params = [:]) {
 
 def addOrEditComment(String details) {
   def commentId = getCommentFromFile()
-
+  def id
   if (commentId?.trim() && commentId.isInteger()) {
-    int value = commentId as Integer
-    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'.")
-    pullRequest.editComment(value, details)
+    id = commentId as Integer
+    try {
+      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'. If comment still exists.")
+      pullRequest.editComment(id, details)
+    } catch (err) {
+      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}' failed with error '${err}'. Let's fallback to add a comment.")
+      id = addComment(details)
+    }
   } else {
-    log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
-    def comment = pullRequest.comment(details)
-    writeFile(file: "${commentIdFileName()}", text: "${comment?.id}")
-    archiveArtifacts(artifacts: commentIdFileName())
+    id = addComment(details)
   }
+  writeFile(file: "${commentIdFileName()}", text: "${id}")
+  archiveArtifacts(artifacts: commentIdFileName())
+}
+
+def addComment(String details) {
+  log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
+  def comment = pullRequest.comment(details)
+  return comment?.id
 }
 
 def getCommentFromFile() {
