@@ -62,17 +62,18 @@ def commentTemplate(Map params = [:]) {
 
 def addOrEditComment(String details) {
   def commentId = getCommentFromFile()
-
+  def id
   if (commentId?.trim() && commentId.isInteger()) {
-    int value = commentId as Integer
+    id = commentId as Integer
     log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'.")
-    pullRequest.editComment(value, details)
+    pullRequest.editComment(id, details)
   } else {
     log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
     def comment = pullRequest.comment(details)
-    writeFile(file: "${commentIdFileName()}", text: "${comment?.id}")
-    archiveArtifacts(artifacts: commentIdFileName())
+    id = comment?.id
   }
+  writeFile(file: "${commentIdFileName()}", text: "${id}")
+  archiveArtifacts(artifacts: commentIdFileName())
 }
 
 def getCommentFromFile() {

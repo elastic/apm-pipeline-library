@@ -98,7 +98,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
     assertJobStatusSuccess()
   }
@@ -112,6 +111,8 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
     assertJobStatusSuccess()
   }
 
