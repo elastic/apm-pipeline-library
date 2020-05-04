@@ -34,6 +34,24 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
 
+## buildStatus
+Fetch the current build status for a given job
+```
+def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']), return_bool: false)
+```
+
+* host: The Jenkins server to connect to. Defaults to `localhost`.
+* job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
+        CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
+       
+            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
+
+        In this case, the corresponding list would be formed as:
+
+            ['apm-agent-java', 'apm-agent-java-mbp', 'master']
+
+* as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -404,6 +422,44 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 def ref = githubBranchRef()
 ```
 
+## githubCreateIssue
+Create an Issue in GitHub as long as the command runs in the git repo.
+
+```
+githubCreateIssue(title: 'Foo')
+githubCreateIssue(title: 'Foo', description: 'Something else to be added', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) to assign to the created issue. Optional.
+* milestone: The milestone name to add to the created issue. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: Windows is not supported yet.
+
+## githubCreatePullRequest
+Create a Pull Request in GitHub as long as the command runs in the git repo and
+there are commited changes.
+
+```
+githubCreatePullRequest(title: 'Foo')
+githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+* reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+* milestone: The milestone name to add to this pull request. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
+* draft: Create the pull request as a draft. Optional. Default: false
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
+_NOTE_: Windows is not supported yet.
+
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
 
@@ -431,18 +487,23 @@ githubPrCheckApproved()
 Add a comment or edit an existing comment in the GitHub.
 
 ```
+// Use default message
 githubPrComment()
 
+// Use default message and append the details to the message.
 githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+
+// Overrides the default message with 'foo bar'
+githubPrComment(message: 'foo bar')
 ```
 
-_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+_NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
-
+* message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
 
@@ -485,8 +546,10 @@ githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
 
 [GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
 
+
 Returns a data structure representing the release, similar to the following:
 
+```
 {
   "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
   "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
@@ -528,12 +591,14 @@ Returns a data structure representing the release, similar to the following:
 
   ]
 }
+```
 
 ## githubReleasePublish
 Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
-      id: '1',         // Release ID
+      id: '1',                // Release ID
+      name: 'Release v1.0.0'  // Release name 
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -647,6 +712,11 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
 
+To return the response code instead of the body:
+```
+def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
+```
+
 ## installTools
 This step will install the list of tools
 
@@ -698,10 +768,20 @@ evaluates the change list with the pattern list:
 
   // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
   def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true)
+
+  // All the entries in the changeset should match with ^_beats for the given from and to commits
+  def match = isGitRegionMatch(patterns: ["^_beats"], from: '1', to: 'zzzzz' )
+
+  // Support Simple pipeline with the from and to arguments
+  isGitRegionMatch(from: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}", to: "${env.GIT_COMMIT}", patterns: "^_beats"])
 ```
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
@@ -739,6 +819,24 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## mvnVersion
+Get a project version from Maven
+
+```
+mvnVersion(
+    showQualifiers: true
+)
+```
+ * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
+                       such as additional labels for pre-release or build metadata. Speficially,
+                       this means the IncrementalVersion, BuildNumber, and Qualifier sections from
+                       the Maven version as specified in the Maven versioning guide.
+
+This script should be run from the root of a Maven-based project.
+
+[Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
+[Semantic Versioning Specification](https://semver.org/)
 
 ## nexusCloseStagingRepository
 Close a Nexus staging repository
@@ -889,6 +987,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
+* prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
@@ -1084,6 +1183,18 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 
+## setupAPMGitEmail
+Configure the git email for the current workspace or globally.
+
+```
+setupAPMGitEmail()
+
+// globally
+setupAPMGitEmail(global: true)
+```
+
+* *global*: to configure the user and email account globally. Optional.
+
 ## tar
 Compress a folder into a tar file.
 
@@ -1242,6 +1353,27 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
 }
 ```
 
+## withGitRelease
+Configure the git release context to run the body closure.
+
+```
+withGitRelease() {
+    // block
+}
+
+
+withGitRelease(credentialsId: 'some-credentials') {
+    // block
+}
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
+
+_NOTE:_
+* This particular implementation requires to checkout with the step gitCheckout
+* Windows agents are not supported.
+
 ## withGithubNotify
 Wrap the GitHub notify check step
 
@@ -1287,8 +1419,12 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
 
-the secret must have this format
+The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
+
+If the secret does not have this format, the `user_key` and `pass_key` flags
+can be set to specify alternative lookup keys for the `username` and `password`
+fields.
 
 The passed data variables will be exported and masked on logs
 
@@ -1297,6 +1433,7 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
 
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been

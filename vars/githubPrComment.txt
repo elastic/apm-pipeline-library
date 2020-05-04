@@ -1,17 +1,22 @@
 Add a comment or edit an existing comment in the GitHub.
 
 ```
+// Use default message
 githubPrComment()
 
+// Use default message and append the details to the message.
 githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+
+// Overrides the default message with 'foo bar'
+githubPrComment(message: 'foo bar')
 ```
 
-_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+_NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
-
+* message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)

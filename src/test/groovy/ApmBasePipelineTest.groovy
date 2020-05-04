@@ -37,7 +37,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp')
+    SECRET_TOTP('secret-totp'), SECRET_ALT_USERNAME('secret-alt-username'),
+    SECRET_ALT_PASSKEY('secret-alt-passkey')
 
     VaultSecret(String value) {
       this.value = value
@@ -235,6 +236,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
     })
     helper.registerAllowedMethod('checkout', [String.class], null)
+    helper.registerAllowedMethod('copyArtifacts', [Map.class], {true})
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -271,6 +273,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('lastWithArtifacts', [ ], null)
+    helper.registerAllowedMethod('libraryResource', [String.class], { path ->
+      File resource = new File("resources/${path}")
+      if (resource.exists()) {
+        return resource.getText()
+      }
+      return ''
+    })
     helper.registerAllowedMethod('mail', [Map.class], { m ->
       println('Writting mail-out.html file with the email result')
       def f = new File("target/mail-out-${env.TEST}.html")
@@ -399,6 +409,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_NPMRC.equals(s) || VaultSecret.SECRET_NPMJS.equals(s)){
       return [data: [ token: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
+      return [data: [alt_user_key: 'username', password: 'user_password']]
+    }
+    if(VaultSecret.SECRET_ALT_PASSKEY.equals(s)){
+      return [data: [user: 'username', alt_pass_key: 'user_password']]
     }
     return null
   }

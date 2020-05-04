@@ -34,7 +34,8 @@ pipeline {
     // Default BASE_DIR should keep the Golang folder layout as a convention
     // for the rest of the projects/languages independently whether they do need it
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
-    NOTIFY_TO = credentials('notify-to')
+    // Email are stored as credentials to ensure those emails are not exposed.
+    NOTIFY_TO = credentials('notify-to-robots')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
     PIPELINE_LOG_LEVEL='INFO'
@@ -133,15 +134,12 @@ pipeline {
             */
             stage('Test') {
               steps {
-                testUnix()
                 testDockerInside()
+                testUnix()
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml"
-                  )
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -162,9 +160,9 @@ pipeline {
             }
           }
           post {
-               always {
-                   sh 'docker ps -a || true'
-               }
+            always {
+              sh 'docker ps -a || true'
+            }
           }
         }
         stage('Ubuntu 18.04 test'){
@@ -194,9 +192,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -234,9 +230,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -251,72 +245,101 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2016 immutable check'){
           agent { label 'windows-2016-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2019 immutable check'){
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
-          steps {
-            checkWindows()
-            installTools([ [tool: 'nodejs', version: '12' ] ])
+          stages {
+            stage('Test') {
+              steps {
+                checkWindows()
+              }
+            }
+            stage('Install tools') {
+              options {
+                warnError('installTools failed')
+              }
+              steps {
+                installTools([ [tool: 'nodejs', version: '12' ] ])
+              }
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
           }
         }
         stage('windows 2019 docker immutable check'){
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkWindows(withExtra: true)
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
           }
         }
         stage('Mac OS X check - 01'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testMac()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('Mac OS X check - 02'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testMac()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-854309 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-854309' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-854309' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-1095690 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-1095690' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-1095690' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
@@ -335,7 +358,7 @@ def testDockerInside(){
     echo "Docker inside"
     dir("${BASE_DIR}"){
       withEnv(["HOME=${env.WORKSPACE}"]){
-        sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
+        sh(script: './resources/scripts/jenkins/build.sh')
       }
     }
   }
@@ -353,13 +376,42 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+    // Ephemeral workers don't have a HOME env variable.
+    withEnv(["HOME=${env.WORKSPACE}"]){
+      sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+    }
   }
 }
 
-def checkWindows(){
+def testBaremetal(){
+  deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    bat returnStatus: true, script: 'resources/scripts/jenkins/build.bat'
+    sh returnStatus: true, script: './resources/scripts/jenkins/test-baremetal.sh'
+  }
+}
+
+def testMac(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/test-mac.sh'
+  }
+}
+
+def checkWindows(params = [:]){
+  def withExtra = params.containsKey('withExtra') ? params.withExtra : false
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    powershell(script: ".\\resources\\scripts\\jenkins\\build.ps1 ${withExtra}")
+  }
+}
+
+def checkOldWindows(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }

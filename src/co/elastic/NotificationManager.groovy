@@ -22,12 +22,10 @@ import groovy.text.StreamingTemplateEngine
 /**
  * This method returns a string with the template filled with groovy variables
  */
-def emailTemplate(params) {
-
-    def fileName = "groovy-html-custom.template"
-    def fileContents = libraryResource(fileName)
+def buildTemplate(params) {
+    def template = params.containsKey('template') ? params.template : 'groovy-html-custom.template'
+    def fileContents = libraryResource(template)
     def engine = new StreamingTemplateEngine()
-
     return engine.createTemplate(fileContents).make(params).toString()
 }
 
@@ -65,7 +63,7 @@ def notifyEmail(Map params = [:]) {
 
       def boURL = getBlueoceanDisplayURL()
 
-      def body = emailTemplate([
+      def body = buildTemplate([
           "jobUrl": boURL,
           "build": build,
           "jenkinsText": env.JOB_NAME,
@@ -84,5 +82,50 @@ def notifyEmail(Map params = [:]) {
         body: body,
         mimeType: 'text/html'
       );
+    }
+}
+
+/**
+ * This method sends a GitHub comment with data from Jenkins
+ * @param build
+ * @param buildStatus String with job result
+ * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param docsUrl URL with the preview docs
+ * @param log String that contains the log
+ * @param statsUrl URL to access to the stats
+ * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ */
+def notifyPR(Map params = [:]) {
+    def build = params.containsKey('build') ? params.build : error('notifyPR: build parameter it is not valid')
+    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyPR: buildStatus parameter is not valid')
+    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
+    def docsUrl = params.get('docsUrl', null)
+    def log = params.containsKey('log') ? params.log : null
+    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
+    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+
+    catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error sending the email') {
+      def statusSuccess = (buildStatus == "SUCCESS")
+      def boURL = getBlueoceanDisplayURL()
+      def body = buildTemplate([
+        "template": 'github-comment-markdown.template',
+        "build": build,
+        "changeSet": changeSet,
+        "docsUrl": docsUrl,
+        "jenkinsText": env.JOB_NAME,
+        "jenkinsUrl": env.JENKINS_URL,
+        "jobUrl": boURL,
+        "log": log,
+        "statsUrl": statsUrl,
+        "statusSuccess": statusSuccess,
+        "stepsErrors": stepsErrors,
+        "testsErrors": testsErrors,
+        "testsSummary": testsSummary
+      ])
+      githubPrComment(message: body)
     }
 }

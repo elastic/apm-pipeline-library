@@ -28,48 +28,16 @@ def call(jobURL, buildNumber){
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  if (!restURLJob.endsWith('/')) {
+    restURLJob += '/'
+  }
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
-  bulkDownload(["${restURLJob}": 'job-info.json',
-                "${restURLBuild}": 'build-info.json',
-                "${restURLBuild}/blueTestSummary": 'tests-summary.json',
-                "${restURLBuild}/tests": 'tests-info.json',
-                "${restURLBuild}/changeSet": 'changeSet-info.json',
-                "${restURLBuild}/artifacts": 'artifacts-info.json',
-                "${restURLBuild}/steps": 'steps-info.json',
-                "${restURLBuild}/log": 'pipeline-log.txt'])
-
-  sh(label: 'Console log summary', script: 'tail -n 100 pipeline-log.txt > pipeline-log-summary.txt')
-
-  def json = [:]
-  json.job = readJSON(file: "job-info.json")
-  json.build = readJSON(file: "build-info.json")
-  json.test_summary = readJSON(file: "tests-summary.json")
-  json.test = readJSON(file: "tests-info.json")
-  json.changeSet = readJSON(file: "changeSet-info.json")
-  json.artifacts = readJSON(file: "artifacts-info.json")
-  json.steps = readJSON(file: "steps-info.json")
-  json.log = readFile(file: "pipeline-log.txt")
-
-  /** The build is not finished so we have to fix some values */
-  json.build.result = currentBuild.currentResult
-  json.build.state = 'FINISHED'
-  json.build.durationInMillis = currentBuild.duration
-  writeJSON(file: 'build-info.json' , json: toJSON(json.build), pretty: 2)
-
-  writeJSON(file: 'build-report.json' , json: toJSON(json), pretty: 2)
-}
-
-def bulkDownload(map) {
-  if(map.isEmpty()) {
-    error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
-  }
-  def command = ['#!/usr/bin/env bash', 'set -x', 'source /usr/local/bin/bash_standard_lib.sh', 'status=0']
-  map.each { url, file ->
-    command << "(retry 3 curl -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}/) || status=1"
-    command << """[ -e "${file}" ] || echo "{}" > "${file}" """
-  }
-  command << 'exit ${status}'
-
-  sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
+  def scriptFile = 'generate-build-data.sh'
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile file: scriptFile, text: resourceContent
+  sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
+    chmod 755 ${scriptFile}
+    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
+    """)
 }

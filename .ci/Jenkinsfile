@@ -24,6 +24,7 @@ pipeline {
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'DEBUG'
+    MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -37,6 +38,7 @@ pipeline {
     issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
+    string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
     booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
   }
   stages {
@@ -137,6 +139,7 @@ pipeline {
           registry: "docker.elastic.co"
         )
         dir("${BASE_DIR}"){
+          setupAPMGitEmail(global: false)
           sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
           sleep 30 //wait for changes available
           withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
@@ -153,11 +156,8 @@ pipeline {
     }
   }
   post {
-    always {
-      githubPrComment()
-    }
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(prComment: true)
     }
   }
 }

@@ -51,8 +51,12 @@ This particular Jenkins instance got the shared library loaded by default.
 
 ### Enable local worker
 
-As simple as opening http://localhost:18080/computer/local/ then download http://localhost:18080/jnlpJars/agent.jar
-and `java -jar agent.jar -jnlpUrl http://localhost:18080/computer/local/slave-agent.jnlp `
+As simple as running the below command
+
+```bash
+make start-local-worker
+open http://localhost:18080
+```
 
 ### Enable linux vagrant worker
 
@@ -60,8 +64,7 @@ As simple as caching the infra vagrant images, see https://github.com/elastic/in
 and
 
 ```bash
-# cd local/linux
-vagrant up --provision
+make start-linux-worker
 open http://localhost:18080
 ```
 
@@ -139,3 +142,12 @@ make stop
 ```
 
 Run `make help` for information on all available commands.
+
+## FAQ
+
+**Adding and validating a new JJBB job or folder to the local instance**
+
+```shell
+$ cd <PIPELINE_ROOT_DIR>
+$ ./local/test-jjbb.sh -j .ci/jobs/file-to-add.yml
+```

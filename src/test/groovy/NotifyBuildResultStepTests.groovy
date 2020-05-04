@@ -47,11 +47,12 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
   }
 
   @Test
@@ -110,15 +111,35 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/apm-team/ci/jenkins-stats-cloud'))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/observability-team/ci/jenkins-stats-cloud'))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
-  void testCatchError() throws Exception {
+  void testCatchError_with_notifications() throws Exception {
     // When a failure
     helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { throw new Exception(s) })
+
+    // Then the build is Success
+    binding.getVariable('currentBuild').result = "SUCCESS"
+    binding.getVariable('currentBuild').currentResult = "SUCCESS"
+
+    def script = loadScript(scriptName)
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    printCallStack()
+
+    // Then senddata to ElasticSearch happens
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    // Then unstable the stage
+    assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCatchError_with_elasticsearch() throws Exception {
+    // When a failure
+    helper.registerAllowedMethod('readFile', [Map.class], { throw new Exception('forced') })
 
     // Then the build is Success
     binding.getVariable('currentBuild').result = "SUCCESS"
@@ -266,5 +287,14 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
+  }
+
+  @Test
+  void test_notify_pr() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(prComment: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
   }
 }

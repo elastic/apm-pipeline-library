@@ -17,38 +17,12 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
-import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
 class GithubPrCommentStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubPrComment.groovy'
-
-  def commentInterceptor = [[
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",
-      id: 2,
-      user: [
-        login: "elasticmachine",
-        id: 3,
-      ],
-      created_at: "2020-01-03T16:16:26Z",
-      updated_at: "2020-01-03T16:16:26Z",
-      body: "\n## :green_heart: Build Succeeded\n* [pipeline](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/display/redirect)\n* Commit: 1\n\n\n<!--PIPELINE\n{\"commit\":\"1\",\"number\":\"2\",\"status\":\"SUCCESS\",\"url\":\"https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/\"}\nPIPELINE-->\n"
-    ],
-    [
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/11",
-      id: 55,
-      user: [
-        login: "foo",
-        id: 11,
-      ],
-      created_at: "2020-01-04T16:16:26Z",
-      updated_at: "2020-01-04T16:16:26Z",
-      body: "LGTM"
-    ],
-  ]
 
   @Override
   @Before
@@ -59,9 +33,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     env.REPO_NAME = 'apm-pipeline-library'
     env.CHANGE_ID = 'PR-1'
     binding.getVariable('currentBuild').currentResult = 'SUCCESS'
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      return commentInterceptor
-    })
   }
 
   @Test
@@ -121,47 +92,60 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testCreateBuildInfoWithoutEnv() throws Exception {
+  void testAddCommentForUnexisting() throws Exception {
     def script = loadScript(scriptName)
-    def obj = script.createBuildInfo()
+    script.addOrEditComment('foo')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testGetComments() throws Exception {
+  void testAddCommentForUnexistingComment_with_file() throws Exception {
     def script = loadScript(scriptName)
-    def obj = script.getComments()
+    helper.registerAllowedMethod('fileExists', [String.class], { return true} )
+    helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
+    script.addOrEditComment('foo')
     printCallStack()
-    assertTrue(obj.size == 2)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testGetLatestBuildComment() throws Exception {
-    def script = loadScript(scriptName)
-    def obj = script.getLatestBuildComment()
-    printCallStack()
-    assertNotNull(obj)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testEditCommentForExistingId() throws Exception {
-    def script = loadScript(scriptName)
-    def obj = script.addOrEditComment('foo')
-    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testAddCommentForUnexisting() throws Exception {
+  void test_override_default_message() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return [[]]} )
-    def obj = script.addOrEditComment('foo')
+    def obj = script(message: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
+    assertFalse(assertMethodCallContainsPattern('commentTemplate', ''))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getCommentFromFile_with_file() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return true} )
+    helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
+    def ret = script.getCommentFromFile()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('readFile', 'comment.id'))
+    assertEquals(ret, "2")
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getCommentFromFile_without_file() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return false} )
+    def ret = script.getCommentFromFile()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
+    assertFalse(assertMethodCallContainsPattern('readFile', 'comment.id'))
+    assertEquals(ret, '')
     assertJobStatusSuccess()
   }
 }

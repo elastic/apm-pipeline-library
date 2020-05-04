@@ -22,26 +22,20 @@
 
   githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 
-  _NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+  githubPrComment(message: 'foo bar')
+
+  _NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 */
 def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
+  def message = params.containsKey('message') ? params.message : ''
 
   if (env?.CHANGE_ID) {
-    addOrEditComment(commentTemplate(details: "${details}"))
+    addOrEditComment(commentTemplate(details: "${details}", message: message))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
-}
-
-def createBuildInfo() {
-  return [
-    commit: env.GIT_BASE_COMMIT,
-    number: env.BUILD_ID,
-    status: currentBuild.currentResult,
-    url: env.BUILD_URL
-  ]
 }
 
 def commentTemplate(Map params = [:]) {
@@ -50,43 +44,46 @@ def commentTemplate(Map params = [:]) {
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
   def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
-  return """
-    ${header}
-    * [pipeline](${url})
-    * Commit: ${env.GIT_BASE_COMMIT}
-    ${details}
 
-    <!--PIPELINE
-    ${toJSON(createBuildInfo()).toString()}
-    PIPELINE-->
-  """.stripIndent()
+  def body
+  if (params.message?.trim()) {
+    body = params.message
+  } else {
+    body = """\
+      ${header}
+      * [pipeline](${url})
+      * Commit: ${env.GIT_BASE_COMMIT}
+      ${details}
+    """.stripIndent()  // stripIdent() requires """/
+  }
+
+  return body
 }
 
 def addOrEditComment(String details) {
+  def commentId = getCommentFromFile()
 
-  // Get the latest comment that was added with this step, if any.
-  def lastComment = getLatestBuildComment()
-
-  if (lastComment) {
-    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${lastComment.id}'.")
-    pullRequest.editComment(lastComment.id, details)
+  if (commentId?.trim() && commentId.isInteger()) {
+    int value = commentId as Integer
+    log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'.")
+    pullRequest.editComment(value, details)
   } else {
     log(level: 'DEBUG', text: 'githubPrComment: Add a new comment.')
-    pullRequest.comment(details)
+    def comment = pullRequest.comment(details)
+    writeFile(file: "${commentIdFileName()}", text: "${comment?.id}")
+    archiveArtifacts(artifacts: commentIdFileName())
   }
 }
 
-def getComments() {
-  def token = getGithubToken()
-  def comments = githubApiCall(token: token, url: "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments")
-
-  return comments
+def getCommentFromFile() {
+  copyArtifacts(filter: commentIdFileName(), flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
+  if (fileExists(commentIdFileName())) {
+    return readFile(commentIdFileName())?.trim()
+  } else {
+    return ''
+  }
 }
 
-def getLatestBuildComment() {
-  // Get all the comments for the given PR.
-  def comments = getComments()
-  return comments
-    .reverse()
-    .find { (it.user.login == 'elasticmachine') && it.body =~ /<!--PIPELINE/ }
+def commentIdFileName() {
+  return 'comment.id'
 }

@@ -21,6 +21,7 @@ set +x
 echo "dummy script"
 
 docker --version || true
+docker buildx ls || true
 docker-compose --version || true
 java -version || true
 go version || true
@@ -33,6 +34,8 @@ python --version || true
 python3 --version || true
 vault --version || true
 jq --version || true
+rsync --version || true
+helm version || true
 
 JAVA_HOME="${HUDSON_HOME}/.java/java10"
 PATH="${JAVA_HOME}/bin:${PATH}"
