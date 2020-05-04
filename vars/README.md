@@ -1419,8 +1419,12 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
 
-the secret must have this format
+The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
+
+If the secret does not have this format, the `user_key` and `pass_key` flags
+can be set to specify alternative lookup keys for the `username` and `password`
+fields.
 
 The passed data variables will be exported and masked on logs
 
@@ -1429,6 +1433,7 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
 
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
