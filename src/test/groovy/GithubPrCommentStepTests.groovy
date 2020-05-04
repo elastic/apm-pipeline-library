@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.PullRequestMock
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertEquals
@@ -98,7 +99,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
     assertJobStatusSuccess()
   }
@@ -112,6 +112,24 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_addOrEditComment_fallback_to_addComment() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return true } )
+    helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
+    script.addOrEditComment('foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '${PullRequestMock.ERROR}'. If comment still exists."))
+    assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '${PullRequestMock.ERROR}' failed with error"))
+    assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
     assertJobStatusSuccess()
   }
 
