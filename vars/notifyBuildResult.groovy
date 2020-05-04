@@ -33,52 +33,76 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
-  // For the time being let's disiable the default comment
-  def notifyPRComment = args.containsKey('prComment') ? args.prComment : false
+  def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   node('master || metal || immutable'){
     stage('Reporting build status'){
-      def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
 
-      catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
-        def notificationManager = new NotificationManager()
-        if(shouldNotify){
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
-          notificationManager.notifyEmail(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            emailRecipients: to,
-            testsSummary: readJSON(file: "tests-summary.json"),
-            changeSet: readJSON(file: "changeSet-info.json"),
-            statsUrl: "${statsURL}",
-            log: readFile(file: "pipeline-log-summary.txt"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            stepsErrors: readJSON(file: "steps-info.json")
-          )
+        if(shouldNotify || notifyPRComment) {
+          // Read files only once and if timeout then use default values
+          def buildData = {}
+          def changeSet = []
+          def logData = ''
+          def stepsErrors = []
+          def testsErrors = []
+          def testsSummary = []
+          try {
+            timeout(5) {
+              buildData = readJSON(file: 'build-info.json')
+              changeSet = readJSON(file: 'changeSet-info.json')
+              logData = readFile(file: 'pipeline-log-summary.txt')
+              stepsErrors = readJSON(file: 'steps-errors.json')
+              testsErrors = readJSON(file: 'tests-errors.json')
+              testsSummary = readJSON(file: 'tests-summary.json')
+            }
+          } catch(e) {
+            log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
+          }
+          def notificationManager = new NotificationManager()
+          if(shouldNotify){
+            log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+            notificationManager.notifyEmail(
+              build: buildData,
+              buildStatus: currentBuild.currentResult,
+              emailRecipients: to,
+              testsSummary: testsSummary,
+              changeSet: changeSet,
+              statsUrl: "${statsURL}",
+              log: logData,
+              testsErrors: testsErrors,
+              stepsErrors: stepsErrors
+            )
+          }
+          if(notifyPRComment) {
+            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+            notificationManager.notifyPR(
+              build: buildData,
+              buildStatus: currentBuild.currentResult,
+              changeSet: changeSet,
+              log: logData,
+              statsUrl: "${statsURL}",
+              stepsErrors: stepsErrors,
+              testsErrors: testsErrors,
+              testsSummary: testsSummary,
+              docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
+            )
+          }
         }
+      }
 
-        if(notifyPRComment) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          notificationManager.notifyPR(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            changeSet: readJSON(file: "changeSet-info.json"),
-            log: readFile(file: "pipeline-log-summary.txt"),
-            statsUrl: "${statsURL}",
-            stepsErrors: readJSON(file: "steps-info.json"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            testsSummary: readJSON(file: "tests-summary.json")
-          )
+      catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        timeout(5) {
+          def datafile = readFile(file: 'build-report.json')
+          sendDataToElasticsearch(es: es, secret: secret, data: datafile)
         }
-
-        def datafile = readFile(file: "build-report.json")
-        sendDataToElasticsearch(es: es, secret: secret, data: datafile)
       }
     }
   }

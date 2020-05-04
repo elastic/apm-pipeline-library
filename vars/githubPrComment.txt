@@ -11,7 +11,7 @@ githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 githubPrComment(message: 'foo bar')
 ```
 
-_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+_NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 
 Arguments:

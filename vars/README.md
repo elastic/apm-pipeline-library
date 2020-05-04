@@ -497,7 +497,7 @@ githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
 githubPrComment(message: 'foo bar')
 ```
 
-_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+_NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 
 Arguments:
@@ -987,6 +987,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
+* prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
@@ -1418,8 +1419,12 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
 
-the secret must have this format
+The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
+
+If the secret does not have this format, the `user_key` and `pass_key` flags
+can be set to specify alternative lookup keys for the `username` and `password`
+fields.
 
 The passed data variables will be exported and masked on logs
 
@@ -1428,6 +1433,7 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
 
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
