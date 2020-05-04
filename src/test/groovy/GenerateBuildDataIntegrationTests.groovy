@@ -1,0 +1,125 @@
+// Licensed to Elasticsearch B.V. under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Elasticsearch B.V. licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule
+import net.sf.json.JSONObject
+import net.sf.json.JSONSerializer
+import org.junit.Rule
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
+
+/**
+  If you need to create new data, then you need to use the Wiremock in conjunction with
+  the local jenkins instance to record the BlueOcean responses.
+
+  For such:
+  - cd local ** make start
+  - Build the jobs http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ in
+  - download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
+  - java -jar wiremock-standalone-2.26.3.jar --verbose
+  - open http://localhost:8080/__admin/recorder/
+  - add the target URL http://localhost:18080 and record
+  - Then click on the BlueOcean URLs for the above jobs.
+  - Once you are done you need to copy the folders mappings and __files to src/test/resources
+*/
+class GenerateBuildDataIntegrationTests {
+
+  @Rule
+  public WireMockRule wireMockRule = new WireMockRule(18080)
+
+  private final String URL = "http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
+
+  @Test
+  public void abortBuild() {
+    String jobUrl = this.URL + "/abort/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "ABORTED", "1")
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Tests were not executed
+    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    assertTrue(obj.isEmpty())
+
+    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertFalse(obj.get("changeSet").isEmpty())
+    assertFalse(obj.get("artifacts").isEmpty())
+    assertTrue(obj.get("test").isEmpty())
+    assertFalse(obj.get("build").isEmpty())
+  }
+
+  @Test
+  public void successBuild() {
+    String jobUrl = this.URL + "/success/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Tests were not executed
+    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    assertTrue(obj.isEmpty())
+
+    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertFalse(obj.get("changeSet").isEmpty())
+    assertFalse(obj.get("artifacts").isEmpty())
+    assertTrue(obj.get("test").isEmpty())
+    assertFalse(obj.get("build").isEmpty())
+  }
+
+  @Test
+  public void unstableBuild() {
+    String jobUrl = this.URL + "/unstable/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Tests were executed
+    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    assertFalse(obj.isEmpty())
+
+    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertFalse(obj.get("changeSet").isEmpty())
+    assertFalse(obj.get("artifacts").isEmpty())
+    assertFalse(obj.get("test").isEmpty())
+    assertFalse(obj.get("build").isEmpty())
+  }
+
+  Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
+    //Build command
+    List<String> commands = new ArrayList<String>()
+    commands.add("../resources/scripts/generate-build-data.sh")
+    commands.add(jobUrl)
+    commands.add(buildUrl)
+    commands.add(status)
+    commands.add(runTime)
+
+    ProcessBuilder pb = new ProcessBuilder(commands)
+    pb.directory(new File("target"))
+    pb.redirectErrorStream(true)
+    Process process = pb.start()
+
+    return process
+  }
+}
