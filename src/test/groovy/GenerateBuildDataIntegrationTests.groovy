@@ -111,6 +111,13 @@ class GenerateBuildDataIntegrationTests {
   public void errorBuild() {
     String jobUrl = this.URL + "/error/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    InputStream stdout = process.getInputStream()
+    BufferedReader reader = new BufferedReader (new InputStreamReader(stdout))
+    def line = ''
+    println("Stdout:")
+    while ((line = reader.readLine ()) != null) {
+      println(line)
+    }
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were not executed
