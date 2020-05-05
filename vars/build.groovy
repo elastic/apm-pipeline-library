@@ -39,21 +39,29 @@ def call(Map params = [:]){
   def buildInfo
   try {
     buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: false, quietPeriod: quietPeriod)
+    log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
+    try {
+      log(level: 'INFO', text: "error - ${e}")
+    } catch(e) {}
   }
-  log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
 
   // Propagate the build error if required
   if (propagate) {
     propagateFailure(buildInfo)
   }
+
+  try {
+    log(level: 'INFO', text: "buildInfo - ${buildInfo}")
+  } catch(e) {}
   return buildInfo
 }
 
 def getRedirectLink(buildInfo, jobName) {
   if(buildInfo instanceof String) {
+    log(level: 'INFO', text: "getRedirectLink - String type")
     def buildNumber = ''
     buildInfo.toString().split(' ').each {
       if(it.contains('#')) {
@@ -66,6 +74,7 @@ def getRedirectLink(buildInfo, jobName) {
       return "Can not determine redirect link!!!"
     }
   } else if(buildInfo instanceof RunWrapper) {
+    log(level: 'INFO', text: "getRedirectLink - RunWrapper type")
     return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
