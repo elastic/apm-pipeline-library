@@ -115,4 +115,24 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "PATH=${env.WORKSPACE}/bin"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_installation_error() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BASE_COMMIT = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m?.label?.contains('Install precommit hooks')){
+        throw new Exception('Timeout when reaching github')
+      }
+    })
+    try {
+      script.call()
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('sh', 3))
+    assertTrue(assertMethodCallContainsPattern('sh', "label=Install precommit"))
+    assertJobStatusFailure()
+  }
 }
