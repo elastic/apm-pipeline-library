@@ -15,12 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.ExtendedFlowInterruptedException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import co.elastic.mock.StepsMock
 import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
@@ -270,7 +270,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_AnalyseDownstreamJobsFailures_with_timeout_in_downstreams() throws Exception {
     def script = loadScript(scriptName)
-    def downstreamBuildInfo = new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause('foo', 1))
+    def downstreamBuildInfo = new ExtendedFlowInterruptedException(Result.FAILURE, 'foo', 1, new TimeoutIssuesCause('foo', 1))
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got a timeout checkout issue'))

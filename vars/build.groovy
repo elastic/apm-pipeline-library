@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import co.elastic.ExtendedFlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 import hudson.model.Result
 import co.elastic.TimeoutIssuesCause
@@ -43,9 +43,6 @@ def call(Map params = [:]){
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
-    try {
-      log(level: 'INFO', text: "error - ${e}")
-    } catch(e) {}
   }
 
   // Propagate the build error if required
@@ -53,15 +50,11 @@ def call(Map params = [:]){
     propagateFailure(buildInfo)
   }
 
-  try {
-    log(level: 'INFO', text: "buildInfo - ${buildInfo}")
-  } catch(e) {}
   return buildInfo
 }
 
 def getRedirectLink(buildInfo, jobName) {
   if(buildInfo instanceof String) {
-    log(level: 'INFO', text: "getRedirectLink - String type")
     def buildNumber = ''
     buildInfo.toString().split(' ').each {
       if(it.contains('#')) {
@@ -74,7 +67,6 @@ def getRedirectLink(buildInfo, jobName) {
       return "Can not determine redirect link!!!"
     }
   } else if(buildInfo instanceof RunWrapper) {
-    log(level: 'INFO', text: "getRedirectLink - RunWrapper type")
     return "For detailed information see: ${buildInfo.getAbsoluteUrl()}display/redirect"
   } else {
     return "Can not determine redirect link!!!"
@@ -84,9 +76,9 @@ def getRedirectLink(buildInfo, jobName) {
 def throwFlowInterruptedException(buildInfo) {
   log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim() ?: ''}'")
   if (buildInfo.getDescription()?.contains('timeout')) {
-    throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
+    throw new ExtendedFlowInterruptedException(Result.FAILURE, buildInfo.getProjectName(), buildInfo.getNumber(), new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
   } else {
-    throw new FlowInterruptedException(Result.FAILURE)
+    throw new ExtendedFlowInterruptedException(Result.FAILURE, buildInfo.getProjectName(), buildInfo.getNumber())
   }
 }
 

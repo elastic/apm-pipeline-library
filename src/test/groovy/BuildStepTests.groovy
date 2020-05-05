@@ -17,7 +17,7 @@
 
 import co.elastic.mock.StepsMock
 import co.elastic.TimeoutIssuesCause
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import co.elastic.ExtendedFlowInterruptedException
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
@@ -81,7 +81,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     try {
       script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof ExtendedFlowInterruptedException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -95,7 +95,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     try {
       script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof ExtendedFlowInterruptedException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -109,7 +109,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     try {
       script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof ExtendedFlowInterruptedException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertTrue(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -131,7 +131,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     try {
       script.propagateFailure(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof ExtendedFlowInterruptedException)
     }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))

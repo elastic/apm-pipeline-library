@@ -24,10 +24,10 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 **/
 
+import co.elastic.ExtendedFlowInterruptedException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import hudson.tasks.test.AbstractTestResultAction
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
@@ -164,7 +164,7 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
     def description = []
 
     // Get all the downstreamJobs that got a TimeoutIssueCause
-    downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
+    downstreamJobs.findAll { k, v -> v instanceof ExtendedFlowInterruptedException &&
                                      v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
                   .collectEntries { name, v ->
                     [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
@@ -187,6 +187,6 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
 }
 
 def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
-  return downstreamJobs?.any { k, v -> v instanceof FlowInterruptedException &&
+  return downstreamJobs?.any { k, v -> v instanceof ExtendedFlowInterruptedException &&
                                        v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
 }
