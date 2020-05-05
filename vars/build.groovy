@@ -42,7 +42,6 @@ def call(Map params = [:]){
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
-    throw e
   }
   log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
 
