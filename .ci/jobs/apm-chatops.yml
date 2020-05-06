@@ -5,7 +5,7 @@
     description: This ChatOps job process all messages on PRs and make actions based on the message.
     view: APM-CI
     project-type: multibranch
-    script-path: .ci/licenseScan.groovy
+    script-path: .ci/chatops.groovy
     scm:
       - github:
           branch-discovery: no-pr
