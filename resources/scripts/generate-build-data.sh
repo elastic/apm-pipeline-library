@@ -200,6 +200,8 @@ function normaliseTests() {
 
 function normaliseSteps() {
     file=$1
+    # shellcheck disable=SC2016
+    jqAppend "${BASE_URL}" 'map(with_entries(select(.key != "_links")) + ( .url = $a + ._links.self.href + "log"))' "${file}"
     jqEdit 'map(del(._links))' "${file}"
     jqEdit 'map(del(._class))' "${file}"
     jqEdit 'map(del(.actions))' "${file}"

@@ -60,11 +60,11 @@
     * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
     * Result: ${c?.result && c?.result != 'null' ? c?.result : ''}
     <% if(c?.durationInMillis >= 0) {%>
-    * Duration: ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec<
+    * Duration: ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec
     <%}%>
     * Start Time: ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}
-    <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
-    * [log](${jenkinsUrl}/${l._links.self.href})
+    <% if(c?.url && c?.url != 'null') {%>
+    * [log](${c?.url})
     <%}%>
   <%}%>
   </p>

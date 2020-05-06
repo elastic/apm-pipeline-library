@@ -24,6 +24,7 @@ import org.junit.Test
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 /**
@@ -129,6 +130,40 @@ class GenerateBuildDataIntegrationTests {
     obj = errors.get(0)
     assertEquals("Log transformation happens successfully", "foo", obj.get("displayDescription"))
     assertEquals("It was an error signal", "Error signal", obj.get("displayName"))
+  }
+
+  @Test
+  public void unstableBuild_with_tests_normalisation() {
+    String jobUrl = this.URL + "/unstable/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Tests were executed
+    JSONArray tests = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    assertFalse("There are tests", tests.isEmpty())
+    JSONObject obj = tests.get(0)
+    assertNull("No _links object", obj.get("_links"))
+    assertNull("No _class object", obj.get("_class"))
+    assertNull("No state object", obj.get("state"))
+    assertNull("No hasStdLog object", obj.get("hasStdLog"))
+    assertNull("No errorStackTrace object", obj.get("errorStackTrace"))
+  }
+
+  @Test
+  public void errorBuild_with_steps_normalisation() {
+    String jobUrl = this.URL + "/error/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    InputStream stdout = process.getInputStream()
+    BufferedReader reader = new BufferedReader (new InputStreamReader(stdout))
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    JSONArray errors = JSONSerializer.toJSON(new File("target/steps-errors.json").text)
+    assertFalse("There are steps errors", errors.isEmpty())
+    JSONObject obj = errors.get(0)
+    assertNull("No _class object", obj.get("_class"))
+    assertNull("No _index object", obj.get("_index"))
+    assertNull("No actions object", obj.get("actions"))
+    assertEquals("URL transformation happens successfully", "http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log", obj.get("url"))
   }
 
   Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
