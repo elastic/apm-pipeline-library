@@ -160,7 +160,7 @@ class GenerateBuildDataIntegrationTests {
     assertNull("No _class object", obj.get("_class"))
     assertNull("No _index object", obj.get("_index"))
     assertNull("No actions object", obj.get("actions"))
-    assertEquals("URL transformation happens successfully", "http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log", obj.get("url"))
+    assertTrue("URL transformation happens successfully", obj.get("url").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
   }
 
   Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
