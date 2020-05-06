@@ -52,6 +52,7 @@ class GenerateBuildDataIntegrationTests {
   public void abortBuild() {
     String jobUrl = this.URL + "/abort/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "ABORTED", "1")
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were not executed
@@ -72,6 +73,7 @@ class GenerateBuildDataIntegrationTests {
   public void successBuild() {
     String jobUrl = this.URL + "/success/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were not executed
@@ -92,6 +94,7 @@ class GenerateBuildDataIntegrationTests {
   public void unstableBuild() {
     String jobUrl = this.URL + "/unstable/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
@@ -112,13 +115,7 @@ class GenerateBuildDataIntegrationTests {
   public void errorBuild() {
     String jobUrl = this.URL + "/error/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
-    InputStream stdout = process.getInputStream()
-    BufferedReader reader = new BufferedReader (new InputStreamReader(stdout))
-    def line = ''
-    println("Stdout:")
-    while ((line = reader.readLine ()) != null) {
-      println(line)
-    }
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were not executed
@@ -136,6 +133,7 @@ class GenerateBuildDataIntegrationTests {
   public void unstableBuild_with_tests_normalisation() {
     String jobUrl = this.URL + "/unstable/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
@@ -153,8 +151,7 @@ class GenerateBuildDataIntegrationTests {
   public void errorBuild_with_steps_normalisation() {
     String jobUrl = this.URL + "/error/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
-    InputStream stdout = process.getInputStream()
-    BufferedReader reader = new BufferedReader (new InputStreamReader(stdout))
+    printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     JSONArray errors = JSONSerializer.toJSON(new File("target/steps-errors.json").text)
@@ -181,5 +178,15 @@ class GenerateBuildDataIntegrationTests {
     Process process = pb.start()
 
     return process
+  }
+
+  private printStdout(Process process) {
+    InputStream stdout = process.getInputStream()
+    BufferedReader reader = new BufferedReader (new InputStreamReader(stdout))
+    def line = ''
+    println("Stdout:")
+    while ((line = reader.readLine ()) != null) {
+      println(line)
+    }
   }
 }
