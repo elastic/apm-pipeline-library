@@ -1,6 +1,6 @@
 ---
 - job:
-    name: beats/e2e-testing-mbp
+    name: stack/e2e-testing-mbp
     display-name: End-2-End Tests Pipeline
     description: Jenkins pipeline for the e2e-testing project
     view: APM-CI
