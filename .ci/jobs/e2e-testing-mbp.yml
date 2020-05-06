@@ -1,8 +1,8 @@
 ---
 - job:
-    name: beats/poc-metricbeat-tests-poc-mbp
-    display-name: Metricbeat Tests POC Pipeline
-    description: Jenkins pipeline for the project metricbeat-tests-poc
+    name: stack/e2e-testing-mbp
+    display-name: End-2-End Tests Pipeline
+    description: Jenkins pipeline for the e2e-testing project
     view: APM-CI
     project-type: multibranch
     script-path: .ci/Jenkinsfile
@@ -14,7 +14,7 @@
           discover-pr-origin: merge-current
           discover-tags: true
           notification-context: 'apm-ci'
-          repo: metricbeat-tests-poc
+          repo: e2e-testing
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
           ssh-checkout:
