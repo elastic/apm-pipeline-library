@@ -1,8 +1,8 @@
 ---
 - job:
-    name: beats/poc-metricbeat-functional-tests
-    display-name: Metricbeat Functional Tests POC Pipeline
-    description: Jenkins pipeline for running the functional tests for the e2e-testing project
+    name: beats/e2e-testing-beats
+    display-name: End-2-End Tests Pipeline for Beats
+    description: Jenkins pipeline for running the functional tests for Beats project
     view: APM-CI
     project-type: pipeline
     pipeline-scm:
