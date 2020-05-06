@@ -805,6 +805,13 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 def userTrigger = isUserTrigger()
 ```
 
+## licenseScan
+Scan the repository for third-party dependencies and report the results.
+
+```
+licenseScan()
+```
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
@@ -1423,7 +1430,7 @@ The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
 
 If the secret does not have this format, the `user_key` and `pass_key` flags
-can be set to specify alternative lookup keys for the `username` and `password`
+can be set to specify alternative lookup keys for the `user` and `password`
 fields.
 
 The passed data variables will be exported and masked on logs
@@ -1433,7 +1440,6 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
-
 
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
