@@ -200,8 +200,8 @@
               <%}%>
               <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong>  ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}</a><br>
 
-              <% c.actions?.findAll{item -> item?.urlName == "log"}.each{ l ->%>
-                <a href="${jenkinsUrl}/${l._links.self.href}">Log</a><br>
+              <% if(c?.url && c?.url != 'null') {%>
+                <a href="${c?.url}">Log</a><br>
               <%}%>
               <hr>
               </td>
