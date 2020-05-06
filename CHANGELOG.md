@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.1.94 (06/05/2020)
+
+#### 🚀 Enhancements
+
+-  feat: licenseScan step [#515](https://github.com/elastic/apm-pipeline-library/pull/515)
+
+---
+
+## v1.1.93 (04/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: cornercase when comment has been deleted [#510](https://github.com/elastic/apm-pipeline-library/pull/510)
+
+#### 🐛 Bug Fixes
+
+-  fix: store comment.id [#509](https://github.com/elastic/apm-pipeline-library/pull/509)
+
+---
+
 ## v1.1.92 (04/05/2020)
 
 #### 🚀 Enhancements
@@ -621,12 +641,12 @@
 
 #### 🚀 Enhancements
 
--  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
--  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
--  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
+-  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
+-  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
+-  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 
 #### 🐛 Bug Fixes
 
@@ -889,10 +909,10 @@
 
 #### 🚀 Enhancements
 
--  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 -  feat: prepareAndRun for the benchmark [#167](https://github.com/elastic/apm-pipeline-library/pull/167)
 -  ci: enable PoC for the metricbeats [#148](https://github.com/elastic/apm-pipeline-library/pull/148)
 -  feat: use preCommit step [#166](https://github.com/elastic/apm-pipeline-library/pull/166)
+-  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 
 #### 🐛 Bug Fixes
 
@@ -908,8 +928,8 @@
 
 #### 🚀 Enhancements
 
--  feat: enable precommit step [#158](https://github.com/elastic/apm-pipeline-library/pull/158)
 -  windows is not supported in some steps [#162](https://github.com/elastic/apm-pipeline-library/pull/162)
+-  feat: enable precommit step [#158](https://github.com/elastic/apm-pipeline-library/pull/158)
 
 #### 🙈 No user affected
 
@@ -1274,13 +1294,13 @@
 
 #### 🚀 Enhancements
 
+-  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
+-  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
+-  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
--  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
--  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
--  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 
 #### 📚 Documentation
 
