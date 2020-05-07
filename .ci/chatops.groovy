@@ -36,7 +36,7 @@ pipeline {
   }
   triggers {
     // most of then come from https://prow.k8s.io/command-help
-    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|uncc|assing|unassign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s\\w+)?$')
+    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assing|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s\\w+)?$')
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
@@ -55,7 +55,7 @@ pipeline {
       }
       steps {
         deleteDir()
-        //gitCheckout(basedir: "${BASE_DIR}")
+        gitCheckout(basedir: "${BASE_DIR}", shallow: true, depth: 1)
         /*
         gitCheckout(basedir: "${BASE_DIR}", branch: "${params.branch_specifier}",
           repo: "git@github.com:elastic/${env.REPO}.git",
@@ -87,9 +87,6 @@ def matcher(){
       break
     case ~/\/assing/:
       assing()
-      break
-    case ~/\/unassign/:
-      unassign()
       break
     case ~/\/approve/:
       approve()
@@ -148,22 +145,38 @@ def runCmd(){
 
 def lgtm(){
   echo "${env.GITHUB_COMMENT}"
+  pullRequest.addLabels("LGTM")
 }
 
 def ccCmd(){
   echo "${env.GITHUB_COMMENT}"
+  def usr = "${env.GITHUB_COMMENT}"
+  usr -= 'cancel'
+  usr -= 'label'
+  usr = label.trim()
+  if(GITHUB_COMMENT.contains('cancel')){
+    pullRequest.deleteReviewRequests(usr)
+  } else {
+    pullRequest.createReviewRequests(usr)
+  }
 }
 
 def assing(){
   echo "${env.GITHUB_COMMENT}"
-}
-
-def unassign(){
-  echo "${env.GITHUB_COMMENT}"
+  def usr = "${env.GITHUB_COMMENT}"
+  usr -= 'cancel'
+  usr -= 'label'
+  usr = label.trim()
+  if(GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeAssignees(usr)
+  } else {
+    pullRequest.addAssignees(usr)
+  }
 }
 
 def approve(){
   echo "${env.GITHUB_COMMENT}"
+  //TODO not implemented in https://github.com/jenkinsci/pipeline-github-plugin
 }
 
 def meow(){
@@ -187,7 +200,7 @@ def help(){
   def body = """
   # ChatOps commands Help
   * **/approve** - Approve the PR.
-  * **/assing @Someone** - Assing the PR to Someone.
+  * **/assing [cancel] @Someone** - Assing the PR to Someone.
   * **/bark** - Add a dog image to the issue or PR.
   * **/build** - Launch the build process.
   * **/cc [cancel] @Someone** - Requests a review from the user(s).
@@ -206,7 +219,6 @@ def help(){
   * **/skip [cancel]** - Mark the PR to be skipped from build in CI.
   * **/test** - Launch the test process.
   * **/this-is-{fine|not-fine|unbearable}** - Add a reaction image to the PR.
-  * **/unassign @Someone** - Unassign @Someone from the PR.
   * **/woof** - Add a dog image to the issue or PR.
   """
   pullRequest.comment(body)
@@ -214,30 +226,60 @@ def help(){
 
 def thisIs(){
   echo "${env.GITHUB_COMMENT}"
+  def body = """
+  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
+  """
+  pullRequest.comment(body)
 }
 
 def hold(){
   echo "${env.GITHUB_COMMENT}"
+  if(env.GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeLabel("DO-NO-MERGGE")
+  } else {
+    pullRequest.addLabels("DO-NO-MERGGE")
+  }
 }
 
 def labelCmd(){
   echo "${env.GITHUB_COMMENT}"
+  def label = "${env.GITHUB_COMMENT}"
+  label -= 'cancel'
+  label -= 'label'
+  label = label.trim()
+  if(env.GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeLabel(label)
+  } else {
+    pullRequest.addLabels(label)
+  }
 }
 
 def closeCmd(){
   echo "${env.GITHUB_COMMENT}"
+  pullRequest.status = 'closed'
 }
 
 def reopenCmd(){
   echo "${env.GITHUB_COMMENT}"
+  pullRequest.status = 'open'
 }
 
 def skipCmd(){
   echo "${env.GITHUB_COMMENT}"
+  if(env.GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeLabel("SKIP-CI")
+  } else {
+    pullRequest.addLabels("SKIP-CI")
+  }
 }
 
 def okToTest(){
   echo "${env.GITHUB_COMMENT}"
+  if(env.GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeLabel("OK-TO-TEST")
+  } else {
+    pullRequest.addLabels("OK-TO-TEST")
+  }
 }
 
 def packageCmd(){
@@ -254,6 +296,15 @@ def test(){
 
 def build(){
   echo "${env.GITHUB_COMMENT}"
+  build(job: 'apm-shared/apm-pipeline-library-mbp/master',
+    parameters: [
+      string(name: 'MAVEN_CONFIG', value: ''),
+      booleanParam(name: 'make_release', value: false)
+    ],
+    propagate: false,
+    quietPeriod: 10,
+    wait: false
+  )
 }
 
 def deploy(){
