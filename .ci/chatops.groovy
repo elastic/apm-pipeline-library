@@ -153,6 +153,7 @@ def ccCmd(){
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
   usr -= '/cc'
+  usr -= '@'
   usr = usr.trim()
   if(GITHUB_COMMENT.contains('cancel')){
     pullRequest.deleteReviewRequests([usr])
@@ -166,6 +167,7 @@ def assing(){
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
   usr -= '/assing'
+  usr -= '@'
   usr = usr.trim()
   if(GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeAssignees([usr])
