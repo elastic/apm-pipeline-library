@@ -36,7 +36,7 @@ pipeline {
   }
   triggers {
     // most of then come from https://prow.k8s.io/command-help
-    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assing|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+[\\w,@,-,_])?$')
+    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assing|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+[\\w,\\@,\\-,_])?$')
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
@@ -256,12 +256,12 @@ def labelCmd(){
 
 def closeCmd(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.status = 'closed'
+  pullRequest.setStatus('closed')
 }
 
 def reopenCmd(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.status = 'open'
+  pullRequest.setStatus('open')
 }
 
 def skipCmd(){
