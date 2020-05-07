@@ -36,7 +36,7 @@ pipeline {
   }
   triggers {
     // most of then come from https://prow.k8s.io/command-help
-    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assing|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s\\w+)?$')
+    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assing|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?( \\w+)?$')
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
@@ -72,7 +72,7 @@ pipeline {
 }
 
 def matcher(){
-  switch ("${env.GITHUB_COMMENT}") {
+  switch ("${env.GITHUB_COMMENT}".lower()) {
     case ~/\/run/:
       runCmd()
       break
@@ -82,10 +82,10 @@ def matcher(){
     case ~/\/lgtm/:
       lgtm()
       break
-    case ~/\/cc/:
+    case ~/\/cc.*/:
       ccCmd()
       break
-    case ~/\/assing/:
+    case ~/\/assing.*/:
       assing()
       break
     case ~/\/approve/:
@@ -98,7 +98,7 @@ def matcher(){
     case ~/\/bark/:
       woof()
       break
-    case ~/\/this-is-/:
+    case ~/\/this-is-.*/:
       thisIs()
       break
     case ~/\/lint/:
@@ -107,10 +107,10 @@ def matcher(){
     case ~/\/help/:
       help()
       break
-    case ~/\/hold/:
+    case ~/\/hold.*/:
       hold()
       break
-    case ~/\/label/:
+    case ~/\/label.*/:
       labelCmd()
       break
     case ~/\/close/:
@@ -119,7 +119,7 @@ def matcher(){
     case ~/\/reopen/:
       reopenCmd()
       break
-    case ~/\/skip/:
+    case ~/\/skip.*/:
       skipCmd()
       break
     case ~/\/ok-to-test/:
