@@ -46,7 +46,6 @@ pipeline {
      Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
-      options { skipDefaultCheckout() }
       agent { label 'linux && immutable' }
       when {
         beforeAgent true
