@@ -152,7 +152,7 @@ def ccCmd(){
   echo "${env.GITHUB_COMMENT}"
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
-  usr -= 'label'
+  usr -= '/cc'
   usr = label.trim()
   if(GITHUB_COMMENT.contains('cancel')){
     pullRequest.deleteReviewRequests(usr)
@@ -165,7 +165,7 @@ def assing(){
   echo "${env.GITHUB_COMMENT}"
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
-  usr -= 'label'
+  usr -= '/assing'
   usr = label.trim()
   if(GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeAssignees(usr)
@@ -245,7 +245,7 @@ def labelCmd(){
   echo "${env.GITHUB_COMMENT}"
   def label = "${env.GITHUB_COMMENT}"
   label -= 'cancel'
-  label -= 'label'
+  label -= '/label'
   label = label.trim()
   if(env.GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeLabel(label)
