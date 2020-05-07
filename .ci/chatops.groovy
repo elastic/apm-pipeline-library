@@ -145,7 +145,7 @@ def runCmd(){
 
 def lgtm(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.addLabels("LGTM")
+  pullRequest.addLabels(["LGTM"])
 }
 
 def ccCmd(){
@@ -237,7 +237,7 @@ def hold(){
   if(env.GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeLabel("DO-NO-MERGGE")
   } else {
-    pullRequest.addLabels("DO-NO-MERGGE")
+    pullRequest.addLabels(["DO-NO-MERGGE"])
   }
 }
 
@@ -250,7 +250,7 @@ def labelCmd(){
   if(env.GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeLabel(label)
   } else {
-    pullRequest.addLabels(label)
+    pullRequest.addLabels([label])
   }
 }
 
@@ -269,7 +269,7 @@ def skipCmd(){
   if(env.GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeLabel("SKIP-CI")
   } else {
-    pullRequest.addLabels("SKIP-CI")
+    pullRequest.addLabels(["SKIP-CI"])
   }
 }
 
@@ -278,7 +278,7 @@ def okToTest(){
   if(env.GITHUB_COMMENT.contains('cancel')){
     pullRequest.removeLabel("OK-TO-TEST")
   } else {
-    pullRequest.addLabels("OK-TO-TEST")
+    pullRequest.addLabels(["OK-TO-TEST"])
   }
 }
 
