@@ -35,7 +35,8 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger('(?i)^\\/run(-\\w+)?$')
+    // most of then come from https://prow.k8s.io/command-help
+    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|uncc|assing|unassign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s\\w+)?$')
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
@@ -55,7 +56,7 @@ pipeline {
       }
       steps {
         deleteDir()
-        checkout scm
+        gitCheckout(basedir: "${BASE_DIR}")
         /*
         gitCheckout(basedir: "${BASE_DIR}", branch: "${params.branch_specifier}",
           repo: "git@github.com:elastic/${env.REPO}.git",
@@ -63,7 +64,9 @@ pipeline {
           githubNotifyFirstTimeContributor: false,
           reference: "/var/lib/jenkins/${env.REPO}.git")
         */
-        matcher()
+        dir("${BASE_DIR}"){
+          matcher()
+        }
       }
     }
   }
@@ -72,26 +75,173 @@ pipeline {
 def matcher(){
   switch ("${env.GITHUB_COMMENT}") {
     case ~/\/run/:
-        runCmd()
-        break
-    case ~/\/run-lint/:
-        lint()
-        break
-    case ~/\/run-test/:
-        test()
-        break
-    case ~/\/run-build/:
-        build()
-        break
-    case ~/\/run-deploy/:
-        deploy()
-        break
+      runCmd()
+      break
+    case ~/\/test/:
+      test()
+      break
+    case ~/\/lgtm/:
+      lgtm()
+      break
+    case ~/\/cc/:
+      ccCmd()
+      break
+    case ~/\/assing/:
+      assing()
+      break
+    case ~/\/unassign/:
+      unassign()
+      break
+    case ~/\/approve/:
+      approve()
+      break
+    case ~/\/meow/:
+      meow()
+      break
+    case ~/\/woof/:
+    case ~/\/bark/:
+      woof()
+      break
+    case ~/\/this-is-/:
+      thisIs()
+      break
+    case ~/\/lint/:
+      lint()
+      break
+    case ~/\/help/:
+      help()
+      break
+    case ~/\/hold/:
+      hold()
+      break
+    case ~/\/label/:
+      labelCmd()
+      break
+    case ~/\/close/:
+      closeCmd()
+      break
+    case ~/\/reopen/:
+      reopenCmd()
+      break
+    case ~/\/skip/:
+      skipCmd()
+      break
+    case ~/\/ok-to-test/:
+      okToTest()
+      break
+    case ~/\/package/:
+      packageCmd()
+      break
+    case ~/\/build/:
+      build()
+      break
+    case ~/\/deploy/:
+      deploy()
+      break
     default:
-        echo "Unrecognized..."
+      echo "Unrecognized..."
   }
 }
 
 def runCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def lgtm(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def ccCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def assing(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def unassign(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def approve(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def meow(){
+  echo "${env.GITHUB_COMMENT}"
+  def body = """
+  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
+  """
+  pullRequest.comment(body)
+}
+
+def woof(){
+  echo "${env.GITHUB_COMMENT}"
+  def body = """
+  ![image](https://media.giphy.com/media/4Zo41lhzKt6iZ8xff9/giphy.gif)
+  """
+  pullRequest.comment(body)
+}
+
+def help(){
+  echo "${env.GITHUB_COMMENT}"
+  def body = """
+  # ChatOps commands Help
+  * **/approve** - Approve the PR.
+  * **/assing @Someone** - Assing the PR to Someone.
+  * **/bark** - Add a dog image to the issue or PR.
+  * **/build** - Launch the build process.
+  * **/cc [cancel] @Someone** - Requests a review from the user(s).
+  * **/close** - Close the PR.
+  * **/deploy** - Launch the deploy process.
+  * **/help** - Punt a comment with the ChatOps commands
+  * **/hold [cancel]** - Adds or removes the `do-not-merge/hold` Label which is used to indicate that the PR should not be automatically merged.
+  * **/label [cancel]** labelName - Adds a label to the PR
+  * **/lgtm [cancel]** - Adds or removes the 'lgtm' label which is typically used to gate merging.
+  * **/lint** - Launch the linting proces.
+  * **/meow** - Add a cat image to the issue or PR.
+  * **/ok-to-test** - Marks a PR as 'trusted' and starts tests.
+  * **/package** - Launch the packaging proces.
+  * **/reopen** - Reopen the PR.
+  * **/run [something]** - Launch the "something" process
+  * **/skip [cancel]** - Mark the PR to be skipped from build in CI.
+  * **/test** - Launch the test process.
+  * **/this-is-{fine|not-fine|unbearable}** - Add a reaction image to the PR.
+  * **/unassign @Someone** - Unassign @Someone from the PR.
+  * **/woof** - Add a dog image to the issue or PR.
+  """
+  pullRequest.comment(body)
+}
+
+def thisIs(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def hold(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def labelCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def closeCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def reopenCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def skipCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def okToTest(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def packageCmd(){
   echo "${env.GITHUB_COMMENT}"
 }
 
