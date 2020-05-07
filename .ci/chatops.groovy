@@ -72,7 +72,7 @@ pipeline {
 }
 
 def matcher(){
-  switch ("${env.GITHUB_COMMENT}".lower()) {
+  switch ("${env.GITHUB_COMMENT}".toLowerCase()) {
     case ~/\/run/:
       runCmd()
       break
