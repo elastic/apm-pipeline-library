@@ -15,9 +15,9 @@
           discover-pr-origin: merge-current
           discover-tags: true
           notification-context: 'chatops'
-          property-strategies:
-            all-branches:
-              - suppress-scm-triggering: true
+#          property-strategies:
+#            all-branches:
+#              - suppress-scm-triggering: true
           repo: apm-pipeline-library
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
