@@ -155,9 +155,9 @@ def ccCmd(){
   usr -= '/cc'
   usr = usr.trim()
   if(GITHUB_COMMENT.contains('cancel')){
-    pullRequest.deleteReviewRequests(usr)
+    pullRequest.deleteReviewRequests([usr])
   } else {
-    pullRequest.createReviewRequests(usr)
+    pullRequest.createReviewRequests([usr])
   }
 }
 
@@ -168,9 +168,9 @@ def assing(){
   usr -= '/assing'
   usr = usr.trim()
   if(GITHUB_COMMENT.contains('cancel')){
-    pullRequest.removeAssignees(usr)
+    pullRequest.removeAssignees([usr])
   } else {
-    pullRequest.addAssignees(usr)
+    pullRequest.addAssignees([usr])
   }
 }
 
