@@ -259,12 +259,12 @@ def labelCmd(){
 
 def closeCmd(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.setStatus('closed')
+  pullRequest.setState('closed')
 }
 
 def reopenCmd(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.setStatus('open')
+  pullRequest.setState('open')
 }
 
 def skipCmd(){
