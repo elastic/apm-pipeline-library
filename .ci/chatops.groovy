@@ -72,6 +72,7 @@ pipeline {
 }
 
 def matcher(){
+  echo "Checking command... '${env.GITHUB_COMMENT}'"
   switch ("${env.GITHUB_COMMENT}".toLowerCase()) {
     case ~/\/run/:
       runCmd()
