@@ -135,7 +135,7 @@ def matcher(){
       deploy()
       break
     default:
-      echo "Unrecognized..."
+      echo "Unrecognized command... '${env.GITHUB_COMMENT}'"
   }
 }
 
