@@ -18,7 +18,7 @@
 @Library('apm@current') _
 
 pipeline {
-  agent { label 'linux && immutable' }
+  agent none
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
@@ -46,6 +46,13 @@ pipeline {
     */
     stage('Checkout') {
       options { skipDefaultCheckout() }
+      agent { label 'linux && immutable' }
+      when {
+        beforeAgent true
+        not {
+          triggeredBy 'SCMTrigger'
+        }
+      }
       steps {
         deleteDir()
         checkout scm
