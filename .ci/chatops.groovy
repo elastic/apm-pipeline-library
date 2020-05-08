@@ -67,10 +67,10 @@ pipeline {
           matcher()
         }
       }
-    }
-    post {
-      cleanup {
-        deleteDir()
+      post {
+        cleanup {
+          deleteDir()
+        }
       }
     }
   }
