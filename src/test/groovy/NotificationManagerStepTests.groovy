@@ -226,7 +226,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void test_notify_pr_with_aborted() throws Exception {
     def script = loadScript(scriptName)
     script.notifyPR(
-      build: readJSON(file: "build-info.json"),
+      build: readJSON(file: "build-info_aborted.json"),
       buildStatus: "ABORTED",
       changeSet: readJSON(file: "changeSet-info.json"),
       log: f.getText(),
@@ -237,6 +237,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '> There is a new build on-going so the previous on-going builds have been aborted'))
     assertJobStatusSuccess()
   }
 
