@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.95 (08/05/2020)
+
+#### ⚙️ CI
+
+-  test: move the job to multibranch pipeline [#514](https://github.com/elastic/apm-pipeline-library/pull/514)
+
+---
+
 ## v1.1.94 (06/05/2020)
 
 #### 🚀 Enhancements
@@ -288,10 +296,10 @@
 
 #### ⚙️ CI
 
--  Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
--  ci(jenkins): generate jruby images within the apm-agent-ruby [#405](https://github.com/elastic/apm-pipeline-library/pull/405)
 -  [jjbb]: enable e2e kibana tests for the master branch only [#403](https://github.com/elastic/apm-pipeline-library/pull/403)
 -  [packer-cache] Cache jjbb images [#404](https://github.com/elastic/apm-pipeline-library/pull/404)
+-  Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
+-  ci(jenkins): generate jruby images within the apm-agent-ruby [#405](https://github.com/elastic/apm-pipeline-library/pull/405)
 
 ---
 
@@ -641,25 +649,25 @@
 
 #### 🚀 Enhancements
 
+-  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
 -  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
 -  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
--  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 
 #### 🐛 Bug Fixes
 
+-  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
 -  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 -  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
 -  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
 -  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
--  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
 
 #### 📚 Documentation
 
--  refactor: simplify asserts with some helper functions [#293](https://github.com/elastic/apm-pipeline-library/pull/293)
 -  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
+-  refactor: simplify asserts with some helper functions [#293](https://github.com/elastic/apm-pipeline-library/pull/293)
 
 #### ⚙️ CI
 
@@ -909,10 +917,10 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 -  feat: prepareAndRun for the benchmark [#167](https://github.com/elastic/apm-pipeline-library/pull/167)
 -  ci: enable PoC for the metricbeats [#148](https://github.com/elastic/apm-pipeline-library/pull/148)
 -  feat: use preCommit step [#166](https://github.com/elastic/apm-pipeline-library/pull/166)
--  feat: enable jjbb validation within the pre-commit [#163](https://github.com/elastic/apm-pipeline-library/pull/163)
 
 #### 🐛 Bug Fixes
 
@@ -1254,15 +1262,15 @@
 
 #### 🚀 Enhancements
 
--   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 -  feat: add build info to the test results object [#65](https://github.com/elastic/apm-pipeline-library/pull/65)
 -  feat: new job for Integrations registry repo [#64](https://github.com/elastic/apm-pipeline-library/pull/64)
+-   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 
 #### 🐛 Bug Fixes
 
+-  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
 -  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
--  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 
 ---
 
