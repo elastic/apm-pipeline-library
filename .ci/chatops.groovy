@@ -69,6 +69,11 @@ pipeline {
       }
     }
   }
+  post {
+    cleanup {
+      deleteDir()
+    }
+  }
 }
 
 def matcher(){
