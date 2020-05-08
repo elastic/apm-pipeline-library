@@ -1,16 +1,12 @@
 <%if (statusSuccess) {%>
 ## :green_heart: Build Succeeded
-<%} else {%>
-  <%if (buildStatus?.equals('ABORTED')) {%>
+<%} else if (buildStatus?.equals('ABORTED')) {%>
 ## :grey_exclamation: Build Aborted
 ${(build?.description?.toLowerCase().contains('aborted')) ? '> There is a new build on-going so the previous on-going builds have been aborted.' : ''}
-  <%} else {%>
-    <%if (buildStatus?.equals('UNSTABLE')) {%>
+<%} else if (buildStatus?.equals('UNSTABLE')) {%>
 ## :yellow_heart: Build Unstable
-    <%} else {%>
+<%} else {%>
 ## :broken_heart: Build Failed
-    <%}%>
-  <%}%>
 <%}%>
 
 <!-- BUILD BADGES-->
