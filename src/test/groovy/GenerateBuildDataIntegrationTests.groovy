@@ -163,6 +163,19 @@ class GenerateBuildDataIntegrationTests {
     assertTrue("URL transformation happens successfully", obj.get("url").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
   }
 
+  @Test
+  public void emptyBuild_with_default_manipulation() {
+    String jobUrl = this.URL + "/empty/"
+    Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    printStdout(process)
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    def content = new File("target/job-info.json").text
+    assertFalse(content.isEmpty())
+    JSONObject info = JSONSerializer.toJSON(content)
+    assertTrue(info.isEmpty())
+  }
+
   Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
     //Build command
     List<String> commands = new ArrayList<String>()
@@ -173,6 +186,9 @@ class GenerateBuildDataIntegrationTests {
     commands.add(runTime)
 
     ProcessBuilder pb = new ProcessBuilder(commands)
+    Map<String, String> env = pb.environment()
+    env.put('JENKINS_URL', 'http://localhost:18080/')
+    env.put('PIPELINE_LOG_LEVEL', 'INFO')
     pb.directory(new File("target"))
     pb.redirectErrorStream(true)
     Process process = pb.start()
