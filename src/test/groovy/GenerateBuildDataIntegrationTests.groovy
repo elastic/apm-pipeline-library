@@ -186,6 +186,9 @@ class GenerateBuildDataIntegrationTests {
     commands.add(runTime)
 
     ProcessBuilder pb = new ProcessBuilder(commands)
+    Map<String, String> env = pb.environment()
+    env.put('JENKINS_URL', 'http://localhost:18080/')
+    env.put('PIPELINE_LOG_LEVEL', 'INFO')
     pb.directory(new File("target"))
     pb.redirectErrorStream(true)
     Process process = pb.start()

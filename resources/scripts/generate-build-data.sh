@@ -107,7 +107,7 @@ function fetchAndDefault() {
         echo "${default}" > "${file}"
     fi
 
-    if [[ $(wc -l <"${file}") -eq 0 ]] ; then
+    if [ ! -s "${file}" ] ; then
         echo "${default}" > "${file}"
     fi
 }
