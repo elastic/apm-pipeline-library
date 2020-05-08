@@ -78,6 +78,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: [ '^file.txt' ])
     printCallStack()
     assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: found with regex [^file.txt]"))
     assertJobStatusSuccess()
   }
 
@@ -149,6 +150,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: [ '^foo/.*', '^foo/bar/.*' ], shouldMatchAll: true)
     printCallStack()
     assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: found with regex [^foo/.*, ^foo/bar/.*]"))
     assertJobStatusSuccess()
   }
 
@@ -159,6 +161,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     printCallStack()
     assertFalse(script.call(patterns: [ '^unknown.txt' ]))
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: not found with regex [^unknown.txt]"))
     assertJobStatusSuccess()
   }
 
@@ -173,6 +176,7 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: [ '^foo/.*/file.txt', '^foo/bar/.*/file.txt' ], shouldMatchAll: true)
     printCallStack()
     assertFalse(result)
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: not found with regex [^foo/.*/file.txt, ^foo/bar/.*/file.txt]"))
     assertJobStatusSuccess()
   }
 
