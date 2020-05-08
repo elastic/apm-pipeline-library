@@ -22,18 +22,19 @@ import static org.junit.Assert.assertFalse
 
 class NotificationManagerStepTests extends ApmBasePipelineTest {
   String scriptName = 'src/co/elastic/NotificationManager.groovy'
+  def f
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    f = new File("src/test/resources/console-100-lines.log")
+    env.TEST = "test"
   }
 
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
-    env.TEST = "test"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
@@ -53,7 +54,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testMinParams() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testMinParams"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
@@ -68,7 +68,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testFAILURE() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testFAILURE"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
@@ -89,7 +88,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoBuildInfo() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildInfo"
     try{
       script.notifyEmail(
@@ -115,7 +113,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoBuildStatus() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildStatus"
     try{
       script.notifyEmail(
@@ -141,7 +138,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoEmailRecipients() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoEmailRecipients"
     try{
       script.notifyEmail(
@@ -167,8 +163,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void test_notify_pr() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
-    env.TEST = "test"
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
@@ -188,7 +182,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoBuildStatus_notify_pr() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildStatus"
     try{
       script.notifyPR(
@@ -211,7 +204,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoBuildInfo_notify_pr() throws Exception {
     def script = loadScript(scriptName)
-    def f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "testNoBuildInfo"
     try {
       script.notifyPR(
@@ -228,5 +220,95 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: build parameter it is not valid'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_notify_pr_with_aborted() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "ABORTED",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_failure() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_unstable() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNSTABLE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Unstable'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_unknown() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNKNOWN",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_foo() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "foo",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertJobStatusSuccess()
   }
 }

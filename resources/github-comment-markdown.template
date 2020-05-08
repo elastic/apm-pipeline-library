@@ -1,4 +1,16 @@
-## ${statusSuccess ? ':green_heart: Build Succeeded' : ':broken_heart: Build Failed'} 
+<%if (statusSuccess) {%>
+## :green_heart: Build Succeeded
+<%} else {%>
+  <%if (buildStatus?.equals('ABORTED')) {%>
+    ## :grey_exclamation: Build Aborted
+  <%} else {%>
+    <%if (buildStatus?.equals('UNSTABLE')) {%>
+      ## :yellow_heart: Build Unstable
+    <%} else {%>
+      ## :broken_heart: Build Failed
+    <%}%>
+  <%}%>
+<%}%>
 
 <!-- BUILD BADGES-->
 [![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) <% if(docsUrl?.trim()) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>
