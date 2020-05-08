@@ -180,6 +180,9 @@ def assing(){
 def approve(){
   echo "${env.GITHUB_COMMENT}"
   //TODO not implemented in https://github.com/jenkinsci/pipeline-github-plugin
+  // see https://github.com/jenkinsci/pipeline-github-plugin/pull/37
+  // pullRequest.review('APPROVE')
+  echo "Unsupported"
 }
 
 def meow(){
@@ -264,7 +267,8 @@ def closeCmd(){
 
 def reopenCmd(){
   echo "${env.GITHUB_COMMENT}"
-  pullRequest.setState('open')
+  // It does not work because closed jobs are not triggered by comments.
+  echo "Unsupported"
 }
 
 def skipCmd(){
