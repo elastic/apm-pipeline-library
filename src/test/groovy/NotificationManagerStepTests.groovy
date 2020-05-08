@@ -223,6 +223,25 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_aborted_but_no_cancel_build() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "ABORTED",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '> Either there was a build timeout or someone aborted the build.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_aborted() throws Exception {
     def script = loadScript(scriptName)
     script.notifyPR(
@@ -273,7 +292,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json")
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Unstable'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Tests Failed'))
     assertJobStatusSuccess()
   }
 
