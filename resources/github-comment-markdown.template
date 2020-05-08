@@ -2,12 +2,13 @@
 ## :green_heart: Build Succeeded
 <%} else {%>
   <%if (buildStatus?.equals('ABORTED')) {%>
-    ## :grey_exclamation: Build Aborted
+## :grey_exclamation: Build Aborted
+${(build?.description?.toLowerCase().contains('aborted')) ? '> There is a new build on-going so the previous on-going builds have been aborted.' : ''}
   <%} else {%>
     <%if (buildStatus?.equals('UNSTABLE')) {%>
-      ## :yellow_heart: Build Unstable
+## :yellow_heart: Build Unstable
     <%} else {%>
-      ## :broken_heart: Build Failed
+## :broken_heart: Build Failed
     <%}%>
   <%}%>
 <%}%>
@@ -22,6 +23,9 @@
 #### Build stats
 
 * Build Cause: ${build?.causes?.shortDescription}
+<% if(!build?.description?.equals('null')) {%>
+* Reason: `${build.description}`
+<%}%>
 * Start Time: ${build?.startTime}
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec (${build.durationInMillis})
