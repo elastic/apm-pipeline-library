@@ -164,14 +164,16 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void emptyBuild_with_steps_normalisation() {
+  public void emptyBuild_with_default_manipulation() {
     String jobUrl = this.URL + "/empty/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     def content = new File("target/job-info.json").text
-    assertTrue(content.isEmpty())
+    assertFalse(content.isEmpty())
+    JSONObject info = JSONSerializer.toJSON(content)
+    assertTrue(info.isEmpty())
   }
 
   Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {

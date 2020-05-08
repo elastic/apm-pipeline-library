@@ -106,6 +106,10 @@ function fetchAndDefault() {
     if [ ! -e "${file}" ] ; then
         echo "${default}" > "${file}"
     fi
+
+    if [[ $(wc -l <"${file}") -eq 0 ]] ; then
+        echo "${default}" > "${file}"
+    fi
 }
 
 function fetchAndPrepareBuildInfo() {
