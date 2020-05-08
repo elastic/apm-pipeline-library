@@ -47,7 +47,6 @@ pipeline {
     */
     stage('Checkout') {
       agent any
-      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         not {
