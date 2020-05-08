@@ -55,7 +55,7 @@ pipeline {
       }
       steps {
         deleteDir()
-        gitCheckout(basedir: "${BASE_DIR}", shallow: true, depth: 1)
+        //gitCheckout(basedir: "${BASE_DIR}", shallow: true, depth: 1)
         /*
         gitCheckout(basedir: "${BASE_DIR}", branch: "${params.branch_specifier}",
           repo: "git@github.com:elastic/${env.REPO}.git",
