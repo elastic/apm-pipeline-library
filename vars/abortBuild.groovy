@@ -36,7 +36,7 @@ def call(Map params = [:]){
     rawBuild = null          // make null to keep pipeline serializable
     build = null             // make null to keep pipeline serializable
   } else {
-    log(level: 'WARNING', text: 'Build or rawBuild do not have any valid value')
+    log(level: 'WARN', text: 'Build or rawBuild do not have any valid value')
   }
 }
 
