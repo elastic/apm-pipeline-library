@@ -38,7 +38,6 @@ public class RunMock implements Serializable {
   }
 
   public void setDescription(description) {
-    println 'setDescription...'
     this.description = description
   }
 }
