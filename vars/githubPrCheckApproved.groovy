@@ -95,9 +95,11 @@ def abortBuild() {
   b = currentBuild
   rawBuild = getRawBuild(b)
   if (rawBuild.isBuilding()) {
-    log(level: 'INFO', text: "Let's stop on-going build #${b.number}")
+    log(level: 'INFO', text: "The PR is not allowed to run in the CI yet, let's stop it")
     rawBuild.doStop()
     setDescription(rawBuild, 'Not allowed to run in the CI yet')
+    sleep 5
+    rawBuild.doStop()    // Try again in case the signal was not yet processed.
   }
   rawBuild = null // make null to keep pipeline serializable
   b = null // make null to keep pipeline serializable
