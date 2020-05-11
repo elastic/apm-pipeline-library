@@ -289,10 +289,28 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
-      testsSummary: readJSON(file: "tests-summary.json")
+      testsSummary: readJSON(file: "tests-summary_failed.json")
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Tests Failed'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_unstable_and_no_tests_failures() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNSTABLE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
     assertJobStatusSuccess()
   }
 

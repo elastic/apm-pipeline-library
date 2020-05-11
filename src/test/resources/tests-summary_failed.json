@@ -6,10 +6,10 @@
       "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/blueTestSummary/"
     }
   },
-  "existingFailed": 0,
-  "failed": 0,
+  "existingFailed": 1,
+  "failed": 1,
   "fixed": 0,
-  "passed": 121,
+  "passed": 120,
   "regressions": 0,
   "skipped": 0,
   "total": 121
