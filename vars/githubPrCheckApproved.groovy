@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   If the current build is a PR, it would check if it is approved or created
   by a user with write/admin permission on the repo.
@@ -39,7 +41,10 @@ def call(Map params = [:]){
   approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
 
   if(!approved){
-    error('githubPrCheckApproved: The PR is not allowed to run in the CI yet. (Only users with write permissions can do so.)')
+    catchError(buildResult: 'SUCCESS', message: 'githubPrCheckApproved: The PR is not allowed to run in the CI yet') {
+      error('githubPrCheckApproved: The PR is not allowed to run in the CI yet. (Only users with write permissions can do so.)')
+    }
+    abortBuild()
   }
   return approved
 }
@@ -84,4 +89,26 @@ def isAuthorizedBot(login, type){
     ret = authorizedBots.any{ it.equals(login) }
   }
   return ret;
+}
+
+def abortBuild() {
+  b = currentBuild
+  rawBuild = getRawBuild(b)
+  if (rawBuild.isBuilding()) {
+    log(level: 'INFO', text: "Let's stop on-going build #${b.number}")
+    rawBuild.doStop()
+    setDescription(rawBuild, 'Not allowed to run in the CI yet')
+  }
+  rawBuild = null // make null to keep pipeline serializable
+  b = null // make null to keep pipeline serializable
+}
+
+@NonCPS
+def getRawBuild(b) {
+  return rawBuild = b.rawBuild
+}
+
+@NonCPS
+def setDescription(b, description) {
+  b.setDescription(description)
 }
