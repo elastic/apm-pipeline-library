@@ -63,7 +63,11 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
   void testDefaultWithMoreBuilds() throws Exception {
     def script = loadScript(scriptName)
     binding.setVariable('currentBuild', build6)
-    script.call()
+    try {
+      script.call()
+    } catch (e) {
+      println e
+    }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'build #5'))
     assertTrue(assertMethodCallContainsPattern('log', 'build #4'))

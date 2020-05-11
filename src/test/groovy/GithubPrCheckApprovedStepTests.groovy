@@ -66,7 +66,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not allowed to run in the CI yet'))
-    assertTrue(assertMethodCallContainsPattern('log', "let's stop it"))
+    assertTrue(assertMethodCallContainsPattern('log', "The PR is not allowed to run in the CI yet"))
     assertJobStatusFailure()
   }
 
