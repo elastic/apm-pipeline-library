@@ -66,29 +66,18 @@ pipeline {
         }
         stages {
           stage('Build') {
+            options { skipDefaultCheckout() }
             environment {
               PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}" //see JENKINS-41929
             }
-            options { skipDefaultCheckout() }
             steps {
-              script {
-                if (isUnix()) { buildUnix() }
-              }
+              runBuild()
             }
           }
           stage('Test') {
             options { skipDefaultCheckout() }
             steps {
-              script {
-                if (isUnix()) {
-                  def uname = sh script: 'uname', returnStdout: true
-                  if (uname.startsWith("Darwin")) { testMac() }
-                  else {
-                    testDockerInside()
-                    testUnix()
-                  }
-                } else { buildWindows() }
-              }
+              runTest()
             }
             post {
               always {
@@ -107,6 +96,39 @@ pipeline {
   }
 }
 
+def runBuild(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    if (isUnix()) {
+      sh(returnStatus: true, script: './resources/scripts/jenkins/build.sh')
+    } else {
+      bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
+    }
+  }
+}
+
+def runTest(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    if (isUnix()) {
+      def uname = sh script: 'uname', returnStdout: true
+      if (uname.startsWith("Darwin")) {
+         sh(returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test-mac.sh')
+      } else {
+        // Ephemeral workers don't have a HOME env variable.
+        withEnv(["HOME=${env.WORKSPACE}"]){
+          sh(returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test.sh')
+        }
+        testDockerInside()
+      }
+    } else {
+      powershell(returnStatus: true, script: ".\\resources\\scripts\\jenkins\\beats-ci\\test.ps1")
+    }
+  }
+}
+
 def testDockerInside(){
   docker.image('node:12').inside(){
     dir("${BASE_DIR}"){
@@ -114,41 +136,5 @@ def testDockerInside(){
         sh(script: './resources/scripts/jenkins/build.sh')
       }
     }
-  }
-}
-
-def buildUnix(){
-  deleteDir()
-  unstash 'source'
-  dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
-  }
-}
-
-def buildWindows(params = [:]){
-  def withExtra = params.containsKey('withExtra') ? params.withExtra : false
-  deleteDir()
-  unstash 'source'
-  dir("${BASE_DIR}"){
-    powershell(script: ".\\resources\\scripts\\jenkins\\build.ps1 ${withExtra}")
-  }
-}
-
-def testUnix(){
-  deleteDir()
-  unstash 'source'
-  dir("${BASE_DIR}"){
-    // Ephemeral workers don't have a HOME env variable.
-    withEnv(["HOME=${env.WORKSPACE}"]){
-      sh returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test.sh'
-    }
-  }
-}
-
-def testMac(){
-  deleteDir()
-  unstash 'source'
-  dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test-mac.sh'
   }
 }
