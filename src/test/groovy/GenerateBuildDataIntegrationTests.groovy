@@ -44,9 +44,9 @@ import static org.junit.Assert.assertTrue
 class GenerateBuildDataIntegrationTests {
 
   @Rule
-  public WireMockRule wireMockRule = new WireMockRule(18080)
+  public WireMockRule wireMockRule = new WireMockRule(18081)
 
-  private final String URL = "http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
+  private final String URL = "http://localhost:18081/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
 
   @Test
   public void abortBuild() {
@@ -187,7 +187,7 @@ class GenerateBuildDataIntegrationTests {
 
     ProcessBuilder pb = new ProcessBuilder(commands)
     Map<String, String> env = pb.environment()
-    env.put('JENKINS_URL', 'http://localhost:18080/')
+    env.put('JENKINS_URL', 'http://localhost:18081/')
     env.put('PIPELINE_LOG_LEVEL', 'INFO')
     pb.directory(new File("target"))
     pb.redirectErrorStream(true)
