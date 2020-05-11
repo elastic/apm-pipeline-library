@@ -22,22 +22,22 @@ import com.cloudbees.groovy.cps.NonCPS
 
   abortBuild(build: currentBuild)
 */
+
 def call(Map params = [:]){
   def build = params.containsKey('build') ? params.build : error('abortBuild: build params is required')
   def message = params.get('message', 'Force to abort the build')
-  rawBuild = getRawBuild(build)
+  def rawBuild = getRawBuild(build)
   if (build && rawBuild) {
     if (rawBuild.isBuilding()) {
       log(level: 'INFO', text: "Let's stop build #${build.number}. ${message}")
       rawBuild.doStop()
       setDescription(rawBuild, message)
-      sleep 1
-      rawBuild.doStop()    // Try again in case the signal was not yet processed.
     }
+    rawBuild = null          // make null to keep pipeline serializable
+    build = null             // make null to keep pipeline serializable
   } else {
     log(level: 'WARNING', text: 'Build or rawBuild do not have any valid value')
   }
-  rawBuild = null // make null to keep pipeline serializable
 }
 
 @NonCPS

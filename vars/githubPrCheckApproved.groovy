@@ -44,6 +44,11 @@ def call(Map params = [:]){
       error("githubPrCheckApproved: ${message}. (Only users with write permissions can do so.)")
     }
     abortBuild(build: currentBuild, message: message)
+    // Abort build is required to run twice with certain sleep to ensure the build gets aborted,
+    // otherwise it won't be stopped. Unfortunately this logic cannot be moved to the abortBuild
+    // step without facing the NotSerializableException.
+    sleep 5
+    abortBuild(build: currentBuild, message: message)
   }
   return approved
 }
