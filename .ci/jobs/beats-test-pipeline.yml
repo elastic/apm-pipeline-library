@@ -1,15 +1,15 @@
 ---
 - job:
-    name: apm-shared/beats-test-pipeline
+    name: Beats/beats-test-pipeline
     display-name: Tests Pipeline
     description: Pipeline to make feature tests
     view: APM-CI
     project-type: pipeline
     parameters:
       - string:
-          name: branch_specifier
-          default: master
-          description: the Git branch specifier to build
+          name: PARAM_WITH_DEFAULT_VALUE
+          default:
+          description: It would not be defined on the first build, see JENKINS-41929.
     pipeline-scm:
       script-path: .ci/validateWorkersBeatsCi.groovy
       scm:
@@ -22,6 +22,6 @@
             credentials-id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
             reference-repo: /var/lib/jenkins/.git-references/apm-test-pipeline.git
             branches:
-              - $branch_specifier
+              - master
     triggers:
-      - timed: '@daily'
+      - timed: 'H H(3-4) * * 1-5'
