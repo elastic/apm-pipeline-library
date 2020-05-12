@@ -261,7 +261,7 @@ pipeline {
           stages {
             stage('Test') {
               steps {
-                checkWindows()
+                testWindows()
               }
             }
             stage('Install tools') {
@@ -283,7 +283,7 @@ pipeline {
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows(withExtra: true)
+            testWindows(withExtra: true)
           }
           post {
             always {
@@ -378,7 +378,7 @@ def testUnix(){
   dir("${BASE_DIR}"){
     // Ephemeral workers don't have a HOME env variable.
     withEnv(["HOME=${env.WORKSPACE}"]){
-      sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+      sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
     }
   }
 }
@@ -387,7 +387,7 @@ def testBaremetal(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-baremetal.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-baremetal.sh'
   }
 }
 
@@ -395,16 +395,16 @@ def testMac(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-mac.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-mac.sh'
   }
 }
 
-def checkWindows(params = [:]){
+def testWindows(params = [:]){
   def withExtra = params.containsKey('withExtra') ? params.withExtra : false
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    powershell(script: ".\\resources\\scripts\\jenkins\\build.ps1 ${withExtra}")
+    powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
   }
 }
 

@@ -46,7 +46,7 @@ def call(Map args = [:]) {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
-        if(shouldNotify || notifyPRComment) {
+        if(shouldNotify || (notifyPRComment && env.CHANGE_ID)) {
           // Read files only once and if timeout then use default values
           def buildData = {}
           def changeSet = []
