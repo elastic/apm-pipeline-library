@@ -93,7 +93,13 @@ unclassified:
                 filterSettings:
                   includeFilter: false
                   selectors:
+                  - wildcard: "*.*"
+                  - wildcard: ".ci/**"
+                  - wildcard: ".mvn/**"
+                  - wildcard: "local/**"
+                  - wildcard: "src/test/**"
                   - wildcard: "target/**"
+                  - wildcard: "test-infra/**"
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
