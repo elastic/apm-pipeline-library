@@ -378,7 +378,7 @@ def testUnix(){
   dir("${BASE_DIR}"){
     // Ephemeral workers don't have a HOME env variable.
     withEnv(["HOME=${env.WORKSPACE}"]){
-      sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+      sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
     }
   }
 }
@@ -387,7 +387,7 @@ def testBaremetal(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-baremetal.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-baremetal.sh'
   }
 }
 
@@ -395,7 +395,7 @@ def testMac(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-mac.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-mac.sh'
   }
 }
 

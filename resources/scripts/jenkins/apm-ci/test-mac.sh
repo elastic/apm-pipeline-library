@@ -22,14 +22,16 @@ virtualenv venv
 # shellcheck disable=SC1091
 source venv/bin/activate
 pip install testinfra
+
+## Prepare the docker for mac
+docker-machine start default || true
+eval "$(docker-machine env default)"
 set -x
 
 ## Run test-infra and trap error to notify when required
 { py.test -v \
-    test-infra/test_installed_tools.py \
-    test-infra/test_installed_tools_docker.py \
-    test-infra/test_installed_tools_extra.py \
-    test-infra/test_packer.py \
+    test-infra/apm-ci/test_installed_tools.py \
+    test-infra/apm-ci/test_installed_tools_docker.py \
     --junit-xml=target/junit-test-infra.xml; \
   err="$?"; } || true
 
