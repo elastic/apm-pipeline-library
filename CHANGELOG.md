@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.1.96 (12/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: notify other build status [#521](https://github.com/elastic/apm-pipeline-library/pull/521)
+-  ci: CI approval aborted rather than failed [#522](https://github.com/elastic/apm-pipeline-library/pull/522)
+-  ci: generate-build-data JSON objects and no stats badge [#520](https://github.com/elastic/apm-pipeline-library/pull/520)
+
+#### 🐛 Bug Fixes
+
+-  fix: null build description [#528](https://github.com/elastic/apm-pipeline-library/pull/528)
+-  ci: avoid template when no PRs [#526](https://github.com/elastic/apm-pipeline-library/pull/526)
+
+#### 🙈 No user affected
+
+-  test: apm-ci test-infra for windows [#527](https://github.com/elastic/apm-pipeline-library/pull/527)
+-  test: move to apm-ci folder [#524](https://github.com/elastic/apm-pipeline-library/pull/524)
+-  test: use a different port [#523](https://github.com/elastic/apm-pipeline-library/pull/523)
+
+---
+
 ## v1.1.95 (08/05/2020)
 
 #### ⚙️ CI
@@ -254,9 +275,9 @@
 
 #### 🐛 Bug Fixes
 
+-  Switch Nexus lookup to use groupid [#413](https://github.com/elastic/apm-pipeline-library/pull/413)
 -  ci(jenkins): run docker in the new home context [#416](https://github.com/elastic/apm-pipeline-library/pull/416)
 -  ci(jenkins): fix cornercase with rebuild when timeouts and no githubPrCheckApproved [#412](https://github.com/elastic/apm-pipeline-library/pull/412)
--  Switch Nexus lookup to use groupid [#413](https://github.com/elastic/apm-pipeline-library/pull/413)
 
 #### 📚 Documentation
 
@@ -296,10 +317,10 @@
 
 #### ⚙️ CI
 
--  [jjbb]: enable e2e kibana tests for the master branch only [#403](https://github.com/elastic/apm-pipeline-library/pull/403)
--  [packer-cache] Cache jjbb images [#404](https://github.com/elastic/apm-pipeline-library/pull/404)
 -  Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
 -  ci(jenkins): generate jruby images within the apm-agent-ruby [#405](https://github.com/elastic/apm-pipeline-library/pull/405)
+-  [jjbb]: enable e2e kibana tests for the master branch only [#403](https://github.com/elastic/apm-pipeline-library/pull/403)
+-  [packer-cache] Cache jjbb images [#404](https://github.com/elastic/apm-pipeline-library/pull/404)
 
 ---
 
@@ -628,8 +649,8 @@
 
 #### 🚀 Enhancements
 
--  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
 -  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
+-  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
 
 #### 🐛 Bug Fixes
 
@@ -658,16 +679,16 @@
 
 #### 🐛 Bug Fixes
 
--  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
--  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 -  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
 -  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
 -  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
+-  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
+-  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 
 #### 📚 Documentation
 
--  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
 -  refactor: simplify asserts with some helper functions [#293](https://github.com/elastic/apm-pipeline-library/pull/293)
+-  (#272) Add system requirements for local compose [#273](https://github.com/elastic/apm-pipeline-library/pull/273)
 
 #### ⚙️ CI
 
@@ -855,14 +876,14 @@
 
 #### 🚀 Enhancements
 
+-  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
+-  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
+-  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 -  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
 -  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
--  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
--  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
--  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 
 #### 🐛 Bug Fixes
 
@@ -1262,15 +1283,15 @@
 
 #### 🚀 Enhancements
 
+-   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 -  feat: add build info to the test results object [#65](https://github.com/elastic/apm-pipeline-library/pull/65)
 -  feat: new job for Integrations registry repo [#64](https://github.com/elastic/apm-pipeline-library/pull/64)
--   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 
 #### 🐛 Bug Fixes
 
--  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
 -  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
+-  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 
 ---
 
