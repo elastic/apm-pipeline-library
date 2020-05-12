@@ -22,32 +22,15 @@
 
   cancelPreviousRunningBuilds()
 */
-import com.cloudbees.groovy.cps.NonCPS
 
 def call(Map params = [:]) {
   def maxBuildsToSearch = params.get('maxBuildsToSearch', 10)
   log(level: 'INFO', text: "Number of builds to be searched ${maxBuildsToSearch}")
   b = currentBuild
   for (int i=0; i<maxBuildsToSearch; i++) {
-    b = b.getPreviousBuild();
-    if (b == null) break;
-    rawBuild = getRawBuild(b)
-    if (rawBuild.isBuilding()) {
-      log(level: 'INFO', text: "Let's stop on-going build #${b.number}")
-      rawBuild.doStop()
-      setDescription(rawBuild, "Aborted from #${currentBuild.number}")
-    }
-    rawBuild = null // make null to keep pipeline serializable
+    b = b?.getPreviousBuild()
+    if (b == null) break
+    abortBuild(build: b, message: "Aborted from #${currentBuild.number}")
   }
   b = null // make null to keep pipeline serializable
-}
-
-@NonCPS
-def getRawBuild(b) {
-  return rawBuild = b.rawBuild
-}
-
-@NonCPS
-def setDescription(b, description) {
-  b.setDescription(description)
 }

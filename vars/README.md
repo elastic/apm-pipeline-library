@@ -1,4 +1,18 @@
 # Steps Documentation
+## abortBuild
+Abort the given build with the given message
+
+```
+// Kill the current build with the default message.
+abortBuild(build: currentBuild)
+
+// Kill the previous build for the current run and set its description message.
+abortBuild(build: currentBuild.getPreviousBuild, message: 'Abort previous build')
+```
+
+* build: the RunBuild to be aborted. Mandatory
+* message: what's the message to be exposed as an error and in the build description. Optional. Default to 'Force to abort the build'
+
 ## agentMapping
 Return the value for the given key.
 
