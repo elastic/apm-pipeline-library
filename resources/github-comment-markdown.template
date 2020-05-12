@@ -2,7 +2,13 @@
 ## :green_heart: Build Succeeded
 <%} else if (buildStatus?.equals('ABORTED')) {%>
 ## :grey_exclamation: Build Aborted
-${(build?.description?.toLowerCase()?.contains('aborted')) ? '> There is a new build on-going so the previous on-going builds have been aborted.' : ' > Either there was a build timeout or someone aborted the build.'}
+  <%if (build?.description?.toLowerCase()?.contains('aborted')) {%>
+  > There is a new build on-going so the previous on-going builds have been aborted.
+  <%} else if (build?.description?.toLowerCase()?.contains('allowed')) {%>
+  > ${build.description}
+  <%} else {%>
+  > Either there was a build timeout or someone aborted the build.'}
+  <%}%>
 <%} else {%>
 ## :broken_heart: ${(testsSummary?.failed != 0) ? 'Tests Failed' : 'Build Failed'}
 <%}%>
