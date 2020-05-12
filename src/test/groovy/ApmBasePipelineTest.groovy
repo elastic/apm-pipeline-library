@@ -333,6 +333,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
   }
 
   void registerSharedLibraryMethods() {
+    helper.registerAllowedMethod('abortBuild', [Map.class],  { m ->
+      def script = loadScript('vars/abortBuild.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
     helper.registerAllowedMethod('cobertura', [Map.class], null)
