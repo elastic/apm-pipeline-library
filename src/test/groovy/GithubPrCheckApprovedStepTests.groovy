@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.RunMock
+import co.elastic.mock.RunWrapperMock
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -52,6 +54,9 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
+    def runBuilding = new RunMock(building: true)
+    def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'FAILURE')
+    binding.setVariable('currentBuild', build)
     def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     try {
@@ -61,6 +66,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not allowed to run in the CI yet'))
+    assertTrue(assertMethodCallContainsPattern('log', "The PR is not allowed to run in the CI yet"))
     assertJobStatusFailure()
   }
 

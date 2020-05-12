@@ -114,6 +114,7 @@ def notifyPR(Map params = [:]) {
       def body = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
+        "buildStatus": buildStatus,
         "changeSet": changeSet,
         "docsUrl": docsUrl,
         "jenkinsText": env.JOB_NAME,

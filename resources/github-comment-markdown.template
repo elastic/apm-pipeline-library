@@ -1,4 +1,17 @@
-## ${statusSuccess ? ':green_heart: Build Succeeded' : ':broken_heart: Build Failed'} 
+<%if (statusSuccess) {%>
+## :green_heart: Build Succeeded
+<%} else if (buildStatus?.equals('ABORTED')) {%>
+## :grey_exclamation: Build Aborted
+  <%if (build?.description?.toLowerCase()?.contains('aborted')) {%>
+  > There is a new build on-going so the previous on-going builds have been aborted.
+  <%} else if (build?.description?.toLowerCase()?.contains('allowed')) {%>
+  > ${build.description}
+  <%} else {%>
+  > Either there was a build timeout or someone aborted the build.'}
+  <%}%>
+<%} else {%>
+## :broken_heart: ${(testsSummary?.failed != 0) ? 'Tests Failed' : 'Build Failed'}
+<%}%>
 
 <!-- BUILD BADGES-->
 [![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) <% if(docsUrl?.trim()) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>
@@ -10,11 +23,14 @@
 #### Build stats
 
 * Build Cause: ${build?.causes?.shortDescription}
+<% if(!build?.description?.equals('null')) {%>
+* Reason: `${build.description}`
+<%}%>
 * Start Time: ${build?.startTime}
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec (${build.durationInMillis})
 <%}%>
-<% if(build?.commitId?.trim()) {%>
+<% if(build?.commitId != null && build?.commitId?.trim()) {%>
 * Commit: ${build?.commitId.split('\\+')[0]}
 <%}%>
 
