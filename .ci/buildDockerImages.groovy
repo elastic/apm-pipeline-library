@@ -325,7 +325,7 @@ pipeline {
         dockerLoginElasticRegistry()
         dir("opbot-latest"){
           def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
-          writeFile(file: 'credentials.json', text: creds.data.-value)
+          writeFile(file: 'credentials.json', text: creds.data.value)
         }
         buildDockerImage(
           repo: 'https://github.com/elastic/opbot.git',
