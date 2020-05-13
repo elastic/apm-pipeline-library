@@ -53,6 +53,7 @@ pipeline {
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
+    booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -310,6 +311,24 @@ pipeline {
           tag: "helm-kubectl",
           version: "latest",
           push: true)
+      }
+    }
+    stage('Build flakey'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.flakey}
+      }
+      steps {
+        deleteDir()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'flakey',
+          version: 'latest',
+          push: false,
+          folder: "apps/automation/jenkins-toolbox"
       }
     }
     stage('Build opbot'){
