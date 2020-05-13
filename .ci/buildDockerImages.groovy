@@ -327,7 +327,7 @@ pipeline {
           repo: 'https://github.com/elastic/observability-dev',
           tag: 'flakey',
           version: 'latest',
-          push: false,
+          push: true,
           folder: "apps/automation/jenkins-toolbox"
       }
     }
