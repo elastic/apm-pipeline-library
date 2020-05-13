@@ -342,11 +342,22 @@ pipeline {
       steps {
         deleteDir()
         dockerLoginElasticRegistry()
+        dir("opbot-latest"){
+          script {
+            def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
+            writeFile(file: 'credentials.json', text: creds.data.value)
+          }
+        }
         buildDockerImage(
           repo: 'https://github.com/elastic/opbot.git',
           tag: "opbot",
           version: "latest",
           push: true)
+      }
+      post {
+        cleanup {
+          deleteDir()
+        }
       }
     }
   }
