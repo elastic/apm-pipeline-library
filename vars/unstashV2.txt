@@ -1,0 +1,29 @@
+Untash the given stashed id, for such it downloads the given stashed id, and 
+uncompresses in the current location.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    unstashV2(name: 'source')
+}
+
+// Given the parameters
+unstashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    unstashV2(name: 'source', bucket: 'foo')
+}
+
+```
+
+* *name*: Name of the stash id to be unstashed. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**: `tar` binary is required in the CI Workers.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
