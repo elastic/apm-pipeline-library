@@ -328,7 +328,7 @@ pipeline {
           tag: 'flakey',
           version: 'latest',
           push: true,
-          folder: "apps/automation/jenkins-toolbox"
+          folder: "apps/automation/jenkins-toolbox")
       }
     }
     stage('Build opbot'){
