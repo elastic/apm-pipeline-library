@@ -340,6 +340,7 @@ pipeline {
   post {
     cleanup {
       notifyBuildResult()
+      deleteDir()
     }
   }
 }
