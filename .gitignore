@@ -29,3 +29,5 @@ local.log
 .classpath
 .project
 .settings/
+
+test-infra/apm-ci/__pycache__/
