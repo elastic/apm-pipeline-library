@@ -335,12 +335,16 @@ pipeline {
           version: "latest",
           push: true)
       }
+      post {
+        cleanup {
+          deleteDir()
+        }
+      }
     }
   }
   post {
     cleanup {
       notifyBuildResult()
-      deleteDir()
     }
   }
 }
