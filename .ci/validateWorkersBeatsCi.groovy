@@ -64,6 +64,14 @@ pipeline {
           }
         }
         stages {
+          stage('Report') {
+            options { skipDefaultCheckout() }
+            steps {
+              echo "NODE_LABELS=${env.NODE_LABELS}"
+              echo "NODE_NAME=${env.NODE_NAME}"
+              echo "PLATFORM=${PLATFORM}"
+            }
+          }
           stage('Build') {
             options { skipDefaultCheckout() }
             environment {
