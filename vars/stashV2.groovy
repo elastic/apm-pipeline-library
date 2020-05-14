@@ -76,15 +76,12 @@ def call(Map params = [:]) {
 }
 
 def compress(String filename) {
-  def folder = '.artefacts'
-  dir(folder) {
-    log(level: 'DEBUG', text: 'stashV2: create artefacts folder to fix the tar: file changed as we read it.')
-  }
-  def command = 'tar -czf'
+  writeFile(file: "${filename}", text: '')
+  def command = "tar --exclude=${filename} -czf ${filename} ."
   if(isUnix()) {
-    sh(label: 'Compress', script: "${command} ${folder}/${filename} --exclude=${folder} . ; mv ${folder}/${filename} ${filename}")
+    sh(label: 'Compress', script: command)
   } else {
-    bat(label: 'Compress', script: "${command} ${folder}\\${filename} --exclude=${folder} . && move ${folder}\\${filename} ${filename}")
+    bat(label: 'Compress', script: command)
   }
 }
 
