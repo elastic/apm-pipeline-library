@@ -41,18 +41,19 @@ def call(Map params = [:]) {
   def to = params.get('to', env.GIT_BASE_COMMIT)
 
   def gitDiffFile = 'git-diff.txt'
-  def match = false
+  def group = ''
   if (from?.trim() && to?.trim()) {
     def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
-    match = getRegion(gitDiffFile, pattern)
-    log(level: 'INFO', text: "getRegionFromPattern: ${match.trim() ?: 'not found'} with regex ${pattern}")
+    group = getGroup(gitDiffFile, pattern)
+    log(level: 'INFO', text: "getRegionFromPattern: ${group.trim() ?: 'not found'} with regex ${pattern}")
   } else {
-    echo 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.'
+    log(level: 'INFO', text: 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
   }
-  return match
+  return group
 }
 
-def getRegion(gitDiffFile, patterns) {
+def getGroup(gitDiffFile, patterns) {
+  return ''
   def fileContent = readFile(gitDiffFile)
   def match = true
   fileContent.split('\n').each { String line ->
