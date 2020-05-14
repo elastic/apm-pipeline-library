@@ -323,6 +323,7 @@ pipeline {
       }
       steps {
         deleteDir()
+        dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-dev',
           tag: 'flakey',
