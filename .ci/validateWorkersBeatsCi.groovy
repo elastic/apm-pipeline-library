@@ -60,7 +60,7 @@ pipeline {
         axes {
           axis {
             name 'PLATFORM'
-            values 'ubuntu && immutable', 'worker-c07l34n6dwym', 'worker-c07y20b6jyvy', 'worker-c07ll940dwyl', 'worker-c07y20b9jyvy', 'worker-c07y20b4jyvy', 'worker-c07y20bcjyvy', 'worker-395930', 'worker-0a434dec4bdcd060f', 'windows-immutable && windows-2019', 'windows-immutable && windows-2016', 'windows-immutable && windows-2012', 'windows-immutable && windows-7', 'windows-immutable && windows-7-32-bit', 'windows-immutable && windows-2008', 'windows-immutable && windows-2008-r2', 'windows-immutable && windows-10'
+            values 'ubuntu && immutable', 'worker-c07l34n6dwym', 'worker-c07y20b6jyvy', 'worker-c07ll940dwyl', 'worker-c07y20b9jyvy', 'worker-c07y20b4jyvy', 'worker-c07y20bcjyvy', 'worker-395930', 'worker-0a434dec4bdcd060f', 'windows-immutable && windows-2019', 'windows-immutable && windows-2016', 'windows-immutable && windows-2012', 'windows-immutable && windows-10', 'windows-immutable && windows-8', 'windows-immutable && windows-2008-r2', 'windows-immutable && windows-7', 'windows-immutable && windows-7-32-bit'
           }
         }
         stages {
@@ -120,20 +120,14 @@ def runTest(){
         withEnv(["HOME=${env.WORKSPACE}"]){
           sh(returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test.sh')
         }
-        testDockerInside()
+        docker.image('node:12').inside(){
+          withEnv(["HOME=${env.WORKSPACE}/${BASE_DIR}"]){
+            sh(script: './resources/scripts/jenkins/build.sh')
+          }
+        }
       }
     } else {
       powershell(returnStatus: true, script: ".\\resources\\scripts\\jenkins\\beats-ci\\test.ps1")
-    }
-  }
-}
-
-def testDockerInside(){
-  docker.image('node:12').inside(){
-    dir("${BASE_DIR}"){
-      withEnv(["HOME=${env.WORKSPACE}"]){
-        sh(script: './resources/scripts/jenkins/build.sh')
-      }
     }
   }
 }
