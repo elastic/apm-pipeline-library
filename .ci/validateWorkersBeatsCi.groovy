@@ -124,9 +124,11 @@ def runTest(){
       if (uname.startsWith("Darwin")) {
          sh(returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test-mac.sh')
       } else {
+        // worker-0a434dec4bdcd060f does not have any reference repos
+        def runPackerCacheTests = PLATFORM.equals('worker-0a434dec4bdcd060f') ? 'false' : 'true'
         // Ephemeral workers don't have a HOME env variable.
         withEnv(["HOME=${env.WORKSPACE}"]){
-          sh(returnStatus: true, script: './resources/scripts/jenkins/beats-ci/test.sh')
+          sh(returnStatus: true, script: "./resources/scripts/jenkins/beats-ci/test.sh ${runPackerCacheTests}")
         }
         docker.image('node:12').inside(){
           withEnv(["HOME=${env.WORKSPACE}/${BASE_DIR}"]){
