@@ -73,7 +73,7 @@ def call(Map params = [:]) {
 }
 
 def extract(String filename) {  
-  def command = "tar -xpf ${filename} ."
+  def command = "tar -xpf ${filename}"
   if(isUnix()) {
     sh(label: 'Extract', script: command)
   } else {
