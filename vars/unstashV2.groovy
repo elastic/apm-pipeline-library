@@ -59,8 +59,6 @@ def call(Map params = [:]) {
     error('unstashV2: BUILD_ID and JOB_NAME environment variables are required.')
   }
 
-  extract(filename)
-
   def bucketUri = "gs://${bucket}/${env.JOB_NAME}-${env.BUILD_ID}/${name}/${filename}"
 
   googleStorageDownload(
@@ -70,6 +68,7 @@ def call(Map params = [:]) {
     pathPrefix: "${env.JOB_NAME}-${env.BUILD_ID}/${name}/"
   )
 
+  extract(filename)
   cleanup(filename)
 }
 
