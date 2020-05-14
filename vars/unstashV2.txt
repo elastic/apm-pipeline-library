@@ -24,6 +24,8 @@ withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
 * *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
 * *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
 
-**NOTE**: `tar` binary is required in the CI Workers.
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
 
 It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)

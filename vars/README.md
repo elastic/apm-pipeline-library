@@ -1216,6 +1216,42 @@ setupAPMGitEmail(global: true)
 
 * *global*: to configure the user and email account globally. Optional.
 
+## stashV2
+Stash the current location, for such it compresses the current path and
+upload it to Google Storage.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    stashV2(name: 'source')
+}
+
+// Given the parameters
+stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    stashV2(name: 'source', bucket: 'foo')
+}
+
+// Store the bucketUri of the just stashed folder.
+def bucketUri = stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+```
+
+* *name*: Name of the tar file to be created. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
 ## tar
 Compress a folder into a tar file.
 
@@ -1246,6 +1282,39 @@ p.setName("John");
 p.setAge(50);
 net.sf.json.JSON obj = toJSON(p)
 ```
+
+## unstashV2
+Untash the given stashed id, for such it downloads the given stashed id, and 
+uncompresses in the current location.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    unstashV2(name: 'source')
+}
+
+// Given the parameters
+unstashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    unstashV2(name: 'source', bucket: 'foo')
+}
+
+```
+
+* *name*: Name of the stash id to be unstashed. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
 
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
