@@ -1,0 +1,20 @@
+Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
+evaluates the change list:
+
+- When exact match then all the files should match those patterns then it
+  returns the region otherwise and empty string.
+
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+```
+  def module = getRegionFromPattern(pattern: "beat/module/([^\/]+)/")
+  whenTrue(module.trim()) {
+    // ...
+  }
+```
+
+* pattern: the regex pattern with the group to look for. Mandatory
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+**NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
