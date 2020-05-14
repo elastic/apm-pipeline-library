@@ -271,6 +271,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
         throw new Exception('Failed')
       }
     })
+    helper.registerAllowedMethod('googleStorageDownload', [Map.class], {true})
+    helper.registerAllowedMethod('googleStorageUpload', [Map.class], {true})
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
     helper.registerAllowedMethod('lastWithArtifacts', [ ], null)

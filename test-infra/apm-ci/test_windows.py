@@ -7,3 +7,7 @@ def test_dotnet_installed(host):
 def test_python_installed(host):
   cmd = host.run("python --version")
   assert cmd.rc == 0, "it is required for the apm-agent-python"
+
+def test_tar_installed(host):
+  cmd = host.run("tar --version")
+  assert cmd.rc == 0, "it is required for the stashV2 and unstashV2 steps"

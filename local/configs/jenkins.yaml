@@ -93,7 +93,6 @@ unclassified:
                 filterSettings:
                   includeFilter: false
                   selectors:
-                  - wildcard: "*.*"
                   - wildcard: ".ci/**"
                   - wildcard: ".mvn/**"
                   - wildcard: "local/**"
@@ -128,6 +127,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/rebuildPipeline.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/stashV2.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/downstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/withGitRelease.dsl"
