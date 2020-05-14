@@ -345,14 +345,15 @@ pipeline {
         dir("opbot-latest"){
           script {
             def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
-            writeFile(file: 'credentials.json', text: creds.data.value)
+            def writeClosure = {writeFile(file: 'credentials.json', text: creds.data.value)}
+            buildDockerImage(
+              repo: 'https://github.com/elastic/opbot.git',
+              tag: "opbot",
+              version: "latest",
+              prepareWith: writeClosure,
+              push: true)
           }
         }
-        buildDockerImage(
-          repo: 'https://github.com/elastic/opbot.git',
-          tag: "opbot",
-          version: "latest",
-          push: true)
       }
       post {
         cleanup {
@@ -382,6 +383,7 @@ def buildDockerImage(args){
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
+  def prepareWith = args.containsKey('prepareWith') ? args.prepareWith : {}
 
   def image = "${params.registry}"
   if(params.tag_prefix != null && params.tag_prefix != ""){
@@ -392,6 +394,7 @@ def buildDockerImage(args){
     git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "${repo}"
     dir("${folder}"){
       withEnv(env){
+        prepareWith()
         sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
         if(push){
           retry(3){
