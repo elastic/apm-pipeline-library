@@ -38,6 +38,11 @@ git config user.name "${USER_NAME}"
 git fetch --all
 git checkout "${BRANCH_NAME}"
 
+# Ruby agent requires the master branch to rebase the *.x branch
+if git show-ref --verify --quiet "refs/heads/master" ; then
+    git checkout master
+fi
+
 # Enable upstream with git+https.
 git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG_NAME}/${REPO_NAME}.git"
 git fetch --all
