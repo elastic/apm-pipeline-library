@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.98 (15/05/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: git pull only for branches [#539](https://github.com/elastic/apm-pipeline-library/pull/539)
+
+#### 🙈 No user affected
+
+-  test: exclude windows-2012-r2 [#537](https://github.com/elastic/apm-pipeline-library/pull/537)
+-  test: fix windows7-32 labels [#536](https://github.com/elastic/apm-pipeline-library/pull/536)
+-  test-infra: beats-ci improvements [#534](https://github.com/elastic/apm-pipeline-library/pull/534)
+
+---
+
 ## v1.1.97 (14/05/2020)
 
 #### 🚀 Enhancements
@@ -885,9 +899,9 @@
 
 #### 🙈 No user affected
 
+-  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 -  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 -  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
--  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 
 ---
 
@@ -1255,8 +1269,8 @@
 
 #### 🐛 Bug Fixes
 
--  [APM-CI] Powershell in W2016 returns a different output [#79](https://github.com/elastic/apm-pipeline-library/pull/79)
 -  (#80) Fix gitCheckout when the caller passed mergeTarget [#81](https://github.com/elastic/apm-pipeline-library/pull/81)
+-  [APM-CI] Powershell in W2016 returns a different output [#79](https://github.com/elastic/apm-pipeline-library/pull/79)
 
 ---
 
