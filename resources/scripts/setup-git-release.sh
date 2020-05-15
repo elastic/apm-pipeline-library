@@ -42,16 +42,16 @@ git checkout "${BRANCH_NAME}"
 git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG_NAME}/${REPO_NAME}.git"
 git fetch --all
 
-# Pull the git history when repo was cloned with shallow/depth.
-if [ -f "$(git rev-parse --git-dir)/shallow" ] || [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-    # If in a branch
-    if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}" ; then
+ # If in a branch then pull changes
+if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}" ; then
+    # Pull the git history when repo was cloned with shallow/depth.
+    if [ -f "$(git rev-parse --git-dir)/shallow" ] || [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
         git pull --unshallow
     else
-        echo 'INFO: git refs is not a branch but a tag'
+        git pull
     fi
 else
-    git pull
+    echo 'INFO: git refs is not a branch but a tag'
 fi
 
 # Ensure the branch points to the original commit to avoid commit injection
