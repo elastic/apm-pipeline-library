@@ -24,10 +24,14 @@ import com.cloudbees.groovy.cps.NonCPS
   - When exact match then all the files should match those patterns then it
     returns the region otherwise and empty string.
 
-  // def module = getBeatsModule(pattern: '([^\\/]+)\\/.*')
+  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*')
   whenTrue(module.trim()) {
     // ...
   }
+
+  // Exclude the asciidoc files from the search.
+  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+
 
   NOTE: This particular implementation requires to checkout with the step gitCheckout
 
@@ -37,6 +41,7 @@ def call(Map params = [:]) {
     error('getBeatsModule: windows is not supported yet.')
   }
   def pattern = params.containsKey('pattern') ? params.pattern : error('getBeatsModule: Missing pattern argument.')
+  def exclude = params.get('exclude', '')
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
   def to = params.get('to', env.GIT_BASE_COMMIT)
 
@@ -44,7 +49,7 @@ def call(Map params = [:]) {
   def group = ''
   if (from?.trim() && to?.trim()) {
     def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
-    group = getGroup(gitDiffFile, pattern)
+    group = getGroup(gitDiffFile, pattern, exclude)
     log(level: 'INFO', text: "getBeatsModule: ${group.trim() ?: 'not found'} with regex ${pattern}")
   } else {
     log(level: 'INFO', text: 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
@@ -52,14 +57,14 @@ def call(Map params = [:]) {
   return group
 }
 
-def getGroup(gitDiffFile, pattern) {
+def getGroup(gitDiffFile, pattern, exclude) {
   def fileContent = readFile(gitDiffFile)
   def modules = [:]
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
-    matches = line =~ pattern
-    def auxModule = matches.collect { it[1] }[0] ?: ''
-    if (auxModule.trim()) {
+    if (!isExcluded(line, exclude)) {
+      matches = line =~ pattern
+      def auxModule = matches.collect { it[1] }[0] ?: ''
       modules[auxModule] = auxModule
     }
   }
@@ -67,4 +72,11 @@ def getGroup(gitDiffFile, pattern) {
     return modules.values().toArray()[0]
   }
   return ''
+}
+
+def isExcluded(line, exclude) {
+  if (exclude.trim()) {
+    return (line ==~ exclude)
+  }
+  return false
 }

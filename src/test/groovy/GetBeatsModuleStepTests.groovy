@@ -24,6 +24,18 @@ import static org.junit.Assert.assertTrue
 class GetBeatsModuleStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/getBeatsModule.groovy'
 
+  def realData = '''CHANGELOG.next.asciidoc
+metricbeat/docs/modules/zookeeper.asciidoc
+metricbeat/docs/modules/zookeeper/connection.asciidoc
+metricbeat/docs/modules_list.asciidoc
+metricbeat/module/zookeeper/_meta/docs.asciidoc
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/zookeeper/connection/_meta/fields.yml
+metricbeat/module/zookeeper/connection/connection.go
+metricbeat/module/zookeeper/fields.go
+metricbeat/module/zookeeper/mntr/_meta/docs.asciidoc
+metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripIndent()
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -218,5 +230,31 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     assertEquals('', module)
     assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_multiple_match_with_real_data_with_exclude() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc)' )
+    assertEquals('zookeeper', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_multiple_match_with_real_data_without_exclude() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*')
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_is_excluded() throws Exception {
+    def script = loadScript(scriptName)
+    assertFalse(script.isExcluded('', ''))
+    assertTrue(script.isExcluded('metricbeat/docs/modules/zookeeper.asciidoc', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
+    assertFalse(script.isExcluded('metricbeat/zookeeper.asciido', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
   }
 }
