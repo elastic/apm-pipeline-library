@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.cloudbees.groovy.cps.NonCPS
-
 /**
   Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
   evaluates the change list and returns the module name.
@@ -63,7 +61,7 @@ def getGroup(gitDiffFile, pattern, exclude) {
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
     if (!isExcluded(line, exclude)) {
-      matches = line =~ pattern
+      def matches = line =~ pattern
       def auxModule = matches.collect { it[1] }[0] ?: ''
       modules[auxModule] = auxModule
     }
