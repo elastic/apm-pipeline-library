@@ -19,12 +19,12 @@ import com.cloudbees.groovy.cps.NonCPS
 
 /**
   Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
-  evaluates the change list:
+  evaluates the change list and returns the module name.
 
   - When exact match then all the files should match those patterns then it
     returns the region otherwise and empty string.
 
-  // def module = getRegionFromPattern(pattern: "beat/module/([^\/]+)/")
+  // def module = getBeatsModule(pattern: '([^\\/]+)\\/.*')
   whenTrue(module.trim()) {
     // ...
   }
@@ -34,9 +34,9 @@ import com.cloudbees.groovy.cps.NonCPS
 */
 def call(Map params = [:]) {
   if(!isUnix()){
-    error('getRegionFromPattern: windows is not supported yet.')
+    error('getBeatsModule: windows is not supported yet.')
   }
-  def pattern = params.containsKey('pattern') ? params.pattern : error('getRegionFromPattern: Missing pattern argument.')
+  def pattern = params.containsKey('pattern') ? params.pattern : error('getBeatsModule: Missing pattern argument.')
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
   def to = params.get('to', env.GIT_BASE_COMMIT)
 
@@ -45,9 +45,9 @@ def call(Map params = [:]) {
   if (from?.trim() && to?.trim()) {
     def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
     group = getGroup(gitDiffFile, pattern)
-    log(level: 'INFO', text: "getRegionFromPattern: ${group.trim() ?: 'not found'} with regex ${pattern}")
+    log(level: 'INFO', text: "getBeatsModule: ${group.trim() ?: 'not found'} with regex ${pattern}")
   } else {
-    log(level: 'INFO', text: 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
+    log(level: 'INFO', text: 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
   }
   return group
 }
@@ -55,7 +55,6 @@ def call(Map params = [:]) {
 def getGroup(gitDiffFile, pattern) {
   def fileContent = readFile(gitDiffFile)
   def modules = [:]
-  //   /beat\/module\/([^\/]+)\/.*/
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
     matches = line =~ pattern

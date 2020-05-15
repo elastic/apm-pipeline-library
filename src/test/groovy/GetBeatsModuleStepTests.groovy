@@ -21,8 +21,8 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
-class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getRegionFromPattern.groovy'
+class GetBeatsModuleStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/getBeatsModule.groovy'
 
   @Override
   @Before
@@ -41,7 +41,7 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getRegionFromPattern: Missing pattern argument.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'getBeatsModule: Missing pattern argument.'))
     assertJobStatusFailure()
   }
 
@@ -53,7 +53,7 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     def module = script.call(pattern: 'foo')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 
@@ -112,7 +112,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: not found'))
+    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: not found'))
     assertJobStatusSuccess()
   }
 
@@ -124,7 +124,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^unknown.txt')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: not found with regex ^unknown.txt'))
+    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: not found with regex ^unknown.txt'))
     assertJobStatusSuccess()
   }
 
@@ -138,7 +138,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getRegionFromPattern: windows is not supported yet.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'getBeatsModule: windows is not supported yet.'))
     assertJobStatusFailure()
   }
 
@@ -206,7 +206,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^foo/.*/file.txt', from: '', to: '')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 
@@ -216,7 +216,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^foo/.*/file.txt', to: '')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 }
