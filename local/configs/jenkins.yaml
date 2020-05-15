@@ -109,6 +109,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogin.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/getBeatsModule.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/connectionRefused.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/error.dsl"
