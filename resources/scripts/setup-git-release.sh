@@ -44,7 +44,12 @@ git fetch --all
 
 # Pull the git history when repo was cloned with shallow/depth.
 if [ -f "$(git rev-parse --git-dir)/shallow" ] || [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-    git pull --unshallow
+    # If in a branch
+    if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}" ; then
+        git pull --unshallow
+    else
+        echo 'INFO: git refs is not a branch but a tag'
+    fi
 else
     git pull
 fi
