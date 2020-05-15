@@ -60,13 +60,10 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
   @Test
   void test_simple_match() throws Exception {
     def script = loadScript(scriptName)
-    def changeset = 'file.txt'
+    def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def module = script.call(pattern: '^file.txt')
-    printCallStack()
-    // TODO
-    assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', "getRegionFromPattern: not found with regex ^file.txt"))
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
+    assertEquals('foo', module)
     assertJobStatusSuccess()
   }
 
@@ -75,31 +72,47 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
     def script = loadScript(scriptName)
-    def changeset = 'file.txt'
+    def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def module = script.call(pattern: '^file.txt')
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
     printCallStack()
-    // TODO
-    assertEquals('', module)
+    assertEquals('foo', module)
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_complex_match() throws Exception {
+  void test_multiple_match() throws Exception {
     def script = loadScript(scriptName)
-    def changeset = 'foo/anotherfolder/file.txt'
+    def changeset = '''foo/bar/file.txt
+foo/bar/subfolder'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    helper.registerAllowedMethod('sh', [Map.class], { m ->
-        if (m.script.contains('git diff')) {
-          return 'foo/anotherfolder/file.txt'
-        } else {
-          return 0
-        }
-      })
-    def module = script.call(pattern: '^foo/.*/file.txt')
-    printCallStack()
-    // TODO
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
+    assertEquals('foo', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_multiple_match_2() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = '''filebeat/README.md
+filebeat/Dockerfile
+filebeat/docs/faq.asciidoc
+filebeat/autodiscover/builder/hints/config.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
+    assertEquals('filebeat', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_multiple_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = '''foo/bar/file.txt
+bar/foo/subfolder'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
     assertEquals('', module)
+    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: not found'))
     assertJobStatusSuccess()
   }
 
@@ -110,9 +123,8 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '^unknown.txt')
     printCallStack()
-    // TODO
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', "getRegionFromPattern: not found with regex ^unknown.txt"))
+    assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: not found with regex ^unknown.txt'))
     assertJobStatusSuccess()
   }
 
@@ -135,15 +147,14 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
     def script = loadScript(scriptName)
-    def changeset = 'foo/anotherfolder/file.txt'
+    def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
-        assertFalse(m.script.contains('origin/'))
-      })
-    def module = script.call(pattern: 'foo')
+      assertFalse(m.script.contains('origin/'))
+    })
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
     printCallStack()
-    // TODO
-    assertEquals('', module)
+    assertEquals('foo', module)
     assertJobStatusSuccess()
   }
 
@@ -154,11 +165,10 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
-        assertFalse(m.script.contains('origin/'))
-      })
+      assertFalse(m.script.contains('origin/'))
+    })
     def module = script.call(pattern: 'foo')
     printCallStack()
-    // TODO
     assertEquals('', module)
     assertJobStatusSuccess()
   }
@@ -166,13 +176,11 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_from_parameter() throws Exception {
     def script = loadScript(scriptName)
-    def changeset = ''' foo/bar/file.txt
-                    '''.stripMargin().stripIndent()
+    def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def module = script.call(pattern: '^foo/.*/file.txt', from: 'something')
+    def module = script.call(pattern: '([^\\/]+)\\/.*', from: 'something')
     printCallStack()
-    // TODO
-    assertEquals('', module)
+    assertEquals('foo', module)
     assertTrue(assertMethodCallContainsPattern('sh', 'something...bar'))
     assertJobStatusSuccess()
   }
@@ -180,13 +188,14 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_from_and_to_parameters() throws Exception {
     def script = loadScript(scriptName)
-    def changeset = ''' foo/bar/file.txt
-                    '''.stripMargin().stripIndent()
+    def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def module = script.call(pattern: '^foo/.*/file.txt', from: 'something', to: 'else')
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      assertFalse(m.script.contains('origin/'))
+    })
+    def module = script.call(pattern: '([^\\/]+)\\/.*', from: 'something', to: 'else')
     printCallStack()
-    // TODO
-    assertEquals('', module)
+    assertEquals('foo', module)
     assertTrue(assertMethodCallContainsPattern('sh', 'something...else'))
     assertJobStatusSuccess()
   }
@@ -196,7 +205,6 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def module = script.call(pattern: '^foo/.*/file.txt', from: '', to: '')
     printCallStack()
-    // TODO
     assertEquals('', module)
     assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
@@ -207,7 +215,6 @@ class GetRegionFromPatternStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def module = script.call(pattern: '^foo/.*/file.txt', to: '')
     printCallStack()
-    // TODO
     assertEquals('', module)
     assertTrue(assertMethodCallContainsPattern('log', 'getRegionFromPattern: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()

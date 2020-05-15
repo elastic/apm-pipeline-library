@@ -52,15 +52,20 @@ def call(Map params = [:]) {
   return group
 }
 
-def getGroup(gitDiffFile, patterns) {
-  return ''
+def getGroup(gitDiffFile, pattern) {
   def fileContent = readFile(gitDiffFile)
-  def match = true
+  def modules = [:]
+  //   /beat\/module\/([^\/]+)\/.*/
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
-    if (!patterns.every { line ==~ it }) {
-      match = false
+    matches = line =~ pattern
+    def auxModule = matches.collect { it[1] }[0] ?: ''
+    if (auxModule.trim()) {
+      modules[auxModule] = auxModule
     }
   }
-  return match
+  if (modules.size() == 1) {
+    return modules.values().toArray()[0]
+  }
+  return ''
 }
