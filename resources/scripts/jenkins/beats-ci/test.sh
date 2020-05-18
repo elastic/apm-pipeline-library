@@ -30,6 +30,7 @@ PACKER=${1:-false}
 ## Run test-infra and trap error to notify when required
 { py.test -v \
     test-infra/beats-ci/test_installed_tools.py \
+    test-infra/beats-ci/test_installed_tools_docker.py \
     --junit-xml=target/junit-test-infra.xml; \
   er="$?"; } || true
 err="${er}"
