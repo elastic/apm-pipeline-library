@@ -21,8 +21,8 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
-class GetBeatsModuleStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getBeatsModule.groovy'
+class GetGitMatchingGroupStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/getGitMatchingGroup.groovy'
 
   def realData = '''CHANGELOG.next.asciidoc
 metricbeat/docs/modules/zookeeper.asciidoc
@@ -53,7 +53,7 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getBeatsModule: Missing pattern argument.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Missing pattern argument.'))
     assertJobStatusFailure()
   }
 
@@ -65,7 +65,7 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
     def module = script.call(pattern: 'foo')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 
@@ -124,7 +124,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: not found'))
+    assertTrue(assertMethodCallContainsPattern('log', 'not found'))
     assertJobStatusSuccess()
   }
 
@@ -136,7 +136,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^unknown.txt')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: not found with regex ^unknown.txt'))
+    assertTrue(assertMethodCallContainsPattern('log', 'not found with regex ^unknown.txt'))
     assertJobStatusSuccess()
   }
 
@@ -150,7 +150,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getBeatsModule: windows is not supported yet.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet.'))
     assertJobStatusFailure()
   }
 
@@ -218,7 +218,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^foo/.*/file.txt', from: '', to: '')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 
@@ -228,7 +228,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     def module = script.call(pattern: '^foo/.*/file.txt', to: '')
     printCallStack()
     assertEquals('', module)
-    assertTrue(assertMethodCallContainsPattern('log', 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
     assertJobStatusSuccess()
   }
 

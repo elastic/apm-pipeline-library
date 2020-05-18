@@ -7,13 +7,13 @@ evaluates the change list and returns the module name.
   NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ```
-  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*')
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*')
   whenTrue(module.trim()) {
     // ...
   }
 
   // Exclude the asciidoc files from the search.
-  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
 ```
 
 * pattern: the regex pattern with the group to look for. Mandatory

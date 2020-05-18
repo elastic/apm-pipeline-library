@@ -22,13 +22,13 @@
   - When exact match then all the files should match those patterns then it
     returns the region otherwise and empty string.
 
-  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*')
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*')
   whenTrue(module.trim()) {
     // ...
   }
 
   // Exclude the asciidoc files from the search.
-  def module = getBeatsModule(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
 
 
   NOTE: This particular implementation requires to checkout with the step gitCheckout
@@ -36,9 +36,9 @@
 */
 def call(Map params = [:]) {
   if(!isUnix()){
-    error('getBeatsModule: windows is not supported yet.')
+    error('getGitMatchingGroup: windows is not supported yet.')
   }
-  def pattern = params.containsKey('pattern') ? params.pattern : error('getBeatsModule: Missing pattern argument.')
+  def pattern = params.containsKey('pattern') ? params.pattern : error('getGitMatchingGroup: Missing pattern argument.')
   def exclude = params.get('exclude', '')
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
   def to = params.get('to', env.GIT_BASE_COMMIT)
@@ -48,9 +48,9 @@ def call(Map params = [:]) {
   if (from?.trim() && to?.trim()) {
     def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
     group = getGroup(gitDiffFile, pattern, exclude)
-    log(level: 'INFO', text: "getBeatsModule: ${group.trim() ?: 'not found'} with regex ${pattern}")
+    log(level: 'INFO', text: "getGitMatchingGroup: ${group.trim() ?: 'not found'} with regex ${pattern}")
   } else {
-    log(level: 'INFO', text: 'getBeatsModule: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
+    log(level: 'INFO', text: 'getGitMatchingGroup: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.')
   }
   return group
 }
