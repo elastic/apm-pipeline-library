@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.99 (18/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: getGitMatchingGroup step [#535](https://github.com/elastic/apm-pipeline-library/pull/535)
+
+---
+
 ## v1.1.98 (15/05/2020)
 
 #### 🐛 Bug Fixes
@@ -899,9 +907,9 @@
 
 #### 🙈 No user affected
 
--  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 -  refactor mock classes and interceptors [#192](https://github.com/elastic/apm-pipeline-library/pull/192)
 -  Revert "HOME is required to be declared when using the preCommit" [#194](https://github.com/elastic/apm-pipeline-library/pull/194)
+-  jjbb: without the branch parameter [#191](https://github.com/elastic/apm-pipeline-library/pull/191)
 
 ---
 
