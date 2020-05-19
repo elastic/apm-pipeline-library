@@ -257,4 +257,36 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     assertTrue(script.isExcluded('metricbeat/docs/modules/zookeeper.asciidoc', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
     assertFalse(script.isExcluded('metricbeat/zookeeper.asciido', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
   }
+
+  @Test
+  void test_match_in_beats_pr18369() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''metricbeat/docs/fields.asciidoc
+metricbeat/docs/images/metricbeat-googlecloud-load-balancing-https-overview.png
+metricbeat/docs/images/metricbeat-googlecloud-load-balancing-l3-overview.png
+metricbeat/docs/modules/googlecloud.asciidoc
+x-pack/metricbeat/module/googlecloud/_meta/docs.asciidoc
+x-pack/metricbeat/module/googlecloud/_meta/kibana/7/dashboard/Metricbeat-googlecloud-load-balancing-https-overview.json
+x-pack/metricbeat/module/googlecloud/_meta/kibana/7/dashboard/Metricbeat-googlecloud-loadbalancing-l3-overview.json
+x-pack/metricbeat/module/googlecloud/fields.go
+x-pack/metricbeat/module/googlecloud/loadbalancing/_meta/fields.yml
+x-pack/metricbeat/module/googlecloud/stackdriver/metrics_requester.go
+x-pack/metricbeat/module/googlecloud/stackdriver/metricset.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc)' )
+    assertEquals('googlecloud', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18609() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/module/elasticsearch/elasticsearch.go
+metricbeat/module/elasticsearch/ml_job/ml_job.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)' )
+    assertEquals('elasticsearch', module)
+    assertJobStatusSuccess()
+  }
 }
