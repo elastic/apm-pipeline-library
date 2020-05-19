@@ -59,8 +59,10 @@ def getGroup(gitDiffFile, pattern, exclude) {
   def fileContent = readFile(gitDiffFile)
   def modules = [:]
   fileContent.split('\n').each { String line ->
-    log(level: 'DEBUG', text: "changeset element: '${line}'")
-    if (!isExcluded(line, exclude)) {
+    if (isExcluded(line, exclude)) {
+      log(level: 'DEBUG', text: "[excluded] changeset element: '${line}'")
+    } else {
+      log(level: 'DEBUG', text: "changeset element: '${line}'")
       def matches = line =~ pattern
       def auxModule = matches.collect { it[1] }[0] ?: ''
       modules[auxModule] = auxModule

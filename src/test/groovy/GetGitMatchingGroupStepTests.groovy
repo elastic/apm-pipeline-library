@@ -26,7 +26,7 @@ class GetGitMatchingGroupStepTests extends ApmBasePipelineTest {
 
   def beatsPattern = '.*\\/module\\/([^\\/]+)\\/.*'
 
-  def beatsExcludePattern = '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)'
+  def beatsExcludePattern = '^(((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png)'
 
   def realData = '''CHANGELOG.next.asciidoc
 metricbeat/docs/modules/zookeeper.asciidoc
@@ -258,8 +258,8 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   void test_is_excluded() throws Exception {
     def script = loadScript(scriptName)
     assertFalse(script.isExcluded('', ''))
-    assertTrue(script.isExcluded('metricbeat/docs/modules/zookeeper.asciidoc', beatsExcludePattern))
-    assertFalse(script.isExcluded('metricbeat/zookeeper.asciido', beatsExcludePattern))
+    assertFalse(script.isExcluded('metricbeat/module/googlecloud/fields.go', beatsExcludePattern))
+    assertTrue(script.isExcluded('metricbeat/zookeeper.asciido', beatsExcludePattern))
   }
 
   @Test
@@ -363,6 +363,35 @@ filebeat/module/logstash/slowlog/manifest.yml'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
     def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
     assertEquals('logstash', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_with_multiple_files_to_be_excluded() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/docs/modules/zookeeper.png
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('zookeeper', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_unmatch_in_beats_with_multiple_files_to_be_excluded() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/docs/modules/zookeeper.png
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/logstash/connection/connection.go
+metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('', module)
     assertJobStatusSuccess()
   }
 }
