@@ -1,0 +1,30 @@
+---
+- job:
+    name: apm-shared/license-scan-general
+    display-name: APM Pipeline Library License Scan on any repo.
+    description: Scans thrid-party licenses and report the results.
+    view: APM-CI
+    project-type: pipeline
+    parameters:
+      - string:
+          name: branch_specifier
+          default: master
+          description: the Git branch specifier to scan
+      - string:
+          name: repo
+          default:
+          description: the Git repository to scan
+    pipeline-scm:
+      script-path: .ci/licenseScanGenaral.groovy
+      scm:
+        - git:
+            url: git@github.com:elastic/apm-pipeline-library.git
+            refspec: +refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*
+            wipe-workspace: 'True'
+            name: origin
+            shallow-clone: true
+            credentials-id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
+            reference-repo: /var/lib/jenkins/.git-references/apm-test-pipeline.git
+            branches:
+              - master
+    triggers: []
