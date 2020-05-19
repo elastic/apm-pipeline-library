@@ -338,5 +338,27 @@ x-pack/filebeat/module/googlecloud/_meta/docs.asciidoc'''.stripMargin().stripInd
     assertJobStatusSuccess()
   }
 
-  
+  @Test
+  void test_match_in_beats_pr18095() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+filebeat/docs/modules/logstash.asciidoc
+filebeat/module/logstash/_meta/docs.asciidoc
+filebeat/module/logstash/log/config/log.yml
+filebeat/module/logstash/log/ingest/pipeline-json.yml
+filebeat/module/logstash/log/ingest/pipeline-plaintext.yml
+filebeat/module/logstash/log/ingest/pipeline.yml
+filebeat/module/logstash/log/manifest.yml
+filebeat/module/logstash/log/test/logstash-plain-7.4.log-expected.json
+filebeat/module/logstash/log/test/logstash-plain.log
+filebeat/module/logstash/log/test/logstash-plain.log-expected.json
+filebeat/module/logstash/slowlog/ingest/pipeline-json.yml
+filebeat/module/logstash/slowlog/ingest/pipeline-plaintext.yml
+filebeat/module/logstash/slowlog/ingest/pipeline.yml
+filebeat/module/logstash/slowlog/manifest.yml'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)' )
+    assertEquals('logstash', module)
+    assertJobStatusSuccess()
+  }
 }
