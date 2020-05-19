@@ -36,7 +36,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(cmd: 'push')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', '&> push.log'))
+    assertFalse(assertMethodCallContainsPattern('sh', '> push.log'))
     assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
     assertJobStatusSuccess()
   }
@@ -97,7 +97,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
-    assertTrue(assertMethodCallContainsPattern('sh', '&> push.log'))
+    assertTrue(assertMethodCallContainsPattern('sh', '> push.log 2>&1'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
     assertJobStatusSuccess()
   }

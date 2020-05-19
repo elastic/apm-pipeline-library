@@ -35,9 +35,11 @@ def call(Map params = [:]) {
       credentialsId: credentialsId,
       passwordVariable: 'GIT_PASSWORD',
       usernameVariable: 'GIT_USERNAME')]) {
-    sh(label: "Git ${cmd}", script: """git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${store ? " &> ${cmd}.log" : ''}""")
+    def logFilename = "${cmd}.log"
+    def storeFlag = store ? "> ${logFilename} 2>&1" : ''
+    sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
     if (store) {
-      archiveArtifacts(artifacts: "${cmd}.log")
+      archiveArtifacts(artifacts: "${logFilename}")
     }
   }
 }
