@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.101 (19/05/2020)
+
+#### 🐛 Bug Fixes
+
+-  ci: fix redirect gitCmd [#549](https://github.com/elastic/apm-pipeline-library/pull/549)
+
+#### 🙈 No user affected
+
+-  test: add tests for beats module patterns [#545](https://github.com/elastic/apm-pipeline-library/pull/545)
+
+#### ⚙️ CI
+
+-  feat: generic job to scan licenses [#547](https://github.com/elastic/apm-pipeline-library/pull/547)
+
+---
+
 ## v1.1.100 (19/05/2020)
 
 #### 🚀 Enhancements
@@ -258,10 +274,10 @@
 
 #### 🚀 Enhancements
 
--  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
--  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
+-  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
+-  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 
 #### 🐛 Bug Fixes
 
@@ -625,9 +641,9 @@
 
 #### 🚀 Enhancements
 
+-  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 -  Reuse GitHub comment when possible [#324](https://github.com/elastic/apm-pipeline-library/pull/324)
 -  enable HOME/PATH env variables for the preCommit's step context [#325](https://github.com/elastic/apm-pipeline-library/pull/325)
--  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 
 #### ⚙️ CI
 
@@ -892,8 +908,8 @@
 
 #### 🚀 Enhancements
 
--  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 -  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
+-  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
 
 #### 🐛 Bug Fixes
 
