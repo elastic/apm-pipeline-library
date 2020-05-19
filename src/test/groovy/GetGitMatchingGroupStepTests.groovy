@@ -312,4 +312,18 @@ libbeat/tests/system/test_monitoring.py'''.stripMargin().stripIndent()
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_match_in_beats_pr18541() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''libbeat/dashboards/config.go
+libbeat/dashboards/dashboards.go
+libbeat/dashboards/decode.go
+libbeat/dashboards/importer.go
+libbeat/dashboards/kibana_loader.go
+libbeat/dashboards/modify_json.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)' )
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
 }
