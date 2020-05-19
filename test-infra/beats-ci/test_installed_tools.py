@@ -18,8 +18,11 @@ def test_git_installed(host):
   assert cmd.rc == 0, "it is required for all the Beats projects"
 
 def test_jq_installed(host):
-  cmd = host.run("jq --version")
-  assert cmd.rc == 0, "it is required for the apm-pipeline-library"
+  if host.system_info.arch != "aarch64" :
+    pytest.skip("jq is unsupported for aarch64 configuration")
+  else :
+    cmd = host.run("jq --version")
+    assert cmd.rc == 0, "it is required for the apm-pipeline-library"
 
 def test_make_installed(host):
   cmd = host.run("make --version")
