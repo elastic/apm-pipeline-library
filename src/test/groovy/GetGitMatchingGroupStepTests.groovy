@@ -24,6 +24,10 @@ import static org.junit.Assert.assertTrue
 class GetGitMatchingGroupStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/getGitMatchingGroup.groovy'
 
+  def beatsPattern = '.*\\/module\\/([^\\/]+)\\/.*'
+
+  def beatsExcludePattern = '^(((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png)'
+
   def realData = '''CHANGELOG.next.asciidoc
 metricbeat/docs/modules/zookeeper.asciidoc
 metricbeat/docs/modules/zookeeper/connection.asciidoc
@@ -236,7 +240,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   void test_multiple_match_with_real_data_with_exclude() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc)' )
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
     assertEquals('zookeeper', module)
     assertJobStatusSuccess()
   }
@@ -245,7 +249,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   void test_multiple_match_with_real_data_without_exclude() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*')
+    def module = script.call(pattern: beatsPattern)
     assertEquals('', module)
     assertJobStatusSuccess()
   }
@@ -254,7 +258,140 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   void test_is_excluded() throws Exception {
     def script = loadScript(scriptName)
     assertFalse(script.isExcluded('', ''))
-    assertTrue(script.isExcluded('metricbeat/docs/modules/zookeeper.asciidoc', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
-    assertFalse(script.isExcluded('metricbeat/zookeeper.asciido', '(.*\\/docs\\/.*|.*\\.asciidoc)'))
+    assertFalse(script.isExcluded('metricbeat/module/googlecloud/fields.go', beatsExcludePattern))
+    assertTrue(script.isExcluded('metricbeat/zookeeper.asciido', beatsExcludePattern))
+  }
+
+  @Test
+  void test_match_in_beats_pr18369() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''metricbeat/docs/fields.asciidoc
+metricbeat/docs/images/metricbeat-googlecloud-load-balancing-https-overview.png
+metricbeat/docs/images/metricbeat-googlecloud-load-balancing-l3-overview.png
+metricbeat/docs/modules/googlecloud.asciidoc
+x-pack/metricbeat/module/googlecloud/_meta/docs.asciidoc
+x-pack/metricbeat/module/googlecloud/_meta/kibana/7/dashboard/Metricbeat-googlecloud-load-balancing-https-overview.json
+x-pack/metricbeat/module/googlecloud/_meta/kibana/7/dashboard/Metricbeat-googlecloud-loadbalancing-l3-overview.json
+x-pack/metricbeat/module/googlecloud/fields.go
+x-pack/metricbeat/module/googlecloud/loadbalancing/_meta/fields.yml
+x-pack/metricbeat/module/googlecloud/stackdriver/metrics_requester.go
+x-pack/metricbeat/module/googlecloud/stackdriver/metricset.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('googlecloud', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18609() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/module/elasticsearch/elasticsearch.go
+metricbeat/module/elasticsearch/ml_job/ml_job.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('elasticsearch', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18608() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/cmd/instance/beat.go
+libbeat/docs/monitoring/monitoring-beats.asciidoc
+libbeat/docs/monitoring/monitoring-internal-collection-legacy.asciidoc
+libbeat/docs/monitoring/shared-monitor-config-legacy.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+libbeat/monitoring/monitoring.go
+libbeat/monitoring/report/elasticsearch/client.go
+libbeat/monitoring/report/elasticsearch/config.go
+libbeat/monitoring/report/elasticsearch/elasticsearch.go
+libbeat/monitoring/report/report.go
+libbeat/tests/system/config/mockbeat.yml.j2
+libbeat/tests/system/test_monitoring.py'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18541() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''libbeat/dashboards/config.go
+libbeat/dashboards/dashboards.go
+libbeat/dashboards/decode.go
+libbeat/dashboards/importer.go
+libbeat/dashboards/kibana_loader.go
+libbeat/dashboards/modify_json.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18425() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''filebeat/docs/modules/googlecloud.asciidoc
+x-pack/filebeat/module/googlecloud/_meta/docs.asciidoc'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_pr18095() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+filebeat/docs/modules/logstash.asciidoc
+filebeat/module/logstash/_meta/docs.asciidoc
+filebeat/module/logstash/log/config/log.yml
+filebeat/module/logstash/log/ingest/pipeline-json.yml
+filebeat/module/logstash/log/ingest/pipeline-plaintext.yml
+filebeat/module/logstash/log/ingest/pipeline.yml
+filebeat/module/logstash/log/manifest.yml
+filebeat/module/logstash/log/test/logstash-plain-7.4.log-expected.json
+filebeat/module/logstash/log/test/logstash-plain.log
+filebeat/module/logstash/log/test/logstash-plain.log-expected.json
+filebeat/module/logstash/slowlog/ingest/pipeline-json.yml
+filebeat/module/logstash/slowlog/ingest/pipeline-plaintext.yml
+filebeat/module/logstash/slowlog/ingest/pipeline.yml
+filebeat/module/logstash/slowlog/manifest.yml'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('logstash', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_match_in_beats_with_multiple_files_to_be_excluded() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/docs/modules/zookeeper.png
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('zookeeper', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_unmatch_in_beats_with_multiple_files_to_be_excluded() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+metricbeat/docs/modules/zookeeper.png
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/logstash/connection/connection.go
+metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
+    assertEquals('', module)
+    assertJobStatusSuccess()
   }
 }
