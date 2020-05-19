@@ -149,7 +149,7 @@ def isDefaultSCM(branch) {
 }
 
 def fetchPullRefs(){
-  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*')
+  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*', store: true)
 }
 
 def setOrgRepoEnvVariables(params) {
