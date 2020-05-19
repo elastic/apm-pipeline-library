@@ -15,7 +15,7 @@
           default:
           description: the Git repository to scan
     pipeline-scm:
-      script-path: .ci/licenseScanGenaral.groovy
+      script-path: .ci/licenseScanGeneral.groovy
       scm:
         - git:
             url: git@github.com:elastic/apm-pipeline-library.git

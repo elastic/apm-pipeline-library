@@ -34,7 +34,7 @@ pipeline {
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: 'master', description: 'the Git branch specifier to scan.')
-    string(name: 'repo', defaultValue: 'git@github.com:elastic/apm-pipeline-library.git', description: 'the Git repository to scan.')
+    string(name: 'repo', defaultValue: 'apm-pipeline-library', description: 'the Git repository to scan.')
   }
   stages {
     stage('License Scan') {
@@ -44,7 +44,7 @@ pipeline {
         }
         dir("${env.BASE_DIR}"){
           git(credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba',
-            url: "${params.repo}",
+            url: "git@github.com:elastic/${params.repo}.git",
             branch: "${params.branch_specifier}"
           )
           licenseScan()
