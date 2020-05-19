@@ -33,6 +33,9 @@ USER_NAME=$(git log -1 --pretty=format:'%an')
 git config user.email "${USER_MAIL}"
 git config user.name "${USER_NAME}"
 
+# Set default remote for the checkout (See https://github.com/elastic/apm-agent-ruby/issues/796)
+git config checkout.defaultRemote 'origin'
+
 # Checkout the branch as it's detached based by default.
 # See https://issues.jenkins-ci.org/browse/JENKINS-33171
 git fetch --all

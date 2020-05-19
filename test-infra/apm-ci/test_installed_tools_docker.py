@@ -3,7 +3,7 @@ import pytest
 
 def test_docker_installed(host):
   cmd = host.run("docker --version")
-  assert cmd.rc == 0, "it is required for all the APM projects and also Beats"
+  assert cmd.rc == 0, "it is required for all the APM projects"
 
 def test_docker_compose_installed(host):
   cmd = host.run("docker-compose --version")

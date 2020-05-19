@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.100 (19/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: less verbose git fetch [#544](https://github.com/elastic/apm-pipeline-library/pull/544)
+
+#### 🙈 No user affected
+
+-  [test-infra] add more configuration requirements [#543](https://github.com/elastic/apm-pipeline-library/pull/543)
+
+---
+
 ## v1.1.99 (18/05/2020)
 
 #### 🚀 Enhancements
@@ -246,15 +258,15 @@
 
 #### 🚀 Enhancements
 
+-  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
 -  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
--  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
 
 #### 🐛 Bug Fixes
 
--  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
 -  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
+-  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
 
 #### ⚙️ CI
 
