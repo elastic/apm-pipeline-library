@@ -289,4 +289,27 @@ metricbeat/module/elasticsearch/ml_job/ml_job.go'''.stripMargin().stripIndent()
     assertEquals('elasticsearch', module)
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_match_in_beats_pr18608() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+libbeat/cmd/instance/beat.go
+libbeat/docs/monitoring/monitoring-beats.asciidoc
+libbeat/docs/monitoring/monitoring-internal-collection-legacy.asciidoc
+libbeat/docs/monitoring/shared-monitor-config-legacy.asciidoc
+libbeat/esleg/eslegclient/bulkapi.go
+libbeat/monitoring/monitoring.go
+libbeat/monitoring/report/elasticsearch/client.go
+libbeat/monitoring/report/elasticsearch/config.go
+libbeat/monitoring/report/elasticsearch/elasticsearch.go
+libbeat/monitoring/report/report.go
+libbeat/tests/system/config/mockbeat.yml.j2
+libbeat/tests/system/test_monitoring.py'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)' )
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
 }
