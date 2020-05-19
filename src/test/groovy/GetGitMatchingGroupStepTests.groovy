@@ -326,4 +326,17 @@ libbeat/dashboards/modify_json.go'''.stripMargin().stripIndent()
     assertEquals('', module)
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_match_in_beats_pr18425() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''filebeat/docs/modules/googlecloud.asciidoc
+x-pack/filebeat/module/googlecloud/_meta/docs.asciidoc'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: '.*\\/module\\/([^\\/]+)\\/.*', exclude: '(.*\\/docs\\/.*|.*\\.asciidoc|^libbeat.*)' )
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  
 }
