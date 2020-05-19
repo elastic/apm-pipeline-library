@@ -8,3 +8,4 @@ It requires to initialise the pipeline with githubEnv() first.
 * credentialsId: the credentials to access the repo.
 * cmd: Git command (tag, push, ...)
 * args: additional arguments passed to `git` command.
+* store: Whether to redirect the output to a file and archive it. Optional. Default value 'false'

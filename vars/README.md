@@ -236,6 +236,32 @@ In other cases, you probably has to use this step.
 def sha = getGitCommitSha()
 ```
 
+## getGitMatchingGroup
+Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
+evaluates the change list and returns the module name.
+
+- When exact match then all the files should match those patterns then it
+  returns the region otherwise and empty string.
+
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+```
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*')
+  whenTrue(module.trim()) {
+    // ...
+  }
+
+  // Exclude the asciidoc files from the search.
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+```
+
+* pattern: the regex pattern with the group to look for. Mandatory
+* exclude: the regex pattern with the files to be excluded from the search. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+**NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
+
 ## getGitRepoURL
 Get the current git repository url from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_URL.
@@ -365,6 +391,7 @@ It requires to initialise the pipeline with githubEnv() first.
 * credentialsId: the credentials to access the repo.
 * cmd: Git command (tag, push, ...)
 * args: additional arguments passed to `git` command.
+* store: Whether to redirect the output to a file and archive it. Optional. Default value 'false'
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
@@ -1565,3 +1592,4 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
