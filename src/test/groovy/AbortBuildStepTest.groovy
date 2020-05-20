@@ -41,7 +41,7 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(build: build, message: "let's stop it")
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', "let's stop it"))
+    assertTrue(assertMethodCallContainsPattern('log', "let's stop it"))
   }
 
   @Test
