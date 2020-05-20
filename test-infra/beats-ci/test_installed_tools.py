@@ -18,7 +18,7 @@ def test_git_installed(host):
   assert cmd.rc == 0, "it is required for all the Beats projects"
 
 def test_jq_installed(host):
-  if host.system_info.arch != "aarch64" :
+  if host.check_output("uname -m") == "aarch64" :
     pytest.skip("jq is unsupported for aarch64 configuration")
   else :
     cmd = host.run("jq --version")
