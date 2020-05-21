@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.102 (21/05/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: skip preview docs with aborted builds [#553](https://github.com/elastic/apm-pipeline-library/pull/553)
+
+#### 🙈 No user affected
+
+-  test-infra: arch is supported in 5.1.0 [#550](https://github.com/elastic/apm-pipeline-library/pull/550)
+
+#### ⚙️ CI
+
+-  ci: cosmetic changes in the PR comment [#551](https://github.com/elastic/apm-pipeline-library/pull/551)
+
+---
+
 ## v1.1.101 (19/05/2020)
 
 #### 🐛 Bug Fixes
@@ -274,15 +290,15 @@
 
 #### 🚀 Enhancements
 
+-  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
 -  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
--  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 
 #### 🐛 Bug Fixes
 
--  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
 -  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
+-  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
 
 #### ⚙️ CI
 
@@ -628,8 +644,8 @@
 
 #### 🐛 Bug Fixes
 
--  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 -  ci(jenkins): validate pipelines [#326](https://github.com/elastic/apm-pipeline-library/pull/326)
+-  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 
 #### ⚙️ CI
 
@@ -641,9 +657,9 @@
 
 #### 🚀 Enhancements
 
--  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 -  Reuse GitHub comment when possible [#324](https://github.com/elastic/apm-pipeline-library/pull/324)
 -  enable HOME/PATH env variables for the preCommit's step context [#325](https://github.com/elastic/apm-pipeline-library/pull/325)
+-  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 
 #### ⚙️ CI
 
@@ -880,18 +896,18 @@
 
 #### 🚀 Enhancements
 
+-  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
 -  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
 -  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 -  enable jjbb validation locally [#217](https://github.com/elastic/apm-pipeline-library/pull/217)
 -  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
 -  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
--  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
 
 #### 🐛 Bug Fixes
 
+-  fix: update workers stages [#209](https://github.com/elastic/apm-pipeline-library/pull/209)
 -  fix: replace only the first '-' with a ':' [#211](https://github.com/elastic/apm-pipeline-library/pull/211)
 -  docker pull --quiet is not supported by default [#215](https://github.com/elastic/apm-pipeline-library/pull/215)
--  fix: update workers stages [#209](https://github.com/elastic/apm-pipeline-library/pull/209)
 
 #### 🙈 No user affected
 
