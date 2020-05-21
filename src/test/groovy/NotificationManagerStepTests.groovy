@@ -167,6 +167,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
       changeSet: readJSON(file: "changeSet-info.json"),
+      docsUrl: 'foo',
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
@@ -175,6 +176,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
     assertJobStatusSuccess()
   }
@@ -257,6 +259,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', '> There is a new build on-going so the previous on-going builds have been aborted'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertJobStatusSuccess()
   }
 
@@ -285,6 +288,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
       changeSet: readJSON(file: "changeSet-info.json"),
+      docsUrl: 'foo',
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
@@ -293,6 +297,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Tests Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertJobStatusSuccess()
   }
 
