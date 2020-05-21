@@ -43,12 +43,10 @@ def call(Map params = [:]){
       sh(label: 'Install gcloud', script: 'curl -s https://sdk.cloud.google.com | bash > install.log')
     }
   }
-
   prepareCredentials(keyFile: keyFile, secret: secret)
   if(install) {
-    withEnv(["PATH=${env.HOME}/google-cloud-sdk/bin:${env.PATH}"]){
-      upload(keyFile: keyFile, source: source, target: target, header: header)
-    }
+    // path argument is a workaround since withEnv(PATH) does not work within the docker.inside step
+    upload(keyFile: keyFile, source: source, target: target, header: header, path: "${env.HOME}/google-cloud-sdk/bin")
   } else {
     upload(keyFile: keyFile, source: source, target: target, header: header)
   }
@@ -63,10 +61,11 @@ def prepareCredentials(Map params = [:]) {
 }
 
 def upload(Map params = [:]) {
+  def pathPrepend = (params.containsKey('path') ? "PATH=${params.path}:\${PATH}" : '')
   try {
-    sh(label: 'Activate service account', script: "gcloud auth activate-service-account --key-file=${params.keyFile}")
+    sh(label: 'Activate service account', script: "${pathPrepend} gcloud auth activate-service-account --key-file=${params.keyFile}")
     def headerFlag = (params.header.trim() ? "-h ${params.header}" : '')
-    sh(label: 'Upload', script: "gsutil ${headerFlag} cp ${params.source} ${params.target}")
+    sh(label: 'Upload', script: "${pathPrepend} gsutil ${headerFlag} cp ${params.source} ${params.target}")
   } catch (err) {
     error "publishToCDN: error ${err}"
     throw err
