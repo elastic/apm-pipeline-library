@@ -1089,6 +1089,28 @@ Parse the pre-commit log file and generates a junit report
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
 
+## publishToCDN
+Publish to the CDN the given set of source files to the target bucket
+with the given headers.
+
+
+```
+  // This command would upload all js files files in the packages/rum/dist/bundles directory
+  // and make them readable and cacheable, with cache expiration of one hour.
+  publishToCDN(header: "Cache-Control:public,max-age=3600",
+                source: 'packages/rum/dist/bundles/*.js',
+                target: "gs://beats-ci-temp/rum/5.1.0",
+                secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
+```
+
+* header: what's the Metadata of the objects to be uploaded to the bucket. Optional
+* install: whether to install the google cloud tools. Default true. Optional
+* secret: what's the secrect with the service account details. Mandatory
+* source: local files. Mandatory
+* target: where to copy those files to. Mandatory
+
+__NOTE__: It requires *Nix where to run it from.
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 

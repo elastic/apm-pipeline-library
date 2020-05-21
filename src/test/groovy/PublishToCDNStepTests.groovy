@@ -70,23 +70,10 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_projectId() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.call(source: 'foo', target: 'bar')
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: Missing projectId argument.'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_without_secret() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(source: 'foo', target: 'bar', projectId: 'p1')
+      script.call(source: 'foo', target: 'bar')
     } catch(e){
       //NOOP
     }
@@ -99,7 +86,7 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
   void test_secret_error() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(source: 'foo', target: 'gs://bar', projectId: 'p1', secret: VaultSecret.SECRET_ERROR.toString())
+      script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_ERROR.toString())
     } catch(e){
       //NOOP
     }
@@ -110,18 +97,23 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_without_install() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(install: false, source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString())
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.call(source: 'foo', target: 'gs://bar', projectId: 'p1', secret: VaultSecret.SECRET_GCP.toString())
-    } catch(e){
-      //NOOP
-    }
+    script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), header: 'my_header')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
     assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', '--key-file=service-account.json'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--project=p1'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'cp -r foo gs://bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-h my_header cp foo gs://bar'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
     assertJobStatusSuccess()
   }
@@ -136,15 +128,14 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
       }
     })
     try {
-      script.call(source: 'foo', target: 'gs://bar', projectId: 'p1', secret: VaultSecret.SECRET_GCP.toString())
+      script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString())
     } catch(e){
       //NOOP
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', '--key-file=service-account.json'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--project=p1'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'cp -r foo gs://bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'cp foo gs://bar'))
     assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: error'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
     assertJobStatusFailure()

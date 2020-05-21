@@ -17,7 +17,15 @@
 
 /**
 
-  publishToCDN(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+  Publish to the CDN the given set of source files to the target bucket
+  with the given headers.
+
+  // This command would upload all js files files in the packages/rum/dist/bundles directory
+  // and make them readable and cacheable, with cache expiration of one hour.
+  publishToCDN(header: "Cache-Control:public,max-age=3600",
+                                 source: 'packages/rum/dist/bundles/*.js',
+                                 target: "gs://beats-ci-temp/rum/5.1.0",
+                                 secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
 */
 def call(Map params = [:]){
   if(!isUnix()){
@@ -27,32 +35,43 @@ def call(Map params = [:]){
   def header = params.get('header', '')
   def source = params.containsKey('source') ? params.source : error('publishToCDN: Missing source argument.')
   def target = params.containsKey('target') ? params.target : error('publishToCDN: Missing target argument.')
-  def projectId = params.containsKey('projectId') ? params.projectId : error('publishToCDN: Missing projectId argument.')
   def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: Missing secret argument.')
+  def keyFile = 'service-account.json'
 
   if(install) {
-    // TODO install google cloud tooling
-    // see https://cloud.google.com/storage/docs/gsutil_install
+    withEnv(["CLOUDSDK_CORE_DISABLE_PROMPTS=1"]){
+      sh(label: 'Install gcloud', script: 'curl -s https://sdk.cloud.google.com | bash > install.log')
+    }
   }
 
-  // Prepare the credentials
-  def keyFile = 'service-account.json'
-  def props = getVaultSecret(secret: secret)
+  prepareCredentials(keyFile: keyFile, secret: secret)
+  if(install) {
+    withEnv(["PATH=${env.HOME}/google-cloud-sdk/bin:${env.PATH}"]){
+      upload(keyFile: keyFile, source: source, target: target, header: header)
+    }
+  } else {
+    upload(keyFile: keyFile, source: source, target: target, header: header)
+  }
+}
+
+def prepareCredentials(Map params = [:]) {
+  def props = getVaultSecret(secret: params.secret)
   if (props?.errors) {
     error "publishToCDN: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
+  writeJSON file: params.keyFile, json: props.data.value
+}
 
-  // Upload with the required headers.
+def upload(Map params = [:]) {
   try {
-    writeJSON file: keyFile, json: props.data.value
-    sh(label: 'Activate service account', script: "gcloud auth activate-service-account --key-file=${keyFile} --project=${projectId}")
-    def headerFlag = (header.trim() ? "-h ${header}" : '')
-    sh(label: 'Upload', script: "gsutil ${headerFlag} cp -r ${source} ${target}")
+    sh(label: 'Activate service account', script: "gcloud auth activate-service-account --key-file=${params.keyFile}")
+    def headerFlag = (params.header.trim() ? "-h ${params.header}" : '')
+    sh(label: 'Upload', script: "gsutil ${headerFlag} cp ${params.source} ${params.target}")
   } catch (err) {
     error "publishToCDN: error ${err}"
     throw err
   } finally {
     // Rollback to the previous release context
-    sh(label: 'Rollback context', script: "rm ${keyFile}")
+    sh(label: 'Rollback context', script: "rm ${params.keyFile}")
   }
 }
