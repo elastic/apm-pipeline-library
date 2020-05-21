@@ -71,7 +71,6 @@ def upload(Map params = [:]) {
     error "publishToCDN: error ${err}"
     throw err
   } finally {
-    // Rollback to the previous release context
     sh(label: 'Rollback context', script: "rm ${params.keyFile}")
   }
 }
