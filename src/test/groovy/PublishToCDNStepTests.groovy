@@ -27,6 +27,7 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.HOME = '/home'
   }
 
   @Test
@@ -102,6 +103,7 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
     script.call(install: false, source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString())
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'PATH=/home/google-cloud-sdk/bin:'))
     assertJobStatusSuccess()
   }
 
@@ -112,6 +114,7 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
     assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=service-account.json'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'PATH=/home/google-cloud-sdk/bin:'))
     assertTrue(assertMethodCallContainsPattern('sh', '--key-file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', '-h my_header cp foo gs://bar'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
