@@ -40,7 +40,7 @@ def call(Map params = [:]){
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
   def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
-  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : true
+  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
@@ -52,9 +52,16 @@ def call(Map params = [:]){
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
-  if (shallowValue && (mergeTarget != null || isMergeWithGitExtension(scm))) {
+  if (shallowValue && (mergeTarget != null)) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
     log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
+    shallowValue = false
+  }
+
+  // Shallow cloning in PRs might cause some issues when running on Multibranch Pipelines, so in order to help with
+  // the shallow cloning has been forced to be disabled on PRs.
+  if (env.CHANGE_ID){
+    log(level: 'INFO', text: "'shallow' is forced to be disabled when running on PullRequests")
     shallowValue = false
   }
 
@@ -189,17 +196,4 @@ def mergeExtensions(defaultExtensions, customisedExtensions) {
   }
 
   return extensions + customisedExtensions
-}
-
-def isMergeWithGitExtension(scm) {
-  // scm.extensions with the target branch to merge with:
-  // https://github.com/jenkinsci/git-plugin/blob/master/src/main/java/jenkins/plugins/git/MergeWithGitSCMExtension.java#L57
-  if (scm != null && scm.getClass().getName().contains('GitSCM')) {
-    def mergeWithGitExtension = scm.extensions?.find { extension ->
-      extension.getClass().getName().contains('MergeWithGitSCMExtension')
-    }
-    return (mergeWithGitExtension && (mergeWithGitExtension?.baseName?.trim() || mergeWithGitExtension?.baseHash?.trim()))
-  } else {
-    return false
-  }
 }
