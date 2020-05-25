@@ -194,9 +194,9 @@ def mergeExtensions(defaultExtensions, customisedExtensions) {
 def isMergeWithGitExtension(scm) {
   // scm.extensions with the target branch to merge with:
   // https://github.com/jenkinsci/git-plugin/blob/master/src/main/java/jenkins/plugins/git/MergeWithGitSCMExtension.java#L57
-  if (scm && !scm instanceof String && scm.extensions) {
-    def mergeWithGitExtension = scm.extensions.find { extension ->
-      extension.getClass().getName().equals('MergeWithGitSCMExtension')
+  if (scm != null && scm.getClass().getName().contains('GitSCM')) {
+    def mergeWithGitExtension = scm.extensions?.find { extension ->
+      extension.getClass().getName().contains('MergeWithGitSCMExtension')
     }
     return (mergeWithGitExtension && (mergeWithGitExtension?.baseName?.trim() || mergeWithGitExtension?.baseHash?.trim()))
   } else {
