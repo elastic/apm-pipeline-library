@@ -72,7 +72,7 @@ def call(Map params = [:]){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
       checkout([$class: 'GitSCM', branches: scm.branches,
         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: extensions,
+        extensions: scm.extensions + extensions,
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
       fetchPullRefs()
