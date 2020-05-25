@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
@@ -494,6 +495,44 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
     assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_IsDefaultSCM_WithCustomisation_and_precedency() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'master'
+    // For testing purposes we don't use objects but toString()
+    script.scm = [ extensions: [ 'jenkins.plugins.git.MergeWithGitSCMExtension@5ab4e352',
+                                 'GitSCMSourceDefaults{includeTags=false}',
+                                 'hudson.plugins.git.extensions.impl.BuildChooserSetting@530ae0ea' ]]
+    script.call(repo: 'git@github.com:elastic/apm-pipeline-library.git', mergeTarget: 'merge', shallow: false)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Checkout SCM master with some customisation'))
+    assertTrue(assertMethodCallContainsPattern('checkout', 'jenkins.plugins.git.MergeWithGitSCMExtension@5ab4e352'))
+    assertTrue(assertMethodCallContainsPattern('checkout', 'PreBuildMerge'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_mergeExtensions_with_precedency() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge']
+    def customisedExtension = [[$class: 'PreBuildMerge', options: [mergeTarget: "abc", mergeRemote: "def"]]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals(customisedExtension, ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_mergeExtensions_without_precedency() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge']
+    def customisedExtension = [[$class: 'CloneOption', depth: 1]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals(defaultExtension + customisedExtension, ret)
     assertJobStatusSuccess()
   }
 }

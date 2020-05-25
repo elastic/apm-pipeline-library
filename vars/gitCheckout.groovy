@@ -72,7 +72,7 @@ def call(Map params = [:]){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
       checkout([$class: 'GitSCM', branches: scm.branches,
         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: scm.extensions + extensions,
+        extensions: mergeExtensions(scm.extensions, extensions),
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
       fetchPullRefs()
@@ -175,4 +175,15 @@ def setOrgRepoEnvVariables(params) {
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
+}
+
+def mergeExtensions(defaultExtensions, customisedExtensions) {
+  def extensions = defaultExtensions
+  // customisedExtensions got precedency over defaultExtensions
+  customisedExtensions.each { custom ->
+    duplicated = defaultExtensions.find { it.toString().contains(custom.get('$class')) }
+    extensions.remove(duplicated)
+  }
+
+  return extensions + customisedExtensions
 }
