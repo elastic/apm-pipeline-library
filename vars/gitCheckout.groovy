@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Perform a checkout from the SCM configuration on a folder inside the workspace,
   if branch, repo, and credentialsId are defined make a checkout using those parameters.
@@ -177,6 +179,7 @@ def setOrgRepoEnvVariables(params) {
   env.REPO_NAME = parts[1] - ".git"
 }
 
+@NonCPS
 def mergeExtensions(defaultExtensions, customisedExtensions) {
   def extensions = defaultExtensions
   // customisedExtensions got precedency over defaultExtensions
