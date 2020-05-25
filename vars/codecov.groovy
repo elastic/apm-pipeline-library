@@ -73,7 +73,7 @@ def call(Map params = [:]){
         "CODECOV_TOKEN=${token}"]) {
         sh label: 'Send report to Codecov', script: """#!/bin/bash
         set -x
-        curl -s -o codecov.sh https://codecov.io/bash
+        curl -sSLo codecov.sh https://codecov.io/bash
         bash codecov.sh ${flags} || echo "codecov exited with \$?"
         """
       }
