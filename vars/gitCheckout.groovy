@@ -52,7 +52,7 @@ def call(Map params = [:]){
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []
 
-  if (shallowValue && mergeTarget != null) {
+  if (shallowValue && (mergeTarget != null || isMergeWithGitExtension(scm))) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
     log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
     shallowValue = false
@@ -189,4 +189,17 @@ def mergeExtensions(defaultExtensions, customisedExtensions) {
   }
 
   return extensions + customisedExtensions
+}
+
+def isMergeWithGitExtension(scm) {
+  // scm.extensions with the target branch to merge with:
+  // https://github.com/jenkinsci/git-plugin/blob/master/src/main/java/jenkins/plugins/git/MergeWithGitSCMExtension.java#L57
+  if (scm && !scm instanceof String && scm.extensions) {
+    def mergeWithGitExtension = scm.extensions.find { extension ->
+      extension.getClass().getName().equals('MergeWithGitSCMExtension')
+    }
+    return (mergeWithGitExtension && (mergeWithGitExtension?.baseName?.trim() || mergeWithGitExtension?.baseHash?.trim()))
+  } else {
+    return false
+  }
 }
