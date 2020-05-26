@@ -104,19 +104,30 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
     assertFalse(assertMethodCallContainsPattern('sh', 'PATH=/home/google-cloud-sdk/bin:'))
+    assertFalse(assertMethodCallContainsPattern('sh', '-h'))
     assertJobStatusSuccess()
   }
 
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), header: 'my_header')
+    script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), headers: ['my_header'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
     assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', 'PATH=/home/google-cloud-sdk/bin:'))
     assertTrue(assertMethodCallContainsPattern('sh', '--key-file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', '-h my_header cp foo gs://bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_multiple_headers() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), headers: ['my_header', 'my_second_header'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '-h my_header -h my_second_header'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
     assertJobStatusSuccess()
   }

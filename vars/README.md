@@ -1093,17 +1093,17 @@ preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
 with the given headers.
 
-
 ```
   // This command would upload all js files files in the packages/rum/dist/bundles directory
-  // and make them readable and cacheable, with cache expiration of one hour.
-  publishToCDN(header: "Cache-Control:public,max-age=3600",
-                source: 'packages/rum/dist/bundles/*.js',
-                target: "gs://beats-ci-temp/rum/5.1.0",
-                secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
+  // and make them readable and cacheable, with cache expiration of one hour and a custom
+  // metadata.
+  publishToCDN(headers: ["Cache-Control:public,max-age=3600", "x-goog-meta-reviewer:v1v"],
+               source: 'packages/rum/dist/bundles/*.js',
+               target: "gs://beats-ci-temp/rum/5.1.0",
+               secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
 ```
 
-* header: what's the Metadata of the objects to be uploaded to the bucket. Optional
+* headers: a list of the metadata of the objects to be uploaded to the bucket. Optional
 * install: whether to install the google cloud tools. Default true. Optional
 * secret: what's the secret with the service account details. Mandatory
 * source: local files. Mandatory. See the supported formats [here](https://cloud.google.com/storage/docs/gsutil/commands/cp)
@@ -1614,3 +1614,4 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+

@@ -16,23 +16,23 @@
 // under the License.
 
 /**
-
   Publish to the CDN the given set of source files to the target bucket
   with the given headers.
 
   // This command would upload all js files files in the packages/rum/dist/bundles directory
-  // and make them readable and cacheable, with cache expiration of one hour.
-  publishToCDN(header: "Cache-Control:public,max-age=3600",
-                                 source: 'packages/rum/dist/bundles/*.js',
-                                 target: "gs://beats-ci-temp/rum/5.1.0",
-                                 secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
+  // and make them readable and cacheable, with cache expiration of one hour and a custom
+  // metadata.
+  publishToCDN(headers: ["Cache-Control:public,max-age=3600", "x-goog-meta-reviewer:v1v"],
+               source: 'packages/rum/dist/bundles/*.js',
+               target: "gs://beats-ci-temp/rum/5.1.0",
+               secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
 */
 def call(Map params = [:]){
   if(!isUnix()){
     error('publishToCDN: windows is not supported yet.')
   }
   def install = params.get('install', true)
-  def header = params.get('header', '')
+  def headers = params.containsKey('headers') ? params.headers.toList() : []
   def source = params.containsKey('source') ? params.source : error('publishToCDN: Missing source argument.')
   def target = params.containsKey('target') ? params.target : error('publishToCDN: Missing target argument.')
   def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: Missing secret argument.')
@@ -46,9 +46,9 @@ def call(Map params = [:]){
   prepareCredentials(keyFile: keyFile, secret: secret)
   if(install) {
     // path argument is a workaround since withEnv(PATH) does not work within the docker.inside step
-    upload(keyFile: keyFile, source: source, target: target, header: header, path: "${env.HOME}/google-cloud-sdk/bin")
+    upload(keyFile: keyFile, source: source, target: target, headers: headers, path: "${env.HOME}/google-cloud-sdk/bin")
   } else {
-    upload(keyFile: keyFile, source: source, target: target, header: header)
+    upload(keyFile: keyFile, source: source, target: target, headers: headers)
   }
 }
 
@@ -64,8 +64,8 @@ def upload(Map params = [:]) {
   def pathPrepend = (params.containsKey('path') ? "PATH=${params.path}:\${PATH}" : '')
   try {
     sh(label: 'Activate service account', script: "${pathPrepend} gcloud auth activate-service-account --key-file=${params.keyFile}")
-    def headerFlag = (params.header.trim() ? "-h ${params.header}" : '')
-    sh(label: 'Upload', script: "${pathPrepend} gsutil ${headerFlag} cp ${params.source} ${params.target}")
+    def headersFlag = (params.headers.isEmpty() ? '' : params.headers.collect{ "-h ${it}" }.join(' '))
+    sh(label: 'Upload', script: "${pathPrepend} gsutil ${headersFlag} cp ${params.source} ${params.target}")
   } catch (err) {
     error "publishToCDN: error ${err}"
     throw err
