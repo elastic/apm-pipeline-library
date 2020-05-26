@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Perform a checkout from the SCM configuration on a folder inside the workspace,
   if branch, repo, and credentialsId are defined make a checkout using those parameters.
@@ -38,7 +40,7 @@ def call(Map params = [:]){
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
   def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
-  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : true
+  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
@@ -53,6 +55,15 @@ def call(Map params = [:]){
   if (shallowValue && mergeTarget != null) {
     // https://issues.jenkins-ci.org/browse/JENKINS-45771
     log(level: 'INFO', text: "'shallow' is forced to be disabled when using mergeTarget to avoid refusing to merge unrelated histories")
+    shallowValue = false
+  }
+
+  // Shallow cloning in PRs might cause some issues when running on Multibranch Pipelines, therefore
+  // the shallow cloning has been forced to be disabled on PRs.
+  // NOTE: This could be skipped with something like the below commit, but it's too risky:
+  //  https://github.com/elastic/apm-pipeline-library/commit/e2a2832569879f9a03d50c59038602075a47e929
+  if (env.CHANGE_ID){
+    log(level: 'INFO', text: "'shallow' is forced to be disabled when running on PullRequests")
     shallowValue = false
   }
 
@@ -72,7 +83,7 @@ def call(Map params = [:]){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
       checkout([$class: 'GitSCM', branches: scm.branches,
         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: extensions,
+        extensions: mergeExtensions(scm.extensions, extensions),
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
       fetchPullRefs()
@@ -175,4 +186,16 @@ def setOrgRepoEnvVariables(params) {
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
+}
+
+@NonCPS
+def mergeExtensions(defaultExtensions, customisedExtensions) {
+  def extensions = defaultExtensions
+  // customisedExtensions got precedency over defaultExtensions
+  customisedExtensions.each { custom ->
+    duplicated = defaultExtensions.find { it.toString().contains(custom.get('$class')) }
+    extensions.remove(duplicated)
+  }
+
+  return extensions + customisedExtensions
 }
