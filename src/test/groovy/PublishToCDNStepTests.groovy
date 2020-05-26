@@ -113,12 +113,22 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), headers: ['my_header'])
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm -rf /home/google-cloud-sdk'))
     assertTrue(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
     assertTrue(assertMethodCallContainsPattern('writeJSON', 'file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', 'PATH=/home/google-cloud-sdk/bin:'))
     assertTrue(assertMethodCallContainsPattern('sh', '--key-file=service-account.json'))
     assertTrue(assertMethodCallContainsPattern('sh', '-h my_header cp foo gs://bar'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm service-account.json'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_force_install() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), forceInstall: false)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'rm -rf /home/google-cloud-sdk'))
     assertJobStatusSuccess()
   }
 

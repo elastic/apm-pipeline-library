@@ -32,13 +32,19 @@ def call(Map params = [:]){
     error('publishToCDN: windows is not supported yet.')
   }
   def install = params.get('install', true)
+  def forceInstall = params.get('forceInstall', true)
   def headers = params.containsKey('headers') ? params.headers.toList() : []
   def source = params.containsKey('source') ? params.source : error('publishToCDN: Missing source argument.')
   def target = params.containsKey('target') ? params.target : error('publishToCDN: Missing target argument.')
   def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: Missing secret argument.')
   def keyFile = 'service-account.json'
 
+  def installPath = "${env.HOME}/google-cloud-sdk"
+
   if(install) {
+    if(forceInstall) {
+      sh(label: 'Delete install folder', script: "rm -rf ${installPath}")
+    }
     withEnv(["CLOUDSDK_CORE_DISABLE_PROMPTS=1"]){
       sh(label: 'Install gcloud', script: 'curl -s https://sdk.cloud.google.com | bash > install.log')
     }
@@ -46,7 +52,7 @@ def call(Map params = [:]){
   prepareCredentials(keyFile: keyFile, secret: secret)
   if(install) {
     // path argument is a workaround since withEnv(PATH) does not work within the docker.inside step
-    upload(keyFile: keyFile, source: source, target: target, headers: headers, path: "${env.HOME}/google-cloud-sdk/bin")
+    upload(keyFile: keyFile, source: source, target: target, headers: headers, path: "${installPath}/bin")
   } else {
     upload(keyFile: keyFile, source: source, target: target, headers: headers)
   }
