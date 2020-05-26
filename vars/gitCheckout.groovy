@@ -58,8 +58,10 @@ def call(Map params = [:]){
     shallowValue = false
   }
 
-  // Shallow cloning in PRs might cause some issues when running on Multibranch Pipelines, so in order to help with
+  // Shallow cloning in PRs might cause some issues when running on Multibranch Pipelines, therefore
   // the shallow cloning has been forced to be disabled on PRs.
+  // NOTE: This could be skipped with something like the below commit, but it's too risky:
+  //  https://github.com/elastic/apm-pipeline-library/commit/e2a2832569879f9a03d50c59038602075a47e929
   if (env.CHANGE_ID){
     log(level: 'INFO', text: "'shallow' is forced to be disabled when running on PullRequests")
     shallowValue = false
