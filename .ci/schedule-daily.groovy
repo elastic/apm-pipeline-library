@@ -86,7 +86,7 @@ pipeline {
         )
       }
     }
-    stage('Thrid-party license scan'){
+    stage('Third-party license scan'){
       matrix {
         axes {
           axis {
@@ -143,7 +143,7 @@ pipeline {
                 job: 'apm-shared/license-scan-general',
                 parameters: [
                   string(name: 'branch_specifier', value: 'master'),
-                  string(name: 'repo', value:" ${env.REPO}")
+                  string(name: 'repo', value:"${env.REPO}")
                 ],
                 wait: false,
                 quietPeriod: 10
