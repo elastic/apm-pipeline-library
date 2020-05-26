@@ -1107,6 +1107,7 @@ with the given headers.
 
 * headers: a list of the metadata of the objects to be uploaded to the bucket. Optional
 * install: whether to install the google cloud tools. Default true. Optional
+* forceInstall: whether to force the installation in the default path. Default true. Optional
 * secret: what's the secret with the service account details. Mandatory
 * source: local files. Mandatory. See the supported formats [here](https://cloud.google.com/storage/docs/gsutil/commands/cp)
 * target: where to copy those files to. Mandatory
