@@ -34,11 +34,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
   enum VaultSecret{
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
-    SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
+    SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
+    SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp'), SECRET_ALT_USERNAME('secret-alt-username'),
-    SECRET_ALT_PASSKEY('secret-alt-passkey')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
 
     VaultSecret(String value) {
       this.value = value
@@ -401,26 +401,29 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     if(VaultSecret.SECRET.equals(s) || VaultSecret.SECRET_NAME.equals(s) ||  VaultSecret.BENCHMARK.equals(s)){
       return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
     }
-    if(VaultSecret.SECRET_ERROR.equals(s)){
-      return [errors: 'Error message']
-    }
-    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
-      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
-    }
-    if(VaultSecret.SECRET_CODECOV.equals(s)){
-      return [data: [ value: 'codecov-token']]
-    }
-    if(VaultSecret.SECRET_TOTP.equals(s)){
-      return [data: [ code: '123456' ], renewable: false]
-    }
-    if(VaultSecret.SECRET_NPMRC.equals(s) || VaultSecret.SECRET_NPMJS.equals(s)){
-      return [data: [ token: 'mytoken' ]]
+    if(VaultSecret.SECRET_ALT_PASSKEY.equals(s)){
+      return [data: [user: 'username', alt_pass_key: 'user_password']]
     }
     if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
       return [data: [alt_user_key: 'username', password: 'user_password']]
     }
-    if(VaultSecret.SECRET_ALT_PASSKEY.equals(s)){
-      return [data: [user: 'username', alt_pass_key: 'user_password']]
+    if(VaultSecret.SECRET_CODECOV.equals(s)){
+      return [data: [ value: 'codecov-token']]
+    }
+    if(VaultSecret.SECRET_ERROR.equals(s)){
+      return [errors: 'Error message']
+    }
+    if(VaultSecret.SECRET_GCP.equals(s)){
+      return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
+      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
+    }
+    if(VaultSecret.SECRET_NPMRC.equals(s) || VaultSecret.SECRET_NPMJS.equals(s)){
+      return [data: [ token: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_TOTP.equals(s)){
+      return [data: [ code: '123456' ], renewable: false]
     }
     return null
   }
