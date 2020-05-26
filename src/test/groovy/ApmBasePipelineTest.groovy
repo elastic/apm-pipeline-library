@@ -374,6 +374,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isPR', {
+      def script = loadScript('vars/isPR.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})

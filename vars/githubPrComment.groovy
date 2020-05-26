@@ -31,7 +31,7 @@ def call(Map params = [:]){
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
   def message = params.containsKey('message') ? params.message : ''
 
-  if (env?.CHANGE_ID) {
+  if (isPR()) {
     addOrEditComment(commentTemplate(details: "${details}", message: message))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')

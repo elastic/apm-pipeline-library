@@ -75,7 +75,7 @@ def getRealCommit(repo, ref){
 
 def getBranch(){
   def branch = "${env.BRANCH_NAME}"
-  if(env.CHANGE_ID){
+  if(isPR()) {
     branch = "pr/${env.CHANGE_ID}"
   }
   return branch
@@ -83,7 +83,7 @@ def getBranch(){
 
 def getRef(){
   def ref = "refs/heads/${env.BRANCH_NAME}"
-  if(env.CHANGE_ID){
+  if(isPR()) {
     ref = "refs/pull/${env.CHANGE_ID}/head"
   }
   return ref

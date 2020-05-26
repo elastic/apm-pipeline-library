@@ -62,7 +62,7 @@ def call(Map params = [:]){
   // the shallow cloning has been forced to be disabled on PRs.
   // NOTE: This could be skipped with something like the below commit, but it's too risky:
   //  https://github.com/elastic/apm-pipeline-library/commit/e2a2832569879f9a03d50c59038602075a47e929
-  if (env.CHANGE_ID){
+  if(isPR()) {
     log(level: 'INFO', text: "'shallow' is forced to be disabled when running on PullRequests")
     shallowValue = false
   }

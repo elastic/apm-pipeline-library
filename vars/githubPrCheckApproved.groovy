@@ -23,7 +23,7 @@
   githubPrCheckApproved()
 */
 def call(Map params = [:]){
-  if(env?.CHANGE_ID == null){
+  if(!isPR()){
     return true
   }
   def approved = false
