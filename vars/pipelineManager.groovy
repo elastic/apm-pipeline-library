@@ -51,13 +51,13 @@ def isEnabled(String when) {
       isEnabled = true
       break
     case 'BRANCH':
-      isEnabled = env.CHANGE_ID?.trim() ? false : true
+      isEnabled = !isPR()
       break
     case 'TAG':
       isEnabled = env.TAG_NAME?.trim() ? true : false
       break
     case 'PR':
-      isEnabled = env.CHANGE_ID?.trim() ? true : false
+      isEnabled = isPR()
       break
     default:
       isEnabled = false

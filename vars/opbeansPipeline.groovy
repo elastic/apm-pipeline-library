@@ -177,8 +177,7 @@ def call(Map pipelineParams) {
 }
 
 def runBuildITs(String repo, String stagingDockerImage) {
-  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(),
-        wait: env.CHANGE_ID?.trim() ? false : true,
+  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(), wait: waitIfNotPR(),
         parameters: [string(name: 'INTEGRATION_TEST', value: 'Opbeans'),
                      string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
                      string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
@@ -203,7 +202,7 @@ def generateBuildOpts(String repo, String stagingDockerImage) {
 }
 
 def waitIfNotPR() {
-  return env.CHANGE_ID?.trim() ? false : true
+  return !isPR()
 }
 
 def getForkedRepoOrElasticRepo(String repo) {

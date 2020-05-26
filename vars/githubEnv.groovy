@@ -63,7 +63,7 @@ def getBaseCommit(){
   def baseCommit = getGitCommitSha()
 
   // When a PR then gets its real commit from the ref spec
-  if(env.CHANGE_ID){
+  if(isPR()) {
     baseCommit = sh(label: 'Get previous commit', script: "git rev-parse origin/pr/${env.CHANGE_ID}", returnStdout: true)?.trim()
   }
 
