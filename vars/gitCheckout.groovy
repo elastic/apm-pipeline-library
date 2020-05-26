@@ -44,6 +44,13 @@ def call(Map params = [:]){
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
+  // Set all the environment variables that other steps can consume later on.
+  if(!env?.GIT_URL && params.repo) {
+    log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
+    env.GIT_URL = params.repo
+  }
+  githubEnv()
+
   // isCustomised
   def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
                    params.containsKey('reference') || params.containsKey('mergeTarget') || params.containsKey('credentialsId') ||
@@ -74,13 +81,6 @@ def call(Map params = [:]){
     extensions.add([$class: 'PreBuildMerge', options: [mergeTarget: "${mergeTarget}", mergeRemote: "${mergeRemote}"]])
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
-
-  // Set all the environment variables that other steps can consume later on.
-  if(!env?.GIT_URL && params.repo) {
-    log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
-    env.GIT_URL = params.repo
-  }
-  githubEnv()
 
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
