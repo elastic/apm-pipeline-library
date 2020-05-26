@@ -143,12 +143,9 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def repo = 'repo'
     def repoUrl = "git@github.com:${org}/${repo}.git"
     script.scm = 'SCM'
-    script.call(repo: repoUrl, branch: 'master',
-                credentialsId: 'credentials-id')
+    script.call(repo: repoUrl, branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
-    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
-    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
     assertTrue(repoUrl.equals(binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }
@@ -160,11 +157,10 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def repo = 'repo'
     env.GIT_URL = "git@github.com:${org}/${repo}.git"
     script.scm = 'SCM'
-    script.call(repo: env.GIT_URL, branch: 'master', credentialsId: 'credentials-id')
+    script.call(repo: "git@github.com:foo/bar.git", branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
-    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
-    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
+    assertFalse(assertMethodCallContainsPattern('checkout', binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }
 

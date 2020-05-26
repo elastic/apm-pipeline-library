@@ -366,7 +366,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
     })
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
-    helper.registerAllowedMethod('githubEnv', [], null)
+    helper.registerAllowedMethod('githubEnv', {
+      def script = loadScript('vars/githubEnv.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
