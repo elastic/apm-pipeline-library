@@ -26,10 +26,15 @@ def call(Map params = [:]) {
       [var: "FOSSA_API_KEY", password: getVaultSecret(secret: 'secret/jenkins-ci/fossa/api-token')?.data?.token ],
     ]){
       sh(label: 'License Scanning', script: '''
-      if [ -f .go-version ]; then
+      if [ -f .go-version ] && command -v gvm; then
         eval $(gvm $(cat .go-version))
         export GOPATH=${WORKSPACE}
       fi
+
+      if [ -f package.json ] && command -v nvm; then
+        nvm install --lts
+      fi
+
       if [ ! -f .fossa.yml ]; then
         fossa init --include-all
       fi
