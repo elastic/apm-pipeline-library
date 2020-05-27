@@ -25,7 +25,7 @@ pipeline {
   }
   options {
     timeout(time: 2, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '50', artifactNumToKeepStr: '50', daysToKeepStr: '30'))
     timestamps()
     ansiColor('xterm')
     disableResume()
@@ -40,7 +40,7 @@ pipeline {
     stage('License Scan') {
       steps {
         script {
-          currentBuild.description = "Third-party license scan of ${params.repo}/${params.branch}"
+          currentBuild.description = "Third-party license scan of ${params.repo}/${params.branch_specifier}"
         }
         dir("${env.BASE_DIR}"){
           git(credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba',
