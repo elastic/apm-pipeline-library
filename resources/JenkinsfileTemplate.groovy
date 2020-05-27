@@ -15,7 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+// NOTE: Consumers should use the current tag
+// @Library('apm@current') _
+// NOTE: Master branch will contain the upcoming release changes
+//       this will help us to detect any breaking changes in production.
+@Library('apm@master') _
 
 // Global variables can be only set usinig the @Field pattern
 import groovy.transform.Field
