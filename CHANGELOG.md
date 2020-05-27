@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.104 (27/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: isPR step [#561](https://github.com/elastic/apm-pipeline-library/pull/561)
+
+#### 🐛 Bug Fixes
+
+-  fix: install node for license scan [#565](https://github.com/elastic/apm-pipeline-library/pull/565)
+
+---
+
 ## v1.1.103 (26/05/2020)
 
 #### 🚀 Enhancements
@@ -8,6 +20,7 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: gitCheckout with customisation and unshallow in PRs [#556](https://github.com/elastic/apm-pipeline-library/pull/556)
 -  fix: typos on third-party dependency scan [#559](https://github.com/elastic/apm-pipeline-library/pull/559)
 
 #### ⚙️ CI
@@ -284,14 +297,14 @@
 
 #### 🐛 Bug Fixes
 
--   fix: retry push events to docker registry [#449](https://github.com/elastic/apm-pipeline-library/pull/449)
 -  fix: installTools is failing, maybe some choco issue [#447](https://github.com/elastic/apm-pipeline-library/pull/447)
+-   fix: retry push events to docker registry [#449](https://github.com/elastic/apm-pipeline-library/pull/449)
 
 #### ⚙️ CI
 
+-  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 -  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
 -  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
--  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 
 ---
 
@@ -648,8 +661,8 @@
 
 #### 🐛 Bug Fixes
 
--  Skip null string when GitHub timeouts [#336](https://github.com/elastic/apm-pipeline-library/pull/336)
 -  Use absoluteUrl method when generating the URL for the build steps [#335](https://github.com/elastic/apm-pipeline-library/pull/335)
+-  Skip null string when GitHub timeouts [#336](https://github.com/elastic/apm-pipeline-library/pull/336)
 
 ---
 
@@ -913,12 +926,12 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 -  enable jjbb validation locally [#217](https://github.com/elastic/apm-pipeline-library/pull/217)
 -  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
 -  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
 -  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
 -  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
--  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 
 #### 🐛 Bug Fixes
 
@@ -941,8 +954,8 @@
 
 #### 🚀 Enhancements
 
--  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 -  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
+-  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 
 #### 🐛 Bug Fixes
 
@@ -1215,9 +1228,9 @@
 
 #### 🚀 Enhancements
 
+-  feat: retry Docker login on failure 3 times [#111](https://github.com/elastic/apm-pipeline-library/pull/111)
 -  feat: setup local development [#97](https://github.com/elastic/apm-pipeline-library/pull/97)
 -  feat: generate release notes and changelog from PRs [#103](https://github.com/elastic/apm-pipeline-library/pull/103)
--  feat: retry Docker login on failure 3 times [#111](https://github.com/elastic/apm-pipeline-library/pull/111)
 
 #### 🐛 Bug Fixes
 
@@ -1227,11 +1240,11 @@
 
 #### ⚙️ CI
 
+-  ci: ignore stage failures and continue [#108](https://github.com/elastic/apm-pipeline-library/pull/108)
+-  feat: retry in case vault is not reachable [#107](https://github.com/elastic/apm-pipeline-library/pull/107)
 -  ci: remove quiet period on cluster updates [#104](https://github.com/elastic/apm-pipeline-library/pull/104)
 -  ci: disable SCM trigger for Observability test environments jobs [#105](https://github.com/elastic/apm-pipeline-library/pull/105)
 -  ci: Cache Oracle Instant Client Docker Image [#100](https://github.com/elastic/apm-pipeline-library/pull/100)
--  ci: ignore stage failures and continue [#108](https://github.com/elastic/apm-pipeline-library/pull/108)
--  feat: retry in case vault is not reachable [#107](https://github.com/elastic/apm-pipeline-library/pull/107)
 
 ---
 
