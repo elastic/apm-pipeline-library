@@ -80,6 +80,8 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')
+    assertTrue(assertMethodCallOccurrences('bat', 0))
+    assertTrue(assertMethodCallContainsPattern('sh', 'git diff'))
     assertEquals('foo', module)
     assertJobStatusSuccess()
   }
@@ -148,15 +150,14 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
+    def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet.'))
-    assertJobStatusFailure()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
+    assertTrue(assertMethodCallOccurrences('sh', 0))
+    assertTrue(assertMethodCallContainsPattern('bat', 'git diff'))
+    assertEquals('foo', module)
+    assertJobStatusSuccess()
   }
 
   @Test
