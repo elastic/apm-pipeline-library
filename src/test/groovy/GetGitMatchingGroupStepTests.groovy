@@ -284,7 +284,7 @@ x-pack/metricbeat/module/googlecloud/stackdriver/metricset.go'''.stripMargin().s
   }
 
   @Test
-  void test_unmatch_in_beats_pr18369() throws Exception {
+  void test_unmatch_in_beats_pr18369_with_oss_pattern() throws Exception {
     def script = loadScript(scriptName)
     def realData = '''metricbeat/docs/fields.asciidoc
 metricbeat/docs/images/metricbeat-googlecloud-load-balancing-https-overview.png
