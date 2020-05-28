@@ -132,7 +132,10 @@ pipeline {
       }
       when {
         beforeAgent true
-        expression { return env.TEST_INFRA == "true" }
+        anyOf {
+          expression { return env.TEST_INFRA == "true" }
+          branch 'master'
+        }
       }
       steps {
         withGithubNotify(context: 'Test infra') {
