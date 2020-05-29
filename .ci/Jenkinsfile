@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -53,10 +53,14 @@ pipeline {
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+          script {
+            dir("${BASE_DIR}"){
+              env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
+            }
+          }
         }
       }
     }
-
     stage('Check Licenses') {
       steps {
         withGithubNotify(context: 'Check Licenses') {
@@ -107,7 +111,6 @@ pipeline {
         }
       }
     }
-
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
@@ -119,6 +122,25 @@ pipeline {
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          }
+        }
+      }
+    }
+    stage('Test infra') {
+      environment {
+        HOME = "${env.WORKSPACE}"
+      }
+      when {
+        beforeAgent true
+        anyOf {
+          expression { return env.TEST_INFRA == "true" }
+          branch 'master'
+        }
+      }
+      steps {
+        withGithubNotify(context: 'Test infra') {
+          dir("${BASE_DIR}"){
+            sh script: './resources/scripts/jenkins/apm-ci/test.sh'
           }
         }
       }

@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.1.105 (29/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: support windows for getGitMatchingGroup [#567](https://github.com/elastic/apm-pipeline-library/pull/567)
+
+#### 🙈 No user affected
+
+-  test: x-pack/oss modules in Beats [#566](https://github.com/elastic/apm-pipeline-library/pull/566)
+-  ci: use master branch in our pipelines [#564](https://github.com/elastic/apm-pipeline-library/pull/564)
+
+---
+
+## v1.1.104 (27/05/2020)
+
+#### 🚀 Enhancements
+
+-  ci: isPR step [#561](https://github.com/elastic/apm-pipeline-library/pull/561)
+
+#### 🐛 Bug Fixes
+
+-  fix: install node for license scan [#565](https://github.com/elastic/apm-pipeline-library/pull/565)
+
+---
+
 ## v1.1.103 (26/05/2020)
 
 #### 🚀 Enhancements
@@ -8,6 +33,7 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: gitCheckout with customisation and unshallow in PRs [#556](https://github.com/elastic/apm-pipeline-library/pull/556)
 -  fix: typos on third-party dependency scan [#559](https://github.com/elastic/apm-pipeline-library/pull/559)
 
 #### ⚙️ CI
@@ -279,8 +305,8 @@
 
 #### 🚀 Enhancements
 
--  ci(jenkins): support from/to sha commits for isGitRegionMatch [#456](https://github.com/elastic/apm-pipeline-library/pull/456)
 -  HTTP status code [#450](https://github.com/elastic/apm-pipeline-library/pull/450)
+-  ci(jenkins): support from/to sha commits for isGitRegionMatch [#456](https://github.com/elastic/apm-pipeline-library/pull/456)
 
 #### 🐛 Bug Fixes
 
@@ -289,9 +315,9 @@
 
 #### ⚙️ CI
 
+-  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 -  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
 -  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
--  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 
 ---
 
@@ -648,8 +674,8 @@
 
 #### 🐛 Bug Fixes
 
--  Skip null string when GitHub timeouts [#336](https://github.com/elastic/apm-pipeline-library/pull/336)
 -  Use absoluteUrl method when generating the URL for the build steps [#335](https://github.com/elastic/apm-pipeline-library/pull/335)
+-  Skip null string when GitHub timeouts [#336](https://github.com/elastic/apm-pipeline-library/pull/336)
 
 ---
 
@@ -772,12 +798,12 @@
 
 #### 🚀 Enhancements
 
+-  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
 -  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
 -  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
--  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
 
 #### 🐛 Bug Fixes
 
@@ -913,12 +939,12 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
+-  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 -  enable jjbb validation locally [#217](https://github.com/elastic/apm-pipeline-library/pull/217)
 -  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
 -  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
 -  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
--  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
--  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 
 #### 🐛 Bug Fixes
 
@@ -941,8 +967,8 @@
 
 #### 🚀 Enhancements
 
--  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 -  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
+-  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 
 #### 🐛 Bug Fixes
 
@@ -1221,17 +1247,17 @@
 
 #### 🐛 Bug Fixes
 
+-  fix: throw an error when GitHub API call fails [#110](https://github.com/elastic/apm-pipeline-library/pull/110)
 -  fix: change .jenkins_python.yml file path [#106](https://github.com/elastic/apm-pipeline-library/pull/106)
 -  fix: change cluster job names on the weekly job [#102](https://github.com/elastic/apm-pipeline-library/pull/102)
--  fix: throw an error when GitHub API call fails [#110](https://github.com/elastic/apm-pipeline-library/pull/110)
 
 #### ⚙️ CI
 
+-  ci: ignore stage failures and continue [#108](https://github.com/elastic/apm-pipeline-library/pull/108)
+-  feat: retry in case vault is not reachable [#107](https://github.com/elastic/apm-pipeline-library/pull/107)
 -  ci: remove quiet period on cluster updates [#104](https://github.com/elastic/apm-pipeline-library/pull/104)
 -  ci: disable SCM trigger for Observability test environments jobs [#105](https://github.com/elastic/apm-pipeline-library/pull/105)
 -  ci: Cache Oracle Instant Client Docker Image [#100](https://github.com/elastic/apm-pipeline-library/pull/100)
--  ci: ignore stage failures and continue [#108](https://github.com/elastic/apm-pipeline-library/pull/108)
--  feat: retry in case vault is not reachable [#107](https://github.com/elastic/apm-pipeline-library/pull/107)
 
 ---
 
@@ -1585,12 +1611,12 @@
 
 #### 🚀 Enhancements
 
+-  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 -  Check approved [#16](https://github.com/elastic/apm-pipeline-library/pull/16)
 -  step to run from inline pipelines to allow run pipelines from the library [#2](https://github.com/elastic/apm-pipeline-library/pull/2)
 -  Checkout elastic docs tools tests [#3](https://github.com/elastic/apm-pipeline-library/pull/3)
 -  Make fetch [#5](https://github.com/elastic/apm-pipeline-library/pull/5)
 -  GitHub env step [#13](https://github.com/elastic/apm-pipeline-library/pull/13)
--  adapt Jenkinsfile to use gitCheckout step [#8](https://github.com/elastic/apm-pipeline-library/pull/8)
 
 #### 🐛 Bug Fixes
 
@@ -1610,10 +1636,10 @@
 
 #### ⚙️ CI
 
+-  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
+-  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
 -  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
 -  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
--  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
--  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
