@@ -28,7 +28,7 @@ def call(Map params = [:]) {
   
   if (isUnix()) {
     return sh(params)
-  } else
+  } else {
     if(returnStdout) {
       def command = """@echo off
                     ${params.script}"""
