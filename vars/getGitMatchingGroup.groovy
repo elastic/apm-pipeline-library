@@ -35,9 +35,6 @@
 
 */
 def call(Map params = [:]) {
-  if(!isUnix()){
-    error('getGitMatchingGroup: windows is not supported yet.')
-  }
   def pattern = params.containsKey('pattern') ? params.pattern : error('getGitMatchingGroup: Missing pattern argument.')
   def exclude = params.get('exclude', '')
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
@@ -46,7 +43,13 @@ def call(Map params = [:]) {
   def gitDiffFile = 'git-diff.txt'
   def group = ''
   if (from?.trim() && to?.trim()) {
-    def changes = sh(script: "git diff --name-only ${from}...${to} > ${gitDiffFile}", returnStdout: true)
+    def changes
+    def command = "git diff --name-only ${from}...${to} > ${gitDiffFile}"
+    if (isUnix()) {
+      changes = sh(script: command, returnStdout: true)
+    } else {
+      changes = bat(script: command, returnStdout: true)
+    }
     group = getGroup(gitDiffFile, pattern, exclude)
     log(level: 'INFO', text: "getGitMatchingGroup: ${group.trim() ?: 'not found'} with regex ${pattern}")
   } else {
