@@ -16,5 +16,8 @@ For instance:
 Could be simplified with:
     
 ```
-    shOrBat(label: 'foo', script: 'git fetch --all')
+    cmd(label: 'foo', script: 'git fetch --all')
 ```
+
+Parameters:
+* See `sh` and `bat` steps

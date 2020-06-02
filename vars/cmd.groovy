@@ -17,11 +17,12 @@
 
 /**
   Wrapper to run a script without the hassle to know what's the OS system underneath.
+  It runs either sh when running on a *Nix agent or Bat on Windows.
 
   _NOTE_: bat with returnStdout requires @echo off to bypass the known issue
           https://issues.jenkins-ci.org/browse/JENKINS-44569
 
-  shOrBat(label: 'foo', script: 'git fetch --all')
+  cmd(label: 'foo', script: 'git fetch --all')
 */
 def call(Map params = [:]) {
   def returnStdout = params.get('returnStdout', false)
