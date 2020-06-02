@@ -18,6 +18,9 @@ multibranchPipelineJob(NAME) {
       buildOriginBranchWithPR(true)
       buildOriginPRHead(false)
       buildOriginPRMerge(true)
+      traits {
+        gitHubTagDiscovery()
+      }
     }
   }
   orphanedItemStrategy {
