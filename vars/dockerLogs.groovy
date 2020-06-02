@@ -23,12 +23,12 @@
 
   // Archive all the docker logs in the current context using the step name 'test'
   //  and the test/docker-compose.yml file
-  dockerLogs(step: 'test', docker-compose: 'test/docker-compose.yml')
+  dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml')
 
   // Archive all the docker logs in the current context using the step name 'test',
   //  the test/docker-compose.yml file and fail if any errors when gathering the docker
   //  log files
-  dockerLogs(step: 'test', docker-compose: 'test/docker-compose.yml', fail-never: false)
+  dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: false)
 
 */
 def call(Map params = [:]){
@@ -36,16 +36,29 @@ def call(Map params = [:]){
     error('dockerLogs: windows is not supported yet.')
   }
 
-  def label = params.containsKey('step') ? params.step : ''
-  def dockerCompose = params.containsKey('docker-compose') ? params.docker-compose : ''
-  def failNever = params.get('fail-never', true)
+  def label = params.get('step', '')
+  def dockerCompose = params.get('dockerCompose', '')
+  def failNever = params.get('failNever', true)
 
-  def flag = failNever ? ' || true' : ''
-  def normaliseLabel = label.replace(";","/").replace("--","_").replace(".","_").replace(" ","_")
+  def flag = failNever ? '|| true' : ''
+  def normaliseLabel = normalise(label)
 
-  def dockerLogs = libraryResource('scripts/docker-logs.sh')
-  sh(label: 'Docker logs', script: """${dockerLogs} "${normaliseLabel}" "${dockerCompose}" ${flag}""")
-  def dockerSummary = libraryResource('scripts/docker-summary.sh')
-  sh(label: 'Docker summary', script: "${dockerSummary} ${flag}")
+  def scriptFile = 'docker-logs.sh'
+  createFileResource(scriptFile)
+  sh(label: 'Docker logs', script: """${scriptFile} "${normaliseLabel}" "${dockerCompose}" ${flag}""")
+
+  scriptFile = 'docker-summary.sh'
+  createFileResource(scriptFile)
+  sh(label: 'Docker summary', script: "${scriptFile} ${flag}")
+
   archiveArtifacts(allowEmptyArchive: true, artifacts: 'docker-info/**', defaultExcludes: false)  
+}
+
+def createFileResource(scriptFile) {
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile file: scriptFile, text: resourceContent
+}
+
+def normalise(value) {
+  return value.replace(';','/').replace('--','_').replace('.','_').replace(' ','_')
 }
