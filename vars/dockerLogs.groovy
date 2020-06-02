@@ -37,26 +37,18 @@ def call(Map params = [:]){
   }
 
   def label = params.get('step', '')
-  def dockerCompose = params.get('dockerCompose', '')
+  def dockerCompose = params.get('dockerCompose', 'docker-compose.yml')
   def failNever = params.get('failNever', true)
 
   def flag = failNever ? '|| true' : ''
   def normaliseLabel = normalise(label)
 
   def scriptFile = 'docker-logs.sh'
-  createFileResource(scriptFile)
-  sh(label: 'Docker logs', script: """${scriptFile} "${normaliseLabel}" "${dockerCompose}" ${flag}""")
-
-  scriptFile = 'docker-summary.sh'
-  createFileResource(scriptFile)
-  sh(label: 'Docker summary', script: "${scriptFile} ${flag}")
+  writeFile file: scriptFile, text: libraryResource("scripts/${scriptFile}")
+  sh(label: 'Permission', script: "chmod 755 ${scriptFile}")
+  sh(label: 'Docker logs', script: """./${scriptFile} "${normaliseLabel}" "${dockerCompose}" ${flag}""")
 
   archiveArtifacts(allowEmptyArchive: true, artifacts: 'docker-info/**', defaultExcludes: false)  
-}
-
-def createFileResource(scriptFile) {
-  def resourceContent = libraryResource("scripts/${scriptFile}")
-  writeFile file: scriptFile, text: resourceContent
 }
 
 def normalise(value) {

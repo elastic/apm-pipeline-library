@@ -35,9 +35,8 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/docker-logs.sh'))
-    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/docker-summary.sh'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker-logs.sh "" "" || true'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker-summary.sh || true'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'docker-logs.sh "" "docker-compose.yml" || true'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'chmod 755'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'docker-info/**'))
     assertJobStatusSuccess()
   }
@@ -47,8 +46,7 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(failNever: false)
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'docker-logs.sh "" "" || true'))
-    assertFalse(assertMethodCallContainsPattern('sh', 'docker-summary.sh || true'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'docker-logs.sh "" "docker-compose.yml" || true'))
     assertJobStatusSuccess()
   }
 
@@ -58,8 +56,24 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
     script.call(step: 'foo', dockerCompose: 'bar/docker-compose.yml', failNever: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker-logs.sh "foo" "bar/docker-compose.yml" || true'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker-summary.sh || true'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_failure_with_failNever_false() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      updateBuildStatus('FAILURE')
+      throw new Exception('Failed')
+    })
+    try {
+      script.call(failNever: false)
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'docker-info/**'))
+    assertJobStatusFailure()
   }
 
   @Test
