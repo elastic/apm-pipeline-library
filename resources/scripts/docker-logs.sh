@@ -31,7 +31,7 @@ DOCKER_INFO_DIR="docker-info/${STEP}"
 mkdir -p "${DOCKER_INFO_DIR}"
 
 if [ -e "${DOCKER_COMPOSE}" ] ; then
-  cp docker-compose.yml "${DOCKER_INFO_DIR}"
+  cp "${DOCKER_COMPOSE}" "${DOCKER_INFO_DIR}"
 fi
 cd "${DOCKER_INFO_DIR}"
 
