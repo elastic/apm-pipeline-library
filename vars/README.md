@@ -118,6 +118,31 @@ Override the `checkout` step to retry the checkout up to 3 times.
 checkout scm
 ```
 
+## cmd
+Wrapper to run bat or sh steps based on the OS system.
+
+ _NOTE_: bat with returnStdout requires @echo off to bypass the known issue
+          https://issues.jenkins-ci.org/browse/JENKINS-44569
+          Therefore it will be included automatically!
+
+For instance:
+```
+    if (isUnix) {
+        sh(label: 'foo', script: 'git fetch --all')
+    } else {
+        bat(label: 'foo', script: 'git fetch --all')
+    }
+```
+
+Could be simplified with:
+    
+```
+    cmd(label: 'foo', script: 'git fetch --all')
+```
+
+Parameters:
+* See `sh` and `bat` steps
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -825,6 +850,19 @@ evaluates the change list with the pattern list:
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+## isPR
+Whether the build is based on a Pull Request or no
+
+```
+  // Assign to a variable
+  def pr = isPR())
+
+  // Use whenTrue condition
+  whenTrue(isPR()) {
+    echo "I'm a Pull Request"
+  }
+```
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
