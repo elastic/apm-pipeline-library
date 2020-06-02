@@ -118,6 +118,31 @@ Override the `checkout` step to retry the checkout up to 3 times.
 checkout scm
 ```
 
+## cmd
+Wrapper to run bat or sh steps based on the OS system.
+
+ _NOTE_: bat with returnStdout requires @echo off to bypass the known issue
+          https://issues.jenkins-ci.org/browse/JENKINS-44569
+          Therefore it will be included automatically!
+
+For instance:
+```
+    if (isUnix) {
+        sh(label: 'foo', script: 'git fetch --all')
+    } else {
+        bat(label: 'foo', script: 'git fetch --all')
+    }
+```
+
+Could be simplified with:
+    
+```
+    cmd(label: 'foo', script: 'git fetch --all')
+```
+
+Parameters:
+* See `sh` and `bat` steps
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -154,6 +179,29 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+
+## dockerLogs
+Archive all the docker containers in the current context.
+
+```
+// Archive all the docker logs in the current context
+dockerLogs()
+
+// Archive all the docker logs in the current context using the step name 'test'
+//  and the test/docker-compose.yml file
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml')
+
+// Archive all the docker logs in the current context using the step name 'test',
+//  the test/docker-compose.yml file and fail if any errors when gathering the docker
+//  log files
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: false)
+```
+
+* *step*: If running multiple times in the same build then this will ensure the folder name will be unique. Optional
+* *dockerCompose*: What's the docker-compose file to be exposed. Optional. Default ''
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
+
+_NOTE_: Windows is not supported.
 
 ## dummy
 A sample of a step implemantetion.
@@ -825,6 +873,19 @@ evaluates the change list with the pattern list:
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+## isPR
+Whether the build is based on a Pull Request or no
+
+```
+  // Assign to a variable
+  def pr = isPR())
+
+  // Use whenTrue condition
+  whenTrue(isPR()) {
+    echo "I'm a Pull Request"
+  }
+```
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
