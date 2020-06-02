@@ -44,12 +44,10 @@ def call(Map params = [:]){
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
-  // Set all the environment variables that other steps can consume later on.
   if(!env?.GIT_URL && params.repo) {
     log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
     env.GIT_URL = params.repo
   }
-  githubEnv()
 
   // isCustomised
   def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
@@ -116,6 +114,9 @@ def call(Map params = [:]){
       }
       error "${message}"
     }
+
+    // Set all the environment variables that other steps can consume later on.
+    githubEnv()
 
     // Let's see the reason for this particular build, there are 3 different reasons:
     // - An user with run permissions did trigger the build manually.
