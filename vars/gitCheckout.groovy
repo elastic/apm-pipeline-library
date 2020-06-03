@@ -83,11 +83,9 @@ def call(Map params = [:]){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
       log(level: 'DEBUG', text: "gitCheckout: default ${scm.extensions.toString()}")
       log(level: 'DEBUG', text: "gitCheckout: customised ${extensions.toString()}")
-      def mergedExtensions = mergeExtensions(scm.extensions, extensions)
-      log(level: 'DEBUG', text: "gitCheckout: Extensions ${mergedExtensions.toString()}")
       checkout([$class: 'GitSCM', branches: scm.branches,
         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: mergedExtensions,
+        extensions: scm.extensions + extensions,
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
       fetchPullRefs()
@@ -190,29 +188,4 @@ def setOrgRepoEnvVariables(params) {
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
-}
-
-@NonCPS
-def mergeExtensions(extensions, customisedExtensions) {
-  def merged = customisedExtensions
-  for(int i = 0; i < extensions.size(); i++){
-    def extension = extensions.get(i)
-    def extensionName = extension.toString()
-    if (qualified(extensionName, customisedExtensions)) {
-      merged << extension
-    }
-  }
-  return merged
-}
-
-@NonCPS
-def qualified(value, customisedExtensions) {
-  for(int j = 0; j < customisedExtensions.size(); j++){
-    def custom = customisedExtensions.get(j)
-    def customName = custom.get('$class')
-    if (!value.contains(customName)) {
-      return true
-    }
-  }
-  return false
 }
