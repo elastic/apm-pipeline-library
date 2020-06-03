@@ -534,4 +534,37 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('checkout', 'PreBuildMerge'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_mergeExtensions_with_precedency() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge']
+    def customisedExtension = [[$class: 'PreBuildMerge', options: [mergeTarget: "abc", mergeRemote: "def"]]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals([[$class: 'PreBuildMerge', options: [mergeTarget: 'abc', mergeRemote: 'def']]], ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_mergeExtensions_with_precedency_and_appending() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge', 'hudson.plugins.git.extensions.impl.AuthorInChangelog']
+    def customisedExtension = [[$class: 'PreBuildMerge', options: [mergeTarget: "abc", mergeRemote: "def"]]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals([[$class: 'PreBuildMerge', options: [mergeTarget: 'abc', mergeRemote: 'def']], 'hudson.plugins.git.extensions.impl.AuthorInChangelog' ], ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_mergeExtensions_without_precedency() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge']
+    def customisedExtension = [[$class: 'CloneOption', depth: 1]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals([[$class: 'CloneOption', depth:1], 'hudson.plugins.git.extensions.impl.PreBuildMerge'], ret)
+    assertJobStatusSuccess()
+  }
 }
