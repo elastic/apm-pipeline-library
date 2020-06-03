@@ -1,5 +1,0 @@
-Override the `checkout` step to retry the checkout up to 3 times.
-
-```
-checkout scm
-```
