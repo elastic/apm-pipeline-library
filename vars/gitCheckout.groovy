@@ -193,8 +193,10 @@ def mergeExtensions(defaultExtensions, customisedExtensions) {
   def extensions = defaultExtensions
   // customisedExtensions got precedency over defaultExtensions
   customisedExtensions.each { custom ->
-    duplicated = defaultExtensions.find { it.toString().contains(custom.get('$class')) }
-    extensions.remove(duplicated)
+    def duplicated = defaultExtensions.find { it.toString().contains(custom.get('$class')) }
+    if (duplicated) {
+      extensions.remove(duplicated)
+    }
   }
 
   return extensions + customisedExtensions
