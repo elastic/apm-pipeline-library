@@ -196,7 +196,7 @@ def mergeExtensions(defaultExtensions, customisedExtensions) {
     removeExtension(extensions, defaultExtensions.find { it.toString().contains(custom.get('$class')) })
   }
 
-  return extensions + customisedExtensions
+  return append(extensions, customisedExtensions)
 }
 
 @NonCPS
@@ -204,4 +204,9 @@ def removeExtension(extensions, duplicated) {
   if (duplicated) {
     extensions.remove(duplicated)
   }
+}
+
+@NonCPS
+def append(extensions, customisedExtensions) {
+  return extensions + customisedExtensions
 }
