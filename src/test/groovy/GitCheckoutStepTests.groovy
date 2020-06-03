@@ -542,7 +542,18 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def customisedExtension = [[$class: 'PreBuildMerge', options: [mergeTarget: "abc", mergeRemote: "def"]]]
     def ret = script.mergeExtensions(defaultExtension, customisedExtension)
     printCallStack()
-    assertEquals(customisedExtension, ret)
+    assertEquals([[$class: 'PreBuildMerge', options: [mergeTarget: 'abc', mergeRemote: 'def']]], ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_mergeExtensions_with_precedency_and_appending() throws Exception {
+    def script = loadScript(scriptName)
+    def defaultExtension = ['hudson.plugins.git.extensions.impl.PreBuildMerge', 'hudson.plugins.git.extensions.impl.AuthorInChangelog']
+    def customisedExtension = [[$class: 'PreBuildMerge', options: [mergeTarget: "abc", mergeRemote: "def"]]]
+    def ret = script.mergeExtensions(defaultExtension, customisedExtension)
+    printCallStack()
+    assertEquals([[$class: 'PreBuildMerge', options: [mergeTarget: 'abc', mergeRemote: 'def']], 'hudson.plugins.git.extensions.impl.AuthorInChangelog' ], ret)
     assertJobStatusSuccess()
   }
 
@@ -553,7 +564,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def customisedExtension = [[$class: 'CloneOption', depth: 1]]
     def ret = script.mergeExtensions(defaultExtension, customisedExtension)
     printCallStack()
-    assertEquals(defaultExtension + customisedExtension, ret)
+    assertEquals([[$class: 'CloneOption', depth:1], 'hudson.plugins.git.extensions.impl.PreBuildMerge'], ret)
     assertJobStatusSuccess()
   }
 }

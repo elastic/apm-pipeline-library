@@ -190,22 +190,11 @@ def setOrgRepoEnvVariables(params) {
 
 @NonCPS
 def mergeExtensions(defaultExtensions, customisedExtensions) {
-  def extensions = [] << defaultExtensions
-  // customisedExtensions got precedency over defaultExtensions
-  customisedExtensions.each { custom ->
-    removeExtension(extensions, defaultExtensions.find { it.toString().contains(custom.get('$class')) })
+  def extensions = customisedExtensions
+  defaultExtensions.each { extension ->
+    if (!customisedExtensions.find { extension.toString().contains(it.get('$class')) }) {
+      extensions << extension
+    }
   }
-  return append(extensions, customisedExtensions)
-}
-
-@NonCPS
-def removeExtension(extensions, duplicated) {
-  if (duplicated) {
-    extensions.remove(duplicated)
-  }
-}
-
-@NonCPS
-def append(extensions, customisedExtensions) {
-  return extensions + customisedExtensions
+  return extensions
 }
