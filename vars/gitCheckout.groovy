@@ -38,7 +38,7 @@ def call(Map params = [:]){
   def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
   def mergeTarget = params?.mergeTarget
   def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
-  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : true
+  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
 
