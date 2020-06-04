@@ -310,4 +310,12 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
   }
+
+  @Test
+  void test_generateBuildReport() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generate build report.'))
+  }
 }
