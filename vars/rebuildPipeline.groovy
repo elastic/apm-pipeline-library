@@ -68,6 +68,9 @@ def call() {
     case ~/.*opbeans.*-mbp.*/:
       opbeans()
       break
+    case ~/.*apm-ui-e2e-tests-mbp.*/:
+      apmUI()
+      break
     case ~/it\/timeout\/parentstream/:
       localTesting()
       break
@@ -175,6 +178,11 @@ def apmServer() {
                      booleanParam(name: 'its_ci', value: params.its_ci),
                      string(name: 'DIAGNOSTIC_INTERVAL', value: params.DIAGNOSTIC_INTERVAL),
                      string(name: 'ES_LOG_LEVEL', value: params.ES_LOG_LEVEL)])
+}
+
+def apmUI() {
+  build(job: env.JOB_NAME, propagate: false, quietPeriod: 1, wait: false,
+        parameters: [booleanParam(name: 'FORCE', value: params.FORCE)])
 }
 
 def opbeans() {
