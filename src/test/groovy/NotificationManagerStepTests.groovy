@@ -178,6 +178,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertJobStatusSuccess()
   }
 

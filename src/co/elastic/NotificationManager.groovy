@@ -127,6 +127,8 @@ def notifyPR(Map params = [:]) {
         "testsErrors": testsErrors,
         "testsSummary": testsSummary
       ])
+      writeFile(file: 'build.md', text: body)
       githubPrComment(message: body)
+      archiveArtifacts 'build.md'
     }
 }
