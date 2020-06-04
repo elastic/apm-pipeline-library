@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.cloudbees.groovy.cps.NonCPS
-
 /**
   Perform a checkout from the SCM configuration on a folder inside the workspace,
   if branch, repo, and credentialsId are defined make a checkout using those parameters.
@@ -83,7 +81,7 @@ def call(Map params = [:]){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
       checkout([$class: 'GitSCM', branches: scm.branches,
         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-        extensions: mergeExtensions(scm.extensions, extensions),
+        extensions: extensions,
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
       fetchPullRefs()
@@ -186,16 +184,4 @@ def setOrgRepoEnvVariables(params) {
   def parts = tmpUrl.split("/")
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
-}
-
-@NonCPS
-def mergeExtensions(defaultExtensions, customisedExtensions) {
-  def extensions = defaultExtensions
-  // customisedExtensions got precedency over defaultExtensions
-  customisedExtensions.each { custom ->
-    duplicated = defaultExtensions.find { it.toString().contains(custom.get('$class')) }
-    extensions.remove(duplicated)
-  }
-
-  return extensions + customisedExtensions
 }
