@@ -27,8 +27,9 @@ Vagrant.configure("2") do |config|
     curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2
     cp bin/hub /usr/bin
   fi
+  sudo usermod vagrant -a -G docker
   su - vagrant -c 'curl -s https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar > swarm-client.jar'
-  sudo nohup java -jar swarm-client.jar -labels "linux docker immutable ubuntu" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1 &
+  su - vagrant -c 'nohup java -jar swarm-client.jar -labels "linux docker immutable ubuntu" -master http://10.0.2.2:18080 >/tmp/jenkins-swarm.log 2>&1' &
   SCRIPT
 
   config.vm.provision "shell", inline: $script
