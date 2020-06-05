@@ -18,8 +18,7 @@
 
 set +x
 
-echo "dummy script"
-
+## Installed versions
 docker --version || true
 docker buildx ls || true
 docker-compose --version || true
@@ -37,15 +36,19 @@ python3 --version || true
 rsync --version || true
 vault --version || true
 
+
+## Jenkins java specific installation
 JAVA_HOME="${HUDSON_HOME}/.java/java10"
 PATH="${JAVA_HOME}/bin:${PATH}"
 java -version || true
-
 ls -la "${HUDSON_HOME}/.java/" || true
 
+## System specific
 uname -a || true
 df -h || true
 
+## Docker specific
 docker images || true
 
+## Eval the parameter PARAM_WITH_DEFAULT_VALUE
 eval "${PARAM_WITH_DEFAULT_VALUE}" || true
