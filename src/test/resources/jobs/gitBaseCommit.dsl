@@ -18,8 +18,14 @@ multibranchPipelineJob(NAME) {
       buildOriginBranchWithPR(true)
       buildOriginPRHead(false)
       buildOriginPRMerge(true)
-      traits {
-        gitHubTagDiscovery()
+    }
+    branchSource {
+      source {
+        github {
+          traits {
+            gitHubTagDiscovery()
+          }
+        }
       }
     }
   }
