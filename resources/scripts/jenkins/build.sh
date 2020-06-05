@@ -18,34 +18,42 @@
 
 set +x
 
-echo "dummy script"
-
+## Installed versions
 docker --version || true
 docker buildx ls || true
 docker-compose --version || true
-java -version || true
+git version || true
 go version || true
 gvm --version || true
-git version || true
+helm version || true
+java -version || true
+jq --version || true
 mvn --version || true
 node --version || true
 npm --version || true
 python --version || true
 python3 --version || true
-vault --version || true
-jq --version || true
 rsync --version || true
-helm version || true
+vault --version || true
 
+
+## Jenkins java specific installation
 JAVA_HOME="${HUDSON_HOME}/.java/java10"
 PATH="${JAVA_HOME}/bin:${PATH}"
 java -version || true
-
 ls -la "${HUDSON_HOME}/.java/" || true
 
+## System specific
 uname -a || true
 df -h || true
+whoami
 
+## Docker specific
+### This is HOME specific therefore if the HOME gets override in the Jenkinsfile
+### let's ensure it uses the default one.
+HOME=$(eval echo "~$USER") grep 'experimental' ~/.docker/config.json || true
+docker version
 docker images || true
 
+## Eval the parameter PARAM_WITH_DEFAULT_VALUE
 eval "${PARAM_WITH_DEFAULT_VALUE}" || true

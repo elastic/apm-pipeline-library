@@ -127,9 +127,6 @@ pipeline {
       }
     }
     stage('Test infra') {
-      environment {
-        HOME = "${env.WORKSPACE}"
-      }
       when {
         beforeAgent true
         anyOf {
@@ -141,7 +138,13 @@ pipeline {
         withGithubNotify(context: 'Test infra') {
           dir("${BASE_DIR}"){
             sh script: './resources/scripts/jenkins/apm-ci/test.sh'
+            sh script: './resources/scripts/jenkins/build.sh'
           }
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
         }
       }
     }

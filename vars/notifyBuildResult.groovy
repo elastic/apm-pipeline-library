@@ -46,56 +46,52 @@ def call(Map args = [:]) {
         getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
-        if(shouldNotify || (notifyPRComment && isPR())) {
-          // Read files only once and if timeout then use default values
-          def buildData = {}
-          def changeSet = []
-          def logData = ''
-          def stepsErrors = []
-          def testsErrors = []
-          def testsSummary = []
-          try {
-            timeout(5) {
-              buildData = readJSON(file: 'build-info.json')
-              changeSet = readJSON(file: 'changeSet-info.json')
-              logData = readFile(file: 'pipeline-log-summary.txt')
-              stepsErrors = readJSON(file: 'steps-errors.json')
-              testsErrors = readJSON(file: 'tests-errors.json')
-              testsSummary = readJSON(file: 'tests-summary.json')
-            }
-          } catch(e) {
-            log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
+        // Read files only once and if timeout then use default values
+        def buildData = {}
+        def changeSet = []
+        def logData = ''
+        def stepsErrors = []
+        def testsErrors = []
+        def testsSummary = []
+        try {
+          timeout(5) {
+            buildData = readJSON(file: 'build-info.json')
+            changeSet = readJSON(file: 'changeSet-info.json')
+            logData = readFile(file: 'pipeline-log-summary.txt')
+            stepsErrors = readJSON(file: 'steps-errors.json')
+            testsErrors = readJSON(file: 'tests-errors.json')
+            testsSummary = readJSON(file: 'tests-summary.json')
           }
-          def notificationManager = new NotificationManager()
-          if(shouldNotify){
-            log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
-            notificationManager.notifyEmail(
-              build: buildData,
-              buildStatus: currentBuild.currentResult,
-              emailRecipients: to,
-              testsSummary: testsSummary,
-              changeSet: changeSet,
-              statsUrl: "${statsURL}",
-              log: logData,
-              testsErrors: testsErrors,
-              stepsErrors: stepsErrors
-            )
-          }
-          if(notifyPRComment) {
-            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-            notificationManager.notifyPR(
-              build: buildData,
-              buildStatus: currentBuild.currentResult,
-              changeSet: changeSet,
-              log: logData,
-              statsUrl: "${statsURL}",
-              stepsErrors: stepsErrors,
-              testsErrors: testsErrors,
-              testsSummary: testsSummary,
-              docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
-            )
-          }
+        } catch(e) {
+          log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
         }
+
+        // There are some values that are not required by the notificationManager but since it uses
+        // a map they are not really affecting :)
+        def data = [
+          build: buildData,
+          buildStatus: currentBuild.currentResult,
+          changeSet: changeSet,
+          docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff",
+          emailRecipients: to,
+          log: logData,
+          statsUrl: "${statsURL}",
+          stepsErrors: stepsErrors,
+          testsErrors: testsErrors,
+          testsSummary: testsSummary
+        ]
+        def notificationManager = new NotificationManager()
+        if(shouldNotify){
+          log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+          notificationManager.notifyEmail(data)
+        }
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          notificationManager.notifyPR(data)
+        }
+        log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+        notificationManager.generateBuildReport(data)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {

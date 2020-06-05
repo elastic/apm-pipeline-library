@@ -17,10 +17,13 @@
 # under the License.
 
 set +x
+
+LOCATION=target/venv
+mkdir -p "${LOCATION}"
 pip install virtualenv
-virtualenv venv
-# shellcheck disable=SC1091
-source venv/bin/activate
+virtualenv "${LOCATION}"
+# shellcheck disable=SC1091,SC1090
+source "${LOCATION}/bin/activate"
 pip install testinfra
 set -x
 
