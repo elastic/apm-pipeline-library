@@ -46,8 +46,11 @@ ls -la "${HUDSON_HOME}/.java/" || true
 ## System specific
 uname -a || true
 df -h || true
+whoami
 
 ## Docker specific
+grep 'experimental' ~/.docker/config.json || true
+docker version
 docker images || true
 
 ## Eval the parameter PARAM_WITH_DEFAULT_VALUE
