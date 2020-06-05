@@ -404,10 +404,7 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    // Ephemeral workers don't have a HOME env variable.
-    withEnv(["HOME=${env.WORKSPACE}"]){
-      sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
-    }
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
   }
 }
 
