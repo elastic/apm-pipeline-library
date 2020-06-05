@@ -49,7 +49,7 @@ df -h || true
 whoami
 
 ## Docker specific
-HOME=/var/lib/jenkins
+HOME=$(eval echo "~$USER")
 grep 'experimental' ~/.docker/config.json || true
 docker version
 docker images || true

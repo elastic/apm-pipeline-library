@@ -10,6 +10,7 @@ def test_docker_compose_installed(host):
   assert cmd.rc == 0, "it is required for all the APM projects"
 
 def test_docker_experimental_configured(host):
-  # HOME should not be changed otherwise the experimental validation won't work
-  cmd = "docker version -f '{{.Client.Experimental}}'"
+  # HOME should point to the USER home fro this validation
+  # When running the Jenkins pipeline the HOME can be potential set to another PATH.
+  cmd = "HOME=$(eval echo ~$USER) docker version -f '{{.Client.Experimental}}'"
   assert host.check_output(cmd) == "true", "it is required for building the ARM docker images in the Beats project"

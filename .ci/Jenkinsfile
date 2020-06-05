@@ -127,6 +127,9 @@ pipeline {
       }
     }
     stage('Test infra') {
+      environment {
+        HOME = "${env.WORKSPACE}"
+      }
       when {
         beforeAgent true
         anyOf {
