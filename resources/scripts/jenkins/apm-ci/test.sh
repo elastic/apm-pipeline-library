@@ -19,11 +19,7 @@
 set +x
 
 LOCATION=target/venv
-if [ -n "${JENKINS_URL}" ] ; then
-  LOCATION=${WORKSPACE}/target/venv
-fi
 mkdir -p "${LOCATION}"
-
 pip install virtualenv
 virtualenv "${LOCATION}"
 # shellcheck disable=SC1091,SC1090
