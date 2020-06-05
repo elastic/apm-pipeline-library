@@ -49,8 +49,9 @@ df -h || true
 whoami
 
 ## Docker specific
-HOME=$(eval echo "~$USER")
-grep 'experimental' ~/.docker/config.json || true
+### This is HOME specific therefore if the HOME gets override in the Jenkinsfile
+### let's ensure it uses the default one.
+HOME=$(eval echo "~$USER") grep 'experimental' ~/.docker/config.json || true
 docker version
 docker images || true
 
