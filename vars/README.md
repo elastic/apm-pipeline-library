@@ -561,7 +561,7 @@ githubEnv()
 * `GIT_URL`: if it is not set, it will create the environment variable GIT_URL, getting it from local repo.
 * `ORG_NAME`: id the organization name in the git URL, it sets this environment variable processing the GIT_URL.
 * `REPO_NAME`: repository name in the git URL, it sets this environment variable processing the GIT_URL.
-* `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
+* `GIT_SHA`: current commit SHA1, it sets this getting it from local repo. Deprecated, uses `GIT_COMMIT` instead
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
 * `GIT_BASE_COMMIT`: On PRs points to the commit before make the merge, on branches is the same as GIT_COMMIT and GIT_SHA
 
