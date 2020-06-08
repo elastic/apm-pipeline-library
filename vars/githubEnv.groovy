@@ -40,7 +40,9 @@ def call(){
   env.ORG_NAME = parts[0]
   env.REPO_NAME = parts[1] - ".git"
 
-  if(!env?.GIT_SHA){
+  if(env?.GIT_SHA?.trim()){
+    log(level: 'INFO', text: "githubEnv: GIT_SHA was already set. skipped.")
+  } else {
     env.GIT_SHA = getGitCommitSha()
   }
 
