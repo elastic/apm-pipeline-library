@@ -112,11 +112,12 @@ def call(Map params = [:]){
       error "${message}"
     }
 
+    // Fetch all the references. It requires the ORG_NAME/REPO_NAME which it's set with the githubEnv.setGitRepoEnvironment step.
+    githubEnv.setGitRepoEnvironment()
+    fetchPullRefs(refspec)
+
     // Set all the environment variables that other steps can consume later on.
     githubEnv()
-
-    // Fetch all the references. It does require the ORG_NAME which it's set with the githubEnv step.
-    fetchPullRefs(refspec)
 
     // Let's see the reason for this particular build, there are 3 different reasons:
     // - An user with run permissions did trigger the build manually.
