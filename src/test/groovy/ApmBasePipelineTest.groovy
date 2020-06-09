@@ -33,6 +33,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   enum VaultSecret{
+    ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
@@ -67,6 +68,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
     env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_ID}/display/redirect"
     env.WORKSPACE = 'WS'
+    env.VAULT_ADDR = 'http://secrets.example.com'
 
     registerDeclarativeMethods()
     registerScriptedMethods()

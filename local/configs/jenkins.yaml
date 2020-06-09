@@ -135,3 +135,4 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/withGitRelease.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/withTotpVault.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/writeVaultSecret.dsl"
