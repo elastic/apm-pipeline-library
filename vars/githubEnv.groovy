@@ -29,7 +29,6 @@ def call(){
   setGitSha()
   getBaseCommit()
   setBuildCause()
-  log(level: 'INFO', text: "githubEnv: Found Git Build Cause: ${env.GIT_BUILD_CAUSE}")
 }
 
 def getBaseCommit(){
@@ -60,6 +59,7 @@ def setBuildCause() {
       returnStdout: true
     )?.split(" ").length > 2 ? "merge" : "commit"
   }
+  log(level: 'INFO', text: "githubEnv: Found Git Build Cause: ${env.GIT_BUILD_CAUSE}")
 }
 
 def setGitRepoEnvironment() {
