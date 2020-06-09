@@ -18,7 +18,7 @@
 /**
 
 Send an email message with a summary of the build result,
-and send some data to Elastic search.
+and send some data to Elasticsearch.
 
 notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
 
@@ -34,6 +34,7 @@ def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : true
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
@@ -55,6 +56,7 @@ def call(Map args = [:]) {
         def testsSummary = []
         try {
           timeout(5) {
+            jobInfo = readJSON(file: 'job-info.json')
             buildData = readJSON(file: 'build-info.json')
             changeSet = readJSON(file: 'changeSet-info.json')
             logData = readFile(file: 'pipeline-log-summary.txt')
@@ -74,6 +76,7 @@ def call(Map args = [:]) {
           changeSet: changeSet,
           docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff",
           emailRecipients: to,
+          jobInfo: jobInfo,
           log: logData,
           statsUrl: "${statsURL}",
           stepsErrors: stepsErrors,
@@ -84,6 +87,14 @@ def call(Map args = [:]) {
         if(shouldNotify){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
           notificationManager.notifyEmail(data)
+        }
+        // Should analyze flakey
+        if(analyzeFlakey) {
+          data['es'] = es
+          data['es_secret'] = secret
+
+          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+          notificationManager.analyzeFlakey(data)
         }
         // Should notify if it is a PR and it's enabled
         if(notifyPRComment && isPR()) {
