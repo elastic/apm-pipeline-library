@@ -41,6 +41,12 @@ def call(Map params = [:]){
   def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
+  def refspec = '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*'
+
+  if(!env?.GIT_URL && params.repo) {
+    log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
+    env.GIT_URL = params.repo
+  }
 
   // isCustomised
   def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
@@ -73,9 +79,6 @@ def call(Map params = [:]){
     log(level: 'DEBUG', text: "gitCheckout: Reference repo enabled ${extensions.toString()}")
   }
 
-  // TODO: to be refactored as it's done also in the githubEnv step
-  setOrgRepoEnvVariables(params)
-
   dir("${basedir}"){
     if(customised && isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with some customisation.")
@@ -84,11 +87,9 @@ def call(Map params = [:]){
         extensions: extensions,
         submoduleCfg: scm.submoduleCfg,
         userRemoteConfigs: scm.userRemoteConfigs])
-      fetchPullRefs()
     } else if(isDefaultSCM(branch)){
       log(level: 'INFO', text: "gitCheckout: Checkout SCM ${env.BRANCH_NAME} with default customisation from the Item.")
       checkout scm
-      fetchPullRefs()
     } else if (branch && branch != '' && repo && credentialsId){
       log(level: 'INFO', text: "gitCheckout: Checkout ${branch} from ${repo} with credentials ${credentialsId}")
       checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
@@ -96,7 +97,7 @@ def call(Map params = [:]){
         extensions: extensions,
         submoduleCfg: [],
         userRemoteConfigs: [[
-          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
+          refspec: refspec,
           credentialsId: "${credentialsId}",
           url: "${repo}"]]])
     } else {
@@ -110,7 +111,12 @@ def call(Map params = [:]){
       }
       error "${message}"
     }
+
+    // Set all the environment variables that other steps can consume later on.
     githubEnv()
+
+    // Fetch all the references. It does require the ORG_NAME which it's set with the githubEnv step.
+    fetchPullRefs(refspec)
 
     // Let's see the reason for this particular build, there are 3 different reasons:
     // - An user with run permissions did trigger the build manually.
@@ -157,31 +163,6 @@ def isDefaultSCM(branch) {
   return env?.BRANCH_NAME && branch == null
 }
 
-def fetchPullRefs(){
-  gitCmd(cmd: 'fetch', args: '+refs/pull/*/head:refs/remotes/origin/pr/*', store: true)
-}
-
-def setOrgRepoEnvVariables(params) {
-
-  if(!env?.GIT_URL){
-    // This is the support for simple pipelines
-    if(params.repo) {
-      log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo')
-      env.GIT_URL = params.repo
-    } else {
-      env.GIT_URL = getGitRepoURL()
-    }
-  }
-
-  def tmpUrl = env.GIT_URL
-
-  if (env.GIT_URL.startsWith("git")){
-    tmpUrl = tmpUrl - "git@github.com:"
-  } else {
-    tmpUrl = tmpUrl - "https://github.com/" - "http://github.com/"
-  }
-
-  def parts = tmpUrl.split("/")
-  env.ORG_NAME = parts[0]
-  env.REPO_NAME = parts[1] - ".git"
+def fetchPullRefs(refs){
+  gitCmd(cmd: 'fetch', args: refs, store: true)
 }
