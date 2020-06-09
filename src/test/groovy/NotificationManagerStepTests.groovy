@@ -373,8 +373,8 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     }
   )
     script.analyzeFlakey(
-      jobInfo: ['fullName': 'foo'],
-      es: "https://7e98388d3a22489988c71c91cd839085.europe-west1.gcp.cloud.es.io:9243",
+      jobInfo: ['fullName': 'fake_name'],
+      es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json')
     )
     assertJobStatusSuccess()

@@ -54,7 +54,6 @@ def analyzeFlakey(Map params = [:]) {
     def ret = []
 
     for (failedTest in testsErrors) {
-      println failedTest.name
       for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
         if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
           ret.add(failedTest.name)
