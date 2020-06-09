@@ -18,6 +18,7 @@
 import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.mock.GithubEnvMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
@@ -74,10 +75,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
     binding.setVariable('env', env)
     binding.setVariable('params', params)
-    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
-    binding.setProperty('steps', new StepsMock())
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setProperty('githubEnv', new GithubEnvMock())
     binding.setProperty('pullRequest', new PullRequestMock())
+    binding.setProperty('steps', new StepsMock())
   }
 
   void registerDeclarativeMethods() {
