@@ -18,7 +18,6 @@
 package co.elastic;
 
 import groovy.text.StreamingTemplateEngine
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 /**
@@ -57,7 +56,7 @@ def analyzeFlakey(Map params = [:]) {
     def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
 
-    def q = new JsonOutput.toJson({"query": {"range": {"test_score": {"gt": 0.0}}}})
+    def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
     def c = '/' + jobInfo['fullName'] + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
     def flakeyTestsParsed = new JsonSlurper().parseText(flakeyTestsRaw)
@@ -73,7 +72,7 @@ def analyzeFlakey(Map params = [:]) {
     }
     def msg = "The following tests failed but were also detected as being flaky tests: " + ret.toString()
     githubPrComment(message: msg)
-
+}
 
 /**
  * This method send an email generated with data from Jenkins
