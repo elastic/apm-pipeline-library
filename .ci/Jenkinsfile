@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@test/checkout-prs-fetch') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
