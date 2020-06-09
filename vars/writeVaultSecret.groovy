@@ -17,7 +17,6 @@
 
 /**
   Write the given data in vault for the given secret.
-  Secret should be a new one or being added to allowed list of secrets.
 
   writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
 */
@@ -26,11 +25,6 @@ import groovy.json.JsonOutput
 def call(Map params = [:]) {
   def secret = params.containsKey('secret') ? params.secret : error ('writeVaultSecret: secret parameter is required.')
   def data = params.containsKey('data') ? params.data : error ('writeVaultSecret: data parameter is required.')
-  
-  // Only certain secret paths are allowed to be overriden
-  if(!isSecretAllowed(secret)) {
-    error("writeVaultSecret: secret '${secret}' already exists.")
-  }
 
   // Ensure the data is transformed to Json and then toString.
   def transformedData = JsonOutput.toJson(data)
@@ -60,8 +54,4 @@ def writeVaultSecretObject(addr, secret, token, data){
                 headers: ['X-Vault-Token': "${token}", 'Content-Type': 'application/json'],
                 data: data)
   }
-}
-
-def isSecretAllowed(secret) {
-  return secret.startsWith('secret/observability-team/ci/temp/')
 }

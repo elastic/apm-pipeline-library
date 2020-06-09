@@ -1681,7 +1681,6 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 ## writeVaultSecret
 Write the given data in vault for the given secret.
-Secret should be a new one or being added to allowed list of secrets.
 
 ```
 writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )

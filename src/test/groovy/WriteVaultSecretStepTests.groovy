@@ -55,19 +55,6 @@ class WriteVaultSecretStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_not_allowed_secret() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.call(secret: VaultSecret.SECRET.toString(), data: [ 'foo': 'bar'])
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', "'${VaultSecret.SECRET.toString()}' already exists"))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
     script.call(secret: VaultSecret.ALLOWED.toString(), data: [ 'foo': 'bar'])

@@ -2,7 +2,7 @@ NAME = 'it/writeVaultSecret'
 DSL = '''pipeline {
   agent any
   stages {
-    stage('isAllowed') {
+    stage('writeVaultSecret') {
       steps {
         writeVaultSecret(secret: 'secret/observability-team/ci/temp/github-comment',
                          data: ['secret': "${BUILD_ID}"] )
@@ -12,19 +12,6 @@ DSL = '''pipeline {
             echo 'Assertion passed'
           } else {
             error('Assertion failed')
-          }
-        }
-      }
-    }
-    stage('NotAllowed') {
-      steps {
-        script {
-          try {
-            writeVaultSecret(secret: 'secret/observability-team/ci/github-comment',
-                            data: ['secret': 'bar'] )
-            error('Assertion failed')
-          } catch(e) {
-            echo 'Assertion passed'
           }
         }
       }
