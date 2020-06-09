@@ -18,7 +18,6 @@
 package co.elastic;
 
 import groovy.text.StreamingTemplateEngine
-import groovy.json.JsonSlurper
 
 /**
  * This method returns a string with the template filled with groovy variables
@@ -43,35 +42,31 @@ This method generates flakey test data from Jenkins test results
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
 */
 def analyzeFlakey(Map params = [:]) {
-    def build = params.containsKey('build') ? params.build : error('analyzeFlakey: build parameter it is not valid')
-    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('analyzeFlakey: buildStatus parameter is not valid')
-    def emailRecipients = params.containsKey('emailRecipients') ? params.emailRecipients : error('analyzeFlakey: emailRecipients parameter is not valid')
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
-    def secret = params.containsKey('es_secret') ? params.es_secret : error('analyzeFlakey: es_secret parameter is not valid')
+    def secret = params.containsKey('es_secret') ? params.es_secret : null
     def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
-    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
-    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
-    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
-    def log = params.containsKey('log') ? params.log : null
-    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
-
     def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
     def c = '/' + jobInfo['fullName'] + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
-    def flakeyTestsParsed = new JsonSlurper().parseText(flakeyTestsRaw)
+    def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
     def ret = []
 
     for (failedTest in testsErrors) {
+      println failedTest.name
       for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
-        if (flakeyTest["_source"]["test_name"] == failedTest.name) {
+        if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
           ret.add(failedTest.name)
         }
       }
     }
-    def msg = "The following tests failed but were also detected as being flaky tests: " + ret.toString()
-    githubPrComment(message: msg)
+    def msg = "❄️ The following tests failed but also have a history of flakiness and may not be related to this change: " + ret.toString()
+    
+    if (ret) {
+      githubPrComment(message: msg)
+    } 
+    
 }
 
 /**

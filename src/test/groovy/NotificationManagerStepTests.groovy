@@ -356,6 +356,31 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakey() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod(
+      "sendDataToElasticsearch",
+      [Map.class],
+      {m -> readJSON(file: "flake-results.json")}
+    )
+
+  helper.registerAllowedMethod(
+    "githubPrComment",
+    [Map.class],
+    {m -> assertTrue(
+      m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [Test / windows-3.6-none / test_send – tests.transports.test_urllib3]'
+      )
+    }
+  )
+    script.analyzeFlakey(
+      jobInfo: ['fullName': 'foo'],
+      es: "https://7e98388d3a22489988c71c91cd839085.europe-west1.gcp.cloud.es.io:9243",
+      testsErrors: readJSON(file: 'flake-tests-errors.json')
+    )
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_generateBuildReport() throws Exception {
     def script = loadScript(scriptName)
     script.generateBuildReport(
