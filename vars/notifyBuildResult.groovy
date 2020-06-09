@@ -34,7 +34,7 @@ def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
-  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : true
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
