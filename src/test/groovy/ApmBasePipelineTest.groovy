@@ -357,7 +357,6 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
-    helper.registerAllowedMethod('getLatestBuildComment', [Map.class], null)
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
@@ -379,6 +378,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('isCommentTrigger', { return false })

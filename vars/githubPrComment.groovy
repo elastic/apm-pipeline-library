@@ -109,7 +109,7 @@ def getCommentIfAny() {
   if (commentId?.trim() && commentId.isInteger()) {
     id = commentId as Integer
   } else {
-    commentId = getLatestBuildComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
+    commentId = githubPrLatestComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
     if (commentId && commentId.id) {
       id = commentId.id as Integer
     }
