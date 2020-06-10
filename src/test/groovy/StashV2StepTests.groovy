@@ -122,6 +122,7 @@ class StashV2StepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('log', 'got precedency instead.'))
     assertNull(assertMethodCall('sh'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=source.tgz'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
     assertTrue(assertMethodCallContainsPattern('bat', 'tar --exclude=source.tgz -czf source.tgz .'))
     assertTrue(assertMethodCallContainsPattern('bat', 'del source.tgz'))
     assertJobStatusSuccess()
