@@ -19,7 +19,7 @@
   Search in the current Pull Request context the latest comment from the given list of 
   users and pattern to match with.
 
-  // Return the comment that matches the pattern '<!--foo-->' and the onwer of the comment is
+  // Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is
   //  elasticmachine
   githubPrLatestComment(pattern: '<!--foo-->', users: [ 'elasticmachine' ])
 */
