@@ -66,7 +66,7 @@ def commentTemplate(Map args = [:]) {
 
 def addOrEditComment(String details) {
   def id = getCommentIfAny()
-if (id != errorId()) {
+  if (id != errorId()) {
     try {
       log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}'. If comment still exists.")
       pullRequest.editComment(id, details)
@@ -109,9 +109,13 @@ def getCommentIfAny() {
   if (commentId?.trim() && commentId.isInteger()) {
     id = commentId as Integer
   } else {
-    commentId = githubPrLatestComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
-    if (commentId && commentId.id) {
-      id = commentId.id as Integer
+    try {
+      commentId = githubPrLatestComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
+      if (commentId && commentId.id) {
+        id = commentId.id as Integer
+      }
+    } catch(e) {
+      log(level: 'WARN', text: "githubPrLatestComment: failed. Therefore a new GitHub comment will be created. For further details see ${e}")
     }
   }
   return id

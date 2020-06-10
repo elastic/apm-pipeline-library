@@ -168,4 +168,62 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     assertEquals(ret, '')
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_getCommentIfAny_with_file_match() {
+	  def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return true } )
+    helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
+    def ret = script.getCommentIfAny()
+    printCallStack()
+    assertEquals(ret, 2)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getCommentIfAny_without_file_match_and_pr_comment_match() {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return false } )
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], {
+      return [
+          url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",
+          issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",
+          id: 2,
+          user: [
+            login: "elasticmachine",
+            id: 3,
+          ],
+          created_at: "2020-02-03T17:21:44Z",
+          updated_at: "2020-02-03T17:21:44Z",
+          body: "<!--METADATA-->"
+        ]
+    } )
+    def ret = script.getCommentIfAny()
+    printCallStack()
+    assertEquals(ret, 2)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getCommentIfAny_without_any_match() {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return false } )
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
+    def ret = script.getCommentIfAny()
+    printCallStack()
+    assertEquals(ret, script.errorId())
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getCommentIfAny_without_any_match_and_an_exception() {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return false } )
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], { throw new Exception('Force failure') })
+    def ret = script.getCommentIfAny()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'a new GitHub comment will be created'))
+    assertEquals(ret, script.errorId())
+    assertJobStatusSuccess()
+  }
 }
