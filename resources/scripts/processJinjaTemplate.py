@@ -28,7 +28,7 @@ import argparse
 import json
 import os
 
-parser = argparse.ArgumentParser(description='Generate a PR message.')
+parser = argparse.ArgumentParser(description='Process a JSON file with Jinja.')
 parser.add_argument('-f', '--file', dest='jsonFile',
                     type=argparse.FileType('r'),
                     required=True, help='JSON file with the variables.')
