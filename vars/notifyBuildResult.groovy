@@ -103,7 +103,9 @@ def call(Map args = [:]) {
           notificationManager.notifyPR(data)
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
-        notificationManager.generateBuildReport(data)
+        catchError(message: "There were some failures when analyzing flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          notificationManager.generateBuildReport(data)
+        }
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
