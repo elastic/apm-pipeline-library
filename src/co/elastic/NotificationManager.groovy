@@ -31,21 +31,17 @@ def buildTemplate(params) {
 
 /**
 This method generates flakey test data from Jenkins test results
- * @param build
- * @param buildStatus String with job result
- * @param emailRecipients Array with emails: emailRecipients = []
- * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
- * @param changeSet list of change set, see src/test/resources/changeSet-info.json
- * @param statsUrl URL to access to the stats
- * @param log String that contains the log
- * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param es Elasticsearch URL
+ * @param secret Vault path to secrets which hold authentication information for Elasticsearch
+ * @param jobInfo JobInfo data collected from job-info.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
-*/
+*/ 
 def analyzeFlakey(Map params = [:]) {
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
     def secret = params.containsKey('es_secret') ? params.es_secret : null
     def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    
     def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
     def c = '/' + jobInfo['fullName'] + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
