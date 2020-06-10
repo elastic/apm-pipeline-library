@@ -364,14 +364,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       {m -> readJSON(file: "flake-results.json")}
     )
 
-  helper.registerAllowedMethod(
-    "githubPrComment",
-    [Map.class],
-    {m -> assertTrue(
-      m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [Test / windows-3.6-none / test_send – tests.transports.test_urllib3]'
-      )
-    }
-  )
+    helper.registerAllowedMethod(
+      "githubPrComment",
+      [Map.class],
+      {m -> assertTrue(
+        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [Test / windows-3.6-none / test_send – tests.transports.test_urllib3]'
+        )
+      }
+    )
     script.analyzeFlakey(
       jobInfo: ['fullName': 'fake_name'],
       es: "https://fake_url",
