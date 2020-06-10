@@ -50,11 +50,11 @@ def call(Map args = [:]) {
         // Read files only once and if timeout then use default values
         def buildData = {}
         def changeSet = []
+        def jobInfo = {}
         def logData = ''
         def stepsErrors = []
         def testsErrors = []
         def testsSummary = []
-        def jobInfo = []
         try {
           timeout(5) {
             jobInfo = readJSON(file: 'job-info.json')
