@@ -95,7 +95,9 @@ def call(Map args = [:]) {
           data['es_secret'] = secret
 
           log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
-          notificationManager.analyzeFlakey(data)
+          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.analyzeFlakey(data)
+          }
         }
         // Should notify if it is a PR and it's enabled
         if(notifyPRComment && isPR()) {
@@ -103,7 +105,7 @@ def call(Map args = [:]) {
           notificationManager.notifyPR(data)
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
-        catchError(message: "There were some failures when analyzing flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           notificationManager.generateBuildReport(data)
         }
       }
