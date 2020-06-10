@@ -42,6 +42,10 @@ def analyzeFlakey(Map params = [:]) {
     def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     
+    if (!jobInfo) {
+      error "Did not receive jobInfo data" 
+    }
+
     def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
     def c = '/' + jobInfo['fullName'] + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)

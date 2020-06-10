@@ -54,6 +54,7 @@ def call(Map args = [:]) {
         def stepsErrors = []
         def testsErrors = []
         def testsSummary = []
+        def jobInfo = []
         try {
           timeout(5) {
             jobInfo = readJSON(file: 'job-info.json')
