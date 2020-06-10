@@ -19,9 +19,13 @@
   Grab build related info from the Blueocean REST API and store it on JSON files.
   Then put all togeder in a simple JSON file.
 
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 */
-def call(jobURL, buildNumber){
+
+def call(Map args = [:]) {
+  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBuildInfoJsonFiles: jobURL parameters is required.')
+  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBuildInfoJsonFiles: buildNumber parameters is required.')
+
   if(!isUnix()){
     error('getBuildInfoJsonFiles: windows is not supported yet.')
   }
@@ -40,4 +44,12 @@ def call(jobURL, buildNumber){
     chmod 755 ${scriptFile}
     ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
     """)
+}
+
+/**
+  For backward compatibility
+  @deprecated
+*/
+def call(jobURL, buildNumber){
+  return call(jobURL: jobURL, buildNumber: buildNumber)
 }

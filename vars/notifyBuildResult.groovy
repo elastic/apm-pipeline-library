@@ -43,7 +43,7 @@ def call(Map args = [:]) {
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+        getBuildInfoJsonFiles([jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER])
         archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
         // Read files only once and if timeout then use default values

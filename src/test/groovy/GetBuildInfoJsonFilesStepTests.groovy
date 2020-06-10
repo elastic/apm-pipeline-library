@@ -34,7 +34,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false })
-    script.call('http://jenkins.example.com/job/myJob', '1')
+    script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
     assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data'))
@@ -52,7 +52,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
       }
       return 0
     })
-    script.call('http://jenkins.example.com/job/myJob', '1')
+    script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
     assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data.sh'))
@@ -60,11 +60,37 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_without_parameters() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameters is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_without_buildNumber_parameter() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(jobURL: 'foo')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameters is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
-      script.call('', '')
+      script.call(jobURL: '', buildNumber: '')
     } catch(e){
       //NOOP
     }
