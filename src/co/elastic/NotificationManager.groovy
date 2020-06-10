@@ -42,7 +42,7 @@ def analyzeFlakey(Map params = [:]) {
     def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     
-    if (!jobInfo) {
+    if (jobInfo || !jobInfo['fullName']?.trim()) {
       error "Did not receive jobInfo data" 
     }
 
