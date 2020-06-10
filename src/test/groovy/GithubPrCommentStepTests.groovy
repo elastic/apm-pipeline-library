@@ -69,6 +69,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     def result = script.commentTemplate()
     printCallStack()
     assertFalse(result.contains('Further details'))
+    assertTrue(result.contains('<!--METADATA-->'))
   }
 
   @Test
@@ -81,6 +82,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     assertTrue(result.contains('foo'))
     assertTrue(result.contains('Commit: 1'))
     assertTrue(result.contains('Build Succeeded'))
+    assertTrue(result.contains('<!--METADATA-->'))
   }
 
   @Test

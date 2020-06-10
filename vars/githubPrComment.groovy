@@ -27,9 +27,9 @@
   _NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 */
-def call(Map params = [:]){
-  def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
-  def message = params.containsKey('message') ? params.message : ''
+def call(Map args = [:]){
+  def details = args.containsKey('details') ? "* Further details: [here](${args.details})" : ''
+  def message = args.containsKey('message') ? args.message : ''
 
   if (isPR()) {
     addOrEditComment(commentTemplate(details: "${details}", message: message))
@@ -38,16 +38,16 @@ def call(Map params = [:]){
   }
 }
 
-def commentTemplate(Map params = [:]) {
-  def details = params.containsKey('details') ? params.details : ''
+def commentTemplate(Map args = [:]) {
+  def details = args.containsKey('details') ? args.details : ''
   def header = currentBuild.currentResult == 'SUCCESS' ?
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
   def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
 
   def body
-  if (params.message?.trim()) {
-    body = params.message
+  if (args.message?.trim()) {
+    body = args.message
   } else {
     body = """\
       ${header}
@@ -57,7 +57,11 @@ def commentTemplate(Map params = [:]) {
     """.stripIndent()  // stripIdent() requires """/
   }
 
-  return body
+  // Add metadata to help with the commit id search fallback.
+  return """\
+      ${body}
+      ${metadata()}
+    """.stripIndent()
 }
 
 def addOrEditComment(String details) {
@@ -96,15 +100,27 @@ def commentIdFileName() {
   return 'comment.id'
 }
 
+/**
+  Support search for the comment id.
+**/
 def getCommentIfAny() {
   def commentId = getCommentFromFile()
   def id = errorId()
   if (commentId?.trim() && commentId.isInteger()) {
     id = commentId as Integer
+  } else {
+    commentId = getLatestBuildComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
+    if (commentId && commentId.id) {
+      id = commentId.id as Integer
+    }
   }
   return id
 }
 
 def errorId() {
   return -1000
+}
+
+def metadata(){
+  return '<!--METADATA-->'
 }
