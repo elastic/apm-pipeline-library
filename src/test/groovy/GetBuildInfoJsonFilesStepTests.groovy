@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
@@ -33,13 +34,15 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('fileExists', [String.class], { return false })
-    script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
+    def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
     assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data'))
     assertTrue(assertMethodCallContainsPattern('sh', 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/'))
     assertTrue(assertMethodCallContainsPattern('sh', 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/runs/1'))
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertTrue(assertMethodCallOccurrences('timeout', 0))
+    assertNull(ret)
     assertJobStatusSuccess()
   }
 
@@ -56,6 +59,17 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
     assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data.sh'))
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_returnData() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1', returnData: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('timeout', 1))
+    assertFalse(ret.isEmpty())
     assertJobStatusSuccess()
   }
 

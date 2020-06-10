@@ -277,6 +277,7 @@ Then put all togeder in a simple JSON file.
 
 * jobURL: the job URL. Mandatory
 * buildNumber: the build id. Mandatory
+* returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
