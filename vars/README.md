@@ -1679,3 +1679,13 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
 
+## writeVaultSecret
+Write the given data in vault for the given secret.
+
+```
+writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+```
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be written. Mandatory
+
