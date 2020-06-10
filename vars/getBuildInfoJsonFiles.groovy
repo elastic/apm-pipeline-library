@@ -23,8 +23,8 @@
 */
 
 def call(Map args = [:]) {
-  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBuildInfoJsonFiles: jobURL parameters is required.')
-  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBuildInfoJsonFiles: buildNumber parameters is required.')
+  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBuildInfoJsonFiles: jobURL parameter is required.')
+  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBuildInfoJsonFiles: buildNumber parameter is required.')
   def returnData = args.get('returnData', false)
 
   if(!isUnix()){

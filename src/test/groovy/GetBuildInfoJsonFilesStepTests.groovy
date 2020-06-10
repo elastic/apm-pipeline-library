@@ -82,7 +82,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameters is required'))
+    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameter is required'))
     assertJobStatusFailure()
   }
 
@@ -95,7 +95,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameters is required'))
+    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameter is required'))
     assertJobStatusFailure()
   }
 
