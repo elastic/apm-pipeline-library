@@ -15,6 +15,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
+#
 # This script use a Jinja template to show the data in a JSON file,
 # and show the result for the stdout or save it in a file.
 #
