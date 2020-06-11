@@ -158,6 +158,17 @@ It requires to initialise the pipeline with githubEnv() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
 
+## convertGoTestResults
+  Converts the Go test result output to JUnit result file
+
+```
+  sh(label: 'Run test', script: 'go test -v ./...|tee unit-report.txt')
+  convertGoTestResults(input: 'unit-report.txt', output: 'junit-report.xml')
+```
+
+* input: file contains the verbose Go test output.
+* output: where to save the JUnit report.
+
 ## coverageReport
  Grab the coverage files, and create the report in Jenkins.
 
@@ -1079,6 +1090,13 @@ nexusUploadStagingArtifact(
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
 
+## nodeOS
+ Return the name of the Operating system based on the labels of the Node.
+
+```
+ def os = nodeOS()
+```
+
 ## notifyBuildResult
 Send an email message with a summary of the build result,
 and send some data to Elastic search.
@@ -1599,6 +1617,52 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
+
+## withGoEnv
+ Install Go an run some command in a pre-configured environment.
+
+```
+  withGoEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnv(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION en var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+
+## withMageEnv
+
+ Install Go and mage an run some command in a pre-configured environment.
+
+```
+  withMageEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withMageEnv(version: '1.14.2', pkgs: [
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION en var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
 
 ## withNpmrc
 Wrap the npmrc token
