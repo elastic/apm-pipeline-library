@@ -356,6 +356,49 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakey() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod(
+      "sendDataToElasticsearch",
+      [Map.class],
+      {m -> readJSON(file: "flake-results.json")}
+    )
+
+    helper.registerAllowedMethod(
+      "githubPrComment",
+      [Map.class],
+      {m -> assertTrue(
+        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
+        )
+      }
+    )
+    script.analyzeFlakey(
+      jobInfo: ['fullName': 'fake_name'],
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json')
+    )
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakeyNoJobInfo() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.analyzeFlakey(
+        jobInfo: [],
+        es: "https://fake_url",
+        testsErrors: readJSON(file: 'flake-tests-errors.json')
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive jobInfo data'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_generateBuildReport() throws Exception {
     def script = loadScript(scriptName)
     script.generateBuildReport(
