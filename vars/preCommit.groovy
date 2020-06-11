@@ -47,10 +47,10 @@ def call(Map params = [:]) {
       if (registry && secretRegistry) {
         dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
       }
-      retryWithSleep(retries: 2, seconds: 5, exponencial: true) {
+      retryWithSleep(retries: 2, seconds: 5, exponential: true) {
         sh(label: 'Install precommit', script: "curl -s https://pre-commit.com/install-local.py | python -")
       }
-      retryWithSleep(retries: 2, seconds: 5, exponencial: true) {
+      retryWithSleep(retries: 2, seconds: 5, exponential: true) {
         sh(label: 'Install precommit hooks', script: """
           export PATH=${newHome}/bin:${env.PATH}
           ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos

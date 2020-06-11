@@ -28,7 +28,7 @@ def call(params) {
   def ret
   // Sleep first is the best of the worst scenarios regarding the sleep times.
   // Further details: https://github.com/elastic/apm-pipeline-library/pull/378
-  retryWithSleep(retries: 3, seconds: 10, exponencial: true, sleepFirst: true) {
+  retryWithSleep(retries: 3, seconds: 10, exponential: true, sleepFirst: true) {
     ret = steps.checkout(params)
   }
   return ret

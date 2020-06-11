@@ -88,11 +88,11 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_retry_with_errors_with_exponencial() throws Exception {
+  void test_retry_with_errors_with_exponential() throws Exception {
     def script = loadScript(scriptName)
     def ret = false
     try {
-      script.call(retries: 3, exponencial: true) {
+      script.call(retries: 3, exponential: true) {
         throw new Exception('Force failure')
         ret = true
       }
