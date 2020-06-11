@@ -41,7 +41,7 @@ def call(Map params = [:]){
   def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
   def depthValue = params.containsKey('depth') ? params.get('depth') : 5
   def retryValue = params.containsKey('retry') ? params.get('retry') : 3
-  def refspec = '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*'
+  def refspec = '+refs/pull/*/head:refs/remotes/origin/pr/*'
 
   if(!env?.GIT_URL && params.repo) {
     log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
@@ -97,7 +97,7 @@ def call(Map params = [:]){
         extensions: extensions,
         submoduleCfg: [],
         userRemoteConfigs: [[
-          refspec: refspec,
+          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
           credentialsId: "${credentialsId}",
           url: "${repo}"]]])
     } else {
