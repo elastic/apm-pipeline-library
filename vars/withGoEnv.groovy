@@ -33,7 +33,7 @@
 }
 
 */
-def call(Map params = [:]) {
+def call(Map params = [:], Closure body) {
   log(level: 'INFO', text: 'I am a dummy step - ' + text)
   def version = params.containsKey('version') ? params.version : '1.14.2'
   def pkgs = params.containsKey('pkgs') ? params.pkgs : []
@@ -46,9 +46,13 @@ def call(Map params = [:]) {
           "GOROOT=${HOME}/.gvm/versions/go${version}.${os}.amd64",
           "GOPATH=${HOME}"
       ]){
-          sh(label: "Installing go ${version}", script: "gvm ${version}")
+          retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+            sh(label: "Installing go ${version}", script: "gvm ${version}")
+          }
           pkgs?.each{ p ->
-              sh(label: "Installing ${pkgs}", script: "go get -u ${p}")
+              retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+                sh(label: "Installing ${pkgs}", script: "go get -u ${p}")
+              }
           }
           body()
       }
