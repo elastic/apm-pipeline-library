@@ -27,7 +27,9 @@ def call(Map params = [:], Closure body) {
   def path = params.containsKey('path') ? params.path : env.WORKSPACE
   def tokenFile = params.containsKey('tokenFile') ? params.tokenFile : '.vault-token'
   getVaultSecret.readSecretWrapper {
-    retry(3) {
+    // When running in the CI with multiple parallel stages
+    // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
+    retryWithSleep(retries: 3, seconds: 5, exponencial: true) {
       def token = getVaultSecret.getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
       dir(path) {
         writeFile file: tokenFile, text: token
@@ -35,9 +37,6 @@ def call(Map params = [:], Closure body) {
       try {
         body()
       } catch (err) {
-        // When running in the CI with multiple parallel stages
-        // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
-        sleep randomNumber(min: 2, max: 5)
         throw err
       } finally {
         // ensure any sensitive details are deleted

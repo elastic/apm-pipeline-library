@@ -47,13 +47,13 @@ def call(Map params = [:]) {
       if (registry && secretRegistry) {
         dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
       }
-      retry(2) {
+      retryWithSleep(retries: 2, seconds: 5, exponencial: true) {
         sh(label: 'Install precommit', script: """
           sleep 1
           curl -s https://pre-commit.com/install-local.py | python -
         """)
       }
-      retry(2) {
+      retryWithSleep(retries: 2, seconds: 5, exponencial: true) {
         sh(label: 'Install precommit hooks', script: """
           sleep 1
           export PATH=${newHome}/bin:${env.PATH}
