@@ -44,46 +44,10 @@ def call(Map args = [:]) {
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
-        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
-
-        // Read files only once and if timeout then use default values
-        def buildData = {}
-        def changeSet = []
-        def jobInfo = {}
-        def logData = ''
-        def stepsErrors = []
-        def testsErrors = []
-        def testsSummary = []
-        try {
-          timeout(5) {
-            jobInfo = readJSON(file: 'job-info.json')
-            buildData = readJSON(file: 'build-info.json')
-            changeSet = readJSON(file: 'changeSet-info.json')
-            logData = readFile(file: 'pipeline-log-summary.txt')
-            stepsErrors = readJSON(file: 'steps-errors.json')
-            testsErrors = readJSON(file: 'tests-errors.json')
-            testsSummary = readJSON(file: 'tests-summary.json')
-          }
-        } catch(e) {
-          log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
-        }
-
-        // There are some values that are not required by the notificationManager but since it uses
-        // a map they are not really affecting :)
-        def data = [
-          build: buildData,
-          buildStatus: currentBuild.currentResult,
-          changeSet: changeSet,
-          docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff",
-          emailRecipients: to,
-          jobInfo: jobInfo,
-          log: logData,
-          statsUrl: "${statsURL}",
-          stepsErrors: stepsErrors,
-          testsErrors: testsErrors,
-          testsSummary: testsSummary
-        ]
+        def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
+        data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
+        data['emailRecipients'] = to
+        data['statsUrl'] = statsURL
         def notificationManager = new NotificationManager()
         if(shouldNotify){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')

@@ -77,7 +77,9 @@ def extract(String filename) {
   if(isUnix()) {
     sh(label: 'Extract', script: command)
   } else {
-    bat(label: 'Extract', script: command)
+    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
+      bat(label: 'Extract', script: command)
+    }
   }
 }
 

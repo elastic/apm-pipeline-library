@@ -81,7 +81,9 @@ def compress(String filename) {
   if(isUnix()) {
     sh(label: 'Compress', script: command)
   } else {
-    bat(label: 'Compress', script: command)
+    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
+      bat(label: 'Compress', script: command)
+    }
   }
 }
 

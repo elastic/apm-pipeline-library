@@ -119,6 +119,7 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'got precedency instead.'))
     assertNull(assertMethodCall('sh'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
     assertTrue(assertMethodCallContainsPattern('bat', 'tar -xpf source.tgz'))
     assertTrue(assertMethodCallContainsPattern('bat', 'del source.tgz'))
     assertJobStatusSuccess()

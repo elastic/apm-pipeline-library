@@ -14,12 +14,12 @@ while getopts "l:j:" options; do
     j)
       echo "Setting job to ${OPTARG}"
       FILENAME=${OPTARG} ;;
-    :)
+    *)
       echo "Error: -l expected argument info|warn|error|debug or needs -f <filename>" ;;
   esac
   done
 
-if [ -z ${FILENAME} ] ; then
+if [ -z "${FILENAME}" ] ; then
   echo "To specify a job to deploy, you must use -j"
   exit 1
 fi
@@ -53,7 +53,7 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
         -v "${TMPFOLDER}:/jjbb" \
         -w '/jjbb' \
         -e HOME=/tmp \
-        widerplan/jenkins-job-builder -l ${LOG_LEVEL} test "${BASENAME}" > "${JJB_REPORT}"
+        osmman/jenkins-job-builder:3.1.0 -l "${LOG_LEVEL}" test "${BASENAME}" > "${JJB_REPORT}"
 
 # shellcheck disable=SC2181
 if [ $? -gt 0 ] ; then
@@ -71,5 +71,5 @@ docker run -t --rm --user "$(id -u):$(id -g)" \
         -w '/jjbb' \
         -v "$(pwd)/local/jenkins_jobs.ini":/etc/jenkins_jobs/jenkins_jobs.ini \
         --network local_apm-pipeline-library \
-        osmman/jenkins-job-builder:3.0.2 -l ${LOG_LEVEL} update "${BASENAME}"
+        osmman/jenkins-job-builder:3.0.2 -l "${LOG_LEVEL}" update "${BASENAME}"
 printf '\tpassed\n'
