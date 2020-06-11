@@ -34,26 +34,24 @@
 
 */
 def call(Map args = [:], Closure body) {
-  log(level: 'INFO', text: 'I am a dummy step - ' + text)
-  def goDefaultVersion = "" != "${GO_VERSION}" ? "${GO_VERSION}": '1.14.2'
+  def goDefaultVersion = "" != "${env.GO_VERSION}" && env.GO_VERSION != null ? "${env.GO_VERSION}" : '1.14.2'
   def version = args.containsKey('version') ? args.version : goDefaultVersion
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
   def os = nodeOS()
+  def lastCoordinate = version[-2..-1]
+  // gvm remove the last coordinate if it is 0
+  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.amd64"
   withEnv([
-      "HOME=${WORKSPACE}"
+      "HOME=${env.WORKSPACE}"
   ]){
       withEnv([
-          "PATH=${HOME}/go/bin:${HOME}/.gvm/versions/go${version}.${os}.amd64/bin:${PATH}",
-          "GOROOT=${HOME}/.gvm/versions/go${version}.${os}.amd64",
+          "PATH=${HOME}/bin:${HOME}/${goDir}/bin:${env.PATH}",
+          "GOROOT=${HOME}/${goDir}",
           "GOPATH=${HOME}"
       ]){
-          retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-            sh(label: "Installing go ${version}", script: "gvm ${version}")
-          }
+          sh(label: "Installing go ${version}", script: "gvm ${version}")
           pkgs?.each{ p ->
-              retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-                sh(label: "Installing ${pkgs}", script: "go get -u ${p}")
-              }
+              sh(label: "Installing ${p}", script: "go get -u ${p}")
           }
           body()
       }
