@@ -50,7 +50,6 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
     script.call(retries: 3) {
       ret = true
     }
-    
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallOccurrences('log', 1))
@@ -62,7 +61,7 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
     def ret = false
     try {
       script.call(retries: 3) {
-        throw new Exception(s)
+        throw new Exception('Force failure')
         ret = true
       }
     } catch(e) {
@@ -70,6 +69,25 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertFalse(ret)
-    assertTrue(assertMethodCallOccurrences('log', 3))
+    assertTrue(assertMethodCallContainsPattern('log', '3 of 3 tries'))
+    assertFalse(assertMethodCallContainsPattern('log', 'sleep 30 seconds'))
+  }
+
+  @Test
+  void test_retry_with_errors_with_exponencial() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = false
+    try {
+      script.call(retries: 3, exponencial: true) {
+        throw new Exception('Force failure')
+        ret = true
+      }
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(ret)
+    assertTrue(assertMethodCallContainsPattern('log', '3 of 3 tries'))
+    assertTrue(assertMethodCallContainsPattern('log', 'sleep 30 seconds'))
   }
 }

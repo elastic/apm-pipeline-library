@@ -38,7 +38,9 @@ def call(Map args = [:], Closure body) {
     try {
       body()
     } catch(e) {
-      sleep( exponencial ? seconds * factor : seconds)
+      def time = exponencial ? (seconds * factor) : seconds
+      log(level: 'DEBUG', text: "retryWithSleep. sleep ${time} seconds.")
+      sleep(time)
       throw e
     }
   }
