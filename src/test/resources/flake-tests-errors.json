@@ -1,0 +1,11 @@
+[
+    {
+      "age": 1,
+      "duration": 0,
+      "errorDetails": "collection failure",
+      "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:%3Ajunit%2F(root)%2F(empty)%2FTest___Python_python_3_7_2___",
+      "name": "Test / windows-3.6-none / test_send – tests.transports.test_urllib3",
+      "status": "FAILED"
+    }
+]
+  

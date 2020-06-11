@@ -18,7 +18,7 @@
 /**
 
 Send an email message with a summary of the build result,
-and send some data to Elastic search.
+and send some data to Elasticsearch.
 
 notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
 
@@ -34,6 +34,7 @@ def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
@@ -52,13 +53,25 @@ def call(Map args = [:]) {
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
           notificationManager.notifyEmail(data)
         }
+        // Should analyze flakey
+        if(analyzeFlakey) {
+          data['es'] = es
+          data['es_secret'] = secret
+
+          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.analyzeFlakey(data)
+          }
+        }
         // Should notify if it is a PR and it's enabled
         if(notifyPRComment && isPR()) {
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
           notificationManager.notifyPR(data)
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
-        notificationManager.generateBuildReport(data)
+        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          notificationManager.generateBuildReport(data)
+        }
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
