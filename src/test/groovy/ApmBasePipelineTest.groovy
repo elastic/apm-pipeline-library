@@ -63,10 +63,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
     env.BRANCH_NAME = 'master'
     env.BUILD_ID = '1'
+    env.BUILD_NUMBER = '1'
     env.JENKINS_URL = 'http://jenkins.example.com:8080/'
     env.BUILD_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JOB_BASE_NAME = 'master'
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.JOB_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}"
     env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_ID}/display/redirect"
     env.WORKSPACE = 'WS'
     env.VAULT_ADDR = 'http://secrets.example.com'
@@ -229,14 +231,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       try{
         body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
     helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, body ->
       try{
         body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
     helper.registerAllowedMethod('checkout', [String.class], null)
@@ -353,6 +355,20 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getBuildInfoJsonFiles', [Map.class], { m ->
+      if (m.containsKey('returnData') && m.returnData) {
+        return [
+          build: {},
+          buildStatus: currentBuild.currentResult,
+          changeSet: [],
+          log: '',
+          stepsErrors: [],
+          testsErrors: [],
+          testsSummary: []
+        ]
+      }
+      true
+    })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
