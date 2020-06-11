@@ -21,7 +21,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.05555555555555555,
-            "test_name" : "Initializing / Sanity checks / isort – pre_commit.lint",
+            "test_name" : "MOCK_TEST_1",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -32,7 +32,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.05555555555555555,
-            "test_name" : "Initializing / Sanity checks / black – pre_commit.lint",
+            "test_name" : "MOCK_TEST_2",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -43,7 +43,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.6-none / test_send – tests.transports.test_urllib3",
+            "test_name" : "MOCK_TEST_3",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -54,7 +54,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.7-none / test_multiple_transactions – tests.metrics.breakdown_tests",
+            "test_name" : "MOCK_TEST_4",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -65,7 +65,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.7-none / test_ssl_verify_disable – tests.transports.test_urllib3",
+            "test_name" : "MOCK_TEST_5",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -76,7 +76,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.8-none / test_ssl_cert_pinning_http – tests.transports.test_urllib3",
+            "test_name" : "MOCK_TEST_6",
             "timestamp" : "2020-06-05T09:21:27.983988"
           }
         },
@@ -87,7 +87,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.05555555555555555,
-            "test_name" : "Initializing / Sanity checks / isort – pre_commit.lint",
+            "test_name" : "MOCK_TEST_7",
             "timestamp" : "2020-06-05T08:19:46.427626"
           }
         },
@@ -98,7 +98,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.05555555555555555,
-            "test_name" : "Initializing / Sanity checks / black – pre_commit.lint",
+            "test_name" : "MOCK_TEST_8",
             "timestamp" : "2020-06-05T08:19:46.427626"
           }
         },
@@ -109,7 +109,7 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.6-none / test_send – tests.transports.test_urllib3",
+            "test_name" : "MOCK_TEST_9",
             "timestamp" : "2020-06-05T08:19:46.427626"
           }
         },
@@ -120,11 +120,10 @@
           "_score" : 1.0,
           "_source" : {
             "test_score" : 0.04,
-            "test_name" : "Test / windows-3.7-none / test_multiple_transactions – tests.metrics.breakdown_tests",
+            "test_name" : "MOCK_TEST_10",
             "timestamp" : "2020-06-05T08:19:46.427626"
           }
         }
       ]
     }
   }
-  
