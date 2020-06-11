@@ -598,6 +598,7 @@ _NOTE_: To edit the existing comment is required these environment variables: `C
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
+* commentFile: the file that will store the comment id. Default 'comment.id'
 * message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)

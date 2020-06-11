@@ -28,11 +28,12 @@
 
 */
 def call(Map params = [:]){
+  def commentFile = params.get('commentFile', 'comment.id')
   def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
   def message = params.containsKey('message') ? params.message : ''
 
   if (isPR()) {
-    addOrEditComment(commentTemplate(details: "${details}", message: message))
+    addOrEditComment(commentFile: commentFile, details: commentTemplate(details: "${details}", message: message))
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -60,8 +61,10 @@ def commentTemplate(Map params = [:]) {
   return body
 }
 
-def addOrEditComment(String details) {
-  def commentId = getCommentFromFile()
+def addOrEditComment(Map args = [:]) {
+  def commentFile = args.commentFile
+  def details = args.details
+  def commentId = getCommentFromFile(commentFile: commentFile)
   def id
   if (commentId?.trim() && commentId.isInteger()) {
     id = commentId as Integer
@@ -75,8 +78,8 @@ def addOrEditComment(String details) {
   } else {
     id = addComment(details)
   }
-  writeFile(file: "${commentIdFileName()}", text: "${id}")
-  archiveArtifacts(artifacts: commentIdFileName())
+  writeFile(file: "${commentFile}", text: "${id}")
+  archiveArtifacts(artifacts: commentFile)
 }
 
 def addComment(String details) {
@@ -85,15 +88,12 @@ def addComment(String details) {
   return comment?.id
 }
 
-def getCommentFromFile() {
-  copyArtifacts(filter: commentIdFileName(), flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
-  if (fileExists(commentIdFileName())) {
-    return readFile(commentIdFileName())?.trim()
+def getCommentFromFile(Map args = [:]) {
+  def commentFile = args.commentFile
+  copyArtifacts(filter: commentFile, flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
+  if (fileExists(commentFile)) {
+    return readFile(commentFile)?.trim()
   } else {
     return ''
   }
-}
-
-def commentIdFileName() {
-  return 'comment.id'
 }
