@@ -39,11 +39,5 @@ class GitStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default git'))
-
-    // The fixed number of retries is 3. This particular test scenario only covers when the
-    // checkout failed three times. Therefore the number of log calls is 4:
-    //   - the three regarding the retry
-    //   - the very first one regarding the `Override default git` log trace.
-    assertTrue(assertMethodCallOccurrences('log', 4))
   }
 }
