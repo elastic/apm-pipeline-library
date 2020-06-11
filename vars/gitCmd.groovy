@@ -37,9 +37,17 @@ def call(Map params = [:]) {
       usernameVariable: 'GIT_USERNAME')]) {
     def logFilename = "${cmd}.log"
     def storeFlag = store ? "> ${logFilename} 2>&1" : ''
-    sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
-    if (store) {
-      archiveArtifacts(artifacts: "${logFilename}")
+    try {
+      sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
+    } catch(err) {
+      if (store) {
+        log(level: 'WARN', text: "gitCmd failed, further details in the archived file '${logFilename}'")
+      }
+      throw err
+    } finally {
+      if (store) {
+        archiveArtifacts(artifacts: "${logFilename}")
+      }
     }
   }
 }
