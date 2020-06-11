@@ -272,8 +272,12 @@ Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
 
 ```
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 ```
+
+* jobURL: the job URL. Mandatory
+* buildNumber: the build id. Mandatory
+* returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -1678,4 +1682,14 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
+## writeVaultSecret
+Write the given data in vault for the given secret.
+
+```
+writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+```
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be written. Mandatory
 

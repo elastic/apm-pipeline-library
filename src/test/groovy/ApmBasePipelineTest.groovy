@@ -18,6 +18,7 @@
 import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.mock.GithubEnvMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
@@ -33,6 +34,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   enum VaultSecret{
+    ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
@@ -61,12 +63,15 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
     env.BRANCH_NAME = 'master'
     env.BUILD_ID = '1'
+    env.BUILD_NUMBER = '1'
     env.JENKINS_URL = 'http://jenkins.example.com:8080/'
     env.BUILD_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JOB_BASE_NAME = 'master'
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.JOB_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}"
     env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_ID}/display/redirect"
     env.WORKSPACE = 'WS'
+    env.VAULT_ADDR = 'http://secrets.example.com'
 
     registerDeclarativeMethods()
     registerScriptedMethods()
@@ -74,10 +79,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
     binding.setVariable('env', env)
     binding.setVariable('params', params)
-    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('docker', new DockerMock())
-    binding.setProperty('steps', new StepsMock())
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setProperty('githubEnv', new GithubEnvMock())
     binding.setProperty('pullRequest', new PullRequestMock())
+    binding.setProperty('steps', new StepsMock())
   }
 
   void registerDeclarativeMethods() {
@@ -225,14 +231,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       try{
         body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
     helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, body ->
       try{
         body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
     helper.registerAllowedMethod('checkout', [String.class], null)
@@ -349,6 +355,20 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getBuildInfoJsonFiles', [Map.class], { m ->
+      if (m.containsKey('returnData') && m.returnData) {
+        return [
+          build: {},
+          buildStatus: currentBuild.currentResult,
+          changeSet: [],
+          log: '',
+          stepsErrors: [],
+          testsErrors: [],
+          testsSummary: []
+        ]
+      }
+      true
+    })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
@@ -366,7 +386,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
     })
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
-    helper.registerAllowedMethod('githubEnv', [], null)
+    helper.registerAllowedMethod('githubEnv', {
+      def script = loadScript('vars/githubEnv.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']

@@ -377,6 +377,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json')
     )
+    printCallStack()
     assertJobStatusSuccess()
   }
 
@@ -392,6 +393,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     } catch(e) {
       //NOOP
     }
+    printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'Did not receive jobInfo data'))
     assertJobStatusFailure()
   }

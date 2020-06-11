@@ -63,7 +63,7 @@ def analyzeFlakey(Map params = [:]) {
     def msg = "❄️ The following tests failed but also have a history of flakiness and may not be related to this change: " + ret.toString()
     
     if (ret) {
-      githubPrComment(message: msg)
+      githubPrComment(message: msg, commentFile: 'flakey.id')
     } 
     
 }
