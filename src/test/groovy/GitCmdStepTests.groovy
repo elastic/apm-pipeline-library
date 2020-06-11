@@ -103,6 +103,21 @@ class GitCmdStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_if_store_with_error_works() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], {
+      throw new Exception('Force Failure an error')
+    })
+    try{
+      script.call(cmd: 'push', credentialsId: 'foo', store: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
+  }
+
+  @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
