@@ -393,6 +393,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     } catch(e) {
       //NOOP
     }
+    printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'Did not receive jobInfo data'))
     assertJobStatusFailure()
   }
