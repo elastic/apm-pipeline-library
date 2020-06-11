@@ -69,7 +69,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     def result = script.commentTemplate()
     printCallStack()
     assertFalse(result.contains('Further details'))
-    assertTrue(result.contains('<!--COMMENT_GENERATED-->'))
   }
 
   @Test
@@ -82,7 +81,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     assertTrue(result.contains('foo'))
     assertTrue(result.contains('Commit: 1'))
     assertTrue(result.contains('Build Succeeded'))
-    assertTrue(result.contains('<!--COMMENT_GENERATED-->'))
   }
 
   @Test
@@ -174,7 +172,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 	  def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
-    def ret = script.getCommentIfAny()
+    def ret = script.getCommentIfAny(commentFile: 'comment.id')
     printCallStack()
     assertEquals(ret, 2)
     assertJobStatusSuccess()
@@ -195,12 +193,13 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
           ],
           created_at: "2020-02-03T17:21:44Z",
           updated_at: "2020-02-03T17:21:44Z",
-          body: "<!--COMMENT_GENERATED-->"
+          body: "<!--COMMENT_GENERATED_WITH_ID_comment.id-->"
         ]
     } )
-    def ret = script.getCommentIfAny()
+    def ret = script.getCommentIfAny(commentFile: 'comment.id')
     printCallStack()
     assertEquals(ret, 2)
+    assertTrue(assertMethodCallContainsPattern('githubPrLatestComment', '<!--COMMENT_GENERATED_WITH_ID_comment.id-->'))
     assertJobStatusSuccess()
   }
 
@@ -209,9 +208,10 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false } )
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
-    def ret = script.getCommentIfAny()
+    def ret = script.getCommentIfAny(commentFile: 'comment.id')
     printCallStack()
     assertEquals(ret, script.errorId())
+    assertTrue(assertMethodCallContainsPattern('githubPrLatestComment', '<!--COMMENT_GENERATED_WITH_ID_comment.id-->'))
     assertJobStatusSuccess()
   }
 
@@ -220,10 +220,20 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false } )
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], { throw new Exception('Force failure') })
-    def ret = script.getCommentIfAny()
+    def ret = script.getCommentIfAny(commentFile: 'comment.id')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrLatestComment', '<!--COMMENT_GENERATED_WITH_ID_comment.id-->'))
     assertTrue(assertMethodCallContainsPattern('log', 'a new GitHub comment will be created'))
     assertEquals(ret, script.errorId())
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_metadata() {
+    def script = loadScript(scriptName)
+    def ret = script.metadata(commentFile: 'foo')
+    printCallStack()
+    assertTrue(ret.equals('<!--COMMENT_GENERATED_WITH_ID_foo-->'))
     assertJobStatusSuccess()
   }
 }

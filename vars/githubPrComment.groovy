@@ -28,12 +28,15 @@
 
 */
 def call(Map args = [:]){
-  def commentFile = params.get('commentFile', 'comment.id')
-  def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
-  def message = params.containsKey('message') ? params.message : ''
+  def commentFile = args.get('commentFile', 'comment.id')
+  def details = args.containsKey('details') ? "* Further details: [here](${args.details})" : ''
+  def message = args.containsKey('message') ? args.message : ''
 
   if (isPR()) {
-    addOrEditComment(commentFile: commentFile, details: commentTemplate(details: "${details}", message: message))
+    def comment = commentTemplate(details: "${details}", message: message)
+    // Add some metadata to support the githubPrLatestComment step
+    def commentWithMetadata =  comment + "\n${metadata(args)}"
+    addOrEditComment(commentFile: commentFile, details: commentWithMetadata)
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
@@ -57,9 +60,7 @@ def commentTemplate(Map args = [:]) {
       ${details}
     """.stripIndent()  // stripIdent() requires """/
   }
-
-  // Add some metadata to support the githubPrLatestComment step
-  return "${body}\n${metadata()}"
+  return body
 }
 
 def addOrEditComment(Map args = [:]) {
@@ -107,7 +108,7 @@ def getCommentIfAny(Map args = [:]) {
     id = commentId as Integer
   } else {
     try {
-      commentId = githubPrLatestComment(pattern: metadata(), users: ['elasticmachine', 'apmmachine'])
+      commentId = githubPrLatestComment(pattern: metadata(args), users: ['elasticmachine', 'apmmachine'])
       if (commentId && commentId.id) {
         id = commentId.id as Integer
       }
@@ -122,6 +123,7 @@ def errorId() {
   return -1000
 }
 
-def metadata(){
-  return '<!--COMMENT_GENERATED-->'
+def metadata(Map args = [:]){
+  // .toString() to avoid org.codehaus.groovy.runtime.GStringImpl issues when comparing Strings.
+  return "<!--COMMENT_GENERATED_WITH_ID_${args.commentFile}-->".toString()
 }
