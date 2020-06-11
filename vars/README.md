@@ -598,6 +598,7 @@ _NOTE_: To edit the existing comment is required these environment variables: `C
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
+* commentFile: the file that will store the comment id. Default 'comment.id'
 * message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
@@ -1216,6 +1217,25 @@ It does require the parameters for the pipeline to be exposed as environment var
 ```
 rebuildPipeline()
 ```
+
+## retryWithSleep
+Retry a command for a specified number of times until the command exits successfully.
+
+```
+retryWithSleep(retries: 2) {
+  //
+}
+
+// Retry up to 3 times with a 5 seconds wait period
+retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+  //
+}
+```
+
+* retries: the number of retries. Mandatory
+* seconds: the seconds to wait for. Optional. Default 10.
+* backoff: whether the wait period backs off backoffly after each retry. Optional. Default false
+* sleepFirst: whether to sleep before running the command. Optional. Default false
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.

@@ -410,6 +410,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('rebuildPipeline', [], { true })
+    helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/retryWithSleep.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
     helper.registerAllowedMethod('toJSON', [Map.class], { m ->
       def script = loadScript('vars/toJSON.groovy')
