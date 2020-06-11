@@ -1,0 +1,9 @@
+  Converts the Go test result output to JUnit result file
+
+```
+  sh(label: 'Run test', script: 'go test -v ./...|tee unit-report.txt')
+  convertGoTestResults(input: 'unit-report.txt', output: 'junit-report.xml')
+```
+
+* input: file contains the verbose Go test output.
+* output: where to save the JUnit report.
