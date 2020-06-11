@@ -1216,7 +1216,8 @@ retryWithSleep(retries: 3, seconds: 5, exponencial: true) {
 
 * retries: the number of retries. Mandatory
 * seconds: the seconds to wait for. Optional. Default 10.
-* exponencial: whether the wait period backs off exponentially after each retry.
+* exponencial: whether the wait period backs off exponentially after each retry. Optional. Default false
+* sleepFirst: whether to sleep before running the command. Optional. Default false
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.

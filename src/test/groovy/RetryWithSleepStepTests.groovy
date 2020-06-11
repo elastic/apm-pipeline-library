@@ -53,6 +53,20 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallOccurrences('log', 1))
+    assertFalse(assertMethodCallContainsPattern('log', 'sleep 10 seconds'))
+  }
+
+  @Test
+  void test_retry_with_sleep_first() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = false
+    script.call(retries: 3, sleepFirst: true) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('log', 2))
+    assertTrue(assertMethodCallContainsPattern('log', 'sleep 10 seconds'))
   }
 
   @Test

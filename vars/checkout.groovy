@@ -25,9 +25,10 @@
 */
 def call(params) {
   log(level: 'INFO', text: 'Override default checkout')
-
   def ret
-  retryWithSleep(retries: 3, seconds: 10, exponencial: true) {
+  // Sleep first is the best of the worst scenarios regarding the sleep times.
+  // Further details: https://github.com/elastic/apm-pipeline-library/pull/378
+  retryWithSleep(retries: 3, seconds: 10, exponencial: true, sleepFirst: true) {
     ret = steps.checkout(params)
   }
   return ret

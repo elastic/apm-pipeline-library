@@ -31,17 +31,24 @@ def call(Map args = [:], Closure body) {
   def i = args.containsKey('retries') ? args.retries : error('retryWithSleep: retries parameter is required.')
   def seconds = args.get('seconds', 10)
   def exponencial = args.get('exponencial', false)
+  def sleepFirst = args.get('sleepFirst', false)
+
   def factor = 0
   retry(i) {
     factor++
     log(level: 'DEBUG', text: "retryWithSleep (${factor} of ${i} tries).")
     try {
+      if(sleepFirst) { sleepWith(seconds, factor, exponencial) }
       body()
     } catch(e) {
-      def time = exponencial ? (seconds * factor) : seconds
-      log(level: 'DEBUG', text: "retryWithSleep. sleep ${time} seconds.")
-      sleep(time)
+      if(!sleepFirst) { sleepWith(seconds, factor, exponencial) }
       throw e
     }
   }
+}
+
+def sleepWith(seconds, factor, exponencial) {
+  def time = exponencial ? (seconds * factor) : seconds
+  log(level: 'DEBUG', text: "retryWithSleep. sleep ${time} seconds.")
+  sleep(time)
 }
