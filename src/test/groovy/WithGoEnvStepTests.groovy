@@ -28,6 +28,7 @@ class WithGoEnvStepTests extends ApmBasePipelineTest {
     super.setUp()
 
     env.PATH = '/foo/bin'
+    helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, b -> b() })
   }
 
   @Test

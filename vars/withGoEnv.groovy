@@ -44,16 +44,20 @@ def call(Map args = [:], Closure body) {
   withEnv([
       "HOME=${env.WORKSPACE}"
   ]){
-      withEnv([
-          "PATH=${HOME}/bin:${HOME}/${goDir}/bin:${env.PATH}",
-          "GOROOT=${HOME}/${goDir}",
-          "GOPATH=${HOME}"
-      ]){
-          sh(label: "Installing go ${version}", script: "gvm ${version}")
-          pkgs?.each{ p ->
-              sh(label: "Installing ${p}", script: "go get -u ${p}")
-          }
-          body()
+    withEnv([
+      "PATH=${HOME}/bin:${HOME}/${goDir}/bin:${env.PATH}",
+      "GOROOT=${HOME}/${goDir}",
+      "GOPATH=${HOME}"
+    ]){
+      retryWithSleep(retries: 3, seconds: 5, backoff: true){
+        sh(label: "Installing go ${version}", script: "gvm ${version}")
       }
+      pkgs?.each{ p ->
+        retryWithSleep(retries: 3, seconds: 5, backoff: true){
+          sh(label: "Installing ${p}", script: "go get -u ${p}")
+        }
+      }
+      body()
+    }
   }
 }
