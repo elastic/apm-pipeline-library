@@ -57,6 +57,7 @@ def commentTemplate(Map args = [:]) {
     """.stripIndent()  // stripIdent() requires """/
   }
 
+  // Add some metadata to support the githubPrLatestComment step
   return "${body}\n${metadata()}"
 }
 
@@ -122,5 +123,5 @@ def errorId() {
 }
 
 def metadata(){
-  return '<!--METADATA-->'
+  return '<!--COMMENT_GENERATED-->'
 }

@@ -69,7 +69,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     def result = script.commentTemplate()
     printCallStack()
     assertFalse(result.contains('Further details'))
-    assertTrue(result.contains('<!--METADATA-->'))
+    assertTrue(result.contains('<!--COMMENT_GENERATED-->'))
   }
 
   @Test
@@ -82,7 +82,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     assertTrue(result.contains('foo'))
     assertTrue(result.contains('Commit: 1'))
     assertTrue(result.contains('Build Succeeded'))
-    assertTrue(result.contains('<!--METADATA-->'))
+    assertTrue(result.contains('<!--COMMENT_GENERATED-->'))
   }
 
   @Test
@@ -195,7 +195,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
           ],
           created_at: "2020-02-03T17:21:44Z",
           updated_at: "2020-02-03T17:21:44Z",
-          body: "<!--METADATA-->"
+          body: "<!--COMMENT_GENERATED-->"
         ]
     } )
     def ret = script.getCommentIfAny()

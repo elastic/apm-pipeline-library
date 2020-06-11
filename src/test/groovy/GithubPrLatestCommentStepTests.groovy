@@ -35,7 +35,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
       ],	
       created_at: "2020-01-03T16:16:26Z",	
       updated_at: "2020-01-03T16:16:26Z",	
-      body: "\n## :green_heart: Build Succeeded\n* [pipeline](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/display/redirect)\n* Commit: 1\n\n\n<!--METADATA-->\n"	
+      body: "\n## :green_heart: Build Succeeded\n* [pipeline](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/display/redirect)\n* Commit: 1\n\n\n<!--COMMENT_GENERATED-->\n"
     ],	
     [	
       url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",	
@@ -61,7 +61,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
       ],	
       created_at: "2020-02-03T17:21:44Z",	
       updated_at: "2020-02-03T17:21:44Z",	
-      body: "<!--METADATA-->"	
+      body: "<!--COMMENT_GENERATED-->"
     ]	
   ]
 
@@ -102,7 +102,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_an_existing_match() throws Exception {	
     def script = loadScript(scriptName)
-    def obj = script.call(pattern: '<!--METADATA-->', users: ['elasticmachine'])
+    def obj = script.call(pattern: '<!--COMMENT_GENERATED-->', users: ['elasticmachine'])
     printCallStack()
     assertNotNull(obj)
   }
@@ -110,7 +110,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_an_existing_match_and_no_users_to_filter_with() throws Exception {	
     def script = loadScript(scriptName)
-    def obj = script.call(pattern: '<!--METADATA-->')
+    def obj = script.call(pattern: '<!--COMMENT_GENERATED-->')
     printCallStack()
     assertNotNull(obj)
   }
@@ -121,7 +121,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubApiCall', [Map.class], {	
       return commentInterceptorFromSomeoneElse	
     })
-    def obj = script.call(pattern: '<!--METADATA-->', users: ['elasticmachine'])
+    def obj = script.call(pattern: '<!--COMMENT_GENERATED-->', users: ['elasticmachine'])
     printCallStack()
     assertNull(obj)
   }
