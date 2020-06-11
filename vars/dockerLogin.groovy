@@ -42,7 +42,7 @@ def call(Map params = [:]){
     ]) {
       // When running in the CI with multiple parallel stages
       // the access could be considered as a DDOS attack.
-      retryWithSleep(retries: 3, seconds: 5, exponential: true) {
+      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
         if (isUnix()) {
           sh(label: "Docker login", script: """
             set +x

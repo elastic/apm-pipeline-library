@@ -6,12 +6,12 @@ retryWithSleep(retries: 2) {
 }
 
 // Retry up to 3 times with a 5 seconds wait period
-retryWithSleep(retries: 3, seconds: 5, exponential: true) {
+retryWithSleep(retries: 3, seconds: 5, backoff: true) {
   //
 }
 ```
 
 * retries: the number of retries. Mandatory
 * seconds: the seconds to wait for. Optional. Default 10.
-* exponential: whether the wait period backs off exponentially after each retry. Optional. Default false
+* backoff: whether the wait period backs off after each retry. Optional. Default false
 * sleepFirst: whether to sleep before running the command. Optional. Default false

@@ -48,7 +48,7 @@ def readSecret(secret) {
   readSecretWrapper() {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
-    retryWithSleep(retries: 3, seconds: 5, exponential: true) {
+    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
       def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
       props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
     }

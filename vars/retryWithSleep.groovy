@@ -23,14 +23,14 @@
   }
 
   // Retry up to 3 times with a 5 seconds wait period
-  retryWithSleep(retries: 3, seconds: 5, exponential: true) {
+  retryWithSleep(retries: 3, seconds: 5, backoff: true) {
     //
   }
 */
 def call(Map args = [:], Closure body) {
   def i = args.containsKey('retries') ? args.retries : error('retryWithSleep: retries parameter is required.')
   def seconds = args.get('seconds', 10)
-  def exponential = args.get('exponential', false)
+  def backoff = args.get('backoff', false)
   def sleepFirst = args.get('sleepFirst', false)
 
   def factor = 0
@@ -38,17 +38,17 @@ def call(Map args = [:], Closure body) {
     factor++
     log(level: 'DEBUG', text: "retryWithSleep (${factor} of ${i} tries).")
     try {
-      if(sleepFirst) { sleepWith(seconds, factor, exponential) }
+      if(sleepFirst) { sleepWith(seconds, factor, backoff) }
       body()
     } catch(e) {
-      if(!sleepFirst) { sleepWith(seconds, factor, exponential) }
+      if(!sleepFirst) { sleepWith(seconds, factor, backoff) }
       throw e
     }
   }
 }
 
-def sleepWith(seconds, factor, exponential) {
-  def time = exponential ? (seconds * factor) : seconds
+def sleepWith(seconds, factor, backoff) {
+  def time = backoff ? (seconds * factor) : seconds
   log(level: 'DEBUG', text: "retryWithSleep. sleep ${time} seconds.")
   sleep(time)
 }

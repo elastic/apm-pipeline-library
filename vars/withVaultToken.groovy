@@ -29,7 +29,7 @@ def call(Map params = [:], Closure body) {
   getVaultSecret.readSecretWrapper {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
-    retryWithSleep(retries: 3, seconds: 5, exponential: true) {
+    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
       def token = getVaultSecret.getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
       dir(path) {
         writeFile file: tokenFile, text: token
