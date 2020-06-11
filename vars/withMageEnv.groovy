@@ -18,12 +18,11 @@
 /**
  Install Go an run some command in a pre-configured environment.
 
-  withGoEnv(version: '1.14.2'){
+  withMageEnv(version: '1.14.2'){
     sh(label: 'Go version', script: 'go version')
   }
 
-   withGoEnv(version: '1.14.2', pkgs: [
-       "github.com/magefile/mage",
+   withMageEnv(version: '1.14.2', pkgs: [
        "github.com/elastic/go-licenser",
        "golang.org/x/tools/cmd/goimports",
    ]){
@@ -31,31 +30,15 @@
    }
 
 }
+**/
 
-*/
 def call(Map args = [:], Closure body) {
-  log(level: 'INFO', text: 'I am a dummy step - ' + text)
-  def goDefaultVersion = "" != "${GO_VERSION}" ? "${GO_VERSION}": '1.14.2'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
-  def os = nodeOS()
-  withEnv([
-      "HOME=${WORKSPACE}"
-  ]){
-      withEnv([
-          "PATH=${HOME}/go/bin:${HOME}/.gvm/versions/go${version}.${os}.amd64/bin:${PATH}",
-          "GOROOT=${HOME}/.gvm/versions/go${version}.${os}.amd64",
-          "GOPATH=${HOME}"
-      ]){
-          retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-            sh(label: "Installing go ${version}", script: "gvm ${version}")
-          }
-          pkgs?.each{ p ->
-              retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-                sh(label: "Installing ${pkgs}", script: "go get -u ${p}")
-              }
-          }
-          body()
-      }
-  }
+  pkgs.append([
+   "github.com/magefile/mage",
+   "github.com/elastic/go-licenser",
+   "golang.org/x/tools/cmd/goimports",
+   "github.com/jstemmer/go-junit-report"
+  ])
+  withGoEnv(args, body)
 }
