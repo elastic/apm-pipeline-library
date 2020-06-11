@@ -3,7 +3,7 @@
   "_links": {
     "self": {
       "_class": "io.jenkins.blueocean.rest.hal.Link",
-      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/blueTestSummary/"
+      "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/blueTestSummary/"
     }
   },
   "existingFailed": 1,
