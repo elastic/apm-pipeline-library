@@ -57,11 +57,7 @@ def commentTemplate(Map args = [:]) {
     """.stripIndent()  // stripIdent() requires """/
   }
 
-  // Add metadata to help with the commit id search fallback.
-  return """\
-      ${body}
-      ${metadata()}
-    """.stripIndent()
+  return "${body}\n${metadata()}"
 }
 
 def addOrEditComment(String details) {
