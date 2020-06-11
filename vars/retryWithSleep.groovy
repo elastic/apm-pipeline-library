@@ -16,19 +16,30 @@
 // under the License.
 
 /**
+  Retry a command for a specified number of times until the command exits successfully.
 
-  As long as we got timeout issues
-
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
-
-  checkout scm
-*/
-def call(params) {
-  log(level: 'INFO', text: 'Override default checkout')
-
-  def ret
-  retryWithSleep(retries: 3, seconds: 10, exponencial: true) {
-    ret = steps.checkout(params)
+  retryWithSleep(retries: 2) {
+    //
   }
-  return ret
+
+  // Retry up to 3 times with a 5 seconds wait period
+  retryWithSleep(retries: 3, seconds: 5, exponencial: true) {
+    //
+  }
+*/
+def call(Map args = [:], Closure body) {
+  def i = args.containsKey('retries') ? args.retries : error('retryWithSleep: retries parameter is required.')
+  def seconds = args.get('seconds', 10)
+  def exponencial = args.get('exponencial', false)
+  def factor = 0
+  retry(i) {
+    factor++
+    log(level: 'DEBUG', text: "retryWithSleep (${factor} of ${i} tries).")
+    try {
+      body()
+    } catch(e) {
+      sleep( exponencial ? seconds * factor : seconds)
+      throw e
+    }
+  }
 }
