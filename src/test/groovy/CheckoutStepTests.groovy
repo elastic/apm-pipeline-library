@@ -39,7 +39,5 @@ class CheckoutStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default checkout'))
-    assertTrue(assertMethodCallOccurrences('log', 4))
   }
-
 }
