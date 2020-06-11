@@ -16,7 +16,7 @@
 // under the License.
 
 /**
- Install Go an run some command in a pre-configured environment.
+ Install Go and mage an run some command in a pre-configured environment.
 
   withMageEnv(version: '1.14.2'){
     sh(label: 'Go version', script: 'go version')
@@ -34,11 +34,12 @@
 
 def call(Map args = [:], Closure body) {
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
-  pkgs.append([
+  pkgs.addAll([
    "github.com/magefile/mage",
    "github.com/elastic/go-licenser",
    "golang.org/x/tools/cmd/goimports",
    "github.com/jstemmer/go-junit-report"
   ])
+  args.pkgs = pkgs
   withGoEnv(args, body)
 }
