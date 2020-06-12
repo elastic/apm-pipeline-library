@@ -283,8 +283,12 @@ Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
 
 ```
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 ```
+
+* jobURL: the job URL. Mandatory
+* buildNumber: the build id. Mandatory
+* returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -605,6 +609,7 @@ _NOTE_: To edit the existing comment is required these environment variables: `C
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
+* commentFile: the file that will store the comment id. Default 'comment.id'
 * message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
@@ -1214,6 +1219,25 @@ It does require the parameters for the pipeline to be exposed as environment var
 rebuildPipeline()
 ```
 
+## retryWithSleep
+Retry a command for a specified number of times until the command exits successfully.
+
+```
+retryWithSleep(retries: 2) {
+  //
+}
+
+// Retry up to 3 times with a 5 seconds wait period
+retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+  //
+}
+```
+
+* retries: the number of retries. Mandatory
+* seconds: the seconds to wait for. Optional. Default 10.
+* backoff: whether the wait period backs off backoffly after each retry. Optional. Default false
+* sleepFirst: whether to sleep before running the command. Optional. Default false
+
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details. Or if using `withApi` then
@@ -1742,3 +1766,13 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
+## writeVaultSecret
+Write the given data in vault for the given secret.
+
+```
+writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+```
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be written. Mandatory

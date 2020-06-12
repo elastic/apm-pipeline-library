@@ -30,6 +30,45 @@ def buildTemplate(params) {
 }
 
 /**
+This method generates flakey test data from Jenkins test results
+ * @param es Elasticsearch URL
+ * @param secret Vault path to secrets which hold authentication information for Elasticsearch
+ * @param jobInfo JobInfo data collected from job-info.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+*/ 
+def analyzeFlakey(Map params = [:]) {
+    def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
+    def secret = params.containsKey('es_secret') ? params.es_secret : null
+    def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    
+    if (!jobInfo || !jobInfo['fullName']?.trim()) {
+      error "Did not receive jobInfo data" 
+    }
+
+    def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
+    def c = '/' + jobInfo['fullName'] + '/_search'
+    def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
+    def flakeyTestsParsed = toJSON(flakeyTestsRaw)
+
+    def ret = []
+
+    for (failedTest in testsErrors) {
+      for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
+        if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
+          ret.add(failedTest.name)
+        }
+      }
+    }
+    def msg = "❄️ The following tests failed but also have a history of flakiness and may not be related to this change: " + ret.toString()
+    
+    if (ret) {
+      githubPrComment(message: msg, commentFile: 'flakey.id')
+    } 
+    
+}
+
+/**
  * This method send an email generated with data from Jenkins
  * @param build
  * @param buildStatus String with job result
@@ -128,7 +167,7 @@ def notifyPR(Map params = [:]) {
         "testsSummary": testsSummary
       ])
       writeFile(file: 'build.md', text: body)
-      githubPrComment(message: body)
+      githubPrComment(commentFile: 'comment.id', message: body)
       archiveArtifacts 'build.md'
     }
 }

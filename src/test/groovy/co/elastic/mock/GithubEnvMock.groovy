@@ -15,21 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
+package co.elastic.mock
+
 /**
-
-  As long as we got timeout issues
-
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
-
-  checkout scm
-*/
-def call(params) {
-  log(level: 'INFO', text: 'Override default checkout')
-  def ret
-  // Sleep first is the best of the worst scenarios regarding the sleep times.
-  // Further details: https://github.com/elastic/apm-pipeline-library/pull/378
-  retryWithSleep(retries: 3, seconds: 10, backoff: true, sleepFirst: true) {
-    ret = steps.checkout(params)
-  }
-  return ret
+ * Mock githubEnv step.
+ */
+class GithubEnvMock implements Serializable {
+  public void setGitRepoEnvironment() {  }
 }
