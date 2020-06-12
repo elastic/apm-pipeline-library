@@ -34,6 +34,8 @@ class TarStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
     printCallStack()
+    assertTrue(assertMethodCallOccurrences('sh', 1))
+    assertTrue(assertMethodCallOccurrences('bat', 0))
     assertJobStatusSuccess()
   }
 
@@ -56,12 +58,14 @@ class TarStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testIsNotUnix() throws Exception {
+  void test_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod("isUnix", [], {false})
     script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'tar step is compatible only with unix systems'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
+    assertTrue(assertMethodCallOccurrences('sh', 0))
+    assertTrue(assertMethodCallOccurrences('bat', 1))
     assertJobStatusSuccess()
   }
 }
