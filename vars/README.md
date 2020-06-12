@@ -616,6 +616,23 @@ def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 
 [Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
 
+## githubPrLatestComment
+Search in the current Pull Request context the latest comment from the given list of
+users and pattern to match with.
+
+```
+// Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is
+//  elasticmachine
+githubPrLatestComment(pattern: '<!--foo-->', users: [ 'elasticmachine' ])
+```
+
+Arguments:
+
+* pattern: what's the pattern to be matched in the comments with. Mandatory.
+* users: the list of users that create the comment to be filtered with. Mandatory.
+
+_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+
 ## githubPrReviews
 Get the Pull Request reviews from the Github REST API.
 

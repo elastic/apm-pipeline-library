@@ -27,28 +27,31 @@
   _NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 */
-def call(Map params = [:]){
-  def commentFile = params.get('commentFile', 'comment.id')
-  def details = params.containsKey('details') ? "* Further details: [here](${params.details})" : ''
-  def message = params.containsKey('message') ? params.message : ''
+def call(Map args = [:]){
+  def commentFile = args.get('commentFile', 'comment.id')
+  def details = args.containsKey('details') ? "* Further details: [here](${args.details})" : ''
+  def message = args.containsKey('message') ? args.message : ''
 
   if (isPR()) {
-    addOrEditComment(commentFile: commentFile, details: commentTemplate(details: "${details}", message: message))
+    def comment = commentTemplate(details: "${details}", message: message)
+    // Add some metadata to support the githubPrLatestComment step
+    def commentWithMetadata =  comment + "\n${metadata(args)}"
+    addOrEditComment(commentFile: commentFile, details: commentWithMetadata)
   } else {
     log(level: 'WARN', text: 'githubPrComment: is only available for PRs.')
   }
 }
 
-def commentTemplate(Map params = [:]) {
-  def details = params.containsKey('details') ? params.details : ''
+def commentTemplate(Map args = [:]) {
+  def details = args.containsKey('details') ? args.details : ''
   def header = currentBuild.currentResult == 'SUCCESS' ?
               '## :green_heart: Build Succeeded' :
               '## :broken_heart: Build Failed'
   def url = env.RUN_DISPLAY_URL?.trim() ? env.RUN_DISPLAY_URL : env.BUILD_URL
 
   def body
-  if (params.message?.trim()) {
-    body = params.message
+  if (args.message?.trim()) {
+    body = args.message
   } else {
     body = """\
       ${header}
@@ -57,22 +60,19 @@ def commentTemplate(Map params = [:]) {
       ${details}
     """.stripIndent()  // stripIdent() requires """/
   }
-
   return body
 }
 
 def addOrEditComment(Map args = [:]) {
   def commentFile = args.commentFile
   def details = args.details
-  def commentId = getCommentFromFile(commentFile: commentFile)
-  def id
-  if (commentId?.trim() && commentId.isInteger()) {
-    id = commentId as Integer
+  def id = getCommentIfAny(args)
+  if (id != errorId()) {
     try {
-      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}'. If comment still exists.")
+      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}'. If comment still exists.")
       pullRequest.editComment(id, details)
     } catch (err) {
-      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${commentId}' failed with error '${err}'. Let's fallback to add a comment.")
+      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}' failed with error '${err}'. Let's fallback to add a comment.")
       id = addComment(details)
     }
   } else {
@@ -96,4 +96,34 @@ def getCommentFromFile(Map args = [:]) {
   } else {
     return ''
   }
+}
+
+/**
+  Support search for the comment id.
+**/
+def getCommentIfAny(Map args = [:]) {
+  def commentId = getCommentFromFile(args)
+  def id = errorId()
+  if (commentId?.trim() && commentId.isInteger()) {
+    id = commentId as Integer
+  } else {
+    try {
+      commentId = githubPrLatestComment(pattern: metadata(args), users: ['elasticmachine', 'apmmachine'])
+      if (commentId && commentId.id) {
+        id = commentId.id as Integer
+      }
+    } catch(e) {
+      log(level: 'WARN', text: "githubPrLatestComment: failed. Therefore a new GitHub comment will be created. For further details see ${e}")
+    }
+  }
+  return id
+}
+
+def errorId() {
+  return -1000
+}
+
+def metadata(Map args = [:]){
+  // .toString() to avoid org.codehaus.groovy.runtime.GStringImpl issues when comparing Strings.
+  return "<!--COMMENT_GENERATED_WITH_ID_${args.commentFile}-->".toString()
 }

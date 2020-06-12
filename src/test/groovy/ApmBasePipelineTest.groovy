@@ -394,6 +394,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
