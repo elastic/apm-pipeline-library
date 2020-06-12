@@ -42,22 +42,19 @@ def call(Map args = [:], Closure body) {
   // gvm remove the last coordinate if it is 0
   def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.amd64"
   withEnv([
-      "HOME=${env.WORKSPACE}"
+    "HOME=${env.WORKSPACE}",
+    "PATH=${env.WORKSPACE}/bin:${env.WORKSPACE}/${goDir}/bin:${env.PATH}",
+    "GOROOT=${env.WORKSPACE}/${goDir}",
+    "GOPATH=${env.WORKSPACE}"
   ]){
-    withEnv([
-      "PATH=${HOME}/bin:${HOME}/${goDir}/bin:${env.PATH}",
-      "GOROOT=${HOME}/${goDir}",
-      "GOPATH=${HOME}"
-    ]){
-      retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        sh(label: "Installing go ${version}", script: "gvm ${version}")
-      }
-      pkgs?.each{ p ->
-        retryWithSleep(retries: 3, seconds: 5, backoff: true){
-          sh(label: "Installing ${p}", script: "go get -u ${p}")
-        }
-      }
-      body()
+    retryWithSleep(retries: 3, seconds: 5, backoff: true){
+      sh(label: "Installing go ${version}", script: "gvm ${version}")
     }
+    pkgs?.each{ p ->
+      retryWithSleep(retries: 3, seconds: 5, backoff: true){
+        sh(label: "Installing ${p}", script: "go get -u ${p}")
+      }
+    }
+    body()
   }
 }
