@@ -16,7 +16,7 @@
 // under the License.
 
 /**
- Install Go an run some command in a pre-configured environment.
+ Install Go and run some command in a pre-configured environment.
 
   withGoEnv(version: '1.14.2'){
     sh(label: 'Go version', script: 'go version')

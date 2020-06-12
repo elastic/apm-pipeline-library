@@ -16,7 +16,7 @@
 // under the License.
 
 /**
- Install Go and mage an run some command in a pre-configured environment.
+ Install Go and mage and run some command in a pre-configured environment.
 
   withMageEnv(version: '1.14.2'){
     sh(label: 'Go version', script: 'go version')

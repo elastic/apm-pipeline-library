@@ -1619,7 +1619,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withGoEnv
- Install Go an run some command in a pre-configured environment.
+ Install Go and run some command in a pre-configured environment.
 
 ```
   withGoEnv(version: '1.14.2'){
@@ -1643,7 +1643,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 ## withMageEnv
 
- Install Go and mage an run some command in a pre-configured environment.
+ Install Go and mage and run some command in a pre-configured environment.
 
 ```
   withMageEnv(version: '1.14.2'){
@@ -1742,4 +1742,3 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
-
