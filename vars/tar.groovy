@@ -24,12 +24,12 @@
   pathPrefix: '',
   allowMissing: true)
 */
-def call(Map params = [:]) {
-  def file = params.containsKey('file') ? params.file : 'archive.tgz'
-  def archive = params.containsKey('archive') ? params.archive : true
-  def dir = params.containsKey('dir') ? params.dir : "."
-  def pathPrefix = params.containsKey('pathPrefix') ? "cd '${params.pathPrefix}'" : ''
-  def allowMissing = params.containsKey('allowMissing') ? params.allowMissing : true
+def call(Map args = [:]) {
+  def file = args.containsKey('file') ? args.file : 'archive.tgz'
+  def archive = args.containsKey('archive') ? args.archive : true
+  def dir = args.containsKey('dir') ? args.dir : "."
+  def pathPrefix = args.containsKey('pathPrefix') ? "cd '${args.pathPrefix}'" : ''
+  def allowMissing = args.containsKey('allowMissing') ? args.allowMissing : true
   try {
     def command = """${pathPrefix}
                   tar -czf '${WORKSPACE}/${file}' '${dir}'"""
