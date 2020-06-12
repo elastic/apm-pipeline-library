@@ -22,15 +22,40 @@
 
 */
 def call() {
-  def labels = env.NODE_LABELS
+  def labels = env.NODE_LABELS?.toLowerCase()
+  def matches = []
 
-  if (labels.contains('linux')) {
-    return 'linux'
-  } else if (labels.contains('windows')) {
-    return 'windows'
-  } else if (labels.contains('darwin')) {
-    return 'darwin'
+  if (isLinux(labels)) {
+    matches.add('linux')
   }
 
-  error("Unhandled OS name in NODE_LABELS: " + labels)
+  if (isWindows(labels)) {
+    matches.add('windows')
+  }
+
+  if (isDarwin(labels)) {
+    matches.add('darwin')
+  }
+
+  if(matches.size() == 0){
+    error("Unhandled OS name in NODE_LABELS: " + labels)
+  }
+
+  if(matches.size() > 1){
+    error("Labels conflit OS name in NODE_LABELS: " + labels)
+  }
+
+  return matches[0]
+}
+
+def isLinux(labels){
+  return labels.contains('linux')
+}
+
+def isDarwin(labels){
+  return labels.contains('darwin') || labels.contains('macos')
+}
+
+def isWindows(labels){
+  return labels.contains('windows')
 }

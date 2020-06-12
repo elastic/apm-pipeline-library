@@ -59,7 +59,7 @@ class NodeOSStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testError() throws Exception {
+  void testNotFound() throws Exception {
     def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"
     try {
@@ -71,4 +71,17 @@ class NodeOSStepTests extends ApmBasePipelineTest {
     assertJobStatusFailure()
   }
 
+
+  @Test
+  void testLabelConflict() throws Exception {
+    def script = loadScript(scriptName)
+    env.NODE_LABELS = "linux windows"
+    try {
+      def value = script.call()
+    } catch(e){
+      assertTrue(e.getMessage() == "Labels conflit OS name in NODE_LABELS: linux windows")
+    }
+    printCallStack()
+    assertJobStatusFailure()
+  }
 }
