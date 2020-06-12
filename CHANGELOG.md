@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.112 (12/06/2020)
+
+#### 🚀 Enhancements
+
+-  feat: withGoEnv step [#592](https://github.com/elastic/apm-pipeline-library/pull/592)
+
+#### 🐛 Bug Fixes
+
+-  fix duplicated GitHub PR comments in PRs with merge conflicts [#603](https://github.com/elastic/apm-pipeline-library/pull/603)
+
+---
+
 ## v1.1.111 (12/06/2020)
 
 #### 🚀 Enhancements
@@ -923,13 +935,13 @@
 
 #### 🚀 Enhancements
 
--  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
 -  feat: cluster management with the repo itself [#266](https://github.com/elastic/apm-pipeline-library/pull/266)
+-  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
 
 #### 📚 Documentation
 
--  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 -  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
+-  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
 
 #### ⚙️ CI
 
@@ -1612,8 +1624,8 @@
 
 #### 🚀 Enhancements
 
--  [APM-CI] add token cache to the codecov step [#41](https://github.com/elastic/apm-pipeline-library/pull/41)
 -  [APM-CI] add cache to GitHub API REST calls [#42](https://github.com/elastic/apm-pipeline-library/pull/42)
+-  [APM-CI] add token cache to the codecov step [#41](https://github.com/elastic/apm-pipeline-library/pull/41)
 
 ---
 
