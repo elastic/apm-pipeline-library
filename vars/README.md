@@ -1662,7 +1662,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION en var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
 
 ## withMageEnv
@@ -1685,7 +1685,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION en var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
 
 ## withNpmrc
