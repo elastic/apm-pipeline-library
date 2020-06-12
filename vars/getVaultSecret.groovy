@@ -69,8 +69,8 @@ def readSecretWrapper(body) {
     string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
     string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
       withEnv([
-        "VAULT_AUTH_METHOD=approle",
-        "VAULT_AUTHTYPE=approle"
+        "VAULT_AUTH_METHOD=approle", //Used by Ansible Vault modules
+        "VAULT_AUTHTYPE=approle" //Used by Ansible Vault modules
       ]){
         body()
       }
