@@ -1,13 +1,11 @@
 Compress a folder into a tar file.
 
 ```
-tar(file: 'archive.tgz',
-archive: true,
-dir: '.'
-pathPrefix: '')
+tar(file: 'archive.tgz', archive: true, dir: '.')
 ```
 
 * *file*: Name of the tar file to create.
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
-* *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+* *allowMissing*: whether to report UNSTABLE if tar command failed. Optional. Default 'true'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
