@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class TarStepTests extends ApmBasePipelineTest {
@@ -83,6 +84,28 @@ class TarStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=archive.tgz'))
     assertTrue(assertMethodCallContainsPattern('bat', 'tar --exclude=archive.tgz -czf archive.tgz folder'))
     assertTrue(assertMethodCallOccurrences('sh', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_windows_with_7zip() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod("isUnix", [], {false})
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.script.contains('tar --version')) {
+        return 1
+      }
+      if (m.script.equals('7z')) {
+        return 1
+      }
+      return 0
+    })
+    script.call(file:'archive.tgz', dir: 'folder', allowMissing: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('installTools', 1))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\ProgramData\\chocolatey\\bin'))
+    assertTrue(assertMethodCallContainsPattern('bat', '7z a -ttar -so archive.tgz folder'))
+    assertFalse(assertMethodCallContainsPattern('bat', 'tar --exclude=archive.tgz'))
     assertJobStatusSuccess()
   }
 }

@@ -53,10 +53,27 @@ def compress(Map args = [:]) {
   if(isUnix()) {
     sh(label: 'Compress', script: command)
   } else {
-    // Some CI Windows workers got the tar binary in the system32
-    // As long as those are not defined in the PATH let's use this hack
-    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
-      bat(label: 'Compress', script: command)
+    if (isTarInstalled()) {
+      // Some CI Windows workers got the tar binary in the system32
+      // As long as those are not defined in the PATH let's use this hack
+      withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
+        bat(label: 'Compress', script: command)
+      }
+    } else {
+      if (!is7zInstalled()) {
+        installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
+      }
+      withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
+        bat(label: 'Compress', script: "7z a -ttar -so ${args.file} ${args.dir} | 7z a -si ${args.file}")
+      }
     }
   }
+}
+
+def isTarInstalled() {
+  return cmd(returnStatus: true, script: 'tar --version') == 0
+}
+
+def is7zInstalled() {
+  return cmd(returnStatus: true, script: '7z') == 0
 }

@@ -347,6 +347,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
     helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
+    helper.registerAllowedMethod('cmd', [Map.class], { m ->
+      def script = loadScript('vars/cmd.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
@@ -397,6 +401,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
+    helper.registerAllowedMethod('installTools', [List.class], { l ->
+      def script = loadScript('vars/installTools.groovy')
+      return script.call(l)
+    })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
     helper.registerAllowedMethod('isPR', {
       def script = loadScript('vars/isPR.groovy')
