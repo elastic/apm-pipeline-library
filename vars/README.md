@@ -1113,7 +1113,7 @@ nexusUploadStagingArtifact(
   * file_path: The location on local disk where the artifact to be uploaded can be found.
 
 ## nodeOS
- Return the name of the Operating system based on the labels of the Node.
+ Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
 ```
  def os = nodeOS()
@@ -1139,6 +1139,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
+* analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
@@ -1252,7 +1253,7 @@ retryWithSleep(retries: 3, seconds: 5, backoff: true) {
 
 * retries: the number of retries. Mandatory
 * seconds: the seconds to wait for. Optional. Default 10.
-* backoff: whether the wait period backs off backoffly after each retry. Optional. Default false
+* backoff: whether the wait period backs off after each retry. Optional. Default false
 * sleepFirst: whether to sleep before running the command. Optional. Default false
 
 ## rubygemsLogin
@@ -1428,16 +1429,14 @@ It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-stor
 Compress a folder into a tar file.
 
 ```
-tar(file: 'archive.tgz',
-archive: true,
-dir: '.'
-pathPrefix: '')
+tar(file: 'archive.tgz', archive: true, dir: '.')
 ```
 
 * *file*: Name of the tar file to create.
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
-* *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+* *allowMissing*: whether to report UNSTABLE if tar command failed. Optional. Default 'true'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
 
 ## toJSON
 This step converts a JSON string to net.sf.json.JSON or and POJO to net.sf.json.JSON.
@@ -1702,7 +1701,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
 * pkgs: Go packages to install with Go get before to execute any command.
 
 ## withNpmrc
@@ -1793,3 +1792,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
