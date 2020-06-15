@@ -11,6 +11,20 @@ DSL = '''pipeline {
         tar(file: 'linux.tgz', archive: true, dir: 'linux', allowMissing: true)
       }
     }
+    stage('linux_without_allowMissing') {
+      agent { label 'linux && immutable' }
+      steps {
+        script {
+          tar(file: 'linux.tgz', archive: true, dir: 'force_failure', allowMissing: false)
+          if (currentBuild.result.equals('UNSTABLE')) {
+            echo 'Assertion passed'
+          } else {
+            echo 'Expected to fail the tar step since force_failure folder does not exist'
+            error('Assertion failed')
+          }
+        }
+      }
+    }
     stage('windows') {
       agent { label 'windows-immutable' }
       steps {
