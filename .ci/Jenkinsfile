@@ -58,7 +58,17 @@ pipeline {
               env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
             }
           }
+          tar(file: 'source.tgz', dir: '.', archive: true, failNever: false)
         }
+      }
+    }
+    stage('Windows') {
+      agent { label 'immutable && windows-2019' }
+      options { skipDefaultCheckout() }
+      steps {
+        deleteDir()
+        unstash 'source'
+        tar(file: 'source-windows.tgz', dir: '.', archive: true, failNever: false)
       }
     }
     stage('Check Licenses') {
