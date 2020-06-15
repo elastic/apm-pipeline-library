@@ -25,6 +25,20 @@ DSL = '''pipeline {
         }
       }
     }
+    stage('linux_without_failNever') {
+      agent { label 'linux && immutable' }
+      steps {
+        script {
+          try {
+            tar(file: 'linux.tgz', archive: true, dir: 'force_failure', failNever: false)
+            echo 'Expected to fail the tar step since force_failure folder does not exist'
+            error('Assertion failed')
+          } catch(e) {
+            echo 'Assertion passed'
+          }
+        }
+      }
+    }
     stage('windows') {
       agent { label 'windows-immutable' }
       steps {

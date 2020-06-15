@@ -76,7 +76,7 @@ def call(Map params = [:]) {
 }
 
 def compress(String filename) {
-  tar(file: filename, dir: '.', archive: false, allowMissing: false)
+  tar(file: filename, dir: '.', archive: false, failNever: false)
 }
 
 def cleanup(String filename) {

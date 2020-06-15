@@ -59,6 +59,21 @@ class TarStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_an_error_without_failNever() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('Error') })
+    try {
+      script.call(file:'archive.tgz', dir: 'folder', failNever: false, archive: true)
+    } catch(err) {
+      //NOOP
+      println err
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod("isUnix", [], {false})

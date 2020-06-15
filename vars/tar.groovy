@@ -25,6 +25,7 @@ def call(Map args = [:]) {
   def archive = args.get('archive', true)
   def dir = args.get('dir', '.')
   def allowMissing = args.get('allowMissing', true)
+  def failNever = args.get('failNever', true)
 
   // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled 
   if (args.pathPrefix?.trim()) {
@@ -38,7 +39,11 @@ def call(Map args = [:]) {
     }
   } catch (e){
     log(level: 'INFO', text: "${file} was not compressed or archived : ${e?.message}")
-    currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
+    if (failNever) {
+      currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
+    } else {
+      error("tar: step failled with error ${e?.message}")
+    }
   }
 }
 
