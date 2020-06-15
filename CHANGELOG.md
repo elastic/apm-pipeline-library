@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.113 (15/06/2020)
+
+#### 🙈 No user affected
+
+-  test-infra: docker experimental is not enabled for MacOSX [#611](https://github.com/elastic/apm-pipeline-library/pull/611)
+
+---
+
 ## v1.1.112 (12/06/2020)
 
 #### 🚀 Enhancements
@@ -288,8 +296,8 @@
 
 #### 🚀 Enhancements
 
--  ci: add error message if Error signal [#508](https://github.com/elastic/apm-pipeline-library/pull/508)
 -  ci: store pr comment id only [#496](https://github.com/elastic/apm-pipeline-library/pull/496)
+-  ci: add error message if Error signal [#508](https://github.com/elastic/apm-pipeline-library/pull/508)
 
 #### 🐛 Bug Fixes
 
@@ -588,8 +596,8 @@
 
 #### ⚙️ CI
 
--  fix: getBuildInfoJsonFiles with retry 3 [#389](https://github.com/elastic/apm-pipeline-library/pull/389)
 -  bump jenkins-pipeline-unit 1.3 [#391](https://github.com/elastic/apm-pipeline-library/pull/391)
+-  fix: getBuildInfoJsonFiles with retry 3 [#389](https://github.com/elastic/apm-pipeline-library/pull/389)
 
 ---
 
@@ -935,13 +943,13 @@
 
 #### 🚀 Enhancements
 
--  feat: cluster management with the repo itself [#266](https://github.com/elastic/apm-pipeline-library/pull/266)
 -  feat: notify to the distribution list with the filter [#269](https://github.com/elastic/apm-pipeline-library/pull/269)
+-  feat: cluster management with the repo itself [#266](https://github.com/elastic/apm-pipeline-library/pull/266)
 
 #### 📚 Documentation
 
--  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
 -  [docs] REPO env variable design pattern [#270](https://github.com/elastic/apm-pipeline-library/pull/270)
+-  design: add comment with the how to use the pipeline [#267](https://github.com/elastic/apm-pipeline-library/pull/267)
 
 #### ⚙️ CI
 
