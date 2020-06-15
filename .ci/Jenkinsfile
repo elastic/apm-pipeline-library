@@ -63,7 +63,7 @@ pipeline {
       }
     }
     stage('Windows') {
-      agent { label 'immutable && windows-2019' }
+      agent { label 'windows-2019-immutable' }
       options { skipDefaultCheckout() }
       steps {
         deleteDir()
