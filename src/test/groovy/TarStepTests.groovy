@@ -30,29 +30,30 @@ class TarStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test() throws Exception {
+  void test_with_all_the_parameters() throws Exception {
     def script = loadScript(scriptName)
-    script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
+    script.call(file:'archive.tgz', dir: 'folder', allowMissing: false, archive: true)
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('sh', 1))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=archive.tgz'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'tar --exclude=archive.tgz -czf archive.tgz folder'))
     assertTrue(assertMethodCallOccurrences('bat', 0))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testError() throws Exception {
+  void test_with_an_error_and_without_allowMissing() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { throw new Exception("Error") })
-    script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: false, archive: true)
+    script.call(file:'archive.tgz', dir: 'folder', allowMissing: false, archive: true)
     printCallStack()
     assertJobStatusUnstable()
   }
 
   @Test
-  void testAllowMissing() throws Exception {
+  void test_with_allowMissing() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [String.class], { throw new Exception("Error") })
-    script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true, archive: false)
+    script.call(file:'archive.tgz', dir: 'folder', allowMissing: true, archive: false)
     printCallStack()
     assertJobStatusSuccess()
   }
@@ -61,11 +62,12 @@ class TarStepTests extends ApmBasePipelineTest {
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod("isUnix", [], {false})
-    script.call(file:'archive.tgz', dir: 'folder', pathPrefix: 'folder', allowMissing: true)
+    script.call(file:'archive.tgz', dir: 'folder', allowMissing: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=archive.tgz'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'tar --exclude=archive.tgz -czf archive.tgz folder'))
     assertTrue(assertMethodCallOccurrences('sh', 0))
-    assertTrue(assertMethodCallOccurrences('bat', 1))
     assertJobStatusSuccess()
   }
 }

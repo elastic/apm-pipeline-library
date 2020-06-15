@@ -415,6 +415,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m, c)
     })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('tar', [Map.class], { m ->
+      def script = loadScript('vars/tar.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('toJSON', [Map.class], { m ->
       def script = loadScript('vars/toJSON.groovy')
       return script.call(m)

@@ -18,41 +18,40 @@
 /**
  Compress a folder into a tar file.
 
- tar(file: 'archive.tgz',
-  archive: true,
-  dir: '.'
-  pathPrefix: '',
-  allowMissing: true)
+ tar(file: 'archive.tgz', dir: '.', archive: true, allowMissing: true)
 */
 def call(Map args = [:]) {
-  def file = args.containsKey('file') ? args.file : 'archive.tgz'
-  def archive = args.containsKey('archive') ? args.archive : true
-  def dir = args.containsKey('dir') ? args.dir : "."
-  def pathPrefix = args.containsKey('pathPrefix') ? "cd '${args.pathPrefix}'" : ''
-  def allowMissing = args.containsKey('allowMissing') ? args.allowMissing : true
+  def file = args.get('file', 'archive.tgz')
+  def archive = args.get('archive', true)
+  def dir = args.get('dir', '.')
+  def allowMissing = args.get('allowMissing', true)
+
+  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled 
+  if (args.pathPrefix?.trim()) {
+    log(level: 'WARN', text: 'tar: pathPrefix parameter is deprecated.')
+  }
+
   try {
-    def command = """${pathPrefix}
-                  tar -czf '${WORKSPACE}/${file}' '${dir}'"""
-    if(isUnix()) {
-      sh(label: 'Generating tar file', script: command)
-    } else {
-      // Some CI Windows workers got the tar binary in the system32
-      // As long as those are not defined in the PATH let's use this hack
-      withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
-        bat(label: 'Generating tar file', script: command)
-      }
-    }
+    compress(file: file, dir: dir)
     if(archive){
-      archiveArtifacts(allowEmptyArchive: true,
-                      artifacts: file,
-                      onlyIfSuccessful: false)
+      archiveArtifacts(allowEmptyArchive: true, artifacts: file, onlyIfSuccessful: false)
     }
   } catch (e){
     log(level: 'INFO', text: "${file} was not compressed or archived : ${e?.message}")
-    if(!allowMissing){
-      currentBuild.result = "UNSTABLE"
-    } else {
-      currentBuild.result = "SUCCESS"
+    currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
+  }
+}
+
+def compress(Map args = [:]) {
+  writeFile(file: "${args.file}", text: '')
+  def command = "tar --exclude=${args.file} -czf ${args.file} ${args.dir}"
+  if(isUnix()) {
+    sh(label: 'Compress', script: command)
+  } else {
+    // Some CI Windows workers got the tar binary in the system32
+    // As long as those are not defined in the PATH let's use this hack
+    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
+      bat(label: 'Compress', script: command)
     }
   }
 }

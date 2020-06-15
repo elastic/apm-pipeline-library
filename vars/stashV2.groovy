@@ -76,15 +76,7 @@ def call(Map params = [:]) {
 }
 
 def compress(String filename) {
-  writeFile(file: "${filename}", text: '')
-  def command = "tar --exclude=${filename} -czf ${filename} ."
-  if(isUnix()) {
-    sh(label: 'Compress', script: command)
-  } else {
-    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
-      bat(label: 'Compress', script: command)
-    }
-  }
+  tar(file: filename, dir: '.', archive: false, allowMissing: false)
 }
 
 def cleanup(String filename) {
