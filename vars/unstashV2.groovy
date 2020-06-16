@@ -69,24 +69,8 @@ def call(Map params = [:]) {
   )
 
   extract(filename)
-  cleanup(filename)
 }
 
 def extract(String filename) {  
-  def command = "tar -xpf ${filename}"
-  if(isUnix()) {
-    sh(label: 'Extract', script: command)
-  } else {
-    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
-      bat(label: 'Extract', script: command)
-    }
-  }
-}
-
-def cleanup(String filename) {
-  if(isUnix()) {
-    sh(label: 'Cleanup', script: "rm ${filename}", returnStatus: true)
-  } else {
-    bat(label: 'Cleanup', script: "del ${filename}", returnStatus: true)
-  }
+  untar(file: filename, dir: '.', failNever: false)
 }

@@ -435,6 +435,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/toJSON.groovy')
       return script.call(s)
     })
+    helper.registerAllowedMethod('untar', [Map.class], { m ->
+      def script = loadScript('vars/untar.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
