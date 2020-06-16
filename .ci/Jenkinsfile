@@ -61,33 +61,6 @@ pipeline {
         }
       }
     }
-    stage('Windows-Tar-windows-2012-r2-immutable') {
-      agent { label 'windows-2012-r2-immutable' }
-      options { skipDefaultCheckout() }
-      steps {
-        deleteDir()
-        unstash 'source'
-        tar(file: 'source-windows-2012.tgz', dir: '.', archive: true, failNever: false)
-      }
-    }
-    stage('Windows-Tar-windows-2016-immutable') {
-      agent { label 'windows-2016-immutable' }
-      options { skipDefaultCheckout() }
-      steps {
-        deleteDir()
-        unstash 'source'
-        tar(file: 'source-windows-2016.tgz', dir: '.', archive: true, failNever: false)
-      }
-    }
-    stage('Windows-Tar-windows-2019-immutable') {
-      agent { label 'windows-2019-immutable' }
-      options { skipDefaultCheckout() }
-      steps {
-        deleteDir()
-        unstash 'source'
-        tar(file: 'source-windows-2019.tgz', dir: '.', archive: true, failNever: false)
-      }
-    }
     stage('Check Licenses') {
       steps {
         withGithubNotify(context: 'Check Licenses') {
