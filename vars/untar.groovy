@@ -41,7 +41,7 @@ def call(Map args = [:]) {
 }
 
 def extract(Map args = [:]) {
-  if (!isTarInstalled()) {
+  if (isTarInstalled()) {
     extractWithTar(args)
   } else {
     extractWith7z(args)
