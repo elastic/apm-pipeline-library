@@ -28,6 +28,7 @@ class StashV2StepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('tar', [Map.class], null)
   }
 
   @Test

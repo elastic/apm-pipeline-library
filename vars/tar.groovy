@@ -48,8 +48,29 @@ def call(Map args = [:]) {
 }
 
 def compress(Map args = [:]) {
-  writeFile(file: "${args.file}", text: '')
+  if (isTarInstalled()) {
+    compressWithTar(args)
+  } else {
+    compressWith7z(args)
+  }
+}
+
+def compressWith7z(Map args = [:]) {
+  if(isUnix()) {
+    // This particular scenario should not happen.
+    error('tar: 7z is not supported yet. *Nix got tar installed.')
+  }
+  if (!is7zInstalled()) {
+    installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
+  }
+  withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
+    bat(label: 'Compress', script: "7z a -ttar -so -an ${args.dir} | 7z a -si ${args.file}")
+  }
+}
+
+def compressWithTar(Map args = [:]) {
   def command = "tar --exclude=${args.file} -czf ${args.file} ${args.dir}"
+  writeFile(file: "${args.file}", text: '')
   if(isUnix()) {
     sh(label: 'Compress', script: command)
   } else {
@@ -59,4 +80,17 @@ def compress(Map args = [:]) {
       bat(label: 'Compress', script: command)
     }
   }
+}
+
+def isTarInstalled() {
+  return cmd(returnStatus: true, script: "tar --version ${redirectStdout()}") == 0
+}
+
+def is7zInstalled() {
+  return cmd(returnStatus: true, script: "7z ${redirectStdout()}") == 0
+}
+
+def redirectStdout() {
+  def value = isUnix() ? '>/dev/null' : '>NUL'
+  return value
 }
