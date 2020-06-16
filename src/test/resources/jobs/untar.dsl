@@ -16,6 +16,7 @@ DSL = '''pipeline {
       agent { label 'linux && immutable' }
       steps {
         testAssertion('source.tgz', '', 'bar.txt')
+        testAssertion('source.tgz', '.', 'bar.txt')
         testAssertion('source.tgz', 'linux', 'linux/bar.txt')
       }
     }
@@ -55,6 +56,7 @@ DSL = '''pipeline {
       agent { label 'windows-immutable' }
       steps {
         testAssertion('source.tgz', '', 'bar.txt')
+        testAssertion('source.tgz', '.', 'bar.txt')
         testAssertion('source.tgz', 'windows', 'windows/bar.txt')
       }
     }

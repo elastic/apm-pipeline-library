@@ -41,7 +41,7 @@ def call(Map args = [:]) {
 }
 
 def extract(Map args = [:]) {
-  if (isTarInstalled()) {
+  if (!isTarInstalled()) {
     extractWithTar(args)
   } else {
     extractWith7z(args)
@@ -49,10 +49,7 @@ def extract(Map args = [:]) {
 }
 
 def extractWithTar(Map args = [:]) {
-  def outputTarFlagIfAny = args.dir?.trim() ? "-C ${args.dir}" : ''
-  def mkdirFlag = isUnix() ? '-p' : ''
-  def mkdirDirIfAny = args.dir?.trim() ? "mkdir ${mkdirFlag} ${args.dir} && " : ''
-  def command = "${mkdirDirIfAny} tar ${outputTarFlagIfAny} -xpf ${args.file}"
+  def command = tarCommand(args)
   if(isUnix()) {
     sh(label: 'Extract', script: command)
   } else {
@@ -64,6 +61,20 @@ def extractWithTar(Map args = [:]) {
   }
 }
 
+def tarCommand(Map args = [:]) {
+  def outputTarFlagIfAny = ''
+  def mkdirDirIfAny = ''
+  // NOTE: when using the '.' in Windows then it will fail with
+  //   A subdirectory or file . already exists.
+  if (args.dir?.trim() && !args.dir?.equals('.')) {
+    outputTarFlagIfAny = "-C ${args.dir}"
+    def mkdirFlag = isUnix() ? '-p' : ''
+    mkdirDirIfAny = "mkdir ${mkdirFlag} ${args.dir} && "
+  }
+  def command = "${mkdirDirIfAny} tar ${outputTarFlagIfAny} -xpf ${args.file}"
+  return command
+}
+
 def extractWith7z(Map args = [:]) {
   if(isUnix()) {
     // This particular scenario should not happen.
@@ -72,7 +83,10 @@ def extractWith7z(Map args = [:]) {
   if (!is7zInstalled()) {
     installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
   }
-  def outputFlagIfAny = args.containsKey('dir') ? "-o'${args.dir}'" : ''
+  def outputFlagIfAny = ''
+  if (args.dir?.trim() && !args.dir?.equals('.')) {
+    outputFlagIfAny = "-o${args.dir}"
+  }
   withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
     bat(label: 'Extract', script: "7z x -tgzip -so ${args.file} | 7z x -si -ttar ${outputFlagIfAny}")
   }

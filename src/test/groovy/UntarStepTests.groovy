@@ -84,8 +84,8 @@ class UntarStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.extractWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "mkdir -p 'folder' &&"))
-    assertTrue(assertMethodCallContainsPattern('sh', "tar -C 'folder' -xpf archive.tgz"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'mkdir -p folder &&'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'tar -C folder -xpf archive.tgz'))
     assertTrue(assertMethodCallOccurrences('bat', 0))
     assertFalse(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
     assertJobStatusSuccess()
@@ -98,8 +98,8 @@ class UntarStepTests extends ApmBasePipelineTest {
     script.extractWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
-    assertTrue(assertMethodCallContainsPattern('bat', "mkdir 'folder' &&"))
-    assertTrue(assertMethodCallContainsPattern('bat', "tar -C 'folder' -xpf archive.tgz"))
+    assertTrue(assertMethodCallContainsPattern('bat', 'mkdir  folder &&'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'tar -C folder -xpf archive.tgz'))
     assertTrue(assertMethodCallOccurrences('sh', 0))
     assertJobStatusSuccess()
   }
@@ -137,7 +137,7 @@ class UntarStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('installTools', 1))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\ProgramData\\chocolatey\\bin'))
     assertTrue(assertMethodCallContainsPattern('bat', '7z x -tgzip -so archive.tgz'))
-    assertTrue(assertMethodCallContainsPattern('bat', "7z x -si -ttar -o'folder'"))
+    assertTrue(assertMethodCallContainsPattern('bat', "7z x -si -ttar -ofolder"))
     assertFalse(assertMethodCallContainsPattern('bat', '-xpf'))
     assertJobStatusSuccess()
   }
@@ -152,6 +152,28 @@ class UntarStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('installTools', 0))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\ProgramData\\chocolatey\\bin'))
     assertTrue(assertMethodCallContainsPattern('bat', '7z x -tgzip -so archive.tgz'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_extractWith7z_windows_transformation() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], {false})
+    script.extractWith7z(file:'archive.tgz', dir: '.')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('bat', "7z x -si -ttar -o"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_tarCommand_in_windows_transformation() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isUnix', [], {false})
+    helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
+    def ret = script.tarCommand(file:'archive.tgz', dir: '.')
+    printCallStack()
+    assertFalse(ret.contains('mkdir'))
+    assertFalse(ret.contains('-C'))
     assertJobStatusSuccess()
   }
 
