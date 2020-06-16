@@ -35,7 +35,7 @@ docker.elastic.co/observability-ci/shellcheck
 docker.elastic.co/observability-ci/yamllint
 widerplan/jenkins-job-builder
 "
-if [ -f "$(command -v docker)" ]; then
+if [ -x "$(command -v docker)" ]; then
   for di in ${DOCKER_IMAGES}
   do
   (retry 2 docker pull "${di}") || echo "Error pulling ${di} Docker image, we continue"
