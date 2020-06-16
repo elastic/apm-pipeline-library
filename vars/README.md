@@ -1487,6 +1487,18 @@ withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
 
 It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
 
+## untar
+Extract the given tar file in the given folder if any, othrewise in the
+current directory.
+
+```
+untar(file: 'src.tgz', dir: 'src')
+```
+
+* *file*: Name of the tar file to extract. Optional (default 'archive.tgz').
+* *dir*: The folder where the extract will be done to. Optional (default '.').
+* *failNever*: Never fail the build, regardless of the step result. Optional (default 'true')
+
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
 
