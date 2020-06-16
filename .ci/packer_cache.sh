@@ -35,11 +35,12 @@ docker.elastic.co/observability-ci/shellcheck
 docker.elastic.co/observability-ci/yamllint
 widerplan/jenkins-job-builder
 "
-
-for di in ${DOCKER_IMAGES}
-do
-(retry 2 docker pull "${di}") || echo "Error pulling ${di} Docker image, we continue"
-done
+if [ -f "$(command -v docker)" ]; then
+  for di in ${DOCKER_IMAGES}
+  do
+  (retry 2 docker pull "${di}") || echo "Error pulling ${di} Docker image, we continue"
+  done
+fi
 
 ## Let's cache the maven dependencies
  ./mvnw clean test --fail-never
