@@ -63,6 +63,10 @@ shell:  ## Open a Bash shell on the local Jenkins master
 			--file docker-compose.yml \
 			exec $${SERVICE:-jenkins} sh
 
+.PHONY: shell-worker
+shell-worker:  ## Open a Bash shell on the local Jenkins worker
+	VAGRANT_CWD=workers/linux/ vagrant ssh
+
 .PHONY: start
 start:  ## Start the local Jenkins master
 start: master
