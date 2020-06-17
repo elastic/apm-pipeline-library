@@ -1,6 +1,19 @@
 # Changelog
 
+## v1.1.114 (17/06/2020)
+
+#### 🚀 Enhancements
+
+-  untar step [#617](https://github.com/elastic/apm-pipeline-library/pull/617)
+-  tar with 7z support for windows [#614](https://github.com/elastic/apm-pipeline-library/pull/614)
+
+---
+
 ## v1.1.113 (15/06/2020)
+
+#### 🚀 Enhancements
+
+-  tar step supports windows [#612](https://github.com/elastic/apm-pipeline-library/pull/612)
 
 #### 🙈 No user affected
 
@@ -237,9 +250,9 @@
 
 #### ⚙️ CI
 
+-  Write credentials for opbot [#529](https://github.com/elastic/apm-pipeline-library/pull/529)
 -  Fix missing Docker login [#533](https://github.com/elastic/apm-pipeline-library/pull/533)
 -  Work around git init with closure [#532](https://github.com/elastic/apm-pipeline-library/pull/532)
--  Write credentials for opbot [#529](https://github.com/elastic/apm-pipeline-library/pull/529)
 
 ---
 
@@ -296,8 +309,8 @@
 
 #### 🚀 Enhancements
 
--  ci: store pr comment id only [#496](https://github.com/elastic/apm-pipeline-library/pull/496)
 -  ci: add error message if Error signal [#508](https://github.com/elastic/apm-pipeline-library/pull/508)
+-  ci: store pr comment id only [#496](https://github.com/elastic/apm-pipeline-library/pull/496)
 
 #### 🐛 Bug Fixes
 
@@ -449,9 +462,9 @@
 #### 🚀 Enhancements
 
 -  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
--  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
 -  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
+-  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 
 #### 🐛 Bug Fixes
 
@@ -560,10 +573,10 @@
 
 #### ⚙️ CI
 
--  Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
 -  ci(jenkins): generate jruby images within the apm-agent-ruby [#405](https://github.com/elastic/apm-pipeline-library/pull/405)
 -  [jjbb]: enable e2e kibana tests for the master branch only [#403](https://github.com/elastic/apm-pipeline-library/pull/403)
 -  [packer-cache] Cache jjbb images [#404](https://github.com/elastic/apm-pipeline-library/pull/404)
+-  Add githubReleasePublish [#406](https://github.com/elastic/apm-pipeline-library/pull/406)
 
 ---
 
@@ -596,8 +609,8 @@
 
 #### ⚙️ CI
 
--  bump jenkins-pipeline-unit 1.3 [#391](https://github.com/elastic/apm-pipeline-library/pull/391)
 -  fix: getBuildInfoJsonFiles with retry 3 [#389](https://github.com/elastic/apm-pipeline-library/pull/389)
+-  bump jenkins-pipeline-unit 1.3 [#391](https://github.com/elastic/apm-pipeline-library/pull/391)
 
 ---
 
@@ -892,8 +905,8 @@
 
 #### 🚀 Enhancements
 
--  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
 -  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
+-  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
 
 #### 🐛 Bug Fixes
 
@@ -913,12 +926,12 @@
 
 #### 🚀 Enhancements
 
--  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
 -  fix: avoid NPE on inconsistent return objects [#279](https://github.com/elastic/apm-pipeline-library/pull/279)
 -  test: set permissions over a folder [#284](https://github.com/elastic/apm-pipeline-library/pull/284)
 -  test: set access permissions from the Jenkinsfile [#282](https://github.com/elastic/apm-pipeline-library/pull/282)
 -  [pre-commit] Default apm-ci jenkins instance and validate ./Jenkinsfile [#281](https://github.com/elastic/apm-pipeline-library/pull/281)
 -  feat: use no blacklisted methods [#275](https://github.com/elastic/apm-pipeline-library/pull/275)
+-  release process for opbeans [#271](https://github.com/elastic/apm-pipeline-library/pull/271)
 
 #### 🐛 Bug Fixes
 
@@ -1566,13 +1579,13 @@
 
 #### 🚀 Enhancements
 
+-  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
+-  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
+-  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
--  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
--  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
--  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 
 #### 📚 Documentation
 
