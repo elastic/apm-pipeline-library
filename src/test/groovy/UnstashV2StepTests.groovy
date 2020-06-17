@@ -28,6 +28,7 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
   }
 
   @Test
@@ -76,11 +77,10 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
     script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'unstashV2: JOB_GCS_BUCKET is set. bucket param got precedency instead.'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'tar -xpf source.tgz'))
+    assertTrue(assertMethodCallOccurrences('untar', 1))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'bucketUri=gs://foo'))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'credentialsId=secret'))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'source/source.tgz'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'rm source.tgz'))
     assertJobStatusSuccess()
   }
 
@@ -91,11 +91,10 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
     script.call(name: 'source', bucket: 'foo', credentialsId: 'my-super-credentials')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'unstashV2: JOB_GCS_CREDENTIALS is set. credentialsId param got precedency instead.'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'tar -xpf source.tgz'))
+    assertTrue(assertMethodCallOccurrences('untar', 1))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'bucketUri=gs://foo'))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'credentialsId=my-super-credentials'))
     assertTrue(assertMethodCallContainsPattern('googleStorageDownload', 'source/source.tgz'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'rm source.tgz'))
     assertJobStatusSuccess()
   }
 
@@ -105,9 +104,8 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
     script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'got precedency instead.'))
+    assertTrue(assertMethodCallOccurrences('untar', 1))
     assertNull(assertMethodCall('bat'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'tar -xpf source.tgz'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'rm source.tgz'))
     assertJobStatusSuccess()
   }
 
@@ -118,10 +116,8 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
     script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'got precedency instead.'))
+    assertTrue(assertMethodCallOccurrences('untar', 1))
     assertNull(assertMethodCall('sh'))
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'C:\\Windows\\System32'))
-    assertTrue(assertMethodCallContainsPattern('bat', 'tar -xpf source.tgz'))
-    assertTrue(assertMethodCallContainsPattern('bat', 'del source.tgz'))
     assertJobStatusSuccess()
   }
 
