@@ -17,9 +17,17 @@ def test_jq_installed(host):
   cmd = host.run("jq --version")
   assert cmd.rc == 0, "it is required for the apm-pipeline-library"
 
+def test_make_installed(host):
+  cmd = host.run("make --version")
+  assert cmd.rc == 0, "it is required for all the APM projects"
+
 def test_python_installed(host):
   cmd = host.run("python --version")
   assert cmd.rc == 0, "it is required for the apm-agent-python and apm-integration-testing"
+
+def test_tar_installed(host):
+  cmd = host.run("tar --version")
+  assert cmd.rc == 0, "it is required for the stashV2 and unstashV2 steps"
 
 def test_vault_installed(host):
   cmd = host.run("vault --version")

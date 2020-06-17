@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitCmdStepTests extends ApmBasePipelineTest {
@@ -35,6 +36,8 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(cmd: 'push')
     printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', '> push.log'))
+    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
     assertJobStatusSuccess()
   }
 
@@ -86,6 +89,32 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_less_verbose_output() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(cmd: 'push', credentialsId: 'foo', store: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
+    assertTrue(assertMethodCallContainsPattern('sh', '> push.log 2>&1'))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_if_store_with_error_works() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], {
+      throw new Exception('Force Failure an error')
+    })
+    try{
+      script.call(cmd: 'push', credentialsId: 'foo', store: true)
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
   }
 
   @Test

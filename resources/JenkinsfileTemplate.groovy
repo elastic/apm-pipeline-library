@@ -15,7 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+// NOTE: Consumers should use the current tag
+// @Library('apm@current') _
+// NOTE: Master branch will contain the upcoming release changes
+//       this will help us to detect any breaking changes in production.
+@Library('apm@master') _
 
 // Global variables can be only set usinig the @Field pattern
 import groovy.transform.Field
@@ -38,7 +42,9 @@ pipeline {
     NOTIFY_TO = credentials('notify-to-robots')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
-    PIPELINE_LOG_LEVEL='INFO'
+    // The level of verbosity in the messages to be printed during the build.
+    // There are so far the below levels: DEBUG, INFO, WARN and ERROR
+    PIPELINE_LOG_LEVEL = 'INFO'
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     PYTHONUTF8 = "1"
@@ -61,12 +67,14 @@ pipeline {
     // options will help to speed up the performance.
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+    // What's the concurrency allowed. For such it's required to configured the JJBB/JJB
+    // with the option `concurrent: true`
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*jenkins\\W+run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     // Let's use input parameters with capital cases.
@@ -106,11 +114,31 @@ pipeline {
         // in the following stages.
         stash allowEmpty: true, name: 'source', useDefaultExcludes: false
 
-        // Set the global variable
-        script { variable = 'foo' }
+        script {
+          // Set the global variable
+          variable = 'foo'
+
+          // Skip all the stages except docs for PR's with asciidoc and md changes only
+          dir("${BASE_DIR}"){
+            env.ONLY_DOCS = isGitRegionMatch(patterns: [ '.*\\.(asciidoc|md)' ], shouldMatchAll: true)
+          }
+        }
+      }
+    }
+    stage('Run if GitHub comment on a PR'){
+      when {
+        beforeAgent true
+        expression { return env.GITHUB_COMMENT?.contains('benchmark tests') }
+      }
+      steps {
+        log(level: 'INFO', text: "I'm running as there was a GitHub comment with the 'benchmark tests'")
       }
     }
     stage('Workers Checks'){
+      when {
+        beforeAgent true
+        expression { return env.ONLY_DOCS == "false" }
+      }
       parallel {
         stage('linux && immutable check'){
           agent { label 'linux && immutable' }
@@ -261,7 +289,7 @@ pipeline {
           stages {
             stage('Test') {
               steps {
-                checkWindows()
+                testWindows()
               }
             }
             stage('Install tools') {
@@ -283,7 +311,7 @@ pipeline {
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows(withExtra: true)
+            testWindows(withExtra: true)
           }
           post {
             always {
@@ -376,10 +404,7 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    // Ephemeral workers don't have a HOME env variable.
-    withEnv(["HOME=${env.WORKSPACE}"]){
-      sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
-    }
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
   }
 }
 
@@ -387,7 +412,7 @@ def testBaremetal(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-baremetal.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-baremetal.sh'
   }
 }
 
@@ -395,16 +420,16 @@ def testMac(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test-mac.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-mac.sh'
   }
 }
 
-def checkWindows(params = [:]){
+def testWindows(params = [:]){
   def withExtra = params.containsKey('withExtra') ? params.withExtra : false
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    powershell(script: ".\\resources\\scripts\\jenkins\\build.ps1 ${withExtra}")
+    powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
   }
 }
 

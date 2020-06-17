@@ -1,4 +1,18 @@
 # Steps Documentation
+## abortBuild
+Abort the given build with the given message
+
+```
+// Kill the current build with the default message.
+abortBuild(build: currentBuild)
+
+// Kill the previous build for the current run and set its description message.
+abortBuild(build: currentBuild.getPreviousBuild, message: 'Abort previous build')
+```
+
+* build: the RunBuild to be aborted. Mandatory
+* message: what's the message to be exposed as an error and in the build description. Optional. Default to 'Force to abort the build'
+
 ## agentMapping
 Return the value for the given key.
 
@@ -104,6 +118,31 @@ Override the `checkout` step to retry the checkout up to 3 times.
 checkout scm
 ```
 
+## cmd
+Wrapper to run bat or sh steps based on the OS system.
+
+ _NOTE_: bat with returnStdout requires @echo off to bypass the known issue
+          https://issues.jenkins-ci.org/browse/JENKINS-44569
+          Therefore it will be included automatically!
+
+For instance:
+```
+    if (isUnix) {
+        sh(label: 'foo', script: 'git fetch --all')
+    } else {
+        bat(label: 'foo', script: 'git fetch --all')
+    }
+```
+
+Could be simplified with:
+    
+```
+    cmd(label: 'foo', script: 'git fetch --all')
+```
+
+Parameters:
+* See `sh` and `bat` steps
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -118,6 +157,17 @@ codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/
 It requires to initialise the pipeline with githubEnv() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
+
+## convertGoTestResults
+  Converts the Go test result output to JUnit result file
+
+```
+  sh(label: 'Run test', script: 'go test -v ./...|tee unit-report.txt')
+  convertGoTestResults(input: 'unit-report.txt', output: 'junit-report.xml')
+```
+
+* input: file contains the verbose Go test output.
+* output: where to save the JUnit report.
 
 ## coverageReport
  Grab the coverage files, and create the report in Jenkins.
@@ -140,6 +190,29 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+
+## dockerLogs
+Archive all the docker containers in the current context.
+
+```
+// Archive all the docker logs in the current context
+dockerLogs()
+
+// Archive all the docker logs in the current context using the step name 'test'
+//  and the test/docker-compose.yml file
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml')
+
+// Archive all the docker logs in the current context using the step name 'test',
+//  the test/docker-compose.yml file and fail if any errors when gathering the docker
+//  log files
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: false)
+```
+
+* *step*: If running multiple times in the same build then this will ensure the folder name will be unique. Optional
+* *dockerCompose*: What's the docker-compose file to be exposed. Optional. Default ''
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
+
+_NOTE_: Windows is not supported.
 
 ## dummy
 A sample of a step implemantetion.
@@ -210,8 +283,12 @@ Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
 
 ```
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 ```
+
+* jobURL: the job URL. Mandatory
+* buildNumber: the build id. Mandatory
+* returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -221,6 +298,32 @@ In other cases, you probably has to use this step.
 ```
 def sha = getGitCommitSha()
 ```
+
+## getGitMatchingGroup
+Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
+evaluates the change list and returns the module name.
+
+- When exact match then all the files should match those patterns then it
+  returns the region otherwise and empty string.
+
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+```
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*')
+  whenTrue(module.trim()) {
+    // ...
+  }
+
+  // Exclude the asciidoc files from the search.
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+```
+
+* pattern: the regex pattern with the group to look for. Mandatory
+* exclude: the regex pattern with the files to be excluded from the search. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+**NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
 
 ## getGitRepoURL
 Get the current git repository url from the .git folder.
@@ -336,9 +439,11 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
-* *shallow*: Whether to enable the shallow cloning. Default: true
+* *shallow*: Whether to enable the shallow cloning. Default: false
 * *depth*: Set shallow clone depth. Default: 5
 * *retry*: Set the number of retries if there are issues when cloning. Default: 3
+
+_NOTE_: 'shallow' is forced to be disabled when running on Pull Requests
 
 ## gitCmd
 Execute a git command against the git repo, using the credentials passed.
@@ -351,6 +456,7 @@ It requires to initialise the pipeline with githubEnv() first.
 * credentialsId: the credentials to access the repo.
 * cmd: Git command (tag, push, ...)
 * args: additional arguments passed to `git` command.
+* store: Whether to redirect the output to a file and archive it. Optional. Default value 'false'
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
@@ -503,6 +609,7 @@ _NOTE_: To edit the existing comment is required these environment variables: `C
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
+* commentFile: the file that will store the comment id. Default 'comment.id'
 * message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
@@ -519,6 +626,23 @@ def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 * pr: Pull Request number.
 
 [Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
+
+## githubPrLatestComment
+Search in the current Pull Request context the latest comment from the given list of
+users and pattern to match with.
+
+```
+// Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is
+//  elasticmachine
+githubPrLatestComment(pattern: '<!--foo-->', users: [ 'elasticmachine' ])
+```
+
+Arguments:
+
+* pattern: what's the pattern to be matched in the comments with. Mandatory.
+* users: the list of users that create the comment to be filtered with. Mandatory.
+
+_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
 
 ## githubPrReviews
 Get the Pull Request reviews from the Github REST API.
@@ -783,6 +907,19 @@ evaluates the change list with the pattern list:
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
+## isPR
+Whether the build is based on a Pull Request or no
+
+```
+  // Assign to a variable
+  def pr = isPR())
+
+  // Use whenTrue condition
+  whenTrue(isPR()) {
+    echo "I'm a Pull Request"
+  }
+```
+
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
 
@@ -975,6 +1112,13 @@ nexusUploadStagingArtifact(
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
 
+## nodeOS
+ Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
+
+```
+ def os = nodeOS()
+```
+
 ## notifyBuildResult
 Send an email message with a summary of the build result,
 and send some data to Elastic search.
@@ -995,6 +1139,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
+* analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 
@@ -1048,6 +1193,29 @@ Parse the pre-commit log file and generates a junit report
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
 
+## publishToCDN
+Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
+with the given headers.
+
+```
+  // This command would upload all js files files in the packages/rum/dist/bundles directory
+  // and make them readable and cacheable, with cache expiration of one hour and a custom
+  // metadata.
+  publishToCDN(headers: ["Cache-Control:public,max-age=3600", "x-goog-meta-reviewer:v1v"],
+               source: 'packages/rum/dist/bundles/*.js',
+               target: "gs://beats-ci-temp/rum/5.1.0",
+               secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
+```
+
+* headers: a list of the metadata of the objects to be uploaded to the bucket. Optional
+* install: whether to install the google cloud tools. Default true. Optional
+* forceInstall: whether to force the installation in the default path. Default true. Optional
+* secret: what's the secret with the service account details. Mandatory
+* source: local files. Mandatory. See the supported formats [here](https://cloud.google.com/storage/docs/gsutil/commands/cp)
+* target: where to copy those files to. Mandatory
+
+__NOTE__: It requires *Nix where to run it from.
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 
@@ -1068,6 +1236,25 @@ It does require the parameters for the pipeline to be exposed as environment var
 ```
 rebuildPipeline()
 ```
+
+## retryWithSleep
+Retry a command for a specified number of times until the command exits successfully.
+
+```
+retryWithSleep(retries: 2) {
+  //
+}
+
+// Retry up to 3 times with a 5 seconds wait period
+retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+  //
+}
+```
+
+* retries: the number of retries. Mandatory
+* seconds: the seconds to wait for. Optional. Default 10.
+* backoff: whether the wait period backs off after each retry. Optional. Default false
+* sleepFirst: whether to sleep before running the command. Optional. Default false
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
@@ -1202,20 +1389,54 @@ setupAPMGitEmail(global: true)
 
 * *global*: to configure the user and email account globally. Optional.
 
+## stashV2
+Stash the current location, for such it compresses the current path and
+upload it to Google Storage.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    stashV2(name: 'source')
+}
+
+// Given the parameters
+stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    stashV2(name: 'source', bucket: 'foo')
+}
+
+// Store the bucketUri of the just stashed folder.
+def bucketUri = stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+```
+
+* *name*: Name of the tar file to be created. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
 ## tar
 Compress a folder into a tar file.
 
 ```
-tar(file: 'archive.tgz',
-archive: true,
-dir: '.'
-pathPrefix: '')
+tar(file: 'archive.tgz', archive: true, dir: '.')
 ```
 
 * *file*: Name of the tar file to create.
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
-* *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+* *allowMissing*: whether to report UNSTABLE if tar command failed. Optional. Default 'true'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
 
 ## toJSON
 This step converts a JSON string to net.sf.json.JSON or and POJO to net.sf.json.JSON.
@@ -1232,6 +1453,51 @@ p.setName("John");
 p.setAge(50);
 net.sf.json.JSON obj = toJSON(p)
 ```
+
+## unstashV2
+Unstash the given stashed id, for such it downloads the given stashed id, and 
+uncompresses in the current location.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    unstashV2(name: 'source')
+}
+
+// Given the parameters
+unstashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    unstashV2(name: 'source', bucket: 'foo')
+}
+
+```
+
+* *name*: Name of the stash id to be unstashed. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
+## untar
+Extract the given tar file in the given folder if any, othrewise in the
+current directory.
+
+```
+untar(file: 'src.tgz', dir: 'src')
+```
+
+* *file*: Name of the tar file to extract. Optional (default 'archive.tgz').
+* *dir*: The folder where the extract will be done to. Optional (default '.').
+* *failNever*: Never fail the build, regardless of the step result. Optional (default 'true')
 
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
@@ -1404,6 +1670,52 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
+## withGoEnv
+ Install Go and run some command in a pre-configured environment.
+
+```
+  withGoEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnv(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+
+## withMageEnv
+
+ Install Go and mage and run some command in a pre-configured environment.
+
+```
+  withMageEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withMageEnv(version: '1.14.2', pkgs: [
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
+* pkgs: Go packages to install with Go get before to execute any command.
+
 ## withNpmrc
 Wrap the npmrc token
 
@@ -1482,4 +1794,14 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
+## writeVaultSecret
+Write the given data in vault for the given secret.
+
+```
+writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+```
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be written. Mandatory
 

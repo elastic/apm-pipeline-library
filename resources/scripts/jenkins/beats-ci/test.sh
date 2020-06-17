@@ -17,18 +17,35 @@
 # under the License.
 
 set +x
+
+LOCATION=target/venv
+mkdir -p "${LOCATION}"
 pip install virtualenv
-virtualenv venv
-# shellcheck disable=SC1091
-source venv/bin/activate
+virtualenv "${LOCATION}"
+# shellcheck disable=SC1091,SC1090
+source "${LOCATION}/bin/activate"
 pip install testinfra
 set -x
 
+## Whether to run the specific test-infra packer cache test suite.
+PACKER=${1:-false}
+
 ## Run test-infra and trap error to notify when required
 { py.test -v \
-    test-infra/test_installed_tools.py \
+    test-infra/beats-ci/test_installed_tools.py \
     --junit-xml=target/junit-test-infra.xml; \
-  err="$?"; } || true
+  er="$?"; } || true
+err="${er}"
+
+if [ "${PACKER}" = "true" ] ; then
+  { py.test -v \
+      test-infra/beats-ci/test_packer.py \
+      --junit-xml=target/junit-test-packer.xml; \
+    er="$?"; } || true
+  if [ $er -gt 0 ] ; then
+    err="${er}"
+  fi
+fi
 
 ### https://docs.pytest.org/en/latest/usage.html#possible-exit-codes
 case "$err" in

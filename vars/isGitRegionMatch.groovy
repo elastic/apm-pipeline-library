@@ -52,7 +52,7 @@ def call(Map params = [:]) {
     } else {
       match = isPartialPatternMatch(gitDiffFile, patterns)
     }
-    log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'}")
+    log(level: 'INFO', text: "isGitRegionMatch: ${match ? 'found' : 'not found'} with regex ${patterns}")
   } else {
     echo 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes. Or the from/to arguments are required.'
   }

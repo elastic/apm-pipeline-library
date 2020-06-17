@@ -77,11 +77,33 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
       credentialsId: 'credentials-id',
-      reference: 'repo')
+      reference: 'repo',
+      shallow: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Checkout master'))
     assertTrue(assertMethodCallContainsPattern('log', 'Reference repo enabled'))
     assertTrue(assertMethodCallContainsPattern('checkout', 'CloneOption, depth=5, noTags=false, reference=repo, shallow=true'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_pull_request_with_shallow() throws Exception {
+    def script = loadScript(scriptName)
+    script.scm = [
+      branches: [ 'BRANCH' ],
+      doGenerateSubmoduleConfigurations: [],
+      extensions: [],
+      submoduleCfg: [],
+      userRemoteConfigs: []
+    ]
+    env.BRANCH_NAME = 'BRANCH'
+    env.CHANGE_ID = '1'
+    script.call(basedir: 'sub-folder',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      shallow: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('checkout', 'shallow=false'))
     assertJobStatusSuccess()
   }
 
@@ -121,12 +143,9 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def repo = 'repo'
     def repoUrl = "git@github.com:${org}/${repo}.git"
     script.scm = 'SCM'
-    script.call(repo: repoUrl, branch: 'master',
-                credentialsId: 'credentials-id')
+    script.call(repo: repoUrl, branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
-    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
-    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
     assertTrue(repoUrl.equals(binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }
@@ -138,11 +157,10 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     def repo = 'repo'
     env.GIT_URL = "git@github.com:${org}/${repo}.git"
     script.scm = 'SCM'
-    script.call(repo: env.GIT_URL, branch: 'master', credentialsId: 'credentials-id')
+    script.call(repo: "git@github.com:foo/bar.git", branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
-    assertTrue(org.equals(binding.getVariable('env').ORG_NAME))
-    assertTrue(repo.equals(binding.getVariable('env').REPO_NAME))
+    assertFalse(assertMethodCallContainsPattern('checkout', binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }
 

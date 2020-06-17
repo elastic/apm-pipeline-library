@@ -23,7 +23,7 @@
   githubPrCheckApproved()
 */
 def call(Map params = [:]){
-  if(env?.CHANGE_ID == null){
+  if(!isPR()){
     return true
   }
   def approved = false
@@ -39,7 +39,16 @@ def call(Map params = [:]){
   approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
 
   if(!approved){
-    error('githubPrCheckApproved: The PR is not allowed to run in the CI yet. (Only users with write permissions can do so.)')
+    def message = 'The PR is not allowed to run in the CI yet'
+    catchError(buildResult: 'SUCCESS', message: "githubPrCheckApproved: ${message}") {
+      error("githubPrCheckApproved: ${message}. (Only users with write permissions can do so.)")
+    }
+    abortBuild(build: currentBuild, message: message)
+    // Abort build is required to run twice with certain sleep to ensure the build gets aborted,
+    // otherwise it won't be stopped. Unfortunately this logic cannot be moved to the abortBuild
+    // step without facing the NotSerializableException.
+    sleep 5
+    abortBuild(build: currentBuild, message: message)
   }
   return approved
 }

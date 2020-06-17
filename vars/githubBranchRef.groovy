@@ -25,7 +25,7 @@ def call(Map params = [:]){
   if(env.ORG_NAME == null || env.REPO_NAME == null){
     error('githubBranchRef: Environment not initialized, try to call githubEnv step before')
   }
-  if (env.CHANGE_ID) {
+  if(isPR()) {
     def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
     def token = getGithubToken()
     def pr = githubPrInfo(token: token, repo: repoName, pr: env.CHANGE_ID)

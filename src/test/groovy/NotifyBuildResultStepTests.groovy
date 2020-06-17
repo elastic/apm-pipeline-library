@@ -47,12 +47,10 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
-
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
     assertTrue(assertMethodCallOccurrences('deleteDir', 1))
   }
 
@@ -64,7 +62,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -75,7 +72,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -90,7 +86,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', "secret=${VaultSecret.SECRET_NAME.toString()}"))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -101,7 +96,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -113,7 +107,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/observability-team/ci/jenkins-stats-cloud'))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -301,5 +294,22 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call(prComment: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+  }
+
+  @Test
+  void test_notify_pr_in_a_branch() throws Exception {
+    env.remove('CHANGE_ID')
+    def script = loadScript(scriptName)
+    script.call(prComment: true)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+  }
+
+  @Test
+  void test_generateBuildReport() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generate build report.'))
   }
 }

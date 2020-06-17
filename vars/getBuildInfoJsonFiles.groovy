@@ -19,9 +19,14 @@
   Grab build related info from the Blueocean REST API and store it on JSON files.
   Then put all togeder in a simple JSON file.
 
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 */
-def call(jobURL, buildNumber){
+
+def call(Map args = [:]) {
+  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBuildInfoJsonFiles: jobURL parameter is required.')
+  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBuildInfoJsonFiles: buildNumber parameter is required.')
+  def returnData = args.get('returnData', false)
+
   if(!isUnix()){
     error('getBuildInfoJsonFiles: windows is not supported yet.')
   }
@@ -38,6 +43,47 @@ def call(jobURL, buildNumber){
   writeFile file: scriptFile, text: resourceContent
   sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
     chmod 755 ${scriptFile}
-    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}
-    """)
+    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}""")
+
+  archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
+
+  if (returnData) {
+    // Read files only once and if timeout then use default values
+    def buildData = {}
+    def changeSet = []
+    def logData = ''
+    def stepsErrors = []
+    def testsErrors = []
+    def testsSummary = []
+    try {
+      timeout(5) {
+        buildData = readJSON(file: 'build-info.json')
+        changeSet = readJSON(file: 'changeSet-info.json')
+        logData = readFile(file: 'pipeline-log-summary.txt')
+        stepsErrors = readJSON(file: 'steps-errors.json')
+        testsErrors = readJSON(file: 'tests-errors.json')
+        testsSummary = readJSON(file: 'tests-summary.json')
+      }
+    } catch(e) {
+      log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
+    }
+
+    return [
+      build: buildData,
+      buildStatus: currentBuild.currentResult,
+      changeSet: changeSet,
+      log: logData,
+      stepsErrors: stepsErrors,
+      testsErrors: testsErrors,
+      testsSummary: testsSummary
+    ]
+  }
+}
+
+/**
+  For backward compatibility
+  @deprecated
+*/
+def call(jobURL, buildNumber){
+  return call(jobURL: jobURL, buildNumber: buildNumber)
 }

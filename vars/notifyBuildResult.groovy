@@ -18,7 +18,7 @@
 /**
 
 Send an email message with a summary of the build result,
-and send some data to Elastic search.
+and send some data to Elasticsearch.
 
 notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
 
@@ -34,67 +34,43 @@ def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
-      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
+      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
 
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
-        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
+        def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
+        data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
+        data['emailRecipients'] = to
+        data['statsUrl'] = statsURL
+        def notificationManager = new NotificationManager()
+        if(shouldNotify){
+          log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+          notificationManager.notifyEmail(data)
+        }
+        // Should analyze flakey
+        if(analyzeFlakey) {
+          data['es'] = es
+          data['es_secret'] = secret
 
-        if(shouldNotify || notifyPRComment) {
-          // Read files only once and if timeout then use default values
-          def buildData = {}
-          def changeSet = []
-          def logData = ''
-          def stepsErrors = []
-          def testsErrors = []
-          def testsSummary = []
-          try {
-            timeout(5) {
-              buildData = readJSON(file: 'build-info.json')
-              changeSet = readJSON(file: 'changeSet-info.json')
-              logData = readFile(file: 'pipeline-log-summary.txt')
-              stepsErrors = readJSON(file: 'steps-errors.json')
-              testsErrors = readJSON(file: 'tests-errors.json')
-              testsSummary = readJSON(file: 'tests-summary.json')
-            }
-          } catch(e) {
-            log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
+          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.analyzeFlakey(data)
           }
-          def notificationManager = new NotificationManager()
-          if(shouldNotify){
-            log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
-            notificationManager.notifyEmail(
-              build: buildData,
-              buildStatus: currentBuild.currentResult,
-              emailRecipients: to,
-              testsSummary: testsSummary,
-              changeSet: changeSet,
-              statsUrl: "${statsURL}",
-              log: logData,
-              testsErrors: testsErrors,
-              stepsErrors: stepsErrors
-            )
-          }
-          if(notifyPRComment) {
-            log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-            notificationManager.notifyPR(
-              build: buildData,
-              buildStatus: currentBuild.currentResult,
-              changeSet: changeSet,
-              log: logData,
-              statsUrl: "${statsURL}",
-              stepsErrors: stepsErrors,
-              testsErrors: testsErrors,
-              testsSummary: testsSummary,
-              docsUrl: "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
-            )
-          }
+        }
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          notificationManager.notifyPR(data)
+        }
+        log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          notificationManager.generateBuildReport(data)
         }
       }
 
