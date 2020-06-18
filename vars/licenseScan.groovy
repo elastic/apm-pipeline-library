@@ -25,20 +25,120 @@ def call(Map params = [:]) {
   withEnvMask(vars: [
       [var: "FOSSA_API_KEY", password: getVaultSecret(secret: 'secret/jenkins-ci/fossa/api-token')?.data?.token ],
     ]){
-      sh(label: 'License Scanning', script: '''
-      if [ -f .go-version ] && command -v gvm; then
-        eval $(gvm $(cat .go-version))
-        export GOPATH=${WORKSPACE}
-      fi
+      def scanned = false
+      def isOK = true
+      if(findFiles(glob: '**/*.go')){
+        isOK &= scanGo()
+        scanned = true
+      }
+      if(findFiles(glob: '**/package.json')){
+        isOK &= scanNode()
+        scanned = true
+      }
+      if(findFiles(glob: '**/*.rb')){
+        isOK &= scanRuby()
+        scanned = true
+      }
+      if(findFiles(glob: '**/*.py')){
+        isOK &= scanDefault()
+        scanned = true
+      }
+      if(findFiles(glob: '**/*.php')){
+        isOK &= scanPhp()
+        scanned = true
+      }
+      if(findFiles(glob: '**/*.java')){
+        isOK &= scanDefault()
+        scanned = true
+      }
+      if(findFiles(glob: '**/*.csproj')){
+        isOK &= scanDefault()
+        scanned = true
+      }
 
-      if [ -f package.json ] && command -v nvm; then
-        nvm install --lts
-      fi
+      //Try to scan the project in any case.
+      if(!scanned){
+        isOK &= scanDefault()
+      }
 
-      if [ ! -f .fossa.yml ]; then
-        fossa init --include-all
-      fi
-      fossa analyze
-      ''')
+      if(!isOK){
+        error("licenseScan: The Third party license scan failed.")
+      }
     }
+}
+
+
+def scanGo(){
+  return sh(label: 'License Scanning', script: '''
+    eval $(gvm $(cat .go-version))
+    export GOPATH=${WORKSPACE}
+    get -v -u github.com/kardianos/govendor
+
+    if [ ! -f .fossa.yml ]; then
+      fossa init --include-all
+    fi
+    fossa analyze
+  ''',
+  returnStatus: true)
+}
+
+def scanNode(){
+  return sh(label: 'License Scanning', script: '''
+    docker run -it --rm \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      node:lts -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze
+      "
+  ''',
+  returnStatus: true)
+}
+
+def scanRuby(){
+  return sh(label: 'License Scanning', script: '''
+    docker run -it --rm \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      ruby:2.5 -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze
+      "
+  ''',
+  returnStatus: true)
+}
+
+def scanDefault(){
+  return sh(label: 'License Scanning', script: '''
+    if [ ! -f .fossa.yml ]; then
+      fossa init --include-all
+    fi
+    fossa analyze
+  ''',
+  returnStatus: true)
+}
+
+def scanPhp(){
+  return sh(label: 'License Scanning', script: '''
+    docker run -it --rm \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      wordpress:php:7.2 -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze
+      "
+  ''',
+  returnStatus: true)
 }
