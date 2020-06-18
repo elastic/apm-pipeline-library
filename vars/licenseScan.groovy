@@ -124,6 +124,9 @@ def scanRuby(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       ruby:2.5 -c "
+        command -v ruby
+        command -v bundle
+        bundle list
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
