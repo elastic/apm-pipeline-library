@@ -116,7 +116,7 @@ def scanNode(){
 
 def scanRuby(){
   return sh(label: 'License Scanning', script: '''
-    set -x
+    set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
       -v $(pwd):/app \
