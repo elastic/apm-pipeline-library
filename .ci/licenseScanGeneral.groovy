@@ -21,6 +21,8 @@ pipeline {
   agent { label 'ubuntu && immutable' }
   environment {
     BASE_DIR = "license/scan"
+    DOCKER_REGISTRY = 'docker.elastic.co'
+    DOCKER_REGISTRY_SECRET = 'secret/observability-team/ci/docker-registry/prod'
     HOME = "${env.WORKSPACE}"
   }
   options {
@@ -42,11 +44,13 @@ pipeline {
         script {
           currentBuild.description = "Third-party license scan of ${params.repo}/${params.branch_specifier}"
         }
+        deleteDir()
         dir("${env.BASE_DIR}"){
           git(credentialsId: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba',
             url: "git@github.com:elastic/${params.repo}.git",
             branch: "${params.branch_specifier}"
           )
+          dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
           prepareRepo()
           licenseScan()
         }
@@ -61,6 +65,6 @@ pipeline {
 */
 def prepareRepo(){
   if(params.repo == "apm-agent-python"){
-    sh(label: 'Generating requirements file', script: 'cat tests/requirements/req-*.txt > requirements.txt')
+    sh(label: 'Generating requirements file', script: 'cat tests/requirements/reqs-*.txt > requirements.txt')
   }
 }

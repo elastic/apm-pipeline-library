@@ -35,20 +35,32 @@ def call(Map params = [:]) {
         isOK = isOK && scanNode()
         scanned = true
       }
-      if(findFiles(glob: '**/*.rb')){
+      if(findFiles(glob: '**/*.rb')
+        && findFiles(glob: '**/Gemfile')
+      ){
         isOK = isOK && scanRuby()
         scanned = true
       }
-      if(findFiles(glob: '**/*.py')){
+      if(findFiles(glob: '**/*.py')
+        && findFiles(glob: '**/requirements.txt')){
         isOK = isOK && scanDefault()
         scanned = true
       }
-      if(findFiles(glob: '**/*.php')){
+      if(findFiles(glob: '**/*.php')
+        && findFiles(glob: '**/composer.json')){
         isOK = isOK && scanPhp()
         scanned = true
       }
-      if(findFiles(glob: '**/*.java')){
-        isOK = isOK && scanDefault()
+      if(findFiles(glob: '**/build.xml')){
+        isOK = isOK && scanAnt()
+        scanned = true
+      }
+      if(findFiles(glob: '**/pom.xml')){
+        isOK = isOK && scanMaven()
+        scanned = true
+      }
+      if(findFiles(glob: '**/build.gradle')){
+        isOK = isOK && scanGradle()
         scanned = true
       }
       if(findFiles(glob: '**/*.csproj')){
@@ -78,18 +90,16 @@ def scanGo(){
       fossa init --include-all
     fi
 
-    if [ -z "${FOSSA_API_KEY}" ]; then
-      fossa analyze --output
-    else
-      fossa analyze
-    fi
+    fossa analyze --no-ansi
   ''',
-  returnStatus: true)
+  returnStatus: true) == 0
 }
 
 def scanNode(){
   return sh(label: 'License Scanning', script: '''
-    docker run -it --rm \
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
       -v ${WORKSPACE}:/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
@@ -98,19 +108,17 @@ def scanNode(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        if [ -z "${FOSSA_API_KEY}" ]; then
-          ./fossa analyze --output
-        else
-          ./fossa analyze
-        fi
+        ./fossa analyze --no-ansi
       "
   ''',
-  returnStatus: true)
+  returnStatus: true) == 0
 }
 
 def scanRuby(){
   return sh(label: 'License Scanning', script: '''
-    docker run -it --rm \
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
       -v ${WORKSPACE}:/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
@@ -119,14 +127,10 @@ def scanRuby(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        if [ -z "${FOSSA_API_KEY}" ]; then
-          ./fossa analyze --output
-        else
-          ./fossa analyze
-        fi
+        ./fossa analyze --no-ansi
       "
   ''',
-  returnStatus: true)
+  returnStatus: true) == 0
 }
 
 def scanDefault(){
@@ -134,18 +138,16 @@ def scanDefault(){
     if [ ! -f .fossa.yml ]; then
       fossa init --include-all
     fi
-    if [ -z "${FOSSA_API_KEY}" ]; then
-      fossa analyze --output
-    else
-      fossa analyze
-    fi
+    fossa analyze --no-ansi
   ''',
-  returnStatus: true)
+  returnStatus: true) == 0
 }
 
 def scanPhp(){
   return sh(label: 'License Scanning', script: '''
-    docker run -it --rm \
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
       -v ${WORKSPACE}:/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
@@ -154,12 +156,65 @@ def scanPhp(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        if [ -z "${FOSSA_API_KEY}" ]; then
-          ./fossa analyze --output
-        else
-          ./fossa analyze
-        fi
+        ./fossa analyze --no-ansi
       "
   ''',
-  returnStatus: true)
+  returnStatus: true) == 0
+}
+
+def scanGradle(){
+  return sh(label: 'License Scanning', script: '''
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      gradle:6.5.0-jdk11 -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze --no-ansi
+      "
+  ''',
+  returnStatus: true) == 0
+}
+
+def scanMaven(){
+  return sh(label: 'License Scanning', script: '''
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      maven:3.6.3-jdk-11 -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze --no-ansi
+      "
+  ''',
+  returnStatus: true) == 0
+}
+
+def scanAnt(){
+  return sh(label: 'License Scanning', script: '''
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
+      -v ${WORKSPACE}:/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      docker.elastic.co/observability-ci/apache-ant:1.10.8 -c "
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze --no-ansi
+      "
+  ''',
+  returnStatus: true) == 0
 }
