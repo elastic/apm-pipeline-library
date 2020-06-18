@@ -25,7 +25,7 @@ pipeline {
   }
   options {
     timeout(time: 2, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '50', artifactNumToKeepStr: '50', daysToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
     timestamps()
     ansiColor('xterm')
     disableResume()
@@ -47,9 +47,20 @@ pipeline {
             url: "git@github.com:elastic/${params.repo}.git",
             branch: "${params.branch_specifier}"
           )
+          prepareRepo()
           licenseScan()
         }
       }
     }
+  }
+}
+
+/**
+  Some repos does not match with the needs of the license scanner
+  so we need to make aditional action over them.
+*/
+def prepareRepo(){
+  if(params.repo == "apm-agent-python"){
+    sh(label: 'Generating requirements file', script: 'cat tests/requirements/req-*.txt > requirements.txt')
   }
 }
