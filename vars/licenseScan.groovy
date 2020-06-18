@@ -100,7 +100,7 @@ def scanNode(){
     set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
@@ -119,7 +119,7 @@ def scanRuby(){
     set -x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
@@ -154,7 +154,7 @@ def scanPhp(){
     set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
@@ -173,7 +173,7 @@ def scanGradle(){
     set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
@@ -192,7 +192,7 @@ def scanMaven(){
     set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
@@ -211,7 +211,7 @@ def scanAnt(){
     set +x
     docker run -t --rm \
       -e FOSSA_API_KEY=${FOSSA_API_KEY} \
-      -v ${WORKSPACE}:/app \
+      -v $(pwd):/app \
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
