@@ -66,7 +66,5 @@ pipeline {
 def prepareRepo(){
   if(params.repo == "apm-agent-python"){
     sh(label: 'Generating requirements file', script: 'cat tests/requirements/reqs-*.txt > requirements.txt')
-  } else if(params.repo == "apm-agent-ruby"){
-    sh(label: 'Repair Gemfile', script: 'bundle check || (rm Gemfile.lock && bundle)')
   }
 }
