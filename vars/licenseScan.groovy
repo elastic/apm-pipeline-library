@@ -77,7 +77,12 @@ def scanGo(){
     if [ ! -f .fossa.yml ]; then
       fossa init --include-all
     fi
-    fossa analyze
+
+    if [ -z "${FOSSA_API_KEY}" ]; then
+      fossa analyze --output
+    else
+      fossa analyze
+    fi
   ''',
   returnStatus: true)
 }
@@ -93,7 +98,11 @@ def scanNode(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        ./fossa analyze
+        if [ -z "${FOSSA_API_KEY}" ]; then
+          ./fossa analyze --output
+        else
+          ./fossa analyze
+        fi
       "
   ''',
   returnStatus: true)
@@ -110,7 +119,11 @@ def scanRuby(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        ./fossa analyze
+        if [ -z "${FOSSA_API_KEY}" ]; then
+          ./fossa analyze --output
+        else
+          ./fossa analyze
+        fi
       "
   ''',
   returnStatus: true)
@@ -121,7 +134,11 @@ def scanDefault(){
     if [ ! -f .fossa.yml ]; then
       fossa init --include-all
     fi
-    fossa analyze
+    if [ -z "${FOSSA_API_KEY}" ]; then
+      fossa analyze --output
+    else
+      fossa analyze
+    fi
   ''',
   returnStatus: true)
 }
@@ -137,7 +154,11 @@ def scanPhp(){
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
-        ./fossa analyze
+        if [ -z "${FOSSA_API_KEY}" ]; then
+          ./fossa analyze --output
+        else
+          ./fossa analyze
+        fi
       "
   ''',
   returnStatus: true)
