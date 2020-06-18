@@ -28,37 +28,37 @@ def call(Map params = [:]) {
       def scanned = false
       def isOK = true
       if(findFiles(glob: '**/*.go')){
-        isOK &= scanGo()
+        isOK = isOK && scanGo()
         scanned = true
       }
       if(findFiles(glob: '**/package.json')){
-        isOK &= scanNode()
+        isOK = isOK && scanNode()
         scanned = true
       }
       if(findFiles(glob: '**/*.rb')){
-        isOK &= scanRuby()
+        isOK = isOK && scanRuby()
         scanned = true
       }
       if(findFiles(glob: '**/*.py')){
-        isOK &= scanDefault()
+        isOK = isOK && scanDefault()
         scanned = true
       }
       if(findFiles(glob: '**/*.php')){
-        isOK &= scanPhp()
+        isOK = isOK && scanPhp()
         scanned = true
       }
       if(findFiles(glob: '**/*.java')){
-        isOK &= scanDefault()
+        isOK = isOK && scanDefault()
         scanned = true
       }
       if(findFiles(glob: '**/*.csproj')){
-        isOK &= scanDefault()
+        isOK = isOK && scanDefault()
         scanned = true
       }
 
       //Try to scan the project in any case.
       if(!scanned){
-        isOK &= scanDefault()
+        isOK = isOK && scanDefault()
       }
 
       if(!isOK){
