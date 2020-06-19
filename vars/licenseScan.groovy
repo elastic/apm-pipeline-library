@@ -82,15 +82,20 @@ def call(Map params = [:]) {
 
 def scanGo(){
   return sh(label: 'License Scanning', script: '''
-    eval $(gvm $(cat .go-version))
-    export GOPATH=${WORKSPACE}
-    get -v -u github.com/kardianos/govendor
-
-    if [ ! -f .fossa.yml ]; then
-      fossa init --include-all
-    fi
-
-    fossa analyze --no-ansi
+    set +x
+    docker run -t --rm \
+      -e FOSSA_API_KEY=${FOSSA_API_KEY} \
+      -v $(pwd):/app \
+      -w /app \
+      -v $(command -v fossa):/app/fossa \
+      --entrypoint /bin/bash \
+      golang:1.14.4-stretch -c "
+        GO111MODULE="off" go get -v -u github.com/kardianos/govendor
+        if [ ! -f .fossa.yml ]; then
+          ./fossa init --include-all
+        fi
+        ./fossa analyze --no-ansi
+      "
   ''',
   returnStatus: true) == 0
 }
