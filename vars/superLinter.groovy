@@ -34,5 +34,5 @@ def call(Map args = [:]) {
   varsEnv.each {
     envFlags << " -e ${it}"
   }
-  sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \${pwd}:/tmp/lint ${dockerImage}")
+  sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \$(pwd):/tmp/lint ${dockerImage}")
 }
