@@ -158,7 +158,7 @@ def scanPhp(){
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
-      wordpress:php:7.2 -c "
+      wordpress:php7.2-fpm -c "
         if [ ! -f .fossa.yml ]; then
           ./fossa init --include-all
         fi
