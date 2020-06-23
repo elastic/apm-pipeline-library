@@ -20,7 +20,7 @@
 
   superLinter()
 
-  superLinter(envs: [ 'VALIDATE_GO=false', 'DISABLE_ERRORS=false' ])
+  superLinter(envs: [ 'VALIDATE_GO=false' ])
 */
 def call(Map args = [:]) {
   def varsEnv = args.get('envs', [])
