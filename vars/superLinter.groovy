@@ -32,7 +32,7 @@ def call(Map args = [:]) {
   }
   envFlags = "-e RUN_LOCAL=true -e DISABLE_ERRORS=${failNever}"
   varsEnv.each {
-    envFlags << " -e ${it}"
+    envFlags += " -e ${it}"
   }
   sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \$(pwd):/tmp/lint ${dockerImage}")
 }
