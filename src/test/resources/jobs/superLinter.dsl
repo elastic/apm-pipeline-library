@@ -8,9 +8,11 @@ pipeline {
         deleteDir()
         gitCheckout(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
                     repo: 'https://github.com/elastic/apm-pipeline-library.git',
-                    branch: master,
+                    branch: 'master',
                     basedir: 'sub-folder')
-        superLinter(envs: [ 'VALIDATE_GO=false' ], failNever: true)
+        dir('sub-folder') {
+          superLinter(envs: [ 'VALIDATE_GO=false' ], failNever: true)
+        }
       }
     }
   }
