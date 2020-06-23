@@ -148,6 +148,17 @@ pipeline {
         }
       }
     }
+    stage('Super-linter') {
+      steps {
+        withGithubNotify(context: 'Check super-linter', tab: 'tests') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            superLinter(failNever: true)
+          }
+        }
+      }
+    }
     stage('Release') {
       environment {
         // gren and other tools are in the .ci/scripts folder.
