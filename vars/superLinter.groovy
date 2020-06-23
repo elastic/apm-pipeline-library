@@ -25,7 +25,7 @@
 def call(Map args = [:]) {
   def varsEnv = args.get('envs', [])
   def failNever = args.get('failNever', false)
-  def dockerImage = 'github/super-linter:latest'
+  def dockerImage = args.get('image', 'github/super-linter:latest')
   def reportFileName = 'super-linter.out'
   retryWithSleep(retries: 2, seconds: 5, backoff: true) {
     sh(label: 'Install super-linter', script: "docker pull ${dockerImage}")
