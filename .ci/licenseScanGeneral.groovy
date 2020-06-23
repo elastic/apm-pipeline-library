@@ -61,7 +61,7 @@ pipeline {
 
 /**
   Some repos does not match with the needs of the license scanner
-  so we need to make aditional action over them.
+  so we need to make an additional action over them.
 */
 def prepareRepo(){
   if(params.repo == "apm-agent-python"){
