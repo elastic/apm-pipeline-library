@@ -131,7 +131,7 @@ class UntarStepTests extends ApmBasePipelineTest {
   void test_extractWith7z_windows_without_7z_installed() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
-    helper.registerAllowedMethod('cmd', [Map.class], { m -> 1 })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return false })
     script.extractWith7z(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('installTools', 1))
@@ -146,7 +146,7 @@ class UntarStepTests extends ApmBasePipelineTest {
   void test_extractWith7z_windows_with_7z_installed() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
-    helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return true })
     script.extractWith7z(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('installTools', 0))

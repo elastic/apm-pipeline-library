@@ -41,7 +41,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type go analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'golang'))
     assertJobStatusSuccess()
   }
@@ -57,7 +57,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type nodejs analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'node:lts'))
     assertJobStatusSuccess()
   }
@@ -73,7 +73,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type gem analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'ruby:2.5'))
     assertJobStatusSuccess()
   }
@@ -104,8 +104,8 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wordpress:php7.2-fpm'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type composer analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'composer:1.10.7'))
     assertJobStatusSuccess()
   }
 
@@ -120,7 +120,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type ant analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'apache-ant'))
     assertJobStatusSuccess()
   }
@@ -136,7 +136,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type mvn analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'maven'))
     assertJobStatusSuccess()
   }
@@ -152,7 +152,7 @@ class LicenseScanTest extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'secret=secret/jenkins-ci/fossa/api-token'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'FOSSA_API_KEY'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'fossa analyze'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'fossa --type gradle analyze'))
     assertTrue(assertMethodCallContainsPattern('sh', 'gradle'))
     assertJobStatusSuccess()
   }

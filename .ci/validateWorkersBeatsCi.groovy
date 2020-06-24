@@ -135,9 +135,11 @@ def runTest(){
         // worker-0a434dec4bdcd060f does not have any reference repos
         def runPackerCacheTests = PLATFORM.equals('worker-0a434dec4bdcd060f') ? 'false' : 'true'
         sh(returnStatus: true, script: "./resources/scripts/jenkins/beats-ci/test.sh ${runPackerCacheTests}")
-        docker.image('node:12').inside(){
-          withEnv(["HOME=${env.WORKSPACE}/${BASE_DIR}"]){
-            sh(script: './resources/scripts/jenkins/build.sh')
+        if(isInstalled(tool: 'docker', flag: '--version')) {
+          docker.image('node:12').inside(){
+            withEnv(["HOME=${env.WORKSPACE}/${BASE_DIR}"]){
+              sh(script: './resources/scripts/jenkins/build.sh')
+            }
           }
         }
       }

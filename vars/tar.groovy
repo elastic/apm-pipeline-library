@@ -48,7 +48,7 @@ def call(Map args = [:]) {
 }
 
 def compress(Map args = [:]) {
-  if (isTarInstalled()) {
+  if (isInstalled(tool: 'tar', flag: '--version')) {
     compressWithTar(args)
   } else {
     compressWith7z(args)
@@ -60,7 +60,8 @@ def compressWith7z(Map args = [:]) {
     // This particular scenario should not happen.
     error('tar: 7z is not supported yet. *Nix got tar installed.')
   }
-  if (!is7zInstalled()) {
+
+  if (!isInstalled(tool: '7z')) {
     installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
   }
   withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
@@ -80,17 +81,4 @@ def compressWithTar(Map args = [:]) {
       bat(label: 'Compress', script: command)
     }
   }
-}
-
-def isTarInstalled() {
-  return cmd(returnStatus: true, script: "tar --version ${redirectStdout()}") == 0
-}
-
-def is7zInstalled() {
-  return cmd(returnStatus: true, script: "7z ${redirectStdout()}") == 0
-}
-
-def redirectStdout() {
-  def value = isUnix() ? '>/dev/null' : '>NUL'
-  return value
 }
