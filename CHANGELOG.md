@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.115 (24/06/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: check that docker is installed [#616](https://github.com/elastic/apm-pipeline-library/pull/616)
+
+#### 🙈 No user affected
+
+-  test-infra: docker in 64 bits only [#623](https://github.com/elastic/apm-pipeline-library/pull/623)
+-  test-infra: support new workers [#619](https://github.com/elastic/apm-pipeline-library/pull/619)
+
+#### ⚙️ CI
+
+-  feat: third-party license scan several languages support [#622](https://github.com/elastic/apm-pipeline-library/pull/622)
+-  [jjbb]: folder description is required [#621](https://github.com/elastic/apm-pipeline-library/pull/621)
+-  [jjbb]: elastic/observability-robots [#620](https://github.com/elastic/apm-pipeline-library/pull/620)
+
+---
+
 ## v1.1.114 (17/06/2020)
 
 #### 🚀 Enhancements
@@ -161,13 +180,13 @@
 
 #### 🐛 Bug Fixes
 
--  fix: gitCheckout with customisation and unshallow in PRs [#556](https://github.com/elastic/apm-pipeline-library/pull/556)
 -  fix: typos on third-party dependency scan [#559](https://github.com/elastic/apm-pipeline-library/pull/559)
+-  fix: gitCheckout with customisation and unshallow in PRs [#556](https://github.com/elastic/apm-pipeline-library/pull/556)
 
 #### ⚙️ CI
 
--  ci: add forceInstall flag [#558](https://github.com/elastic/apm-pipeline-library/pull/558)
 -  ci: publishToCDN step [#552](https://github.com/elastic/apm-pipeline-library/pull/552)
+-  ci: add forceInstall flag [#558](https://github.com/elastic/apm-pipeline-library/pull/558)
 
 ---
 
@@ -461,15 +480,15 @@
 
 #### 🚀 Enhancements
 
--  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
 -  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
+-  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 
 #### 🐛 Bug Fixes
 
--  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
 -  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
+-  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
 
 #### ⚙️ CI
 
@@ -905,8 +924,8 @@
 
 #### 🚀 Enhancements
 
--  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
 -  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
+-  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
 
 #### 🐛 Bug Fixes
 
@@ -1579,13 +1598,13 @@
 
 #### 🚀 Enhancements
 
+-  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
+-  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
--  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
--  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 
 #### 📚 Documentation
 
