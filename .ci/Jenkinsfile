@@ -58,7 +58,7 @@ pipeline {
               env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
             }
           }
-          sh 'echo "##my test" > file.md'
+          sh 'echo "## my test 2" > file.md'
           stash includes: 'file.md', name: 'file.md'
         }
       }
