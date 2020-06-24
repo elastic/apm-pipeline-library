@@ -34,6 +34,7 @@ docker.elastic.co/observability-ci/gren
 docker.elastic.co/observability-ci/shellcheck
 docker.elastic.co/observability-ci/yamllint
 widerplan/jenkins-job-builder
+github/super-linter:latest
 "
 if [ -x "$(command -v docker)" ]; then
   for di in ${DOCKER_IMAGES}

@@ -1443,6 +1443,17 @@ def bucketUri = stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-
 
 It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
 
+## superLinter
+Run the github/super-linter step
+
+```
+superLinter(envs: [ 'VALIDATE_GO=false' ])
+```
+
+* *envs*: the list of new env variables to use, format variable=value. Optional
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *dockerImage*: What's the docker image to use. Optional. Default: 'github/super-linter:latest'
+
 ## tar
 Compress a folder into a tar file.
 
