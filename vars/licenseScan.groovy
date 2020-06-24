@@ -171,7 +171,7 @@ def scanGradle(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       gradle:6.5.0-jdk11 -c "
-        ./fossa analyze --type gradle --no-ansi
+        ./fossa --type gradle analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
