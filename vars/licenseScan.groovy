@@ -27,6 +27,13 @@ def call(Map params = [:]) {
     ]){
       def scanned = false
       def isOK = true
+
+      sh(label: 'Init FOSSA', script: '''
+        if [ ! -f .fossa.yml ]; then
+          fossa init --include-all --no-ansi
+        fi
+      ''')
+
       if(findFiles(glob: '**/*.go')){
         isOK = isOK && scanGo()
         scanned = true
@@ -91,10 +98,7 @@ def scanGo(){
       --entrypoint /bin/bash \
       golang:1.14.4-stretch -c "
         GO111MODULE="off" go get -v -u github.com/kardianos/govendor
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa --type go analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -110,10 +114,7 @@ def scanNode(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       node:lts -c "
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa --type nodejs analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -130,10 +131,7 @@ def scanRuby(){
       --entrypoint /bin/bash \
       ruby:2.5 -c "
         bundle update
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa --type gem analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -141,9 +139,6 @@ def scanRuby(){
 
 def scanDefault(){
   return sh(label: 'License Scanning', script: '''
-    if [ ! -f .fossa.yml ]; then
-      fossa init --include-all
-    fi
     fossa analyze --no-ansi
   ''',
   returnStatus: true) == 0
@@ -158,11 +153,9 @@ def scanPhp(){
       -w /app \
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
-      wordpress:php7.2-fpm -c "
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+      composer:1.10.7 -c "
+        composer install --no-ansi && composer show --tree --no-ansi
+        ./fossa --type composer analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -178,10 +171,7 @@ def scanGradle(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       gradle:6.5.0-jdk11 -c "
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa analyze --type gradle --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -197,10 +187,7 @@ def scanMaven(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       maven:3.6.3-jdk-11 -c "
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa --type mvn analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
@@ -216,10 +203,7 @@ def scanAnt(){
       -v $(command -v fossa):/app/fossa \
       --entrypoint /bin/bash \
       docker.elastic.co/observability-ci/apache-ant:1.10.8 -c "
-        if [ ! -f .fossa.yml ]; then
-          ./fossa init --include-all
-        fi
-        ./fossa analyze --no-ansi
+        ./fossa --type ant analyze --no-ansi
       "
   ''',
   returnStatus: true) == 0
