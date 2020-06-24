@@ -128,7 +128,7 @@ class TarStepTests extends ApmBasePipelineTest {
   void test_compressWith7z_windows_without_7z_installed() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
-    helper.registerAllowedMethod('cmd', [Map.class], { m -> 1 })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return false })
     script.compressWith7z(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('installTools', 1))
@@ -143,7 +143,7 @@ class TarStepTests extends ApmBasePipelineTest {
   void test_compressWith7z_windows_with_7z_installed() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
-    helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return true })
     script.compressWith7z(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('installTools', 0))

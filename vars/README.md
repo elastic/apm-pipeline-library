@@ -907,6 +907,24 @@ evaluates the change list with the pattern list:
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
+## isInstalled
+Whether the given tool is installed and available.
+
+```
+  // if docker is installed, the validation uses docker --version
+  whenTrue(isInstalled(tool: 'docker', flag: '--version')) {
+    // ...
+  }
+
+  // if 7zip is installed, the validations uses 7z
+  whenTrue(isInstalled(tool: '7z')) {
+    // ...
+  }
+```
+
+* tool: The name of the tool to check whether it is installed and available. Mandatory.
+* flag: The flag to be added to the validation. For instance `--version`. Optional.
+
 ## isPR
 Whether the build is based on a Pull Request or no
 
@@ -1804,4 +1822,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
