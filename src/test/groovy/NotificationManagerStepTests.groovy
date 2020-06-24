@@ -420,4 +420,40 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_customPRComment_without_file_argument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.customPRComment()
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'file parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_customPRComment_without_commentFile_argument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.customPRComment(file: 'foo')
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'commentFile parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_customPRComment() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { 'awesome' })
+    script.customPRComment(file: 'foo', commentFile: 'bar')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'message=awesome'))
+    assertJobStatusSuccess()
+  }
 }
