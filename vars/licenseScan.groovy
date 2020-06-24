@@ -28,7 +28,7 @@ def call(Map params = [:]) {
       def scanned = false
       def isOK = true
 
-      sh(label: 'Init Fossa', script: '''
+      sh(label: 'Init FOSSA', script: '''
         if [ ! -f .fossa.yml ]; then
           fossa init --include-all --no-ansi
         fi
