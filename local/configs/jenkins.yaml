@@ -131,6 +131,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/rebuildPipeline.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/stashV2.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/superLinter.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/tar.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/downstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/timeout/parentstream.dsl"
