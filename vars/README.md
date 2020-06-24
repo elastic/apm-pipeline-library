@@ -908,7 +908,7 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tools is installed and available.
+Whether the given tool is installed and available.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -1822,4 +1822,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
