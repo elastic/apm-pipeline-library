@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@feature/pr-comment-customise') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -58,8 +58,6 @@ pipeline {
               env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
             }
           }
-          sh 'echo "## my test 2" > file.md'
-          stash includes: 'file.md', name: 'file.md'
         }
       }
     }
