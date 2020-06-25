@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.116 (25/06/2020)
+
+#### 🚀 Enhancements
+
+-  superLinter step [#624](https://github.com/elastic/apm-pipeline-library/pull/624)
+-  isInstalled step [#626](https://github.com/elastic/apm-pipeline-library/pull/626)
+
+#### 🐛 Bug Fixes
+
+-  fix: fix licenseScan tests [#629](https://github.com/elastic/apm-pipeline-library/pull/629)
+-  fix: php report and refactor [#627](https://github.com/elastic/apm-pipeline-library/pull/627)
+
+---
+
 ## v1.1.115 (24/06/2020)
 
 #### 🐛 Bug Fixes
@@ -180,13 +194,13 @@
 
 #### 🐛 Bug Fixes
 
--  fix: typos on third-party dependency scan [#559](https://github.com/elastic/apm-pipeline-library/pull/559)
 -  fix: gitCheckout with customisation and unshallow in PRs [#556](https://github.com/elastic/apm-pipeline-library/pull/556)
+-  fix: typos on third-party dependency scan [#559](https://github.com/elastic/apm-pipeline-library/pull/559)
 
 #### ⚙️ CI
 
--  ci: publishToCDN step [#552](https://github.com/elastic/apm-pipeline-library/pull/552)
 -  ci: add forceInstall flag [#558](https://github.com/elastic/apm-pipeline-library/pull/558)
+-  ci: publishToCDN step [#552](https://github.com/elastic/apm-pipeline-library/pull/552)
 
 ---
 
@@ -480,15 +494,15 @@
 
 #### 🚀 Enhancements
 
+-  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Maven version output module [#432](https://github.com/elastic/apm-pipeline-library/pull/432)
 -  Add name param to github release [#427](https://github.com/elastic/apm-pipeline-library/pull/427)
--  Install Docker in image [#434](https://github.com/elastic/apm-pipeline-library/pull/434)
 -  Jenkins build status module [#433](https://github.com/elastic/apm-pipeline-library/pull/433)
 
 #### 🐛 Bug Fixes
 
--  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
 -  fix: renamed parameter for the ITs [#435](https://github.com/elastic/apm-pipeline-library/pull/435)
+-  Remove PYTHON_EXE when building beats images [#430](https://github.com/elastic/apm-pipeline-library/pull/430)
 
 #### ⚙️ CI
 
@@ -1558,15 +1572,15 @@
 
 #### 🚀 Enhancements
 
--   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 -  feat: add build info to the test results object [#65](https://github.com/elastic/apm-pipeline-library/pull/65)
 -  feat: new job for Integrations registry repo [#64](https://github.com/elastic/apm-pipeline-library/pull/64)
+-   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 
 #### 🐛 Bug Fixes
 
+-  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
 -  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
--  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 
 ---
 
