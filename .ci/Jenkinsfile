@@ -192,7 +192,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, newPRComment: [ 'file.id': 'file.md' ])
+      notifyBuildResult(prComment: true)
     }
   }
 }
