@@ -373,7 +373,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       }
     )
     script.analyzeFlakey(
-      jobInfo: ['fullName': 'fake_name'],
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json')
     )
@@ -386,7 +386,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     try {
       script.analyzeFlakey(
-        jobInfo: [],
+        flakyReportIdx: '',
         es: "https://fake_url",
         testsErrors: readJSON(file: 'flake-tests-errors.json')
       )
@@ -394,7 +394,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive jobInfo data'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive flakyReportIdx data'))
     assertJobStatusFailure()
   }
 
