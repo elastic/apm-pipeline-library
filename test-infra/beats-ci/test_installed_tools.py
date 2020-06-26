@@ -2,14 +2,14 @@ import testinfra
 import pytest
 
 def test_docker_installed(host):
-  if host.system_info.arch == 'x86_64' :
+  if host.check_output("uname -m") == "x86_64" :
     cmd = host.run("docker --version")
     assert cmd.rc == 0, "it is required for all the Beats projects"
   else:
     pytest.skip("unsupported configuration")
 
 def test_docker_compose_installed(host):
-  if host.system_info.arch == 'x86_64' :
+  if host.check_output("uname -m") == "x86_64" :
     cmd = host.run("docker-compose --version")
     assert cmd.rc == 0, "it is required for all the Beats projects"
   else:
