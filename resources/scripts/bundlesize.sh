@@ -14,13 +14,17 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-set -uxeo pipefail
+set -eo pipefail
 
 # Once the npm run bundlesize goal has been run this particular
 # script will create a JSON file with all the details regarding
 # the size of the bundles and also the details regardinig the
 # target to be compared with.
 #
+
+if [ -n "${PIPELINE_LOG_LEVEL}" ] && [ "${PIPELINE_LOG_LEVEL}" == "DEBUG" ] ; then
+  set -x
+fi
 
 NAME=${1:?'Missing the name of the report'}
 REPORT_FOLDER=${2:?'Missing the output folder'}
