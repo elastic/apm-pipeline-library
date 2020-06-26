@@ -32,7 +32,7 @@ INPUT=${3:?'Missing the input files to query for'}
 COMPARE_TO=${4:-''}
 
 # Install jq if required
-JQ=$(which jq)
+JQ=$(command -v jq || true)
 if [ -z "${JQ}" ]; then
     echo "1..5 install jq"
     JQ="/tmp/jq"
@@ -47,6 +47,7 @@ if [ -z "${JQ}" ]; then
         suffix=osx-amd64
     fi
     wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
+    chmod 755 "${JQ}"
 else
     echo "1..5 install jq is not required"
 fi
