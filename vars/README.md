@@ -1144,11 +1144,15 @@ and send some data to Elastic search.
 Besides, if there are checkout environmental issues then it will rebuild the pipeline.
 
 ```
-notifyBuildResult()
-```
+  // Default
+  notifyBuildResult()
 
-```
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
 ```
 * es: Elasticserach URL to send the report.
 * secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
@@ -1160,6 +1164,7 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
+* newPRComment: The map of the data to be populated as a comment. Default empty.
 
 ## opbeansPipeline
 Opbeans Pipeline

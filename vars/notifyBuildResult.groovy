@@ -35,6 +35,8 @@ def call(Map args = [:]) {
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
+  def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
+
   node('master || metal || immutable'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
@@ -53,6 +55,14 @@ def call(Map args = [:]) {
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
           notificationManager.notifyEmail(data)
         }
+
+        newPRComment.findAll { k, v ->
+          catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            unstash v
+            notificationManager.customPRComment(commentFile: k, file: v)
+          }
+        }
+
         // Should analyze flakey
         if(analyzeFlakey) {
           data['es'] = es

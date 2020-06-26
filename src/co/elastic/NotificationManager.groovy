@@ -64,8 +64,19 @@ def analyzeFlakey(Map params = [:]) {
     
     if (ret) {
       githubPrComment(message: msg, commentFile: 'flakey.id')
-    } 
-    
+    }
+}
+
+/**
+This method generates a custom PR comment with the given data
+ * @param file
+ * @param commentFile
+*/
+def customPRComment(Map args = [:]) {
+    def file = args.containsKey('file') ? args.file : error('customPRComment: file parameter is not valid')
+    def commentFile = args.containsKey('commentFile') ? args.commentFile : error('customPRComment: commentFile parameter is not valid')
+    def msg = readFile(file: file)
+    githubPrComment(message: msg, commentFile: "${commentFile}")
 }
 
 /**
