@@ -91,6 +91,15 @@ if [ -n "${COMPARE_TO}" ] ; then
                 $JQ --arg id "${label}" --argjson new "${previousGzipSize}" '(.[] | select(.label==$id) | .previousGzipSize) |= $new' "${REPORT}" > "$tmp"
                 mv "$tmp" "${REPORT}"
             fi
+            # shellcheck disable=SC2016
+            previousStatSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .statSize)' "${COMPARE_TO}")
+            # shellcheck disable=SC2016
+            currentStatSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .statSize)' "${REPORT}")
+            if [ "${previousStatSize}" != "${currentStatSize}" ] ; then
+                # shellcheck disable=SC2016
+                $JQ --arg id "${label}" --argjson new "${previousStatSize}" '(.[] | select(.label==$id) | .previousStatSize) |= $new' "${REPORT}" > "$tmp"
+                mv "$tmp" "${REPORT}"
+            fi
         done
     else
         echo "5..5 compare is disabled since the provided file does not exist."
