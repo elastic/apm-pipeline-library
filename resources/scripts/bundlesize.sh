@@ -27,6 +27,23 @@ REPORT_FOLDER=${2:?'Missing the output folder'}
 INPUT=${3:?'Missing the input files to query for'}
 COMPARE_TO=${4:-''}
 
+# Install jq if required
+JQ=$(which jq)
+if [ -z "${JQ}" ]; then
+  JQ="/tmp/jq"
+  OS=$(uname -s)
+  if [ "${OS}" == "Linux" ] ; then
+    ARCH=$(uname -m)
+    suffix=linux-64
+    if [ "${ARCH}" != "x86_64" ] ; then
+        suffix=linux-32
+    fi
+  else
+    suffix=osx-amd64
+  fi
+  wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
+fi
+
 # Prepare temporary folder
 mkdir -p "${REPORT_FOLDER}"
 
@@ -34,28 +51,35 @@ mkdir -p "${REPORT_FOLDER}"
 for f in ${INPUT} ; do
 	DATA=$(grep "window.chartData =" "${f}" | sed 's#window.chartData =##g' | sed 's#;$##g')
     FILENAME=$(basename "${f}")
-    echo "${DATA}" | jq 'map(del(.groups))' > "${REPORT_FOLDER}/${FILENAME}.json"
+    echo "${DATA}" | $JQ 'map(del(.groups))' > "${REPORT_FOLDER}/${FILENAME}.json"
 done
 
 # Create a reported file
 REPORT=${REPORT_FOLDER}/${NAME}.json
-jq -s '[.[][]]' "${REPORT_FOLDER}"/*.json > "${REPORT}"
+$JQ -s '[.[][]]' "${REPORT_FOLDER}"/*.json > "${REPORT}"
 
 # Compare report with the given report
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
         tmp="$(mktemp -d)/compare.json"
-        for label in $(jq -r 'map(.label) | .[]' "${COMPARE_TO}"); do
-            previousParsedSize=$(jq --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${COMPARE_TO}")
-            currentParsedSize=$(jq --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${REPORT}")
+        # For each entry then add the previous sizes
+        for label in $($JQ -r 'map(.label) | .[]' "${COMPARE_TO}"); do
+            # shellcheck disable=SC2016
+            previousParsedSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${COMPARE_TO}")
+            # shellcheck disable=SC2016
+            currentParsedSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${REPORT}")
             if [ "${previousParsedSize}" != "${currentParsedSize}" ] ; then
-                jq --arg id "${label}" --argjson new "${previousParsedSize}" '(.[] | select(.label==$id) | .previousParsedSize) |= $new' "${REPORT}" > "$tmp"
+                # shellcheck disable=SC2016
+                $JQ --arg id "${label}" --argjson new "${previousParsedSize}" '(.[] | select(.label==$id) | .previousParsedSize) |= $new' "${REPORT}" > "$tmp"
                 mv "$tmp" "${REPORT}"
             fi
-            previousGzipSize=$(jq --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${COMPARE_TO}")
-            currentGzipSize=$(jq --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${REPORT}")
+            # shellcheck disable=SC2016
+            previousGzipSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${COMPARE_TO}")
+            # shellcheck disable=SC2016
+            currentGzipSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${REPORT}")
             if [ "${previousGzipSize}" != "${currentGzipSize}" ] ; then
-                jq --arg id "${label}" --argjson new "${previousGzipSize}" '(.[] | select(.label==$id) | .previousGzipSize) |= $new' "${REPORT}" > "$tmp"
+                # shellcheck disable=SC2016
+                $JQ --arg id "${label}" --argjson new "${previousGzipSize}" '(.[] | select(.label==$id) | .previousGzipSize) |= $new' "${REPORT}" > "$tmp"
                 mv "$tmp" "${REPORT}"
             fi
         done
