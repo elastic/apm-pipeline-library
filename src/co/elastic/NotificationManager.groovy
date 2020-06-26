@@ -39,15 +39,15 @@ This method generates flakey test data from Jenkins test results
 def analyzeFlakey(Map params = [:]) {
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
     def secret = params.containsKey('es_secret') ? params.es_secret : null
-    def jobInfo = params.containsKey('jobInfo') ? params.jobInfo : error('analyzeFlakey: jobInfo parameter is not valid')
+    def flakyReportIdx = params.containsKey('flakyReportIdx') ? params.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     
-    if (!jobInfo || !jobInfo['fullName']?.trim()) {
-      error "Did not receive jobInfo data" 
+    if (!flakyReportIdx || !flakyReportIdx.trim()) {
+      error "Did not receive flakyReportIdx data" 
     }
 
     def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
-    def c = '/' + jobInfo['fullName'] + '/_search'
+    def c = '/' + flakyReportIdx + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
