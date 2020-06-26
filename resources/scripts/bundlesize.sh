@@ -34,37 +34,41 @@ COMPARE_TO=${4:-''}
 # Install jq if required
 JQ=$(which jq)
 if [ -z "${JQ}" ]; then
-  JQ="/tmp/jq"
-  OS=$(uname -s)
-  if [ "${OS}" == "Linux" ] ; then
-    ARCH=$(uname -m)
-    suffix=linux-64
-    if [ "${ARCH}" != "x86_64" ] ; then
-        suffix=linux-32
+    echo "1..5 install jq"
+    JQ="/tmp/jq"
+    OS=$(uname -s)
+    if [ "${OS}" == "Linux" ] ; then
+        ARCH=$(uname -m)
+        suffix=linux-64
+        if [ "${ARCH}" != "x86_64" ] ; then
+            suffix=linux-32
+        fi
+    else
+        suffix=osx-amd64
     fi
-  else
-    suffix=osx-amd64
-  fi
-  wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
+    wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
+else
+    echo "1..5 install jq is not required"
 fi
 
 # Prepare temporary folder
+echo "2..5 prepare a temporary folder"
 mkdir -p "${REPORT_FOLDER}"
 
-# Query each bundlesize html reported file
+echo "3..5 query each bundlesize html reported file"
 for f in ${INPUT} ; do
 	DATA=$(grep "window.chartData =" "${f}" | sed 's#window.chartData =##g' | sed 's#;$##g')
     FILENAME=$(basename "${f}")
     echo "${DATA}" | $JQ 'map(del(.groups))' > "${REPORT_FOLDER}/${FILENAME}.json"
 done
 
-# Create a reported file
+echo "4..5 aggregate files"
 REPORT=${REPORT_FOLDER}/${NAME}.json
 $JQ -s '[.[][]]' "${REPORT_FOLDER}"/*.json > "${REPORT}"
 
-# Compare report with the given report
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
+        echo "5..5 compare is enabled"
         tmp="$(mktemp -d)/compare.json"
         # For each entry then add the previous sizes
         for label in $($JQ -r 'map(.label) | .[]' "${COMPARE_TO}"); do
@@ -87,5 +91,11 @@ if [ -n "${COMPARE_TO}" ] ; then
                 mv "$tmp" "${REPORT}"
             fi
         done
+    else
+        echo "5..5 compare is disabled since the provided file does not exist."
     fi
+else
+    echo "5..5 compare is disabled since no file to compare with has been provided"
 fi
+
+echo "Report has been generated. See ${REPORT}"
