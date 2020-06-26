@@ -39,9 +39,9 @@ if [ -z "${JQ}" ]; then
     OS=$(uname -s)
     if [ "${OS}" == "Linux" ] ; then
         ARCH=$(uname -m)
-        suffix=linux-64
+        suffix=linux64
         if [ "${ARCH}" != "x86_64" ] ; then
-            suffix=linux-32
+            suffix=linux32
         fi
     else
         suffix=osx-amd64
