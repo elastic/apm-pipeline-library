@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.117 (26/06/2020)
+
+#### 🚀 Enhancements
+
+-  customPRComment step [#630](https://github.com/elastic/apm-pipeline-library/pull/630)
+
+#### 🙈 No user affected
+
+-  test-infra: arch is supported in 5.1.0 [#632](https://github.com/elastic/apm-pipeline-library/pull/632)
+
+---
+
 ## v1.1.116 (25/06/2020)
 
 #### 🚀 Enhancements
@@ -476,9 +488,9 @@
 
 #### ⚙️ CI
 
+-  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
 -  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 -  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
--  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
 
 ---
 
@@ -1188,14 +1200,14 @@
 
 #### 🚀 Enhancements
 
--  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 -  feat: pre-commit hooks library [#168](https://github.com/elastic/apm-pipeline-library/pull/168)
 -  add some debug logs to the isGitRegionMatch  [#176](https://github.com/elastic/apm-pipeline-library/pull/176)
+-  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 
 #### 🐛 Bug Fixes
 
--  withEnv in the checkLicenses step [#175](https://github.com/elastic/apm-pipeline-library/pull/175)
 -  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
+-  withEnv in the checkLicenses step [#175](https://github.com/elastic/apm-pipeline-library/pull/175)
 
 ---
 
@@ -1572,15 +1584,15 @@
 
 #### 🚀 Enhancements
 
+-   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 -  feat: add build info to the test results object [#65](https://github.com/elastic/apm-pipeline-library/pull/65)
 -  feat: new job for Integrations registry repo [#64](https://github.com/elastic/apm-pipeline-library/pull/64)
--   feat: scheduled tasks [#68](https://github.com/elastic/apm-pipeline-library/pull/68)
 
 #### 🐛 Bug Fixes
 
--  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 -  fix: protect against null values on changes fields [#67](https://github.com/elastic/apm-pipeline-library/pull/67)
 -  fix: remove job that it is in the beats-ci too [#66](https://github.com/elastic/apm-pipeline-library/pull/66)
+-  fix: fix scm checkout on dockerImagesESLatest pipeline [#63](https://github.com/elastic/apm-pipeline-library/pull/63)
 
 ---
 
