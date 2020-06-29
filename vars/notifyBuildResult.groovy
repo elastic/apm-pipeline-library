@@ -36,7 +36,8 @@ def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args. flakyReportIdx : ""
+  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
+  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
 
   node('master || metal || immutable'){
     stage('Reporting build status'){
@@ -69,6 +70,7 @@ def call(Map args = [:]) {
           data['es'] = es
           data['es_secret'] = secret
           data['flakyReportIdx'] = flakyReportIdx
+          data['flakyThreshold'] = flakyThreshold
           log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
           catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
             notificationManager.analyzeFlakey(data)

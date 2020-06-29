@@ -41,12 +41,13 @@ def analyzeFlakey(Map params = [:]) {
     def secret = params.containsKey('es_secret') ? params.es_secret : null
     def flakyReportIdx = params.containsKey('flakyReportIdx') ? params.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
     
     if (!flakyReportIdx || !flakyReportIdx.trim()) {
       error "Did not receive flakyReportIdx data" 
     }
 
-    def q = toJSON(["query":["range": ["test_score": ["gt": 0.0]]]])
+    def q = toJSON(["query":["range": ["test_score": ["gt": flakyThreshold]]]])
     def c = '/' + flakyReportIdx + '/_search'
     def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)

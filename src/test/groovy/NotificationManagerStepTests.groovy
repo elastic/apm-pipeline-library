@@ -382,6 +382,35 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakeyThreshold() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod(
+      "sendDataToElasticsearch",
+      [Map.class],
+      {m -> readJSON(file: "flake-results.json")}
+    )
+
+    helper.registerAllowedMethod(
+      "githubPrComment",
+      [Map.class],
+      {m -> assertTrue(
+        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
+        )
+      }
+    )
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      flakyThreshold: 0.5
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
+    assertJobStatusSuccess()
+  }
+
+
+  @Test
   void test_analyzeFlakeyNoJobInfo() throws Exception {
     def script = loadScript(scriptName)
     try {
