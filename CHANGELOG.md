@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.118 (29/06/2020)
+
+#### 🚀 Enhancements
+
+-  generateReport step [#634](https://github.com/elastic/apm-pipeline-library/pull/634)
+
+---
+
 ## v1.1.117 (26/06/2020)
 
 #### 🚀 Enhancements
@@ -488,9 +496,9 @@
 
 #### ⚙️ CI
 
+-  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
 -  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
 -  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
--  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
 
 ---
 
@@ -873,14 +881,14 @@
 
 #### 🚀 Enhancements
 
+-  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 -  Reuse GitHub comment when possible [#324](https://github.com/elastic/apm-pipeline-library/pull/324)
 -  enable HOME/PATH env variables for the preCommit's step context [#325](https://github.com/elastic/apm-pipeline-library/pull/325)
--  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 
 #### ⚙️ CI
 
--  refactor: use the ApmBasePipelineTest superclass [#319](https://github.com/elastic/apm-pipeline-library/pull/319)
 -  ci(jenkins): support rebuild for the toplevel apm-integration-tests pipeline [#318](https://github.com/elastic/apm-pipeline-library/pull/318)
+-  refactor: use the ApmBasePipelineTest superclass [#319](https://github.com/elastic/apm-pipeline-library/pull/319)
 
 ---
 
@@ -1177,14 +1185,14 @@
 
 #### 🚀 Enhancements
 
+-  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
+-  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 -  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
 -  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
 -  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
--  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
--  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
 
 #### 🐛 Bug Fixes
 
@@ -1200,14 +1208,14 @@
 
 #### 🚀 Enhancements
 
+-  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 -  feat: pre-commit hooks library [#168](https://github.com/elastic/apm-pipeline-library/pull/168)
 -  add some debug logs to the isGitRegionMatch  [#176](https://github.com/elastic/apm-pipeline-library/pull/176)
--  feat: enable gherkin-lint pre-commit hook [#177](https://github.com/elastic/apm-pipeline-library/pull/177)
 
 #### 🐛 Bug Fixes
 
--  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
 -  withEnv in the checkLicenses step [#175](https://github.com/elastic/apm-pipeline-library/pull/175)
+-  fix: trim for trailing spaces when comparing the company  [#174](https://github.com/elastic/apm-pipeline-library/pull/174)
 
 ---
 
@@ -1555,8 +1563,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix: avoid showing 'null' on the email subject when BRANCH_NAME is not defined [#73](https://github.com/elastic/apm-pipeline-library/pull/73)
 -  fix: check the return value of curl instead of the file is created [#72](https://github.com/elastic/apm-pipeline-library/pull/72)
+-  fix: avoid showing 'null' on the email subject when BRANCH_NAME is not defined [#73](https://github.com/elastic/apm-pipeline-library/pull/73)
 
 ---
 
