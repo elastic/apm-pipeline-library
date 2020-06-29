@@ -10,5 +10,5 @@ Filename | Size(bundled) | Size(gzip) | Diff(gzip)
         {%- set status = "green" -%}
     {%- endif -%} 
 {%- endif -%} 
-{{ item.label }} | {{ item.parsedSize }} B | {{ item.gzipSize }} B | {% if item.previousGzipSize %} (<span style="color:{{ status }}"> {{ item.gzipSize - item.previousGzipSize }}</span> ) {% endif %}
+{{ item.label }} | {{ item.parsedSize | int | filesizeformat(true) }} | {{ item.gzipSize | int | filesizeformat(true) }} | {% if item.previousGzipSize %} (<span style="color:{{ status }}"> {{ ( item.gzipSize - item.previousGzipSize | int ) | filesizeformat(true) }}</span> ) {% endif %}
 {% endfor %}
