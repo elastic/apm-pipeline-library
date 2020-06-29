@@ -31,6 +31,32 @@ REPORT_FOLDER=${2:?'Missing the output folder'}
 INPUT=${3:?'Missing the input files to query for'}
 COMPARE_TO=${4:-''}
 
+# Function to add the previous size for the given bundlesize id
+# if there is something to compare with.
+function addPreviousSizeIfPossible() {
+    set -x
+    label=$1
+    size=$2
+    new_size=$3
+    report=$4
+    compare_to=$5
+
+    if [ ! -e "${compare_to}" ] ; then
+        return
+    fi
+    tmp="$(mktemp -d)/compare.json"
+    # shellcheck disable=SC2016
+    previous_size=$($JQ --arg id "${label}" --arg v "$size" '(.[] | select(.label==$id) | .[$v])' "${compare_to}")
+    # shellcheck disable=SC2016
+    current_size=$($JQ --arg id "${label}" --arg v "$size" '(.[] | select(.label==$id) | .[$v])' "${report}")
+    if [ "${previous_size}" != "${current_size}" ] ; then
+        # shellcheck disable=SC2016
+        $JQ --arg id "${label}" --arg v "${new_size}" --argjson new "${previous_size}" '(.[] | select(.label==$id) | .[$v]) |= $new' "${report}" > "$tmp"
+        mv "$tmp" "${report}"
+    fi
+    set +x
+}
+
 # Install jq if required
 JQ=$(command -v jq || true)
 if [ -z "${JQ}" ]; then
@@ -70,36 +96,11 @@ $JQ -s '[.[][]]' "${REPORT_FOLDER}"/*.json > "${REPORT}"
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
         echo "5..5 compare is enabled"
-        tmp="$(mktemp -d)/compare.json"
         # For each entry then add the previous sizes
         for label in $($JQ -r 'map(.label) | .[]' "${COMPARE_TO}"); do
-            # shellcheck disable=SC2016
-            previousParsedSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${COMPARE_TO}")
-            # shellcheck disable=SC2016
-            currentParsedSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .parsedSize)' "${REPORT}")
-            if [ "${previousParsedSize}" != "${currentParsedSize}" ] ; then
-                # shellcheck disable=SC2016
-                $JQ --arg id "${label}" --argjson new "${previousParsedSize}" '(.[] | select(.label==$id) | .previousParsedSize) |= $new' "${REPORT}" > "$tmp"
-                mv "$tmp" "${REPORT}"
-            fi
-            # shellcheck disable=SC2016
-            previousGzipSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${COMPARE_TO}")
-            # shellcheck disable=SC2016
-            currentGzipSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .gzipSize)' "${REPORT}")
-            if [ "${previousGzipSize}" != "${currentGzipSize}" ] ; then
-                # shellcheck disable=SC2016
-                $JQ --arg id "${label}" --argjson new "${previousGzipSize}" '(.[] | select(.label==$id) | .previousGzipSize) |= $new' "${REPORT}" > "$tmp"
-                mv "$tmp" "${REPORT}"
-            fi
-            # shellcheck disable=SC2016
-            previousStatSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .statSize)' "${COMPARE_TO}")
-            # shellcheck disable=SC2016
-            currentStatSize=$($JQ --arg id "${label}" '(.[] | select(.label==$id) | .statSize)' "${REPORT}")
-            if [ "${previousStatSize}" != "${currentStatSize}" ] ; then
-                # shellcheck disable=SC2016
-                $JQ --arg id "${label}" --argjson new "${previousStatSize}" '(.[] | select(.label==$id) | .previousStatSize) |= $new' "${REPORT}" > "$tmp"
-                mv "$tmp" "${REPORT}"
-            fi
+            addPreviousSizeIfPossible "${label}" "parsedSize" "previousParsedSize" "${REPORT}" "${COMPARE_TO}"
+            addPreviousSizeIfPossible "${label}" "gzipSize" "previousGzipSize" "${REPORT}" "${COMPARE_TO}"
+            addPreviousSizeIfPossible "${label}" "statSize" "previousStatSize" "${REPORT}" "${COMPARE_TO}"
         done
     else
         echo "5..5 compare is disabled since the provided file does not exist."
