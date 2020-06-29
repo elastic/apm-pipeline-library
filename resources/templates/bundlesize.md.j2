@@ -1,12 +1,12 @@
-Filename | Size(parsed) | Size(gzip) | Size(stat) | Diff(gzip)
- --- | --- | --- | --- | ---
+Filename | Size(bundled) | Size(gzip) | Diff(gzip)
+ --- | --- | --- | ---
 {% for item in data -%}
 {%- if item.previousParsedSize -%}
-    {%- if item.parsedSize - item.previousParsedSize > 0 -%}
+    {%- if item.gzipSize - item.previousGzipSize > 0 -%}
         {%- set status = "red" -%}
     {% else %}
         {%- set status = "green" -%}
     {%- endif -%} 
 {%- endif -%} 
-{{ item.label }} | {{ item.parsedSize }} B | {{ item.gzipSize }} B | {{ item.statSize }} B | {% if item.previousParsedSize %} (<span style="color:{{ status }}"> {{ item.parsedSize - item.previousParsedSize }}</span> ) {% endif %}
+{{ item.label }} | {{ item.parsedSize }} B | {{ item.gzipSize }} B | {% if item.previousGzipSize %} (<span style="color:{{ status }}"> {{ item.gzipSize - item.previousGzipSize }}</span> ) {% endif %}
 {% endfor %}
