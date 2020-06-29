@@ -292,6 +292,7 @@ script, template and outputs that are generated.
 * compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
 
 _NOTE_: It only supports *nix.
+
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
 
@@ -1199,6 +1200,8 @@ Besides, if there are checkout environmental issues then it will rebuild the pip
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
+* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
+* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
