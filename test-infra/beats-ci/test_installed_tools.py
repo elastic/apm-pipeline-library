@@ -16,7 +16,7 @@ def test_docker_compose_installed(host):
     pytest.skip("unsupported configuration")
 
 def test_docker_experimental_configured(host):
-  if host.system_info.type == 'darwin' :
+  if host.system_info.type == 'darwin' or host.check_output("uname -m") != "x86_64" :
     pytest.skip("unsupported configuration")
   else:
     # HOME should point to the USER home for this validation
