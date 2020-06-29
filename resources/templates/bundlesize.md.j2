@@ -1,0 +1,14 @@
+### :package: Bundlesize report
+
+Filename | Size(bundled) | Size(gzip) | Diff(gzip)
+ --- | --- | --- | ---
+{% for item in data -%}
+{%- if item.previousParsedSize -%}
+    {%- if item.gzipSize - item.previousGzipSize > 0 -%}
+        {%- set status = "red" -%}
+    {% else %}
+        {%- set status = "green" -%}
+    {%- endif -%} 
+{%- endif -%} 
+{{ item.label }} | {{ item.parsedSize }} B | {{ item.gzipSize }} B | {% if item.previousGzipSize %} (<span style="color:{{ status }}"> {{ item.gzipSize - item.previousGzipSize }}</span> ) {% endif %}
+{% endfor %}

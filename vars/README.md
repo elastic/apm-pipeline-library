@@ -176,6 +176,23 @@ It requires to initialise the pipeline with githubEnv() first.
  coverageReport("path_to_base_folder")
 ```
 
+## createFileFromTemplate
+
+Create a file given a Jinja template and the data in a JSON format
+
+```
+  // if the template to be used is the one in the shared library
+  createFileFromTemplate(data: 'my-data.json', template: 'my-template.md.j2', output: 'file.md')
+
+  // if the template to be used is another one in the local workspace
+  createFileFromTemplate(data: 'my-data.json', template: 'src/foo/templates/my-template.md.j2', output: 'file.md', localTemplate: true)
+```
+
+* data: JSON file with the data to be consumed in the template. Mandatory.
+* template: jinja template to be used. Mandatory.
+* output: the name of the file to be transformed. Mandatory.
+* localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
@@ -255,6 +272,26 @@ generateChangelog(
 
 [GitHub Changelog Generator documentation](https://github.com/github-changelog-generator/github-changelog-generator)
 
+## generateReport
+Generate a report using the `id` script and compare the output with the `TARGET_BRANCH`
+variable if exists. Then it creates a report using the template `id`.
+
+This particular step is quite opinionated, and it relies on the id as the name of the
+script, template and outputs that are generated.
+
+```
+  // This will create a report with the name `bundlesize.md` and `bundlesize.json` in the build folder.
+  generateReport(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
+```
+
+* id: The id that matches the script name to run and the jinja template if triggered. Mandatory
+* input: The input required to be used when generating the reports. Mandatory
+* output: The input required to be used when generating the reports. Optional. Default 'build'
+* template: Whether to generate a report with the template with id name. Optional. Default 'true'
+* templateFormat: What's the report extension generated with the template. Optional. Default 'md'
+* compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
+
+_NOTE_: It only supports *nix.
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
 
@@ -908,7 +945,7 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tool is installed and available.
+Whether the given tools is installed and available.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -1838,3 +1875,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+

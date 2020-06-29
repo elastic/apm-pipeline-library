@@ -36,7 +36,7 @@ def call(Map args = [:]) {
   def localTemplate = args.get('localTemplate', false)
   
   if(!localTemplate) {
-    writeFile file: "${template}", text: libraryResource("scripts/templates/${template}")
+    writeFile file: "${template}", text: libraryResource("templates/${template}")
   }
 
   def scriptFile = 'processJinjaTemplate.py'
