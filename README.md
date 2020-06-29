@@ -89,6 +89,13 @@ flag:
 
 Every time there are enough changes, we would release a new version. A version
 has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](https://semver.org/).
+
+### Automated release process :rocket: (preferred)
+
+Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/build?delay=0sec) and choose `Build with Parameters`. Select the `make_release` checkbox and click `Build`. The build will take ~1 hour to complete.
+
+### Manual release process :man: (replaced by the automated process above)
+
 To create a new release please use Maven Release Plugin, which uses the `pom.xml` file
 to store the semantic version for this project.
 
