@@ -36,7 +36,7 @@ def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args. flakyReportIdx : ""
+  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
 
   node('master || metal || immutable'){
     stage('Reporting build status'){
