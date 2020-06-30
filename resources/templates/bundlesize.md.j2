@@ -3,12 +3,12 @@
 Filename | Size(bundled) | Size(gzip) | Diff(gzip)
  --- | --- | --- | ---
 {% for item in data -%}
-{%- if item.previousParsedSize -%}
+{%- if item.previousGzipSize -%}
     {%- if item.gzipSize - item.previousGzipSize > 0 -%}
-        {%- set status = "red" -%}
+        {%- set status = ":warning:" -%}
     {% else %}
-        {%- set status = "green" -%}
+        {%- set status = ":green_heart:" -%}
     {%- endif -%} 
 {%- endif -%} 
-{{ item.label }} | {{ item.parsedSize | int | filesizeformat(true) }} | {{ item.gzipSize | int | filesizeformat(true) }} | {% if item.previousGzipSize %} (<span style="color:{{ status }}"> {{ ( item.gzipSize - item.previousGzipSize | int ) | filesizeformat(true) }}</span> ) {% endif %}
+{{ item.label }} | {{ item.parsedSize | int | filesizeformat(true) }} | {{ item.gzipSize | int | filesizeformat(true) }} | {% if item.previousGzipSize %} {{ status }} {{ ( item.gzipSize - item.previousGzipSize | int ) | filesizeformat(true) }} {% endif %}
 {% endfor %}
