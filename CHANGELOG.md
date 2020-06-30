@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.119 (30/06/2020)
+
+#### 🚀 Enhancements
+
+-  template: size to kbs format [#637](https://github.com/elastic/apm-pipeline-library/pull/637)
+
+#### 🐛 Bug Fixes
+
+-  [opbeans] fix the docker logs happy path [#641](https://github.com/elastic/apm-pipeline-library/pull/641)
+
+#### 📚 Documentation
+
+-  template: fix conditional and emoticons [#640](https://github.com/elastic/apm-pipeline-library/pull/640)
+-  Update release instructions [#638](https://github.com/elastic/apm-pipeline-library/pull/638)
+
+---
+
 ## v1.1.118 (29/06/2020)
 
 #### 🚀 Enhancements
@@ -496,9 +513,9 @@
 
 #### ⚙️ CI
 
+-  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 -  ci: test-infra with less failures [#441](https://github.com/elastic/apm-pipeline-library/pull/441)
 -  ci(jenkins): cache mvn dependencies and help to debug [#439](https://github.com/elastic/apm-pipeline-library/pull/439)
--  ci(jjbb): apm-ui https://github.com/elastic/kibana/pull/61803 [#451](https://github.com/elastic/apm-pipeline-library/pull/451)
 
 ---
 
@@ -868,8 +885,8 @@
 
 #### 🐛 Bug Fixes
 
--  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 -  ci(jenkins): validate pipelines [#326](https://github.com/elastic/apm-pipeline-library/pull/326)
+-  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 
 #### ⚙️ CI
 
@@ -881,14 +898,14 @@
 
 #### 🚀 Enhancements
 
--  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 -  Reuse GitHub comment when possible [#324](https://github.com/elastic/apm-pipeline-library/pull/324)
 -  enable HOME/PATH env variables for the preCommit's step context [#325](https://github.com/elastic/apm-pipeline-library/pull/325)
+-  Add information on Docker creds [#317](https://github.com/elastic/apm-pipeline-library/pull/317)
 
 #### ⚙️ CI
 
--  ci(jenkins): support rebuild for the toplevel apm-integration-tests pipeline [#318](https://github.com/elastic/apm-pipeline-library/pull/318)
 -  refactor: use the ApmBasePipelineTest superclass [#319](https://github.com/elastic/apm-pipeline-library/pull/319)
+-  ci(jenkins): support rebuild for the toplevel apm-integration-tests pipeline [#318](https://github.com/elastic/apm-pipeline-library/pull/318)
 
 ---
 
@@ -1185,14 +1202,14 @@
 
 #### 🚀 Enhancements
 
--  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
--  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
--  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
--  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
 -  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
+-  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
+-  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
+-  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
+-  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 
 #### 🐛 Bug Fixes
 
@@ -1563,8 +1580,8 @@
 
 #### 🐛 Bug Fixes
 
--  fix: check the return value of curl instead of the file is created [#72](https://github.com/elastic/apm-pipeline-library/pull/72)
 -  fix: avoid showing 'null' on the email subject when BRANCH_NAME is not defined [#73](https://github.com/elastic/apm-pipeline-library/pull/73)
+-  fix: check the return value of curl instead of the file is created [#72](https://github.com/elastic/apm-pipeline-library/pull/72)
 
 ---
 
@@ -1632,13 +1649,13 @@
 
 #### 🚀 Enhancements
 
+-  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
+-  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
 -  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
 -  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
 -  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
--  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
--  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 
 #### 📚 Documentation
 
