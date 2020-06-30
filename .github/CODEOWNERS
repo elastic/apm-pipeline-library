@@ -1,0 +1,18 @@
+# GitHub CODEOWNERS definition
+# See: https://help.github.com/articles/about-codeowners/
+
+# APM agents
+/resources/approval-list/apm-agent-dotnet.yml @graphaelli
+/resources/approval-list/apm-agent-go.yml @graphaelli
+/resources/approval-list/apm-agent-java.yml @graphaelli
+/resources/approval-list/apm-agent-python.yml @graphaelli
+/resources/approval-list/apm-agent-nodejs.yml @graphaelli
+/resources/approval-list/apm-agent-php.yml @graphaelli
+/resources/approval-list/apm-agent-ruby.yml @graphaelli
+/resources/approval-list/apm-agent-rum-js.yml @graphaelli
+
+# APM server
+/resources/approval-list/apm-server.yml @axw
+
+# Beats
+/resources/approval-list/beats.yml @andresrc
