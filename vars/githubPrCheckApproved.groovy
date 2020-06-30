@@ -109,7 +109,7 @@ def isAuthorizedBot(login, type){
   Check if the PR come from a trusted user. For such it requires the access to
   the env variable REPO_NAME.
 */
-def isAuthorizedUser(login,){
+def isAuthorizedUser(login){
   log(level: 'DEBUG', text: "githubPrCheckApproved: isAuthorizedUser(${login})")
   def ret = false
   if(env.REPO_NAME) {
