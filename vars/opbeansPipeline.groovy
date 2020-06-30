@@ -75,12 +75,18 @@ def call(Map pipelineParams) {
             unstash 'source'
             dir(BASE_DIR){
               sh 'make build'
+            }
+          }
+        }
+        post {
+          always {
+            dir(BASE_DIR){
               // Let's store the docker log files for debugging purposes
               script {
                 if (fileExists('docker-compose.yml')) {
-                  sh(label: 'docker-compose start', script: 'docker-compose up --build -d')
+                  sh(label: 'docker-compose start', script: 'docker-compose up --build -d', returnStatus: true)
                   dockerLogs()
-                  sh(label: 'docker-compose stop', script: 'docker-compose down -v')
+                  sh(label: 'docker-compose stop', script: 'docker-compose down -v', returnStatus: true)
                 }
               }
             }
