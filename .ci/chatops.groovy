@@ -91,8 +91,8 @@ def matcher(){
     case ~/\/cc.*/:
       ccCmd()
       break
-    case ~/\/assing.*/:
-      assing()
+    case ~/\/assign.*/:
+      assign()
       break
     case ~/\/approve/:
       approve()
