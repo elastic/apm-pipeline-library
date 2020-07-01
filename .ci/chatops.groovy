@@ -172,7 +172,7 @@ def assign(){
   echo "${env.GITHUB_COMMENT}"
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
-  usr -= '/assing'
+  usr -= '/assign'
   usr -= '@'
   usr = usr.trim()
   if(GITHUB_COMMENT.contains('cancel')){
