@@ -88,6 +88,9 @@ def matcher(){
     case ~/\/build/:
       build()
       break
+    case ~/\/cc.*/:
+      ccCmd()
+      break
     case ~/\/close/:
       closeCmd()
       break
@@ -102,9 +105,6 @@ def matcher(){
       break
     case ~/\/lgtm/:
       lgtm()
-      break
-    case ~/\/cc.*/:
-      ccCmd()
       break
     case ~/\/help/:
       help()
