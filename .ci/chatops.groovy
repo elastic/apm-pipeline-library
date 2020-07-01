@@ -145,27 +145,12 @@ def matcher(){
   }
 }
 
-def runCmd(){
+def approve(){
   echo "${env.GITHUB_COMMENT}"
-}
-
-def lgtm(){
-  echo "${env.GITHUB_COMMENT}"
-  pullRequest.addLabels(["LGTM"])
-}
-
-def ccCmd(){
-  echo "${env.GITHUB_COMMENT}"
-  def usr = "${env.GITHUB_COMMENT}"
-  usr -= 'cancel'
-  usr -= '/cc'
-  usr -= '@'
-  usr = usr.trim()
-  if(GITHUB_COMMENT.contains('cancel')){
-    pullRequest.deleteReviewRequests([usr])
-  } else {
-    pullRequest.createReviewRequests([usr])
-  }
+  //TODO not implemented in https://github.com/jenkinsci/pipeline-github-plugin
+  // see https://github.com/jenkinsci/pipeline-github-plugin/pull/37
+  // pullRequest.review('APPROVE')
+  echo "Unsupported"
 }
 
 def assign(){
@@ -182,28 +167,40 @@ def assign(){
   }
 }
 
-def approve(){
+def build(){
   echo "${env.GITHUB_COMMENT}"
-  //TODO not implemented in https://github.com/jenkinsci/pipeline-github-plugin
-  // see https://github.com/jenkinsci/pipeline-github-plugin/pull/37
-  // pullRequest.review('APPROVE')
-  echo "Unsupported"
+  build(job: 'apm-shared/apm-pipeline-library-mbp/master',
+    parameters: [
+      string(name: 'MAVEN_CONFIG', value: ''),
+      booleanParam(name: 'make_release', value: false)
+    ],
+    propagate: false,
+    quietPeriod: 10,
+    wait: false
+  )
 }
 
-def meow(){
+def ccCmd(){
   echo "${env.GITHUB_COMMENT}"
-  def body = """
-  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
-  """
-  pullRequest.comment(body)
+  def usr = "${env.GITHUB_COMMENT}"
+  usr -= 'cancel'
+  usr -= '/cc'
+  usr -= '@'
+  usr = usr.trim()
+  if(GITHUB_COMMENT.contains('cancel')){
+    pullRequest.deleteReviewRequests([usr])
+  } else {
+    pullRequest.createReviewRequests([usr])
+  }
 }
 
-def woof(){
+def closeCmd(){
   echo "${env.GITHUB_COMMENT}"
-  def body = """
-  ![image](https://media.giphy.com/media/4Zo41lhzKt6iZ8xff9/giphy.gif)
-  """
-  pullRequest.comment(body)
+  pullRequest.setState('closed')
+}
+
+def deploy(){
+  echo "${env.GITHUB_COMMENT}"
 }
 
 def help(){
@@ -235,14 +232,6 @@ def help(){
   pullRequest.comment(body)
 }
 
-def thisIs(){
-  echo "${env.GITHUB_COMMENT}"
-  def body = """
-  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
-  """
-  pullRequest.comment(body)
-}
-
 def hold(){
   echo "${env.GITHUB_COMMENT}"
   if(env.GITHUB_COMMENT.contains('cancel')){
@@ -250,6 +239,23 @@ def hold(){
   } else {
     pullRequest.addLabels(["DO-NO-MERGGE"])
   }
+}
+
+def lgtm(){
+  echo "${env.GITHUB_COMMENT}"
+  pullRequest.addLabels(["LGTM"])
+}
+
+def lint(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def meow(){
+  echo "${env.GITHUB_COMMENT}"
+  def body = """
+  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
+  """
+  pullRequest.comment(body)
 }
 
 def labelCmd(){
@@ -262,26 +268,6 @@ def labelCmd(){
     pullRequest.removeLabel(label)
   } else {
     pullRequest.addLabels([label])
-  }
-}
-
-def closeCmd(){
-  echo "${env.GITHUB_COMMENT}"
-  pullRequest.setState('closed')
-}
-
-def reopenCmd(){
-  echo "${env.GITHUB_COMMENT}"
-  // It does not work because closed jobs are not triggered by comments.
-  echo "Unsupported"
-}
-
-def skipCmd(){
-  echo "${env.GITHUB_COMMENT}"
-  if(env.GITHUB_COMMENT.contains('cancel')){
-    pullRequest.removeLabel("SKIP-CI")
-  } else {
-    pullRequest.addLabels(["SKIP-CI"])
   }
 }
 
@@ -298,27 +284,41 @@ def packageCmd(){
   echo "${env.GITHUB_COMMENT}"
 }
 
-def lint(){
+def reopenCmd(){
   echo "${env.GITHUB_COMMENT}"
+  // It does not work because closed jobs are not triggered by comments.
+  echo "Unsupported"
+}
+
+def runCmd(){
+  echo "${env.GITHUB_COMMENT}"
+}
+
+def skipCmd(){
+  echo "${env.GITHUB_COMMENT}"
+  if(env.GITHUB_COMMENT.contains('cancel')){
+    pullRequest.removeLabel("SKIP-CI")
+  } else {
+    pullRequest.addLabels(["SKIP-CI"])
+  }
 }
 
 def test(){
   echo "${env.GITHUB_COMMENT}"
 }
 
-def build(){
+def thisIs(){
   echo "${env.GITHUB_COMMENT}"
-  build(job: 'apm-shared/apm-pipeline-library-mbp/master',
-    parameters: [
-      string(name: 'MAVEN_CONFIG', value: ''),
-      booleanParam(name: 'make_release', value: false)
-    ],
-    propagate: false,
-    quietPeriod: 10,
-    wait: false
-  )
+  def body = """
+  ![image](https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif)
+  """
+  pullRequest.comment(body)
 }
 
-def deploy(){
+def woof(){
   echo "${env.GITHUB_COMMENT}"
+  def body = """
+  ![image](https://media.giphy.com/media/4Zo41lhzKt6iZ8xff9/giphy.gif)
+  """
+  pullRequest.comment(body)
 }
