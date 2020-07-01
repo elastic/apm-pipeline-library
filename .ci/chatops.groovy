@@ -168,7 +168,7 @@ def ccCmd(){
   }
 }
 
-def assing(){
+def assign(){
   echo "${env.GITHUB_COMMENT}"
   def usr = "${env.GITHUB_COMMENT}"
   usr -= 'cancel'
