@@ -79,6 +79,21 @@ pipeline {
 def matcher(){
   echo "Checking command... '${env.GITHUB_COMMENT}'"
   switch ("${env.GITHUB_COMMENT}".toLowerCase()) {
+    case ~/\/approve/:
+      approve()
+      break
+    case ~/\/assign.*/:
+      assign()
+      break
+    case ~/\/build/:
+      build()
+      break
+    case ~/\/close/:
+      closeCmd()
+      break
+    case ~/\/deploy/:
+      deploy()
+      break
     case ~/\/run/:
       runCmd()
       break
@@ -91,25 +106,6 @@ def matcher(){
     case ~/\/cc.*/:
       ccCmd()
       break
-    case ~/\/assign.*/:
-      assign()
-      break
-    case ~/\/approve/:
-      approve()
-      break
-    case ~/\/meow/:
-      meow()
-      break
-    case ~/\/woof/:
-    case ~/\/bark/:
-      woof()
-      break
-    case ~/\/this-is-.*/:
-      thisIs()
-      break
-    case ~/\/lint/:
-      lint()
-      break
     case ~/\/help/:
       help()
       break
@@ -119,14 +115,11 @@ def matcher(){
     case ~/\/label.*/:
       labelCmd()
       break
-    case ~/\/close/:
-      closeCmd()
+    case ~/\/lint/:
+      lint()
       break
-    case ~/\/reopen/:
-      reopenCmd()
-      break
-    case ~/\/skip.*/:
-      skipCmd()
+    case ~/\/meow/:
+      meow()
       break
     case ~/\/ok-to-test/:
       okToTest()
@@ -134,11 +127,18 @@ def matcher(){
     case ~/\/package/:
       packageCmd()
       break
-    case ~/\/build/:
-      build()
+    case ~/\/reopen/:
+      reopenCmd()
       break
-    case ~/\/deploy/:
-      deploy()
+    case ~/\/skip.*/:
+      skipCmd()
+      break
+    case ~/\/woof/:
+    case ~/\/bark/:
+      woof()
+      break
+    case ~/\/this-is-.*/:
+      thisIs()
       break
     default:
       echo "Unrecognized command... '${env.GITHUB_COMMENT}'"
