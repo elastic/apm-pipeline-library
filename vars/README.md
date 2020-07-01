@@ -900,6 +900,13 @@ installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12
             will detect then one available for the OS. Optional.
 * extraArgs: Allow to use some extra args to extend the provider. Optional.
 
+## isBranchIndexTrigger
+Check it the build was triggered by a Branch index.
+
+```
+def branchIndexTrigger = isBranchIndexTrigger()
+```
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
