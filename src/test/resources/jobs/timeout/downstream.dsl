@@ -47,6 +47,7 @@ pipeline {
                                           </testcase>
                                       </testsuite>"""
         junit 'junit.xml'
+        archiveArtifacts(allowEmptyArchive: true, artifacts: 'junit.xml')
       }
     }
   }

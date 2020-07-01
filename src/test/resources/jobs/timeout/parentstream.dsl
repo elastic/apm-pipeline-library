@@ -34,9 +34,10 @@ pipeline {
   }
 }
 def runBuild(String type) {
+  def jobName = 'downstream'
   def downstreamBuild
   try {
-    downstreamBuild = build(job: 'downstream', propagate: true, quietPeriod: 0,  wait: true,
+    downstreamBuild = build(job: jobName, propagate: true, quietPeriod: 0, wait: true,
                             parameters: [string(name: 'type', value: "${type}")])
     if (type.equals('timeout') || type.equals('failure')) {
       error("Assertion failed - ${type} should fail.")
@@ -57,6 +58,12 @@ def runBuild(String type) {
     }
   } finally {
     downstreamJobs["downstream-${type}"] = downstreamBuild
+    catchError(buildResult: 'SUCCESS', message: "Aggregate test results from dowsntream job has failed failed. Let's keep moving.") {
+      dir('test') {
+        copyArtifacts(projectName: jobName, selector: specific(buildNumber: downstreamBuild.number.toString()))
+        junit(testResults: 'junit.xml', allowEmptyResults: true, keepLongStdio: true)
+      }
+    }
   }
 }
 '''
