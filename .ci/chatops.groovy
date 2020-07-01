@@ -49,8 +49,8 @@ pipeline {
       agent any
       when {
         beforeAgent true
-        not {
-          triggeredBy 'SCMTrigger'
+        expression {
+          return isCommentTrigger()
         }
       }
       steps {
