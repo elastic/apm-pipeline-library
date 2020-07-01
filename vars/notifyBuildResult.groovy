@@ -24,6 +24,7 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 **/
 
+import co.elastic.BuildException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import hudson.tasks.test.AbstractTestResultAction
@@ -153,8 +154,7 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
     def description = []
 
     // Get all the downstreamJobs that got a TimeoutIssueCause
-    downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
-                                     v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+    downstreamJobs.findAll { k, v -> isSupportedException(v)  && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
                   .collectEntries { name, v ->
                     [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
                   }
@@ -176,6 +176,9 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
 }
 
 def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
-  return downstreamJobs?.any { k, v -> v instanceof FlowInterruptedException &&
-                                       v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+  return downstreamJobs?.any { k, v -> isSupportedException(v) && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+}
+
+def isSupportedException(v) {
+  return (v instanceof FlowInterruptedException || v instanceof BuildException)
 }

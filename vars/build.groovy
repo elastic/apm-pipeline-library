@@ -19,7 +19,7 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 import hudson.model.Result
 import co.elastic.TimeoutIssuesCause
-iimport co.elastic.BuildException
+import co.elastic.BuildException
 
 /**
 
@@ -45,7 +45,7 @@ def call(Map params = [:]){
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     url = getRedirectLink(buildLogOutput, job)
-    throw new BuildException(getBuildId(buildLogOutput))
+    throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE)
   } finally {
     log(level: 'INFO', text: "${url}")
   }
@@ -86,19 +86,19 @@ def getRedirectLink(buildInfo, jobName) {
   }
 }
 
-def throwFlowInterruptedException(buildInfo) {
+def throwBuildException(buildInfo) {
   log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim() ?: ''}'")
   if (buildInfo.getDescription()?.contains('timeout')) {
-    throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
+    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
   } else {
-    throw new FlowInterruptedException(Result.FAILURE)
+    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE)
   }
 }
 
 def propagateFailure(buildInfo) {
   if (buildInfo) {
     if (buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
-      throwFlowInterruptedException(buildInfo)
+      throwBuildException(buildInfo)
     }
   } else {
     log(level: 'DEBUG', text: 'buildInfo is not an object.')

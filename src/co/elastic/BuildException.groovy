@@ -17,12 +17,47 @@
 
 package co.elastic
 
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import hudson.model.Result
+import java.util.Arrays
+import jenkins.model.CauseOfInterruption
 
-public final class BuildException extends FlowInterruptedException {
+public class BuildException extends InterruptedException {
     final String number
+    final Result result
+    final List<CauseOfInterruption> causes
+    private Boolean actualInterruption = true
 
     public BuildException(String number) {
         this.number = number
+    }
+
+    public BuildException(String number, Result result, CauseOfInterruption... causes) {
+        this.number = number
+        this.result = result
+        this.causes = Arrays.asList(causes)
+        this.actualInterruption = true
+    }
+
+    public BuildException(String number, Result result, boolean actualInterruption, CauseOfInterruption... causes) {
+        this.number = number
+        this.result = result
+        this.causes = Arrays.asList(causes)
+        this.actualInterruption = actualInterruption
+    }
+
+    public String getNumber() {
+        return number
+    }
+
+    public Result getResult() {
+        return result
+    }
+
+    public List<CauseOfInterruption> getCauses() {
+        return causes
+    }
+
+    public boolean isActualInterruption() {
+        return actualInterruption
     }
 }
