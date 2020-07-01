@@ -139,6 +139,7 @@ pipeline {
         beforeAgent true
         expression { return env.ONLY_DOCS == "false" }
       }
+      failFast false
       parallel {
         stage('linux && immutable check'){
           agent { label 'linux && immutable' }
@@ -360,6 +361,32 @@ pipeline {
         }
         stage('BareMetal worker-1095690 check'){
           agent { label 'worker-1095690' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1213919 check'){
+          agent { label 'worker-1213919' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1225339 check'){
+          agent { label 'worker-1225339' }
           options { skipDefaultCheckout() }
           steps {
             buildUnix()

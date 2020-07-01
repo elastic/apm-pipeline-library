@@ -1,4 +1,5 @@
 ---
 - job:
     name: apm-ui
+    description: apm-ui
     project-type: folder

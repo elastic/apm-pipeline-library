@@ -312,4 +312,32 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generate build report.'))
   }
+
+  @Test
+  void test_newPRComment_without_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [:])
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('unstash', 0))
+  }
+
+  @Test
+  void test_newPRComment_with_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [ 'foo': 'bar'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
+  }
+
+  @Test
+  void test_newPRComment_with_multiples_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [ 'foo': 'bar', 'bob': 'builder' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
+    assertTrue(assertMethodCallContainsPattern('unstash', 'builder'))
+  }
 }

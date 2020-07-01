@@ -373,7 +373,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       }
     )
     script.analyzeFlakey(
-      jobInfo: ['fullName': 'fake_name'],
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json')
     )
@@ -382,11 +382,40 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakeyThreshold() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod(
+      "sendDataToElasticsearch",
+      [Map.class],
+      {m -> readJSON(file: "flake-results.json")}
+    )
+
+    helper.registerAllowedMethod(
+      "githubPrComment",
+      [Map.class],
+      {m -> assertTrue(
+        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
+        )
+      }
+    )
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      flakyThreshold: 0.5
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
+    assertJobStatusSuccess()
+  }
+
+
+  @Test
   void test_analyzeFlakeyNoJobInfo() throws Exception {
     def script = loadScript(scriptName)
     try {
       script.analyzeFlakey(
-        jobInfo: [],
+        flakyReportIdx: '',
         es: "https://fake_url",
         testsErrors: readJSON(file: 'flake-tests-errors.json')
       )
@@ -394,7 +423,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive jobInfo data'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive flakyReportIdx data'))
     assertJobStatusFailure()
   }
 
@@ -418,6 +447,42 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_customPRComment_without_file_argument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.customPRComment()
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'file parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_customPRComment_without_commentFile_argument() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.customPRComment(file: 'foo')
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'commentFile parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_customPRComment() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('readFile', [Map.class], { 'awesome' })
+    script.customPRComment(file: 'foo', commentFile: 'bar')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'message=awesome'))
     assertJobStatusSuccess()
   }
 }

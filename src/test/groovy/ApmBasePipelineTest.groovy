@@ -352,6 +352,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
+    helper.registerAllowedMethod('createFileFromTemplate', [Map.class],  { m ->
+      def script = loadScript('vars/createFileFromTemplate.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
@@ -395,6 +399,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
+    helper.registerAllowedMethod('githubPrComment', [Map.class], { m ->
+      def script = loadScript('vars/githubPrComment.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
@@ -409,6 +417,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('isPR', {
       def script = loadScript('vars/isPR.groovy')
       return script.call()
+    })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
+      def script = loadScript('vars/isInstalled.groovy')
+      return script.call(m)
     })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })

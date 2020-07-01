@@ -1,5 +1,75 @@
 # Changelog
 
+## v1.1.119 (30/06/2020)
+
+#### 🚀 Enhancements
+
+-  template: size to kbs format [#637](https://github.com/elastic/apm-pipeline-library/pull/637)
+
+#### 🐛 Bug Fixes
+
+-  [opbeans] fix the docker logs happy path [#641](https://github.com/elastic/apm-pipeline-library/pull/641)
+
+#### 📚 Documentation
+
+-  template: fix conditional and emoticons [#640](https://github.com/elastic/apm-pipeline-library/pull/640)
+-  Update release instructions [#638](https://github.com/elastic/apm-pipeline-library/pull/638)
+
+---
+
+## v1.1.118 (29/06/2020)
+
+#### 🚀 Enhancements
+
+-  generateReport step [#634](https://github.com/elastic/apm-pipeline-library/pull/634)
+
+---
+
+## v1.1.117 (26/06/2020)
+
+#### 🚀 Enhancements
+
+-  customPRComment step [#630](https://github.com/elastic/apm-pipeline-library/pull/630)
+
+#### 🙈 No user affected
+
+-  test-infra: arch is supported in 5.1.0 [#632](https://github.com/elastic/apm-pipeline-library/pull/632)
+
+---
+
+## v1.1.116 (25/06/2020)
+
+#### 🚀 Enhancements
+
+-  superLinter step [#624](https://github.com/elastic/apm-pipeline-library/pull/624)
+-  isInstalled step [#626](https://github.com/elastic/apm-pipeline-library/pull/626)
+
+#### 🐛 Bug Fixes
+
+-  fix: fix licenseScan tests [#629](https://github.com/elastic/apm-pipeline-library/pull/629)
+-  fix: php report and refactor [#627](https://github.com/elastic/apm-pipeline-library/pull/627)
+
+---
+
+## v1.1.115 (24/06/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: check that docker is installed [#616](https://github.com/elastic/apm-pipeline-library/pull/616)
+
+#### 🙈 No user affected
+
+-  test-infra: docker in 64 bits only [#623](https://github.com/elastic/apm-pipeline-library/pull/623)
+-  test-infra: support new workers [#619](https://github.com/elastic/apm-pipeline-library/pull/619)
+
+#### ⚙️ CI
+
+-  feat: third-party license scan several languages support [#622](https://github.com/elastic/apm-pipeline-library/pull/622)
+-  [jjbb]: folder description is required [#621](https://github.com/elastic/apm-pipeline-library/pull/621)
+-  [jjbb]: elastic/observability-robots [#620](https://github.com/elastic/apm-pipeline-library/pull/620)
+
+---
+
 ## v1.1.114 (17/06/2020)
 
 #### 🚀 Enhancements
@@ -815,8 +885,8 @@
 
 #### 🐛 Bug Fixes
 
--  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 -  ci(jenkins): validate pipelines [#326](https://github.com/elastic/apm-pipeline-library/pull/326)
+-  (pre-commit) avoid error when pulling docker images [#331](https://github.com/elastic/apm-pipeline-library/pull/331)
 
 #### ⚙️ CI
 
@@ -905,8 +975,8 @@
 
 #### 🚀 Enhancements
 
--  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
 -  feat: pipelineManager to encapsulate certain steps [#300](https://github.com/elastic/apm-pipeline-library/pull/300)
+-  feat: setEnvVar, whenTrue, whenFalse, and withEnvMask new steps [#295](https://github.com/elastic/apm-pipeline-library/pull/295)
 
 #### 🐛 Bug Fixes
 
@@ -1132,14 +1202,14 @@
 
 #### 🚀 Enhancements
 
--  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
--  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 -  feat: enable functional tests pipeline [#186](https://github.com/elastic/apm-pipeline-library/pull/186)
 -  feat: rename GitHub check context as apm-ci [#184](https://github.com/elastic/apm-pipeline-library/pull/184)
 -  support withVaultToken step [#183](https://github.com/elastic/apm-pipeline-library/pull/183)
 -  dockerLogin for the precommit wrapper [#182](https://github.com/elastic/apm-pipeline-library/pull/182)
 -  feat: Build Apm Server Docker images [#150](https://github.com/elastic/apm-pipeline-library/pull/150)
 -  use orgs API for checking if build was triggered by a comment [#178](https://github.com/elastic/apm-pipeline-library/pull/178)
+-  feat: support docker image when running preCommit [#188](https://github.com/elastic/apm-pipeline-library/pull/188)
+-  feat: vault is not required in the jjbb [#187](https://github.com/elastic/apm-pipeline-library/pull/187)
 
 #### 🐛 Bug Fixes
 
@@ -1579,13 +1649,13 @@
 
 #### 🚀 Enhancements
 
--  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
--  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
--  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 -  [APM-CI][.NET] Support .NET images [#56](https://github.com/elastic/apm-pipeline-library/pull/56)
 -  [APM-CI][All] Make the trigger by comment case-insensitive [#50](https://github.com/elastic/apm-pipeline-library/pull/50)
 -  ci(jenkins): add licenses to files, fix JJBB jobs [#59](https://github.com/elastic/apm-pipeline-library/pull/59)
 -  (#53) Include Maven wrapper into the scm [#54](https://github.com/elastic/apm-pipeline-library/pull/54)
+-  [ci] add files for JJBB jobs [#49](https://github.com/elastic/apm-pipeline-library/pull/49)
+-  [APM-CI][Ruby] Build Docker images for JRuby [#48](https://github.com/elastic/apm-pipeline-library/pull/48)
+-  [APM-CI] Implement a withSecretVault step [#51](https://github.com/elastic/apm-pipeline-library/pull/51)
 
 #### 📚 Documentation
 

@@ -176,6 +176,23 @@ It requires to initialise the pipeline with githubEnv() first.
  coverageReport("path_to_base_folder")
 ```
 
+## createFileFromTemplate
+
+Create a file given a Jinja template and the data in a JSON format
+
+```
+  // if the template to be used is the one in the shared library
+  createFileFromTemplate(data: 'my-data.json', template: 'my-template.md.j2', output: 'file.md')
+
+  // if the template to be used is another one in the local workspace
+  createFileFromTemplate(data: 'my-data.json', template: 'src/foo/templates/my-template.md.j2', output: 'file.md', localTemplate: true)
+```
+
+* data: JSON file with the data to be consumed in the template. Mandatory.
+* template: jinja template to be used. Mandatory.
+* output: the name of the file to be transformed. Mandatory.
+* localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
@@ -254,6 +271,27 @@ generateChangelog(
         used.
 
 [GitHub Changelog Generator documentation](https://github.com/github-changelog-generator/github-changelog-generator)
+
+## generateReport
+Generate a report using the `id` script and compare the output with the `TARGET_BRANCH`
+variable if exists. Then it creates a report using the template `id`.
+
+This particular step is quite opinionated, and it relies on the id as the name of the
+script, template and outputs that are generated.
+
+```
+  // This will create a report with the name `bundlesize.md` and `bundlesize.json` in the build folder.
+  generateReport(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
+```
+
+* id: The id that matches the script name to run and the jinja template if triggered. Mandatory
+* input: The input required to be used when generating the reports. Mandatory
+* output: The input required to be used when generating the reports. Optional. Default 'build'
+* template: Whether to generate a report with the template with id name. Optional. Default 'true'
+* templateFormat: What's the report extension generated with the template. Optional. Default 'md'
+* compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
+
+_NOTE_: It only supports *nix.
 
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
@@ -907,6 +945,24 @@ evaluates the change list with the pattern list:
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
+## isInstalled
+Whether the given tools is installed and available.
+
+```
+  // if docker is installed, the validation uses docker --version
+  whenTrue(isInstalled(tool: 'docker', flag: '--version')) {
+    // ...
+  }
+
+  // if 7zip is installed, the validations uses 7z
+  whenTrue(isInstalled(tool: '7z')) {
+    // ...
+  }
+```
+
+* tool: The name of the tool to check whether it is installed and available. Mandatory.
+* flag: The flag to be added to the validation. For instance `--version`. Optional.
+
 ## isPR
 Whether the build is based on a Pull Request or no
 
@@ -1126,11 +1182,15 @@ and send some data to Elastic search.
 Besides, if there are checkout environmental issues then it will rebuild the pipeline.
 
 ```
-notifyBuildResult()
-```
+  // Default
+  notifyBuildResult()
 
-```
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
 ```
 * es: Elasticserach URL to send the report.
 * secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
@@ -1140,8 +1200,11 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
+* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
+* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
 * downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
+* newPRComment: The map of the data to be populated as a comment. Default empty.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -1424,6 +1487,17 @@ def bucketUri = stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-
 * retention policy for the bucket is delegated on the Google side.
 
 It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
+## superLinter
+Run the github/super-linter step
+
+```
+superLinter(envs: [ 'VALIDATE_GO=false' ])
+```
+
+* *envs*: the list of new env variables to use, format variable=value. Optional
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *dockerImage*: What's the docker image to use. Optional. Default: 'github/super-linter:latest'
 
 ## tar
 Compress a folder into a tar file.
