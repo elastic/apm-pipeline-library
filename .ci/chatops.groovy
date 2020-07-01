@@ -211,7 +211,7 @@ def help(){
   def body = """
   # ChatOps commands Help
   * **/approve** - Approve the PR.
-  * **/assing [cancel] @Someone** - Assing the PR to Someone.
+  * **/assign [cancel] @Someone** - Assing the PR to Someone.
   * **/bark** - Add a dog image to the issue or PR.
   * **/build** - Launch the build process.
   * **/cc [cancel] @Someone** - Requests a review from the user(s).
