@@ -16,8 +16,8 @@
 // under the License.
 
 import co.elastic.mock.StepsMock
+import co.elastic.BuildException
 import co.elastic.TimeoutIssuesCause
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
@@ -76,12 +76,12 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_throwFlowInterruptedException() throws Exception {
+  void test_throwBuildException() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
+      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -90,12 +90,12 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_throwFlowInterruptedException_with_null_description() throws Exception {
+  void test_throwBuildException_with_null_description() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
+      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -104,12 +104,12 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_throwFlowInterruptedException_caused_by_timeout() throws Exception {
+  void test_throwBuildException_caused_by_timeout() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
+      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
       assertThat(e.getResult().toString(), is('FAILURE'))
       assertTrue(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
@@ -131,7 +131,7 @@ public class BuildStepTests extends ApmBasePipelineTest {
     try {
       script.propagateFailure(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
     }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))
