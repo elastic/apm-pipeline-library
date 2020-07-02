@@ -348,7 +348,7 @@ pipeline {
         dir("apps/beats/heartbeat"){
           script{
             sh("pip3 install pyyaml")
-            sh("./generate_heartbeat_configs.py")
+            sh("python3 ./generate_heartbeat_configs.py")
             def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
             buildDockerImage(
               repo: "https://github.com/elastic/observability-robots",
