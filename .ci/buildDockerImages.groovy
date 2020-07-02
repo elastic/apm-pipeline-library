@@ -54,6 +54,7 @@ pipeline {
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -330,6 +331,30 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build Heartbeat'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.heartbeat}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        git 'https://github.com/elastic/observability-robots'
+        dir("apps/beats/heartbeat"){
+          sh("./generate_heartbeat_configs.py")
+          buildDockerImage(
+            repo: "https://github.com/elastic/observability-robots",
+            tag: 'obs-jenkins-heartbeat',
+            version: 'latest',
+            push: true,
+            folder: "apps/beats/heartbeat"
+          )
+        }
       }
     }
     stage('Build opbot'){
