@@ -26,7 +26,7 @@
           disable-pr-notifications: true
           ## Change the default GitHub check notification context from
           #   'continuous-integration/jenkins/SUFFIX' to a custom text
-          notification-context: 'apm-ci'
+          notification-context: 'apm-ci/test-pipeline'
           repo: apm-pipeline-library
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
