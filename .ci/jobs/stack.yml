@@ -1,5 +1,0 @@
----
-- job:
-    name: stack
-    description: stack
-    project-type: folder
