@@ -47,9 +47,7 @@ function addPreviousSizeIfPossible() {
     tmp="$(mktemp -d)/compare.json"
     # shellcheck disable=SC2016
     previous_size=$($JQ --arg id "${label}" --arg v "$size" '(.[] | select(.label==$id) | .[$v])' "${compare_to}")
-    # shellcheck disable=SC2016
-    current_size=$($JQ --arg id "${label}" --arg v "$size" '(.[] | select(.label==$id) | .[$v])' "${report}")
-    if [ "${previous_size}" != "${current_size}" ] ; then
+    if [ -n "${previous_size}" ] ; then
         # shellcheck disable=SC2016
         $JQ --arg id "${label}" --arg v "${new_size}" --argjson new "${previous_size}" '(.[] | select(.label==$id) | .[$v]) |= $new' "${report}" > "$tmp"
         mv "$tmp" "${report}"
