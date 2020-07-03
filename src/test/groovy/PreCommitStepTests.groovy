@@ -101,7 +101,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     script.call(commit: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sshagent', '[f6c7695a-671e-4f4f-a331-acdce44ff9ba]'))
-    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
+    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/observability-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
     assertJobStatusSuccess()
   }
 
