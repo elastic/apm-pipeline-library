@@ -32,10 +32,13 @@
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
           ssh-checkout:
             credentials: f6c7695a-671e-4f4f-a331-acdce44ff9ba
-          ## TODO What the use case for this??
-          # property-strategies:
-          #   all-branches:
-          #     - suppress-scm-triggering: true
+          ## suppress-scm-triggering: true creates the jobs but skip the builds
+          ## that are SCM based.
+          ## It does not register any push/comment/cron/upstream or any other kind of
+          ## trigger defined in the pipeline.
+          property-strategies:
+            all-branches:
+              - suppress-scm-triggering: true
           build-strategies:
             - tags:
                 ignore-tags-older-than: -1
