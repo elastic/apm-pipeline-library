@@ -73,7 +73,11 @@ pipeline {
     quietPeriod(10)
   }
   triggers {
-    cron 'H H(3-4) * * 1-5'
+    // If required a cron trigger then use the parentstream daily/weekly pipeline helper
+    // to trigger it for simplicity. Otherwise, if PRs are not required to run for that
+    // particular cron scheduler then it will be required to add the when condition
+    // accordingly.
+    // cron 'H H(3-4) * * 1-5'
     issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
