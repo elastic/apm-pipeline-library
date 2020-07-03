@@ -118,9 +118,12 @@ pipeline {
           // Set the global variable
           variable = 'foo'
 
-          // Skip all the stages except docs for PR's with asciidoc and md changes only
           dir("${BASE_DIR}"){
+            // Skip all the stages except docs for PR's with asciidoc and md changes only
             env.ONLY_DOCS = isGitRegionMatch(patterns: [ '.*\\.(asciidoc|md)' ], shouldMatchAll: true)
+
+            // Enable Workers Checks stage for PRs with the given pattern
+            env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
           }
         }
       }
@@ -137,7 +140,13 @@ pipeline {
     stage('Workers Checks'){
       when {
         beforeAgent true
-        expression { return env.ONLY_DOCS == "false" }
+        allOf {
+          expression { return env.ONLY_DOCS == "false" }
+          anyOf {
+            expression { return env.TEST_INFRA == "true" }
+            branch 'master'
+          }
+        }
       }
       failFast false
       parallel {
@@ -146,7 +155,8 @@ pipeline {
           options { skipDefaultCheckout() }
           environment {
             PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-            //see JENKINS-41929
+            // Parameters will be empty for the very first build, setting an environment variable
+            // with the same name will workaround the issue. see JENKINS-41929
             PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
           stages {
