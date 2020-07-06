@@ -39,7 +39,7 @@ pipeline {
   stages {
     stage('Run Tasks'){
       steps {
-        build(job: 'apm-ui/apm-test-pipeline-mbp/master',
+        build(job: 'apm-shared/apm-test-pipeline-mbp/master',
           parameters: [
             booleanParam(name: 'Run_As_Master_Branch', value: true),
           ],
