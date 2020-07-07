@@ -114,7 +114,7 @@ def isAuthorizedUser(login){
   def ret = false
   if(env.REPO_NAME) {
     try {
-      def fileContent = libraryResource("approval-list/${env.REPO}.yml")
+      def fileContent = libraryResource("approval-list/${env.REPO_NAME}.yml")
       def authorizedUsers = readYaml(text: fileContent)['USERS']
       ret = authorizedUsers.any{ it.equals(login) }
     } catch(e) {

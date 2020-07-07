@@ -248,4 +248,47 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not allowed to run in the CI yet'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_isAuthorizedUser_that_it_exists_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    def ret = script.isAuthorizedUser('v1v')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_that_it_is_quite_similar_to_an_existing_one_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v1', 'another']] })
+    def ret = script.isAuthorizedUser('v1v')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_with_an_existing_user_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { '' })
+    def ret = script.isAuthorizedUser('foo')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_that_it_exists_in_the_approval_list_without_env_repo_name() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.isAuthorizedUser('v1v')
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
 }
