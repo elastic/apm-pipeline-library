@@ -97,7 +97,6 @@ def call(Map params = [:]){
         extensions: extensions,
         submoduleCfg: [],
         userRemoteConfigs: [[
-          refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*',
           credentialsId: "${credentialsId}",
           url: "${repo}"]]])
     } else {
