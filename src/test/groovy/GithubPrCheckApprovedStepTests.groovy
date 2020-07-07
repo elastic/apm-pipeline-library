@@ -223,7 +223,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
-
   @Test
   void testAPIContractViolationOnUserObject() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -289,6 +288,24 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
     printCallStack()
     assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_IsAuthorizedBot() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [] })
+    helper.registerAllowedMethod('githubPrInfo', [Map.class], {
+      return [title: 'dummy PR', user: [login: 'v1v'], author_association: 'MEMBER']
+    })
+    helper.registerAllowedMethod('githubPrReviews', [Map.class], { return [] })
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    env.REPO_NAME = 'apm-agent-go'
+    env.CHANGE_ID = 1
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/apm-agent-go.yml'))
     assertJobStatusSuccess()
   }
 }
