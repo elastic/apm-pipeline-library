@@ -900,6 +900,13 @@ installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12
             will detect then one available for the OS. Optional.
 * extraArgs: Allow to use some extra args to extend the provider. Optional.
 
+## isBranchIndexTrigger
+Check it the build was triggered by a Branch index.
+
+```
+def branchIndexTrigger = isBranchIndexTrigger()
+```
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
@@ -1247,7 +1254,7 @@ preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/doc
 * commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
 * credentialsId: what credentialsId to be loaded to enable git clones from private repos. Default: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba'. Optional
 * registry: what docker registry to be logged to consume internal docker images. Default: 'docker.elastic.co'. Optional
-* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/apm-team/ci/docker-registry/prod'. Optional
+* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/observability-team/ci/docker-registry/prod'. Optional
 
 ## preCommitToJunit
 Parse the pre-commit log file and generates a junit report

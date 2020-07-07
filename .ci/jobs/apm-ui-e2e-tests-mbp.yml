@@ -23,7 +23,7 @@
           build-strategies:
             - regular-branches: false
             - change-request:
-                ignore-target-only-changes: false
+                ignore-target-only-changes: true
           clean:
             after: true
             before: true

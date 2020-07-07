@@ -1,0 +1,5 @@
+Check it the build was triggered by a Branch index.
+
+```
+def branchIndexTrigger = isBranchIndexTrigger()
+```

@@ -1,0 +1,65 @@
+---
+
+## See .ci/jobs/defaults.yml for some generic configuration that gets
+## populated in this particular job.
+- job:
+    name: apm-shared/apm-test-pipeline-mbp
+    display-name: Tests Pipeline
+    description: Pipeline to make feature tests
+    view: APM-CI
+    project-type: multibranch
+    script-path: resources/JenkinsfileTemplate.groovy
+    scm:
+      ## https://docs.openstack.org/infra/jenkins-job-builder/project_workflow_multibranch.html
+      ## NOTE: the above docs might refere to the latest version of the JJB, but it doesn't
+      ##       mean the one used in the infra side matches with that particular version
+      - github:
+          ## no-pr skips all the branches in the origin that match with a PR.
+          branch-discovery: no-pr
+          discover-pr-forks-strategy: merge-current
+          discover-pr-forks-trust: permission
+          discover-pr-origin: merge-current
+          discover-tags: true
+          ## Look for specific branches, tags and PRs that match the given regex.
+          head-filter-regex: '(master|current|PR-.*)'
+          ## Disable default github status notifications on pull requests
+          disable-pr-notifications: true
+          ## Change the default GitHub check notification context from
+          #   'continuous-integration/jenkins/SUFFIX' to a custom text
+          notification-context: 'apm-ci/test-pipeline'
+          repo: apm-pipeline-library
+          repo-owner: elastic
+          credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+          ssh-checkout:
+            credentials: f6c7695a-671e-4f4f-a331-acdce44ff9ba
+          ## suppress-scm-triggering: true creates the jobs but skip the builds
+          ## that are SCM based.
+          ## It does not register any push/comment/cron/upstream or any other kind of
+          ## trigger defined in the pipeline.
+          property-strategies:
+            all-branches:
+              - suppress-scm-triggering: true
+          build-strategies:
+            - tags:
+                ignore-tags-older-than: -1
+                ignore-tags-newer-than: -1
+            - regular-branches: true
+            ## This will avoid building the PRs when the target branch has changed
+            ## when the MBP index scan happens
+            - change-request:
+                ignore-target-only-changes: true
+          clean:
+            after: true
+            before: true
+          prune: true
+          shallow-clone: true
+          depth: 4
+          do-not-fetch-tags: true
+          submodule:
+            disable: false
+            recursive: true
+            parent-credentials: true
+            timeout: 100
+          timeout: '15'
+          use-author: true
+          wipe-workspace: 'True'

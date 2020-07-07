@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.BuildException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import co.elastic.mock.StepsMock
@@ -264,6 +265,15 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test_AnalyseDownstreamJobsFailures_with_timeout_in_downstreams() throws Exception {
     def script = loadScript(scriptName)
     def downstreamBuildInfo = new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause('foo', 1))
+    script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got a timeout checkout issue'))
+  }
+
+  @Test
+  void test_AnalyseDownstreamJobsFailures_with_timeout_in_downstreams_with_build_exception() throws Exception {
+    def script = loadScript(scriptName)
+    def downstreamBuildInfo = new BuildException("1", Result.FAILURE, new TimeoutIssuesCause('foo', 1))
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got a timeout checkout issue'))
