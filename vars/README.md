@@ -620,12 +620,15 @@ githubEnv()
 
 ## githubPrCheckApproved
 If the current build is a PR, it would check if it is approved or created
-by a user with write/admin permission on the repo.
+by a user with write/admin permission on the repo or a trusted user.
+
 If it is not approved, the method will throw an error.
 
 ```
 githubPrCheckApproved()
 ```
+
+NOTE: `REPO_NAME` env variable is required, so gitHubEnv step is the one in charge
 
 ## githubPrComment
 Add a comment or edit an existing comment in the GitHub.

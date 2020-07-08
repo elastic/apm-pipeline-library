@@ -17,7 +17,8 @@
 
 /**
   If the current build is a PR, it would check if it is approved or created
-  by a user with write/admin permission on the repo.
+  by a user with write/admin permission on the repo or a trusted user.
+
   If it is not approved, the method will throw an error.
 
   githubPrCheckApproved()
@@ -36,7 +37,16 @@ def call(Map params = [:]){
 
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${user} - Author Association: ${pr?.author_association}")
 
-  approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
+  // The PR is approved to be executed in the CI for the below reasons:
+  // - An user with write permissions raised the PR.
+  // - An authorized bot created the PR.
+  // - If it has already been approved by a member or collaborator.
+  // - A trusted user for that particular repo.
+  //
+  approved = user != null && (isPrApproved(reviews) ||
+                              hasWritePermission(token, repoName, user) ||
+                              isAuthorizedBot(user, userType) ||
+                              isAuthorizedUser(user))
 
   if(!approved){
     def message = 'The PR is not allowed to run in the CI yet'
@@ -93,4 +103,25 @@ def isAuthorizedBot(login, type){
     ret = authorizedBots.any{ it.equals(login) }
   }
   return ret;
+}
+
+/**
+  Check if the PR come from a trusted user. For such it requires the access to
+  the env variable REPO_NAME.
+*/
+def isAuthorizedUser(login){
+  log(level: 'DEBUG', text: "githubPrCheckApproved: isAuthorizedUser(${login})")
+  def ret = false
+  if(env.REPO_NAME) {
+    try {
+      def fileContent = libraryResource("approval-list/${env.REPO_NAME}.yml")
+      def authorizedUsers = readYaml(text: fileContent)['USERS']
+      ret = authorizedUsers.any{ it.equals(login) }
+    } catch(e) {
+      ret = false
+    }
+  } else {
+    ret = false
+  }
+  return ret
 }
