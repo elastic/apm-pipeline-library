@@ -305,7 +305,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_IsAuthorizedBot() throws Exception {
+  void test_isAuthorizedUser() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [] })
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
