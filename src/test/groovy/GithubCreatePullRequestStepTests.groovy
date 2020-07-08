@@ -128,4 +128,13 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'git config remote.origin.url'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_with_force() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(title: 'foo', force: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "--force"))
+    assertJobStatusSuccess()
+  }
 }
