@@ -58,10 +58,6 @@ pipeline {
         stage('Opbeans-dotnet') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }
-          /** FIXME disable until 7.4 is not released */
-          when {
-            expression { return false }
-          }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-dotnet.git',
               tag: "opbeans-dotnet",
