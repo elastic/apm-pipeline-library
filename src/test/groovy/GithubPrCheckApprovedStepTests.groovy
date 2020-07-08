@@ -282,6 +282,19 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_isAuthorizedUser_with_an_unexisting_repo() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'repo_without_approval_list_file'
+    helper.registerAllowedMethod('libraryResource', [String.class], {
+      throw new Exception('Force the approval file does not exist')
+    })
+    def ret = script.isAuthorizedUser('foo')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_isAuthorizedUser_that_it_exists_in_the_approval_list_without_env_repo_name() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.isAuthorizedUser('v1v')
