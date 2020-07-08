@@ -1,5 +1,37 @@
 # Changelog
 
+## v1.1.123 (07/07/2020)
+
+#### 🐛 Bug Fixes
+
+- [**team:automation**] fix: remove refspec because is no longer needed [#658](https://github.com/elastic/apm-pipeline-library/pull/658)
+
+#### 🙈 No user affected
+
+-  test-infra: windows7 is not provisioned [#656](https://github.com/elastic/apm-pipeline-library/pull/656)
+
+#### ⚙️ CI
+
+-  opbeans: dotnet enable docker generation [#657](https://github.com/elastic/apm-pipeline-library/pull/657)
+-  daily: fix job name [#655](https://github.com/elastic/apm-pipeline-library/pull/655)
+-  [jjbb]: add docs in the test pipeline one [#651](https://github.com/elastic/apm-pipeline-library/pull/651)
+
+---
+
+## v1.1.122 (03/07/2020)
+
+#### 🚀 Enhancements
+
+-  pre-commit: change vault secrets [#652](https://github.com/elastic/apm-pipeline-library/pull/652)
+-  Pipeline for building Jenkins Heartbeat container [#645](https://github.com/elastic/apm-pipeline-library/pull/645)
+
+#### ⚙️ CI
+
+-  Switch to pyyaml [#647](https://github.com/elastic/apm-pipeline-library/pull/647)
+-  Install yaml via pip for Heartbeat stage [#646](https://github.com/elastic/apm-pipeline-library/pull/646)
+
+---
+
 ## v1.1.121 (02/07/2020)
 
 #### 🚀 Enhancements
@@ -348,20 +380,20 @@
 
 #### 🚀 Enhancements
 
--  ci: notify other build status [#521](https://github.com/elastic/apm-pipeline-library/pull/521)
 -  ci: CI approval aborted rather than failed [#522](https://github.com/elastic/apm-pipeline-library/pull/522)
 -  ci: generate-build-data JSON objects and no stats badge [#520](https://github.com/elastic/apm-pipeline-library/pull/520)
+-  ci: notify other build status [#521](https://github.com/elastic/apm-pipeline-library/pull/521)
 
 #### 🐛 Bug Fixes
 
--  fix: null build description [#528](https://github.com/elastic/apm-pipeline-library/pull/528)
 -  ci: avoid template when no PRs [#526](https://github.com/elastic/apm-pipeline-library/pull/526)
+-  fix: null build description [#528](https://github.com/elastic/apm-pipeline-library/pull/528)
 
 #### 🙈 No user affected
 
--  test: apm-ci test-infra for windows [#527](https://github.com/elastic/apm-pipeline-library/pull/527)
 -  test: move to apm-ci folder [#524](https://github.com/elastic/apm-pipeline-library/pull/524)
 -  test: use a different port [#523](https://github.com/elastic/apm-pipeline-library/pull/523)
+-  test: apm-ci test-infra for windows [#527](https://github.com/elastic/apm-pipeline-library/pull/527)
 
 ---
 
@@ -684,8 +716,8 @@
 
 #### 🐛 Bug Fixes
 
--  ci(jenkins): enable .ci/scripts in other repos [#394](https://github.com/elastic/apm-pipeline-library/pull/394)
 -  retry in the getBuildInfoJsonFiles didn't load the functions library [#393](https://github.com/elastic/apm-pipeline-library/pull/393)
+-  ci(jenkins): enable .ci/scripts in other repos [#394](https://github.com/elastic/apm-pipeline-library/pull/394)
 
 #### ⚙️ CI
 
@@ -747,8 +779,8 @@
 
 #### 🚀 Enhancements
 
--  POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
 -  Speed up builds with less sleeps steps [#376](https://github.com/elastic/apm-pipeline-library/pull/376)
+-  POST ability for GitHub API [#375](https://github.com/elastic/apm-pipeline-library/pull/375)
 
 #### ⚙️ CI
 
@@ -1023,11 +1055,11 @@
 
 #### 🐛 Bug Fixes
 
+-  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 -  fix: avoid lose Exceptions [#291](https://github.com/elastic/apm-pipeline-library/pull/291)
 -  (#213) Fix script path [#290](https://github.com/elastic/apm-pipeline-library/pull/290)
 -  213 fix gopath [#289](https://github.com/elastic/apm-pipeline-library/pull/289)
 -  (#213) Define HOME variable for ephemeral worker installing Gimme [#288](https://github.com/elastic/apm-pipeline-library/pull/288)
--  (#213) Install mage in the build agent [#276](https://github.com/elastic/apm-pipeline-library/pull/276)
 
 #### 📚 Documentation
 
@@ -1155,10 +1187,10 @@
 
 #### 🚀 Enhancements
 
--  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
 -  feat: enable linux worker [#223](https://github.com/elastic/apm-pipeline-library/pull/223)
 -  feat: enable manual ITs [#204](https://github.com/elastic/apm-pipeline-library/pull/204)
 -  enable jjbb validation locally [#217](https://github.com/elastic/apm-pipeline-library/pull/217)
+-  force shallow to False if mergeTarget is enabled [#220](https://github.com/elastic/apm-pipeline-library/pull/220)
 -  feat: support multidocument YAML files [#210](https://github.com/elastic/apm-pipeline-library/pull/210)
 -  feat: CodeCov Docker container as tool [#172](https://github.com/elastic/apm-pipeline-library/pull/172)
 
@@ -1183,8 +1215,8 @@
 
 #### 🚀 Enhancements
 
--  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 -  feat: test cluster for 7.4.0 [#205](https://github.com/elastic/apm-pipeline-library/pull/205)
+-  docker pull quietly to reduce log verbose output [#203](https://github.com/elastic/apm-pipeline-library/pull/203)
 
 #### 🐛 Bug Fixes
 
@@ -1852,10 +1884,10 @@
 
 #### ⚙️ CI
 
+-  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
 -  [APM-CI] APM UI pipeline version 0.2 [#15](https://github.com/elastic/apm-pipeline-library/pull/15)
 -  [APM-CI] APM UI pipeline version 0.1 [#14](https://github.com/elastic/apm-pipeline-library/pull/14)
 -  Fix test and add new ones [#17](https://github.com/elastic/apm-pipeline-library/pull/17)
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
--  Pr no build test [#6](https://github.com/elastic/apm-pipeline-library/pull/6)
