@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.124 (08/07/2020)
+
+#### 🚀 Enhancements
+
+- [**team:automation**] feat: support for foce option in githubCreatePullRequest [#654](https://github.com/elastic/apm-pipeline-library/pull/654)
+
+#### 🐛 Bug Fixes
+
+- [**team:automation**] fix: fossa need the tools to make the init [#660](https://github.com/elastic/apm-pipeline-library/pull/660)
+- [**team:automation**] fix: generate long Changelogs [#659](https://github.com/elastic/apm-pipeline-library/pull/659)
+
 ## v1.1.123 (07/07/2020)
 
 #### 🐛 Bug Fixes
