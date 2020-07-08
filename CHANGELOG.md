@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.125 (08/07/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: ignore label team:automation on changelogs [#662](https://github.com/elastic/apm-pipeline-library/pull/662)
+-  fix: using capital on the refspec does not have colisions [#661](https://github.com/elastic/apm-pipeline-library/pull/661)
+
 ## v1.1.124 (08/07/2020)
 
 #### 🚀 Enhancements
