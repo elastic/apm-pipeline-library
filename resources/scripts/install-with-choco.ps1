@@ -1,15 +1,19 @@
 # Abort with non zero exit code on errors
 $ErrorActionPreference = "Stop"
 
-Write-Host("Getting latest {0} version for {1} ..." -f $env:TOOL,$env:VERSION)
-& choco list $env:TOOL --exact --by-id-only --all | Select-String -Pattern "$env:TOOL $env:VERSION"
+$tool=$args[0]
+$pattern=$args[1]
+$exclude=$args[2]
+
+Write-Host("Getting latest {0} version for {1} (and exclude {2})..." -f $tool,$pattern,$exclude))
+& choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch
 
 # Get the latest version sorted by alphanumerics.
-$DefaultVersion = $(choco list $env:TOOL --exact --by-id-only --all) | Select-String -Pattern "$env:TOOL $env:VERSION" | %{$_.ToString().split(" ")[1]} | sort | Select-Object -Last 1
+$DefaultVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort | Select-Object -Last 1
 
 # Get the latest version sorted by numeric versions, aka support to semantic versioning
 try {
-  $SemVerVersion = $(choco list $env:TOOL --exact --by-id-only --all) | Select-String -Pattern "$env:TOOL $env:VERSION" | %{$_.ToString().split(" ")[1]} | sort {[version] $_} | Select-Object -Last 1
+  $SemVerVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort {[version] $_} | Select-Object -Last 1
 } catch {
   ## If the version type accelerator throws an error then let's use the default version
   $SemVerVersion = $DefaultVersion
