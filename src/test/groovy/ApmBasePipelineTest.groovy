@@ -425,6 +425,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('nodeArch', [], {
+      def script = loadScript('vars/nodeArch.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)

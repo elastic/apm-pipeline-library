@@ -905,6 +905,15 @@ This step will install the list of tools
             will detect then one available for the OS. Optional.
 * extraArgs: Allow to use some extra args to extend the provider. Optional.
 
+## is32
+Whether the architecture is a 32 bits using the `nodeArch` step
+
+```
+    when(is32()) {
+        ...
+    }
+```
+
 ## isBranchIndexTrigger
 Check it the build was triggered by a Branch index.
 
