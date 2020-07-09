@@ -15,9 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.mock.IssueCommentCause
-import co.elastic.mock.RawBuildMock
-import hudson.model.Cause
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
