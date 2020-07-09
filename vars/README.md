@@ -886,19 +886,21 @@ def response_code = httpRequest(url: "https://www.google.com", response_code_onl
 This step will install the list of tools
 
 ```
-installTools([ [ tool: 'python3', version: '3.5'] ])
-installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12.0' ] ])
-```
+  # Install the latest 3.5 version of python3.
+  installTools([ [ tool: 'python3', version: '3.5'] ])
+  # Install the latest 3.5 version of python3 but exclude rc versions.
+  installTools([ [ tool: 'python3', version: '3.5', exclude: 'rc'] ])
+  # Install the latest 3.5 version of python3 and nodejs 12.0
+  installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12.0' ] ])
 
-```
   installTools([
     [ tool: 'visualstudio2019enterprise', version: '16.4.0.0', provider: 'choco', extraArgs: '--package-parameters "--includeRecommended"' ]
   ])
 ```
 
-
 * tool: The name of the tool to be installed for the default package manager. Mandatory.
 * version: The version of the tool to be installated. Mandatory.
+* exclude: What pattern in the version to be excluded when no provider is used. Optional.
 * provider: The provider to be used for installing the tools. Default behaviour
             will detect then one available for the OS. Optional.
 * extraArgs: Allow to use some extra args to extend the provider. Optional.
