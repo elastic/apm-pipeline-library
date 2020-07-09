@@ -5,15 +5,28 @@ $tool=$args[0]
 $pattern=$args[1]
 $exclude=$args[2]
 
-Write-Host("Getting latest {0} version for {1} (and exclude {2})..." -f $tool,$pattern,$exclude))
-& choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch
+if ($exclude) {
+  Write-Host("Getting latest {0} version for {1} (and exclude {2})..." -f $tool,$pattern,$exclude)
+  & choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch
+} else {
+  Write-Host("Getting latest {0} version for {1} ..." -f $tool,$pattern)
+  & choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern"
+}
 
 # Get the latest version sorted by alphanumerics.
-$DefaultVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort | Select-Object -Last 1
+if ($exclude) {
+  $DefaultVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort | Select-Object -Last 1
+} else {
+  $DefaultVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | %{$_.ToString().split(" ")[1]} | sort | Select-Object -Last 1
+}
 
 # Get the latest version sorted by numeric versions, aka support to semantic versioning
 try {
-  $SemVerVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort {[version] $_} | Select-Object -Last 1
+  if ($exclude) {
+    $SemVerVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch | %{$_.ToString().split(" ")[1]} | sort {[version] $_} | Select-Object -Last 1
+  } else {
+    $SemVerVersion = $(choco list $tool --exact --by-id-only --all) | Select-String -Pattern "$tool $pattern" | %{$_.ToString().split(" ")[1]} | sort {[version] $_} | Select-Object -Last 1
+  }
 } catch {
   ## If the version type accelerator throws an error then let's use the default version
   $SemVerVersion = $DefaultVersion
@@ -36,5 +49,5 @@ try {
   Write-Host("Comparing version numbers could not be done. Use {0} version instead of {1} ..." -f $DefaultVersion,$SemVerVersion)
 }
 
-Write-Host("Installing {0} version: {1} ..." -f $env:TOOL,$Version)
-& choco install $env:TOOL --no-progress -y --version "$Version"
+Write-Host("Installing {0} version: {1} ..." -f $tool,$Version)
+& choco install $tool --no-progress -y --version "$Version"
