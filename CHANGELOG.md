@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.126 (09/07/2020)
+
+#### 🚀 Enhancements
+
+-  installTools step with exclude [#665](https://github.com/elastic/apm-pipeline-library/pull/665)
+-  approval list for pull requests [#642](https://github.com/elastic/apm-pipeline-library/pull/642)
+
 ## v1.1.125 (08/07/2020)
 
 #### 🐛 Bug Fixes
