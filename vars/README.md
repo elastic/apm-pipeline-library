@@ -1180,6 +1180,13 @@ nexusUploadStagingArtifact(
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
 
+## nodeArch
+Return the architecture in the current worker using the labels as the source of truth
+
+```
+ def arch = nodeArch()
+```
+
 ## nodeOS
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
