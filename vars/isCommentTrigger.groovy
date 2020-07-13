@@ -30,8 +30,6 @@ def call(){
     log(level: 'DEBUG', text: 'isCommentTrigger: set some environment variables with the comments and so on')
     env.GITHUB_COMMENT = data.comment
     env.BUILD_CAUSE_USER = data.user
-
-    log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
 
     try {
@@ -40,6 +38,7 @@ def call(){
       // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
       found = membershipResponse.message?.trim() ? false : true
     } catch(e) {
+      log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
       // Then it means 404 errorcode.
       // See https://developer.github.com/v3/orgs/members/#response-if-requester-is-an-organization-member-and-user-is-not-a-member
       found = false
