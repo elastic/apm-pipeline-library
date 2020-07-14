@@ -57,7 +57,6 @@ def call(Map params = [:]){
         json = cache["${key}"]
       }
     } catch(err) {
-      log(level: 'DEBUG', text: "githubApiCall: something bad happened. See ${err.toString()}")
       def obj = [:]
       obj.message = err.toString()
       json = toJSON(obj).toString()
