@@ -38,7 +38,7 @@ def call(){
       // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
       found = membershipResponse.message?.trim() ? false : true
     } catch(err) {
-      log(level: 'DEBUG', text: "isCommentTrigger: only users under the elastic organisation are allowed. Message: See ${err.toString()}")
+      log(level: 'WARN', text: "isCommentTrigger: only users under the elastic organisation are allowed. Message: See ${err.toString()}")
       // Then it means 404 errorcode.
       // See https://developer.github.com/v3/orgs/members/#response-if-requester-is-an-organization-member-and-user-is-not-a-member
       found = false
