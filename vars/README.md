@@ -914,6 +914,24 @@ Whether the architecture is a 32 bits using the `nodeArch` step
     }
 ```
 
+## is32arm
+Whether the architecture is an arm 32 bits based using the `nodeArch` step
+
+```
+    when(is32arm()) {
+        ...
+    }
+```
+
+## is32x86
+Whether the architecture is a x86 32 bits using the `nodeArch` step
+
+```
+    when(is32x86()) {
+        ...
+    }
+```
+
 ## is64
 Whether the architecture is a 64 bits using the `nodeArch` step
 
@@ -923,29 +941,29 @@ Whether the architecture is a 64 bits using the `nodeArch` step
     }
 ```
 
+## is64arm
+Whether the architecture is an arm 64 bits based using the `nodeArch` step
+
+```
+    when(is64arm()) {
+        ...
+    }
+```
+
+## is64x86
+Whether the architecture is a x86 64 bits using the `nodeArch` step
+
+```
+    when(is64x86()) {
+        ...
+    }
+```
+
 ## isArm
 Whether the architecture is an arm based using the `nodeArch` step
 
 ```
     when(isArm()) {
-        ...
-    }
-```
-
-## isArm32
-Whether the architecture is an arm 32 bits based using the `nodeArch` step
-
-```
-    when(isArm32()) {
-        ...
-    }
-```
-
-## isArm64
-Whether the architecture is an arm 64 bits based using the `nodeArch` step
-
-```
-    when(isArm64()) {
         ...
     }
 ```
@@ -1053,6 +1071,15 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
 def userTrigger = isUserTrigger()
+```
+
+## isX86
+Whether the architecture is a x86 based using the `nodeArch` step
+
+```
+    when(isX86()) {
+        ...
+    }
 ```
 
 ## licenseScan
