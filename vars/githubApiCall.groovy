@@ -75,7 +75,7 @@ def call(Map params = [:]){
     } else if (ret == null ) {
       error ("githubApiCall: something happened with the toJson")
     } else {
-      log(level: 'DEBUG', text: "githubApiCall: The REST API call ${url} return ${ret}")
+      log(level: 'DEBUG', text: "githubApiCall: The REST API call ${url} returned ${ret}")
     }
     return ret
   }
