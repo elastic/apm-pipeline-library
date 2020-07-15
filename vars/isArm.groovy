@@ -16,47 +16,13 @@
 // under the License.
 
 /**
- Return the architecture in the current worker using the labels as the
- source of truth
+ Whether the architecture is an arm based using the `nodeArch` step
 
- def arch = nodeArch()
+ when(isArm()) {
+   ...
+ }
 
 */
 def call() {
-  def labels = env.NODE_LABELS?.toLowerCase()
-  def matches = []
-
-  if (is32bit(labels)) {
-    matches.add('i386')
-  }
-
-  if (is64bit(labels)) {
-    matches.add('x86_64')
-  }
-
-  if (isArm(labels)) {
-    matches.add('arm')
-  }
-
-  if(matches.size() == 0){
-    error("Unhandled arch in NODE_LABELS: ${labels}")
-  }
-
-  if(matches.size() > 1){
-    error("Labels conflict arch in NODE_LABELS: ${labels}")
-  }
-
-  return matches[0]
-}
-
-def is32bit(labels){
-  return labels.contains('i386')
-}
-
-def is64bit(labels){
-  return labels.contains('x86_64')
-}
-
-def isArm(labels){
-  return labels.contains('arm')
+  return nodeArch().equals('arm')
 }

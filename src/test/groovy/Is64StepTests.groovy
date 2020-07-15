@@ -18,67 +18,44 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
-class NodeArchStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nodeArch.groovy'
+class Is64StepTests extends ApmBasePipelineTest {
+
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/is64.groovy')
   }
 
   @Test
-  void test_i386() throws Exception {
-    def script = loadScript(scriptName)
-    env.NODE_LABELS = "i386 foo bar"
-    def value = script.call()
+  void test_32bits() throws Exception {
+    env.NODE_LABELS = 'i386'
+    def ret = script.call()
     printCallStack()
-    assertTrue(value == "i386")
+    assertFalse(ret)
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_x86_64() throws Exception {
-    def script = loadScript(scriptName)
-    env.NODE_LABELS = "foo bar x86_64"
-    def value = script.call()
+  void test_64bits() throws Exception {
+    env.NODE_LABELS = 'x86_64'
+    def ret = script.call()
     printCallStack()
-    assertTrue(value == "x86_64")
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_arm() throws Exception {
-    def script = loadScript(scriptName)
-    env.NODE_LABELS = "foo bar arm"
-    def value = script.call()
-    printCallStack()
-    assertTrue(value == "arm")
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_notFound() throws Exception {
-    def script = loadScript(scriptName)
-    env.NODE_LABELS = "foo bar"
+  void test_error() throws Exception {
+    env.NODE_LABELS = 'foo bar'
     try {
-      def value = script.call()
-    } catch(e){
+      def ret = script.call()
+    } catch (e) {
       assertTrue(e.getMessage() == 'Unhandled arch in NODE_LABELS: foo bar')
-    }
-    printCallStack()
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void test_label_conflict() throws Exception {
-    def script = loadScript(scriptName)
-    env.NODE_LABELS = "i386 x86_64"
-    try {
-      def value = script.call()
-    } catch(e){
-      assertTrue(e.getMessage() == 'Labels conflict arch in NODE_LABELS: i386 x86_64')
     }
     printCallStack()
     assertJobStatusFailure()
