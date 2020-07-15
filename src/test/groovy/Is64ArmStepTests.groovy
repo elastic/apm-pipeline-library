@@ -20,7 +20,7 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class IsArm32StepTests extends ApmBasePipelineTest {
+class Is64ArmStepTests extends ApmBasePipelineTest {
 
   def script
 
@@ -28,7 +28,7 @@ class IsArm32StepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/isArm32.groovy')
+    script = loadScript('vars/is64arm.groovy')
   }
 
   @Test
@@ -36,7 +36,7 @@ class IsArm32StepTests extends ApmBasePipelineTest {
     env.NODE_LABELS = 'arm'
     def ret = script.call()
     printCallStack()
-    assertTrue(ret)
+    assertFalse(ret)
     assertJobStatusSuccess()
   }
 
@@ -45,7 +45,7 @@ class IsArm32StepTests extends ApmBasePipelineTest {
     env.NODE_LABELS = 'arm aarch64'
     def ret = script.call()
     printCallStack()
-    assertFalse(ret)
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 

@@ -24,5 +24,5 @@
 
 */
 def call() {
-  return nodeArch().equals('arm') || nodeArch().equals('aarch64')
+  return is32arm() || is64arm()
 }

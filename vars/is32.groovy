@@ -24,5 +24,5 @@
 
 */
 def call() {
-  return nodeArch().equals('i386')
+  return is32arm() || is32x86()
 }

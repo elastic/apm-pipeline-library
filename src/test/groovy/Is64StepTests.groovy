@@ -41,8 +41,17 @@ class Is64StepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_64bits() throws Exception {
+  void test_64bits_x86() throws Exception {
     env.NODE_LABELS = 'x86_64'
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_64bits_arm() throws Exception {
+    env.NODE_LABELS = 'aarch64'
     def ret = script.call()
     printCallStack()
     assertTrue(ret)

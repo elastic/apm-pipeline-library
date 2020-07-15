@@ -16,13 +16,13 @@
 // under the License.
 
 /**
- Whether the architecture is a 64 bits using the nodeArch step
+ Whether the architecture is an arm 32 bits based using the `nodeArch` step
 
- when(is64()) {
+ when(is32arm()) {
    ...
  }
 
 */
 def call() {
-  return is64arm() || is64x86()
+  return nodeArch().equals('arm')
 }
