@@ -59,6 +59,16 @@ class NodeArchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_arm_with_aarch64() throws Exception {
+    def script = loadScript(scriptName)
+    env.NODE_LABELS = "foo bar arm aarch64"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "aarch64")
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notFound() throws Exception {
     def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"

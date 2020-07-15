@@ -34,7 +34,11 @@ def call() {
     matches.add('x86_64')
   }
 
-  if (isArm(labels)) {
+  if (isArm64(labels)) {
+    matches.add('aarch64')
+  }
+
+  if (isArm(labels) && !isArm64(labels)) {
     matches.add('arm')
   }
 
@@ -59,4 +63,8 @@ def is64bit(labels){
 
 def isArm(labels){
   return labels.contains('arm')
+}
+
+def isArm64(labels){
+  return labels.contains('aarch64')
 }
