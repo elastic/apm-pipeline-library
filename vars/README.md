@@ -914,6 +914,42 @@ Whether the architecture is a 32 bits using the `nodeArch` step
     }
 ```
 
+## is64
+Whether the architecture is a 64 bits using the `nodeArch` step
+
+```
+    when(is64()) {
+        ...
+    }
+```
+
+## isArm
+Whether the architecture is an arm based using the `nodeArch` step
+
+```
+    when(isArm()) {
+        ...
+    }
+```
+
+## isArm32
+Whether the architecture is an arm 32 bits based using the `nodeArch` step
+
+```
+    when(isArm32()) {
+        ...
+    }
+```
+
+## isArm64
+Whether the architecture is an arm 64 bits based using the `nodeArch` step
+
+```
+    when(isArm64()) {
+        ...
+    }
+```
+
 ## isBranchIndexTrigger
 Check it the build was triggered by a Branch index.
 
