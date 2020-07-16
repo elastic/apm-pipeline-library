@@ -513,9 +513,7 @@ metricbeat/module/zookeeper/connection/connection.go
 x-pack/auditbeat/module/system/system.go
 x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: getExcludePattern('metricbeat'))
-    assertEquals('zookeeper', module)
-    module = script.call(pattern: beatsXpackPattern, exclude: getExcludePattern('x-pack/auditbeat'))
+    def module = script.call(pattern: beatsXpackPattern, exclude: getExcludePattern('x-pack/auditbeat'))
     assertEquals('system', module)
     assertJobStatusSuccess()
   }
