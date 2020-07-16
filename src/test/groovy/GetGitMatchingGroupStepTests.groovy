@@ -459,22 +459,9 @@ auditbeat/module/auditd/config_linux.go
 go.mod
 go.sum'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    def module = script.call(pattern: beatsPattern, exclude: getExcludePattern('auditbeat'))
     assertEquals('auditd', module)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_PR19908_in_metricbeat() throws Exception {
-    def script = loadScript(scriptName)
-    def realData = '''CHANGELOG.next.asciidoc
-NOTICE.txt
-auditbeat/module/auditd/audit.go
-auditbeat/module/auditd/config_linux.go
-go.mod
-go.sum'''.stripMargin().stripIndent()
-    helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    module = script.call(pattern: beatsPattern, exclude: getExcludePattern('metricbeat'))
     assertEquals('', module)
     assertJobStatusSuccess()
   }
@@ -491,9 +478,9 @@ metricbeat/module/logstash/config_linux.go
 go.mod
 go.sum'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    def module = script.call(pattern: beatsPattern, exclude: getExcludePattern('metricbeat'))
     assertEquals('logstash', module)
-    module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    module = script.call(pattern: beatsPattern, exclude: getExcludePattern('auditbeat'))
     assertEquals('auditd', module)
     assertJobStatusSuccess()
   }
@@ -510,9 +497,9 @@ metricbeat/module/logstash/config_linux.go
 go.mod
 go.sum'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    def module = script.call(pattern: beatsPattern, exclude: getExcludePattern('metricbeat'))
     assertEquals('', module)
-    module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    module = script.call(pattern: beatsPattern, exclude: getExcludePattern('auditbeat'))
     assertEquals('', module)
     assertJobStatusSuccess()
   }
@@ -526,10 +513,17 @@ metricbeat/module/zookeeper/connection/connection.go
 x-pack/auditbeat/module/system/system.go
 x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
-    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    def module = script.call(pattern: beatsPattern, exclude: getExcludePattern('metricbeat'))
     assertEquals('zookeeper', module)
-    module = script.call(pattern: beatsXpackPattern, exclude: '^(((?!^x-pack\\/auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    module = script.call(pattern: beatsXpackPattern, exclude: getExcludePattern('x-pack/auditbeat'))
     assertEquals('system', module)
     assertJobStatusSuccess()
+  }
+
+  def getExcludePattern(directory) {
+    // Transform folder structure in regex format since path separator is required to be escaped
+    def transformedDirectory = directory.replaceAll('/', '\\/')
+    def directoryExclussion = "((?!^${transformedDirectory}\\/).)*\$"
+    return "^(${directoryExclussion}|((?!\\/module\\/).)*\$|.*\\.asciidoc|.*\\.png)"
   }
 }
