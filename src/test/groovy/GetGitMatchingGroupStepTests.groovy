@@ -450,7 +450,7 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
   }
 
   @Test
-  void test_PR19908_in_auditbeat() throws Exception {
+  void test_match_auditbeat_with_dynamic_exclude_pattern() throws Exception {
     def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
@@ -467,7 +467,7 @@ go.sum'''.stripMargin().stripIndent()
   }
 
   @Test
-  void test_PR19908_in_metricbeat_and_auditbeat() throws Exception {
+  void test_match_auditbeat_and_metricbeat_with_dynamic_exclude_pattern() throws Exception {
     def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
@@ -486,7 +486,7 @@ go.sum'''.stripMargin().stripIndent()
   }
 
   @Test
-  void test_PR19908_in_metricbeat_and_auditbeat_with_multi_module() throws Exception {
+  void test_unmatch_in_metricbeat_and_auditbeat_with_multi_modules_and_dynamic_exclude_pattern() throws Exception {
     def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
@@ -505,7 +505,7 @@ go.sum'''.stripMargin().stripIndent()
   }
 
   @Test
-  void test_PR19908_in_metricbeat_and_xpack_auditbeat() throws Exception {
+  void test_match_in_metricbeat_and_xpack_auditbeat_with_dynamic_exclude_pattern() throws Exception {
     def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
