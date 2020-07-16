@@ -449,4 +449,87 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_PR19908_in_auditbeat() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+NOTICE.txt
+auditbeat/module/auditd/audit.go
+auditbeat/module/auditd/config_linux.go
+go.mod
+go.sum'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('auditd', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_PR19908_in_metricbeat() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+NOTICE.txt
+auditbeat/module/auditd/audit.go
+auditbeat/module/auditd/config_linux.go
+go.mod
+go.sum'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_PR19908_in_metricbeat_and_auditbeat() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+NOTICE.txt
+auditbeat/module/auditd/audit.go
+auditbeat/module/auditd/config_linux.go
+metricbeat/module/logstash/audit.go
+metricbeat/module/logstash/config_linux.go
+go.mod
+go.sum'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('logstash', module)
+    module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('auditd', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_PR19908_in_metricbeat_and_auditbeat_with_multi_module() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+NOTICE.txt
+auditbeat/module/system/system.go
+auditbeat/module/auditd/config_linux.go
+metricbeat/module/system/system.go
+metricbeat/module/logstash/config_linux.go
+go.mod
+go.sum'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('', module)
+    module = script.call(pattern: beatsPattern, exclude: '^(((?!^auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('', module)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_PR19908_in_metricbeat_and_xpack_auditbeat() throws Exception {
+    def script = loadScript(scriptName)
+    def realData = '''CHANGELOG.next.asciidoc
+metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
+metricbeat/module/zookeeper/connection/connection.go
+x-pack/auditbeat/module/system/system.go
+x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return realData })
+    def module = script.call(pattern: beatsPattern, exclude: '^(((?!^metricbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('zookeeper', module)
+    module = script.call(pattern: beatsXpackPattern, exclude: '^(((?!^x-pack\\/auditbeat\\/).)*$|((?!\\/module\\/).)*$|.*\\.asciidoc|.*\\.png )')
+    assertEquals('system', module)
+    assertJobStatusSuccess()
+  }
 }
