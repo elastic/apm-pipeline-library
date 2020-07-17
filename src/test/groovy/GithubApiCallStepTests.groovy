@@ -68,6 +68,21 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to POST"))
+    assertTrue(assertMethodCallContainsPattern('httpRequest', 'POST'))
+  }
+
+  @Test
+  void testData_with_patch() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def script = loadScript(scriptName)
+    try {
+      script.call(url: "dummy", token: "dummy", data: ["foo": "bar"], method: 'PATCH')
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to PATCH"))
+    assertTrue(assertMethodCallContainsPattern('httpRequest', 'PATCH'))
   }
 
   @Test

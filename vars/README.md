@@ -861,6 +861,28 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
 
+## githubTraditionalPrComment
+Add a comment or edit an existing comment in the GitHub Pull Request
+using the GitHub API.
+
+```
+  // create a new comment
+  githubTraditionalPrComment(message: 'foo bar')
+
+  // edit an existing comment
+  githubTraditionalPrComment(message: 'foo bar', id: 12323)
+```
+
+Arguments:
+
+* message: . Mandatory
+* id: the comment id to be edited. Optional
+
+_NOTE_: To edit the existing comment is required these environment variables:
+        - `CHANGE_ID`
+        - `ORG_NAME`
+        - `REPO_NAME`
+
 ## httpRequest
 Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
