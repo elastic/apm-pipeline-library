@@ -18,45 +18,32 @@
 import co.elastic.mock.PullRequestMock
 import org.junit.Before
 import org.junit.Test
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertNull
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/githubTraditionalPrComment.groovy'
 
-  def commentInterceptor = [[	
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",	
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",	
-      id: 2,	
-      user: [	
-        login: "elasticmachine",	
-        id: 3,	
-      ],	
-      created_at: "2020-01-03T16:16:26Z",	
-      updated_at: "2020-01-03T16:16:26Z",	
-      body: "\n## :green_heart: Build Succeeded\n* [pipeline](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/display/redirect)\n* Commit: 1\n\n\n<!--COMMENT_GENERATED-->\n"
-    ],	
-    [	
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",	
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/11",	
-      id: 55,	
-      user: [	
-        login: "foo",	
-        id: 11,	
-      ],	
-      created_at: "2020-01-04T16:16:26Z",	
-      updated_at: "2020-01-04T16:16:26Z",	
-      body: "LGTM"	
-    ],	
+  def commentInterceptor = [
+    id: 1,
+    node_id: "MDEyOklzc3VlQ29tbWVudDE=",
+    url: "https://api.github.com/repos/octocat/Hello-World/issues/comments/1",
+    html_url: "https://github.com/octocat/Hello-World/issues/1347#issuecomment-1",
+    body: "Me too",
+    user: [
+        login: "octocat",
+        id: 1,
+    ],
+    created_at: "2011-04-14T16:00:49Z",
+    updated_at: "2011-04-14T16:00:49Z"
   ]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.ORG_NAME = 'elastic'
-    env.REPO_NAME = 'apm-pipeline-library'
+    env.ORG_NAME = 'octocat'
+    env.REPO_NAME = 'Hello-World'
     env.CHANGE_ID = 'PR-1'
     helper.registerAllowedMethod('githubApiCall', [Map.class], {	
       return commentInterceptor	
@@ -88,16 +75,18 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   @Test
   void test_add_a_new_comment() throws Exception {	
     def script = loadScript(scriptName)
-    def obj = script.call(message: '<!--COMMENT_GENERATED-->')
+    def obj = script.call(message: 'Me too')
     printCallStack()
-    assertNotNull(obj)
+    assertEquals(obj, 1)
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'POST'))
   }
 
   @Test
   void test_edit_a_comment() throws Exception {	
     def script = loadScript(scriptName)
-    def obj = script.call(message: '<!--COMMENT_GENERATED-->', id: 1)
+    def obj = script.call(message: 'Me too', id: 1)
     printCallStack()
-    assertNotNull(obj)
+    assertEquals(obj, 1)
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'PATCH'))
   }
 }

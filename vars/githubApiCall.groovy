@@ -31,6 +31,7 @@ def call(Map params = [:]){
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
   def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
   def data = params?.data
+  def method = params.get('method', 'POST')
   def headers = ["Authorization": "token ${token}",
                  "User-Agent": "Elastic-Jenkins-APM"]
   def dryRun = params?.data
@@ -47,7 +48,7 @@ def call(Map params = [:]){
         if(data) {
           log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to POST")
           headers.put("Content-Type", "application/json")
-          json = httpRequest(url: url, method: "POST", headers: headers, data: toJSON(data).toString())
+          json = httpRequest(url: url, method: method, headers: headers, data: toJSON(data).toString())
         } else {
           json = httpRequest(url: url, headers: headers)
         }
