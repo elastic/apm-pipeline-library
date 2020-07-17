@@ -555,6 +555,7 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
 * allowEmptyResponse: whether to allow empty responses. Default false.
+* method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
 
 [Github REST API](https://developer.github.com/v3/)
@@ -1611,6 +1612,25 @@ superLinter(envs: [ 'VALIDATE_GO=false' ])
 * *envs*: the list of new env variables to use, format variable=value. Optional
 * *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
 * *dockerImage*: What's the docker image to use. Optional. Default: 'github/super-linter:latest'
+* junit: whether to generate the JUnit report. Default: true. Optional
+
+## tap2Junit
+Transform the TAP to JUnit, for such it uses some parameters
+to customise the generated output.
+
+```
+  // Use default setup
+  tap2Junit()
+
+  // Convert TAP files to JUnit using the suffix junit.xml
+  tap2Junit(pattern: '*.TAP', suffix: 'junit.xml')
+```
+
+* *package*: Name of the package in the JUnit report. Default 'co.elastic'.
+* *pattern*: What files that are TAP based should be searched. Default '*.tap'.
+* *suffix*: The suffix in the JUnit output files. Default 'junit-report.xml'
+* *nodeVersion*: What docker image used for transforming the tap to junit. Default 'node:12-alpine'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
 
 ## tar
 Compress a folder into a tar file.
@@ -1991,3 +2011,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
