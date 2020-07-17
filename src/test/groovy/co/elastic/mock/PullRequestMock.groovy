@@ -29,6 +29,9 @@ class PullRequestMock implements Serializable {
   public PullRequestMock() { }
 
   public Map comment(String description) {
+    if (description.equals('error')) {
+      throw new Exception('org.eclipse.egit.github.core.client.RequestException: Not Found (404)')
+    }
     this.description = description
     return [ id: 42 ]
   }

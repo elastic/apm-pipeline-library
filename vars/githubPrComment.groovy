@@ -68,12 +68,7 @@ def addOrEditComment(Map args = [:]) {
   def details = args.details
   def id = getCommentIfAny(args)
   if (id != errorId()) {
-    try {
-      editComment(id, details)
-    } catch (err) {
-      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}' failed with error '${err}'. Let's fallback to add a comment.")
-      id = addComment(details)
-    }
+    id = editComment(id, details)
   } else {
     id = addComment(details)
   }
@@ -98,10 +93,16 @@ def editComment(id, details) {
   log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}'. If comment still exists.")
   try {
     pullRequest.editComment(id, details)
-  } catch (err) {
-    log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with message: ${err.toString()}")
-    githubTraditionalPrComment(message: details, id: id)
+  } catch (errorWithEdit) {
+    try {
+      log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with error '${errorWithEdit.toString()}'. Let's fallback to the traditional PR comment approach.")
+      githubTraditionalPrComment(message: details, id: id)
+    } catch (err) {
+      log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}' failed with error '${err.toString()}'. Let's fallback to add a comment.")
+      id = addComment(details)
+    }
   }
+  return id
 }
 
 def getCommentFromFile(Map args = [:]) {
