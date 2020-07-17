@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.128 (17/07/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix github pr comment [#675](https://github.com/elastic/apm-pipeline-library/pull/675)
+
 ## v1.1.127 (17/07/2020)
 
 #### 🚀 Enhancements
