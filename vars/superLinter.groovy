@@ -32,11 +32,16 @@ def call(Map args = [:]) {
   retryWithSleep(retries: 2, seconds: 5, backoff: true) {
     sh(label: 'Install super-linter', script: "docker pull ${dockerImage}")
   }
-  envFlags = "-e RUN_LOCAL=true -e DISABLE_ERRORS=${failNever} -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output}"
+  envFlags = "-e RUN_LOCAL=true -e DISABLE_ERRORS=${failNever}"
   varsEnv.each {
     envFlags += " -e ${it}"
   }
-  sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \$(pwd):/tmp/lint ${dockerImage}")
+  sh(label: 'Run super-linter', script: """
+    docker run ${envFlags} \
+      -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
+      -v \$(pwd):/tmp/lint \
+      -u \$(shell id -u):\$(shell id -g) \
+      ${dockerImage}""")
 
   if(junitFlag) {
     dir("${output}") {
