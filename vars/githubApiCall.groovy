@@ -46,7 +46,7 @@ def call(Map params = [:]){
       if(cache["${key}"] == null){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
         if(data) {
-          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to POST")
+          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to ${method}")
           headers.put("Content-Type", "application/json")
           json = httpRequest(url: url, method: method, headers: headers, data: toJSON(data).toString())
         } else {
