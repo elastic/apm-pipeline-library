@@ -30,6 +30,9 @@ using the GitHub API.
           - `ORG_NAME`
           - `REPO_NAME`
 */
+
+import groovy.json.JsonOutput
+
 def call(Map args = [:]){
   def id = "${args.get('id', '')}"
   def message = args.containsKey('message') ? args.message : error('githubTraditionalPrComment: message parameter is required')
@@ -42,7 +45,9 @@ def call(Map args = [:]){
        url = "${url}/${id}"
        method = 'PATCH'
     }
-    def comment = githubApiCall(token: token, url: url, data: """{ "body": "${message}"} """, method: method)
+    // Ensure the data is transformed to Json and then toString.
+    def transformedData = JsonOutput.toJson([ "body": "${message}" ])
+    def comment = githubApiCall(token: token, url: url, data: transformedData, method: method)
     return comment.id
   } else {
     log(level: 'WARN', text: 'githubTraditionalPrComment: is only available for PRs.')
