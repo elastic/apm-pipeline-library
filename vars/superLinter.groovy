@@ -41,11 +41,13 @@ def call(Map args = [:]) {
       -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
       -v \$(pwd):/tmp/lint \
       -u \$(id -u):\$(id -g) \
-      ${dockerImage}""")
+      ${dockerImage}
+      ls -ltrah .super-linter
+    """)
 
   if(junitFlag) {
     dir("${output}") {
-      convertGoTestResults(input: '*.xml', output: 'junit-report.xml')
+      convertGoTestResults(input: '*.tap', output: 'junit-report.xml')
       junit testResults: 'junit-report.xml', allowEmptyResults: true, keepLongStdio: true
     }
   }
