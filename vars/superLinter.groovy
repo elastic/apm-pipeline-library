@@ -40,7 +40,7 @@ def call(Map args = [:]) {
     docker run ${envFlags} \
       -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
       -v \$(pwd):/tmp/lint \
-      -u \$(shell id -u):\$(shell id -g) \
+      -u \$(id -u):\$(id -g) \
       ${dockerImage}""")
 
   if(junitFlag) {
