@@ -41,9 +41,7 @@ def call(Map args = [:]) {
       -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
       -v \$(pwd):/tmp/lint \
       -u \$(id -u):\$(id -g) \
-      ${dockerImage}
-      ls -ltrah .super-linter
-    """)
+      ${dockerImage}""")
 
   if(junitFlag) {
     dir("${output}") {

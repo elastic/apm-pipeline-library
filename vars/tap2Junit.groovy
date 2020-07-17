@@ -40,7 +40,7 @@ def call(Map args = [:]) {
         -w /usr/src/app \
         -u \$(id -u):\$(id -g) \
         ${nodeVersion} \
-        sh -c 'export HOME=/tmp ; npm install tap-xunit -g ; for i in ${suffix}; do cat \${i} | tap-xunit --package='${packageName}' > \${i%.*}-${suffix} ; done'
+        sh -c 'export HOME=/tmp ; mkdir ~/.npm-global; npm config set prefix '~/.npm-global' ; npm install tap-xunit -g ; for i in ${suffix}; do cat \${i} | /tmp/.npm-global/bin/tap-xunit --package='${packageName}' > \${i%.*}-${suffix} ; done'
     """)
   junit testResults: "*-${suffix}", allowEmptyResults: true, keepLongStdio: true
 }
