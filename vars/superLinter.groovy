@@ -47,8 +47,15 @@ def call(Map args = [:]) {
 
   if(junitFlag) {
     dir("${output}") {
-      convertGoTestResults(input: '*.tap', output: 'junit-report.xml')
-      junit testResults: 'junit-report.xml', allowEmptyResults: true, keepLongStdio: true
+      sh(label: 'Tap2JUnit', script: """
+        docker run --rm \
+          -v \$(pwd):/usr/src/app \
+          -w /usr/src/app \
+          -u \$(id -u):\$(id -g) \
+          node:12-alpine \
+          sh -c 'npm install tap-xunit -g ; for i in *.tap; do cat \${i} | tap-xunit --package='super-linter' > \${i%.*}-junit-report.xml ; done'
+        """)
+      junit testResults: '*-junit-report.xml', allowEmptyResults: true, keepLongStdio: true
     }
   }
 }
