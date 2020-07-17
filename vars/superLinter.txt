@@ -7,3 +7,4 @@ superLinter(envs: [ 'VALIDATE_GO=false' ])
 * *envs*: the list of new env variables to use, format variable=value. Optional
 * *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
 * *dockerImage*: What's the docker image to use. Optional. Default: 'github/super-linter:latest'
+* junit: whether to generate the JUnit report. Default: true. Optional

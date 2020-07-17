@@ -352,6 +352,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
+    helper.registerAllowedMethod('convertGoTestResults', [Map.class], { m ->
+      def script = loadScript('vars/convertGoTestResults.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('createFileFromTemplate', [Map.class],  { m ->
       def script = loadScript('vars/createFileFromTemplate.groovy')
       return script.call(m)
@@ -429,6 +433,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
@@ -458,7 +463,15 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGoEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
+      def script = loadScript('vars/withMageEnv.groovy')
+      return script.call(c)
+    })
   }
 
   def getVaultSecret(String s) {

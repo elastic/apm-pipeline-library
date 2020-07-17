@@ -25,14 +25,23 @@
 def call(Map args = [:]) {
   def varsEnv = args.get('envs', [])
   def failNever = args.get('failNever', false)
+  def junitFlag = args.get('junit', true)
   def dockerImage = args.get('image', 'github/super-linter:latest')
   def reportFileName = 'super-linter.out'
+  def output = '.super-linter'
   retryWithSleep(retries: 2, seconds: 5, backoff: true) {
     sh(label: 'Install super-linter', script: "docker pull ${dockerImage}")
   }
-  envFlags = "-e RUN_LOCAL=true -e DISABLE_ERRORS=${failNever}"
+  envFlags = "-e RUN_LOCAL=true -e DISABLE_ERRORS=${failNever} -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output}"
   varsEnv.each {
     envFlags += " -e ${it}"
   }
   sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \$(pwd):/tmp/lint ${dockerImage}")
+
+  if(junitFlag) {
+    dir("${output}") {
+      convertGoTestResults(input: '*.xml', output: 'junit-report.xml')
+      junit testResults: 'junit-report.xml', allowEmptyResults: true, keepLongStdio: true
+    }
+  }
 }

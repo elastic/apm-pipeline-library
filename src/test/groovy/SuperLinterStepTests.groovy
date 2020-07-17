@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class SuperLinterStepTests extends ApmBasePipelineTest {
@@ -34,6 +35,7 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
     script.call(failNever: false)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e RUN_LOCAL=true -e DISABLE_ERRORS=false'))
+    assertTrue(assertMethodCallContainsPattern('junit', 'junit-report.xml'))
     assertJobStatusSuccess()
   }
 
@@ -52,6 +54,24 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
     script.call(envs: [ 'foo=bar', 'var=value'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e foo=bar -e var=value'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_junit_true() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(junit: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('junit', 'junit-report.xml'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_junit_false() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(junit: false)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('junit', 'junit-report.xml'))
     assertJobStatusSuccess()
   }
 
