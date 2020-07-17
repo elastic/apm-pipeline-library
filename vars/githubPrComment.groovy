@@ -89,7 +89,7 @@ def addComment(String details) {
     id = comment?.id
   } catch (err) {
     log(level: 'DEBUG', text: "githubPrComment: pullRequest.comment failed with message: ${err.toString()}")
-    id = githubTraditionalPrComment(details: details)
+    id = githubTraditionalPrComment(message: details)
   }
   return id
 }
@@ -100,7 +100,7 @@ def editComment(id, details) {
     pullRequest.editComment(id, details)
   } catch (err) {
     log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with message: ${err.toString()}")
-    githubTraditionalPrComment(details: details, id: id)
+    githubTraditionalPrComment(message: details, id: id)
   }
 }
 
