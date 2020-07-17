@@ -909,7 +909,7 @@ This step will install the list of tools
 Whether the architecture is a 32 bits using the `nodeArch` step
 
 ```
-    when(is32()) {
+    whenTrue(is32()) {
         ...
     }
 ```
@@ -936,7 +936,7 @@ Whether the architecture is a x86 32 bits using the `nodeArch` step
 Whether the architecture is a 64 bits using the `nodeArch` step
 
 ```
-    when(is64()) {
+    whenTrue(is64()) {
         ...
     }
 ```
