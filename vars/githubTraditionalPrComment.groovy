@@ -37,15 +37,12 @@ def call(Map args = [:]){
   if (isPR()) {
     def token = getGithubToken()
     def url = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments"
-    def comment_params = [
-      "body": "${message}"
-    ]
     def method = 'POST'
     if(id.trim()) {
        url = "${url}/${id}"
        method = 'PATCH'
     }
-    def comment = githubApiCall(token: token, url: url, data: comment_params, method: method)
+    def comment = githubApiCall(token: token, url: url, data: """{ "body": "${message}"} """, method: method)
     return comment.id
   } else {
     log(level: 'WARN', text: 'githubTraditionalPrComment: is only available for PRs.')

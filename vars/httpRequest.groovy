@@ -45,7 +45,13 @@ def call(Map params = [:]){
   URLConnection con
   try {
     con = obj.openConnection()
-    con.setRequestMethod(method)
+    // Let's support the PATCH method https://stackoverflow.com/a/32503192
+    if (method.equals('PATCH')) {
+      conn.setRequestProperty("X-HTTP-Method-Override", 'PATCH')
+      con.setRequestMethod('POST')
+    } else {
+      con.setRequestMethod(method)
+    }
     con.setUseCaches(false)
     con.setDoInput(true)
     con.setDoOutput(true)
