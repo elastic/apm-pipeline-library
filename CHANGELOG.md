@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.127 (17/07/2020)
+
+#### 🚀 Enhancements
+
+-  nodeArch, is32, is64, isArm, is32arm, is64arm, is32x86, is64x86 steps [#666](https://github.com/elastic/apm-pipeline-library/pull/666)
+-  add more debug traces in isCommentTrigger [#668](https://github.com/elastic/apm-pipeline-library/pull/668)
+
+#### 🙈 No user affected
+
+-  [test] add more tests for the gitMatchingGroup step [#671](https://github.com/elastic/apm-pipeline-library/pull/671)
+
 ## v1.1.126 (09/07/2020)
 
 #### 🚀 Enhancements

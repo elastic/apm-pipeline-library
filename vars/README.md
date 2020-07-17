@@ -927,6 +927,69 @@ This step will install the list of tools
             will detect then one available for the OS. Optional.
 * extraArgs: Allow to use some extra args to extend the provider. Optional.
 
+## is32
+Whether the architecture is a 32 bits using the `nodeArch` step
+
+```
+    whenTrue(is32()) {
+        ...
+    }
+```
+
+## is32arm
+Whether the architecture is an arm 32 bits based using the `nodeArch` step
+
+```
+    whenTrue(is32arm()) {
+        ...
+    }
+```
+
+## is32x86
+Whether the architecture is a x86 32 bits using the `nodeArch` step
+
+```
+    whenTrue(is32x86()) {
+        ...
+    }
+```
+
+## is64
+Whether the architecture is a 64 bits using the `nodeArch` step
+
+```
+    whenTrue(is64()) {
+        ...
+    }
+```
+
+## is64arm
+Whether the architecture is an arm 64 bits based using the `nodeArch` step
+
+```
+    whenTrue(is64arm()) {
+        ...
+    }
+```
+
+## is64x86
+Whether the architecture is a x86 64 bits using the `nodeArch` step
+
+```
+    whenTrue(is64x86()) {
+        ...
+    }
+```
+
+## isArm
+Whether the architecture is an arm based using the `nodeArch` step
+
+```
+    whenTrue(isArm()) {
+        ...
+    }
+```
+
 ## isBranchIndexTrigger
 Check it the build was triggered by a Branch index.
 
@@ -1030,6 +1093,15 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
 def userTrigger = isUserTrigger()
+```
+
+## isX86
+Whether the architecture is a x86 based using the `nodeArch` step
+
+```
+    whenTrue(isX86()) {
+        ...
+    }
 ```
 
 ## licenseScan
@@ -1201,6 +1273,13 @@ nexusUploadStagingArtifact(
   * artifactId: The ID for the artifact to be uploaded
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
+
+## nodeArch
+Return the architecture in the current worker using the labels as the source of truth
+
+```
+ def arch = nodeArch()
+```
 
 ## nodeOS
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
@@ -1912,4 +1991,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
