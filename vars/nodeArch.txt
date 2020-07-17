@@ -1,0 +1,5 @@
+Return the architecture in the current worker using the labels as the source of truth
+
+```
+ def arch = nodeArch()
+```
