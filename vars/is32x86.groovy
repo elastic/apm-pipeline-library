@@ -18,7 +18,7 @@
 /**
  Whether the architecture is a x86 32 bits using the nodeArch step
 
- when(is32x86()) {
+ whenTrue(is32x86()) {
    ...
  }
 

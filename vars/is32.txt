@@ -1,7 +1,7 @@
 Whether the architecture is a 32 bits using the `nodeArch` step
 
 ```
-    when(is32()) {
+    whenTrue(is32()) {
         ...
     }
 ```

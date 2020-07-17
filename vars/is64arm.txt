@@ -1,7 +1,7 @@
 Whether the architecture is an arm 64 bits based using the `nodeArch` step
 
 ```
-    when(is64arm()) {
+    whenTrue(is64arm()) {
         ...
     }
 ```

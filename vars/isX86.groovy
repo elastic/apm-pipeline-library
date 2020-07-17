@@ -18,7 +18,7 @@
 /**
  Whether the architecture is a x86 based using the `nodeArch` step
 
- when(isX86()) {
+ whenTrue(isX86()) {
    ...
  }
 

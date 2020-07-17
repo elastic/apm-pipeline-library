@@ -18,7 +18,7 @@
 /**
  Whether the architecture is a 64 bits using the nodeArch step
 
- when(is64()) {
+ whenTrue(is64()) {
    ...
  }
 

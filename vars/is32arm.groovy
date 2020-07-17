@@ -18,7 +18,7 @@
 /**
  Whether the architecture is an arm 32 bits based using the `nodeArch` step
 
- when(is32arm()) {
+ whenTrue(is32arm()) {
    ...
  }
 

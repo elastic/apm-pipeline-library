@@ -18,7 +18,7 @@
 /**
  Whether the architecture is an arm based using the `nodeArch` step
 
- when(isArm()) {
+ whenTrue(isArm()) {
    ...
  }
 

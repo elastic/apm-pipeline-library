@@ -918,7 +918,7 @@ Whether the architecture is a 32 bits using the `nodeArch` step
 Whether the architecture is an arm 32 bits based using the `nodeArch` step
 
 ```
-    when(is32arm()) {
+    whenTrue(is32arm()) {
         ...
     }
 ```
@@ -927,7 +927,7 @@ Whether the architecture is an arm 32 bits based using the `nodeArch` step
 Whether the architecture is a x86 32 bits using the `nodeArch` step
 
 ```
-    when(is32x86()) {
+    whenTrue(is32x86()) {
         ...
     }
 ```
@@ -945,7 +945,7 @@ Whether the architecture is a 64 bits using the `nodeArch` step
 Whether the architecture is an arm 64 bits based using the `nodeArch` step
 
 ```
-    when(is64arm()) {
+    whenTrue(is64arm()) {
         ...
     }
 ```
@@ -954,7 +954,7 @@ Whether the architecture is an arm 64 bits based using the `nodeArch` step
 Whether the architecture is a x86 64 bits using the `nodeArch` step
 
 ```
-    when(is64x86()) {
+    whenTrue(is64x86()) {
         ...
     }
 ```
@@ -963,7 +963,7 @@ Whether the architecture is a x86 64 bits using the `nodeArch` step
 Whether the architecture is an arm based using the `nodeArch` step
 
 ```
-    when(isArm()) {
+    whenTrue(isArm()) {
         ...
     }
 ```
@@ -1077,7 +1077,7 @@ def userTrigger = isUserTrigger()
 Whether the architecture is a x86 based using the `nodeArch` step
 
 ```
-    when(isX86()) {
+    whenTrue(isX86()) {
         ...
     }
 ```
@@ -1969,4 +1969,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
