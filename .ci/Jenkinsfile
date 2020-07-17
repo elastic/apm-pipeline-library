@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@feature/github-super-junit') _
 
 pipeline {
   agent { label 'linux && immutable' }
