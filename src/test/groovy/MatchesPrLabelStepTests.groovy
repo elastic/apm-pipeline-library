@@ -29,13 +29,7 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
     super.setUp()
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
-
-    helper.registerAllowedMethod('githubPrInfo', [Map.class], {
-      return [ labels: [
-              [ id: '1', name: 'foo' ],
-              [ id: '2', name: 'bar' ]
-             ]]
-    })
+    helper.registerAllowedMethod('githubPrLabels', [], { return [ 'bar', 'foo' ] })
   }
 
   @Test
