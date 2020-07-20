@@ -18,7 +18,7 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'linux && immutable && hub' }
+  agent { label 'linux && immutable' }
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
