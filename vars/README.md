@@ -555,6 +555,7 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
 * allowEmptyResponse: whether to allow empty responses. Default false.
+* method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
 
 [Github REST API](https://developer.github.com/v3/)
@@ -667,6 +668,16 @@ def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 * pr: Pull Request number.
 
 [Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
+
+## githubPrLabels
+If the current build is a PR, it would return the list of labels that
+are assigned to the PR.
+
+  ```
+  def labels = githubPrLabels()
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
 
 ## githubPrLatestComment
 Search in the current Pull Request context the latest comment from the given list of
@@ -1125,6 +1136,18 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## matchesPrLabel
+If the current build is a PR, it would return true if the given label
+matches with the list of assigned labels in the PR.
+
+  ```
+  whenTrue(matchesPrLabel(label: 'foo')) {
+    ...
+  }
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
 
 ## mvnVersion
 Get a project version from Maven
@@ -1991,3 +2014,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
