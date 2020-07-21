@@ -68,6 +68,19 @@ class CodecovStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('dir', 'ws'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo codecov.sh https://codecov.io/bash'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'bash codecov.sh  ||'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_flags() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(repo: 'repo', flags: 'foo', secret: VaultSecret.SECRET_CODECOV.toString())
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('dir', '.'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'bash codecov.sh foo'))
     assertJobStatusSuccess()
   }
 
