@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.130 (21/07/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix quotes in tap2Junit [#679](https://github.com/elastic/apm-pipeline-library/pull/679)
+
 ## v1.1.129 (21/07/2020)
 
 #### 🚀 Enhancements
