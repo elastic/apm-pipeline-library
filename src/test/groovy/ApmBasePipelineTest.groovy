@@ -352,6 +352,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
+    helper.registerAllowedMethod('convertGoTestResults', [Map.class], { m ->
+      def script = loadScript('vars/convertGoTestResults.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('createFileFromTemplate', [Map.class],  { m ->
       def script = loadScript('vars/createFileFromTemplate.groovy')
       return script.call(m)
@@ -449,6 +453,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
     helper.registerAllowedMethod('nodeArch', [], {
       def script = loadScript('vars/nodeArch.groovy')
       return script.call()
@@ -463,6 +468,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m, c)
     })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('tap2Junit', [Map.class], { m ->
+      def script = loadScript('vars/tap2Junit.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('tar', [Map.class], { m ->
       def script = loadScript('vars/tar.groovy')
       return script.call(m)
@@ -482,7 +491,15 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGoEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
+      def script = loadScript('vars/withMageEnv.groovy')
+      return script.call(c)
+    })
   }
 
   def getVaultSecret(String s) {

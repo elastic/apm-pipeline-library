@@ -34,6 +34,7 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
     script.call(failNever: false)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e RUN_LOCAL=true -e DISABLE_ERRORS=false'))
+    assertTrue(assertMethodCallOccurrences('tap2Junit', 1))
     assertJobStatusSuccess()
   }
 
@@ -52,6 +53,24 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
     script.call(envs: [ 'foo=bar', 'var=value'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e foo=bar -e var=value'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_junit_true() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(junit: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('tap2Junit', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_junit_false() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(junit: false)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('tap2Junit', 0))
     assertJobStatusSuccess()
   }
 

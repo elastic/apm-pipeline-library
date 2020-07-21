@@ -25,8 +25,10 @@
 def call(Map args = [:]) {
   def varsEnv = args.get('envs', [])
   def failNever = args.get('failNever', false)
+  def junitFlag = args.get('junit', true)
   def dockerImage = args.get('image', 'github/super-linter:latest')
   def reportFileName = 'super-linter.out'
+  def output = '.super-linter'
   retryWithSleep(retries: 2, seconds: 5, backoff: true) {
     sh(label: 'Install super-linter', script: "docker pull ${dockerImage}")
   }
@@ -34,5 +36,16 @@ def call(Map args = [:]) {
   varsEnv.each {
     envFlags += " -e ${it}"
   }
-  sh(label: 'Run super-linter', script: "docker run ${envFlags} -v \$(pwd):/tmp/lint ${dockerImage}")
+  sh(label: 'Run super-linter', script: """
+    docker run ${envFlags} \
+      -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
+      -v \$(pwd):/tmp/lint \
+      -u \$(id -u):\$(id -g) \
+      ${dockerImage}""")
+
+  if(junitFlag) {
+    dir("${output}") {
+      tap2Junit(pattern: '*.tap', package: 'super-linter')
+    }
+  }
 }
