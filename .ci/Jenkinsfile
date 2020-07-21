@@ -154,7 +154,7 @@ pipeline {
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
-            superLinter(failNever: true)
+            superLinter(failNever: true, junit: false)
           }
         }
       }
