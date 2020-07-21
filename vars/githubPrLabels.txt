@@ -1,0 +1,8 @@
+If the current build is a PR, it would return the list of labels that
+are assigned to the PR.
+
+  ```
+  def labels = githubPrLabels()
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
