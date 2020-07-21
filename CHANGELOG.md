@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.129 (21/07/2020)
+
+#### 🚀 Enhancements
+
+-  matchesPrLabel and githubPrLabels steps [#678](https://github.com/elastic/apm-pipeline-library/pull/678)
+
+#### ⚙️ CI
+
+-  superLinter with junit reporting [#673](https://github.com/elastic/apm-pipeline-library/pull/673)
+
 ## v1.1.128 (17/07/2020)
 
 #### 🐛 Bug Fixes
