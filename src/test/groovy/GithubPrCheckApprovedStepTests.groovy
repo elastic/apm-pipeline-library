@@ -71,7 +71,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testIsApprobed() throws Exception {
+  void testIsApproved() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
       return []
       })

@@ -669,6 +669,16 @@ def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 
 [Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
 
+## githubPrLabels
+If the current build is a PR, it would return the list of labels that
+are assigned to the PR.
+
+  ```
+  def labels = githubPrLabels()
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
+
 ## githubPrLatestComment
 Search in the current Pull Request context the latest comment from the given list of
 users and pattern to match with.
@@ -1126,6 +1136,18 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## matchesPrLabel
+If the current build is a PR, it would return true if the given label
+matches with the list of assigned labels in the PR.
+
+  ```
+  whenTrue(matchesPrLabel(label: 'foo')) {
+    ...
+  }
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
 
 ## mvnVersion
 Get a project version from Maven
