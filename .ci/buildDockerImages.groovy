@@ -54,6 +54,7 @@ pipeline {
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
   }
   stages {
@@ -331,6 +332,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build test-plans'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.testPlans}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-robots.git',
+          buildCommand: 'make build',
+          pushCommand: 'make push',
+          push: true,
+          folder: "apps/test-plans")
       }
     }
     stage('Build Heartbeat'){
