@@ -411,6 +411,8 @@ def buildDockerImage(args){
   String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
   String version = args.containsKey('version') ? args.version : "latest"
   String folder = args.containsKey('folder') ? args.folder : "."
+  String buildCommand = args.containsKey('buildCommand') ? args.buildCommand : ""
+  String pushCommand = args.containsKey('pushCommand') ? args.pushCommand : ""
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
@@ -426,10 +428,19 @@ def buildDockerImage(args){
     dir("${folder}"){
       withEnv(env){
         prepareWith()
-        sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        if buildCommand.equals("") {
+          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        } else {
+          sh(label: "custom build docker image", script: "${buildCommand}")
+        }
+
         if(push){
           retry(3){
-            sh(label: "push docker image", script: "docker push ${image}")
+            if pushCommand.equals("") {
+              sh(label: "push docker image", script: "docker push ${image}")
+            } else {
+              sh(label: "custom push docker image", script: "${pushCommmand}")
+            }
           }
         }
       }
