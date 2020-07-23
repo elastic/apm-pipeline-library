@@ -428,7 +428,7 @@ def buildDockerImage(args){
     dir("${folder}"){
       withEnv(env){
         prepareWith()
-        if buildCommand.equals("") {
+        if (buildCommand.equals("")) {
           sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
         } else {
           sh(label: "custom build docker image", script: "${buildCommand}")
@@ -436,7 +436,7 @@ def buildDockerImage(args){
 
         if(push){
           retry(3){
-            if pushCommand.equals("") {
+            if (pushCommand.equals("")) {
               sh(label: "push docker image", script: "docker push ${image}")
             } else {
               sh(label: "custom push docker image", script: "${pushCommmand}")
