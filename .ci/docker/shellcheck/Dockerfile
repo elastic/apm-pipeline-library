@@ -4,7 +4,10 @@ USER root
 WORKDIR /opt/shellCheck
 
 # Install OS deps
-RUN apt-get update -qq && apt-get install -qq -y ghc cabal-install git
+RUN apt-get update -qq \
+ && apt-get install -qq -y --no-install-recommends ghc cabal-install git \
+ && rm -rf /var/lib/apt/lists/*
+
 RUN git clone -n https://github.com/koalaman/shellcheck.git .\
   && git checkout -B v0.6.0 cb57b4a74f490991e65ee8d0be1a6151a9819f91
 

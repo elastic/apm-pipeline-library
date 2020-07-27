@@ -30,12 +30,14 @@ README="${FOLDER}/README.md"
 echo "FOLDER=${1}"
 echo "README=${FOLDER}/README.md"
 
-echo "# Steps Documentation" > ${README}
-for i in ${FOLDER}/*.txt
+echo "# Steps Documentation" > "${README}"
+for i in "${FOLDER}"/*.txt
 do
-  echo "Procesing $i"
-  step=$(basename $i .txt)
-  echo "## ${step}" >>  ${README}
-  cat $i >>  ${README}
-  echo "" >> ${README}
+  echo "Procesing ${i}"
+  step=$(basename "${i}" .txt)
+  {
+    echo "## ${step}"
+    cat "$i"
+    echo ""
+  } >> "${README}"
 done
