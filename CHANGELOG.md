@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 # Changelog
 
 ## v1.1.130 (21/07/2020)
@@ -1949,3 +1950,5 @@
 -  [APM-CI] APM UI pipeline version 0 [#4](https://github.com/elastic/apm-pipeline-library/pull/4)
 -  Pr no build test [#7](https://github.com/elastic/apm-pipeline-library/pull/7)
 -  Jenkinsfile [#1](https://github.com/elastic/apm-pipeline-library/pull/1)
+
+<!-- markdownlint-restore -->

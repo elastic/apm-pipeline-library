@@ -30,7 +30,11 @@ README="${FOLDER}/README.md"
 echo "FOLDER=${1}"
 echo "README=${FOLDER}/README.md"
 
-echo "# Steps Documentation" > "${README}"
+{
+  echo "<!-- markdownlint-disable -->"
+  echo "# Steps Documentation"
+} > "${README}"
+
 for i in "${FOLDER}"/*.txt
 do
   echo "Procesing ${i}"
@@ -41,3 +45,5 @@ do
     echo ""
   } >> "${README}"
 done
+
+echo "<!-- markdownlint-restore -->" >> "${README}"
