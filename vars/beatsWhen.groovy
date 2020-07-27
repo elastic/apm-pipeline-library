@@ -20,7 +20,7 @@
 * Given the YAML definition and the changeset global macros
 * then it verifies if the project or stage should be enabled.
 */
-Boolean call(Map params = [:]){
+Boolean call(Map args = [:]){
   def project = args.project
   def content = args.content
   def patterns = args.changeset
