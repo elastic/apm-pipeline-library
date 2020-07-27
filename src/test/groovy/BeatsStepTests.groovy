@@ -54,6 +54,37 @@ class BeatsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenComments_and_no_environment_variable() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenComments()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenComments_and_environment_variable_but_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    env.GITHUB_COMMENT = 'branch'
+    def ret = script.whenComments(content: [:])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenComments_and_environment_variable_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    env.GITHUB_COMMENT = '/test foo'
+    def ret = script.whenComments(content: [ comments: ['/test foo']])
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenComments_and_environment_variable_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    env.GITHUB_COMMENT = '/test foo'
+    def ret = script.whenComments(content: [ comments: ['/run bla', '/test bar']])
+    assertFalse(ret)
+  }
+
+  @Test
   void test_whenParameters_and_no_params() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenParameters()

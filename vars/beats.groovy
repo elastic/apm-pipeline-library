@@ -30,8 +30,8 @@ private Boolean whenBranches(Map args = [:]) {
 
 private Boolean whenComments(Map args = [:]) {
   def ret = false
-  if (args.content['comments']?.trim() && env.GITHUB_COMMENT?.trim()) {
-    if (args.content['comments']?.any { env.GITHUB_COMMENT?.toLowerCase()?.contains(it?.toLowerCase()) }) {
+  if (args.content?.get('comments') && env.GITHUB_COMMENT?.trim()) {
+    if (args.content?.get('comments')?.any { env.GITHUB_COMMENT?.toLowerCase()?.contains(it?.toLowerCase()) }) {
       ret = true
       markdownReason(project: args.project, reason: 'Comment is enabled and matches with the pattern.')
     } else {
@@ -43,8 +43,8 @@ private Boolean whenComments(Map args = [:]) {
 
 private Boolean whenLabels(Map args = [:]) {
   def ret = false
-  if (content['labels']) {
-    if (content['labels']?.any { matchesPrLabel(label: it) }) {
+  if (args.content?.get('labels')) {
+    if (args.content?.get('labels')?.any { matchesPrLabel(label: it) }) {
       ret = true
       markdownReason(project: args.project, reason: 'Label is enabled and matches with the pattern.')
     } else {
