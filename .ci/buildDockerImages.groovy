@@ -347,6 +347,7 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-robots.git',
+          tag: 'test-plans',
           buildCommand: 'make build',
           pushCommand: 'make push',
           push: true,
