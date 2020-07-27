@@ -15,7 +15,7 @@ Boolean when(Map args = [:]) {
   if (whenParameters(args)) { ret = true }
   if (whenBranches(args)) { ret = true }
   if (whenTags(args)) { ret = true }
-
+  // TODO: changeset validation
   return ret
 }
 

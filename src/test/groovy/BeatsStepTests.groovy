@@ -85,6 +85,29 @@ class BeatsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenLabels_and_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenLabels(content: [:])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenLabels_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('matchesPrLabel', [Map.class], { true })
+    def ret = script.whenLabels(content: [ labels: ['foo']])
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenLabels_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
+    def ret = script.whenLabels(content: [ labels: ['foo']])
+    assertFalse(ret)
+  }
+
+  @Test
   void test_whenParameters_and_no_params() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenParameters()
