@@ -460,7 +460,7 @@ def buildDockerImage(args){
             if (pushCommand.equals("")) {
               sh(label: "push docker image", script: "docker push ${image}")
             } else {
-              sh(label: "custom push docker image", script: "${pushCommmand}")
+              sh(label: "custom push docker image", script: "${pushCommand}")
             }
           }
         }
