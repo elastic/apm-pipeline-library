@@ -46,9 +46,9 @@ private Boolean whenLabels(Map args = [:]) {
   if (content['labels']) {
     if (content['labels']?.any { matchesPrLabel(label: it) }) {
       ret = true
-      markdownReason(project: project, reason: 'Label is enabled and matches with the pattern.')
+      markdownReason(project: args.project, reason: 'Label is enabled and matches with the pattern.')
     } else {
-      markdownReason(project: project, reason: 'Label is enabled and does not match with the pattern.')
+      markdownReason(project: args.project, reason: 'Label is enabled and does not match with the pattern.')
     }
   }
   return ret
@@ -56,12 +56,12 @@ private Boolean whenLabels(Map args = [:]) {
 
 private Boolean whenParameters(Map args = [:]) {
   def ret = false
-  if (content['parameters']) {
-    if (content['parameters']?.any { params[it] }) {
+  if (args.content?.get('parameters')) {
+    if (args.content?.get('parameters')?.any { params[it] }) {
       ret = true
-      markdownReason(project: project, reason: 'Parameter is enabled and matches with the pattern.')
+      markdownReason(project: args.project, reason: 'Parameter is enabled and matches with the pattern.')
     } else {
-      markdownReason(project: project, reason: 'Parameter is enabled and does not match with the pattern.')
+      markdownReason(project: args.project, reason: 'Parameter is enabled and does not match with the pattern.')
     }
   }
   return ret
@@ -69,9 +69,9 @@ private Boolean whenParameters(Map args = [:]) {
 
 private Boolean whenTags(Map args = [:]) {
   def ret = false
-  if (content['tags'] && env.TAG_NAME?.trim()) {
+  if (env.TAG_NAME?.trim() && args.content?.get('tags')) {
     ret = true
-    markdownReason(project: project, reason: 'Tag is enabled and matches with the pattern.')
+    markdownReason(project: args.project, reason: 'Tag is enabled and matches with the pattern.')
   }
   return ret
 }

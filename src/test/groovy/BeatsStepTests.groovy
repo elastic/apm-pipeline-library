@@ -52,4 +52,55 @@ class BeatsStepTests extends ApmBasePipelineTest {
     def ret = script.whenBranches(content: [ branches: true])
     assertTrue(ret)
   }
+
+  @Test
+  void test_whenParameters_and_no_params() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenParameters()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenParameters_and_params_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
+    assertFalse(ret)
+  }
+
+  void test_whenParameters_and_params_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    params.bar = true
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
+    assertTrue(ret)
+  }
+
+  void test_whenParameters_and_params_with_match_but_disabled() throws Exception {
+    def script = loadScript(scriptName)
+    params.bar = false
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenTags_and_no_environment_variable() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenTags()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenTags_and_environment_variable_but_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    env.TAG_NAME = 'tag'
+    def ret = script.whenTags(content: [:])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenTags_and_environment_variable_with_data() throws Exception {
+    def script = loadScript(scriptName)
+    env.TAG_NAME = 'tag'
+    def ret = script.whenTags(content: [ tags: true])
+    assertTrue(ret)
+  }
 }
