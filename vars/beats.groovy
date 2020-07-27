@@ -21,10 +21,9 @@ Boolean when(Map args = [:]) {
 
 private Boolean whenBranches(Map args = [:]) {
   def ret = false
-  
-  if (content['branches'] && env.BRANCH_NAME?.trim()) {
+  if (env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
     ret = true
-    markdownReason(project: project, reason: 'Branch is enabled and matches with the pattern.')
+    markdownReason(project: args.project, reason: 'Branch is enabled and matches with the pattern.')
   }
   return ret
 }
@@ -55,23 +54,10 @@ private Boolean whenLabels(Map args = [:]) {
   return ret
 }
 
-private Boolean whenLabels(Map args = [:]) {
-  def ret = false
-  if (content['labels']) {
-    if (content['labels']?.any { matchesPrLabel(label: it) }) {
-      ret = true
-      markdownReason(project: project, reason: 'Label is enabled and matches with the pattern.')
-    } else {
-      markdownReason(project: project, reason: 'Label is enabled and does not match with the pattern.')
-    }
-  }
-  return ret
-}
-
 private Boolean whenParameters(Map args = [:]) {
   def ret = false
   if (content['parameters']) {
-    if (content['parameters']?.any { params.[it] }) {
+    if (content['parameters']?.any { params[it] }) {
       ret = true
       markdownReason(project: project, reason: 'Parameter is enabled and matches with the pattern.')
     } else {
