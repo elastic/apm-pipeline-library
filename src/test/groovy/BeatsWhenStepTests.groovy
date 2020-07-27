@@ -21,8 +21,8 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class BeatsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/beats.groovy'
+class BeatsWhenStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/beatsWhen.groovy'
 
   @Override
   @Before
