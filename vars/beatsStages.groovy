@@ -16,14 +16,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-* Given the YAML definition and the changeset global macros
-* then it verifies if the project or stage should be enabled.
-*/
-Boolean when(Map args = [:]){
-  return beatsWhen(args)
-}
-
-Map generateStages(Map args = [:]) {
+Boolean call(Map args = [:]){
+  def project = args.project
+  def content = args.content
+  def patterns = args.changeset
+  
   // TODO
 }

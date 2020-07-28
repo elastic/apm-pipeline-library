@@ -15,3 +15,21 @@
 
 
 </pre>
+
+<strong>beats.generateStages()</strong>
+
+<p>
+    fooo
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>foo: </li>
+        <li>bar: Defaults to `8`</li>
+    </ul>
+</p>
+
+
+<pre>
+
+
+</pre>
