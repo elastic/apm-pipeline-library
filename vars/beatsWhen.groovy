@@ -31,7 +31,8 @@ Boolean call(Map args = [:]){
   if (whenParameters(args)) { ret = true }
   if (whenBranches(args)) { ret = true }
   if (whenTags(args)) { ret = true }
-  // TODO: changeset validation
+  if (whenChangeset(args)) { ret = true }
+
   return ret
 }
 
@@ -41,6 +42,12 @@ private Boolean whenBranches(Map args = [:]) {
     ret = true
     markdownReason(project: args.project, reason: 'Branch is enabled and matches with the pattern.')
   }
+  return ret
+}
+
+private Boolean whenChangeset(Map args = [:]) {
+  def ret = false
+  // TODO
   return ret
 }
 
@@ -93,6 +100,10 @@ private Boolean whenTags(Map args = [:]) {
 }
 
 private void markdownReason(Map args = [:]) {
-  echo "${args.project} - ${args.reason}"
-  // TODO create markdown
+  def fileName = "build-${args.project}.md"
+  def data = ''
+  if(fileExists(fileName)) {
+    data = readFile(file: "${fileName}")
+  }
+  writeFile file: 'build.sbt', text: "${data}\r\n${args.reason}"
 }
