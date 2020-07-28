@@ -346,6 +346,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('beatsWhen', [Map.class], null)
     helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
     helper.registerAllowedMethod('cmd', [Map.class], { m ->
       def script = loadScript('vars/cmd.groovy')

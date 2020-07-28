@@ -20,18 +20,17 @@
 * Given the YAML definition then it creates all the stages
 */
 Map call(Map args = [:]){
-  def project = args.project
-  def content = args.content
-  
-  def mapOfStages = [:]
+  def project = args.containsKey('project') ? args.project : error('beatsStages: project param is required')
+  def content = args.containsKey('content') ? args.content : error('beatsStages: content param is required')
+  def defaultNode = content.containsKey('platform') ? content.platform : error('beatsStages: platform entry in the content is required.')
 
-  def defaultNode = content.containsKey('platform') ? content.platform : ''
+  def mapOfStages = [:]
 
   content?.stages?.each { stageName, value ->
     def tempMapOfStages = [:]
     if (value.containsKey('when')) {
       if (beatsWhen(project: project, content: value.when)) {
-        tempMapOfStages = generateStages(content: value, project: project, name: stageName, defaultNode: defaultNode)
+        tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode)
       }
     } else {
       tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode)
@@ -66,6 +65,8 @@ private generateStages(Map args = [:]) {
 private generateStage(Map args = [:]) {
   def content = args.content
   def label = args.label
+
+  def command = content?.containsKey('command') ? content.command : error('beatsStages: command entry in the stage is required.')
   return {
     // TODO TBDnode(label) {
       echo "${content.command} in ${label}"

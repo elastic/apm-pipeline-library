@@ -13,8 +13,7 @@ DSL = '''pipeline {
         deleteDir()
 
         writeYaml(file: 'simple.yaml', data: readYaml(text: """
-platform:
-  - "linux && ubuntu-16"
+platform: "linux && ubuntu-16"
 stages:
   simple:
     command:
@@ -22,8 +21,7 @@ stages:
 """))
 
         writeYaml(file: 'two.yaml', data: readYaml(text: """
-platform:
-  - "linux && ubuntu-16"
+platform: "linux && ubuntu-16"
 stages:
   one:
     command:
@@ -34,8 +32,7 @@ stages:
 """))
 
         writeYaml(file: 'platforms.yaml', data: readYaml(text: """
-platform:
-  - "linux && ubuntu-16"
+platform: "linux && ubuntu-16"
 stages:
   windows:
     command:
@@ -46,8 +43,7 @@ stages:
 """))
 
         writeYaml(file: 'when.yaml', data: readYaml(text: """
-platform:
-  - "linux && ubuntu-16"
+platform: "linux && ubuntu-16"
 stages:
   windows:
     command:
