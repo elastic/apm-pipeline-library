@@ -27,20 +27,39 @@ Map call(Map args = [:]){
 
   def defaultNode = content.containsKey('platform') ? content.platform : ''
 
-  content?.stages?.each { name, value ->
-    if (value.containsKey('platforms')) {
-      value.platforms.each { platform ->
-        def stageName = "${project}-${name}-${platform}"
-        log(level: 'DEBUG', text: "stage: ${stageName}")
-        mapOfStages[stageName] = generateStage(label: platform, content: value)
+  content?.stages?.each { stageName, value ->
+    def tempMapOfStages = [:]
+    if (value.containsKey('when')) {
+      if (beatsWhen(project: project, content: value.when)) {
+        tempMapOfStages = generateStages(content: value, project: project, name: stageName, defaultNode: defaultNode)
       }
     } else {
-      def stageName = "${project}-${name}"
-      log(level: 'DEBUG', text: "stage: ${stageName}")
-      mapOfStages["${stageName}"] = generateStage(label: defaultNode, content: value)
+      tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode)
     }
+    tempMapOfStages.each { k,v -> mapOfStages["${k}"] = v }
   }
 
+  return mapOfStages
+}
+
+private generateStages(Map args = [:]) {
+  def content = args.content
+  def project = args.project
+  def stageName = args.stageName
+  def defaultNode = args.defaultNode
+
+  def mapOfStages = [:]
+  if (content.containsKey('platforms')) {
+    content.platforms.each { platform ->
+      def id = "${project}-${stageName}-${platform}"
+      log(level: 'DEBUG', text: "stage: ${id}")
+      mapOfStages[id] = generateStage(label: platform, content: content)
+    }
+  } else {
+    def id = "${project}-${stageName}"
+    log(level: 'DEBUG', text: "stage: ${id}")
+    mapOfStages["${id}"] = generateStage(label: defaultNode, content: content)
+  }
   return mapOfStages
 }
 
