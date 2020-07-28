@@ -80,6 +80,59 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenChangeset_and_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenChangeset()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenChangeset_and_content() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci']])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenChangeset_and_content_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']])
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenChangeset_content_and_macro() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
+                                   changeset: [ oss: [ '^oss'] ])
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenChangeset_content_and_macro_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'oss'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
+                                   changeset: [ oss: [ '^oss'] ])
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenChangeset_content_and_macro_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'oss'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@osss']],
+                                   changeset: [ oss: [ '^oss'] ])
+    assertFalse(ret)
+  }
+
+  @Test
   void test_whenComments_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenComments()

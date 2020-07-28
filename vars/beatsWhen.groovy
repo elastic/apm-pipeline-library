@@ -23,7 +23,7 @@
 Boolean call(Map args = [:]){
   def project = args.containsKey('project') ? args.project : error('beatsWhen: project param is required')
   def content = args.containsKey('content') ? args.content : error('beatsWhen: content param is required')
-  def patterns = args.changeset
+  def changeset = args.changeset
   def ret = false
 
   if (whenComments(args)) { ret = true }
@@ -47,7 +47,46 @@ private Boolean whenBranches(Map args = [:]) {
 
 private Boolean whenChangeset(Map args = [:]) {
   def ret = false
-  // TODO
+
+  if (args.content?.get('changeset')) {
+    // Gather macro changeset entries
+    def macro = [:]
+    args?.changeset?.each { k,v ->
+      macro[k] = v
+    }
+
+    // Create list of changeset patterns to be searched.
+    def patterns = []
+    args.content.changeset.each {
+      if (it.startsWith('@')){
+        def search = it.replaceAll('@', '')
+        macro[search].each { macroEntry ->
+          patterns << macroEntry
+        }
+      } else {
+        patterns << it
+      }
+    }
+
+    // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
+
+    // Gather the diff between the target branch and the current commit.
+    def gitDiffFile = 'git-diff.txt'
+    def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT
+    sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
+
+    // Search for any pattern that matches that particular
+    def fileContent = readFile(gitDiffFile)
+    ret = patterns?.any { pattern ->
+      fileContent?.split('\n').any { line -> line ==~ pattern }
+    }
+    if (ret) {
+      markdownReason(project: args.project, reason: 'Changeset is enabled and matches with the pattern.')
+    } else {
+      markdownReason(project: args.project, reason: 'Changeset is enabled and does not match with the pattern.')
+    }
+  }
+
   return ret
 }
 
