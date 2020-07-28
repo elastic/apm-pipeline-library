@@ -16,10 +16,40 @@
 // specific language governing permissions and limitations
 // under the License.
 
-Boolean call(Map args = [:]){
+/**
+* Given the YAML definition then it creates all the stages
+*/
+Map call(Map args = [:]){
   def project = args.project
   def content = args.content
-  def patterns = args.changeset
   
-  // TODO
+  def mapOfStages = [:]
+
+  def defaultNode = content.containsKey('platform') ? content.platform : ''
+
+  content?.stages?.each { name, value ->
+    if (value.containsKey('platforms')) {
+      value.platforms.each { platform ->
+        def stageName = "${project}-${name}-${platform}"
+        log(level: 'DEBUG', text: "stage: ${stageName}")
+        mapOfStages[stageName] = generateStage(label: platform, content: value)
+      }
+    } else {
+      def stageName = "${project}-${name}"
+      log(level: 'DEBUG', text: "stage: ${stageName}")
+      mapOfStages["${stageName}"] = generateStage(label: defaultNode, content: value)
+    }
+  }
+
+  return mapOfStages
+}
+
+private generateStage(Map args = [:]) {
+  def content = args.content
+  def label = args.label
+  return {
+    // TODO TBDnode(label) {
+      echo "${content.command} in ${label}"
+    //}
+  }
 }

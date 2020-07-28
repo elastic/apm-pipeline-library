@@ -107,6 +107,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/getBuildInfoJsonFiles.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/timeout.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/beats/beatsStages.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/beats/beatsWhen.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cancelPreviousRunningBuilds.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/cmd.dsl"

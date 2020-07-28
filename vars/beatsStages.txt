@@ -1,15 +1,18 @@
 <p>
-    fooo
+    Given the YAML definition then it creates all the stages
 
     The list of step's params and the related default values are:
     <ul>
-        <li>foo: </li>
-        <li>bar: Defaults to `8`</li>
+        <li>project: the name of the project</li>
+        <li>content: the content with all the stages and commands to be transformed</li>
     </ul>
 </p>
 
 
 <pre>
-
-
+    script {
+        def mapParallelTasks = [:]
+        beatsWhen(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml'))
+        parallel(mapParallelTasks)
+    }
 </pre>
