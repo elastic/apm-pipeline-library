@@ -24,6 +24,10 @@ import static org.junit.Assert.assertTrue
 class BeatsStagesStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/beatsStages.groovy'
 
+  def runCommand(Map args = [:]) {
+    echo "${args.label}"
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -60,7 +64,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
   void test_with_no_platform() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(project: 'foo', content: [:])
+      script.call(project: 'foo', content: [:], function: this.&runCommand)
     } catch (e) {
       // NOOP
     }
@@ -70,24 +74,15 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_missing_command() throws Exception {
+  void test_with_no_function() throws Exception {
     def script = loadScript(scriptName)
-    def data = [
-      "platform" : "linux && ubuntu-16",
-      "stages": [
-        "simple" : [
-          "foo" : [ "bar" ]
-        ]
-      ]
-    ]
-
     try {
-      script.call(project: 'foo', content: data)
+      script.call(project: 'foo', content: [:])
     } catch (e) {
       // NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'command entry in the stage is required'))
+    assertTrue(assertMethodCallContainsPattern('error', 'function param is required'))
     assertJobStatusFailure()
   }
 
@@ -98,10 +93,10 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
         "simple" : [
-          "command" : [ "foo" ]
+          "mage" : [ "foo" ]
         ]
       ]
-    ])
+    ], function: this.&runCommand)
     printCallStack()
     assertTrue(ret.size() == 1)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
@@ -115,14 +110,14 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
         "simple" : [
-          "command" : [ "foo" ]
+          "make" : [ "foo" ]
         ],
         "multi" : [
-          "command" : [ "foo" ],
+          "mage" : [ "foo" ],
           "platforms" : [ 'windows-2019', 'windows-2016' ]
         ]
       ]
-    ])
+    ], function: this.&runCommand)
     printCallStack()
     assertTrue(ret.size() == 3)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
@@ -139,21 +134,21 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
         "simple" : [
-          "command" : [ "foo" ]
+          "make" : [ "foo" ]
         ],
         "multi" : [
-          "command" : [ "foo" ],
+          "make" : [ "foo" ],
           "platforms" : [ 'windows-2019' ]
         ],
         "multi-when" : [
-          "command" : [ "foo" ],
+          "mage" : [ "foo" ],
           "platforms" : [ 'windows-2016' ],
           "when" : [ 
             "comments" : [ "/test auditbeat for windows" ]
           ]
         ]
       ]
-    ])
+    ], function: this.&runCommand)
     printCallStack()
     assertTrue(ret.size() == 2)
     assertFalse(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))
@@ -168,21 +163,21 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
         "simple" : [
-          "command" : [ "foo" ]
+          "make" : [ "foo" ]
         ],
         "multi" : [
-          "command" : [ "foo" ],
+          "mage" : [ "foo" ],
           "platforms" : [ 'windows-2019' ]
         ],
         "multi-when" : [
-          "command" : [ "foo" ],
+          "mage" : [ "foo" ],
           "platforms" : [ 'windows-2016' ],
           "when" : [ 
             "comments" : [ "/test auditbeat for windows" ]
           ]
         ]
       ]
-    ])
+    ], function: this.&runCommand)
     printCallStack()
     assertTrue(ret.size() == 3)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))

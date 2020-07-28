@@ -16,7 +16,7 @@ DSL = '''pipeline {
 platform: "linux && ubuntu-16"
 stages:
   simple:
-    command:
+    mage:
       - "mage build test"
 """))
 
@@ -24,10 +24,10 @@ stages:
 platform: "linux && ubuntu-16"
 stages:
   one:
-    command:
+    mage:
       - "mage build test"
   two: 
-    command:
+    make:
       - "make -C auditbeat crosscompile"
 """))
 
@@ -35,8 +35,8 @@ stages:
 platform: "linux && ubuntu-16"
 stages:
   windows:
-    command:
-      - "cd auditbeat && mage build unitTest"
+    mage:
+      - "mage build unitTest"
     platforms:
       - "windows-2019"
       - "windows-2016"
@@ -46,8 +46,8 @@ stages:
 platform: "linux && ubuntu-16"
 stages:
   windows:
-    command:
-      - "cd auditbeat && mage build unitTest"
+    mage:
+      - "mage build unitTest"
     platforms:
       - "windows-2019"
       - "windows-2016"
@@ -62,7 +62,7 @@ stages:
     stage('simple') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'simple.yaml'))
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'simple.yaml'), function: this.&runCommand)
           whenFalse(ret.size() == 1) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -71,13 +71,14 @@ stages:
               error 'Assert failed. Name of the stage does not match.'
             }
           }
+          parallel(ret)
         }
       }
     }
     stage('two') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'two.yaml'))
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'two.yaml'), function: this.&runCommand)
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -86,13 +87,14 @@ stages:
               error 'Assert failed. Name of the stage does not match.'
             }
           }
+          parallel(ret)
         }
       }
     }
     stage('platforms') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'platforms.yaml'))
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'platforms.yaml'), function: this.&runCommand)
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -101,6 +103,7 @@ stages:
               error 'Assert failed. Name of the stage does not match.'
             }
           }
+          parallel(ret)
         }
       }
     }
@@ -110,10 +113,11 @@ stages:
       }
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'))
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: this.&runCommand)
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just 2 entries.'
           }
+          parallel(ret)
         }
       }
     }
@@ -123,13 +127,26 @@ stages:
       }
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'))
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: this.&runCommand)
           whenFalse(ret.size() == 0) {
             error 'Assert failed. There should be just 0 entries.'
           }
+          parallel(ret)
         }
       }
     }
+  }
+}
+
+// TODO expected to call org.codehaus.groovy.runtime.MethodClosure.call but wound up catching WorkflowScript.runCommand; see: https://jenkins.io/redirect/pipeline-cps-method-mismatches/
+def runCommand(Map args = [:]) {
+  if (args?.content?.mage) {
+    dir(args.project) {
+      echo "mage ${args.label}"
+    }
+  }
+  if (args?.content?.make) {
+    echo "make ${args.label}"
   }
 }
 '''

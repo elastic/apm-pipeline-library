@@ -22,6 +22,7 @@
 Map call(Map args = [:]){
   def project = args.containsKey('project') ? args.project : error('beatsStages: project param is required')
   def content = args.containsKey('content') ? args.content : error('beatsStages: content param is required')
+  def function = args.containsKey('function') ? args.function : error('beatsStages: function param is required')
   def defaultNode = content.containsKey('platform') ? content.platform : error('beatsStages: platform entry in the content is required.')
 
   def mapOfStages = [:]
@@ -30,10 +31,10 @@ Map call(Map args = [:]){
     def tempMapOfStages = [:]
     if (value.containsKey('when')) {
       if (beatsWhen(project: project, content: value.when)) {
-        tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode)
+        tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode, function: function)
       }
     } else {
-      tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode)
+      tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode, function: function)
     }
     tempMapOfStages.each { k,v -> mapOfStages["${k}"] = v }
   }
@@ -46,30 +47,29 @@ private generateStages(Map args = [:]) {
   def project = args.project
   def stageName = args.stageName
   def defaultNode = args.defaultNode
+  def function = args.function
 
   def mapOfStages = [:]
   if (content.containsKey('platforms')) {
     content.platforms.each { platform ->
       def id = "${project}-${stageName}-${platform}"
       log(level: 'DEBUG', text: "stage: ${id}")
-      mapOfStages[id] = generateStage(label: platform, content: content)
+      mapOfStages[id] = generateStage(project: project, label: platform, content: content, function: function)
     }
   } else {
     def id = "${project}-${stageName}"
     log(level: 'DEBUG', text: "stage: ${id}")
-    mapOfStages["${id}"] = generateStage(label: defaultNode, content: content)
+    mapOfStages["${id}"] = generateStage(project: project, label: defaultNode, content: content, function: function)
   }
   return mapOfStages
 }
 
 private generateStage(Map args = [:]) {
+  def project = args.project
   def content = args.content
   def label = args.label
-
-  def command = content?.containsKey('command') ? content.command : error('beatsStages: command entry in the stage is required.')
+  def function = args.function
   return {
-    // TODO TBDnode(label) {
-      echo "${content.command} in ${label}"
-    //}
+    function(args)
   }
 }
