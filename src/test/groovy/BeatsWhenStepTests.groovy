@@ -31,6 +31,32 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call()
+    } catch (e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'project param is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_no_project() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(project: 'foo')
+    } catch (e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'content param is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_whenBranches_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenBranches()

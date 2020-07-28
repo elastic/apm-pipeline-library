@@ -21,8 +21,8 @@
 * then it verifies if the project or stage should be enabled.
 */
 Boolean call(Map args = [:]){
-  def project = args.project
-  def content = args.content
+  def project = args.containsKey('project') ? args.project : error('beatsWhen: project param is required')
+  def content = args.containsKey('content') ? args.content : error('beatsWhen: content param is required')
   def patterns = args.changeset
   def ret = false
 

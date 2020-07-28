@@ -1,17 +1,18 @@
-<strong>beats.when()</strong>
-
 <p>
-    fooo
+    Given the YAML definition and the changeset global macros
+    then it verifies if the project or stage should be enabled.
 
     The list of step's params and the related default values are:
     <ul>
-        <li>foo: </li>
-        <li>bar: Defaults to `8`</li>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with the when section. Mandatory</li>
+        <li>changeset: the global changeset. Optional</li>
     </ul>
 </p>
 
 
 <pre>
-
-
+    whenTrue(beatsWhen(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+        ...
+    }
 </pre>
