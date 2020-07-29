@@ -36,12 +36,11 @@ Boolean call(Map args = [:]){
 }
 
 private Boolean whenBranches(Map args = [:]) {
-  def ret = false
   if (env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
-    ret = true
     markdownReason(project: args.project, reason: 'Branch is enabled and matches with the pattern.')
+    return true
   }
-  return ret
+  return false
 }
 
 private Boolean whenChangeset(Map args = [:]) {
@@ -90,16 +89,14 @@ private Boolean whenChangeset(Map args = [:]) {
 }
 
 private Boolean whenComments(Map args = [:]) {
-  def ret = false
   if (args.content?.get('comments') && env.GITHUB_COMMENT?.trim()) {
     if (args.content?.get('comments')?.any { env.GITHUB_COMMENT?.toLowerCase()?.contains(it?.toLowerCase()) }) {
-      ret = true
       markdownReason(project: args.project, reason: 'Comment is enabled and matches with the pattern.')
-    } else {
-      markdownReason(project: args.project, reason: 'Comment is enabled and does not match with the pattern.')
+      return true
     }
+    markdownReason(project: args.project, reason: 'Comment is enabled and does not match with the pattern.')
   }
-  return ret
+  return false
 }
 
 private Boolean whenLabels(Map args = [:]) {
