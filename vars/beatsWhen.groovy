@@ -25,12 +25,12 @@ Boolean call(Map args = [:]){
   def changeset = args.changeset
   def ret = false
 
+  if (whenBranches(args)) { ret = true }
+  if (whenChangeset(args)) { ret = true }
   if (whenComments(args)) { ret = true }
   if (whenLabels(args)) { ret = true }
   if (whenParameters(args)) { ret = true }
-  if (whenBranches(args)) { ret = true }
   if (whenTags(args)) { ret = true }
-  if (whenChangeset(args)) { ret = true }
 
   return ret
 }
@@ -44,8 +44,6 @@ private Boolean whenBranches(Map args = [:]) {
 }
 
 private Boolean whenChangeset(Map args = [:]) {
-  def ret = false
-
   if (args.content?.get('changeset')) {
     // Gather macro changeset entries
     def macro = [:]
@@ -80,12 +78,13 @@ private Boolean whenChangeset(Map args = [:]) {
     }
     if (ret) {
       markdownReason(project: args.project, reason: 'Changeset is enabled and matches with the pattern.')
+      return true
     } else {
       markdownReason(project: args.project, reason: 'Changeset is enabled and does not match with the pattern.')
     }
   }
 
-  return ret
+  return false
 }
 
 private Boolean whenComments(Map args = [:]) {
@@ -100,38 +99,35 @@ private Boolean whenComments(Map args = [:]) {
 }
 
 private Boolean whenLabels(Map args = [:]) {
-  def ret = false
   if (args.content?.get('labels')) {
     if (args.content?.get('labels')?.any { matchesPrLabel(label: it) }) {
-      ret = true
       markdownReason(project: args.project, reason: 'Label is enabled and matches with the pattern.')
+      return true
     } else {
       markdownReason(project: args.project, reason: 'Label is enabled and does not match with the pattern.')
     }
   }
-  return ret
+  return false
 }
 
 private Boolean whenParameters(Map args = [:]) {
-  def ret = false
   if (args.content?.get('parameters')) {
     if (args.content?.get('parameters')?.any { params[it] }) {
-      ret = true
       markdownReason(project: args.project, reason: 'Parameter is enabled and matches with the pattern.')
+      return true
     } else {
       markdownReason(project: args.project, reason: 'Parameter is enabled and does not match with the pattern.')
     }
   }
-  return ret
+  return false
 }
 
 private Boolean whenTags(Map args = [:]) {
-  def ret = false
   if (env.TAG_NAME?.trim() && args.content?.get('tags')) {
-    ret = true
     markdownReason(project: args.project, reason: 'Tag is enabled and matches with the pattern.')
+    return true
   }
-  return ret
+  return false
 }
 
 private void markdownReason(Map args = [:]) {
