@@ -22,50 +22,38 @@
 Boolean call(Map args = [:]){
   def project = args.containsKey('project') ? args.project : error('beatsWhen: project param is required')
   def content = args.containsKey('content') ? args.content : error('beatsWhen: content param is required')
-  def macros = args.get('changeset', [:])
+  def changeset = args.changeset
   def ret = false
 
-  def changeset = content.get('changeset', [])
-  def comments = content.get('comments', [])
-  def isBranch = content.get('branches', false)
-  def isTag = content.get('tags', false)
-  def labels = content.get('labels', [])
-  def parameters = content.get('parameters', [])
+  if (whenBranches(args)) { ret = true }
+  if (whenChangeset(args)) { ret = true }
+  if (whenComments(args)) { ret = true }
+  if (whenLabels(args)) { ret = true }
+  if (whenParameters(args)) { ret = true }
+  if (whenTags(args)) { ret = true }
 
-  if (whenBranches(isBranch: isBranch, project: project)) { ret = true }
-  if (whenChangeset(changeset: changeset, macros: macros, project: project)) { ret = true }
-  if (whenComments(comments: comments, project: project)) { ret = true }
-  if (whenLabels(labels: labels, project: project)) { ret = true }
-  if (whenParameters(parameters: parameters, project: project)) { ret = true }
-  if (whenTags(isTag: isTag, project: project)) { ret = true }
   return ret
 }
 
 private Boolean whenBranches(Map args = [:]) {
-  def isBranch = args.get('isBranch', false)
-  def project = args.project
-  if (env.BRANCH_NAME?.trim() && isBranch) {
-    markdownReason(project: project, reason: 'Branch is enabled and matches with the pattern.')
+  if (env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
+    markdownReason(project: args.project, reason: 'Branch is enabled and matches with the pattern.')
     return true
   }
   return false
 }
 
 private Boolean whenChangeset(Map args = [:]) {
-  def macros = args.get('macros', [:])
-  def changeset = args.get('changeset', [])
-  def project = args.project
-
-  if (changeset) {
+  if (args.content?.get('changeset')) {
     // Gather macro changeset entries
     def macro = [:]
-    macros.each { k,v ->
+    args?.changeset?.each { k,v ->
       macro[k] = v
     }
 
     // Create list of changeset patterns to be searched.
     def patterns = []
-    changeset.each {
+    args.content.changeset.each {
       if (it.startsWith('@')){
         def search = it.replaceAll('@', '')
         macro[search].each { macroEntry ->
@@ -89,10 +77,10 @@ private Boolean whenChangeset(Map args = [:]) {
       fileContent?.split('\n').any { line -> line ==~ pattern }
     }
     if (ret) {
-      markdownReason(project: project, reason: 'Changeset is enabled and matches with the pattern.')
+      markdownReason(project: args.project, reason: 'Changeset is enabled and matches with the pattern.')
       return true
     } else {
-      markdownReason(project: project, reason: 'Changeset is enabled and does not match with the pattern.')
+      markdownReason(project: args.project, reason: 'Changeset is enabled and does not match with the pattern.')
     }
   }
 
@@ -100,51 +88,43 @@ private Boolean whenChangeset(Map args = [:]) {
 }
 
 private Boolean whenComments(Map args = [:]) {
-  def comments = args.get('comments', [])
-  def project = args.project
-  if (comments && env.GITHUB_COMMENT?.trim()) {
-    if (comments.any { env.GITHUB_COMMENT?.toLowerCase()?.contains(it?.toLowerCase()) }) {
-      markdownReason(project: project, reason: 'Comment is enabled and matches with the pattern.')
+  if (args.content?.get('comments') && env.GITHUB_COMMENT?.trim()) {
+    if (args.content?.get('comments')?.any { env.GITHUB_COMMENT?.toLowerCase()?.contains(it?.toLowerCase()) }) {
+      markdownReason(project: args.project, reason: 'Comment is enabled and matches with the pattern.')
       return true
     }
-    markdownReason(project: project, reason: 'Comment is enabled and does not match with the pattern.')
+    markdownReason(project: args.project, reason: 'Comment is enabled and does not match with the pattern.')
   }
   return false
 }
 
 private Boolean whenLabels(Map args = [:]) {
-  def labels = args.get('labels', [])
-  def project = args.project
-  if (labels) {
-    if (labels.any { matchesPrLabel(label: it) }) {
-      markdownReason(project: project, reason: 'Label is enabled and matches with the pattern.')
+  if (args.content?.get('labels')) {
+    if (args.content?.get('labels')?.any { matchesPrLabel(label: it) }) {
+      markdownReason(project: args.project, reason: 'Label is enabled and matches with the pattern.')
       return true
     } else {
-      markdownReason(project: project, reason: 'Label is enabled and does not match with the pattern.')
+      markdownReason(project: args.project, reason: 'Label is enabled and does not match with the pattern.')
     }
   }
   return false
 }
 
 private Boolean whenParameters(Map args = [:]) {
-  def parameters = args.get('parameters', [])
-  def project = args.project
-  if (parameters) {
-    if (parameters.any { params[it] }) {
-      markdownReason(project: project, reason: 'Parameter is enabled and matches with the pattern.')
+  if (args.content?.get('parameters')) {
+    if (args.content?.get('parameters')?.any { params[it] }) {
+      markdownReason(project: args.project, reason: 'Parameter is enabled and matches with the pattern.')
       return true
     } else {
-      markdownReason(project: project, reason: 'Parameter is enabled and does not match with the pattern.')
+      markdownReason(project: args.project, reason: 'Parameter is enabled and does not match with the pattern.')
     }
   }
   return false
 }
 
 private Boolean whenTags(Map args = [:]) {
-  def isTag = args.get('isTag', false)
-  def project = args.project
-  if (env.TAG_NAME?.trim() && isTag) {
-    markdownReason(project: project, reason: 'Tag is enabled and matches with the pattern.')
+  if (env.TAG_NAME?.trim() && args.content?.get('tags')) {
+    markdownReason(project: args.project, reason: 'Tag is enabled and matches with the pattern.')
     return true
   }
   return false

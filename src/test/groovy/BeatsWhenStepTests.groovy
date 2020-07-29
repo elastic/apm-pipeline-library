@@ -59,7 +59,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   @Test
   void test_whenBranches_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenBranches(project: 'foo')
+    def ret = script.whenBranches()
     assertFalse(ret)
   }
 
@@ -67,7 +67,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenBranches_and_environment_variable_but_no_data() throws Exception {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = 'branch'
-    def ret = script.whenBranches(project: 'foo')
+    def ret = script.whenBranches(content: [:])
     assertFalse(ret)
   }
 
@@ -75,14 +75,14 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenBranches_and_environment_variable_with_data() throws Exception {
     def script = loadScript(scriptName)
     env.BRANCH_NAME = 'branch'
-    def ret = script.whenBranches(isBranch: true, project: 'foo')
+    def ret = script.whenBranches(content: [ branches: true])
     assertTrue(ret)
   }
 
   @Test
   void test_whenChangeset_and_no_data() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenChangeset(project: 'foo')
+    def ret = script.whenChangeset()
     assertFalse(ret)
   }
 
@@ -91,7 +91,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def ret = script.whenChangeset(changeset: ['^.ci'], project: 'foo')
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci']])
     assertFalse(ret)
   }
 
@@ -100,15 +100,15 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def ret = script.whenChangeset(changeset: ['^Jenkinsfile'], project: 'foo')
+    def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']])
     assertTrue(ret)
   }
 
   @Test
   void test_whenChangeset_content_and_macro() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenChangeset(changeset: ['^.ci', '@oss'],
-                                   macros: [ oss: [ '^oss'] ], project: 'foo')
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
+                                   changeset: [ oss: [ '^oss'] ])
     assertFalse(ret)
   }
 
@@ -117,8 +117,8 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def ret = script.whenChangeset(changeset: ['^.ci', '@oss'],
-                                   macros: [ oss: [ '^oss'] ], project: 'foo')
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
+                                   changeset: [ oss: [ '^oss'] ])
     assertTrue(ret)
   }
 
@@ -127,15 +127,15 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
-    def ret = script.whenChangeset(changeset: ['^.ci', '@osss'],
-                                   macros: [ oss: [ '^oss'] ], project: 'foo')
+    def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@osss']],
+                                   changeset: [ oss: [ '^oss'] ])
     assertFalse(ret)
   }
 
   @Test
   void test_whenComments_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenComments(project: 'foo')
+    def ret = script.whenComments()
     assertFalse(ret)
   }
 
@@ -143,7 +143,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenComments_and_environment_variable_but_no_data() throws Exception {
     def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'branch'
-    def ret = script.whenComments(project: 'foo')
+    def ret = script.whenComments(content: [:])
     assertFalse(ret)
   }
 
@@ -151,7 +151,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenComments_and_environment_variable_with_match() throws Exception {
     def script = loadScript(scriptName)
     env.GITHUB_COMMENT = '/test foo'
-    def ret = script.whenComments(comments: ['/test foo'], project: 'foo')
+    def ret = script.whenComments(content: [ comments: ['/test foo']])
     assertTrue(ret)
   }
 
@@ -159,14 +159,14 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenComments_and_environment_variable_without_match() throws Exception {
     def script = loadScript(scriptName)
     env.GITHUB_COMMENT = '/test foo'
-    def ret = script.whenComments(comments: ['/run bla', '/test bar'], project: 'foo')
+    def ret = script.whenComments(content: [ comments: ['/run bla', '/test bar']])
     assertFalse(ret)
   }
 
   @Test
   void test_whenLabels_and_no_data() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenLabels(project: 'foo')
+    def ret = script.whenLabels(content: [:])
     assertFalse(ret)
   }
 
@@ -174,7 +174,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenLabels_with_match() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { true })
-    def ret = script.whenLabels(labels: ['bar'], project: 'foo')
+    def ret = script.whenLabels(content: [ labels: ['foo']])
     assertTrue(ret)
   }
 
@@ -182,42 +182,42 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenLabels_without_match() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
-    def ret = script.whenLabels(labels: ['bar'], project: 'foo')
+    def ret = script.whenLabels(content: [ labels: ['foo']])
     assertFalse(ret)
   }
 
   @Test
   void test_whenParameters_and_no_params() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenParameters(project: 'foo')
+    def ret = script.whenParameters()
     assertFalse(ret)
   }
 
   @Test
   void test_whenParameters_and_params_without_match() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenParameters(parameters : [ 'foo', 'bar'], project: 'foo')
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     assertFalse(ret)
   }
 
   void test_whenParameters_and_params_with_match() throws Exception {
     def script = loadScript(scriptName)
     params.bar = true
-    def ret = script.whenParameters(parameters : [ 'foo', 'bar'], project: 'foo')
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     assertTrue(ret)
   }
 
   void test_whenParameters_and_params_with_match_but_disabled() throws Exception {
     def script = loadScript(scriptName)
     params.bar = false
-    def ret = script.whenParameters(parameters : [ 'foo', 'bar'], project: 'foo')
+    def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     assertFalse(ret)
   }
 
   @Test
   void test_whenTags_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
-    def ret = script.whenTags(project: 'foo')
+    def ret = script.whenTags()
     assertFalse(ret)
   }
 
@@ -225,7 +225,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenTags_and_environment_variable_but_no_data() throws Exception {
     def script = loadScript(scriptName)
     env.TAG_NAME = 'tag'
-    def ret = script.whenTags(project: 'foo')
+    def ret = script.whenTags(content: [:])
     assertFalse(ret)
   }
 
@@ -233,7 +233,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   void test_whenTags_and_environment_variable_with_data() throws Exception {
     def script = loadScript(scriptName)
     env.TAG_NAME = 'tag'
-    def ret = script.whenTags(isTag: true, project: 'foo')
+    def ret = script.whenTags(content: [ tags: true])
     assertTrue(ret)
   }
 }
