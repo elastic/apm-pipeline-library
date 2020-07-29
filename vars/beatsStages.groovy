@@ -29,7 +29,7 @@ Map call(Map args = [:]){
   content?.stages?.each { stageName, value ->
     def tempMapOfStages = [:]
     if (value.containsKey('when')) {
-      if (beatsWhen(project: project, content: value.when)) {
+      if (beatsWhen(project: project, content: value.when, description: stageName)) {
         tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode, function: function)
       }
     } else {

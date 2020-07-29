@@ -7,9 +7,9 @@
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with the when section. Mandatory</li>
         <li>changeset: the global changeset. Optional</li>
+        <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
     </ul>
 </p>
-
 
 <pre>
     whenTrue(beatsWhen(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))

@@ -57,6 +57,15 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_description() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call(project: 'foo', description: 'bar', content: [:])
+    printCallStack()
+    assertFalse(ret)
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'Stages for `foo bar`'))
+  }
+
+  @Test
   void test_whenBranches_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenBranches()

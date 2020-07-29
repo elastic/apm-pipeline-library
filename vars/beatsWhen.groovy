@@ -22,17 +22,17 @@
 Boolean call(Map args = [:]){
   def project = args.containsKey('project') ? args.project : error('beatsWhen: project param is required')
   def content = args.containsKey('content') ? args.content : error('beatsWhen: content param is required')
-  def changeset = args.changeset
+  def description = args.get('description', '')
   def ret = false
 
-  markdownReason(project: project, reason: "## Build reasons for `${project}`")
+  markdownReason(project: project, reason: "## Build reasons for `${project}` ${description}")
   if (whenBranches(args)) { ret = true }
   if (whenChangeset(args)) { ret = true }
   if (whenComments(args)) { ret = true }
   if (whenLabels(args)) { ret = true }
   if (whenParameters(args)) { ret = true }
   if (whenTags(args)) { ret = true }
-  markdownReason(project: project, reason: "### ${ret ? '✅ enabled' : '❕disabled'}")
+  markdownReason(project: project, reason: "* Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}")
 
   return ret
 }
