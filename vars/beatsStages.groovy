@@ -53,20 +53,17 @@ private generateStages(Map args = [:]) {
     content.platforms.each { platform ->
       def id = "${project}-${stageName}-${platform}"
       log(level: 'DEBUG', text: "stage: ${id}")
-      mapOfStages[id] = generateStage(project: project, label: platform, content: content, function: function)
+      mapOfStages[id] = generateStage(context: id, project: project, label: platform, content: content, function: function)
     }
   } else {
     def id = "${project}-${stageName}"
     log(level: 'DEBUG', text: "stage: ${id}")
-    mapOfStages["${id}"] = generateStage(project: project, label: defaultNode, content: content, function: function)
+    mapOfStages["${id}"] = generateStage(context: id, project: project, label: defaultNode, content: content, function: function)
   }
   return mapOfStages
 }
 
 private generateStage(Map args = [:]) {
-  def project = args.project
-  def content = args.content
-  def label = args.label
   def function = args.function
   return {
     function(args)
