@@ -26,12 +26,14 @@ Boolean call(Map args = [:]){
   def ret = false
 
   markdownReason(project: project, reason: "## Build reasons for `${project}` ${description}")
-  if (whenBranches(args)) { ret = true }
-  if (whenChangeset(args)) { ret = true }
-  if (whenComments(args)) { ret = true }
-  if (whenLabels(args)) { ret = true }
-  if (whenParameters(args)) { ret = true }
-  if (whenTags(args)) { ret = true }
+  if (whenEnabled(args)) {
+    if (whenBranches(args)) { ret = true }
+    if (whenChangeset(args)) { ret = true }
+    if (whenComments(args)) { ret = true }
+    if (whenLabels(args)) { ret = true }
+    if (whenParameters(args)) { ret = true }
+    if (whenTags(args)) { ret = true }
+  }
   markdownReason(project: project, reason: "* Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}")
 
   return ret
@@ -103,6 +105,10 @@ private Boolean whenComments(Map args = [:]) {
     markdownReason(project: args.project, reason: '* ❕Comment is `disabled`.')
   }
   return false
+}
+
+private boolean whenEnabled(Map args = [:]) {
+  return !args.content?.get('disabled')
 }
 
 private Boolean whenLabels(Map args = [:]) {

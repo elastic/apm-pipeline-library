@@ -186,6 +186,38 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenEnabled_without_data() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenEnabled()
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenEnabled_with_data() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenEnabled(content: [:])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenEnabled_with_disabled() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenEnabled(content: [ disabled: true])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenEnabled_with_no_disabled() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenEnabled(content: [ disabled: false])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
   void test_whenLabels_and_no_data() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenLabels(content: [:])
