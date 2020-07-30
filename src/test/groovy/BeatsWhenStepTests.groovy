@@ -24,6 +24,10 @@ import static org.junit.Assert.assertTrue
 class BeatsWhenStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/beatsWhen.groovy'
 
+  def getProjectDependencies(Map args = [:]) {
+    return [ '^projectA/.*', '^projectB' ]
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -146,6 +150,28 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@osss']],
                                    changeset: [ oss: [ '^oss'] ])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenChangeset_content_and_function_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'projectA/Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
+                                   changesetFunction: this.&getProjectDependencies)
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenChangeset_content_and_function_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'foo/Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
+                                   changesetFunction: this.&getProjectDependencies)
     printCallStack()
     assertFalse(ret)
   }

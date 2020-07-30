@@ -8,11 +8,17 @@
         <li>content: the content with the when section. Mandatory</li>
         <li>changeset: the global changeset. Optional</li>
         <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
+        <li>changesetFunction: the function to be called. Optional</li>
     </ul>
 </p>
 
 <pre>
-    whenTrue(beatsWhen(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+    whenTrue(beatsWhen(project: 'auditbeat', changesetFunction: this.&getProjectDependencies
+                       content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+        ...
+    }
+
+    def getProjectDependencies(Map args = [:]) {
         ...
     }
 </pre>

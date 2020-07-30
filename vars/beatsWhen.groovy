@@ -69,6 +69,12 @@ private Boolean whenChangeset(Map args = [:]) {
       }
     }
 
+    // If function then calculate the project dependencies on the fly.
+    if (args.get('changesetFunction')) {
+      calculatedPatterns = args.changesetFunction(args)
+      patterns.addAll(calculatedPatterns)
+    }
+
     // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
 
     // Gather the diff between the target branch and the current commit.
