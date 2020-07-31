@@ -27,12 +27,14 @@ Boolean call(Map args = [:]){
 
   markdownReason(project: project, reason: "## Build reasons for `${project}` ${description}")
   if (whenEnabled(args)) {
+    markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>")
     if (whenBranches(args)) { ret = true }
     if (whenChangeset(args)) { ret = true }
     if (whenComments(args)) { ret = true }
     if (whenLabels(args)) { ret = true }
     if (whenParameters(args)) { ret = true }
     if (whenTags(args)) { ret = true }
+    markdownReason(project: project, reason: "</p></details>")
   }
   markdownReason(project: project, reason: "* Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}")
 
