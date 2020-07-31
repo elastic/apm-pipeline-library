@@ -166,6 +166,17 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenChangeset_content_with_project_dependency_and_function_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'projectA/Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['#generator/common/beatgen']],
+                                   changesetFunction: this.&getProjectDependencies)
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
   void test_whenChangeset_content_and_function_without_match() throws Exception {
     def script = loadScript(scriptName)
     def changeset = 'foo/Jenkinsfile'

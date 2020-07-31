@@ -75,6 +75,15 @@ private Boolean whenChangeset(Map args = [:]) {
     if (args.get('changesetFunction')) {
       calculatedPatterns = args.changesetFunction(args)
       patterns.addAll(calculatedPatterns)
+
+      // Search for some other project dependencies that are explicitly
+      // sett with the pattern #<project-folder>
+      args.content.changeset.findAll { it.startsWith('#') }.each {
+        Map newArgs = args
+        newArgs.project = it.replaceAll('#', '')
+        calculatedPatterns = args.changesetFunction(args)
+        patterns.addAll(calculatedPatterns)
+      }
     }
 
     // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
