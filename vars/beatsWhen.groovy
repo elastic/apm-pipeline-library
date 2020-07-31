@@ -25,9 +25,9 @@ Boolean call(Map args = [:]){
   def description = args.get('description', '')
   def ret = false
 
-  markdownReason(project: project, reason: "## Build reasons for `${project}` ${description}")
+  markdownReason(project: project, reason: "## Build reasons for `${project} ${description}`")
   if (whenEnabled(args)) {
-    markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>")
+    markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>\n")
     if (whenBranches(args)) { ret = true }
     if (whenChangeset(args)) { ret = true }
     if (whenComments(args)) { ret = true }
@@ -36,7 +36,7 @@ Boolean call(Map args = [:]){
     if (whenTags(args)) { ret = true }
     markdownReason(project: project, reason: "</p></details>")
   }
-  markdownReason(project: project, reason: "* Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}")
+  markdownReason(project: project, reason: "#### Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}\n")
 
   return ret
 }
