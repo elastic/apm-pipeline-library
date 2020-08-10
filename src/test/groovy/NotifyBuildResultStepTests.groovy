@@ -158,8 +158,8 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void testCustomisedEmailWithEmptyOrNull() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(script.customisedEmail('').equals(''))
-    assertTrue(script.customisedEmail(null).equals(''))
+    assertTrue(script.customisedEmail('').equals([]))
+    assertTrue(script.customisedEmail(null).equals([]))
     assertJobStatusSuccess()
   }
 
@@ -169,7 +169,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     env.REPO = 'foo'
     env.remove('JOB_NAME')
     def result = script.customisedEmail('build-apm@example.com')
-    assertTrue(result.equals('build-apm+foo@example.com'))
+    assertTrue(result.equals(['build-apm+foo@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -178,7 +178,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = 'foo'
     env.JOB_NAME = 'folder1/folder2/foo'
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm+folder1@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm+folder1@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -187,7 +187,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = ''
     env.JOB_NAME = ''
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm@example.com']))
     assertJobStatusSuccess()
   }
 
