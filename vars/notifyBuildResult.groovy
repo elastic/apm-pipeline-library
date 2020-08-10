@@ -54,7 +54,7 @@ def call(Map args = [:]) {
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
         def notificationManager = new NotificationManager()
-        if(shouldNotify){
+        if(shouldNotify && to?.size() > 0){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
           notificationManager.notifyEmail(data)
         }

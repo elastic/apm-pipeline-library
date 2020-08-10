@@ -192,6 +192,31 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_email_without_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    env.remove('NOTIFY_TO')
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_to() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true, to: 'foo@acme.com')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
   void testRebuildWhenEnvIssueAlreadySet() throws Exception {
     def script = loadScript(scriptName)
     env.GIT_BUILD_CAUSE = 'pr'
