@@ -211,7 +211,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_email_with_to() throws Exception {
     def script = loadScript(scriptName)
-    script.call(shouldNotify: true, to: 'foo@acme.com')
+    script.call(shouldNotify: true, to: ['foo@acme.com'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
