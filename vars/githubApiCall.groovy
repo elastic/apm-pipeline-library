@@ -31,6 +31,7 @@ def call(Map params = [:]){
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
   def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
   def data = params?.data
+  def method = params.get('method', 'POST')
   def headers = ["Authorization": "token ${token}",
                  "User-Agent": "Elastic-Jenkins-APM"]
   def dryRun = params?.data
@@ -45,9 +46,9 @@ def call(Map params = [:]){
       if(cache["${key}"] == null){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
         if(data) {
-          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to POST")
+          log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to ${method}")
           headers.put("Content-Type", "application/json")
-          json = httpRequest(url: url, method: "POST", headers: headers, data: toJSON(data).toString())
+          json = httpRequest(url: url, method: method, headers: headers, data: toJSON(data).toString())
         } else {
           json = httpRequest(url: url, headers: headers)
         }
@@ -74,6 +75,8 @@ def call(Map params = [:]){
       error("githubApiCall: The REST API call ${url} return the message : ${ret.message}")
     } else if (ret == null ) {
       error ("githubApiCall: something happened with the toJson")
+    } else {
+      log(level: 'DEBUG', text: "githubApiCall: The REST API call ${url} returned ${ret}")
     }
     return ret
   }

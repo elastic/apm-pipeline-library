@@ -18,3 +18,16 @@ metadata.txt
 
 out.html
 .vscode
+
+test-infra/__pycache__
+test-infra/.pytest_cache
+venv
+
+agent.jar
+local.pid
+local.log
+.classpath
+.project
+.settings/
+
+test-infra/apm-ci/__pycache__/

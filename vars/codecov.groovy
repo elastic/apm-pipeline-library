@@ -71,9 +71,14 @@ def call(Map params = [:]){
         "ghprbPullId=${env.CHANGE_ID}",
         "GIT_BRANCH=${branchName}",
         "CODECOV_TOKEN=${token}"]) {
+        retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+          sh(label: 'Download Codecov', script: """#!/bin/bash
+          set -x
+          curl -sSLo codecov.sh https://codecov.io/bash
+          """)
+        }
         sh label: 'Send report to Codecov', script: """#!/bin/bash
         set -x
-        curl -s -o codecov.sh https://codecov.io/bash
         bash codecov.sh ${flags} || echo "codecov exited with \$?"
         """
       }

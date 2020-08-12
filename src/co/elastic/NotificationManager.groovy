@@ -22,13 +22,62 @@ import groovy.text.StreamingTemplateEngine
 /**
  * This method returns a string with the template filled with groovy variables
  */
-def emailTemplate(params) {
-
-    def fileName = "groovy-html-custom.template"
-    def fileContents = libraryResource(fileName)
+def buildTemplate(params) {
+    def template = params.containsKey('template') ? params.template : 'groovy-html-custom.template'
+    def fileContents = libraryResource(template)
     def engine = new StreamingTemplateEngine()
-
     return engine.createTemplate(fileContents).make(params).toString()
+}
+
+/**
+This method generates flakey test data from Jenkins test results
+ * @param es Elasticsearch URL
+ * @param secret Vault path to secrets which hold authentication information for Elasticsearch
+ * @param jobInfo JobInfo data collected from job-info.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+*/ 
+def analyzeFlakey(Map params = [:]) {
+    def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
+    def secret = params.containsKey('es_secret') ? params.es_secret : null
+    def flakyReportIdx = params.containsKey('flakyReportIdx') ? params.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
+    
+    if (!flakyReportIdx || !flakyReportIdx.trim()) {
+      error "Did not receive flakyReportIdx data" 
+    }
+
+    def q = toJSON(["query":["range": ["test_score": ["gt": flakyThreshold]]]])
+    def c = '/' + flakyReportIdx + '/_search'
+    def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
+    def flakeyTestsParsed = toJSON(flakeyTestsRaw)
+
+    def ret = []
+
+    for (failedTest in testsErrors) {
+      for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
+        if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
+          ret.add(failedTest.name)
+        }
+      }
+    }
+    def msg = "❄️ The following tests failed but also have a history of flakiness and may not be related to this change: " + ret.toString()
+    
+    if (ret) {
+      githubPrComment(message: msg, commentFile: 'flakey.id')
+    }
+}
+
+/**
+This method generates a custom PR comment with the given data
+ * @param file
+ * @param commentFile
+*/
+def customPRComment(Map args = [:]) {
+    def file = args.containsKey('file') ? args.file : error('customPRComment: file parameter is not valid')
+    def commentFile = args.containsKey('commentFile') ? args.commentFile : error('customPRComment: commentFile parameter is not valid')
+    def msg = readFile(file: file)
+    githubPrComment(message: msg, commentFile: "${commentFile}")
 }
 
 /**
@@ -65,7 +114,7 @@ def notifyEmail(Map params = [:]) {
 
       def boURL = getBlueoceanDisplayURL()
 
-      def body = emailTemplate([
+      def body = buildTemplate([
           "jobUrl": boURL,
           "build": build,
           "jenkinsText": env.JOB_NAME,
@@ -84,5 +133,100 @@ def notifyEmail(Map params = [:]) {
         body: body,
         mimeType: 'text/html'
       );
+    }
+}
+
+/**
+ * This method sends a GitHub comment with data from Jenkins
+ * @param build
+ * @param buildStatus String with job result
+ * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param docsUrl URL with the preview docs
+ * @param log String that contains the log
+ * @param statsUrl URL to access to the stats
+ * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ */
+def notifyPR(Map params = [:]) {
+    def build = params.containsKey('build') ? params.build : error('notifyPR: build parameter it is not valid')
+    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyPR: buildStatus parameter is not valid')
+    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
+    def docsUrl = params.get('docsUrl', null)
+    def log = params.containsKey('log') ? params.log : null
+    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
+    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+
+    catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
+      def statusSuccess = (buildStatus == "SUCCESS")
+      def boURL = getBlueoceanDisplayURL()
+      def body = buildTemplate([
+        "template": 'github-comment-markdown.template',
+        "build": build,
+        "buildStatus": buildStatus,
+        "changeSet": changeSet,
+        "docsUrl": docsUrl,
+        "jenkinsText": env.JOB_NAME,
+        "jenkinsUrl": env.JENKINS_URL,
+        "jobUrl": boURL,
+        "log": log,
+        "statsUrl": statsUrl,
+        "statusSuccess": statusSuccess,
+        "stepsErrors": stepsErrors,
+        "testsErrors": testsErrors,
+        "testsSummary": testsSummary
+      ])
+      writeFile(file: 'build.md', text: body)
+      githubPrComment(commentFile: 'comment.id', message: body)
+      archiveArtifacts 'build.md'
+    }
+}
+
+/**
+ * This method generates the build report and archive it
+ * @param build
+ * @param buildStatus String with job result
+ * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param docsUrl URL with the preview docs
+ * @param log String that contains the log
+ * @param statsUrl URL to access to the stats
+ * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ */
+def generateBuildReport(Map params = [:]) {
+    def build = params.containsKey('build') ? params.build : error('generateBuildReport: build parameter it is not valid')
+    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('generateBuildReport: buildStatus parameter is not valid')
+    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
+    def docsUrl = params.get('docsUrl', null)
+    def log = params.containsKey('log') ? params.log : null
+    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
+    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
+    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
+    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+
+    catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
+      def statusSuccess = (buildStatus == "SUCCESS")
+      def boURL = getBlueoceanDisplayURL()
+      def body = buildTemplate([
+        "template": 'github-comment-markdown.template',
+        "build": build,
+        "buildStatus": buildStatus,
+        "changeSet": changeSet,
+        "docsUrl": docsUrl,
+        "jenkinsText": env.JOB_NAME,
+        "jenkinsUrl": env.JENKINS_URL,
+        "jobUrl": boURL,
+        "log": log,
+        "statsUrl": statsUrl,
+        "statusSuccess": statusSuccess,
+        "stepsErrors": stepsErrors,
+        "testsErrors": testsErrors,
+        "testsSummary": testsSummary
+      ])
+      writeFile(file: 'build.md', text: body)
+      archiveArtifacts 'build.md'
     }
 }

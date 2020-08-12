@@ -1,0 +1,5 @@
+ Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
+
+```
+ def os = nodeOS()
+```

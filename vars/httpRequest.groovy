@@ -32,6 +32,7 @@ def call(Map params = [:]){
   def url = params?.url
   def method = params.containsKey('method') ? params.method : "GET"
   def headers = params.containsKey('headers') ? params.headers : ["User-Agent": "Mozilla/5.0"]
+  def response_code_only = params.containsKey('response_code_only') ? params.response_code_only : false
   def data = params?.data
 
   URL obj
@@ -44,7 +45,13 @@ def call(Map params = [:]){
   URLConnection con
   try {
     con = obj.openConnection()
-    con.setRequestMethod(method)
+    // Let's support the PATCH method https://stackoverflow.com/a/32503192
+    if (method.equals('PATCH')) {
+      conn.setRequestProperty("X-HTTP-Method-Override", 'PATCH')
+      con.setRequestMethod('POST')
+    } else {
+      con.setRequestMethod(method)
+    }
     con.setUseCaches(false)
     con.setDoInput(true)
     con.setDoOutput(true)
@@ -57,10 +64,13 @@ def call(Map params = [:]){
       IOUtils.write(data, con.getOutputStream(), "UTF-8")
     }
     int responseCode = con.getResponseCode()
+    if (response_code_only) {
+      return responseCode
+    }
     String body
-    String encoding = con.getContentEncoding();
-    encoding = encoding == null ? "UTF-8" : encoding;
-    if (con.getResponseCode() < 400) {
+    String encoding = con.getContentEncoding()
+    encoding = encoding == null ? "UTF-8" : encoding
+    if (responseCode < 400) {
       body = IOUtils.toString(con.getInputStream(), encoding)
     } else {
       body = "\nMessage: " + con.getResponseMessage()

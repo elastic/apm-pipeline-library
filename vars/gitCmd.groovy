@@ -29,11 +29,25 @@ def call(Map params = [:]) {
   def cmd =  params.containsKey('cmd') ? params.cmd : error('gitCmd: missing git command')
   def args =  params.containsKey('args') ? params.args : ''
   def credentialsId = (params.containsKey('credentialsId') && params.credentialsId.trim()) ? params.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+  def store = params.get('store', false)
   withCredentials([
     usernamePassword(
       credentialsId: credentialsId,
       passwordVariable: 'GIT_PASSWORD',
       usernameVariable: 'GIT_USERNAME')]) {
-    sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args}")
+    def logFilename = "${cmd}.log"
+    def storeFlag = store ? "> ${logFilename} 2>&1" : ''
+    try {
+      sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
+    } catch(err) {
+      if (store) {
+        log(level: 'WARN', text: "gitCmd failed, further details in the archived file '${logFilename}'")
+      }
+      throw err
+    } finally {
+      if (store) {
+        archiveArtifacts(artifacts: "${logFilename}")
+      }
+    }
   }
 }

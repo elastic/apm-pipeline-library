@@ -19,6 +19,7 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 import hudson.model.Result
 import co.elastic.TimeoutIssuesCause
+import co.elastic.BuildException
 
 /**
 
@@ -37,14 +38,17 @@ def call(Map params = [:]){
   def quietPeriod = params.get('quietPeriod', 1)
 
   def buildInfo
+  def url
   try {
     buildInfo = steps.build(job: job, parameters: parameters, wait: wait, propagate: false, quietPeriod: quietPeriod)
+    url = getRedirectLink(buildInfo, job)
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
-    log(level: 'INFO', text: "${getRedirectLink(buildLogOutput, job)}")
-    throw e
+    url = getRedirectLink(buildLogOutput, job)
+    throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE)
+  } finally {
+    log(level: 'INFO', text: "${url}")
   }
-  log(level: 'INFO', text: "${getRedirectLink(buildInfo, job)}")
 
   // Propagate the build error if required
   if (propagate) {
@@ -53,14 +57,23 @@ def call(Map params = [:]){
   return buildInfo
 }
 
-def getRedirectLink(buildInfo, jobName) {
+def getBuildId(buildInfo) {
+  def buildNumber = ''
   if(buildInfo instanceof String) {
-    def buildNumber = ''
     buildInfo.toString().split(' ').each {
       if(it.contains('#')) {
         buildNumber = it.substring(1)
       }
     }
+  } else if(buildInfo instanceof RunWrapper) {
+    buildNumber = buildInfo.getNumber()
+  }
+  return buildNumber
+}
+
+def getRedirectLink(buildInfo, jobName) {
+  if(buildInfo instanceof String) {
+    def buildNumber = getBuildId(buildInfo)
     if (buildNumber.trim()) {
       return "For detailed information see: ${env.JENKINS_URL}job/${jobName.replaceAll('/', '/job/')}/${buildNumber}/display/redirect"
     } else {
@@ -73,19 +86,19 @@ def getRedirectLink(buildInfo, jobName) {
   }
 }
 
-def throwFlowInterruptedException(buildInfo) {
+def throwBuildException(buildInfo) {
   log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim() ?: ''}'")
   if (buildInfo.getDescription()?.contains('timeout')) {
-    throw new FlowInterruptedException(Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
+    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
   } else {
-    throw new FlowInterruptedException(Result.FAILURE)
+    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE)
   }
 }
 
 def propagateFailure(buildInfo) {
   if (buildInfo) {
     if (buildInfo.resultIsWorseOrEqualTo('FAILURE')) {
-      throwFlowInterruptedException(buildInfo)
+      throwBuildException(buildInfo)
     }
   } else {
     log(level: 'DEBUG', text: 'buildInfo is not an object.')

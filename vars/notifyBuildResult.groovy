@@ -18,12 +18,13 @@
 /**
 
 Send an email message with a summary of the build result,
-and send some data to Elastic search.
+and send some data to Elasticsearch.
 
 notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
 
 **/
 
+import co.elastic.BuildException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import hudson.tasks.test.AbstractTestResultAction
@@ -33,36 +34,69 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
+  def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
+  def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
+  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
+  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
+
   node('master || metal || immutable'){
     stage('Reporting build status'){
-      def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
-      def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
-      def statsURL = args.containsKey('statsURL') ? args.statsURL : "ela.st/observabtl-ci-stats"
-      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
+      def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
+      def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
+      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
 
-      catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
-        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
-
-        if(shouldNotify){
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
-          def notificationManager = new NotificationManager()
-          notificationManager.notifyEmail(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            emailRecipients: to,
-            testsSummary: readJSON(file: "tests-summary.json"),
-            changeSet: readJSON(file: "changeSet-info.json"),
-            statsUrl: "${statsURL}",
-            log: readFile(file: "pipeline-log-summary.txt"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            stepsErrors: readJSON(file: "steps-info.json")
-          )
+      catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
+        data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
+        data['emailRecipients'] = to
+        data['statsUrl'] = statsURL
+        def notificationManager = new NotificationManager()
+        if(shouldNotify && !to?.empty){
+          log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+          notificationManager.notifyEmail(data)
         }
 
-        def datafile = readFile(file: "build-report.json")
-        sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+        newPRComment.findAll { k, v ->
+          catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            unstash v
+            notificationManager.customPRComment(commentFile: k, file: v)
+          }
+        }
+
+        // Should analyze flakey
+        if(analyzeFlakey) {
+          data['es'] = es
+          data['es_secret'] = secret
+          data['flakyReportIdx'] = flakyReportIdx
+          data['flakyThreshold'] = flakyThreshold
+          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.analyzeFlakey(data)
+          }
+        }
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          notificationManager.notifyPR(data)
+        }
+        log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          notificationManager.generateBuildReport(data)
+        }
+      }
+
+      catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        timeout(5) {
+          def datafile = readFile(file: 'build-report.json')
+          sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+        }
+      }
+
+      catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
+        deleteDir()
       }
     }
   }
@@ -101,12 +135,12 @@ def customisedEmail(String email) {
       }
     }
     if (suffix?.trim()) {
-      return email.replace('@', "+${suffix}@")
+      return [email.replace('@', "+${suffix}@")]
     } else {
-      return email
+      return [email]
     }
   }
-  return ''
+  return []
 }
 
 def isGitCheckoutIssue() {
@@ -120,8 +154,7 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
     def description = []
 
     // Get all the downstreamJobs that got a TimeoutIssueCause
-    downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
-                                     v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+    downstreamJobs.findAll { k, v -> isSupportedException(v)  && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
                   .collectEntries { name, v ->
                     [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
                   }
@@ -143,6 +176,9 @@ def analyseDownstreamJobsFailures(downstreamJobs) {
 }
 
 def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
-  return downstreamJobs?.any { k, v -> v instanceof FlowInterruptedException &&
-                                       v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+  return downstreamJobs?.any { k, v -> isSupportedException(v) && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+}
+
+def isSupportedException(v) {
+  return (v instanceof FlowInterruptedException || v instanceof BuildException)
 }

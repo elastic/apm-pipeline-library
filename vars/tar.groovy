@@ -18,36 +18,67 @@
 /**
  Compress a folder into a tar file.
 
- tar(file: 'archive.tgz',
-  archive: true,
-  dir: '.'
-  pathPrefix: '',
-  allowMissing: true)
+ tar(file: 'archive.tgz', dir: '.', archive: true, allowMissing: true)
 */
-def call(Map params = [:]) {
-  def file = params.containsKey('file') ? params.file : 'archive.tgz'
-  def archive = params.containsKey('archive') ? params.archive : true
-  def dir = params.containsKey('dir') ? params.dir : "."
-  def pathPrefix = params.containsKey('pathPrefix') ? "cd '" + params.pathPrefix + "' && " : ""
-  def allowMissing = params.containsKey('allowMissing') ? params.allowMissing : true
+def call(Map args = [:]) {
+  def file = args.get('file', 'archive.tgz')
+  def archive = args.get('archive', true)
+  def dir = args.get('dir', '.')
+  def allowMissing = args.get('allowMissing', true)
+  def failNever = args.get('failNever', true)
 
-  if(!isUnix()){
-    log(level: 'INFO', text: "tar step is compatible only with unix systems")
-    return
+  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled 
+  if (args.pathPrefix?.trim()) {
+    log(level: 'WARN', text: 'tar: pathPrefix parameter is deprecated.')
   }
+
   try {
-    sh label: 'Generating tar file', script: "${pathPrefix} tar -czf '${WORKSPACE}/${file}' '${dir}'"
+    compress(file: file, dir: dir)
     if(archive){
-      archiveArtifacts(allowEmptyArchive: true,
-                      artifacts: file,
-                      onlyIfSuccessful: false)
+      archiveArtifacts(allowEmptyArchive: true, artifacts: file, onlyIfSuccessful: false)
     }
   } catch (e){
-    log(level: 'INFO', text: "${file} was not compresesd or archived : ${e?.message}")
-    if(!allowMissing){
-      currentBuild.result = "UNSTABLE"
+    log(level: 'INFO', text: "${file} was not compressed or archived : ${e?.message}")
+    if (failNever) {
+      currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
     } else {
-      currentBuild.result = "SUCCESS"
+      error("tar: step failled with error ${e?.message}")
+    }
+  }
+}
+
+def compress(Map args = [:]) {
+  if (isInstalled(tool: 'tar', flag: '--version')) {
+    compressWithTar(args)
+  } else {
+    compressWith7z(args)
+  }
+}
+
+def compressWith7z(Map args = [:]) {
+  if(isUnix()) {
+    // This particular scenario should not happen.
+    error('tar: 7z is not supported yet. *Nix got tar installed.')
+  }
+
+  if (!isInstalled(tool: '7z')) {
+    installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
+  }
+  withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
+    bat(label: 'Compress', script: "7z a -ttar -so -an ${args.dir} | 7z a -si ${args.file}")
+  }
+}
+
+def compressWithTar(Map args = [:]) {
+  def command = "tar --exclude=${args.file} -czf ${args.file} ${args.dir}"
+  writeFile(file: "${args.file}", text: '')
+  if(isUnix()) {
+    sh(label: 'Compress', script: command)
+  } else {
+    // Some CI Windows workers got the tar binary in the system32
+    // As long as those are not defined in the PATH let's use this hack
+    withEnv(["PATH+SYSTEM=C:\\Windows\\System32"]) {
+      bat(label: 'Compress', script: command)
     }
   }
 }

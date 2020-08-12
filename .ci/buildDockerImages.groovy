@@ -53,6 +53,9 @@ pipeline {
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
+    booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
+    booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -245,7 +248,9 @@ pipeline {
         dir("integration-testing-images"){
           git('https://github.com/elastic/apm-integration-testing.git')
           sh(label: 'Test Docker containers', script: 'make -C docker all-tests')
-          sh(label: 'Push Docker images', script: 'make -C docker all-push')
+          retry(3){
+            sh(label: 'Push Docker images', script: 'make -C docker all-push')
+          }
         }
       }
       post {
@@ -278,7 +283,9 @@ pipeline {
         dir("apm-server-images"){
           git('https://github.com/elastic/apm-server.git')
           sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
-          sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+          retry(3){
+            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+          }
         }
       }
       post {
@@ -308,6 +315,74 @@ pipeline {
           push: true)
       }
     }
+    stage('Build flakey'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.flakey}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'flakey',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build test-plans'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.testPlans}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-robots.git',
+          tag: 'test-plans',
+          buildCommand: 'make build',
+          pushCommand: 'make push',
+          push: true,
+          folder: "apps/test-plans")
+      }
+    }
+    stage('Build Heartbeat'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.heartbeat}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: 'https://github.com/elastic/observability-robots'
+        dir("apps/beats/heartbeat"){
+          script{
+            sh("pip3 install pyyaml")
+            sh("python3 ./generate_heartbeat_configs.py")
+            def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
+            buildDockerImage(
+              repo: "https://github.com/elastic/observability-robots",
+              tag: 'obs-jenkins-heartbeat',
+              version: 'latest',
+              push: true,
+              prepareWith: writeClosure,
+              folder: "apps/beats/heartbeat"
+            )
+          }
+        }
+      }
+    }
     stage('Build opbot'){
       options {
         skipDefaultCheckout()
@@ -319,11 +394,23 @@ pipeline {
       steps {
         deleteDir()
         dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/opbot.git',
-          tag: "opbot",
-          version: "latest",
-          push: true)
+        dir("opbot-latest"){
+          script {
+            def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
+            def writeClosure = {writeFile(file: 'credentials.json', text: creds.data.value)}
+            buildDockerImage(
+              repo: 'https://github.com/elastic/opbot.git',
+              tag: "opbot",
+              version: "latest",
+              prepareWith: writeClosure,
+              push: true)
+          }
+        }
+      }
+      post {
+        cleanup {
+          deleteDir()
+        }
       }
     }
   }
@@ -345,9 +432,12 @@ def buildDockerImage(args){
   String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
   String version = args.containsKey('version') ? args.version : "latest"
   String folder = args.containsKey('folder') ? args.folder : "."
+  String buildCommand = args.containsKey('buildCommand') ? args.buildCommand : ""
+  String pushCommand = args.containsKey('pushCommand') ? args.pushCommand : ""
   def env = args.containsKey('env') ? args.env : []
   String options = args.containsKey('options') ? args.options : ""
   boolean push = args.containsKey('push') ? args.push : false
+  def prepareWith = args.containsKey('prepareWith') ? args.prepareWith : {}
 
   def image = "${params.registry}"
   if(params.tag_prefix != null && params.tag_prefix != ""){
@@ -358,9 +448,21 @@ def buildDockerImage(args){
     git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "${repo}"
     dir("${folder}"){
       withEnv(env){
-        sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        prepareWith()
+        if (buildCommand.equals("")) {
+          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+        } else {
+          sh(label: "custom build docker image", script: "${buildCommand}")
+        }
+
         if(push){
-          sh(label: "push docker image", script: "docker push ${image}")
+          retry(3){
+            if (pushCommand.equals("")) {
+              sh(label: "push docker image", script: "docker push ${image}")
+            } else {
+              sh(label: "custom push docker image", script: "${pushCommand}")
+            }
+          }
         }
       }
     }

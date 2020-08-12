@@ -101,7 +101,7 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     script.call(commit: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sshagent', '[f6c7695a-671e-4f4f-a331-acdce44ff9ba]'))
-    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
+    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/observability-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
     assertJobStatusSuccess()
   }
 
@@ -114,5 +114,25 @@ class PreCommitStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.WORKSPACE}"))
     assertTrue(assertMethodCallContainsPattern('sh', "PATH=${env.WORKSPACE}/bin"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_installation_error() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BASE_COMMIT = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m?.label?.contains('Install precommit hooks')){
+        throw new Exception('Timeout when reaching github')
+      }
+    })
+    try {
+      script.call()
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('sh', 3))
+    assertTrue(assertMethodCallContainsPattern('sh', "label=Install precommit"))
+    assertJobStatusFailure()
   }
 }

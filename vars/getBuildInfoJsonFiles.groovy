@@ -19,57 +19,71 @@
   Grab build related info from the Blueocean REST API and store it on JSON files.
   Then put all togeder in a simple JSON file.
 
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 */
-def call(jobURL, buildNumber){
+
+def call(Map args = [:]) {
+  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBuildInfoJsonFiles: jobURL parameter is required.')
+  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBuildInfoJsonFiles: buildNumber parameter is required.')
+  def returnData = args.get('returnData', false)
+
   if(!isUnix()){
     error('getBuildInfoJsonFiles: windows is not supported yet.')
   }
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  if (!restURLJob.endsWith('/')) {
+    restURLJob += '/'
+  }
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
-  bulkDownload(["${restURLJob}": 'job-info.json',
-                "${restURLBuild}": 'build-info.json',
-                "${restURLBuild}/blueTestSummary": 'tests-summary.json',
-                "${restURLBuild}/tests": 'tests-info.json',
-                "${restURLBuild}/changeSet": 'changeSet-info.json',
-                "${restURLBuild}/artifacts": 'artifacts-info.json',
-                "${restURLBuild}/steps": 'steps-info.json',
-                "${restURLBuild}/log": 'pipeline-log.txt'])
+  def scriptFile = 'generate-build-data.sh'
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile file: scriptFile, text: resourceContent
+  sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
+    chmod 755 ${scriptFile}
+    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}""")
 
-  sh(label: 'Console log summary', script: 'tail -n 100 pipeline-log.txt > pipeline-log-summary.txt')
+  archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
 
-  def json = [:]
-  json.job = readJSON(file: "job-info.json")
-  json.build = readJSON(file: "build-info.json")
-  json.test_summary = readJSON(file: "tests-summary.json")
-  json.test = readJSON(file: "tests-info.json")
-  json.changeSet = readJSON(file: "changeSet-info.json")
-  json.artifacts = readJSON(file: "artifacts-info.json")
-  json.steps = readJSON(file: "steps-info.json")
-  json.log = readFile(file: "pipeline-log.txt")
+  if (returnData) {
+    // Read files only once and if timeout then use default values
+    def buildData = {}
+    def changeSet = []
+    def logData = ''
+    def stepsErrors = []
+    def testsErrors = []
+    def testsSummary = []
+    try {
+      timeout(5) {
+        buildData = readJSON(file: 'build-info.json')
+        changeSet = readJSON(file: 'changeSet-info.json')
+        logData = readFile(file: 'pipeline-log-summary.txt')
+        stepsErrors = readJSON(file: 'steps-errors.json')
+        testsErrors = readJSON(file: 'tests-errors.json')
+        testsSummary = readJSON(file: 'tests-summary.json')
+      }
+    } catch(e) {
+      log(level: 'WARN', text: 'It was a really slow query, so use what we got so far')
+    }
 
-  /** The build is not finished so we have to fix some values */
-  json.build.result = currentBuild.currentResult
-  json.build.state = 'FINISHED'
-  json.build.durationInMillis = currentBuild.duration
-  writeJSON(file: 'build-info.json' , json: toJSON(json.build), pretty: 2)
-
-  writeJSON(file: 'build-report.json' , json: toJSON(json), pretty: 2)
+    return [
+      build: buildData,
+      buildStatus: currentBuild.currentResult,
+      changeSet: changeSet,
+      log: logData,
+      stepsErrors: stepsErrors,
+      testsErrors: testsErrors,
+      testsSummary: testsSummary
+    ]
+  }
 }
 
-def bulkDownload(map) {
-  if(map.isEmpty()) {
-    error('getBuildInfoJsonFiles: bulkDownload cannot be executed with empty arguments.')
-  }
-  def command = ['#!/usr/bin/env bash', 'set -x', 'source /usr/local/bin/bash_standard_lib.sh', 'status=0']
-  map.each { url, file ->
-    command << "(retry 3 curl -sfS --max-time 60 --connect-timeout 30 -o ${file} ${url}/) || status=1"
-    command << """[ -e "${file}" ] || echo "{}" > "${file}" """
-  }
-  command << 'exit ${status}'
-
-  sh(label: 'Get Build info details', script: "${command.join('\n')}", returnStatus: true)
+/**
+  For backward compatibility
+  @deprecated
+*/
+def call(jobURL, buildNumber){
+  return call(jobURL: jobURL, buildNumber: buildNumber)
 }

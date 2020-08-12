@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.BuildException
 import co.elastic.NotificationManager
 import co.elastic.TimeoutIssuesCause
 import co.elastic.mock.StepsMock
@@ -49,9 +50,9 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
   }
 
   @Test
@@ -62,7 +63,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -73,7 +73,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -88,7 +87,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', "secret=${VaultSecret.SECRET_NAME.toString()}"))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -99,7 +97,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -110,15 +107,36 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
-    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/apm-team/ci/jenkins-stats-cloud'))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/observability-team/ci/jenkins-stats-cloud'))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
-  void testCatchError() throws Exception {
+  void testCatchError_with_notifications() throws Exception {
     // When a failure
     helper.registerAllowedMethod("getBuildInfoJsonFiles", [String.class,String.class], { throw new Exception(s) })
+
+    // Then the build is Success
+    binding.getVariable('currentBuild').result = "SUCCESS"
+    binding.getVariable('currentBuild').currentResult = "SUCCESS"
+
+    def script = loadScript(scriptName)
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    printCallStack()
+
+    // Then senddata to ElasticSearch happens
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    // Then unstable the stage
+    assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
+    // Then cleanup the workspace
+    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCatchError_with_elasticsearch() throws Exception {
+    // When a failure
+    helper.registerAllowedMethod('readFile', [Map.class], { throw new Exception('forced') })
 
     // Then the build is Success
     binding.getVariable('currentBuild').result = "SUCCESS"
@@ -132,14 +150,16 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 0))
     // Then unstable the stage
     assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
+    // Then cleanup the workspace
+    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
     assertJobStatusSuccess()
   }
 
   @Test
   void testCustomisedEmailWithEmptyOrNull() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(script.customisedEmail('').equals(''))
-    assertTrue(script.customisedEmail(null).equals(''))
+    assertTrue(script.customisedEmail('').equals([]))
+    assertTrue(script.customisedEmail(null).equals([]))
     assertJobStatusSuccess()
   }
 
@@ -149,7 +169,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     env.REPO = 'foo'
     env.remove('JOB_NAME')
     def result = script.customisedEmail('build-apm@example.com')
-    assertTrue(result.equals('build-apm+foo@example.com'))
+    assertTrue(result.equals(['build-apm+foo@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -158,7 +178,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = 'foo'
     env.JOB_NAME = 'folder1/folder2/foo'
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm+folder1@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm+folder1@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -167,8 +187,33 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = ''
     env.JOB_NAME = ''
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm@example.com']))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_email_without_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    env.remove('NOTIFY_TO')
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_to() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true, to: ['foo@acme.com'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
@@ -251,6 +296,15 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_AnalyseDownstreamJobsFailures_with_timeout_in_downstreams_with_build_exception() throws Exception {
+    def script = loadScript(scriptName)
+    def downstreamBuildInfo = new BuildException("1", Result.FAILURE, new TimeoutIssuesCause('foo', 1))
+    script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'foo#1 got a timeout checkout issue'))
+  }
+
+  @Test
   void test_AnalyseDownstreamJobsFailures_with_unstable_in_downstreams_for_test_failures() throws Exception {
     def script = loadScript(scriptName)
     def downstreamBuildInfo = StepsMock.mockRunWrapperWithUnstable('foo')
@@ -266,5 +320,59 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.analyseDownstreamJobsFailures(['foo': downstreamBuildInfo])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "analyseDownstreamJobsFailures just updated the description with 'dummy'."))
+  }
+
+  @Test
+  void test_notify_pr() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(prComment: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+  }
+
+  @Test
+  void test_notify_pr_in_a_branch() throws Exception {
+    env.remove('CHANGE_ID')
+    def script = loadScript(scriptName)
+    script.call(prComment: true)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+  }
+
+  @Test
+  void test_generateBuildReport() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generate build report.'))
+  }
+
+  @Test
+  void test_newPRComment_without_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [:])
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('unstash', 0))
+  }
+
+  @Test
+  void test_newPRComment_with_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [ 'foo': 'bar'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
+  }
+
+  @Test
+  void test_newPRComment_with_multiples_entries() throws Exception {
+    env.CHANGE_ID = "123"
+    def script = loadScript(scriptName)
+    script.call(newPRComment: [ 'foo': 'bar', 'bob': 'builder' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
+    assertTrue(assertMethodCallContainsPattern('unstash', 'builder'))
   }
 }

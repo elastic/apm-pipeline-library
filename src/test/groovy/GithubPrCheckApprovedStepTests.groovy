@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.RunMock
+import co.elastic.mock.RunWrapperMock
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -52,6 +54,9 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("githubPrReviews", [Map.class], {
       return []
       })
+    def runBuilding = new RunMock(building: true)
+    def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'FAILURE')
+    binding.setVariable('currentBuild', build)
     def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     try {
@@ -60,12 +65,13 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not approved yet'))
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not allowed to run in the CI yet'))
+    assertTrue(assertMethodCallContainsPattern('log', "The PR is not allowed to run in the CI yet"))
     assertJobStatusFailure()
   }
 
   @Test
-  void testIsApprobed() throws Exception {
+  void testIsApproved() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
       return []
       })
@@ -217,7 +223,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
-
   @Test
   void testAPIContractViolationOnUserObject() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
@@ -239,7 +244,81 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not approved yet'))
+    assertTrue(assertMethodCallContainsPattern('error', 'githubPrCheckApproved: The PR is not allowed to run in the CI yet'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_isAuthorizedUser_that_it_exists_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    def ret = script.isAuthorizedUser('v1v')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_that_it_is_quite_similar_to_an_existing_one_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v1', 'another']] })
+    def ret = script.isAuthorizedUser('v1v')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_with_an_existing_user_in_the_approval_list() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'apm-agent-go'
+    helper.registerAllowedMethod('readYaml', [Map.class], { '' })
+    def ret = script.isAuthorizedUser('foo')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_with_an_unexisting_repo() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'repo_without_approval_list_file'
+    helper.registerAllowedMethod('libraryResource', [String.class], {
+      throw new Exception('Force the approval file does not exist')
+    })
+    def ret = script.isAuthorizedUser('foo')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser_that_it_exists_in_the_approval_list_without_env_repo_name() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.isAuthorizedUser('v1v')
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_isAuthorizedUser() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [] })
+    helper.registerAllowedMethod('githubPrInfo', [Map.class], {
+      return [title: 'dummy PR', user: [login: 'v1v'], author_association: 'MEMBER']
+    })
+    helper.registerAllowedMethod('githubPrReviews', [Map.class], { return [] })
+    helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
+    env.REPO_NAME = 'apm-agent-go'
+    env.CHANGE_ID = 1
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/apm-agent-go.yml'))
+    assertJobStatusSuccess()
   }
 }

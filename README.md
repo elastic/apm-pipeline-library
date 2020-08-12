@@ -2,8 +2,6 @@
 
 # apm-pipeline-library
 
-[![Build Status](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/badge/icon)](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/)
-
 Jenkins pipeline shared library for the project APM
 
 ```
@@ -24,12 +22,12 @@ Jenkins pipeline shared library for the project APM
 |       +- jenkins.yaml
 |   +- docker-compose.yml
 |   +- Dockerfile
-|
++- test-infra                  # to validate our CI workers
+|   +- test_<os|generic>.yml   # the specific tests/asserts to run in each worker.
 ```
 
 * [Pipeline](https://jenkins.io/doc/book/pipeline/)
 * [Pipeline shared library](https://jenkins.io/doc/book/pipeline/shared-libraries/)
-
 * [Steps Documentation](vars/README.md)
 
 ## Requirements
@@ -59,6 +57,7 @@ These are the common steps we should follow to create a new step:
 * Update the steps `README.md` by executing `./resources/scripts/generateReadme.sh vars/`
 
 Those steps should satisfy the following characteristics:
+
 * It does only one thing
 * It does it well
 * It is short
@@ -88,6 +87,13 @@ flag:
 
 Every time there are enough changes, we would release a new version. A version
 has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](https://semver.org/).
+
+### Automated release process :rocket: (preferred)
+
+Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/build?delay=0sec) and choose `Build with Parameters`. Select the `make_release` checkbox and click `Build`. The build will take ~1 hour to complete.
+
+### Manual release process :man: (replaced by the automated process above)
+
 To create a new release please use Maven Release Plugin, which uses the `pom.xml` file
 to store the semantic version for this project.
 
@@ -151,34 +157,34 @@ curl --silent -X POST -F "jenkinsfile=<.ci/Jenkinsfile" http://0.0.0.0:18080/pip
 
 This particular process will help to evaluate some linting before committing any changes. Therefore you need the pre-commit.
 
-#### Installation.
+#### Installation
 
-Follow https://pre-commit.com/#install and `pre-commit install`
+Follow <https://pre-commit.com/#install> and `pre-commit install`
 
 Some hooks might require some extra tools such as:
-- [shellcheck](https://github.com/koalaman/shellcheck#installing)
-- [yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html)
+
+* [shellcheck](https://github.com/koalaman/shellcheck#installing)
+* [yamllint](https://yamllint.readthedocs.io/en/stable/quickstart.html)
 
 #### Enabled hooks
 
-- Check case conflict
-- Check executables have shebangs
-- Check merge conflicts
-- Check json
-- Check yaml
-- Check xml
-- Check bash syntax
-- End-of-file-fixer
-- Ensure neither abstract classes nor traits are used in the shared library.
-- Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
-- Jenkinsfile linter.
-- yamllint
-- shellcheck
-- Detect unicode non-breaking space character U+00A0 aka M-BM-
-- Remove unicode non-breaking space character U+00A0 aka M-BM-
-- Detect the EXTREMELY confusing unicode character U+2013
-- Remove the EXTREMELY confusing unicode character U+2013
-
+* Check case conflict
+* Check executables have shebangs
+* Check merge conflicts
+* Check json
+* Check yaml
+* Check xml
+* Check bash syntax
+* End-of-file-fixer
+* Ensure neither abstract classes nor traits are used in the shared library.
+* Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
+* Jenkinsfile linter.
+* yamllint
+* shellcheck
+* Detect unicode non-breaking space character U+00A0 aka M-BM-
+* Remove unicode non-breaking space character U+00A0 aka M-BM-
+* Detect the EXTREMELY confusing unicode character U+2013
+* Remove the EXTREMELY confusing unicode character U+2013
 
 ### Validate JJBB files
 
@@ -186,10 +192,13 @@ If the local jenkins instance has been enabled then it's possible to validate wh
 files are healthy enough.
 
 Prepare test environment by first changing to the local/ directory and running:
+
 ```bash
   make start
 ```
-Logs for the running Jenkins instance can then be viewed if you wish by running
+
+Logs for the running Jenkins instance can then be viewed if you wish by running:
+
 ```bash
   make logs
 ```
@@ -198,6 +207,7 @@ To run the JJBB locally you must ensure that you have an /etc/hosts entry which 
 `jenkins` to `localhost`.
 
 To prepare to test most pipelines, you must first set up the APM jobs folder:
+
 ```bash
   sh local/test-jjbb.sh -j .ci/jobs/apm-shared.yml
 ```
@@ -212,12 +222,13 @@ Debugging can be made easier by passing `-ldebug` to `test-jbb.sh`.
 
 ## pre-commit-hooks
 
-Observability robots hooks for http://pre-commit.com/
+Observability robots hooks for <http://pre-commit.com/>
 
 ### Using these hooks
 
 Add this to your `.pre-commit-config.yaml`
 
+```yaml
     - repo: https://github.com/elastic/apm-pipeline-library
       rev: current
       hooks:
@@ -230,18 +241,25 @@ Add this to your `.pre-commit-config.yaml`
       -   id: check-en-dashes
       -   id: remove-en-dashes
       -   id: check-gherkin-lint
+```
 
 ### Available hooks
 
-- check-bash-syntax - Check Shell scripts syntax corectness, requires bash
-- check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
-- check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
-- check-jenkins-pipelines - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
-- check-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
-- remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
-- check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
-- remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
-- check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
+* check-bash-syntax - Check Shell scripts syntax corectness, requires bash
+* check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
+* check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
+* check-jenkins-pipelines - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
+* check-unicode-non-breaking-spaces - Detect unicode non-breaking space character U+00A0 aka M-BM-
+* remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
+* check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
+* remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
+* check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
+
+## Test Infra
+
+This is how we test the actual state of our CI workers that are configured with Ansible. Therefore, we can validate whether the CI worker templates have been configured with the expected requirements
+
+This particular implementation uses [testinfra](https://testinfra.readthedocs.io/en/latest/).
 
 ## Resources
 

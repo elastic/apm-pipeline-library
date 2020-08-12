@@ -78,6 +78,20 @@ def call(Map pipelineParams) {
             }
           }
         }
+        post {
+          always {
+            dir(BASE_DIR){
+              // Let's store the docker log files for debugging purposes
+              script {
+                if (fileExists('docker-compose.yml')) {
+                  sh(label: 'docker-compose start', script: 'docker-compose up --build -d', returnStatus: true)
+                  dockerLogs()
+                  sh(label: 'docker-compose stop', script: 'docker-compose down -v', returnStatus: true)
+                }
+              }
+            }
+          }
+        }
       }
       /**
       Execute unit tests.
@@ -177,9 +191,8 @@ def call(Map pipelineParams) {
 }
 
 def runBuildITs(String repo, String stagingDockerImage) {
-  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(),
-        wait: env.CHANGE_ID?.trim() ? false : true,
-        parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
+  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(), wait: waitIfNotPR(),
+        parameters: [string(name: 'INTEGRATION_TEST', value: 'Opbeans'),
                      string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
                      string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
                      string(name: 'GITHUB_CHECK_REPO', value: repo),
@@ -203,7 +216,7 @@ def generateBuildOpts(String repo, String stagingDockerImage) {
 }
 
 def waitIfNotPR() {
-  return env.CHANGE_ID?.trim() ? false : true
+  return !isPR()
 }
 
 def getForkedRepoOrElasticRepo(String repo) {

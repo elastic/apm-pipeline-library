@@ -24,13 +24,22 @@ class PullRequestMock implements Serializable {
 
   String description = ''
 
-  public PullRequestMock(Map params = [:]) { }
+  static int ERROR = -1
 
-  public void comment(String description) {
+  public PullRequestMock() { }
+
+  public Map comment(String description) {
+    if (description.equals('error')) {
+      throw new Exception('org.eclipse.egit.github.core.client.RequestException: Not Found (404)')
+    }
     this.description = description
+    return [ id: 42 ]
   }
 
   public void editComment(int id, String description) {
+    if (id == ERROR) {
+      throw new Exception('org.eclipse.egit.github.core.client.RequestException: Not Found (404)')
+    }
     this.description = description
   }
 }

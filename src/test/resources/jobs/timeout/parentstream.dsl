@@ -2,7 +2,7 @@ NAME = 'it/timeout/parentstream'
 DSL = '''
 import groovy.transform.Field
 
-@Field def rubyDownstreamJobs = [:]
+@Field def downstreamJobs = [:]
 
 pipeline {
   agent any
@@ -16,28 +16,54 @@ pipeline {
     stage('success') { steps { runBuild('success') } }
     stage('unstable') { steps { runBuild('unstable') } }
     stage('Populate Test failures') {
-      when { expression { return !rubyDownstreamJobs.isEmpty() } }
-      steps { error("There were some failures when running the 'Test' stage.") }
+      steps {
+        script {
+          if (downstreamJobs.isEmpty()) {
+            error("Assertion failed - There were some failures when running the above stages.")
+          } else {
+            echo 'Assertion passed - populate test errors'
+          }
+        }
+      }
     }
   }
   post {
     always {
-      notifyBuildResult(downstreamJobs: rubyDownstreamJobs, rebuild: true, shouldNotify: false)
+      notifyBuildResult(downstreamJobs: downstreamJobs, rebuild: true, shouldNotify: false)
     }
   }
 }
 def runBuild(String type) {
+  def jobName = 'downstream'
   def downstreamBuild
   try {
-    downstreamBuild = build(job: 'downstream', propagate: true, quietPeriod: 0,  wait: true,
+    downstreamBuild = build(job: jobName, propagate: true, quietPeriod: 0, wait: true,
                             parameters: [string(name: 'type', value: "${type}")])
+    if (type.equals('timeout') || type.equals('failure')) {
+      error("Assertion failed - ${type} should fail.")
+    } else {
+      echo 'Assertion passed - build'
+    }
   } catch(e) {
     downstreamBuild = e
-    warnError('Test Failures') {
-      error("Downstream job for 'downstream' with '${type}' failed")
+    if (type.equals('timeout') || type.equals('failure')) {
+      echo 'Assertion passed - type'
+    } else {
+      error("Assertion failed - ${type} should not go throught the catch.")
+    }
+    if (e?.number?.trim()) {
+      echo "Assertion passed - build number ${e?.number}"
+    } else {
+      error("Assertion failed - build number failed.")
     }
   } finally {
-    rubyDownstreamJobs["downstream-${type}"] = downstreamBuild
+    downstreamJobs["downstream-${type}"] = downstreamBuild
+    catchError(buildResult: 'SUCCESS', message: "Aggregate test results from dowsntream job has failed failed. Let's keep moving.") {
+      dir('test') {
+        copyArtifacts(projectName: jobName, selector: specific(buildNumber: downstreamBuild.number.toString()))
+        junit(testResults: 'junit.xml', allowEmptyResults: true, keepLongStdio: true)
+      }
+    }
   }
 }
 '''

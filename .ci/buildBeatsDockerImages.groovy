@@ -31,7 +31,6 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     PATH = "${env.GOPATH}/bin:${env.PATH}"
     PIPELINE_LOG_LEVEL='INFO'
-    PYTHON_EXE='python2.7'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -79,8 +78,9 @@ pipeline {
       }
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
-
-        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/metricbeat'")
+        retry(3){
+          sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/metricbeat'")
+        }
       }
     }
     stage('Release X-Pack Beats Test Docker images'){
@@ -92,8 +92,9 @@ pipeline {
       }
       steps {
         dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.DOCKER_REGISTRY}")
-
-        sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/x-pack/metricbeat'")
+        retry(3){
+          sh(label: 'Build ', script: ".ci/scripts/build-beats-integrations-test-images.sh '${GO_VERSION}' '${HOME}/${BASE_DIR}/x-pack/metricbeat'")
+        }
       }
     }
   }

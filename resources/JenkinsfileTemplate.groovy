@@ -15,7 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+// NOTE: Consumers should use the current tag
+// @Library('apm@current') _
+// NOTE: Master branch will contain the upcoming release changes
+//       this will help us to detect any breaking changes in production.
+@Library('apm@master') _
 
 // Global variables can be only set usinig the @Field pattern
 import groovy.transform.Field
@@ -34,10 +38,13 @@ pipeline {
     // Default BASE_DIR should keep the Golang folder layout as a convention
     // for the rest of the projects/languages independently whether they do need it
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
-    NOTIFY_TO = credentials('notify-to')
+    // Email are stored as credentials to ensure those emails are not exposed.
+    NOTIFY_TO = credentials('notify-to-robots')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
-    PIPELINE_LOG_LEVEL='INFO'
+    // The level of verbosity in the messages to be printed during the build.
+    // There are so far the below levels: DEBUG, INFO, WARN and ERROR
+    PIPELINE_LOG_LEVEL = 'INFO'
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     PYTHONUTF8 = "1"
@@ -60,12 +67,18 @@ pipeline {
     // options will help to speed up the performance.
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+    // What's the concurrency allowed. For such it's required to configured the JJBB/JJB
+    // with the option `concurrent: true`
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
   }
   triggers {
-    cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*jenkins\\W+run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    // If required a cron trigger then use the parentstream daily/weekly pipeline helper
+    // to trigger it for simplicity. Otherwise, if PRs are not required to run for that
+    // particular cron scheduler then it will be required to add the when condition
+    // accordingly.
+    // cron 'H H(3-4) * * 1-5'
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     // Let's use input parameters with capital cases.
@@ -105,18 +118,49 @@ pipeline {
         // in the following stages.
         stash allowEmpty: true, name: 'source', useDefaultExcludes: false
 
-        // Set the global variable
-        script { variable = 'foo' }
+        script {
+          // Set the global variable
+          variable = 'foo'
+
+          dir("${BASE_DIR}"){
+            // Skip all the stages except docs for PR's with asciidoc and md changes only
+            env.ONLY_DOCS = isGitRegionMatch(patterns: [ '.*\\.(asciidoc|md)' ], shouldMatchAll: true)
+
+            // Enable Workers Checks stage for PRs with the given pattern
+            env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
+          }
+        }
+      }
+    }
+    stage('Run if GitHub comment on a PR'){
+      when {
+        beforeAgent true
+        expression { return env.GITHUB_COMMENT?.contains('benchmark tests') }
+      }
+      steps {
+        log(level: 'INFO', text: "I'm running as there was a GitHub comment with the 'benchmark tests'")
       }
     }
     stage('Workers Checks'){
+      when {
+        beforeAgent true
+        allOf {
+          expression { return env.ONLY_DOCS == "false" }
+          anyOf {
+            expression { return env.TEST_INFRA == "true" }
+            branch 'master'
+          }
+        }
+      }
+      failFast false
       parallel {
         stage('linux && immutable check'){
           agent { label 'linux && immutable' }
           options { skipDefaultCheckout() }
           environment {
             PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-            //see JENKINS-41929
+            // Parameters will be empty for the very first build, setting an environment variable
+            // with the same name will workaround the issue. see JENKINS-41929
             PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
           }
           stages {
@@ -133,15 +177,12 @@ pipeline {
             */
             stage('Test') {
               steps {
-                testUnix()
                 testDockerInside()
+                testUnix()
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml"
-                  )
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -162,9 +203,9 @@ pipeline {
             }
           }
           post {
-               always {
-                   sh 'docker ps -a || true'
-               }
+            always {
+              sh 'docker ps -a || true'
+            }
           }
         }
         stage('Ubuntu 18.04 test'){
@@ -194,9 +235,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -234,9 +273,7 @@ pipeline {
               }
               post {
                 always {
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/**/junit-*.xml,${BASE_DIR}/target/**/TEST-*.xml")
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
                 }
               }
             }
@@ -251,72 +288,127 @@ pipeline {
           agent { label 'windows-2012-r2-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2016 immutable check'){
           agent { label 'windows-2016-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            checkOldWindows()
           }
         }
         stage('windows 2019 immutable check'){
           agent { label 'windows-2019-immutable' }
           options { skipDefaultCheckout() }
-          steps {
-            checkWindows()
-            installTools([ [tool: 'nodejs', version: '12' ] ])
+          stages {
+            stage('Test') {
+              steps {
+                testWindows()
+              }
+            }
+            stage('Install tools') {
+              options {
+                warnError('installTools failed')
+              }
+              steps {
+                installTools([ [tool: 'nodejs', version: '12' ] ])
+              }
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
           }
         }
         stage('windows 2019 docker immutable check'){
           agent { label 'windows-2019-docker-immutable' }
           options { skipDefaultCheckout() }
           steps {
-            checkWindows()
+            testWindows(withExtra: true)
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
           }
         }
         stage('Mac OS X check - 01'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testMac()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('Mac OS X check - 02'){
-          stages {
-            stage('build') {
-              agent { label 'macosx' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'macosx' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testMac()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-854309 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-854309' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-854309' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
         stage('BareMetal worker-1095690 check'){
-          stages {
-            stage('build') {
-              agent { label 'worker-1095690' }
-              options { skipDefaultCheckout() }
-              steps {
-                buildUnix()
-              }
+          agent { label 'worker-1095690' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1213919 check'){
+          agent { label 'worker-1213919' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1225339 check'){
+          agent { label 'worker-1225339' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildUnix()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
         }
@@ -335,7 +427,7 @@ def testDockerInside(){
     echo "Docker inside"
     dir("${BASE_DIR}"){
       withEnv(["HOME=${env.WORKSPACE}"]){
-        sh(label: "Convert Test results to JUnit format", script: './resources/scripts/jenkins/build.sh')
+        sh(script: './resources/scripts/jenkins/build.sh')
       }
     }
   }
@@ -353,13 +445,39 @@ def testUnix(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/test.sh'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test.sh'
   }
 }
 
-def checkWindows(){
+def testBaremetal(){
+  deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    bat returnStatus: true, script: 'resources/scripts/jenkins/build.bat'
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-baremetal.sh'
+  }
+}
+
+def testMac(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    sh returnStatus: true, script: './resources/scripts/jenkins/apm-ci/test-mac.sh'
+  }
+}
+
+def testWindows(params = [:]){
+  def withExtra = params.containsKey('withExtra') ? params.withExtra : false
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
+  }
+}
+
+def checkOldWindows(){
+  deleteDir()
+  unstash 'source'
+  dir("${BASE_DIR}"){
+    bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }

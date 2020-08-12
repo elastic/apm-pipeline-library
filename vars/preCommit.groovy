@@ -32,7 +32,7 @@ def call(Map params = [:]) {
   def commit = params.get('commit', env.GIT_BASE_COMMIT)
   def credentialsId = params.get('credentialsId', 'f6c7695a-671e-4f4f-a331-acdce44ff9ba')
   def registry = params.get('registry', 'docker.elastic.co')
-  def secretRegistry = params.get('secretRegistry', 'secret/apm-team/ci/docker-registry/prod')
+  def secretRegistry = params.get('secretRegistry', 'secret/observability-team/ci/docker-registry/prod')
 
   if (!commit?.trim()) {
     commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')
@@ -47,13 +47,18 @@ def call(Map params = [:]) {
       if (registry && secretRegistry) {
         dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
       }
-      sh """
+      retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+        sh(label: 'Install precommit', script: "curl -s https://pre-commit.com/install-local.py | python -")
+      }
+      retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+        sh(label: 'Install precommit hooks', script: """
+          export PATH=${newHome}/bin:${env.PATH}
+          ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos
+          pre-commit install --install-hooks
+        """)
+      }
+      sh(label: 'Run precommit', script: """
         export PATH=${newHome}/bin:${env.PATH}
-        curl https://pre-commit.com/install-local.py | python -
-
-        ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos
-        pre-commit install --install-hooks
-
         ## Search for the repo with the scripts to be added to the PATH
         set +e
         searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name 'scripts' | grep '.ci/scripts')
@@ -65,7 +70,7 @@ def call(Map params = [:]) {
         set -e
         ## Validate the pre-commit for the new changes
         git diff-tree --no-commit-id --name-only -r ${commit} | xargs pre-commit run --files | tee ${reportFileName}
-      """
+      """)
     }
   }
   if(junitFlag) {

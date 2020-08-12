@@ -1,0 +1,5 @@
+# A list of trusted GitHub users that can build a job in the CI when
+# they submit a pull request
+# The name of the YAML file should match the name of the GitHub repo.
+USERS:
+    - v1v

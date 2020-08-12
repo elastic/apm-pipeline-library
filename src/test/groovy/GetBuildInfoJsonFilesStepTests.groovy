@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
@@ -27,67 +28,88 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.JENKINS_URL = 'http://jenkins.example.com/'
   }
+
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
-    script.call("http://jenkins.example.com/job/myJob", "1")
+    def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/runs/1'))
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
+    assertTrue(assertMethodCallOccurrences('timeout', 0))
+    assertNull(ret)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testFailedToDownload() throws Exception {
+  void test_failed_script() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('fileExists', [String.class], { return false })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
-      if(m.label == 'Get Build info details'){
+      if(m.label == 'generate-build-data'){
         return 1
       }
       return 0
     })
-    script.call("http://jenkins.example.com/job/myJob", "1")
+    script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'generate-build-data.sh'))
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testWindows() throws Exception {
+  void test_with_returnData() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1', returnData: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('timeout', 1))
+    assertFalse(ret.isEmpty())
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_parameters() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameter is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_without_buildNumber_parameter() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.call(jobURL: 'foo')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameter is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_windows() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
-      script.call('', '')
+      script.call(jobURL: '', buildNumber: '')
     } catch(e){
       //NOOP
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'getBuildInfoJsonFiles: windows is not supported yet.'))
     assertJobStatusFailure()
-  }
-
-  @Test
-  void test_bulkDownload_with_empty_map() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.bulkDownload([])
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'bulkDownload cannot be executed with empty arguments'))
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void test_bulkDownload_with_some_entries_and_failures() throws Exception {
-    def script = loadScript(scriptName)
-    // force to create an empty file for bar
-    helper.registerAllowedMethod('fileExists', [String.class], { return it.equals('file') })
-    script.bulkDownload([ 'foo': 'bar', 'url': 'file' ])
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '-o bar foo'))
-    assertTrue(assertMethodCallContainsPattern('sh', '-o file url'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'bar'))
-    assertJobStatusSuccess()
   }
 }

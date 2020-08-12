@@ -1,0 +1,21 @@
+
+ Install Go and mage and run some command in a pre-configured environment.
+
+```
+  withMageEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withMageEnv(version: '1.14.2', pkgs: [
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
+* pkgs: Go packages to install with Go get before to execute any command.
