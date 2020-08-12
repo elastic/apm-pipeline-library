@@ -1,5 +1,5 @@
 Check it the build was triggered by a user.
-it stores the username in the GITHUB_COMMENT_AUTHOR environment variable.
+it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
 def userTrigger = isUserTrigger()

@@ -47,7 +47,7 @@ class IsUserTriggerStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
-    assertTrue('admin'.equals(env.GITHUB_COMMENT_AUTHOR))
+    assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
     assertJobStatusSuccess()
   }
 

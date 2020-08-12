@@ -5,3 +5,5 @@ comment itself in the GITHUB_COMMENT environment variable.
 ```
 def commentTrigger = isCommentTrigger()
 ```
+
+It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)

@@ -1017,6 +1017,8 @@ comment itself in the GITHUB_COMMENT environment variable.
 def commentTrigger = isCommentTrigger()
 ```
 
+It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
+
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
 evaluates the change list with the pattern list:
@@ -1100,7 +1102,7 @@ def upstreamTrigger = isUpstreamTrigger()
 
 ## isUserTrigger
 Check it the build was triggered by a user.
-it stores the username in the GITHUB_COMMENT_AUTHOR environment variable.
+it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
 def userTrigger = isUserTrigger()
