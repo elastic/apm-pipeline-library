@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.131 (12/08/2020)
+
+#### 🐛 Bug Fixes
+
+-  Control when to send email notifications [#692](https://github.com/elastic/apm-pipeline-library/pull/692)
+
+#### ⚙️ CI
+
+-  feat: support passing custom build commands from the target project [#683](https://github.com/elastic/apm-pipeline-library/pull/683)
+-  fix: typo caused by keyboard strokes [#688](https://github.com/elastic/apm-pipeline-library/pull/688)
+-  [jjbb] beats mbp is not required in the apm-ci anymore [#690](https://github.com/elastic/apm-pipeline-library/pull/690)
+-  fix: add the mandatory tag argument [#686](https://github.com/elastic/apm-pipeline-library/pull/686)
+
 ## v1.1.130 (21/07/2020)
 
 #### 🐛 Bug Fixes
