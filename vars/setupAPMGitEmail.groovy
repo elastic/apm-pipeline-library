@@ -25,6 +25,6 @@ def call(Map params = [:]) {
   def flag = params.containsKey('global') ? (params.global ? '--global' : '') : ''
   sh(label: 'Git config', script: """
     git config ${flag} user.name apmmachine
-    git config ${flag} user.email 58790750+apmmachine@users.noreply.github.com
+    git config ${flag} user.email infra-root+apmmachine@elastic.co
   """)
 }
