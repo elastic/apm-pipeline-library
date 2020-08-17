@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.132 (17/08/2020)
+
+#### 🐛 Bug Fixes
+
+-  Fix opbeans-frontend release process [#697](https://github.com/elastic/apm-pipeline-library/pull/697)
+-  Use real email account [#695](https://github.com/elastic/apm-pipeline-library/pull/695)
+
 ## v1.1.131 (12/08/2020)
 
 #### 🐛 Bug Fixes
