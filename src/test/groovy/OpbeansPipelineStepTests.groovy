@@ -94,6 +94,18 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_when_tag_release_for_opbeans_frontend() throws Exception {
+    def script = loadScript(scriptName)
+    // When the tag release does match
+    env.BRANCH_NAME = '@elastic/apm-rum@1.0'
+    script.call()
+    printCallStack()
+    // Then publish shell step
+    assertTrue(assertMethodCallContainsPattern('sh', 'VERSION=agent-1.0 make publish'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_getForkedRepoOrElasticRepo() throws Exception {
     def script = loadScript(scriptName)
     env.CHANGE_FORK = 'user/forked_repo'
