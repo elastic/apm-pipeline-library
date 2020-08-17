@@ -152,7 +152,7 @@ def call(Map pipelineParams) {
         when {
           anyOf {
             branch 'master'
-            tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
+            tag pattern: '(v\\d+\\.\\d+|@).*', comparator: 'REGEXP'
           }
         }
         environment {
@@ -165,6 +165,12 @@ def call(Map pipelineParams) {
                 deleteDir()
                 unstash 'source'
                 dir(BASE_DIR){
+                  // opbeans-frontend uses a different tag versioning
+                  script {
+                    if (env.VERSION.contains('@')) {
+                      env.VERSION = env.VERSION.replaceAll('.*@', 'agent-')
+                    }
+                  }
                   dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
                   sh "VERSION=${env.VERSION} make publish"
                 }
