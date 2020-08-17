@@ -1,8 +1,8 @@
 ---
 - job:
-    name: apm-shared/apm-update-gherkin-pipeline
+    name: apm-shared/apm-update-specs-pipeline
     display-name: APM Update Specs
-    description: Send PRs to the subscribed APM Agents if the gherkin files are modified, triggered for the master branch for the elastic/apm project
+    description: Send PRs to the subscribed APM Agents if the spec files (Gherkin and JSON) are modified, triggered for the master branch for the elastic/apm project
     project-type: pipeline
     view: APM-CI
     parameters:
