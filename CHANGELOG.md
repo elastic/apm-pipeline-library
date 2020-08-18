@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.133 (18/08/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix read only env variable [#698](https://github.com/elastic/apm-pipeline-library/pull/698)
+
 ## v1.1.132 (17/08/2020)
 
 #### 🐛 Bug Fixes
