@@ -25,6 +25,8 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'DEBUG'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
+    LANG = "C.UTF-8"
+    LC_ALL = "C.UTF-8"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
