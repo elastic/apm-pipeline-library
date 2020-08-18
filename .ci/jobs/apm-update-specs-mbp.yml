@@ -12,9 +12,9 @@
           default: false
           description: "If true, allows to execute this pipeline in dry run mode, without sending a PR."
       - bool:
-          name: LOOK_FOR_SPEC_CHANGES
-          default: true
-          description: "If true, will look for changes in the spec files comparing with the previous successful build."
+          name: FORCE_SEND_PR
+          default: false
+          description: "If true, will force sending a PR."
     scm:
       - github:
           branch-discovery: no-pr
