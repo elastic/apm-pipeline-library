@@ -168,11 +168,13 @@ def call(Map pipelineParams) {
                   // opbeans-frontend uses a different tag versioning
                   script {
                     if (env.VERSION.contains('@')) {
-                      env.VERSION = env.VERSION.replaceAll('.*@', 'agent-')
+                      env.TAG = env.VERSION.replaceAll('.*@', 'agent-')
+                    } else {
+                      env.TAG = env.VERSION
                     }
                   }
                   dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                  sh "VERSION=${env.VERSION} make publish"
+                  sh "VERSION=${env.TAG} make publish"
                 }
               }
             }
