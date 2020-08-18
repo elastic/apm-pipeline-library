@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.134 (18/08/2020)
+
+#### ⚙️ CI
+
+-  [CI] git commit with correct user.email [#700](https://github.com/elastic/apm-pipeline-library/pull/700)
+
 ## v1.1.133 (18/08/2020)
 
 #### 🐛 Bug Fixes
