@@ -6,15 +6,6 @@
     view: APM-CI
     project-type: multibranch
     script-path: .ci/Jenkinsfile
-    parameters:
-      - bool:
-          name: DRY_RUN_MODE
-          default: false
-          description: "If true, allows to execute this pipeline in dry run mode, without sending a PR."
-      - bool:
-          name: FORCE_SEND_PR
-          default: false
-          description: "If true, will force sending a PR, although it could be affected by the value off the DRY_RUN parameter: if the later is true, a message will be printed in the console."
     scm:
       - github:
           branch-discovery: no-pr
