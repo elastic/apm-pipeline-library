@@ -67,6 +67,7 @@ pipeline {
           agent {
               docker {
                 image 'node:12-alpine'
+                label 'ubuntu-18'
               }
           }
           steps {
@@ -77,6 +78,7 @@ pipeline {
           agent {
               docker {
                 image 'node:8-alpine'
+                label 'ubuntu-18'
               }
           }
           steps {
