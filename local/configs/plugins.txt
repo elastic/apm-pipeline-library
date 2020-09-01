@@ -1,4 +1,5 @@
 disable-github-multibranch-status
 filesystem_scm
 job-dsl
+kubernetes
 ssh-agent

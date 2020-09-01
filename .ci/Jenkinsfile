@@ -18,7 +18,11 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'linux && immutable' }
+  agent {
+    kubernetes {
+      yamlFile '.ci/k8s/build.yaml'
+    }
+  }
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
