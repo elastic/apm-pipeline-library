@@ -47,30 +47,38 @@ pipeline {
     /**
      Checkout the code and stash it, to use it on other stages.
     */
-    stage('Checkout') {
+    stage('Node-14') {
       agent {
-          docker { image 'node:14-alpine'
-                   label '<label_name>' }
-      }
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Checkout') {
-          pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
-          deleteDir()
-          gitCheckout(basedir: "${BASE_DIR}")
-          stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          script {
-            dir("${BASE_DIR}"){
-              env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
-            }
+          docker {
+            image 'node:14-alpine'
+            label 'ubuntu-18'
           }
-        }
+      }
+      steps {
+        sh 'node --version'
       }
     }
-  }
-  post {
-    cleanup {
-      notifyBuildResult(prComment: true)
+    stage('Node-12') {
+      agent {
+          docker {
+            image 'node:12-alpine'
+            label 'ubuntu-18'
+          }
+      }
+      steps {
+        sh 'node --version'
+      }
+    }
+    stage('Node-8') {
+      agent {
+          docker {
+            image 'node:8-alpine'
+            label 'ubuntu-18'
+          }
+      }
+      steps {
+        sh 'node --version'
+      }
     }
   }
 }
