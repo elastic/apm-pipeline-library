@@ -8,7 +8,7 @@ services:
       CASC_JENKINS_CONFIG: /var/jenkins_home/casc_configs
       CASC_VAULT_ENGINE_VERSION: "1"
       CASC_VAULT_PATHS: |
-        secret/jcasc/localhost/base,secret/jcasc/localhost/apm-ci
+        secret/jcasc/localhost/base,secret/jcasc/localhost/apm-ci,secret/observability-team/ci/localhost/apm-ci-k8s
       CASC_VAULT_TOKEN: ${VAULT_TOKEN}
       CASC_VAULT_URL: ${VAULT_ADDR:-https://secrets.elastic.co:8200}
       JAVA_OPTS: >-

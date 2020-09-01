@@ -24,6 +24,38 @@ jenkins:
       remoteFS: "/tmp"
       retentionStrategy: "always"
 
+  clouds:
+  - kubernetes:
+      containerCap: 10
+      containerCapStr: "10"
+      credentialsId: ${k8s_cluster_project_id}
+      jenkinsUrl: "http://3e6c9fc4abd4.ngrok.io"  # this should be done
+      maxRequestsPerHost: 32
+      maxRequestsPerHostStr: "32"
+      name: "kubernetes"
+      namespace: "default"
+      serverCertificate: ${k8s_cluster_server_certificate}
+      serverUrl: ${k8s_cluster_server_url}
+      skipTlsVerify: true
+      templates:
+        - containers:
+          - alwaysPullImage: true
+            args: "cat"
+            command: "/bin/sh -c"
+            image: "jenkinsci/jnlp-slave:alpine"
+            livenessProbe:
+              failureThreshold: 0
+              initialDelaySeconds: 0
+              periodSeconds: 0
+              successThreshold: 0
+              timeoutSeconds: 0
+            name: "jnlp"
+            ttyEnabled: true
+            workingDir: "/home/jenkins"
+          label: "k8s"
+          name: "jnlp"
+          yamlMergeStrategy: "override"
+
 credentials:
   system:
     domainCredentials:
@@ -37,6 +69,11 @@ credentials:
                   privateKey: ${github_ssh_key_privatekey}
               scope: GLOBAL
               username: ${github_username}
+          - googleRobotPrivateKey:
+              projectId: ${k8s_cluster_project_id}
+              serviceAccountConfig:
+                json:
+                  secretJsonKey: ${k8s_cluster_service_account_secret}
           - string:
               description: GitHub user @${github_username} Personal Access Token
               id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
@@ -127,6 +164,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/installTools.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/k8s.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/log.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"

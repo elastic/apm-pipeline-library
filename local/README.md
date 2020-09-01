@@ -143,6 +143,19 @@ make stop
 
 Run `make help` for information on all available commands.
 
+#### Kubernetes
+
+In order to use k8s locally you need to:
+
+* verify credentials and configuration is available in `vault read secret/observability-team/ci/localhost/apm-ci-k8s`
+* ngrok http 18080 and copy the http url.
+* replace `jenkinsUrl: "http://3e6c9fc4abd4.ngrok.io"` in the file `local/configs/jenkins.yaml`
+* make -C local clean start
+* run job `http://localhost:18080/job/it/job/k8s/`
+
+**NOTE**: `apm-ci-k8s-cluster` is the default k8s cluster that has been created for testing purposes
+
+
 ## FAQ
 
 **Adding and validating a new JJBB job or folder to the local instance**
