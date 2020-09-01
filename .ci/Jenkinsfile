@@ -58,26 +58,31 @@ pipeline {
         sh 'node --version'
       }
     }
-    stage('Node-12') {
+    stage('Ubuntu') {
       agent {
-          docker {
-            image 'node:12-alpine'
-            label 'ubuntu-18'
+        label 'ubuntu-18'
+      }
+      stages {
+        stage('Node-12') {
+          agent {
+              docker {
+                image 'node:12-alpine'
+              }
           }
-      }
-      steps {
-        sh 'node --version'
-      }
-    }
-    stage('Node-8') {
-      agent {
-          docker {
-            image 'node:8-alpine'
-            label 'ubuntu-18'
+          steps {
+            sh 'node --version'
           }
-      }
-      steps {
-        sh 'node --version'
+        }
+        stage('Node-8') {
+          agent {
+              docker {
+                image 'node:8-alpine'
+              }
+          }
+          steps {
+            sh 'node --version'
+          }
+        }
       }
     }
   }
