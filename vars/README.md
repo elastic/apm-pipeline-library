@@ -1426,16 +1426,6 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
-## rebuildPipeline
-Rebuild the pipeline if supported, for such, it does use the built-in env variable
-`JOB_NAME`.
-
-It does require the parameters for the pipeline to be exposed as environment variables.
-
-```
-rebuildPipeline()
-```
-
 ## retryWithSleep
 Retry a command for a specified number of times until the command exits successfully.
 

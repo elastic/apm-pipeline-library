@@ -18,7 +18,6 @@
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 import hudson.model.Result
-import co.elastic.TimeoutIssuesCause
 import co.elastic.BuildException
 
 /**
@@ -88,11 +87,7 @@ def getRedirectLink(buildInfo, jobName) {
 
 def throwBuildException(buildInfo) {
   log(level: 'DEBUG', text: "${buildInfo.getProjectName()}#${buildInfo.getNumber()} with issue '${buildInfo.getDescription()?.trim() ?: ''}'")
-  if (buildInfo.getDescription()?.contains('timeout')) {
-    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE, new TimeoutIssuesCause(buildInfo.getProjectName(), buildInfo.getNumber()))
-  } else {
-    throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE)
-  }
+  throw new BuildException(String.valueOf(buildInfo.getNumber()), Result.FAILURE)
 }
 
 def propagateFailure(buildInfo) {

@@ -17,7 +17,6 @@
 
 import co.elastic.mock.StepsMock
 import co.elastic.BuildException
-import co.elastic.TimeoutIssuesCause
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
@@ -83,38 +82,9 @@ public class BuildStepTests extends ApmBasePipelineTest {
     } catch (e) {
       assertTrue(e instanceof BuildException)
       assertThat(e.getResult().toString(), is('FAILURE'))
-      assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue ''"))
-  }
-
-  @Test
-  void test_throwBuildException_with_null_description() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
-    } catch (e) {
-      assertTrue(e instanceof BuildException)
-      assertThat(e.getResult().toString(), is('FAILURE'))
-      assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue ''"))
-  }
-
-  @Test
-  void test_throwBuildException_caused_by_timeout() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
-    } catch (e) {
-      assertTrue(e instanceof BuildException)
-      assertThat(e.getResult().toString(), is('FAILURE'))
-      assertTrue(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue 'Issue: checkout timeout'"))
   }
 
   @Test

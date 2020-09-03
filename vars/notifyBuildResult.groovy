@@ -26,13 +26,11 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 
 import co.elastic.BuildException
 import co.elastic.NotificationManager
-import co.elastic.TimeoutIssuesCause
 import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
-  def rebuild = args.containsKey('rebuild') ? args.rebuild : true
   def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
@@ -100,26 +98,6 @@ def call(Map args = [:]) {
       }
     }
   }
-
-  if (rebuild) {
-    log(level: 'DEBUG', text: 'notifyBuildResult: rebuild is enabled.')
-
-    // Supported scenarios to rebuild in case of a timeout issue:
-    // 1) If there is an issue in the upstream with the default checkout then the env variable
-    // won't be created.
-    // 2) If there is an issue with any of the dowstreamjobs related to the timeout.
-    if (isGitCheckoutIssue()) {
-      currentBuild.description = "Issue: timeout checkout ${currentBuild.description?.trim() ? currentBuild.description : ''}"
-      rebuildPipeline()
-    } else if (isAnyDownstreamJobFailedWithTimeout(downstreamJobs)) {  // description is handled with the analyseDownstreamJobsFailures method
-      rebuildPipeline()
-    } else {
-      log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
-    }
-  }
-
-  // This is the one in charge to notify the parenstream with the likelihood downstream issues, if any
-  analyseDownstreamJobsFailures(downstreamJobs)
 }
 
 def customisedEmail(String email) {
@@ -141,44 +119,4 @@ def customisedEmail(String email) {
     }
   }
   return []
-}
-
-def isGitCheckoutIssue() {
-  return currentBuild.currentResult == 'FAILURE' && !env.GIT_BUILD_CAUSE?.trim()
-}
-
-def analyseDownstreamJobsFailures(downstreamJobs) {
-  if (downstreamJobs.isEmpty()) {
-    log(level: 'DEBUG', text: 'notifyBuildResult: there are no downstream jobs to be analysed')
-  } else {
-    def description = []
-
-    // Get all the downstreamJobs that got a TimeoutIssueCause
-    downstreamJobs.findAll { k, v -> isSupportedException(v)  && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
-                  .collectEntries { name, v ->
-                    [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
-                  }
-                  .each { jobName, issue ->
-                    description << issue
-                  }
-
-    // Explicitly identify the test cause issues that got failed test cases.
-    downstreamJobs.findAll { k, v -> v instanceof RunWrapper && v.resultIsWorseOrEqualTo('UNSTABLE') }
-                  .each { k, v ->
-                    def testResultAction = v.getRawBuild().getAction(AbstractTestResultAction.class)
-                    if (testResultAction != null && testResultAction.getFailCount() > 0 ) {
-                      description << "${k}#${v.getNumber()} got ${testResultAction.failCount} test failure(s)"
-                    }
-                  }
-    currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"
-    log(level: 'DEBUG', text: "notifyBuildResult: analyseDownstreamJobsFailures just updated the description with '${currentBuild.description?.trim()}'.")
-  }
-}
-
-def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
-  return downstreamJobs?.any { k, v -> isSupportedException(v) && v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
-}
-
-def isSupportedException(v) {
-  return (v instanceof FlowInterruptedException || v instanceof BuildException)
 }
