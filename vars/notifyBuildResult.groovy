@@ -44,7 +44,7 @@ def call(Map args = [:]) {
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
-      def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
+      def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
 
@@ -54,7 +54,7 @@ def call(Map args = [:]) {
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
         def notificationManager = new NotificationManager()
-        if(shouldNotify){
+        if(shouldNotify && !to?.empty){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
           notificationManager.notifyEmail(data)
         }
@@ -135,12 +135,12 @@ def customisedEmail(String email) {
       }
     }
     if (suffix?.trim()) {
-      return email.replace('@', "+${suffix}@")
+      return [email.replace('@', "+${suffix}@")]
     } else {
-      return email
+      return [email]
     }
   }
-  return ''
+  return []
 }
 
 def isGitCheckoutIssue() {

@@ -158,8 +158,8 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void testCustomisedEmailWithEmptyOrNull() throws Exception {
     def script = loadScript(scriptName)
-    assertTrue(script.customisedEmail('').equals(''))
-    assertTrue(script.customisedEmail(null).equals(''))
+    assertTrue(script.customisedEmail('').equals([]))
+    assertTrue(script.customisedEmail(null).equals([]))
     assertJobStatusSuccess()
   }
 
@@ -169,7 +169,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     env.REPO = 'foo'
     env.remove('JOB_NAME')
     def result = script.customisedEmail('build-apm@example.com')
-    assertTrue(result.equals('build-apm+foo@example.com'))
+    assertTrue(result.equals(['build-apm+foo@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -178,7 +178,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = 'foo'
     env.JOB_NAME = 'folder1/folder2/foo'
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm+folder1@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm+folder1@example.com']))
     assertJobStatusSuccess()
   }
 
@@ -187,8 +187,33 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     env.REPO = ''
     env.JOB_NAME = ''
-    assertTrue(script.customisedEmail('build-apm@example.com').equals('build-apm@example.com'))
+    assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm@example.com']))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_email_without_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    env.remove('NOTIFY_TO')
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_NOTIFY_TO() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
+  }
+
+  @Test
+  void test_email_with_to() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(shouldNotify: true, to: ['foo@acme.com'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
