@@ -36,16 +36,19 @@ def call(Map args = [:]) {
   varsEnv.each {
     envFlags += " -e ${it}"
   }
-  sh(label: 'Run super-linter', script: """
-    docker run ${envFlags} \
-      -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
-      -v \$(pwd):/tmp/lint \
-      -u \$(id -u):\$(id -g) \
-      ${dockerImage}""")
-
+  def status = sh(label: 'Run super-linter',
+                  script: """
+                  docker run ${envFlags} \
+                    -e OUTPUT_FORMAT=tap -e OUTPUT_DETAILS=detailed -e OUTPUT_FOLDER=${output} \
+                    -v \$(pwd):/tmp/lint \
+                    -u \$(id -u):\$(id -g) \
+                    ${dockerImage}""", returnStatus: true)
   if(junitFlag) {
     dir("${output}") {
       tap2Junit(pattern: '*.tap', package: 'super-linter')
     }
+  }
+  if (!failNever && status != 0) {
+    error 'Super linter failed'
   }
 }
