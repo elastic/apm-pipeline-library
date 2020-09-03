@@ -62,7 +62,7 @@ stages:
     stage('simple') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'simple.yaml'), function: this.&runCommand)
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'simple.yaml'), function: new RunCommand(steps: this))
           whenFalse(ret.size() == 1) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -78,7 +78,7 @@ stages:
     stage('two') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'two.yaml'), function: this.&runCommand)
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'two.yaml'), function: new RunCommand(steps: this))
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -94,7 +94,7 @@ stages:
     stage('platforms') {
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'platforms.yaml'), function: this.&runCommand)
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'platforms.yaml'), function: new RunCommand(steps: this))
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just one entry.'
           }
@@ -113,7 +113,7 @@ stages:
       }
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: this.&runCommand)
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: new RunCommand(steps: this))
           whenFalse(ret.size() == 2) {
             error 'Assert failed. There should be just 2 entries.'
           }
@@ -127,7 +127,7 @@ stages:
       }
       steps {
         script {
-          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: this.&runCommand)
+          def ret = beatsStages(project: 'test', content: readYaml(file: 'when.yaml'), function: new RunCommand(steps: this))
           whenFalse(ret.size() == 0) {
             error 'Assert failed. There should be just 0 entries.'
           }
@@ -138,15 +138,19 @@ stages:
   }
 }
 
-// TODO expected to call org.codehaus.groovy.runtime.MethodClosure.call but wound up catching WorkflowScript.runCommand; see: https://jenkins.io/redirect/pipeline-cps-method-mismatches/
-def runCommand(Map args = [:]) {
-  if (args?.content?.mage) {
-    dir(args.project) {
-      echo "mage ${args.label}"
-    }
+class RunCommand extends co.elastic.beats.BeatsFunction {
+  public RunCommand(Map args = [:]){
+    super(args)
   }
-  if (args?.content?.make) {
-    echo "make ${args.label}"
+  public run(Map args = [:]){
+    if (args?.content?.mage) {
+      steps.dir(args.project) {
+        steps.echo "mage ${args.label}"
+      }
+    }
+    if (args?.content?.make) {
+      steps.echo "make ${args.label}"
+    }
   }
 }
 '''

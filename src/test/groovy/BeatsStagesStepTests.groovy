@@ -20,13 +20,10 @@ import org.junit.After
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
+import co.elastic.mock.beats.RunCommand
 
 class BeatsStagesStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/beatsStages.groovy'
-
-  def runCommand(Map args = [:]) {
-    echo "${args.label}"
-  }
 
   @Override
   @Before
@@ -64,7 +61,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
   void test_with_no_platform() throws Exception {
     def script = loadScript(scriptName)
     try {
-      script.call(project: 'foo', content: [:], function: this.&runCommand)
+      script.call(project: 'foo', content: [:], function: new RunCommand(steps: this))
     } catch (e) {
       // NOOP
     }
@@ -96,7 +93,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
           "mage" : [ "foo" ]
         ]
       ]
-    ], function: this.&runCommand)
+    ], function: new RunCommand(steps: this))
     printCallStack()
     assertTrue(ret.size() == 1)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
@@ -117,7 +114,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
           "platforms" : [ 'windows-2019', 'windows-2016' ]
         ]
       ]
-    ], function: this.&runCommand)
+    ], function: new RunCommand(steps: this))
     printCallStack()
     assertTrue(ret.size() == 3)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
@@ -148,7 +145,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
           ]
         ]
       ]
-    ], function: this.&runCommand)
+    ], function: new RunCommand(steps: this))
     printCallStack()
     assertTrue(ret.size() == 2)
     assertFalse(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))
@@ -177,7 +174,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
           ]
         ]
       ]
-    ], function: this.&runCommand)
+    ], function: new RunCommand(steps: this))
     printCallStack()
     assertTrue(ret.size() == 3)
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))

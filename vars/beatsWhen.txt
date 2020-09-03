@@ -8,7 +8,7 @@
         <li>content: the content with the when section. Mandatory</li>
         <li>changeset: the global changeset. Optional</li>
         <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
-        <li>changesetFunction: the function to be called. Optional</li>
+        <li>changesetFunction: the function to be called. Should implement the class BeatsFunction. Optional</li>
     </ul>
 </p>
 

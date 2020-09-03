@@ -66,6 +66,6 @@ private generateStages(Map args = [:]) {
 private generateStage(Map args = [:]) {
   def function = args.function
   return {
-    function(args)
+    function.run(args)
   }
 }

@@ -73,7 +73,8 @@ private Boolean whenChangeset(Map args = [:]) {
 
     // If function then calculate the project dependencies on the fly.
     if (args.get('changesetFunction')) {
-      calculatedPatterns = args.changesetFunction(args)
+      def changesetFunction = args.changesetFunction
+      calculatedPatterns = changesetFunction.run(args)
       patterns.addAll(calculatedPatterns)
 
       // Search for some other project dependencies that are explicitly
@@ -81,7 +82,7 @@ private Boolean whenChangeset(Map args = [:]) {
       args.content.changeset.findAll { it.startsWith('#') }.each {
         Map newArgs = args
         newArgs.project = it.replaceAll('#', '')
-        calculatedPatterns = args.changesetFunction(args)
+        calculatedPatterns = changesetFunction.run(args)
         patterns.addAll(calculatedPatterns)
       }
     }

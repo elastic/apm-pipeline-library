@@ -5,7 +5,7 @@
     <ul>
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
-        <li>function: the function to be called. Mandatory</li>
+        <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
     </ul>
 </p>
 

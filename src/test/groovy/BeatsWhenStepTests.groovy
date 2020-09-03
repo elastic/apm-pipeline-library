@@ -20,13 +20,10 @@ import org.junit.After
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
+import co.elastic.mock.beats.GetProjectDependencies
 
 class BeatsWhenStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/beatsWhen.groovy'
-
-  def getProjectDependencies(Map args = [:]) {
-    return [ '^projectA/.*', '^projectB' ]
-  }
 
   @Override
   @Before
@@ -160,7 +157,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def changeset = 'projectA/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
-                                   changesetFunction: this.&getProjectDependencies)
+                                   changesetFunction: new GetProjectDependencies())
     printCallStack()
     assertTrue(ret)
   }
@@ -171,7 +168,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def changeset = 'projectA/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['#generator/common/beatgen']],
-                                   changesetFunction: this.&getProjectDependencies)
+                                   changesetFunction: new GetProjectDependencies())
     printCallStack()
     assertTrue(ret)
   }
@@ -182,7 +179,7 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     def changeset = 'foo/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
-                                   changesetFunction: this.&getProjectDependencies)
+                                   changesetFunction: new GetProjectDependencies())
     printCallStack()
     assertFalse(ret)
   }
