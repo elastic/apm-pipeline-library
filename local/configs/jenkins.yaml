@@ -29,7 +29,7 @@ jenkins:
       containerCap: 10
       containerCapStr: "10"
       credentialsId: ${k8s_cluster_project_id}
-      jenkinsUrl: "http://3e6c9fc4abd4.ngrok.io"  # this should be done
+      jenkinsUrl: "http://3e6c9fc4abd4.ngrok.io"  ## This should be changed accordingly
       maxRequestsPerHost: 32
       maxRequestsPerHostStr: "32"
       name: "kubernetes"
@@ -37,24 +37,7 @@ jenkins:
       serverCertificate: ${k8s_cluster_server_certificate}
       serverUrl: ${k8s_cluster_server_url}
       skipTlsVerify: true
-      templates:
-        - containers:
-          - alwaysPullImage: true
-            args: "cat"
-            command: "/bin/sh -c"
-            image: "jenkinsci/jnlp-slave:alpine"
-            livenessProbe:
-              failureThreshold: 0
-              initialDelaySeconds: 0
-              periodSeconds: 0
-              successThreshold: 0
-              timeoutSeconds: 0
-            name: "jnlp"
-            ttyEnabled: true
-            workingDir: "/home/jenkins"
-          label: "k8s"
-          name: "jnlp"
-          yamlMergeStrategy: "override"
+      webSocket: true
 
 credentials:
   system:
