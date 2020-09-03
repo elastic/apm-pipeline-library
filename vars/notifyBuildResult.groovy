@@ -31,7 +31,6 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
-  def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]

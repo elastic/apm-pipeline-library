@@ -1338,8 +1338,6 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
-* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
-* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 
 ## opbeansPipeline
