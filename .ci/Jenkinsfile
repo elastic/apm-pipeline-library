@@ -151,6 +151,9 @@ pipeline {
       }
     }
     stage('Super-linter') {
+      options {
+        warnError('Super-linter failed, unstable and move forward')
+      }
       steps {
         withGithubNotify(context: 'Check super-linter', tab: 'tests') {
           deleteDir()
