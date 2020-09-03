@@ -26,6 +26,9 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      return 0
+    })
   }
 
   @Test
@@ -75,7 +78,7 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_installation_error() throws Exception {
+  void test_with_installation_error_with_not_failNever() throws Exception {
     def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -84,7 +87,7 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
       }
     })
     try {
-      script.call()
+      script.call(failNever: false)
     } catch(e) {
       // NOOP
     }
@@ -92,5 +95,43 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('sh', 2))
     assertTrue(assertMethodCallContainsPattern('sh', "label=Install super-linter"))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_superlinter_error_and_not_failNever() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BASE_COMMIT = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m?.label?.contains('Run super-linter')){
+        return 1
+      }
+    })
+    try {
+      script.call(failNever: false)
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Super linter failed'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_superlinter_error_and_failNever() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BASE_COMMIT = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m?.label?.contains('Run super-linter')){
+        return 1
+      }
+    })
+    try {
+      script.call(failNever: true)
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 0))
+    assertJobStatusSuccess()
   }
 }
