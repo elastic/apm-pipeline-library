@@ -46,7 +46,7 @@ private Boolean whenBranches(Map args = [:]) {
     markdownReason(project: args.project, reason: '* ✅ Branch is enabled .')
     return true
   }
-  markdownReason(project: args.project, reason: '* ❕Branch is `disabled`.')
+  markdownReason(project: args.project, reason: '* ❗Branch is `disabled`.')
   return false
 }
 
