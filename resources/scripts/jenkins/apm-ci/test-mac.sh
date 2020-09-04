@@ -23,15 +23,19 @@ virtualenv venv
 source venv/bin/activate
 pip install testinfra
 
-## Prepare the docker for mac
-docker-machine start default || true
-eval "$(docker-machine env default)"
-set -x
+## Prepare the docker for mac if docker-machine is installed
+if command -v docker-machine ; then
+  docker-machine start default || true
+  eval "$(docker-machine env default)"
+  docker_py_test=test-infra/apm-ci/test_installed_tools_docker.py
+else
+  docker_py_test=""
+fi
 
 ## Run test-infra and trap error to notify when required
+set -x
 { py.test -v \
-    test-infra/apm-ci/test_installed_tools.py \
-    test-infra/apm-ci/test_installed_tools_docker.py \
+    test-infra/apm-ci/test_installed_tools.py "${docker_py_test}" \
     --junit-xml=target/junit-test-infra.xml; \
   err="$?"; } || true
 
