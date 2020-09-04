@@ -21,7 +21,7 @@ pipeline {
   agent {
     kubernetes {
       yamlFile '.ci/k8s/build.yaml'
-      defaultContainer 'maven'
+      defaultContainer 'java'
     }
   }
   environment {

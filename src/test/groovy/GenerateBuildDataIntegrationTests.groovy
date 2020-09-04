@@ -19,6 +19,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import net.sf.json.JSONArray
 import net.sf.json.JSONObject
 import net.sf.json.JSONSerializer
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,7 +50,7 @@ class GenerateBuildDataIntegrationTests {
   private final String URL = "http://localhost:18081/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
 
   @Test
-  public void abortBuild() {
+  @Ignore("not ready yet for running a docker container") public void abortBuild() {
     String jobUrl = this.URL + "/abort/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "ABORTED", "1")
     printStdout(process)
@@ -70,7 +71,7 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void successBuild() {
+  @Ignore("not ready yet for running a docker container") public void successBuild() {
     String jobUrl = this.URL + "/success/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
     printStdout(process)
@@ -112,7 +113,7 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void errorBuild() {
+  @Ignore("not ready yet for running a docker container") public void errorBuild() {
     String jobUrl = this.URL + "/error/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
@@ -130,7 +131,7 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void unstableBuild_with_tests_normalisation() {
+  @Ignore("not ready yet for running a docker container") public void unstableBuild_with_tests_normalisation() {
     String jobUrl = this.URL + "/unstable/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
@@ -148,7 +149,7 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void errorBuild_with_steps_normalisation() {
+  @Ignore("not ready yet for running a docker container") public void errorBuild_with_steps_normalisation() {
     String jobUrl = this.URL + "/error/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
