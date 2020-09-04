@@ -1,0 +1,17 @@
+Check if the given GitHub user is member of the given GitHub team.
+
+```
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
+    //...
+}
+
+// using another organisation
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
+    //...
+}
+
+```
+
+* user: the GitHub user. Mandatory
+* team: the GitHub teamd. Mandatory
+* org: the GitHub organisation. Optional. Default: 'elastic'
