@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.135 (04/09/2020)
+
+#### 🚀 Enhancements
+
+-  isMemberOf step to query GitHub user/teams [#711](https://github.com/elastic/apm-pipeline-library/pull/711)
+
+#### 🙈 No user affected
+
+-  [test-infra] run docker if docker-machine installed [#710](https://github.com/elastic/apm-pipeline-library/pull/710)
+
 ## v1.1.134 (18/08/2020)
 
 #### ⚙️ CI
