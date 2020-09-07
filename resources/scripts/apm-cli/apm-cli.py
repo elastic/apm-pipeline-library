@@ -38,7 +38,7 @@ def file_for_write(path):
     Open a file for writting.
 
     :param path: Path for the file.
-    :return: An File type object for writting.
+    :return: An File type object for writing.
     """
     return open(path, "w")
 
