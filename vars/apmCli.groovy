@@ -20,6 +20,7 @@ import groovy.transform.Field
 
 def call(Map args = [:]) {
   def apmCliConfig = args.containsKey('apmCliConfig') ? args.apmCliConfig : "secret/observability-team/ci/test-clusters/dev-next-oblt/k8s-apm"
+  def serviceName = args.containsKey('serviceName') ? args.serviceName : "${env.APM_CLI_SERVICE_NAME ? env.APM_CLI_SERVICE_NAME : ''}"
   def saveTsID = args.containsKey('saveTsID') ? args.saveTsID : false
   def transactionName = args.containsKey('transactionName') ? args.transactionName : "${STAGE_NAME}"
   def spanName = args.containsKey('spanName') ? args.spanName : ''
@@ -27,7 +28,7 @@ def call(Map args = [:]) {
   def spanLabel = args.containsKey('spanLabel') ? args.spanLabel : ''
   def result = args.containsKey('result') ? args.result : ''
 
-  if(!isUnix()){
+  if(!isUnix() || !serviceName){
     return
   }
 
@@ -63,6 +64,7 @@ def call(Map args = [:]) {
     withEnvMask(vars: [
       [var: "APM_CLI_SERVER_URL", password: "${apm.url}"],
       [var: "APM_CLI_TOKEN", password: "${apm.token}"],
+      [var: "APM_CLI_SERVICE_NAME", password: "${serviceName}"],
       [var: "APM_CLI_TRANSACTION_NAME", password: "${transactionName}"],
       [var: "APM_CLI_SPAN_NAME", password: "${spanName}"],
       [var: "APM_CLI_SPAN_COMMAND", password: "${spanCommand}"],
@@ -73,6 +75,7 @@ def call(Map args = [:]) {
     // withEnv([
     //   "APM_CLI_SERVER_URL=${apm.url}",
     //   "APM_CLI_TOKEN=${apm.token}",
+    //   "APM_CLI_SERVICE_NAME=${serviceName}"
     //   "APM_CLI_TRANSACTION_NAME=${transactionName}",
     //   "APM_CLI_SPAN_NAME=${spanName}",
     //   "APM_CLI_SPAN_COMMAND=${spanCommand}",
