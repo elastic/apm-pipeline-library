@@ -30,6 +30,8 @@
 def call(Map params = [:]) {
   def cancel = params.get('cancelPreviousRunningBuilds', null)
   def firstTime = params.get('firstTimeContributor', null)
+  def apmTraces = params.get('apmTraces', null)
+
   if (cancel) {
     def when = cancel.get('when', 'always')
     if (isEnabled(when)) {
@@ -40,6 +42,11 @@ def call(Map params = [:]) {
   }
   if (firstTime) {
     log(level: 'INFO', text: 'firstTimeContributor step is not available yet.')
+  }
+  if(apmTraces && isEnabled(apmTraces.get('when', 'always'))) {
+    log(level: 'INFO', text: 'apmTraces is enabled.')
+    setEnvVar('APM_CLI_SERVICE_NAME',"${env.JOB_NAME}")
+    apmCli(transactionName: "Pipeline", saveTsID: true)
   }
 }
 

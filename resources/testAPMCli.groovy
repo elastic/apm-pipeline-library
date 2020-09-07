@@ -29,81 +29,38 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     PYTHONUTF8 = "1"
-    APM_CLI_SERVICE_NAME = "${env.JOB_NAME}"
   }
   stages {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
-        // Just in case the workspace is reset.
+        pipelineManager([apmTraces : [ when: 'ALWAYS' ] ])
+        sleep 10
         deleteDir()
-        apmCLITransaction("Pipeline", true)
-        apmCLITransaction("${STAGE_NAME} - BEGIN", false)
-        apmCLITransaction("${STAGE_NAME} - END", false)
+        apmCli(spanCommand: "sleep ${randomNumber(min: 1, max: 30)}s")
       }
     }
     stage('lint') {
       options { skipDefaultCheckout() }
       steps {
         deleteDir()
-        apmCLITransaction("${STAGE_NAME} - BEGIN", false)
-        apmCLITransaction("${STAGE_NAME} - END", false)
+        apmCli(spanCommand: "sleep ${randomNumber(min: 1, max: 30)}s")
       }
     }
     stage('test') {
       options { skipDefaultCheckout() }
       steps {
-        // Just in case the workspace is reset.
         deleteDir()
-        apmCLITransaction("${STAGE_NAME} - BEGIN", false)
-        apmCLITransaction("${STAGE_NAME} - END", false)
+        apmCli(spanCommand: "sleep ${randomNumber(min: 1, max: 30)}s")
       }
     }
-    stage('build') {
+    stage('build Fail') {
       options { skipDefaultCheckout() }
       steps {
-        deleteDir()
-        apmCLITransaction("${STAGE_NAME} - BEGIN", false)
-        apmCLITransaction("${STAGE_NAME} - END", false)
-      }
-    }
-  }
-}
-
-def apmCLITransaction(transactionName, saveTsID){
-  if(!isUnix()){
-    return
-  }
-
-  def setupPy = libraryResource("scripts/apm-cli/requirements.txt")
-  def apmCliPy = libraryResource("scripts/apm-cli/apm-cli.py")
-  dir('apm-cli'){
-    writeFile file: "requirements.txt", text: setupPy
-    writeFile file: "apm-cli.py", text: apmCliPy
-    def apmJson = getVaultSecret(secret: "secret/observability-team/ci/test-clusters/dev-next-oblt/k8s-apm")?.data.value
-    def apm = readJSON(text: apmJson)
-    withEnvMask(vars: [
-      [var: "APM_CLI_SERVER_URL", password:"${apm.url}"],
-      [var: "APM_CLI_TOKEN", password: "${apm.token}"],
-      [var: "APM_CLI_TRANSACTION_NAME", password:" ${transactionName}"],
-      [var: "APM_CLI_PARENT_TRANSACTION_SAVE", password: "${ saveTsID ? 'tsID.txt' : ''}"],
-    ]){
-      sh(script: """#!/bin/bash +x
-            if [ -z "\$(command -v python3)" ] \
-              || [ -z "\$(command -v virtualenv)" ]; then
-              exit 0
-            fi
-            virtualenv -q --python=python3 .venv
-            source ".venv/bin/activate"
-            pip -q install -r requirements.txt
-            set -x
-            python3 apm-cli.py --transaction-name "${transactionName}"
-            sleep 10s
-          """,
-        label: 'apm-cli'
-      )
-      if(saveTsID){
-        setEnvVar('APM_CLI_PARENT_TRANSACTION', readFile(file: 'tsID.txt'))
+        withAPM(){
+          deleteDir()
+          sh("exit 1")
+        }
       }
     }
   }
