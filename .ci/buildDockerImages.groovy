@@ -348,7 +348,7 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-dev',
-          prepareWith: {git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/haproxytech/spoa-mirror.git"},
+          prepareWith: {dir("spoa-mirror"){git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/haproxytech/spoa-mirror.git"}},
           tag: "apm-proxy",
           version: "latest",
           folder: "tools/apm_proxy",
