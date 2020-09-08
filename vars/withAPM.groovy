@@ -15,13 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
+/**
+  Create an APM reporting context by reporting and APM trace
+  at the begin of the block and another at the end.
+  see apmCli.groovy fo the parameters description
+**/
 def call(Map args = [:], Closure body) {
   try {
     apmCli(args)
     body(args)
     apmCli()
   } catch (err) {
-    args["result"] = 'FAILURE'
+    args["result"] = 'failure'
     apmCli(args)
     throw err
   }
