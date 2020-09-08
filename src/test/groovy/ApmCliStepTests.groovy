@@ -147,7 +147,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
   @Test
   void testSavedParentTransaction() throws Exception {
     helper.registerAllowedMethod('readFile', [Map.class],{'fooID'})
-    helper.registerAllowedMethod('setEnvVar', [String.class, String.class],{ var, value -> env[var] = value })
 
     def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo", saveTsID: true)
