@@ -23,8 +23,8 @@
 def call(Map args = [:], Closure body) {
   try {
     apmCli(args)
-    body(args)
-    apmCli()
+    body()
+    apmCli(args)
   } catch (err) {
     args["result"] = 'failure'
     apmCli(args)
