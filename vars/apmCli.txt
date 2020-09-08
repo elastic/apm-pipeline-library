@@ -42,6 +42,7 @@ It is mandatory to pass a serviceName. If a service name is no passes apmCli do 
 and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
 * transactionName: Name of the transaction to report, it is mandatory.
 By default the "STAGE_NAME" environment variable is used.
+* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
 * spanName : Name of the span to report.
 * spanCommand Command to execute as span,
 if spanName is no set, spanCommand param would be used as span name.

@@ -23,8 +23,9 @@ def call(Map args = [:]) {
   def url = args.containsKey('url') ? args.url : ''
   def token = args.containsKey('token') ? args.token : ''
   def serviceName = args.containsKey('serviceName') ? args.serviceName : "${env.APM_CLI_SERVICE_NAME ? env.APM_CLI_SERVICE_NAME : ''}"
+  def parentTransaction = args.containsKey('parentTransaction') ? args.parentTransaction : "${env.APM_CLI_PARENT_TRANSACTION ? env.APM_CLI_PARENT_TRANSACTION : ''}"
   def saveTsID = args.containsKey('saveTsID') ? args.saveTsID : false
-  def transactionName = args.containsKey('transactionName') ? args.transactionName : "${STAGE_NAME}"
+  def transactionName = args.containsKey('transactionName') ? args.transactionName : "${env.STAGE_NAME}"
   def spanName = args.containsKey('spanName') ? args.spanName : ''
   def spanCommand = args.containsKey('spanCommand') ? args.spanCommand : ''
   def spanLabel = args.containsKey('spanLabel') ? args.spanLabel : ''
@@ -58,7 +59,7 @@ def call(Map args = [:]) {
     }
 
     // transactions with and span do not need BEGIN/END
-    if("${env.APM_CLI_PARENT_TRANSACTION}" && !spanName) {
+    if(!spanName) {
       if(transactions["${transactionName}"]) {
         log(level: 'DEBUG', text: "apmCli: Transaction ${transactionName} end")
         transactionName += "-END"
@@ -68,6 +69,7 @@ def call(Map args = [:]) {
         transactions["${transactionName}"] = true
       }
     }
+
     withEnvMask(vars: [
       [var: "APM_CLI_SERVER_URL", password: "${url}"],
       [var: "APM_CLI_TOKEN", password: "${token}"],
@@ -78,6 +80,7 @@ def call(Map args = [:]) {
       [var: "APM_CLI_SPAN_LABELS", password: "${spanLabel}"],
       [var: "APM_CLI_PARENT_TRANSACTION_SAVE", password: "${ saveTsID ? 'tsID.txt' : ''}"],
       [var: "APM_CLI_TRANSACTION_RESULT", password: "${result}"],
+      [var: "APM_CLI_PARENT_TRANSACTION", password: "${parentTransaction}"],
     ]){
       log(level: 'DEBUG', text: "apmCli: Runninf APM CLI")
       sh(script: """#!/bin/bash +x
