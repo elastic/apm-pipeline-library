@@ -1,4 +1,5 @@
 Wrap the GitHub notify check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
 
 ```
 withGithubNotify(context: 'Build', description: 'Execute something') {
