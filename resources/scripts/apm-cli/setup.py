@@ -8,7 +8,7 @@ setup(
     install_requires=[
         "elastic-apm",
         "ConfigArgParse",
-        "psutil"
+        "psutil",
     ],
     url='https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/apm-cli',
     license='Apache License Version 2.0',
