@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Licensed to Elasticsearch B.V. under one or more contributor
 # license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright

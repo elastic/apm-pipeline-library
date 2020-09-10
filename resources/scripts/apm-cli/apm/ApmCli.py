@@ -14,12 +14,37 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import collections
+import logging
 
 import configargparse
 import sys
 from elasticapm import Client, set_custom_context, capture_span, get_trace_id, trace_parent_from_string, get_span_id
 import json
 import subprocess
+
+import traceback
+
+
+class ApmCliArgs:
+
+    def __init__(self):
+        self.apm_server_url = None
+        self.apm_token = None
+        self.api_key = None
+        self.service_name = None
+        self.custom_context = None
+        self.transaction_name = None
+        self.transaction_result = None
+        self.span_name = None
+        self.span_type = None
+        self.span_subtype = None
+        self.span_labels = None
+        self.span_action = None
+        self.span_cmd = None
+        self.apm_parent_id_file_save = None
+        self.apm_parent_id_file_load = None
+        self.apm_parent_id = None
 
 
 class ApmCli:
@@ -59,12 +84,10 @@ class ApmCli:
         group_auth.add_argument('--apm-token',
                             dest='apm_token',
                             env_var='APM_CLI_TOKEN',
-                            default='NO_SET',
                             help='Token to access to APM server.')
         group_auth.add_argument('--apm-api-key',
                             dest='api_key',
                             env_var='APM_CLI_TOKEN_API_KEY',
-                            default='NO_SET',
                             help='API key to access to APM server.')
 
         parser.add_argument('--service-name',
@@ -147,25 +170,31 @@ class ApmCli:
                               span_type=self.args.span_type,
                               span_subtype=self.args.span_subtype,
                               span_action=self.args.span_action,
-                              labels=json.loads(self.args.span_labels)) as span:
-                print('The span begins.')
+                              labels=json.loads(self.args.span_labels if self.args.span_labels else '{}')) as span:
+                self.logger.debug('The span begins.')
                 if self.args.span_cmd:
                     output = ''
                     try:
-                        print('Executing the command.')
+                        self.logger.debug('Executing the command.')
                         output = subprocess.check_output(self.args.span_cmd, shell=True).decode('utf8').strip()
-                        print(output)
-                        print('The span ends.')
+                        self.logger.debug(output)
+                        self.logger.debug('The span ends.')
                         self.span = span
                     except subprocess.CalledProcessError:
                         self.apm_client.capture_exception()
-                        print('Error executing the command.')
-                        print(output)
-                        print('The span ends.')
+                        self.logger.debug('Error executing the command.')
+                        self.logger.debug(output)
+                        self.logger.debug('The span ends.')
                         self.span = span
                         sys.exit(1)
                 else:
-                    print('The span ends.')
+                    self.logger.debug('The span ends.')
+
+    def get_parent_id(self):
+        """
+        :return: returns the parent ID of the current transaction.
+        """
+        return "{:02x}-{}-{}-{:02x}".format(0, get_trace_id(), get_span_id(), 1)
 
     def begin_transaction(self):
         """
@@ -180,18 +209,17 @@ class ApmCli:
             self.args.apm_parent_id_file_load.close()
             self.parent = trace_parent_from_string(ts_id)
             self.transaction = self.apm_client.begin_transaction(self.args.transaction_name, trace_parent=self.parent)
-            print('Parent transaction : ' + ts_id)
+            self.logger.debug('Parent transaction : ' + ts_id)
         elif self.args.apm_parent_id:
             self.parent = trace_parent_from_string(self.args.apm_parent_id)
             self.transaction = self.apm_client.begin_transaction(self.args.transaction_name, trace_parent=self.parent)
-            print('Parent transaction : ' + self.args.apm_parent_id)
+            self.logger.debug('Parent transaction : ' + self.args.apm_parent_id)
         else:
             self.transaction = self.apm_client.begin_transaction(self.args.transaction_name)
-        print('The transaction begins.')
+        self.logger.debug('The transaction begins.')
         if self.args.apm_parent_id_file_save:
             with capture_span('parent'):
-                self.args.apm_parent_id_file_save.write("{:02x}-{}-{}-{:02x}".format(0, get_trace_id(),
-                                                                                     get_span_id(), 1))
+                self.args.apm_parent_id_file_save.write(self.get_parent_id())
                 self.args.apm_parent_id_file_save.close()
 
     def init_apm_client(self):
@@ -224,17 +252,43 @@ class ApmCli:
 
     def end_transaction(self):
         self.apm_client.end_transaction(self.args.transaction_name, self.args.transaction_result)
-        print('The transaction ends.')
+        self.logger.debug('The transaction ends.')
 
-    def __init__(self, cmd_args=None):
+    def __init__(self, cmd_args=None, parse_cmd_args=True):
         """
 
         :param cmd_args: Optional parameter to pass an array of command line arguments for parsing instead of use sys.args.
-        """
+        :param parse_cmd_args: False to do not parse command line arguments and init the APM Client see the init method.
+        """  # noqa E501
+        self.logger = logging.getLogger("ApmCli")
         self.transaction = None
         self.span = None
         self.parent = None
-        self.args = self.prepare_arguments(cmd_args)
+        if parse_cmd_args:
+            self.args = self.prepare_arguments(cmd_args)
+            self.apm_client = self.init_apm_client()
+
+    def init(self, server_url=None, apm_token=None, api_key=None, service_name=None):
+        """
+
+        :param server_url: URL of the APM Server.
+        :param apm_token: Token to access to the APM Server.
+        :param api_key: API key to access to the APM Server (conflits with Token).
+        :param service_name: NAme of the service to report in the APM traces.
+        """
+        self.logger = logging.getLogger("ApmCli")
+        if not server_url and (apm_token or api_key) and service_name:
+            self.logger.error("APM server URL, APM service name, and an TOKEN or API Key are required to connect to the APM service.")  # noqa E501
+            raise
+        self.transaction = None
+        self.span = None
+        self.parent = None
+        self.args = ApmCliArgs()
+        self.args.apm_server_url = server_url
+        self.args.apm_token = apm_token
+        self.args.api_key = api_key
+        self.args.service_name = service_name
+        self.args.apm_token = apm_token
         self.apm_client = self.init_apm_client()
 
     def run(self):

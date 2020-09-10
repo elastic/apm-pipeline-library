@@ -1,10 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from setuptools import setup
 
 setup(
     name='apm-cli',
     version='0.0.1',
+    python_requires=">=3.5",
+    packages=["apm"],
     install_requires=[
         "elastic-apm",
         "ConfigArgParse",
