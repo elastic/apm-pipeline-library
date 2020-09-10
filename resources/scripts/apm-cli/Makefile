@@ -21,15 +21,26 @@ virtualenv:
 ## @help:install:Install APM CLI in a Python virtual environment.
 .PHONY: install
 install: virtualenv
-	$(PIP) install .
+	source $(VENV)/bin/activate;\
+	$(PIP) install .;
 
 ## @help:test:Run the test.
 .PHONY: test
 test: virtualenv
-	pytest
+	source $(VENV)/bin/activate;\
+	pytest;
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage
 coverage: virtualenv
-	coverage run --source=apm -m pytest
-	coverage report -m
+	source $(VENV)/bin/activate;\
+	coverage run --source=apm -m pytest; \
+	coverage report -m;
+
+## @help:clean:Remove Python file artifacts.
+.PHONY: clean
+clean-pyc:
+	@echo "+ $@"
+	@find . -type f -name "*.py[co]" -delete
+	@find . -type d -name "__pycache__" -delete
+	@find . -name '*~' -delete
