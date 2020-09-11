@@ -14,16 +14,13 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-import collections
 import logging
 
 import configargparse
 import sys
-from elasticapm import Client, set_custom_context, capture_span, get_trace_id, trace_parent_from_string, get_span_id
+from elasticapm import Client, set_context, capture_span, get_trace_id, trace_parent_from_string, get_span_id
 import json
 import subprocess
-
-import traceback
 
 
 class ApmCliArgs:
@@ -221,6 +218,7 @@ class ApmCli:
             with capture_span('parent'):
                 self.args.apm_parent_id_file_save.write(self.get_parent_id())
                 self.args.apm_parent_id_file_save.close()
+        return self.transaction
 
     def init_apm_client(self):
         """
@@ -246,9 +244,14 @@ class ApmCli:
                                 debug=True)
         return apm_client
 
-    def custom_context(self):
+    def set_context(self, key="custom"):
+        """
+        Attach contextual data to the current transaction and errors that happen during the current transaction.
+
+        :param key: the namespace for this data.
+        """
         if self.args.custom_context:
-            set_custom_context(json.loads(self.args.custom_context))
+            set_context(json.loads(self.args.custom_context), key)
 
     def end_transaction(self):
         self.apm_client.end_transaction(self.args.transaction_name, self.args.transaction_result)
@@ -298,6 +301,6 @@ class ApmCli:
         :return: None
         """
         self.begin_transaction()
-        self.custom_context()
+        self.set_context()
         self.begin_span()
         self.end_transaction()

@@ -217,6 +217,7 @@ def set_save_parent_id(cmd_args):
 
 @when("I launch the apm-cly.py")
 def launch_cli(apm_cli):
+    # maybe we can use ELASTIC_APM_DISABLE_SEND instead
     mock_urlopen_patcher = patch('elasticapm.transport.http.Transport.send')
     mock_urlopen = mock_urlopen_patcher.start()
     mock_urlopen.return_value.status = 200
