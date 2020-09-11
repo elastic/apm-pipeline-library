@@ -5,6 +5,10 @@ import elasticapm
 
 LOGGER = logging.getLogger("pytest_apm")
 
+# change the way transactions are generates
+# 'dt' -> use distributing tracing to set the a Session parane transaction and every test has his own transaction and span.
+# None -> There is only one transaction at Session level and every test is a span.
+apm_mode = None
 apm_cli = None
 apm_server_url = None
 apm_token = None
@@ -13,9 +17,7 @@ apm_service_name = None
 apm_custom_context = None
 apm_parent_id = None
 apm_outcome = None
-apm_session_transaction = None
-apm_test_transaction = None
-apm_test_span = None
+apm_session_name = None
 
 
 def pytest_addoption(parser):
@@ -38,6 +40,10 @@ def pytest_addoption(parser):
     group.addoption('--apm-custom-context',
                     dest='apm_custom_context',
                     help='Custom context for the current transaction in a JSON string.')
+    group.addoption('--apm-session-name',
+                    dest='apm_session_name',
+                    default='Session',
+                    help='Name for the Main transaction reported to APM.')
 
 
 def begin_transaction(transaction_name):
@@ -81,26 +87,28 @@ def get_parent_id():
 
 
 def pytest_sessionstart(session):
-    global apm_cli, apm_server_url, apm_token, apm_api_key, apm_service_name, apm_custom_context, apm_parent_id, apm_session_transaction
+    global apm_cli, apm_server_url, apm_token, apm_api_key, apm_service_name, apm_custom_context, \
+        apm_parent_id, apm_session_name
     LOGGER.setLevel(logging.DEBUG)
     config = session.config
-    apm_session_transaction = None
     apm_server_url = config.getoption("apm_server_url", default=None)
     apm_token = config.getoption("apm_token", default=None)
     apm_api_key = config.getoption("apm_api_key", default=None)
     apm_service_name = config.getoption("apm_service_name", default=None)
     apm_custom_context = config.getoption("apm_custom_context", default=None)
+    apm_session_name = config.getoption("apm_session_name")
     apm_cli = init_apm_client()
     if apm_cli:
         LOGGER.debug("Session transaction starts.")
         elasticapm.instrument()
-        apm_session_transaction = begin_transaction('Session')
+        begin_transaction(apm_session_name)
         set_context(apm_custom_context)
-        with elasticapm.capture_span('session - BEGIN'):
-            apm_parent_id = get_parent_id()
-        # FIXME it is need to end the transaction to allow child transaction,
-        #  if we do not end it the session transaction is not show in the UI.
-        apm_session_transaction = end_transaction('Session')
+        if apm_mode == 'dt':
+            with elasticapm.capture_span('Start session'):
+                apm_parent_id = get_parent_id()
+            # FIXME it is need to end the transaction to allow child transaction,
+            #  if we do not end it the session transaction is not show in the UI.
+            end_transaction(apm_session_name)
 
 
 def init_apm_client():
@@ -134,13 +142,11 @@ def init_apm_client():
 
 
 def pytest_runtest_setup(item):
-    global apm_cli, apm_parent_id, apm_outcome, apm_test_transaction, apm_test_span
+    global apm_cli, apm_mode, apm_parent_id, apm_outcome
     apm_outcome = None
-    apm_test_transaction = None
-    apm_test_span = None
-    if apm_cli:
+    if apm_cli and apm_mode == 'dt':
         LOGGER.debug("pytest_runtest_setup-{}-{}".format(item.name, apm_parent_id))
-        apm_test_transaction = begin_transaction(item.name)
+        begin_transaction(item.name)
 
 
 def pytest_report_teststatus(report):
@@ -149,8 +155,8 @@ def pytest_report_teststatus(report):
 
 
 def pytest_runtest_teardown(item, nextitem):
-    global apm_cli, apm_parent_id, apm_outcome, apm_test_transaction, apm_test_span
-    if apm_cli:
+    global apm_cli, apm_mode, apm_parent_id, apm_outcome
+    if apm_cli and apm_mode == 'dt':
         LOGGER.debug("pytest_runtest_teardown-{}-{}".format(apm_outcome, apm_parent_id))
         end_transaction(item.name, apm_outcome)
 
@@ -158,10 +164,10 @@ def pytest_runtest_teardown(item, nextitem):
 def pytest_sessionfinish(session, exitstatus):
     # FIXME the session does not have the duration of all test
     #  because it is not possible to end the transaction at this point.
-    global apm_cli, apm_session_transaction
+    global apm_cli, apm_session_name
     if apm_cli:
         LOGGER.debug('Session transaction Ends')
-        end_transaction('Session', apm_outcome)
+        end_transaction(apm_session_name, apm_outcome)
 
 
 @pytest.hookimpl(hookwrapper=True)
