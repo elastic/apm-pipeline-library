@@ -32,10 +32,10 @@ exec { venv\Scripts\activate.bat }
 exec { pip install testinfra }
 
 # Run the test-infra
-exec { py.test -v test-infra\apm-ci\test_apm_windows.py --junit-xml=target\junit-test-infra.xml }
+exec { py.test -v test-infra\apm-ci\test_windows.py --junit-xml=target\junit-test-infra.xml }
 
 # Run the test-infra for the given param
 $extra=$args[0]
 If ($extra -eq 'true') {
-  exec { py.test -v test-infra\apm-ci\test_apm_windows_extra.py --junit-xml=target\junit-test-infra-extra.xml }
+  exec { py.test -v test-infra\apm-ci\test_windows_extra.py --junit-xml=target\junit-test-infra-extra.xml }
 }

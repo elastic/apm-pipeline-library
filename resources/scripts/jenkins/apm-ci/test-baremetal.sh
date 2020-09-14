@@ -26,7 +26,7 @@ set -x
 
 ## Run test-infra and trap error to notify when required
 { py.test -v \
-    test-infra/apm-ci/test_apm_installed_tools.py \
+    test-infra/apm-ci/test_installed_tools.py \
     --junit-xml=target/junit-test-infra.xml; \
   err="$?"; } || true
 
