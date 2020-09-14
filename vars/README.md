@@ -1407,8 +1407,6 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
-* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
-* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 
 ## opbeansPipeline
@@ -1493,16 +1491,6 @@ def i = randomNumber()
 
 ```
 def i = randomNumber(min: 1, max: 99)
-```
-
-## rebuildPipeline
-Rebuild the pipeline if supported, for such, it does use the built-in env variable
-`JOB_NAME`.
-
-It does require the parameters for the pipeline to be exposed as environment variables.
-
-```
-rebuildPipeline()
 ```
 
 ## retryWithSleep
@@ -1601,10 +1589,14 @@ def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
 
 ## setEnvVar
 
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+It sets an environment variable with either a string or boolean value as a parameter, it simplifies the declarative syntax.
 
 ```
+  // Support string value
   setEnvVar('MY_ENV_VAR', 'value')
+
+  // Support boolean value
+  setEnvVar('MY_ENV_VAR', true)
 ```
 
   it replaces the following code
