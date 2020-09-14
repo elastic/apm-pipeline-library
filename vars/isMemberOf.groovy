@@ -33,7 +33,11 @@ def call(Map args = [:]) {
     def token = getGithubToken()
     def url = "https://api.github.com/orgs/${org}/teams/${team}/memberships/${user}"
     def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true, url: url)
-    return membershipResponse.message?.state?.equals('active')
+    if (membershipResponse?.state) {
+      return membershipResponse?.state?.equals('active')
+    } else {
+      return false
+    }
   } catch(err) {
     return false
   }
