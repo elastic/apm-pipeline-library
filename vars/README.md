@@ -47,7 +47,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
     <ul>
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
-        <li>function: the function to be called. Mandatory</li>
+        <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
     </ul>
 </p>
 
@@ -74,7 +74,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>content: the content with the when section. Mandatory</li>
         <li>changeset: the global changeset. Optional</li>
         <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
-        <li>changesetFunction: the function to be called. Optional</li>
+        <li>changesetFunction: the function to be called. Should implement the class BeatsFunction. Optional</li>
     </ul>
 </p>
 
@@ -1129,6 +1129,10 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
     //...
 }
 
+whenTrue(isMemberOf(user: 'my-user', team: ['my-team', 'another-team'])) {
+    //...
+}
+
 // using another organisation
 whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
     //...
@@ -1137,7 +1141,7 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
 ```
 
 * user: the GitHub user. Mandatory
-* team: the GitHub teamd. Mandatory
+* team: the GitHub team or list of GitHub teams. Mandatory
 * org: the GitHub organisation. Optional. Default: 'elastic'
 
 ## isPR

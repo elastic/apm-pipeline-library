@@ -5,6 +5,10 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
     //...
 }
 
+whenTrue(isMemberOf(user: 'my-user', team: ['my-team', 'another-team'])) {
+    //...
+}
+
 // using another organisation
 whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
     //...
@@ -13,5 +17,5 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
 ```
 
 * user: the GitHub user. Mandatory
-* team: the GitHub teamd. Mandatory
+* team: the GitHub team or list of GitHub teams. Mandatory
 * org: the GitHub organisation. Optional. Default: 'elastic'
