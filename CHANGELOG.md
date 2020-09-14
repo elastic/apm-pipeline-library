@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.137 (14/09/2020)
+
+#### 🚀 Enhancements
+
+-  Support multiple teams validation [#721](https://github.com/elastic/apm-pipeline-library/pull/721)
+
+#### 🐛 Bug Fixes
+
+-  Fix isMemberOf data structure [#720](https://github.com/elastic/apm-pipeline-library/pull/720)
+
 ## v1.1.136 (14/09/2020)
 
 #### 🚀 Enhancements
