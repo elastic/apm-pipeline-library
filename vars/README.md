@@ -1060,12 +1060,14 @@ def branchIndexTrigger = isBranchIndexTrigger()
 
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
-it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
+it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
 ```
 def commentTrigger = isCommentTrigger()
 ```
+
+It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
 
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
