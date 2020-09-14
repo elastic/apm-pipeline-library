@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.136 (14/09/2020)
+
+#### 🚀 Enhancements
+
+-  2.0 pipeline steps for beats [#689](https://github.com/elastic/apm-pipeline-library/pull/689)
+-  Remove timeout analyser and rebuild [#708](https://github.com/elastic/apm-pipeline-library/pull/708)
+
+#### ⚙️ CI
+
+-  Move to fe/be config for apm-proxy [#718](https://github.com/elastic/apm-pipeline-library/pull/718)
+-  Wrap checkout of spoa in dir [#717](https://github.com/elastic/apm-pipeline-library/pull/717)
+-  chore: automate pickes [#714](https://github.com/elastic/apm-pipeline-library/pull/714)
+-  New stage for apm-proxy [#712](https://github.com/elastic/apm-pipeline-library/pull/712)
+
 ## v1.1.135 (04/09/2020)
 
 #### 🚀 Enhancements
