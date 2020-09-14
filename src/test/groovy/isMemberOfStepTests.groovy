@@ -58,7 +58,7 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_active_membership() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{ "message": {"state":"active","role":"maintainer","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"} }') })
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{"state":"active","role":"maintainer","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"}') })
     def ret = script.call(user: 'foo', team: 'apm-ui')
     printCallStack()
     assertTrue(ret)
@@ -67,7 +67,7 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pending_membership() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{ "message": {"state":"pending","role":"member","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"} }') })
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{"state":"pending","role":"member","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"}') })
     def ret = script.call(user: 'foo', team: 'apm-ui')
     printCallStack()
     assertFalse(ret)
