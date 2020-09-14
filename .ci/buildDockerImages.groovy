@@ -54,8 +54,10 @@ pipeline {
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
+    booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -334,6 +336,34 @@ pipeline {
           folder: "apps/automation/jenkins-toolbox")
       }
     }
+    stage('Build APM Proxy'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.apm_proxy}
+      }
+      steps{
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          prepareWith: {dir("spoa-mirror"){git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/haproxytech/spoa-mirror.git"}},
+          tag: "apm-proxy",
+          version: "latest",
+          folder: "tools/apm_proxy/frontend",
+          push: true
+        )
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: "apm-proxy-be",
+          version: "latest",
+          folder: "tools/apm_proxy/backend",
+          push: true
+        )
+      }
+    }
     stage('Build test-plans'){
       options {
         skipDefaultCheckout()
@@ -352,6 +382,26 @@ pipeline {
           pushCommand: 'make push',
           push: true,
           folder: "apps/test-plans")
+      }
+    }
+    stage('Build pickles'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.picklesdoc}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-robots.git',
+          tag: 'picklesdoc',
+          buildCommand: 'make build',
+          pushCommand: 'make push',
+          push: true,
+          folder: "apps/pickles")
       }
     }
     stage('Build Heartbeat'){

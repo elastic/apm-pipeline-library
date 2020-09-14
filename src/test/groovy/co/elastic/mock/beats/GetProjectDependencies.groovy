@@ -15,22 +15,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
+package co.elastic.mock.beats
+
 /**
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
-
-  setEnvVar('MY_ENV_VAR', 'value')
-
-  it replaces the following code
-
-  script {
-    env.MY_ENV_VAR = 'value')
-  }
-*/
-
-def call(String name, String value){
-  env[name] = value
-}
-
-def call(String name, Boolean value){
-  env[name] = Boolean.toString(value)
+ * Mock class for the Beats 2.0 beatsWhen step
+ */
+class GetProjectDependencies extends co.elastic.beats.BeatsFunction {
+    public GetProjectDependencies(Map args = [:]){
+        super(args)
+    }
+    public run(Map args = [:]){
+        return [ '^projectA/.*', '^projectB' ]
+    }
 }

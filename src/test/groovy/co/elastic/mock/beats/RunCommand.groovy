@@ -15,22 +15,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic
+package co.elastic.mock.beats
 
-import jenkins.model.CauseOfInterruption
-
-public final class TimeoutIssuesCause extends CauseOfInterruption {
-
-  private final String job
-  private final int buildId
-
-  public TimeoutIssuesCause(String job, int buildId) {
-    this.job = job
-    this.buildId = buildId
-  }
-
-  @Override
-  public String getShortDescription() {
-    return "${job}#${buildId} got a timeout checkout issue"
-  }
+/**
+ * Mock class for the Beats 2.0 beatsStages step
+ */
+class RunCommand extends co.elastic.beats.BeatsFunction {
+    public RunCommand(Map args = [:]){
+        super(args)
+    }
+    public run(Map args = [:]) {
+        steps.echo "-------------${args.label} ---- ${args.context}"
+    }
 }

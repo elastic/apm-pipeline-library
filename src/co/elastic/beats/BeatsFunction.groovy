@@ -15,22 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
+package co.elastic.beats
+
 /**
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
-
-  setEnvVar('MY_ENV_VAR', 'value')
-
-  it replaces the following code
-
-  script {
-    env.MY_ENV_VAR = 'value')
-  }
+  Base class to implement specific functions for the beats 2.0 pipeline.
 */
+class BeatsFunction {
+  /** object to access to pipeline steps */
+  public steps
 
-def call(String name, String value){
-  env[name] = value
-}
-
-def call(String name, Boolean value){
-  env[name] = Boolean.toString(value)
+  public BeatsFunction(Map args){
+    this.steps = args.steps
+  }
+  
+  /**
+    This method should be overwritten by the target pipeline.
+  */
+  protected run(Map args){ }
 }

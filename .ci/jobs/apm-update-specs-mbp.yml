@@ -1,11 +1,11 @@
 ---
 - job:
-    name: apm-ui/apm-ui-e2e-tests-mbp
-    display-name: APM UI e2e tests Pipeline
-    description: Jenkins pipeline to run the end2end tests for the APM UI
+    name: apm-shared/apm-update-specs-mbp
+    display-name: APM Update Specs
+    description: Send PRs to the subscribed APM Agents if the spec files (Gherkin and JSON) are modified, triggered for the master branch for the elastic/apm project
+    view: APM-CI
     project-type: multibranch
-    script-path: .ci/end2end.groovy
-    disabled: false
+    script-path: .ci/Jenkinsfile
     scm:
       - github:
           branch-discovery: no-pr
@@ -13,15 +13,14 @@
           discover-pr-forks-trust: permission
           discover-pr-origin: merge-current
           discover-tags: false
-          head-filter-regex: '(master|PR-.*)'
-          repo: kibana
+          notification-context: 'apm-ci'
+          repo: apm
           repo-owner: elastic
           credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
-          reference-repo: /var/lib/jenkins/.git-references/kibana.git
           ssh-checkout:
             credentials: f6c7695a-671e-4f4f-a331-acdce44ff9ba
           build-strategies:
-            - regular-branches: false
+            - regular-branches: true
             - change-request:
                 ignore-target-only-changes: true
           clean:
@@ -29,7 +28,7 @@
             before: true
           prune: true
           shallow-clone: true
-          depth: 3
+          depth: 4
           do-not-fetch-tags: true
           submodule:
             disable: false
@@ -39,4 +38,5 @@
           timeout: '15'
           use-author: true
           wipe-workspace: 'True'
-          disable-pr-notifications: true
+    triggers:
+      - timed: 'H H(4-5) * * 1,5'

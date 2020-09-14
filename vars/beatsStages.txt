@@ -1,0 +1,22 @@
+<p>
+    Given the YAML definition then it creates all the stages
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
+        <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+    </ul>
+</p>
+
+<pre>
+    script {
+        def mapParallelTasks = [:]
+        beatsStages(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml'), function: this.&myFunction)
+        parallel(mapParallelTasks)
+    }
+
+    def myFunction(Map args = [:]) {
+        ...
+    }
+</pre>
