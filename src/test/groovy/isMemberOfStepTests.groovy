@@ -76,13 +76,7 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_membership() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      return net.sf.json.JSONSerializer.toJSON( """{
-        "Code": "404",
-        "message": "Not Found",
-        "documentation_url": "https://developer.github.com/v3"
-      }""")
-    })
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { return notFound() })
     def ret = script.call(user: 'foo', team: 'bar')
     printCallStack()
     assertFalse(ret)
@@ -98,5 +92,39 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_active_membership_with_a_list() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { m ->
+      if (m.url.contains('apm-ui')) {
+        return net.sf.json.JSONSerializer.toJSON('{"state":"active","role":"maintainer","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"}') 
+      } else {
+        return notFound()
+      }
+    })
+    def ret = script.call(user: 'foo', team: ['bar', 'apm-ui'])
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_active_membership_with_a_list_of_no_members() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], { m ->
+      return notFound()
+    })
+    def ret = script.call(user: 'foo', team: ['bar', 'foo'])
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  def notFound() {
+    return net.sf.json.JSONSerializer.toJSON( """{
+        "Code": "404",
+        "message": "Not Found",
+        "documentation_url": "https://developer.github.com/v3"
+      }""")
   }
 }
