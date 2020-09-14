@@ -39,6 +39,56 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+## beatsStages
+<p>
+    Given the YAML definition then it creates all the stages
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
+        <li>function: the function to be called. Mandatory</li>
+    </ul>
+</p>
+
+<pre>
+    script {
+        def mapParallelTasks = [:]
+        beatsStages(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml'), function: this.&myFunction)
+        parallel(mapParallelTasks)
+    }
+
+    def myFunction(Map args = [:]) {
+        ...
+    }
+</pre>
+
+## beatsWhen
+<p>
+    Given the YAML definition and the changeset global macros
+    then it verifies if the project or stage should be enabled.
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with the when section. Mandatory</li>
+        <li>changeset: the global changeset. Optional</li>
+        <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
+        <li>changesetFunction: the function to be called. Optional</li>
+    </ul>
+</p>
+
+<pre>
+    whenTrue(beatsWhen(project: 'auditbeat', changesetFunction: this.&getProjectDependencies
+                       content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+        ...
+    }
+
+    def getProjectDependencies(Map args = [:]) {
+        ...
+    }
+</pre>
+
 ## build
 Override the `build` step to highlight in BO the URL to the downstream job.
 
