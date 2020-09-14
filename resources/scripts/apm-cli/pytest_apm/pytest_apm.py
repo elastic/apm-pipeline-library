@@ -1,3 +1,20 @@
+# Licensed to Elasticsearch B.V. under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http:www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
 import pytest
 import logging
 import json
@@ -18,6 +35,7 @@ apm_custom_context = None
 apm_parent_id = None
 apm_outcome = None
 apm_session_name = None
+apm_labels = None
 
 
 def pytest_addoption(parser):
@@ -40,6 +58,10 @@ def pytest_addoption(parser):
     group.addoption('--apm-custom-context',
                     dest='apm_custom_context',
                     help='Custom context for the current transaction in a JSON string.')
+    group.addoption('--apm-labels',
+                    dest='apm_labels',
+                    default='{}',
+                    help='Labels to add to every transaction and span.')
     group.addoption('--apm-session-name',
                     dest='apm_session_name',
                     default='Session',
@@ -65,10 +87,11 @@ def end_transaction(transaction_name, transaction_result='success'):
     return transaction
 
 
-def begin_span(span_name, span_type):
+def begin_span(span_name, span_type, labels=None):
     with elasticapm.capture_span(span_name,
                                  span_type=span_type,
-                                 span_action='begin') as span:
+                                 span_action='begin',
+                                 labels=labels) as span:
         LOGGER.debug('The {}/{} span begins.'.format(span_name, span_type))
         LOGGER.debug('The {}/{} span ends.'.format(span_name, span_type))
         return span
@@ -88,7 +111,7 @@ def get_parent_id():
 
 def pytest_sessionstart(session):
     global apm_cli, apm_server_url, apm_token, apm_api_key, apm_service_name, apm_custom_context, \
-        apm_parent_id, apm_session_name
+        apm_parent_id, apm_session_name, apm_labels
     LOGGER.setLevel(logging.DEBUG)
     config = session.config
     apm_server_url = config.getoption("apm_server_url", default=None)
@@ -97,14 +120,16 @@ def pytest_sessionstart(session):
     apm_service_name = config.getoption("apm_service_name", default=None)
     apm_custom_context = config.getoption("apm_custom_context", default=None)
     apm_session_name = config.getoption("apm_session_name")
+    apm_labels = json.loads(config.getoption("apm_labels"))
     apm_cli = init_apm_client()
     if apm_cli:
         LOGGER.debug("Session transaction starts.")
         elasticapm.instrument()
         begin_transaction(apm_session_name)
+        elasticapm.label(**apm_labels)
         set_context(apm_custom_context)
         if apm_mode == 'dt':
-            with elasticapm.capture_span('Start session'):
+            with elasticapm.capture_span('Start session', labels=apm_labels):
                 apm_parent_id = get_parent_id()
             # FIXME it is need to end the transaction to allow child transaction,
             #  if we do not end it the session transaction is not show in the UI.
@@ -172,8 +197,9 @@ def pytest_sessionfinish(session, exitstatus):
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
+    global apm_cli, apm_labels
     if apm_cli:
-        with elasticapm.capture_span('Running {}'.format(item.name)):
+        with elasticapm.capture_span('Running {}'.format(item.name), labels=apm_labels):
             LOGGER.debug('Test {} begins'.format(item.name))
             yield
             LOGGER.debug('Test {} ends'.format(item.name))
