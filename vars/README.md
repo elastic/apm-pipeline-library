@@ -1071,6 +1071,25 @@ Whether the given tools is installed and available.
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
 
+## isMemberOf
+Check if the given GitHub user is member of the given GitHub team.
+
+```
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
+    //...
+}
+
+// using another organisation
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
+    //...
+}
+
+```
+
+* user: the GitHub user. Mandatory
+* team: the GitHub teamd. Mandatory
+* org: the GitHub organisation. Optional. Default: 'elastic'
+
 ## isPR
 Whether the build is based on a Pull Request or no
 
