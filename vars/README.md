@@ -1551,10 +1551,14 @@ def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
 
 ## setEnvVar
 
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+It sets an environment variable with either a string or boolean value as a parameter, it simplifies the declarative syntax.
 
 ```
+  // Support string value
   setEnvVar('MY_ENV_VAR', 'value')
+
+  // Support boolean value
+  setEnvVar('MY_ENV_VAR', true)
 ```
 
   it replaces the following code

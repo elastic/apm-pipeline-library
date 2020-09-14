@@ -36,4 +36,13 @@ class SetEnvVarStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_boolean() throws Exception {
+    def script = loadScript(scriptName)
+    script.call('MY_VAR', true)
+    assertTrue(env['MY_VAR'] == 'true')
+    printCallStack()
+    assertJobStatusSuccess()
+  }
 }
