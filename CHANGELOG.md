@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.138 (15/09/2020)
+
+#### 🐛 Bug Fixes
+
+-  [test-infra] fix pytests with multimodule [#722](https://github.com/elastic/apm-pipeline-library/pull/722)
+
+#### ⚙️ CI
+
+- [**on-hold**] refactor: use env variables from the plugin [#426](https://github.com/elastic/apm-pipeline-library/pull/426)
+
 ## v1.1.137 (14/09/2020)
 
 #### 🚀 Enhancements
