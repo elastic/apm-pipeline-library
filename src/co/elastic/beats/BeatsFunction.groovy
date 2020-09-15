@@ -15,22 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic
+package co.elastic.beats
 
-import jenkins.model.CauseOfInterruption
+/**
+  Base class to implement specific functions for the beats 2.0 pipeline.
+*/
+class BeatsFunction {
+  /** object to access to pipeline steps */
+  public steps
 
-public final class TimeoutIssuesCause extends CauseOfInterruption {
-
-  private final String job
-  private final int buildId
-
-  public TimeoutIssuesCause(String job, int buildId) {
-    this.job = job
-    this.buildId = buildId
+  public BeatsFunction(Map args){
+    this.steps = args.steps
   }
-
-  @Override
-  public String getShortDescription() {
-    return "${job}#${buildId} got a timeout checkout issue"
-  }
+  
+  /**
+    This method should be overwritten by the target pipeline.
+  */
+  protected run(Map args){ }
 }

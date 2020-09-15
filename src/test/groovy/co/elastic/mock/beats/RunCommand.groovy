@@ -15,31 +15,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic.mock
-
-import hudson.model.Cause
+package co.elastic.mock.beats
 
 /**
- * Mock IssueCommentCause class. It's required to keep the IssueCommentCause class name!.
+ * Mock class for the Beats 2.0 beatsStages step
  */
-class IssueCommentCause extends Cause {
-  private final String userLogin
-  private final String comment
-
-  public IssueCommentCause(final String userLogin, final String comment) {
-    this.userLogin = userLogin
-    this.comment = comment
-  }
-
-  public String getUserLogin() {
-    return userLogin
-  }
-
-  public String getComment() {
-    return comment
-  }
-
-  public String getShortDescription(){
-    return String.format("%s commented: %s", userLogin, comment);
-  }
+class RunCommand extends co.elastic.beats.BeatsFunction {
+    public RunCommand(Map args = [:]){
+        super(args)
+    }
+    public run(Map args = [:]) {
+        steps.echo "-------------${args.label} ---- ${args.context}"
+    }
 }

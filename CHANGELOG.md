@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.1.137 (14/09/2020)
+
+#### 🚀 Enhancements
+
+-  Support multiple teams validation [#721](https://github.com/elastic/apm-pipeline-library/pull/721)
+
+#### 🐛 Bug Fixes
+
+-  Fix isMemberOf data structure [#720](https://github.com/elastic/apm-pipeline-library/pull/720)
+
+## v1.1.136 (14/09/2020)
+
+#### 🚀 Enhancements
+
+-  2.0 pipeline steps for beats [#689](https://github.com/elastic/apm-pipeline-library/pull/689)
+-  Remove timeout analyser and rebuild [#708](https://github.com/elastic/apm-pipeline-library/pull/708)
+
+#### ⚙️ CI
+
+-  Move to fe/be config for apm-proxy [#718](https://github.com/elastic/apm-pipeline-library/pull/718)
+-  Wrap checkout of spoa in dir [#717](https://github.com/elastic/apm-pipeline-library/pull/717)
+-  chore: automate pickes [#714](https://github.com/elastic/apm-pipeline-library/pull/714)
+-  New stage for apm-proxy [#712](https://github.com/elastic/apm-pipeline-library/pull/712)
+
+## v1.1.135 (04/09/2020)
+
+#### 🚀 Enhancements
+
+-  isMemberOf step to query GitHub user/teams [#711](https://github.com/elastic/apm-pipeline-library/pull/711)
+
+#### 🙈 No user affected
+
+-  [test-infra] run docker if docker-machine installed [#710](https://github.com/elastic/apm-pipeline-library/pull/710)
+
 ## v1.1.134 (18/08/2020)
 
 #### ⚙️ CI

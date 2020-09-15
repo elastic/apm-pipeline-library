@@ -21,6 +21,8 @@ import com.cloudbees.groovy.cps.NonCPS
 
   whenTrue(isMemberOf(user: 'my-user', team: 'my-team'))
 
+  whenTrue(isMemberOf(user: 'my-user', team: ['my-team', 'another-team']))
+
   NOTE: https://developer.github.com/v3/teams/members/#get-team-membership-for-a-user
 */
 
@@ -28,14 +30,30 @@ def call(Map args = [:]) {
   def user = args.containsKey('user') ? args.user : error('isMemberOf: user param is required')
   def team = args.containsKey('team') ? args.team : error('isMemberOf: team param is required')
   def org = args.containsKey('org') ? args.org : 'elastic'
+  def token = getGithubToken()
+  if (team in List) {
+    if (team.find { validateTeam(org: org, team: it, user: user, token: token) }) {
+      return true
+    }
+  } else {
+    return validateTeam(org: org, team: team, user: user, token: token)
+  }
+  return false
+}
 
+def validateTeam(Map args = [:]) {
+  def user = args.user
+  def team = args.team
+  def org = args.org
+  def token = args.token
   try {
-    def token = getGithubToken()
-    def url = "https://api.github.com/orgs/${org}/teams/${team}/memberships/${user}"
-    def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true, url: url)
-    return membershipResponse.message?.state?.equals('active')
+    def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true, url: "https://api.github.com/orgs/${org}/teams/${team}/memberships/${user}")
+    if (membershipResponse?.state) {
+      return membershipResponse?.state?.equals('active')
+    } else {
+      return false
+    }
   } catch(err) {
     return false
   }
-  return false
 }

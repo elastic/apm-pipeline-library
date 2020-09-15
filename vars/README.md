@@ -39,6 +39,56 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+## beatsStages
+<p>
+    Given the YAML definition then it creates all the stages
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
+        <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+    </ul>
+</p>
+
+<pre>
+    script {
+        def mapParallelTasks = [:]
+        beatsStages(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml'), function: this.&myFunction)
+        parallel(mapParallelTasks)
+    }
+
+    def myFunction(Map args = [:]) {
+        ...
+    }
+</pre>
+
+## beatsWhen
+<p>
+    Given the YAML definition and the changeset global macros
+    then it verifies if the project or stage should be enabled.
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with the when section. Mandatory</li>
+        <li>changeset: the global changeset. Optional</li>
+        <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
+        <li>changesetFunction: the function to be called. Should implement the class BeatsFunction. Optional</li>
+    </ul>
+</p>
+
+<pre>
+    whenTrue(beatsWhen(project: 'auditbeat', changesetFunction: this.&getProjectDependencies
+                       content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+        ...
+    }
+
+    def getProjectDependencies(Map args = [:]) {
+        ...
+    }
+</pre>
+
 ## build
 Override the `build` step to highlight in BO the URL to the downstream job.
 
@@ -1010,12 +1060,14 @@ def branchIndexTrigger = isBranchIndexTrigger()
 
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
-it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
+it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
 ```
 def commentTrigger = isCommentTrigger()
 ```
+
+It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
 
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
@@ -1079,6 +1131,10 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
     //...
 }
 
+whenTrue(isMemberOf(user: 'my-user', team: ['my-team', 'another-team'])) {
+    //...
+}
+
 // using another organisation
 whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
     //...
@@ -1087,7 +1143,7 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
 ```
 
 * user: the GitHub user. Mandatory
-* team: the GitHub teamd. Mandatory
+* team: the GitHub team or list of GitHub teams. Mandatory
 * org: the GitHub organisation. Optional. Default: 'elastic'
 
 ## isPR
@@ -1357,8 +1413,6 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
-* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
-* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 
 ## opbeansPipeline
@@ -1443,16 +1497,6 @@ def i = randomNumber()
 
 ```
 def i = randomNumber(min: 1, max: 99)
-```
-
-## rebuildPipeline
-Rebuild the pipeline if supported, for such, it does use the built-in env variable
-`JOB_NAME`.
-
-It does require the parameters for the pipeline to be exposed as environment variables.
-
-```
-rebuildPipeline()
 ```
 
 ## retryWithSleep
@@ -1551,10 +1595,14 @@ def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
 
 ## setEnvVar
 
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+It sets an environment variable with either a string or boolean value as a parameter, it simplifies the declarative syntax.
 
 ```
+  // Support string value
   setEnvVar('MY_ENV_VAR', 'value')
+
+  // Support boolean value
+  setEnvVar('MY_ENV_VAR', true)
 ```
 
   it replaces the following code

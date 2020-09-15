@@ -346,6 +346,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('beatsWhen', [Map.class], null)
     helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
     helper.registerAllowedMethod('cmd', [Map.class], { m ->
       def script = loadScript('vars/cmd.groovy')
@@ -462,7 +463,6 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod('rebuildPipeline', [], { true })
     helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/retryWithSleep.groovy')
       return script.call(m, c)
