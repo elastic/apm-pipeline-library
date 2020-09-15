@@ -5,6 +5,9 @@ metadata:
     some-label: some-label-value
   spec:
     containers:
+    - name: 'jnlp'
+      image: 'jenkinsci/jnlp-slave:latest'
+      workingDir: '/home/jenkins'
     - name: java
       image: adoptopenjdk:8-openj9-bionic
       command:

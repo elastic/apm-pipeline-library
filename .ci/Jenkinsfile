@@ -55,6 +55,7 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
+        sh 'env | sort'
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
