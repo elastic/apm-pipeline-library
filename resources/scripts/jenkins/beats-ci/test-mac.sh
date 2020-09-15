@@ -30,7 +30,7 @@ set -x
 
 ## Run test-infra and trap error to notify when required
 { py.test -v \
-    test-infra/beats-ci/test_installed_tools.py \
+    test-infra/beats-ci/test_beats_installed_tools.py \
     --junit-xml=target/junit-test-infra.xml; \
   err="$?"; } || true
 
