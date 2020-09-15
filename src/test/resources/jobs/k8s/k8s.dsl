@@ -1,4 +1,4 @@
-NAME = 'it/k8s'
+NAME = 'it/k8s/k8s.dsl'
 DSL = '''pipeline {
   agent {
     kubernetes {
