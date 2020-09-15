@@ -32,4 +32,4 @@ exec { venv\Scripts\activate.bat }
 exec { pip install testinfra }
 
 # Run the test-infra
-exec { py.test -v test-infra\beats-ci\test_windows.py --junit-xml=target\junit-test-infra.xml }
+exec { py.test -v test-infra\beats-ci\test_beats_windows.py --junit-xml=target\junit-test-infra.xml }
