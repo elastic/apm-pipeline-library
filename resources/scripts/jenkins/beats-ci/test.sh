@@ -32,14 +32,14 @@ PACKER=${1:-false}
 
 ## Run test-infra and trap error to notify when required
 { py.test -v \
-    test-infra/beats-ci/test_installed_tools.py \
+    test-infra/beats-ci/test_beats_installed_tools.py \
     --junit-xml=target/junit-test-infra.xml; \
   er="$?"; } || true
 err="${er}"
 
 if [ "${PACKER}" = "true" ] ; then
   { py.test -v \
-      test-infra/beats-ci/test_packer.py \
+      test-infra/beats-ci/test_beats_packer.py \
       --junit-xml=target/junit-test-packer.xml; \
     er="$?"; } || true
   if [ $er -gt 0 ] ; then

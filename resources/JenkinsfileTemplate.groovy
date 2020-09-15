@@ -108,7 +108,7 @@ pipeline {
         // the contributor is member from the elastic organisation, it tracks the status
         // with a GitHub check when using a Multibranch Pipeline!
         // Git reference repos are a good practise to speed up the whole execution time.
-        gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+        gitCheckout(basedir: "${BASE_DIR}",
           repo: "git@github.com:elastic/${env.REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}",
           githubNotifyFirstTimeContributor: false,
