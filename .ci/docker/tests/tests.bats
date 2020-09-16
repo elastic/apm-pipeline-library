@@ -13,7 +13,8 @@ CONTAINER="${DOCKERFILE//\//-}"
 	if [ ! -e ${DOCKERFILE} ] ; then
 		DOCKERFILE="${DOCKERFILE//-//}"
 	fi
-	run docker build --rm -t ${IMAGE} ${DOCKERFILE}
+	cd ../..
+	run docker build --rm -t ${IMAGE} -f ${BATS_CWD}/${DOCKERFILE}/Dockerfile .
 	assert_success
 }
 

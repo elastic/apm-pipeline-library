@@ -55,18 +55,37 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
-        sh 'env | sort'
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          script {
-            dir("${BASE_DIR}"){
-              env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
-            }
+          dir("${BASE_DIR}"){
+            setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false))
+            setEnvVar('IS_DOCKER_TOOLS', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: false))
+            setEnvVar('IS_DOCKER_TOOLS_ONLY', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: true))
           }
         }
+      }
+    }
+    stage('Docker image') {
+      when {
+        beforeAgent true
+        expression { return env.IS_DOCKER_TOOLS == "true" }
+      }
+      steps {
+        // TBD
+        sh(label: 'Test Docker container', script: 'make -C .ci/docker test-build')
+        retry(3){
+          sh(label: 'Push Docker images', script: "VERSION=${GIT_BASE_COMMIT} make -C .ci/docker push-build-${VERSION}")
+        }
+        dir('pr') {
+          // git ''
+          // edit yaml file
+          // git add commit
+          // githubCreatePullRequest(title: 'Validate docker changes in PR-XYZ', labels: 'automation')
+        }
+        error('IMPORTANT: changes related to dockerfiles should be validated, please look at the just generated PR with those changes.')
       }
     }
     stage('Check Licenses') {

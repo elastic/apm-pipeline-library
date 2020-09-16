@@ -1,0 +1,33 @@
+.idea
+*.iml
+release.properties
+target
+jenkins-cli.jar
+
+
+# For the BATS testing
+bats-core/
+target/
+.ci/docker/tests/test_helper/
+
+# For the vagrant
+.vagrant
+
+mail*.html
+metadata.txt
+
+out.html
+.vscode
+
+test-infra/__pycache__
+test-infra/.pytest_cache
+venv
+
+agent.jar
+local.pid
+local.log
+.classpath
+.project
+.settings/
+
+test-infra/apm-ci/__pycache__/
