@@ -16,10 +16,6 @@ multibranchPipelineJob(NAME) {
           repositoryUrl('https://github.com/elastic/apm-pipeline-library')
           configuredByUrl(false)
           traits {
-            gitHubTagDiscovery()
-            gitHubBranchDiscovery {
-              strategyId(1)
-            }
             gitHubPullRequestDiscovery {
               strategyId(1)
             }
