@@ -36,4 +36,10 @@ multibranchPipelineJob(NAME) {
       numToKeep(20)
     }
   }
+  configure {
+    it / 'sources' / 'data' / 'jenkins.branch.BranchSource' / 'source' / traits / 'org.jenkinsci.plugins.github__branch__source.ForkPullRequestDiscoveryTrait' {
+      strategyId(1)
+      trust(class: "org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait\$TrustPermission")
+    }
+  }
 }
