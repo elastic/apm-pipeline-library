@@ -38,6 +38,10 @@ jenkins:
       serverUrl: ${k8s_cluster_server_url}
       skipTlsVerify: true
       webSocket: true
+      templates:
+        - label: "jnlp"
+          name: "jnlp"
+          yamlMergeStrategy: "override"
 
 credentials:
   system:
@@ -123,9 +127,9 @@ unclassified:
     globalConfigName: username
     globalConfigEmail: username@example.com
 jobs:
+  - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/beats.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/getBuildInfoJsonFiles.dsl"
-  - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/k8s.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/beats/beatsStages.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/beats/beatsWhen.dsl"

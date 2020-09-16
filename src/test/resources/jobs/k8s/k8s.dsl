@@ -1,4 +1,4 @@
-NAME = 'it/k8s/k8s.dsl'
+NAME = 'it/k8s/k8s'
 DSL = '''pipeline {
   agent {
     kubernetes {
@@ -23,6 +23,9 @@ spec:
     stage('Run maven') {
       steps {
         sh 'mvn -version'
+        container('jnlp') {
+          sh 'git --version'
+        }
       }
     }
   }
