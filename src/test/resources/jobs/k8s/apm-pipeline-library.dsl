@@ -21,7 +21,7 @@ multibranchPipelineJob(NAME) {
             }
             headWildcardFilter {
               includes('*705')
-              excludes('*')
+              excludes('')
             }
           }
         }
