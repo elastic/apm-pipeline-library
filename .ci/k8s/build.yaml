@@ -6,7 +6,7 @@ metadata:
   spec:
     containers:
     - name: java
-      image: adoptopenjdk:8-openj9-bionic
+      image: docker.pkg.github.com/v1v/observability-ci/apm-pipeline-library1:latest
       command:
       - cat
       tty: true
