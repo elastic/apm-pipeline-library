@@ -14,6 +14,7 @@ services:
       JAVA_OPTS: >-
         -Djenkins.install.runSetupWizard=false
         -Dhudson.model.UsageStatistics.disabled=true
+        -Djava.util.logging.config.file=/var/jenkins_home/loggers/logging.properties
     volumes:
       - type: volume
         source: jenkins_home
@@ -21,6 +22,10 @@ services:
       - type: bind
         source: ./configs/jenkins.yaml
         target: /var/jenkins_home/casc_configs/jenkins.yaml
+        read_only: true
+      - type: bind
+        source: ./configs/logging.properties
+        target: /var/jenkins_home/loggers/logging.properties
         read_only: true
       - type: bind
         source: ../.

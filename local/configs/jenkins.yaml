@@ -60,6 +60,7 @@ credentials:
               projectId: ${k8s_cluster_project_id}
               serviceAccountConfig:
                 json:
+                  filename: "elastic-observability-bc2b9fd265a4.json"
                   secretJsonKey: ${k8s_cluster_service_account_secret}
           - string:
               description: GitHub user @${github_username} Personal Access Token
