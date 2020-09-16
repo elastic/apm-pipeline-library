@@ -3,7 +3,7 @@ kind: Pod
 spec:
   containers:
   - name: java
-    image: docker.pkg.github.com/v1v/observability-ci/apm-pipeline-library1:latest
+    image: v1v1v/observability-ci:apm-pipeline-library-latest
     command:
     - sleep
     args:
