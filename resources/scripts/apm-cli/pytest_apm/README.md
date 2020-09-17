@@ -34,7 +34,9 @@ pytest_apm is configured by adding some parameters to the pytest command line he
 * --apm-custom-context: Custom context for the current transaction in a JSON string.
 * --apm-labels: Labels to add to every transaction and span, it is a JSON string.
 * --apm-session-name: Name for the Main transaction reported to APM.(Default Session)
-
+* --apm-transaction-mode: Change the way to capture transactiona and spans.
+  By default the session is a transaction and the tests are spans.
+  If is set, every test is a transaction.
 
 ```
 pytest --apm-server-url https://apm.example.com:8200 --apm-token ASWDCcCRFfr --apm-service-name pytest_apm --apm-labels '{"var01": "value01","var02": "value02"}' --apm-session-name='My_Test_cases'

@@ -14,11 +14,15 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import traceback
 
+import _pytest._code
+import _pytest.skipping
 import pytest
 import logging
 import json
 import elasticapm
+import sys
 
 LOGGER = logging.getLogger("pytest_apm")
 
@@ -66,7 +70,13 @@ def pytest_addoption(parser):
                     dest='apm_session_name',
                     default='Session',
                     help='Name for the Main transaction reported to APM.')
-
+    group.addoption('--apm-transaction-mode',
+                    dest='apm_transaction_mode',
+                    action='store_true',
+                    default=False,
+                    help='Change the way to capture transactiona and spans. '
+                         'By default the session is a transaction and the tests are spans.'
+                         'If is set, every test is a transaction.')
 
 def begin_transaction(transaction_name):
     global apm_cli, apm_parent_id
@@ -199,7 +209,41 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_runtest_call(item):
     global apm_cli, apm_labels
     if apm_cli:
-        with elasticapm.capture_span('Running {}'.format(item.name), labels=apm_labels):
+        with elasticapm.capture_span('Running {}'.format(item.name), labels=apm_labels) as span:
             LOGGER.debug('Test {} begins'.format(item.name))
             yield
             LOGGER.debug('Test {} ends'.format(item.name))
+            if hasattr(sys, "last_value") and hasattr(sys, "last_traceback") and hasattr(sys, "last_type"):
+                longrepr = ''
+                outcome = ''
+                if not isinstance(sys.last_value, _pytest._code.ExceptionInfo):
+                    outcome = "failed"
+                    longrepr = sys.last_value
+                elif isinstance(sys.last_value, _pytest._code.skip.Exception):
+                    outcome = "skipped"
+                    r = sys.last_value._getreprcrash()
+                    longrepr = (str(r.path), r.lineno, r.message)
+                else:
+                    outcome = "failed"
+                    longrepr = item._repr_failure_py(
+                        sys.last_value, style=item.config.getoption("tbstyle", "auto")
+                    )
+                LOGGER.debug('outcome {}'.format(outcome))
+                LOGGER.debug('longrepr {}'.format(longrepr))
+                LOGGER.debug('last_value {}'.format(sys.last_value))
+                stack_trace = repr(traceback.format_exception(sys.last_type, sys.last_value, sys.last_traceback))
+                span.label(stack_trace="{}".format(stack_trace))
+                span.label(error="{}".format(sys.last_value.args[0]))
+                span.label(last_value="{}".format(sys.last_value))
+                span.label(last_type="{}".format(sys.last_type))
+
+                xfailed = item._store.get(_pytest.skipping.xfailed_key, None)
+                if xfailed:
+                    span.label(xfailed="{}".format(xfailed.reason))
+                # trick to generate a failure setFailure() do not work.
+                try:
+                    #if not item.config.option.runxfail:
+                    raise sys.last_value
+                except:
+                    #span.setFailure()
+                    apm_cli.capture_exception()

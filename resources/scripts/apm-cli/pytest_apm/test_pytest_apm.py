@@ -17,18 +17,46 @@
 
 import time
 import random
+import pytest
+
+def sleep_random_number():
+    time.sleep(random.randint(3, 10))
 
 def test_basic():
     """Basic."""
-    time.sleep(random.randint(3, 10))
+    sleep_random_number()
     pass
 
 def test_success():
     """Success."""
-    time.sleep(random.randint(3, 10))
+    sleep_random_number()
     assert True
 
 def test_failure():
     """Failure."""
-    time.sleep(random.randint(3, 10))
+    sleep_random_number()
+    assert 1 < 0
+
+def test_failure_code():
+    """Failure Code."""
+    sleep_random_number()
+    d = 1/0
+    assert True
+
+@pytest.mark.skip
+def test_skip():
+    """Skip."""
+    sleep_random_number()
+    assert True
+
+@pytest.mark.xfail
+def test_xfail():
+    """XFail."""
+    sleep_random_number()
+    assert False
+
+@pytest.mark.xfail(run=False)
+def test_xfail_no_run():
+    """XFail No Run."""
+    sleep_random_number()
     assert False
