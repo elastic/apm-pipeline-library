@@ -8,5 +8,5 @@ FROM adoptopenjdk:8-openj9-bionic
 COPY --from=dependencies /root/.m2 /root/.m2
 
 RUN apt-get update -qq -y \
-  && apt-get install -qq -y --no-install-recommends git \
+  && apt-get install -qq -y --no-install-recommends build-essential git \
   && rm -rf /var/lib/apt/lists/*
