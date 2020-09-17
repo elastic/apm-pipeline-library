@@ -77,8 +77,7 @@ pipeline {
     stage('Docker image') {
       when {
         beforeAgent true
-        //expression { return env.IS_DOCKER_TOOLS == "true" }
-        expression { return false }
+        expression { return env.IS_DOCKER_TOOLS == "TBD" }
       }
       steps {
         // TBD
