@@ -1,10 +1,17 @@
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    pod-type: apm-ci
 spec:
   containers:
   - name: java
     image: v1v1v/observability-ci:apm-pipeline-library-latest
     command:
-    - sleep
-    args:
-    - infinity
+    - cat
+    tty: true
+  - name: maven
+    image: maven:alpine
+    command:
+    - cat
+    tty: true

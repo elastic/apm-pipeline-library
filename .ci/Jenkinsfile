@@ -55,6 +55,12 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
+        container('maven') {
+          sh 'mvn --version'
+        }
+        container('java') {
+          sh 'java -version'
+        }
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
