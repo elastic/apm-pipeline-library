@@ -112,6 +112,7 @@ pipeline {
       }
     }
     stage('Check pre-commit') {
+      agent { label 'ubuntu && immutable' } // TODO: required docker CLI in the pod template
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
