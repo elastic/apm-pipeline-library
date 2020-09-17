@@ -26,6 +26,10 @@ spec:
         container('jnlp') {
           sh 'git --version'
         }
+        container('apm-pipeline-library') {
+          sh 'git --version'
+          sh 'java -version'
+        }
       }
     }
   }
