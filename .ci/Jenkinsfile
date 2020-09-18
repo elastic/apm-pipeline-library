@@ -28,7 +28,7 @@ pipeline {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL = 'DEBUG'
+    PIPELINE_LOG_LEVEL = 'INFO'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
@@ -55,32 +55,24 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
-        container('maven') {
-          sh 'mvn --version'
-        }
-        container('java') {
-          sh 'java -version'
-        }
         withGithubNotify(context: 'Checkout') {
+          debugCommand()
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false))
-            setEnvVar('IS_DOCKER_TOOLS', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: false))
-            setEnvVar('IS_DOCKER_TOOLS_ONLY', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: true))
+            setEnvVar('IS_DOCKER_CHANGES', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: false))
+            setEnvVar('IS_DOCKER_CHANGES_ONLY', isGitRegionMatch(patterns: [ '^.ci\\/docker\\/build\\/.*' ], shouldMatchAll: true))
           }
         }
       }
     }
     stage('Docker image') {
-      when {
-        beforeAgent true
-        expression { return env.IS_DOCKER_TOOLS == "TBD" }
-      }
+      when { expression { return env.IS_DOCKER_CHANGES == "true" } }
       steps {
-        // TBD
+        /**
         sh(label: 'Test Docker container', script: 'make -C .ci/docker test-build')
         retry(3){
           sh(label: 'Push Docker images', script: "VERSION=${GIT_BASE_COMMIT} make -C .ci/docker push-build-${VERSION}")
@@ -91,19 +83,17 @@ pipeline {
           // git add commit
           // githubCreatePullRequest(title: 'Validate docker changes in PR-XYZ', labels: 'automation')
         }
-        error('IMPORTANT: changes related to dockerfiles should be validated, please look at the just generated PR with those changes.')
+        whenFalse(env.IS_DOCKER_CHANGES_ONLY != "true") {
+          error('IMPORTANT: changes related to dockerfiles should be validated, please look at the just generated PR with those changes.')
+        }
+        */
+        echo 'TBD'
       }
     }
     stage('Check Licenses') {
+      agent { label 'ubuntu && immutable' } // TODO: required docker CLI in the pod template
       steps {
         withGithubNotify(context: 'Check Licenses') {
-          sh '''
-            ls -ltrah
-            pwd
-            env | sort
-            whoam
-            touch test.txt
-          '''
           dir("${BASE_DIR}"){
             catchError(
                 buildResult: 'SUCCESS',
@@ -118,6 +108,7 @@ pipeline {
     }
     stage('Check pre-commit') {
       agent { label 'ubuntu && immutable' } // TODO: required docker CLI in the pod template
+      when { expression { return env.IS_DOCKER_CHANGES_ONLY != "true" } }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
@@ -134,13 +125,7 @@ pipeline {
     stage('Test') {
       steps {
         withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          sh '''
-            ls -ltrah
-            pwd
-            env | sort
-            whoam
-            touch test.txt
-          '''
+          debugCommand()
           dir("${BASE_DIR}"){
             sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
           }
@@ -158,13 +143,7 @@ pipeline {
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
-          sh '''
-            ls -ltrah
-            pwd
-            env | sort
-            whoam
-            touch test.txt
-          '''
+          debugCommand()
           dir("${BASE_DIR}"){
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
@@ -200,6 +179,7 @@ pipeline {
       }
     }
     stage('Super-linter') {
+      agent { label 'ubuntu && immutable' } // TODO: required docker CLI in the pod template
       steps {
         withGithubNotify(context: 'Check super-linter', tab: 'tests') {
           deleteDir()
@@ -211,6 +191,7 @@ pipeline {
       }
     }
     stage('Release') {
+      agent { label 'ubuntu && immutable' } // TODO: required docker CLI in the pod template
       environment {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
@@ -243,7 +224,17 @@ pipeline {
   }
   post {
     cleanup {
+      debugCommand()
       notifyBuildResult(prComment: true)
     }
   }
+}
+
+def debugCommand() {
+  sh '''
+    ls -ltrah
+    pwd
+    env | sort
+    whoami || true
+  '''
 }
