@@ -97,8 +97,13 @@ pipeline {
     stage('Check Licenses') {
       steps {
         withGithubNotify(context: 'Check Licenses') {
-          deleteDir()
-          unstash 'source'
+          sh '''
+            ls -ltrah
+            pwd
+            env | sort
+            whoam
+            touch test.txt
+          '''
           dir("${BASE_DIR}"){
             catchError(
                 buildResult: 'SUCCESS',
@@ -129,8 +134,13 @@ pipeline {
     stage('Test') {
       steps {
         withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          deleteDir()
-          unstash 'source'
+          sh '''
+            ls -ltrah
+            pwd
+            env | sort
+            whoam
+            touch test.txt
+          '''
           dir("${BASE_DIR}"){
             sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
           }
@@ -148,6 +158,13 @@ pipeline {
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
+          sh '''
+            ls -ltrah
+            pwd
+            env | sort
+            whoam
+            touch test.txt
+          '''
           dir("${BASE_DIR}"){
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
