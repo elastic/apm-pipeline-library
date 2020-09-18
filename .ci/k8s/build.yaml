@@ -4,14 +4,30 @@ metadata:
   labels:
     pod-type: apm-ci
 spec:
+  volumes:
+    - name: docker-socket
+      emptyDir: {}
   containers:
   - name: java
     image: v1v1v/observability-ci:apm-pipeline-library-latest
     command:
     - cat
     tty: true
-  - name: maven
-    image: maven:alpine
+  - name: docker
+    image: docker:19.03.1
     command:
-    - cat
-    tty: true
+    - sleep
+    args:
+    - 99d
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run
+    - name: docker-binary
+      mountPath: /var/run
+  - name: docker-daemon
+    image: docker:19.03.1-dind
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run
