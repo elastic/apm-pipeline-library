@@ -4,6 +4,8 @@ metadata:
   labels:
     pod-type: apm-ci
 spec:
+  securityContext:
+    runAsUser: 1000
   volumes:
     - name: docker-socket
       emptyDir: {}
