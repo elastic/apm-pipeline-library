@@ -21,7 +21,6 @@ pipeline {
   agent {
     kubernetes {
       yamlFile '.ci/k8s/build.yaml'
-      defaultContainer 'java'
     }
   }
   environment {
@@ -126,12 +125,14 @@ pipeline {
     */
     stage('Test') {
       steps {
-        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          debugCommand()
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+        container('java') {
+          withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+            debugCommand()
+            deleteDir()
+            unstash 'source'
+            dir("${BASE_DIR}"){
+              sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            }
           }
         }
       }
@@ -146,18 +147,20 @@ pipeline {
     }
     stage('Check Pipelines') {
       steps {
-        withGithubNotify(context: 'Check Pipelines') {
-          deleteDir()
-          unstash 'source'
-          debugCommand()
-          dir("${BASE_DIR}"){
-            validateDeclarativePipeline '.ci/Jenkinsfile'
-            validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
-            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
-            validateDeclarativePipeline '.ci/schedule-daily.groovy'
-            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
-            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+        container('java') {
+          withGithubNotify(context: 'Check Pipelines') {
+            deleteDir()
+            unstash 'source'
+            debugCommand()
+            dir("${BASE_DIR}"){
+              validateDeclarativePipeline '.ci/Jenkinsfile'
+              validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
+              validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+              validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+              validateDeclarativePipeline '.ci/schedule-daily.groovy'
+              validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+              validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+            }
           }
         }
       }
@@ -171,13 +174,15 @@ pipeline {
         }
       }
       steps {
-        withGithubNotify(context: 'Test infra') {
-          deleteDir()
-          unstash 'source'
-          debugCommand()
-          dir("${BASE_DIR}"){
-            sh script: './resources/scripts/jenkins/apm-ci/test.sh'
-            sh script: './resources/scripts/jenkins/build.sh'
+        container('java') {
+          withGithubNotify(context: 'Test infra') {
+            deleteDir()
+            unstash 'source'
+            debugCommand()
+            dir("${BASE_DIR}"){
+              sh script: './resources/scripts/jenkins/apm-ci/test.sh'
+              sh script: './resources/scripts/jenkins/build.sh'
+            }
           }
         }
       }
@@ -212,24 +217,26 @@ pipeline {
         }
       }
       steps {
-        deleteDir()
-        unstash 'source'
-        dockerLogin(secret: "secret/apm-team/ci/docker-registry/prod",
-          registry: "docker.elastic.co"
-        )
-        dir("${BASE_DIR}"){
-          setupAPMGitEmail(global: false)
-          sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
-          sleep 30 //wait for changes available
-          withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
-            sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
-            sh(label: 'Add changelog', script: '''#!/bin/bash
-              git add CHANGELOG.md
-              git commit -m "docs: update CHANGELOG.md"
-            ''')
+        container('java') {
+          deleteDir()
+          unstash 'source'
+          dockerLogin(secret: "secret/apm-team/ci/docker-registry/prod",
+            registry: "docker.elastic.co"
+          )
+          dir("${BASE_DIR}"){
+            setupAPMGitEmail(global: false)
+            sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
+            sleep 30 //wait for changes available
+            withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
+              sh(label: 'Creating Release Notes', script: './resources/scripts/jenkins/release-notes.sh')
+              sh(label: 'Add changelog', script: '''#!/bin/bash
+                git add CHANGELOG.md
+                git commit -m "docs: update CHANGELOG.md"
+              ''')
+            }
+            gitPush()
+            gitCreateTag(tag: 'current', tagArgs: '--force', pushArgs: '--force')
           }
-          gitPush()
-          gitCreateTag(tag: 'current', tagArgs: '--force', pushArgs: '--force')
         }
       }
     }
