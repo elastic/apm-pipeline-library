@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.139 (22/09/2020)
+
+#### 🚀 Enhancements
+
+-  isInternalCI step [#727](https://github.com/elastic/apm-pipeline-library/pull/727)
+
+#### 🐛 Bug Fixes
+
+-  Remove folder jobdsl reference [#725](https://github.com/elastic/apm-pipeline-library/pull/725)
+
 ## v1.1.138 (15/09/2020)
 
 #### 🐛 Bug Fixes
