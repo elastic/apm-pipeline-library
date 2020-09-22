@@ -1123,6 +1123,15 @@ Whether the given tools is installed and available.
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
 
+## isInternalCI
+Whether the CI instance is the internal-ci one.
+
+```
+  whenTrue(isInternalCI()) {
+    //
+  }
+```
+
 ## isMemberOf
 Check if the given GitHub user is member of the given GitHub team.
 
@@ -1988,6 +1997,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
 
 ## withMageEnv
 
