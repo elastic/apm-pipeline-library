@@ -30,6 +30,8 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     env.BUILD_ID = '4'
     env.BRANCH_NAME = 'PR-60'
     env.JENKINS_URL = 'http://jenkins.example.com:8080'
+
+    helper.registerAllowedMethod('withAPM', [Closure.class], { body -> body() })
   }
 
   @Test
