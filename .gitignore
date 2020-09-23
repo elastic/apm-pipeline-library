@@ -29,5 +29,6 @@ local.log
 .classpath
 .project
 .settings/
+.venv
 
 test-infra/apm-ci/__pycache__/

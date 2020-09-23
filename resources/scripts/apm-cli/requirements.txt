@@ -1,0 +1,7 @@
+ConfigArgParse
+coverage
+elastic-apm
+psutil
+pytest
+pytest-bdd
+pytest-mock

@@ -25,6 +25,65 @@ Return the value for the given key.
   agentMapping.yamlVersionFile('UI')
 ```
 
+## apmCli
+ApmCli report APM transactions/span to an APM server.
+
+```
+apmCli(
+  apmCliConfig : "secrets/oblt/apm",
+  serviceName : "service01"
+)
+```
+
+```
+apmCli(
+  apmCliConfig : "secrets/oblt/apm",
+  serviceName : "service01",
+  transactionName : "test",
+  spanName : "ITs",
+  spanCommand: "make run-its",
+  spanLabel: '{"type": "IT"}'
+)
+```
+
+```
+apmCli(
+  url : "https://apm.example.com:8200",
+  token: "${TOKEN}"
+  serviceName : "service01",
+  transactionName : "test",
+  spanName : "ITs",
+  spanCommand: "make run-its",
+  spanLabel: '{"type": "IT"}'
+)
+```
+
+* apmCliConfig : Vault secret to read the `url` and `token` of the APM server.
+(`{"value": {"url": "https://apm.example.com:8200", "token": "WS1DFER1WES2"}}`)
+* serviceName : the service name used to report the APM data,
+if the environment variable `APM_CLI_SERVICE_NAME` and no value set
+the `APM_CLI_SERVICE_NAME` value is used by default.
+It is mandatory to pass a serviceName. If a service name is no passes apmCli do nothing.
+* url : The URL of the APM server (conflicts with apmCliConfig)
+* token : The token to access the APM server (conflicts with apmCliConfig)
+* saveTsID : if true the current transaction ID is saved on a text file (tsID.txt)
+and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
+* transactionName: Name of the transaction to report, it is mandatory.
+By default the "STAGE_NAME" environment variable is used.
+* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* spanName : Name of the span to report.
+* spanCommand Command to execute as span,
+if spanName is no set, spanCommand param would be used as span name.
+* spanLabel : label to add to the span (`{"type": "arabica"}`)
+* result : Result of the transaction, the default values is `success`
+
+You can enable apm traces by configuring the [pipelineManager](#pipelinemanager) step,
+by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
+
+```
+  pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
+```
+
 ## base64decode
 Decode a base64 input to string
 
@@ -1868,6 +1927,17 @@ script{
 }
 ```
 
+## withAPM
+It encloses a set of commands in a APM reporting context.
+This will generate APM data related with the block of code executed.
+The parameters accepted by withAPM are the same of [apmCli](#apmcli) step
+
+```
+withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
+  echo "OK"
+}
+```
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
@@ -1954,6 +2024,7 @@ _NOTE:_
 
 ## withGithubNotify
 Wrap the GitHub notify check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
 
 ```
 withGithubNotify(context: 'Build', description: 'Execute something') {
