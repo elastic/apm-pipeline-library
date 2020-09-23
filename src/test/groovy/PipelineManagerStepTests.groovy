@@ -72,6 +72,17 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testApmTracesWhenAlways() throws Exception {
+    helper.registerAllowedMethod('apmCli', [Map.class], {'OK'})
+    def script = loadScript(scriptName)
+    script.call(apmTraces: [ when: 'ALWAYS' ])
+    assertTrue(assertMethodCallContainsPattern('log', 'apmTraces is enabled.'))
+    assertTrue(env.APM_CLI_SERVICE_NAME == env.JOB_NAME)
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testDefaultAndEmptyWhen() throws Exception {
     def script = loadScript(scriptName)
     assertFalse(script.isEnabled('unknwon'))

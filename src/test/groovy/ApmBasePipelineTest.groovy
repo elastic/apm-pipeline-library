@@ -128,6 +128,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
     helper.registerAllowedMethod('script', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('setEnvVar', [String.class, String.class],{ var, value -> env[var] = value })
     helper.registerAllowedMethod('skipDefaultCheckout', [], null)
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->

@@ -46,7 +46,9 @@ def call(Map params = [:], Closure body) {
 
   try {
     notify(context, "${description} ...", 'PENDING', redirect)
-    body()
+    withAPM(){
+      body()
+    }
     notify(context, "${description} passed", 'SUCCESS', redirect)
   } catch (err) {
     notify(context, "${description} failed", 'FAILURE', redirect)
