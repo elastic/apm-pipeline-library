@@ -47,6 +47,7 @@ def call() {
   }
 
   if(matches.size() > 1){
+    println matches
     error("Labels conflict arch in NODE_LABELS: ${labels}")
   }
 
@@ -62,7 +63,7 @@ def is64bit(labels){
 }
 
 def isArm(labels){
-  return labels.contains('arm')
+  return labels?.split(' ').find{ it.equals('arm')} ? true : false
 }
 
 def isArm64(labels){

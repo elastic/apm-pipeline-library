@@ -26,6 +26,7 @@ class NodeOSStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('isArm', { false })
   }
 
   @Test
@@ -59,12 +60,24 @@ class NodeOSStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testArm_is_linux() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isArm', { true })
+    env.NODE_LABELS = "foo arm bar"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "linux")
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNotFound() throws Exception {
     def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"
     try {
       def value = script.call()
     } catch(e){
+      println e
       assertTrue(e.getMessage() == "Unhandled OS name in NODE_LABELS: foo bar")
     }
     printCallStack()

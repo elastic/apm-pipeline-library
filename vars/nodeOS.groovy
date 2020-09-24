@@ -25,7 +25,7 @@ def call() {
   def labels = env.NODE_LABELS?.toLowerCase()
   def matches = []
 
-  if (isLinux(labels)) {
+  if (isLinux(labels) || isArm()) {
     matches.add('linux')
   }
 

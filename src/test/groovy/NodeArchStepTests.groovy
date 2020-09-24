@@ -93,4 +93,14 @@ class NodeArchStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_x86_64_with_swarm_label() throws Exception {
+    def script = loadScript(scriptName)
+    env.NODE_LABELS = "swarm x86_64"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "x86_64")
+    assertJobStatusSuccess()
+  }
 }
