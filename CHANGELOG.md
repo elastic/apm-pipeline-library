@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.140 (24/09/2020)
+
+#### 🚀 Enhancements
+
+-  runbld wrappers [#728](https://github.com/elastic/apm-pipeline-library/pull/728)
+-  test: POC of APM CLI [#715](https://github.com/elastic/apm-pipeline-library/pull/715)
+
 ## v1.1.139 (22/09/2020)
 
 #### 🚀 Enhancements
