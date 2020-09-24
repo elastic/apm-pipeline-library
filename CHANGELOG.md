@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.141 (24/09/2020)
+
+#### 🚀 Enhancements
+
+-  Support ARM arch [#731](https://github.com/elastic/apm-pipeline-library/pull/731)
+
 ## v1.1.140 (24/09/2020)
 
 #### 🚀 Enhancements
