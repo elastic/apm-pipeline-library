@@ -1258,6 +1258,40 @@ Whether the architecture is a x86 based using the `nodeArch` step
     }
 ```
 
+## junitAndStore
+Wrap the junit built-in step to archive the test reports that are going to be
+populated later on with the runbld post build step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports, id: 'test-stage-foo', ...)
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory
+* *id*: the unique id, normally the stage name. Optional
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
+
 ## licenseScan
 Scan the repository for third-party dependencies and report the results.
 
@@ -1602,6 +1636,38 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runbld
+Populate the test output using the runbld approach. It depends on the *junitAndStore* step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports)
+                    }
+                }
+            }
+        }
+        post {
+            always {
+                // Process stashed test reports
+                runbld(stashedTestReports: stashedTestReports, project: env.REPO)
+            }
+        }
+    }
+```
+
+* *project*: the project id, normally the repo name. Mandatory
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory
 
 ## sendBenchmarks
 Send the benchmarks to the cloud service or run the script and prepare the environment
