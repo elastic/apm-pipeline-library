@@ -95,7 +95,7 @@ class NodeArchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_label_linux_swarm() throws Exception {
+  void test_x86_64_with_swarm_label() throws Exception {
     def script = loadScript(scriptName)
     env.NODE_LABELS = "swarm x86_64"
     def value = script.call()
