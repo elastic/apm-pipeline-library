@@ -59,6 +59,16 @@ class NodeOSStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testArm_is_linux() throws Exception {
+    def script = loadScript(scriptName)
+    env.NODE_LABELS = "foo arm bar"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "linux")
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNotFound() throws Exception {
     def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"

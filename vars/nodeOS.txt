@@ -1,5 +1,7 @@
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
+ NOTE: arm architecture is linux.
+
 ```
  def os = nodeOS()
 ```
