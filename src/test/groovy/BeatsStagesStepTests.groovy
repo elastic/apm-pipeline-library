@@ -180,4 +180,39 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_multiple_when_with_top_level_when_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('beatsWhen', [Map.class], { m ->
+      if (m?.containsKey('branches')) { return m?.branches }
+      else { return false }
+      })
+    def ret = script.call(project: 'foo', content: [
+      "when" : [
+        "branches" : true
+      ],
+      "platform" : [ "linux && ubuntu-16" ],
+      "stages": [
+        "simple" : [
+          "make" : [ "foo" ]
+        ],
+        "multi" : [
+          "mage" : [ "foo" ],
+          "platforms" : [ 'windows-2019' ]
+        ],
+        "multi-when" : [
+          "mage" : [ "foo" ],
+          "platforms" : [ 'windows-2016' ],
+          "when" : [
+            "comments" : [ "/test auditbeat for windows" ]
+          ]
+        ]
+      ]
+    ], function: new RunCommand(steps: this))
+    printCallStack()
+    assertTrue(ret.size() == 3)
+    assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))
+    assertJobStatusSuccess()
+  }
 }
