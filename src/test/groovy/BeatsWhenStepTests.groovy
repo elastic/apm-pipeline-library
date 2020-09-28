@@ -334,4 +334,39 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret)
   }
+
+  @Test
+  void test_isSkipCiBuildLabel_without_content() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
+    def ret = script.isSkipCiBuildLabel(content: [:])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_isSkipCiBuildLabel_with_label_enabled_and_pr_without_label_match() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
+    def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': true ])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_isSkipCiBuildLabel_with_label_enabled_and_pr_with_label_match() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('matchesPrLabel', [Map.class], { true })
+    def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': true ])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_isSkipCiBuildLabel_with_label_disabled() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': false ])
+    printCallStack()
+    assertFalse(ret)
+  }
 }
