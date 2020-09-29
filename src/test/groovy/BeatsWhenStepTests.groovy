@@ -93,6 +93,16 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenBranches_and_environment_variable_with_data_and_prs() throws Exception {
+    def script = loadScript(scriptName)
+    env.BRANCH_NAME = 'branch'
+    env.CHANGE_ID = 'PR-1'
+    def ret = script.whenBranches(content: [ branches: true])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
   void test_whenChangeset_and_no_data() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenChangeset()
