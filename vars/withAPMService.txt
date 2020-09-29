@@ -1,0 +1,30 @@
+  It defines and masks the environment variables APM_CLI_SERVER_URL and APM_CLI_TOKEN,
+  you can pass the URL and the token, or pass a Vault secret like {"url": "https://apm.example.com:8200", "token": "SKmaKSwsnaA1"}
+
+```
+  withAPMService(){
+    apmCli()
+    echo "Hello world"
+    apmCli()
+  }
+```
+
+```
+  withAPMService(secret : "secret/team/my-secret"){
+    apmCli()
+    echo "Hello world"
+    apmCli()
+  }
+```
+
+```
+  withAPMService(url : "https:/apm.example.com:8200", token: "AJSSomsuws1"){
+    apmCli()
+    echo "Hello world"
+    apmCli()
+  }
+```
+
+* url: URL of the APM service.
+* token: Token to access to the APM service.
+* secret: Vault secret like {"url": "https://apm.example.com:8200", "token": "SKmaKSwsnaA1"}.
