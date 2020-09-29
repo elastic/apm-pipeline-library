@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.142 (29/09/2020)
+
+#### 🚀 Enhancements
+
+-  Support skip-ci-build label for beatsWhen [#733](https://github.com/elastic/apm-pipeline-library/pull/733)
+
+#### 🐛 Bug Fixes
+
+-  Fix docker-compose and JCasC [#735](https://github.com/elastic/apm-pipeline-library/pull/735)
+
+#### 🙈 No user affected
+
+-  reduce build reasons i/o accesses with global variables [#734](https://github.com/elastic/apm-pipeline-library/pull/734)
+
 ## v1.1.141 (24/09/2020)
 
 #### 🚀 Enhancements
