@@ -1,0 +1,54 @@
+
+  It configures environment variables needed to use pytest-apm plugin.
+  You can pass and APM URL+Token or a Vault secret like {"url": "https://apm.example.com:8200", "token": "SKmaKSwsnaA1"}
+
+```
+  withPytestAPM(serviceName: 'MyService'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', url: 'https://apm.example.com:8200', token: 'SKmaKSwsnaA1'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', secret: 'secret/team/my_secret'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', secret: 'secret/team/my_secret', labels: '{"name1": "value1", "name2": "value2"}'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', secret: 'secret/team/my_secret', customContext: '{"name1": "value1", "name2": "value2"}'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', secret: 'secret/team/my_secret', sessionName: 'MyTestSession'){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+```
+  withPytestAPM(serviceName: 'MyService', secret: 'secret/team/my_secret', transactionMode: true){
+    sh(label: 'Test', 'pytest')
+  }
+```
+
+* serviceName: Name os the service in the APM.
+* url: URL of the APM service.
+* token: Token to access to the APM service.
+* secret: Vault secret like {"url": "https://apm.example.com:8200", "token": "SKmaKSwsnaA1"}.
+* labels: JSON with labels to apply to span and transactions.
+* customContext: JSON with the content to apply to span and transactions.
+* sessionName: Name of the parent transaction to the whole test set.
+* transactionMode: It changes the mode to use transaction per test instead of only spans.
