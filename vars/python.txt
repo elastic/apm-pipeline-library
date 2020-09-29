@@ -1,0 +1,21 @@
+
+  Execute a Python command or script in a virtualenv.
+
+```
+  python(label: 'Python command', script: 'print("Hello world")')
+```
+
+```
+  python(label: 'Python command', cmd: '-m pip install my_python_package')
+```
+
+```
+  python(label: 'Python command', file: 'my_script.py')
+```
+
+* label: Label to show in the UI for the pipeline step.
+* venv: folder for the virtual environment.
+* requirementsFile: file requirements.txt with the packages to install.
+* cmd: execute Python arguments using `python` CLI.
+* script: execute a Python script passing the Python code.
+* file: execute a Python script file.
