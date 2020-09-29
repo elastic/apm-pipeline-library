@@ -19,9 +19,6 @@ import groovy.transform.Field
 @Field def transactions = [:]
 
 def call(Map args = [:]) {
-  def apmCliConfig = args.containsKey('apmCliConfig') ? args.apmCliConfig : "secret/observability-team/ci/test-clusters/dev-next-oblt/k8s-apm"
-  def url = args.containsKey('url') ? args.url : ''
-  def token = args.containsKey('token') ? args.token : ''
   def serviceName = args.containsKey('serviceName') ? args.serviceName : "${env.APM_CLI_SERVICE_NAME ? env.APM_CLI_SERVICE_NAME : ''}"
   def parentTransaction = args.containsKey('parentTransaction') ? args.parentTransaction : "${env.APM_CLI_PARENT_TRANSACTION ? env.APM_CLI_PARENT_TRANSACTION : ''}"
   def saveTsID = args.containsKey('saveTsID') ? args.saveTsID : false
@@ -31,7 +28,7 @@ def call(Map args = [:]) {
   def spanLabel = args.containsKey('spanLabel') ? args.spanLabel : ''
   def result = args.containsKey('result') ? args.result : ''
 
-  if(!isUnix() || !serviceName){
+  if(!serviceName){
     log(level: 'DEBUG', text: "apmCli: not executed.")
     return
   }
@@ -44,20 +41,9 @@ def call(Map args = [:]) {
     spanName = spanCommand
   }
 
-  def setupPy = libraryResource("scripts/apm-cli/requirements.txt")
-  def apmCliPy = libraryResource("scripts/apm-cli/apm-cli.py")
   dir('apm-cli'){
-    log(level: 'DEBUG', text: "apmCli: Installing APM CLI")
-    writeFile file: "requirements.txt", text: setupPy
-    writeFile file: "apm-cli.py", text: apmCliPy
-
-    if(!url && !token){
-      def apmJson = getVaultSecret(secret: "${apmCliConfig}")?.data.value
-      def apm = readJSON(text: apmJson)
-      url = apm.url
-      token = apm.token
-    }
-
+    def apmCliRelease = "https://github.com/elastic/apm-pipeline-library/releases/download/apm-cli-0.0.1/apm-cli-0.0.1.tar.gz"
+    python(label: 'Install apmCLI', cmd: "-m pip install ${apmCliRelease}")
     // transactions with and span do not need BEGIN/END
     if(!spanName) {
       if(transactions["${transactionName}"]) {
@@ -70,36 +56,23 @@ def call(Map args = [:]) {
       }
     }
 
-    withEnvMask(vars: [
-      [var: "APM_CLI_SERVER_URL", password: "${url}"],
-      [var: "APM_CLI_TOKEN", password: "${token}"],
-      [var: "APM_CLI_SERVICE_NAME", password: "${serviceName}"],
-      [var: "APM_CLI_TRANSACTION_NAME", password: "${transactionName}"],
-      [var: "APM_CLI_SPAN_NAME", password: "${spanName}"],
-      [var: "APM_CLI_SPAN_COMMAND", password: "${spanCommand}"],
-      [var: "APM_CLI_SPAN_LABELS", password: "${spanLabel}"],
-      [var: "APM_CLI_PARENT_TRANSACTION_SAVE", password: "${ saveTsID ? 'tsID.txt' : ''}"],
-      [var: "APM_CLI_TRANSACTION_RESULT", password: "${result}"],
-      [var: "APM_CLI_PARENT_TRANSACTION", password: "${parentTransaction}"],
-    ]){
-      log(level: 'DEBUG', text: "apmCli: Runninf APM CLI")
-      sh(script: """#!/bin/bash +x
-            if [ -z "\$(command -v python3)" ] \
-              || [ -z "\$(command -v virtualenv)" ]; then
-              exit 0
-            fi
-            virtualenv -q --python=python3 .venv
-            source ".venv/bin/activate"
-            pip -q install -r requirements.txt
-            set -x
-            export |grep APM_CLI
-            python3 apm-cli.py
-          """,
-        label: 'apm-cli'
-      )
-      if(saveTsID){
-        log(level: 'DEBUG', text: "apmCli: Persistent transaction ID on APM_CLI_PARENT_TRANSACTION")
-        setEnvVar('APM_CLI_PARENT_TRANSACTION', readFile(file: 'tsID.txt'))
+    withAPMService(args){
+      withEnv([
+        "APM_CLI_SERVICE_NAME=${serviceName}",
+        "APM_CLI_TRANSACTION_NAME=${transactionName}",
+        "APM_CLI_SPAN_NAME=${spanName}",
+        "APM_CLI_SPAN_COMMAND=${spanCommand}",
+        "APM_CLI_SPAN_LABELS=${spanLabel}",
+        "APM_CLI_PARENT_TRANSACTION_SAVE=${ saveTsID ? 'tsID.txt' : ''}",
+        "APM_CLI_TRANSACTION_RESULT=${result}",
+        "APM_CLI_PARENT_TRANSACTION=${parentTransaction}",
+      ]){
+        log(level: 'DEBUG', text: "apmCli: Runninf APM CLI")
+        python(label: 'apmCLI', file: 'apm-cli.py')
+        if(saveTsID){
+          log(level: 'DEBUG', text: "apmCli: Persistent transaction ID on APM_CLI_PARENT_TRANSACTION")
+          setEnvVar('APM_CLI_PARENT_TRANSACTION', readFile(file: 'tsID.txt'))
+        }
       }
     }
   }
