@@ -38,7 +38,7 @@ def call(Map args = [:]) {
 
   def requirements = ''
   if (fileExists("${requirementsFile}")) {
-    requirements = "pip -q install -r ${requirementsFile}"
+    requirements = "pip -q install -q -r ${requirementsFile}"
   }
 
   cmd(label: "Prepare virtual environment", script: """
