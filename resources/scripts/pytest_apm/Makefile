@@ -1,5 +1,5 @@
-APM_CLI_VERSION = 0.0.1
-APM_CLI_PKG = apm-cli-$(APM_CLI_VERSION)
+PYTEST_APM_VERSION = 0.0.1
+PYTEST_APM_PKG = pytest-apm-$(PYTEST_APM_VERSION)
 VENV ?= .venv
 PYTHON ?= python3
 PIP ?= pip3
@@ -79,7 +79,7 @@ package: virtualenv
 	$(PYTHON) setup.py sdist bdist_wheel
 
 release: bin/gh package
-	$(GH) release create $(APM_CLI_PKG) dist/$(APM_CLI_PKG).tar.gz \
+	$(GH) release create $(PYTEST_APM_PKG) dist/$(PYTEST_APM_PKG).tar.gz \
 		--repo elastic/apm-pipeline-library \
-		--title $(APM_CLI_PKG) \
-		--notes "$(APM_CLI_PKG)"
+		--title $(PYTEST_APM_PKG) \
+		--notes "$(PYTEST_APM_PKG)"
