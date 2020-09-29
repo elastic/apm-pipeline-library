@@ -63,6 +63,9 @@ when:
       environment { TAG_NAME = 'foo' }
       steps { verify('tags.yaml') }
     }
+    stage('markdown') {
+      steps { archiveArtifacts(allowEmptyArchive: false, artifacts: 'build-reasons/*.*') }
+    }
   }
 }
 

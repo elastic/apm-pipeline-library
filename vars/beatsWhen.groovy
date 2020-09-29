@@ -15,6 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import groovy.transform.Field
+
+
+@Field def buildReasons = []
+
 /**
 * Given the YAML definition and the changeset global macros
 * then it verifies if the project or stage should be enabled.
@@ -37,7 +42,7 @@ Boolean call(Map args = [:]){
     markdownReason(project: project, reason: "</p></details>")
   }
   markdownReason(project: project, reason: "#### Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}\n")
-
+  flushBuildReason()
   return ret
 }
 
@@ -168,13 +173,17 @@ private Boolean whenTags(Map args = [:]) {
 }
 
 private void markdownReason(Map args = [:]) {
+  buildReasons << args.reason
+}
+
+private void flushBuildReason() {
   dir('build-reasons') {
     def fileName = 'build.md'
     def data = ''
     if(fileExists(fileName)) {
       data = readFile(file: "${fileName}")
     }
-    def content = "${data}\r\n${args.reason}"
+    def content = "${data}\r\n${buildReasons.join('\n')}"
     writeFile(file: fileName, text: "${content}")
   }
 }
