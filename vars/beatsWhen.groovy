@@ -31,7 +31,7 @@ Boolean call(Map args = [:]){
   def ret = false
 
   markdownReason(project: project, reason: "## Build reasons for `${project} ${description}`")
-  if (whenEnabled(args)) {
+  if (whenEnabled(args) || !isSkipCiBuildLabel(args)) {
     markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>\n")
     if (whenBranches(args)) { ret = true }
     if (whenChangeset(args)) { ret = true }
@@ -47,7 +47,7 @@ Boolean call(Map args = [:]){
 }
 
 private Boolean whenBranches(Map args = [:]) {
-  if (env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
+  if (!isPR() && env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
     markdownReason(project: args.project, reason: '* ✅ Branch is enabled .')
     return true
   }
@@ -169,6 +169,20 @@ private Boolean whenTags(Map args = [:]) {
     return true
   }
   markdownReason(project: args.project, reason: '* ❕Tag is `disabled`.')
+  return false
+}
+
+private boolean isSkipCiBuildLabel(Map args = [:]) {
+  def gitHubLabel = 'skip-ci-build'
+  if (args.content?.get('skip-ci-build-label', false)) {
+    if (matchesPrLabel(label: gitHubLabel) ) {
+      markdownReason(project: args.project, reason: "* ✅ skip-ci-build-label is `enabled` and matches with the pattern `${gitHubLabel}`.")
+      return true
+    }
+    markdownReason(project: args.project, reason: "* skip-ci-build-label is `enabled` and does **NOT** match with the pattern `${gitHubLabel}`.")
+  } else {
+    markdownReason(project: args.project, reason: '* ❕skip-ci-build-label label is `disabled`.')
+  }
   return false
 }
 
