@@ -32,6 +32,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
   def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
@@ -44,12 +45,13 @@ def call(Map args = [:]) {
       def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
-
+      def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
+        data['slackChannel'] = slackChannel
         def notificationManager = new NotificationManager()
         if(shouldNotify && !to?.empty){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
@@ -78,6 +80,12 @@ def call(Map args = [:]) {
         if(notifyPRComment && isPR()) {
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
           notificationManager.notifyPR(data)
+        }
+
+        // Should notify in slack if it's enabled
+        if(notifySlackComment) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
+          notificationManager.notifySlack(data)
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
         catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {

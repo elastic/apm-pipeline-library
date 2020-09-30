@@ -21,6 +21,8 @@ Besides, if there are checkout environmental issues then it will rebuild the pip
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
+* slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
+* slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0

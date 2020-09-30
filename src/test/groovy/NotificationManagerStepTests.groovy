@@ -356,6 +356,22 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_with_aborted_but_no_cancel_build() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifySlack(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "ABORTED",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Build Aborted'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakey() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
