@@ -225,5 +225,5 @@ def testSlack() {
       ]
     ]
   ]
-  slackSend(channel: "#beats-ci-builds", blocks: blocks)
+  slackSend(channel: "#beats-ci-builds", blocks: blocks, botUser: true)
 }
