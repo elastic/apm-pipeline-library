@@ -1,15 +1,14 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
-*Status*: ${buildStatus} &lt;${jobUrl}pipeline|build&gt;
+<% pipelineUrl = String.format("<%spipeline|build>", jobUrl)%>
+*Status*: ${buildStatus} ${pipelineUrl}
 *User*: ${changes?.author?.id}
 *Commit*: ${changes?.url}
-*Total Tests*: ${(testsSummary?.total) ?: 0}
-*Passed Tests*: ${(testsSummary?.passed) ?: 0}
-*Failed Tests*: ${(testsSummary?.failed) ?: 0}
+*Tests(Total/Passed/Failed/Skipped)*: `${(testsSummary?.total) ?: 0}/${(testsSummary?.passed) ?: 0}/${(testsSummary?.failed) ?: 0}/${(testsSummary?.skipped) ?: 0}`
 <% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
     <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>
     * *Name*: `${it?.name}` for the last ${it?.age} builds<%}%>
 <%}%>
 *Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0}
-<% steps.each{ %>
-* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` &lt;${(it?.url && it?.url != 'null') ? it?.url : ''}|log&gt;<%}%>
+<% steps.each{ it -> %> <% stepUrl = (it?.url && it?.url != 'null') ? String.format("(<%s|see logs>)", it.url) : ''%>
+* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` ${stepUrl} <%}%>

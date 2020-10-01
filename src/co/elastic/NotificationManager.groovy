@@ -227,7 +227,7 @@ def notifySlack(Map args = [:]) {
         "testsSummary": testsSummary
       ])
       // TODO: move env variables and hardcoded to parameters
-      slackSend(channel: "#beats-ci-builds", color: 'green', message: "${body}", tokenCredentialId: 'jenkins-slack-integration-token')
+      slackSend(channel: "#beats-ci-builds", color: 'danger', message: "${body}", tokenCredentialId: 'jenkins-slack-integration-token')
     }
 }
 
