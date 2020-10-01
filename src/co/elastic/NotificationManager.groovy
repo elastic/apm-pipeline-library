@@ -207,28 +207,29 @@ def notifySlack(Map args = [:]) {
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def enabled = args.get('enabled', false)
-    def channel = args.get('channel')
-    def credentialId = args.get('credentialId')
-    catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
-      def statusSuccess = (buildStatus == "SUCCESS")
-      def boURL = getBlueoceanDisplayURL()
-      def body = buildTemplate([
-        "template": 'slack-markdown.template',
-        "build": build,
-        "buildStatus": buildStatus,
-        "changeSet": changeSet,
-        "docsUrl": docsUrl,
-        "jenkinsText": env.JOB_NAME,
-        "jenkinsUrl": env.JENKINS_URL,
-        "jobUrl": boURL,
-        "log": log,
-        "statsUrl": statsUrl,
-        "statusSuccess": statusSuccess,
-        "stepsErrors": stepsErrors,
-        "testsErrors": testsErrors,
-        "testsSummary": testsSummary
-      ])
-      if (enabled) {
+    def channel = args.containsKey('channel') ? args.channel : error('notifySlack: channel parameter is not required')
+    def credentialId = args.containsKey('credentialId') ? args.credentialId : error('notifySlack: credentialId parameter is not required')
+
+    if (enabled) {
+      catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
+        def statusSuccess = (buildStatus == "SUCCESS")
+        def boURL = getBlueoceanDisplayURL()
+        def body = buildTemplate([
+          "template": 'slack-markdown.template',
+          "build": build,
+          "buildStatus": buildStatus,
+          "changeSet": changeSet,
+          "docsUrl": docsUrl,
+          "jenkinsText": env.JOB_NAME,
+          "jenkinsUrl": env.JENKINS_URL,
+          "jobUrl": boURL,
+          "log": log,
+          "statsUrl": statsUrl,
+          "statusSuccess": statusSuccess,
+          "stepsErrors": stepsErrors,
+          "testsErrors": testsErrors,
+          "testsSummary": testsSummary
+        ])
         def color = (currentBuild.currentResult == "SUCCESS") ? 'good' : 'warning'
         slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentialId)
       }
