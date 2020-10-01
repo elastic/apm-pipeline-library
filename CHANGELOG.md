@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.143 (30/09/2020)
+
+#### 🚀 Enhancements
+
+-  feat: package and release for Python modules [#730](https://github.com/elastic/apm-pipeline-library/pull/730)
+
+#### 🐛 Bug Fixes
+
+-  fix branch when on a PR basis [#737](https://github.com/elastic/apm-pipeline-library/pull/737)
+
 ## v1.1.142 (29/09/2020)
 
 #### 🚀 Enhancements
