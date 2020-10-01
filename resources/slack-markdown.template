@@ -1,39 +1,15 @@
-<%if (statusSuccess) {%>
-## :green_heart: Build Succeeded
-<%} else if (buildStatus?.equals('ABORTED')) {%>
-## :grey_exclamation: Build Aborted
-  <%if (!build?.description != null && build?.description.toString().toLowerCase().contains('aborted')) {%>
-  > There is a new build on-going so the previous on-going builds have been aborted.
-  <%} else if (!build?.description != null && build?.description.toString().toLowerCase().contains('allowed')) {%>
-  > ${build.description}
-  <%} else {%>
-  > Either there was a build timeout or someone aborted the build.'}
-  <%}%>
-<%} else {%>
-## :broken_heart: ${(testsSummary?.failed != 0) ? 'Tests Failed' : 'Build Failed'}
-<%}%>
-
-<% if(testsSummary?.total != 0) {%>
-
-| Test         | Results                         |
-| ------------ | :-----------------------------: |
-| Failed       | ${(testsSummary?.failed) ?: 0}  |
-| Passed       | ${(testsSummary?.passed) ?: 0}  |
-| Skipped      | ${(testsSummary?.skipped) ?: 0} |
-| Total        | ${(testsSummary?.total) ?: 0}   |
-<%}%>
-
+<% changes = changeSet?.find { true }%>
+<% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub')}%>
+*Status*: ${buildStatus} ${jobUrl}pipeline
+*User*: ${changes?.author?.id}
+*Commit*: ${changes?.url}
+*Total Tests*: ${(testsSummary?.total) ?: 0}
+*Passed Tests*: ${(testsSummary?.passed) ?: 0}
+*Failed Tests*: ${(testsSummary?.failed) ?: 0}
 <% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
-    <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ test -> %>
-* **Name**: `${test?.name}`
-  * Age: ${test?.age}
-    <%}%>
+    <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>
+    * *Name*: `${it?.name}` for the last ${it?.age} builds<%}%>
 <%}%>
-
-<% stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
-<% if (stepsErrors?.size() != 0) {%>
-  <% stepsErrors.each{ c -> %>
-  * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
-    * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
-  <%}%>
-<%}%>
+*Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0}
+<% steps.each{ %>
+* *Name*: `${(it?.displayName && it?.displayName != 'null') ? it?.displayName : ''}` ${(it?.url && it?.url != 'null') ? it?.url : ''}<%}%>

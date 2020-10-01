@@ -31,7 +31,8 @@
     "result": "FAILURE",
     "startTime": "2019-05-29T12:08:57.040+0000",
     "state": "FINISHED",
-    "type": "STEP"
+    "type": "STEP",
+    "url": "FOOOO"
   },
   {
     "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
@@ -92,7 +93,7 @@
       }
     ],
     "displayDescription": "./mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
-    "displayName": "Shell Script",
+    "displayName": "Notifies GitHub of the status of a Pull Request",
     "durationInMillis": 101825,
     "id": "58",
     "input": null,
