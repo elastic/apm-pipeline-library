@@ -207,7 +207,7 @@ def notifySlack(Map args = [:]) {
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def enabled = args.get('enabled', false)
-    def slackChannel = args.get('channel')
+    def channel = args.get('channel')
     def credentialId = args.get('credentialId')
     catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
       def statusSuccess = (buildStatus == "SUCCESS")
@@ -230,7 +230,7 @@ def notifySlack(Map args = [:]) {
       ])
       if (enabled) {
         def color = (currentBuild.currentResult == "SUCCESS") ? 'good' : 'warning'
-        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentials)
+        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentialId)
       }
     }
 }

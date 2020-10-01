@@ -1,9 +1,9 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% pipelineUrl = String.format("<%spipeline|build>", jobUrl)%>
+<% commitUrl = String.format("<%s|%s>", changes?.url, changes?.msg)%>
 *Status*: ${buildStatus} ${pipelineUrl}
-*User*: ${changes?.author?.id}
-*Commit*: ${changes?.url}
+*Build causes*: ${changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
 *Tests(Total/Passed/Failed/Skipped)*: `${(testsSummary?.total) ?: 0}/${(testsSummary?.passed) ?: 0}/${(testsSummary?.failed) ?: 0}/${(testsSummary?.skipped) ?: 0}`
 <% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
     <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>

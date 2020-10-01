@@ -364,7 +364,10 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       changeSet: readJSON(file: "changeSet-info.json"),
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
-      testsSummary: readJSON(file: "tests-summary.json")
+      testsSummary: readJSON(file: "tests-summary.json"),
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
