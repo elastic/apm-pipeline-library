@@ -1,6 +1,6 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
-*Status*: ${buildStatus} ${jobUrl}pipeline
+*Status*: ${buildStatus} &lt;${jobUrl}pipeline|build&gt;
 *User*: ${changes?.author?.id}
 *Commit*: ${changes?.url}
 *Total Tests*: ${(testsSummary?.total) ?: 0}
@@ -12,4 +12,4 @@
 <%}%>
 *Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0}
 <% steps.each{ %>
-* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` ${(it?.url && it?.url != 'null') ? it?.url : ''}<%}%>
+* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` &lt;${(it?.url && it?.url != 'null') ? it?.url : ''}|log&gt;<%}%>
