@@ -367,7 +367,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json")
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('slackSend', 'Build Aborted'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
     assertJobStatusSuccess()
   }
 
