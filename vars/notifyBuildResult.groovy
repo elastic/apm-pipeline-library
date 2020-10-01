@@ -46,12 +46,12 @@ def call(Map args = [:]) {
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
+      def slackAlways = args.containsKey('slackAlways') ? args.slackAlways : (currentBuild.currentResult != "SUCCESS")
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
-        data['slackChannel'] = slackChannel
         def notificationManager = new NotificationManager()
         if(shouldNotify && !to?.empty){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
@@ -84,6 +84,9 @@ def call(Map args = [:]) {
 
         // Should notify in slack if it's enabled
         if(notifySlackComment) {
+          data['channel'] = "#beats-ci-builds" // TODO: slackChannel
+          data['credentialId'] = 'jenkins-slack-integration-token'
+          data['enabled'] = slackAlways
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
           notificationManager.notifySlack(data)
         }

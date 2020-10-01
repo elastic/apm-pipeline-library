@@ -206,7 +206,9 @@ def notifySlack(Map args = [:]) {
     def stepsErrors = args.containsKey('stepsErrors') ? args.stepsErrors : []
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
-
+    def enabled = args.get('enabled', false)
+    def slackChannel = args.get('channel')
+    def credentialId = args.get('credentialId')
     catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
@@ -226,8 +228,10 @@ def notifySlack(Map args = [:]) {
         "testsErrors": testsErrors,
         "testsSummary": testsSummary
       ])
-      // TODO: move env variables and hardcoded to parameters
-      slackSend(channel: "#beats-ci-builds", color: 'danger', message: "${body}", tokenCredentialId: 'jenkins-slack-integration-token')
+      if (enabled) {
+        def color = (currentBuild.currentResult == "SUCCESS") ? 'good' : 'warning'
+        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentials)
+      }
     }
 }
 
