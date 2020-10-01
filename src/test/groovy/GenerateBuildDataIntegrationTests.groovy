@@ -53,7 +53,7 @@ class GenerateBuildDataIntegrationTests {
     String jobUrl = this.URL + "/abort/"
     Process process = runCommand(jobUrl, jobUrl + "runs/1", "ABORTED", "1")
     printStdout(process)
-    assertEquals("Process did finish successfully", 0, process.waitFor())
+    assertEquals("Process did finish successfully", 1, process.waitFor())
 
     // Tests were not executed
     JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)

@@ -80,10 +80,7 @@ function sedCommand() {
 }
 
 function curlCommand() {
-    ## Avoid 500 server side errors
-    if [ "$(curl -LI "$2" -o /dev/null -w '%{http_code}\n' -s)" != "500" ]; then
-        curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2"
-    fi
+    curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2" --fail
 }
 
 function fetch() {
