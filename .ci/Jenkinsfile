@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@test/slackComment') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -194,7 +194,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true)
+      notifyBuildResult(prComment: true, slackComment: true)
     }
   }
 }
