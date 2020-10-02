@@ -1,14 +1,10 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
-<% pipelineUrl = String.format("<%spipeline|%s>", jobUrl, build?.id ?: 'build')%>
+<% artifactsUrl = String.format("<%sartifacts|here>", jobUrl)%>
 <% commitUrl = String.format("<%s|%s>", changes?.url, changes?.msg)%>
+<% pipelineUrl = String.format("<%spipeline|%s>", jobUrl, build?.id ?: 'build')%>
+<% testsUrl = String.format("<%stests|here>", jobUrl)%>
 *Build*: ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
-*Changes*: ${changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
-*Tests(Total/Passed/Failed/Skipped)*: `${(testsSummary?.total) ?: 0}/${(testsSummary?.passed) ?: 0}/${(testsSummary?.failed) ?: 0}/${(testsSummary?.skipped) ?: 0}`
-<% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
-    <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>
-    * *Name*: `${it?.name}` for the last ${it?.age} builds<%}%>
-<%}%>
-*Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0}
-<% steps.each{ it -> %> <% stepUrl = (it?.url && it?.url != 'null') ? String.format("(<%s|see logs>)", it.url) : ''%>
-* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` ${stepUrl} <%}%>
+*Changes*: ${changes?.commitId?.length() > 7 ? changes?.commitId.substring(0, 7) : changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
+*Tests*: ${(testsSummary?.passed) ?: 0} passed out of ${(testsSummary?.total) ?: 0} with `${(testsSummary?.failed) ?: 0}` failure/s (Click ${testsUrl} for further details)
+*Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0} (Click ${artifactsUrl} and open `build.md` for further details)
