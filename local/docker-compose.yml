@@ -29,14 +29,6 @@ services:
     ports:
       - "18080:8080"
       - "50000:50000"
-    deploy:
-      resources:
-        limits:
-          cpus: 0.50
-          memory: 250M
-        reservations:
-          cpus: 0.25
-          memory: 100M
     networks:
       apm-pipeline-library:
 
