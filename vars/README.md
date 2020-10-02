@@ -1111,15 +1111,15 @@ Whether the architecture is an arm based using the `nodeArch` step
 ```
 
 ## isBranch
-Whether the build is based on a Pull Request or no
+Whether the build is based on a Branch or no
 
 ```
   // Assign to a variable
-  def pr = isPR())
+  def branch = isBranch())
 
   // Use whenTrue condition
-  whenTrue(isPR()) {
-    echo "I'm a Pull Request"
+  whenTrue(isBranch()) {
+    echo "I'm a Branch"
   }
 ```
 
