@@ -49,17 +49,18 @@ class GenerateBuildDataIntegrationTests {
   private final String URL = "http://localhost:18081/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
 
   @Test
-  public void abortBuild() {
+  public void abortBuild_without_tests() {
+    String targetFolder = "abortBuild_without_tests"
     String jobUrl = this.URL + "/abort/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "ABORTED", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "ABORTED", "1")
     printStdout(process)
-    assertEquals("Process did finish successfully", 0, process.waitFor())
+    assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
     assertTrue(obj.isEmpty())
 
-    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
@@ -70,17 +71,18 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
-  public void successBuild() {
+  public void successBuild_without_tests() {
+    String targetFolder = "successBuild_without_tests"
     String jobUrl = this.URL + "/success/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
     printStdout(process)
-    assertEquals("Process did finish successfully", 0, process.waitFor())
+    assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
     assertTrue(obj.isEmpty())
 
-    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
@@ -92,16 +94,17 @@ class GenerateBuildDataIntegrationTests {
 
   @Test
   public void unstableBuild() {
+    String targetFolder = "unstableBuild"
     String jobUrl = this.URL + "/unstable/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
     assertFalse(obj.isEmpty())
 
-    obj = JSONSerializer.toJSON(new File("target/build-report.json").text)
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
@@ -113,16 +116,17 @@ class GenerateBuildDataIntegrationTests {
 
   @Test
   public void errorBuild() {
+    String targetFolder = "errorBuild"
     String jobUrl = this.URL + "/error/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
-    assertEquals("Process did finish successfully", 0, process.waitFor())
+    assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
     assertTrue(obj.isEmpty())
 
-    JSONArray errors = JSONSerializer.toJSON(new File("target/steps-errors.json").text)
+    JSONArray errors = JSONSerializer.toJSON(new File("target/${targetFolder}/steps-errors.json").text)
     assertFalse("There are steps errors", errors.isEmpty())
     obj = errors.get(0)
     assertEquals("Log transformation happens successfully", "foo", obj.get("displayDescription"))
@@ -131,13 +135,14 @@ class GenerateBuildDataIntegrationTests {
 
   @Test
   public void unstableBuild_with_tests_normalisation() {
+    String targetFolder = "unstableBuild_with_tests_normalisation"
     String jobUrl = this.URL + "/unstable/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONArray tests = JSONSerializer.toJSON(new File("target/tests-info.json").text)
+    JSONArray tests = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
     assertFalse("There are tests", tests.isEmpty())
     JSONObject obj = tests.get(0)
     assertNull("No _links object", obj.get("_links"))
@@ -149,12 +154,13 @@ class GenerateBuildDataIntegrationTests {
 
   @Test
   public void errorBuild_with_steps_normalisation() {
+    String targetFolder = "errorBuild_with_steps_normalisation"
     String jobUrl = this.URL + "/error/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
     printStdout(process)
-    assertEquals("Process did finish successfully", 0, process.waitFor())
+    assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
-    JSONArray errors = JSONSerializer.toJSON(new File("target/steps-errors.json").text)
+    JSONArray errors = JSONSerializer.toJSON(new File("target/${targetFolder}/steps-errors.json").text)
     assertFalse("There are steps errors", errors.isEmpty())
     JSONObject obj = errors.get(0)
     assertNull("No _class object", obj.get("_class"))
@@ -165,21 +171,22 @@ class GenerateBuildDataIntegrationTests {
 
   @Test
   public void emptyBuild_with_default_manipulation() {
+    String targetFolder = "emptyBuild_with_default_manipulation"
     String jobUrl = this.URL + "/empty/"
-    Process process = runCommand(jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
-    def content = new File("target/job-info.json").text
+    def content = new File("target/${targetFolder}/job-info.json").text
     assertFalse(content.isEmpty())
     JSONObject info = JSONSerializer.toJSON(content)
     assertTrue(info.isEmpty())
   }
 
-  Process runCommand(String jobUrl, String buildUrl, String status, String runTime) {
+  Process runCommand(String targetFolder, String jobUrl, String buildUrl, String status, String runTime) {
     //Build command
     List<String> commands = new ArrayList<String>()
-    commands.add("../resources/scripts/generate-build-data.sh")
+    commands.add("../../resources/scripts/generate-build-data.sh")
     commands.add(jobUrl)
     commands.add(buildUrl)
     commands.add(status)
@@ -189,7 +196,9 @@ class GenerateBuildDataIntegrationTests {
     Map<String, String> env = pb.environment()
     env.put('JENKINS_URL', 'http://localhost:18081/')
     env.put('PIPELINE_LOG_LEVEL', 'INFO')
-    pb.directory(new File("target"))
+    File location = new File("target/${targetFolder}")
+    location.mkdirs()
+    pb.directory(location)
     pb.redirectErrorStream(true)
     Process process = pb.start()
 
