@@ -80,7 +80,7 @@ function sedCommand() {
 }
 
 function curlCommand() {
-    curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2"
+    curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2" --fail
 }
 
 function fetch() {
