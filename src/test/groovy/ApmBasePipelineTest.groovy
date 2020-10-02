@@ -428,14 +428,22 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/installTools.groovy')
       return script.call(l)
     })
+    helper.registerAllowedMethod('isBranch', {
+      def script = loadScript('vars/isBranch.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
+      def script = loadScript('vars/isInstalled.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('isPR', {
       def script = loadScript('vars/isPR.groovy')
       return script.call()
     })
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
-      def script = loadScript('vars/isInstalled.groovy')
-      return script.call(m)
+    helper.registerAllowedMethod('isTag', {
+      def script = loadScript('vars/isTag.groovy')
+      return script.call()
     })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })

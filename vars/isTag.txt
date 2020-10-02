@@ -1,0 +1,11 @@
+Whether the build is based on a Tag Request or no
+
+```
+  // Assign to a variable
+  def tag = isTag())
+
+  // Use whenTrue condition
+  whenTrue(isTag()) {
+    echo "I'm a Tag"
+  }
+```

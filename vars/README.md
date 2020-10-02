@@ -1110,6 +1110,19 @@ Whether the architecture is an arm based using the `nodeArch` step
     }
 ```
 
+## isBranch
+Whether the build is based on a Branch or no
+
+```
+  // Assign to a variable
+  def branch = isBranch())
+
+  // Use whenTrue condition
+  whenTrue(isBranch()) {
+    echo "I'm a Branch"
+  }
+```
+
 ## isBranchIndexTrigger
 Check it the build was triggered by a Branch index.
 
@@ -1224,6 +1237,19 @@ Whether the build is based on a Pull Request or no
   // Use whenTrue condition
   whenTrue(isPR()) {
     echo "I'm a Pull Request"
+  }
+```
+
+## isTag
+Whether the build is based on a Tag Request or no
+
+```
+  // Assign to a variable
+  def tag = isTag())
+
+  // Use whenTrue condition
+  whenTrue(isTag()) {
+    echo "I'm a Tag"
   }
 ```
 
