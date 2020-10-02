@@ -174,7 +174,7 @@
         </td>
       </tr>
       <!--TABLE_CHANGES-->
-      <% stepsErrors = stepsErrors?.findAll{item -> item?.result == "FAILURE"}%>
+      <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
       <tr>
         <td colspan="7" style="height: 32px;${ stepsErrors?.size() != 0 ? '' : 'display: none;' }"></td>
       </tr>
