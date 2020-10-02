@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.144 (02/10/2020)
+
+#### 🚀 Enhancements
+
+-  Exclude GH Notifies and JUnit from reported failed steps [#747](https://github.com/elastic/apm-pipeline-library/pull/747)
+-  Support slack comments for builds [#745](https://github.com/elastic/apm-pipeline-library/pull/745)
+
+#### 🐛 Bug Fixes
+
+-  Fix 500 http errors in BO [#746](https://github.com/elastic/apm-pipeline-library/pull/746)
+
 ## v1.1.143 (30/09/2020)
 
 #### 🚀 Enhancements
