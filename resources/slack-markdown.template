@@ -3,7 +3,7 @@
 <% pipelineUrl = String.format("<%spipeline|%s>", jobUrl, build?.id ?: 'build')%>
 <% commitUrl = String.format("<%s|%s>", changes?.url, changes?.msg)%>
 *Build*: ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
-*Causes*: ${changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
+*Changes*: ${changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
 *Tests(Total/Passed/Failed/Skipped)*: `${(testsSummary?.total) ?: 0}/${(testsSummary?.passed) ?: 0}/${(testsSummary?.failed) ?: 0}/${(testsSummary?.skipped) ?: 0}`
 <% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
     <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>
