@@ -47,7 +47,7 @@ Boolean call(Map args = [:]){
 }
 
 private Boolean whenBranches(Map args = [:]) {
-  if (!isPR() && env.BRANCH_NAME?.trim() && args.content?.get('branches')) {
+  if (isBranch() && args.content?.get('branches')) {
     markdownReason(project: args.project, reason: '* ✅ Branch is enabled .')
     return true
   }
