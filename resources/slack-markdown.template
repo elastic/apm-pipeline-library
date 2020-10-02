@@ -6,5 +6,5 @@
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
 *Build*: ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
 *Changes*: ${changes?.commitId?.length() > 7 ? changes?.commitId.substring(0, 7) : changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
-*Tests(Total/Passed/Failed/Skipped)*: ${(testsSummary?.passed) ?: 0} passed of ${(testsSummary?.total) ?: 0} with `${(testsSummary?.failed) ?: 0}` failure/s (Click ${testsUrl} for further details)
+*Tests*: ${(testsSummary?.passed) ?: 0} passed out of ${(testsSummary?.total) ?: 0} with `${(testsSummary?.failed) ?: 0}` failure/s (Click ${testsUrl} for further details)
 *Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0} (Click ${artifactsUrl} and open `build.md` for further details)
