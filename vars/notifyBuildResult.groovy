@@ -17,10 +17,21 @@
 
 /**
 
-Send an email message with a summary of the build result,
-and send some data to Elasticsearch.
+Notify build status in vary ways, such as an email, comment in GitHub, slack message.
+In addition, it interacts with Elasticsearch to upload all the build data and execute
+the flakey test analyser.
 
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Default
+  notifyBuildResult()
+
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
+  // Notify build status for a PR as a GitHub comment, and send slack message if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
 **/
 
@@ -32,6 +43,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
   def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
@@ -44,7 +56,9 @@ def call(Map args = [:]) {
       def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
-
+      def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
+      def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
+      def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
@@ -78,6 +92,15 @@ def call(Map args = [:]) {
         if(notifyPRComment && isPR()) {
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
           notificationManager.notifyPR(data)
+        }
+
+        // Should notify in slack if it's enabled
+        if(notifySlackComment) {
+          data['channel'] = slackChannel
+          data['credentialId'] = slackCredentials
+          data['enabled'] = slackNotify
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
+          notificationManager.notifySlack(data)
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
         catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {

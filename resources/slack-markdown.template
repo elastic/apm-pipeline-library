@@ -1,0 +1,14 @@
+<% changes = changeSet?.find { true }%>
+<% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
+<% pipelineUrl = String.format("<%spipeline|%s>", jobUrl, build?.id ?: 'build')%>
+<% commitUrl = String.format("<%s|%s>", changes?.url, changes?.msg)%>
+*Build*: ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
+*Changes*: ${changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
+*Tests(Total/Passed/Failed/Skipped)*: `${(testsSummary?.total) ?: 0}/${(testsSummary?.passed) ?: 0}/${(testsSummary?.failed) ?: 0}/${(testsSummary?.skipped) ?: 0}`
+<% if(testsErrors != null && testsErrors instanceof List && testsErrors?.any{item -> item?.status == "FAILED"}) {%>
+    <% testsErrors?.findAll{it?.status == "FAILED"}.each{ %>
+    * *Name*: `${it?.name}` for the last ${it?.age} builds<%}%>
+<%}%>
+*Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0}
+<% steps.each{ it -> %> <% stepUrl = (it?.url && it?.url != 'null') ? String.format("(<%s|see logs>)", it.url) : ''%>
+* *Name*: `${(it?.displayDescription && it?.displayDescription != 'null') ? it?.displayDescription : it?.displayName}` ${stepUrl} <%}%>

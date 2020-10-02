@@ -185,6 +185,58 @@ def notifyPR(Map params = [:]) {
 }
 
 /**
+ * This method sends a slack message with data from Jenkins
+ * @param build
+ * @param buildStatus String with job result
+ * @param changeSet list of change set, see src/test/resources/changeSet-info.json
+ * @param docsUrl URL with the preview docs
+ * @param log String that contains the log
+ * @param statsUrl URL to access to the stats
+ * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ */
+def notifySlack(Map args = [:]) {
+    def build = args.containsKey('build') ? args.build : error('notifySlack: build parameter it is not valid')
+    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('notifySlack: buildStatus parameter is not valid')
+    def changeSet = args.containsKey('changeSet') ? args.changeSet : []
+    def docsUrl = args.get('docsUrl', null)
+    def log = args.containsKey('log') ? args.log : null
+    def statsUrl = args.containsKey('statsUrl') ? args.statsUrl : ''
+    def stepsErrors = args.containsKey('stepsErrors') ? args.stepsErrors : []
+    def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
+    def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
+    def enabled = args.get('enabled', false)
+    def channel = args.containsKey('channel') ? args.channel : error('notifySlack: channel parameter is not required')
+    def credentialId = args.containsKey('credentialId') ? args.credentialId : error('notifySlack: credentialId parameter is not required')
+
+    if (enabled) {
+      catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
+        def statusSuccess = (buildStatus == "SUCCESS")
+        def boURL = getBlueoceanDisplayURL()
+        def body = buildTemplate([
+          "template": 'slack-markdown.template',
+          "build": build,
+          "buildStatus": buildStatus,
+          "changeSet": changeSet,
+          "docsUrl": docsUrl,
+          "jenkinsText": env.JOB_NAME,
+          "jenkinsUrl": env.JENKINS_URL,
+          "jobUrl": boURL,
+          "log": log,
+          "statsUrl": statsUrl,
+          "statusSuccess": statusSuccess,
+          "stepsErrors": stepsErrors,
+          "testsErrors": testsErrors,
+          "testsSummary": testsSummary
+        ])
+        def color = (buildStatus == "SUCCESS") ? 'good' : 'warning'
+        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentialId)
+      }
+    }
+}
+
+/**
  * This method generates the build report and archive it
  * @param build
  * @param buildStatus String with job result

@@ -27,6 +27,7 @@ pipeline {
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
+    SLACK_CHANNEL = '#beats-ci-builds'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -194,7 +195,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true)
+      notifyBuildResult(prComment: true, slackComment: true)
     }
   }
 }

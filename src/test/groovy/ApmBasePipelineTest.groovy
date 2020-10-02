@@ -318,6 +318,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
         throw lastError
       }
     })
+    helper.registerAllowedMethod('slackSend', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
