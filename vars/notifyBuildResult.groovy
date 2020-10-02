@@ -17,10 +17,21 @@
 
 /**
 
-Send an email message with a summary of the build result,
-and send some data to Elasticsearch.
+Notify build status in vary ways, such as an email, comment in GitHub, slack message.
+In addition, it interacts with Elasticsearch to upload all the build data and execute
+the flakey test analyser.
 
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Default
+  notifyBuildResult()
+
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
+  // Notify build status for a PR as a GitHub comment, and send slack message if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
 **/
 
@@ -46,7 +57,7 @@ def call(Map args = [:]) {
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
-      def slackAlways = args.containsKey('slackAlways') ? args.slackAlways : (currentBuild.currentResult != "SUCCESS")
+      def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
@@ -87,7 +98,7 @@ def call(Map args = [:]) {
         if(notifySlackComment) {
           data['channel'] = slackChannel
           data['credentialId'] = slackCredentials
-          data['enabled'] = slackAlways
+          data['enabled'] = slackNotify
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
           notificationManager.notifySlack(data)
         }

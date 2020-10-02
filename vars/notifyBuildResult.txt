@@ -1,7 +1,6 @@
-Send an email message with a summary of the build result,
-and send some data to Elastic search.
-
-Besides, if there are checkout environmental issues then it will rebuild the pipeline.
+Notify build status in vary ways, such as an email, comment in GitHub, slack message.
+In addition, it interacts with Elasticsearch to upload all the build data and execute
+the flakey test analyser.
 
 ```
   // Default
@@ -12,6 +11,9 @@ Besides, if there are checkout environmental issues then it will rebuild the pip
 
   // Notify a new comment with the content of the bundle-details.md file
   notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
+  // Notify build status for a PR as a GitHub comment, and send slack message if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
 ```
 * es: Elasticserach URL to send the report.
@@ -24,7 +26,7 @@ emails on Failed builds that are not pull request.
 * slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
 * slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
-* slackAlways: Whether to send or not the slack notifications, by default it sends notifications on Failed builds.
+* slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
