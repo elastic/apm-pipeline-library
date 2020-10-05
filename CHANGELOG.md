@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.145 (05/10/2020)
+
+#### 🚀 Enhancements
+
+-  isBranch and isTag helpers [#749](https://github.com/elastic/apm-pipeline-library/pull/749)
+
+#### 🙈 No user affected
+
+-  [cosmetic] less verbose test and step failures in the slack message [#750](https://github.com/elastic/apm-pipeline-library/pull/750)
+-  [local] remove resources limitations in docker [#748](https://github.com/elastic/apm-pipeline-library/pull/748)
+
 ## v1.1.144 (02/10/2020)
 
 #### 🚀 Enhancements
