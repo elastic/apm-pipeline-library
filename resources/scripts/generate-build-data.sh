@@ -151,6 +151,35 @@ function fetchAndPrepareTestsInfo() {
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
+function fetchAndPrepareTestSummaryReport() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+    testsFile=$5
+
+    echo "INFO: fetchAndPrepareTestSummaryReport (see ${file})"
+    fetch "$file" "$url"
+
+    ## BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
+    if [ ! -e "${file}" ] ; then
+        if [ -e "${testsFile}" ] ; then
+            {
+                echo "["
+                echo "\"total\": $(jq '. | length' "${testsFile}"),"
+                echo "\"passed\": $(jq 'map(select(.status |contains("PASSED"))) | length' "${testsFile}"),"
+                echo "\"failed\": $(jq 'map(select(.status |contains("FAILED"))) | length' "${testsFile}"),"
+                echo "\"skipped\": $(jq 'map(select(.status |contains("SKIPPED"))) | length' "${testsFile}"),"
+                echo "]"
+            } > "${file}"
+        else
+            echo "${default}" > "${file}"
+        fi
+    fi
+
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+}
+
 function fetchAndPrepareArtifactsInfo() {
     file=$1
     url=$2
@@ -294,10 +323,11 @@ fi
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
 fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
-fetchAndPrepareBuildReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}"
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
 fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
+### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
+fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 echo '}' >> "${BUILD_REPORT}"
 
