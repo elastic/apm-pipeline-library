@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.146 (05/10/2020)
+
+#### 🚀 Enhancements
+
+-  Resilience when test-summary is not accessible. [#751](https://github.com/elastic/apm-pipeline-library/pull/751)
+
 ## v1.1.145 (05/10/2020)
 
 #### 🚀 Enhancements
