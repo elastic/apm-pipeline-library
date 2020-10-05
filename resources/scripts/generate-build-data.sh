@@ -165,12 +165,12 @@ function fetchAndPrepareTestSummaryReport() {
     if [ ! -e "${file}" ] ; then
         if [ -e "${testsFile}" ] ; then
             {
-                echo "["
+                echo "{"
                 echo "\"total\": $(jq '. | length' "${testsFile}"),"
                 echo "\"passed\": $(jq 'map(select(.status |contains("PASSED"))) | length' "${testsFile}"),"
                 echo "\"failed\": $(jq 'map(select(.status |contains("FAILED"))) | length' "${testsFile}"),"
-                echo "\"skipped\": $(jq 'map(select(.status |contains("SKIPPED"))) | length' "${testsFile}"),"
-                echo "]"
+                echo "\"skipped\": $(jq 'map(select(.status |contains("SKIPPED"))) | length' "${testsFile}")"
+                echo "}"
             } > "${file}"
         else
             echo "${default}" > "${file}"
