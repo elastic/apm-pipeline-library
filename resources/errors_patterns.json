@@ -1,0 +1,62 @@
+  [
+    {
+      "regexp": "ERROR.*https:\/\/registry.*\\.docker\\.io",
+      "description": "Error accesing to the Docker.io registry",
+      "tags": ["Environment", "docker"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "Client\\.Timeout exceeded while awaiting headers",
+      "description": "Timeout accessing to an HTTP service",
+      "tags": ["Environment"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "script returned exit code 143",
+      "description": "The pipeline was aborted",
+      "tags": ["pipeline"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "Error when executing always post condition",
+      "description": "Unhandled exception on a post stage",
+      "tags": ["code", "Groovy"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "error: Unable to find package [a-zA-Z\\._0-9]+ with version",
+      "description": "Error trying to resolve a dependency",
+      "tags": ["Environment", "dependencies", ".NET"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "Could not transfer artifact [a-zA-Z\\._0-9:-]+ from",
+      "description": "Error trying to resolve a dependency",
+      "tags": ["Environment", "dependencies", "maven", "Java"],
+      "kb": "https://link_to_kb_article"
+  },
+    {
+      "regexp": "npm ERR! Unexpected end of JSON input while parsing near",
+      "description": "Syntax error on a JSON file",
+      "tags": ["code", "Node.js", "npm"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "Error ReadTimeout(HTTPSConnectionPool\\(host=''[a-z\\.-]+'', port=([0-9]+)\\)",
+      "description": "Timeout accessing to an HTTP service",
+      "tags": ["Environment", "Python"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "java.lang.InterruptedException: no matches found within 10000",
+      "description": "JUnit step patterns are too generic",
+      "tags": ["ci", "junit"],
+      "kb": "https://link_to_kb_article"
+    },
+    {
+      "regexp": "hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection",
+      "description": "Jenkins agent disconnection issue",
+      "tags": ["ci", "agents"],
+      "kb": "https://link_to_kb_article"
+    }
+  ]
