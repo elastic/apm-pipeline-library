@@ -1,0 +1,20 @@
+## :bug: Flaky test report
+<% if(tests) {%>
+:snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
+    <% tests?.each{ k,v -> %>
+* **Name**: `${k}` reported in the issue #${v}
+    <%}%>
+<%}%>
+<%}else {%>
+:grey_exclamation: There are not known flaky tests.
+<%}%>
+
+<% if(testsSummary?.total != 0) {%>
+### Test stats :test_tube:
+| Test         | Results                         |
+| ------------ | :-----------------------------: |
+| Failed       | ${(testsSummary?.failed) ?: 0}  |
+| Passed       | ${(testsSummary?.passed) ?: 0}  |
+| Skipped      | ${(testsSummary?.skipped) ?: 0} |
+| Total        | ${(testsSummary?.total) ?: 0}   |
+<%}%>

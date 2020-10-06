@@ -35,6 +35,9 @@ This method generates flakey test data from Jenkins test results
  * @param secret Vault path to secrets which hold authentication information for Elasticsearch
  * @param jobInfo JobInfo data collected from job-info.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param flakyReportIdx, what's the id.
+ * @param flakyThreshold, to tweak the score.
+ * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
 */ 
 def analyzeFlakey(Map params = [:]) {
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
@@ -42,7 +45,8 @@ def analyzeFlakey(Map params = [:]) {
     def flakyReportIdx = params.containsKey('flakyReportIdx') ? params.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
-    
+    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+
     if (!flakyReportIdx || !flakyReportIdx.trim()) {
       error "Did not receive flakyReportIdx data" 
     }
@@ -61,11 +65,14 @@ def analyzeFlakey(Map params = [:]) {
         }
       }
     }
-    def msg = "❄️ The following tests failed but also have a history of flakiness and may not be related to this change: " + ret.toString()
-    
-    if (ret) {
-      githubPrComment(message: msg, commentFile: 'flakey.id')
-    }
+    def body = buildTemplate([
+      "template": 'flakey-github-comment-markdown',
+      "tests": build,
+      "testsSummary": testsSummary
+    ])
+    writeFile(file: 'flakey.md', text: body)
+    githubPrComment(commentFile: 'flakey.id', message: body)
+    archiveArtifacts 'flakey.md'
 }
 
 /**
