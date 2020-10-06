@@ -3,8 +3,10 @@
 * **Test Name:** ${testName}.
 * **Artifact Link:** ${jobUrl}
 
+<% if (stacktrace) {%>
 ### Stack Trace
 
 ```
 ${stacktrace}
 ```
+<% }%>
