@@ -2,12 +2,10 @@
 <% if(tests) {%>
 :snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
     <% tests?.each{ k,v -> %>
-* **Name**: `${k}` reported in the issue #${v}
-    <%}%>
+* **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
 <%}else {%>
 :grey_exclamation: There are not known flaky tests.
 <%}%>
-
 <% if(testsSummary?.total != 0) {%>
 ### Test stats :test_tube:
 | Test         | Results                         |

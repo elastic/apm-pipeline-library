@@ -71,34 +71,33 @@ def analyzeFlakey(Map params = [:]) {
     def tests = lookForGitHubIssues(flakeyList: ret)
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
-    ret.each { k, v ->
+    def flakyTestsWithIssues = [:]
+    tests.each { k, v ->
       def issue = v
       if (!v?.trim()) {
         def issueDescription = buildTemplate([
           "template": 'flakey-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
-          "testData": testsErrors?.any { it.name.equals(k) }
+          "testData": testsErrors?.find { it.name.equals(k) }
         ])
-        // TODO: Some resilience if someothing bad happened
+        // TODO: Some resilience if something bad happened
         try {
-          retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
-            if(!issue?.trim()) {
-              error('something bad happened with the issue creation.')
-            }
+          issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
+          if(!issue?.trim()) {
+            issue = ''
           }
         } catch(err) {
           issue = ''
         }
       }
-      tests[k] = issue
+      flakyTestsWithIssues[k] = issue
     }
 
     // Decorate comment
     def body = buildTemplate([
       "template": 'flakey-github-comment-markdown.template',
-      "tests": tests,
+      "tests": flakyTestsWithIssues,
       "testsSummary": testsSummary
     ])
     writeFile(file: 'flakey.md', text: body)

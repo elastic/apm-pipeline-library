@@ -22,7 +22,7 @@
 */
 def call(Map args = [:]) {
   def list = params.get('flakeyList', [])
-  if (list()) {
+  if (list) {
     //TODO
 
     return []
