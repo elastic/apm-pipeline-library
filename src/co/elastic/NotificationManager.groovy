@@ -66,18 +66,20 @@ def analyzeFlakey(Map params = [:]) {
       }
     }
 
-    // TODO: Lookup
+    // TODO: reporting should not happen if no test failures!
 
+    def tests = lookForGitHubIssues(flakeyList: ret)
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
-    def tests = [:]
     ret.each { k, v ->
       def issue = v
       if (!v?.trim()) {
         def issueDescription = buildTemplate([
           "template": 'flakey-github-issue.template',
           "testName": k,
-          "jobUrl": boURL
+          "jobUrl": boURL,
+          "testsSummary": testsSummary,
+          "testsErrors": testsErrors
         ])
         // TODO: Some resilience if someothing bad happened
         retryWithSleep(retries: 3, seconds: 5, backoff: true) {
