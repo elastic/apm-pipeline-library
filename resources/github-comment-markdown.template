@@ -50,7 +50,7 @@
 
 <!-- TEST RESULTS IF ANY-->
 <% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
-  ### Test errors
+  ### Test errors [![${testsSummary?.failed}](https://img.shields.io/badge/${testsSummary?.failed}%20-red)](${jobUrl}/tests)
   <details><summary>Expand to view the tests failures</summary>
   <p>
     <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ test -> %>
@@ -66,8 +66,7 @@
 <!-- STEPS ERRORS IF ANY-->
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% if (stepsErrors?.size() != 0) {%>
-### Steps errors
-
+### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
   <% stepsErrors.each{ c -> %>
