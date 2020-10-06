@@ -1,10 +1,1 @@
-If the current build is a PR, it would return true if the given label
-matches with the list of assigned labels in the PR.
-
-  ```
-  whenTrue(matchesPrLabel(label: 'foo')) {
-    ...
-  }
-  ```
-
-NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
+Look for all the issues that were reported as flakey tests.

@@ -66,7 +66,8 @@ def analyzeFlakey(Map params = [:]) {
       }
     }
 
-    def tests = lookForGitHubIssues(flakeyList: ret)
+    def labels = 'flaky-test,ci-reported'
+    def tests = lookForGitHubIssues(flakeyList: ret, labelsFilter: labels.split(','))
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
@@ -81,7 +82,7 @@ def analyzeFlakey(Map params = [:]) {
         ])
         try {
           retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnStdout: true)
+            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: labels, returnStdout: true)
           }
         } catch(err) {
           issue = ''

@@ -690,6 +690,7 @@ githubCreateIssue(title: 'Foo', description: 'Something else to be added', assig
 * milestone: The milestone name to add to the created issue. Optional
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+* returnStdout: Whether to return the just created issue. Optional. Default false.
 
 _NOTE_: Windows is not supported yet.
 
@@ -1339,6 +1340,10 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## lookForGitHubIssues
+Look for all the issues that were reported as flakey tests.
+
 
 ## matchesPrLabel
 If the current build is a PR, it would return true if the given label

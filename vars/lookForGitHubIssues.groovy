@@ -16,12 +16,13 @@
 // under the License.
 
 /**
-  Look for all the issues that were reported for flakey tests.
+  Look for all the issues that were reported as flakey tests.
 
   TBD
 */
 def call(Map args = [:]) {
   def list = params.get('flakeyList', [])
+  def labels = params.get('labelsFilter', [])
   if (list) {
     //TODO
 
