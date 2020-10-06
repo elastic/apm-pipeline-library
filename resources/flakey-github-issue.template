@@ -3,10 +3,15 @@
 * **Test Name:** ${testName}.
 * **Artifact Link:** ${jobUrl}
 
-<% if (stacktrace) {%>
-### Stack Trace
-
+<% if (testData?.errorDetails) {%>
+### Error details
 ```
-${stacktrace}
+${testData.errorDetails}
+```
+<% }%>
+<% if (testData?.errorStackTrace) {%>
+### Stack Trace
+```
+${testData.errorStackTrace}
 ```
 <% }%>

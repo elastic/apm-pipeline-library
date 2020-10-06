@@ -78,18 +78,21 @@ def analyzeFlakey(Map params = [:]) {
           "template": 'flakey-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
-          "testsSummary": testsSummary,
-          "testsErrors": testsErrors
+          "testData": testsErrors?.any { it.name.equals(k) }
         ])
         // TODO: Some resilience if someothing bad happened
-        retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-          issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
-          if(!issue?.trim()) {
-            error('something bad happened with the issue creation.')
+        try {
+          retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
+            if(!issue?.trim()) {
+              error('something bad happened with the issue creation.')
+            }
           }
+        } catch(err) {
+          issue = ''
         }
       }
-      test[k] = issue
+      tests[k] = issue
     }
 
     // Decorate comment
