@@ -66,8 +66,6 @@ def analyzeFlakey(Map params = [:]) {
       }
     }
 
-    // TODO: reporting should not happen if no test failures!
-
     def tests = lookForGitHubIssues(flakeyList: ret)
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
@@ -81,14 +79,16 @@ def analyzeFlakey(Map params = [:]) {
           "jobUrl": boURL,
           "testData": testsErrors?.find { it.name.equals(k) }
         ])
-        // TODO: Some resilience if something bad happened
         try {
-          issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
-          if(!issue?.trim()) {
-            issue = ''
+          retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnStdout: true)
           }
         } catch(err) {
           issue = ''
+        } finally {
+          if(!issue?.trim()) {
+            issue = ''
+          }
         }
       }
       flakyTestsWithIssues[k] = issue
