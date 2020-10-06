@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.147 (06/10/2020)
+
+#### 🚀 Enhancements
+
+-  highlight step and test failures in GH comments [#752](https://github.com/elastic/apm-pipeline-library/pull/752)
+
 ## v1.1.146 (05/10/2020)
 
 #### 🚀 Enhancements
