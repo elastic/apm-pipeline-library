@@ -392,22 +392,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_analyzeFlakey() throws Exception {
+  void test_analyzeFlakey_in_prs() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
       "sendDataToElasticsearch",
       [Map.class],
       {m -> readJSON(file: "flake-results.json")}
     )
-
-    helper.registerAllowedMethod(
-      "githubPrComment",
-      [Map.class],
-      {m -> assertTrue(
-        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
-        )
-      }
-    )
+    helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
       flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
@@ -425,15 +417,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       [Map.class],
       {m -> readJSON(file: "flake-results.json")}
     )
-
-    helper.registerAllowedMethod(
-      "githubPrComment",
-      [Map.class],
-      {m -> assertTrue(
-        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
-        )
-      }
-    )
     script.analyzeFlakey(
       flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
@@ -444,7 +427,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
     assertJobStatusSuccess()
   }
-
 
   @Test
   void test_analyzeFlakeyNoJobInfo() throws Exception {

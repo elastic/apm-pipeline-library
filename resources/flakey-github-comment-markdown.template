@@ -4,7 +4,6 @@
     <% tests?.each{ k,v -> %>
 * **Name**: `${k}` reported in the issue #${v}
     <%}%>
-<%}%>
 <%}else {%>
 :grey_exclamation: There are not known flaky tests.
 <%}%>

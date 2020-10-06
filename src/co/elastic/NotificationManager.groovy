@@ -75,7 +75,7 @@ def analyzeFlakey(Map params = [:]) {
       def issue = v
       if (!v?.trim()) {
         def issueDescription = buildTemplate([
-          "template": 'flakey-issue-template',
+          "template": 'flakey-github-issue.template',
           "testName": k,
           "jobUrl": boURL
         ])
@@ -92,7 +92,7 @@ def analyzeFlakey(Map params = [:]) {
 
     // Decorate comment
     def body = buildTemplate([
-      "template": 'flakey-github-comment-markdown',
+      "template": 'flakey-github-comment-markdown.template',
       "tests": tests,
       "testsSummary": testsSummary
     ])
