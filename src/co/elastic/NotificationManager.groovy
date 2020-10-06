@@ -65,9 +65,35 @@ def analyzeFlakey(Map params = [:]) {
         }
       }
     }
+
+    // TODO: Lookup
+
+    // Create issues if they were not created
+    def boURL = getBlueoceanDisplayURL()
+    def tests = [:]
+    ret.each { k, v ->
+      def issue = v
+      if (!v?.trim()) {
+        def issueDescription = buildTemplate([
+          "template": 'flakey-issue-template',
+          "testName": k,
+          "jobUrl": boURL
+        ])
+        // TODO: Some resilience if someothing bad happened
+        retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+          issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: 'flaky-test,ci-reported', returnIssue: true)
+          if(!issue?.trim()) {
+            error('something bad happened with the issue creation.')
+          }
+        }
+      }
+      test[k] = issue
+    }
+
+    // Decorate comment
     def body = buildTemplate([
       "template": 'flakey-github-comment-markdown',
-      "tests": build,
+      "tests": tests,
       "testsSummary": testsSummary
     ])
     writeFile(file: 'flakey.md', text: body)
