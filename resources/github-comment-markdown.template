@@ -14,6 +14,7 @@
 <%}%>
 
 <!-- BUILD BADGES-->
+> _the below badges are clickables and redirect to their specific view in the CI or DOCS_
 [![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) <% if(docsUrl?.trim() && !buildStatus?.equals('ABORTED')) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>
 
 <!-- BUILD SUMMARY-->
