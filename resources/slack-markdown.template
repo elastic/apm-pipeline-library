@@ -2,9 +2,11 @@
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% artifactsUrl = String.format("<%sartifacts|here>", jobUrl)%>
 <% commitUrl = String.format("<%s|%s>", changes?.url, changes?.msg)%>
-<% pipelineUrl = String.format("<%spipeline|%s>", jobUrl, build?.id ?: 'build')%>
+<% pipelineUrl = String.format("<%spipeline|#%s>", jobUrl, build?.id ?: 'build')%>
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
+<% changesMessage = (changes?.url && changes?.msg) ? "${commitUrl} (by `${changes?.author?.id}`)" : "No push event to branch ${build?.pipeline}" %>
+<% stepsMessage = (steps?.size()!= 0) ? "`${steps?.size()}` (click ${artifactsUrl} and open `build.md` for further details)" : 0%>
 *Build*: ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
-*Changes*: ${changes?.commitId?.length() > 7 ? changes?.commitId.substring(0, 7) : changes?.commitId} has been merged (see ${commitUrl}) (PR owner `${changes?.author?.id}`)
-*Tests*: ${(testsSummary?.passed) ?: 0} passed out of ${(testsSummary?.total) ?: 0} with `${(testsSummary?.failed) ?: 0}` failure/s (Click ${testsUrl} for further details)
-*Steps failures*: ${(steps?.size()!= 0) ? steps?.size() : 0} (Click ${artifactsUrl} and open `build.md` for further details)
+*Changes*: ${changesMessage}
+*Tests*: ${(testsSummary?.failed) ?: 0} test/s failed out of ${(testsSummary?.total) ?: 0} (click ${testsUrl} for further details)
+*Steps failures*: ${stepsMessage}
