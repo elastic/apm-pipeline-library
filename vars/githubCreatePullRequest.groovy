@@ -39,6 +39,7 @@ def call(Map args = [:]) {
 
   def draftFlag = draft ? '--draft' : ''
   def forceFlag = force ? '--force' : ''
+  def output = ''
   withCredentials([
     usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')
   ]) {
@@ -48,7 +49,9 @@ def call(Map args = [:]) {
       git config remote.origin.url \${remoteUrl}
     """)
     try {
-      sh(label: 'Create GitHub issue', script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}")
+      def output = sh(label: 'Create GitHub issue', returnStdout: true,
+                   script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}")
+      return output
     } catch(e) {
       error "githubCreatePullRequest: error ${e}"
     } finally {
