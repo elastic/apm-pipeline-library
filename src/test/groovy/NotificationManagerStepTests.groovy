@@ -388,6 +388,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
+    assertFalse(assertMethodCallContainsPattern('slackSend', '*Changes*: No push event to branch'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_slack_with_aborted_and_no_commit_history() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifySlack(
+      build: readJSON(file: "build-info-manual.json"),
+      buildStatus: "ABORTED",
+      changeSet: readJSON(file: "changeSet-info-manual.json"),
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json"),
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', '*Changes*: No push event to branch'))
     assertJobStatusSuccess()
   }
 

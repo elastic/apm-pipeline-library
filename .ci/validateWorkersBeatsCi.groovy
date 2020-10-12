@@ -60,7 +60,29 @@ pipeline {
         axes {
           axis {
             name 'PLATFORM'
-            values 'ubuntu && immutable', 'ubuntu-1404-i386', 'worker-c07l34n6dwym', 'worker-c07y20b6jyvy', 'worker-c07ll940dwyl', 'worker-c07y20b9jyvy', 'worker-c07y20b4jyvy', 'worker-c07y20bcjyvy', 'worker-395930', 'worker-0a434dec4bdcd060f', 'immutable && windows-2019', 'immutable && windows-2016', 'immutable && windows-2012-r2', 'immutable && windows-10', 'immutable && windows-8', 'immutable && windows-2008-r2', 'immutable && windows-7-32-bit'
+            values (
+              'ubuntu && immutable',
+              'ubuntu-1404-i386',
+              'ubuntu-16',
+              'ubuntu-18',
+              'ubuntu-20',
+              'worker-c07l34n6dwym',
+              'worker-c07y20b6jyvy',
+              'worker-c07ll940dwyl',
+              'worker-c07y20b9jyvy',
+              'worker-c07y20b4jyvy',
+              'worker-c07y20bcjyvy',
+              'worker-395930',
+              'worker-0a434dec4bdcd060f',
+              'immutable && windows-2019',
+              'immutable && windows-2016',
+              'immutable && windows-2012-r2',
+              'immutable && windows-10',
+              'immutable && windows-8',
+              'immutable && windows-2008-r2',
+              'immutable && windows-7-32-bit',
+              'immutable && windows-7'
+            )
           }
         }
         excludes {

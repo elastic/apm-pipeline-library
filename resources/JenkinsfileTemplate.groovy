@@ -141,7 +141,8 @@ pipeline {
         log(level: 'INFO', text: "I'm running as there was a GitHub comment with the 'benchmark tests'")
       }
     }
-    stage('Workers Checks'){
+
+    stage('Check Unix Workers'){
       when {
         beforeAgent true
         allOf {
@@ -152,191 +153,140 @@ pipeline {
           }
         }
       }
+      options { skipDefaultCheckout() }
+      environment {
+        PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+        // Parameters will be empty for the very first build, setting an environment variable
+        // with the same name will workaround the issue. see JENKINS-41929
+        PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
+      }
+      matrix {
+        agent { label "${PLATFORM}" }
+        axes {
+          axis {
+            name 'PLATFORM'
+            values (
+              'debian-9',
+              'ubuntu-16',
+              'ubuntu-18'
+              )
+          }
+        }
+        stages {
+          /**
+          Build the project from code..
+          */
+          stage('Build') {
+            steps {
+              buildUnix()
+            }
+          }
+          /**
+          Execute unit tests.
+          */
+          stage('Test') {
+            steps {
+              testDockerInside()
+              testUnix()
+            }
+            post {
+              always {
+                junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+              }
+            }
+          }
+          stage('Run on branch or tag'){
+            when {
+              beforeAgent true
+              anyOf {
+                branch 'master'
+                branch "v7*"
+                branch "v8*"
+                tag pattern: "v\\d+\\.\\d+\\.\\d+.*", comparator: 'REGEXP'
+                expression { return params.Run_As_Master_Branch }
+              }
+            }
+            steps {
+              echo "I am a tag or branch"
+            }
+          }
+        }
+        post {
+          always {
+            sh 'docker ps -a || true'
+          }
+        }
+      }
+    }
+
+    stage('Check Windows Workers'){
+      when {
+        beforeAgent true
+        allOf {
+          expression { return env.ONLY_DOCS == "false" }
+          anyOf {
+            expression { return env.TEST_INFRA == "true" }
+            branch 'master'
+          }
+        }
+      }
+      options { skipDefaultCheckout() }
+      matrix {
+        agent { label "${PLATFORM}" }
+        axes {
+          axis {
+            name 'PLATFORM'
+            values (
+              'windows-2016-immutable',
+              'windows-2016-latest-immutable',
+              'windows-2012-r2-immutable',
+              'windows-2012-r2-latest-immutable',
+              'windows-2019-immutable',
+              'windows-2019-docker-immutable',
+              'windows-2019-test-immutable',
+              'windows-2019-latest-immutable'
+              )
+          }
+        }
+        stages {
+          stage('Test') {
+            steps {
+              testWindows()
+            }
+          }
+          stage('Install tools') {
+            options {
+              warnError('installTools failed')
+            }
+            steps {
+              installTools([ [tool: 'nodejs', version: '12' ] ])
+            }
+          }
+        }
+        post {
+          always {
+            junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+          }
+        }
+      }
+    }
+
+    stage('Check Static Workers'){
+      when {
+        beforeAgent true
+        allOf {
+          expression { return env.ONLY_DOCS == "false" }
+          anyOf {
+            expression { return env.TEST_INFRA == "true" }
+            branch 'master'
+          }
+        }
+      }
+      options { skipDefaultCheckout() }
       failFast false
       parallel {
-        stage('linux && immutable check'){
-          agent { label 'linux && immutable' }
-          options { skipDefaultCheckout() }
-          environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-            // Parameters will be empty for the very first build, setting an environment variable
-            // with the same name will workaround the issue. see JENKINS-41929
-            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
-          }
-          stages {
-            /**
-            Build the project from code..
-            */
-            stage('Build') {
-              steps {
-                buildUnix()
-              }
-            }
-            /**
-            Execute unit tests.
-            */
-            stage('Test') {
-              steps {
-                testDockerInside()
-                testUnix()
-              }
-              post {
-                always {
-                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-                }
-              }
-            }
-            stage('Run on branch or tag'){
-              when {
-                beforeAgent true
-                anyOf {
-                  branch 'master'
-                  branch "v7*"
-                  branch "v8*"
-                  tag pattern: "v\\d+\\.\\d+\\.\\d+.*", comparator: 'REGEXP'
-                  expression { return params.Run_As_Master_Branch }
-                }
-              }
-              steps {
-                echo "I am a tag or branch"
-              }
-            }
-          }
-          post {
-            always {
-              sh 'docker ps -a || true'
-            }
-          }
-        }
-        stage('Ubuntu 18.04 test'){
-          agent { label 'ubuntu-edge' }
-          options { skipDefaultCheckout() }
-          environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-            //see JENKINS-41929
-            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
-          }
-          stages {
-            /**
-            Build the project from code..
-            */
-            stage('Build') {
-              steps {
-                buildUnix()
-              }
-            }
-            /**
-            Execute unit tests.
-            */
-            stage('Test') {
-              steps {
-                testUnix()
-                testDockerInside()
-              }
-              post {
-                always {
-                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-                }
-              }
-            }
-          }
-          post {
-            cleanup {
-              sh 'docker ps -a || true'
-            }
-          }
-        }
-        stage('Debian 9 test'){
-          agent { label 'debian-9' }
-          options { skipDefaultCheckout() }
-          environment {
-            PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-            //see JENKINS-41929
-            PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
-          }
-          stages {
-            /**
-            Build the project from code..
-            */
-            stage('Build') {
-              steps {
-                buildUnix()
-              }
-            }
-            /**
-            Execute unit tests.
-            */
-            stage('Test') {
-              steps {
-                testUnix()
-                testDockerInside()
-              }
-              post {
-                always {
-                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-                }
-              }
-            }
-          }
-          post {
-            cleanup {
-              sh 'docker ps -a || true'
-            }
-          }
-        }
-        stage('windows 2012 immutable check'){
-          agent { label 'windows-2012-r2-immutable' }
-          options { skipDefaultCheckout() }
-          steps {
-            checkOldWindows()
-          }
-        }
-        stage('windows 2016 immutable check'){
-          agent { label 'windows-2016-immutable' }
-          options { skipDefaultCheckout() }
-          steps {
-            checkOldWindows()
-          }
-        }
-        stage('windows 2019 immutable check'){
-          agent { label 'windows-2019-immutable' }
-          options { skipDefaultCheckout() }
-          stages {
-            stage('Test') {
-              steps {
-                testWindows()
-              }
-            }
-            stage('Install tools') {
-              options {
-                warnError('installTools failed')
-              }
-              steps {
-                installTools([ [tool: 'nodejs', version: '12' ] ])
-              }
-            }
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
-        stage('windows 2019 docker immutable check'){
-          agent { label 'windows-2019-docker-immutable' }
-          options { skipDefaultCheckout() }
-          steps {
-            testWindows(withExtra: true)
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
         stage('Mac OS X check - 01'){
-          agent { label 'macosx' }
-          options { skipDefaultCheckout() }
+          agent { label 'worker-c07yx0vrjyvy' }
           steps {
             buildUnix()
             testMac()
@@ -348,8 +298,7 @@ pipeline {
           }
         }
         stage('Mac OS X check - 02'){
-          agent { label 'macosx' }
-          options { skipDefaultCheckout() }
+          agent { label 'worker-c07yx0vdjyvy' }
           steps {
             buildUnix()
             testMac()
@@ -362,7 +311,6 @@ pipeline {
         }
         stage('BareMetal worker-854309 check'){
           agent { label 'worker-854309' }
-          options { skipDefaultCheckout() }
           steps {
             buildUnix()
             testBaremetal()
@@ -375,7 +323,6 @@ pipeline {
         }
         stage('BareMetal worker-1095690 check'){
           agent { label 'worker-1095690' }
-          options { skipDefaultCheckout() }
           steps {
             buildUnix()
             testBaremetal()
@@ -388,7 +335,6 @@ pipeline {
         }
         stage('BareMetal worker-1213919 check'){
           agent { label 'worker-1213919' }
-          options { skipDefaultCheckout() }
           steps {
             buildUnix()
             testBaremetal()
@@ -401,7 +347,6 @@ pipeline {
         }
         stage('BareMetal worker-1225339 check'){
           agent { label 'worker-1225339' }
-          options { skipDefaultCheckout() }
           steps {
             buildUnix()
             testBaremetal()
@@ -466,11 +411,15 @@ def testMac(){
 }
 
 def testWindows(params = [:]){
-  def withExtra = params.containsKey('withExtra') ? params.withExtra : false
+  def withExtra = params.containsKey('withExtra') ? params.withExtra : hasDocker("${PLATFORM}")
   deleteDir()
   unstash 'source'
-  dir("${BASE_DIR}"){
-    powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
+  if(isModermWindows("${PLATFORM}")){
+    dir("${BASE_DIR}"){
+      powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
+    }
+  } else {
+    checkOldWindows()
   }
 }
 
@@ -480,4 +429,12 @@ def checkOldWindows(){
   dir("${BASE_DIR}"){
     bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
+}
+
+def hasDocker(platform){
+  return platform.contains('docker')
+}
+
+def isModermWindows(platform){
+  return platform.contains('2019')
 }
