@@ -410,6 +410,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/githubEnv.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('githubIssues', [Map.class], {
+      def script = loadScript('vars/githubIssues.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
     helper.registerAllowedMethod('githubPrComment', [Map.class], { m ->
       def script = loadScript('vars/githubPrComment.groovy')
