@@ -700,6 +700,10 @@ there are commited changes.
 ```
 githubCreatePullRequest(title: 'Foo')
 githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+
+// Get the PR URL
+def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'something')
+
 ```
 
 * title: The issue title. Mandatory

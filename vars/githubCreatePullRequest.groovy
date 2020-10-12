@@ -20,6 +20,8 @@
   there are commited changes
 
   githubCreatePullRequest(title: 'Foo')
+
+  def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'something')
 */
 
 def call(Map args = [:]) {
