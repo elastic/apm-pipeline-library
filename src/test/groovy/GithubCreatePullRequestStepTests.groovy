@@ -142,62 +142,14 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_push_disabled() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { s ->
-      if(s.script.contains('hub pull-request')) {
-        throw new Exception('Aborted: the current branch seems not yet pushed to a remote.\n(use `-p` to push the branch or `-f` to skip this check)')
-      } else {
-        'OK'
-      }
-    })
-    try {
-      script.call(title: 'foo', force: false)
-    } catch(e) {
-
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Aborted: the current '))
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void test_with_pr_already_exist() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { s ->
-      if(s.script.contains('hub pull-request')) {
-        throw new Exception('Error creating pull request: Unprocessable Entity (HTTP 422)\nA pull request already exists for v1v:feature/ghpr-return-url.')
-      } else {
-        'OK'
-      }
-    })
-    try {
-      script.call(title: 'foo', force: false)
-    } catch(e) {
-
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Error creating pull request'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_with_stdout() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { s ->
-      if(s.script.contains('hub pull-request')) {
-        throw new Exception('Aborted: the current branch seems not yet pushed to a remote.\n(use `-p` to push the branch or `-f` to skip this check)')
-      } else {
-        'OK'
-      }
+      return 'https://github.com/acme/my-repo/pull/1'
     })
-    try {
-      script.call(title: 'foo', force: false)
-    } catch(e) {
-
-    }
+    def ret = script.call(title: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Aborted: the current '))
-    assertJobStatusFailure()
+    assertTrue(ret.equals('https://github.com/acme/my-repo/pull/1'))
+    assertJobStatusSuccess()
   }
 }
