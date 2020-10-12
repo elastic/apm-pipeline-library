@@ -396,6 +396,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
       getVaultSecret(s)
     })
+    helper.registerAllowedMethod('gh', [Map.class], {
+      def script = loadScript('vars/gh.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('gitCmd', [Map.class], null)
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
