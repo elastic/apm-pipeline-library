@@ -49,8 +49,8 @@ def call(Map args = [:]) {
       git config remote.origin.url \${remoteUrl}
     """)
     try {
-      def output = sh(label: 'Create GitHub issue', returnStdout: true,
-                   script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}")
+      output = sh(label: 'Create GitHub issue', returnStdout: true,
+                  script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}").trim()
       return output
     } catch(e) {
       error "githubCreatePullRequest: error ${e}"

@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
@@ -117,8 +118,9 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
       }
     })
     def script = loadScript(scriptName)
+    def ret
     try {
-      script.call(title: 'foo')
+      ret = script.call(title: 'foo')
     } catch(e){
       //NOOP
     }
@@ -126,6 +128,7 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'Force an error'))
     assertTrue(assertMethodCallContainsPattern('sh', 'sed "s#.*@#https://#g"'))
     assertTrue(assertMethodCallContainsPattern('sh', 'git config remote.origin.url'))
+    assertNull(ret)
     assertJobStatusFailure()
   }
 
@@ -136,5 +139,65 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "--force"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_push_disabled() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      if(s.script.contains('hub pull-request')) {
+        throw new Exception('Aborted: the current branch seems not yet pushed to a remote.\n(use `-p` to push the branch or `-f` to skip this check)')
+      } else {
+        'OK'
+      }
+    })
+    try {
+      script.call(title: 'foo', force: false)
+    } catch(e) {
+
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Aborted: the current '))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_pr_already_exist() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      if(s.script.contains('hub pull-request')) {
+        throw new Exception('Error creating pull request: Unprocessable Entity (HTTP 422)\nA pull request already exists for v1v:feature/ghpr-return-url.')
+      } else {
+        'OK'
+      }
+    })
+    try {
+      script.call(title: 'foo', force: false)
+    } catch(e) {
+
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Error creating pull request'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_stdout() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      if(s.script.contains('hub pull-request')) {
+        throw new Exception('Aborted: the current branch seems not yet pushed to a remote.\n(use `-p` to push the branch or `-f` to skip this check)')
+      } else {
+        'OK'
+      }
+    })
+    try {
+      script.call(title: 'foo', force: false)
+    } catch(e) {
+
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Aborted: the current '))
+    assertJobStatusFailure()
   }
 }
