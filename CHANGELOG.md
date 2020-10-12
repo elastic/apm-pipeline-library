@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.148 (12/10/2020)
+
+#### 🚀 Enhancements
+
+-  slack message for no push events [#762](https://github.com/elastic/apm-pipeline-library/pull/762)
+
+#### 🙈 No user affected
+
+-  [DOCS] fix typo [#758](https://github.com/elastic/apm-pipeline-library/pull/758)
+-  [DOCS] Add badge details [#757](https://github.com/elastic/apm-pipeline-library/pull/757)
+
+#### ⚙️ CI
+
+-  ci: add workers to the infra test [#759](https://github.com/elastic/apm-pipeline-library/pull/759)
+
 ## v1.1.147 (06/10/2020)
 
 #### 🚀 Enhancements
