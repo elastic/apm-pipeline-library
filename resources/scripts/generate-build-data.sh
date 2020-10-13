@@ -232,7 +232,7 @@ function normaliseTestsWithoutStacktrace() {
     file=$1
     normaliseTests "${file}"
     ## This will help to tidy up the file size quite a lot.
-    ## It might be useful to export it but let's go step by step
+    ## It might be useful to export it but lets go step by step
     jqEdit 'map(del(.errorStackTrace))' "${file}"
 }
 

@@ -1,6 +1,6 @@
 ## Flaky Test
 
-* **Test Name:** ${testName}.
+* **Test Name:** ${testName}
 * **Artifact Link:** ${jobUrl}
 
 <% if (testData?.errorDetails) {%>
