@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.149 (13/10/2020)
+
+#### 🚀 Enhancements
+
+-  Return PR URL with githubCreatePullRequest step [#765](https://github.com/elastic/apm-pipeline-library/pull/765)
+
 ## v1.1.148 (12/10/2020)
 
 #### 🚀 Enhancements
