@@ -20,25 +20,28 @@
   there are commited changes
 
   githubCreatePullRequest(title: 'Foo')
+
+  def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'something')
 */
 
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCreatePullRequest: windows is not supported yet.'
   }
-  def title = params.containsKey('title') ? """--message '${params.title}'""" : error('githubCreatePullRequest: title argument is required.')
-  def description = params.containsKey('description') ? """--message '${params.description}'""" : ''
-  def assign = params.containsKey('assign') ? "--assign ${params.assign}" : ''
-  def reviewer = params.containsKey('reviewer') ? "--reviewer ${params.reviewer}" : ''
-  def milestone = params.containsKey('milestone') ? "--milestone ${params.milestone}" : ''
-  def labels = params.containsKey('labels') ? "--labels ${params.labels}" : ''
-  def draft = params.containsKey('draft') ? params.draft : false
-  def base = params.containsKey('base') ? "--base ${params.base}" : ''
-  def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-  def force = params.containsKey('force') ? params.force : false
+  def title = args.containsKey('title') ? """--message '${args.title}'""" : error('githubCreatePullRequest: title argument is required.')
+  def description = args.containsKey('description') ? """--message '${args.description}'""" : ''
+  def assign = args.containsKey('assign') ? "--assign ${args.assign}" : ''
+  def reviewer = args.containsKey('reviewer') ? "--reviewer ${args.reviewer}" : ''
+  def milestone = args.containsKey('milestone') ? "--milestone ${args.milestone}" : ''
+  def labels = args.containsKey('labels') ? "--labels ${args.labels}" : ''
+  def draft = args.containsKey('draft') ? args.draft : false
+  def base = args.containsKey('base') ? "--base ${args.base}" : ''
+  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+  def force = args.containsKey('force') ? args.force : false
 
   def draftFlag = draft ? '--draft' : ''
   def forceFlag = force ? '--force' : ''
+  def output = ''
   withCredentials([
     usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')
   ]) {
@@ -48,7 +51,9 @@ def call(Map params = [:]) {
       git config remote.origin.url \${remoteUrl}
     """)
     try {
-      sh(label: 'Create GitHub issue', script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}")
+      output = sh(label: 'Create GitHub issue', returnStdout: true,
+                  script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}").trim()
+      return output
     } catch(e) {
       error "githubCreatePullRequest: error ${e}"
     } finally {

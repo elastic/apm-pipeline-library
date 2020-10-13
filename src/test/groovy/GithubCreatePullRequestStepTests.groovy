@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
@@ -117,8 +118,9 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
       }
     })
     def script = loadScript(scriptName)
+    def ret
     try {
-      script.call(title: 'foo')
+      ret = script.call(title: 'foo')
     } catch(e){
       //NOOP
     }
@@ -126,6 +128,7 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'Force an error'))
     assertTrue(assertMethodCallContainsPattern('sh', 'sed "s#.*@#https://#g"'))
     assertTrue(assertMethodCallContainsPattern('sh', 'git config remote.origin.url'))
+    assertNull(ret)
     assertJobStatusFailure()
   }
 
@@ -135,6 +138,18 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo', force: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "--force"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_stdout() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      return 'https://github.com/acme/my-repo/pull/1'
+    })
+    def ret = script.call(title: 'foo')
+    printCallStack()
+    assertTrue(ret.equals('https://github.com/acme/my-repo/pull/1'))
     assertJobStatusSuccess()
   }
 }
