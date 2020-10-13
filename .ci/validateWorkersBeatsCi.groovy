@@ -23,6 +23,7 @@ pipeline {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
+    SLACK_CHANNEL = '#observablt-bots'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -66,12 +67,15 @@ pipeline {
               'ubuntu-16',
               'ubuntu-18',
               'ubuntu-20',
+              'worker-c07jc1nzdwym',
               'worker-c07l34n6dwym',
               'worker-c07y20b6jyvy',
               'worker-c07ll940dwyl',
               'worker-c07y20b9jyvy',
               'worker-c07y20b4jyvy',
               'worker-c07y20bcjyvy',
+              'worker-c07mq25jdy3h',
+              'worker-c07mq1u7dy3h',
               'worker-395930',
               'worker-0a434dec4bdcd060f',
               'immutable && windows-2019',
@@ -128,7 +132,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(slackComment: true)
     }
   }
 }

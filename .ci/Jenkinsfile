@@ -27,7 +27,7 @@ pipeline {
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
-    SLACK_CHANNEL = '#beats-ci-builds'
+    SLACK_CHANNEL = '#observablt-bots'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
