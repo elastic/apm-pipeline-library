@@ -16,14 +16,14 @@
 // under the License.
 
 /**
-  Look for all the open issues that were reported as flakey tests. It returns
+  Look for all the open issues that were reported as flaky tests. It returns
   a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 
-  // Look for all the GitHub issues with label 'flakey-test' and test failures either test-foo or test-bar
-  lookForGitHubIssues( flakeyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flakey-test'])
+  // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
+  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
 */
 def call(Map args = [:]) {
-  def list = args.get('flakeyList', [])
+  def list = args.get('flakyList', [])
   def labels = args.get('labelsFilter', [])
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def output = [:]

@@ -41,7 +41,7 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
   void test_with_githubIssues_error() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
-    def ret = script.call(flakeyList: [ 'test-foo' ])
+    def ret = script.call(flakyList: [ 'test-foo' ])
     printCallStack()
     assertTrue(ret['test-foo'].equals(''))
   }
@@ -51,7 +51,7 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], {
       return [ 1 : [ state: 'OPEN', title: 'title' ]] })
-    def ret = script.call(flakeyList: [ 'test-foo' ])
+    def ret = script.call(flakyList: [ 'test-foo' ])
     printCallStack()
     assertTrue(ret['test-foo'].equals(''))
   }
@@ -61,7 +61,7 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], {
       return [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]] })
-    def ret = script.call(flakeyList: [ 'test-foo' ])
+    def ret = script.call(flakyList: [ 'test-foo' ])
     println ret
     printCallStack()
     assertTrue(ret['test-foo'] == 1)
