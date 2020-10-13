@@ -67,7 +67,7 @@ def analyzeFlakey(Map params = [:]) {
     }
 
     def labels = 'flaky-test,ci-reported'
-    def tests = lookForGitHubIssues(flakeyList: ret, labelsFilter: labels.split(','))
+    def tests = lookForGitHubIssues(flakyList: ret, labelsFilter: labels.split(','))
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
@@ -75,7 +75,7 @@ def analyzeFlakey(Map params = [:]) {
       def issue = v
       if (!v?.trim()) {
         def issueDescription = buildTemplate([
-          "template": 'flakey-github-issue.template',
+          "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
           "testData": testsErrors?.find { it.name.equals(k) }
@@ -97,13 +97,13 @@ def analyzeFlakey(Map params = [:]) {
 
     // Decorate comment
     def body = buildTemplate([
-      "template": 'flakey-github-comment-markdown.template',
+      "template": 'flaky-github-comment-markdown.template',
       "tests": flakyTestsWithIssues,
       "testsSummary": testsSummary
     ])
-    writeFile(file: 'flakey.md', text: body)
-    githubPrComment(commentFile: 'flakey.id', message: body)
-    archiveArtifacts 'flakey.md'
+    writeFile(file: 'flaky.md', text: body)
+    githubPrComment(commentFile: 'flaky.id', message: body)
+    archiveArtifacts 'flaky.md'
 }
 
 /**
