@@ -96,7 +96,7 @@ def hasWritePermission(token, repo, user){
   Check if the PR come from a bot and if the bot is authorized.
 */
 def isAuthorizedBot(login, type){
-  def authorizedBots = ['greenkeeper[bot]']
+  def authorizedBots = ['greenkeeper[bot]', 'dependabot']
   log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${login}, Type: ${type}")
   def ret = false;
   if('bot'.equalsIgnoreCase(type)){
