@@ -119,6 +119,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/success.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/unstable.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getGitMatchingGroup.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gh.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"

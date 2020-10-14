@@ -32,7 +32,11 @@ def call(Map params = [:]) {
   def milestone = params.containsKey('milestone') ? "--milestone ${params.milestone}" : ''
   def labels = params.containsKey('labels') ? "--labels ${params.labels}" : ''
   def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
+  def returnStdout = params.get('returnStdout', false)
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-    sh(label: 'Create GitHub issue', script: "hub issue create ${title} ${description} ${assign} ${labels} ${milestone}")
+    def value = sh(label: 'Create GitHub issue', script: "hub issue create ${title} ${description} ${assign} ${labels} ${milestone}", returnStdout: returnStdout).trim()
+    if(returnStdout) {
+      return value
+    }
   }
 }

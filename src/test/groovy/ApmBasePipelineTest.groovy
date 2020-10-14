@@ -222,6 +222,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('archiveArtifacts', [String.class], null)
     helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
@@ -395,6 +396,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
       getVaultSecret(s)
     })
+    helper.registerAllowedMethod('gh', [Map.class], {
+      def script = loadScript('vars/gh.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('gitCmd', [Map.class], null)
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
@@ -403,6 +408,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
     helper.registerAllowedMethod('githubEnv', {
       def script = loadScript('vars/githubEnv.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('githubIssues', [Map.class], {
+      def script = loadScript('vars/githubIssues.groovy')
       return script.call()
     })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
@@ -464,6 +473,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
     helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
     helper.registerAllowedMethod('nodeArch', [], {
       def script = loadScript('vars/nodeArch.groovy')

@@ -1,0 +1,17 @@
+## Flaky Test
+
+* **Test Name:** ${testName}
+* **Artifact Link:** ${jobUrl}
+
+<% if (testData?.errorDetails) {%>
+### Error details
+```
+${testData.errorDetails}
+```
+<% }%>
+<% if (testData?.errorStackTrace) {%>
+### Stack Trace
+```
+${testData.errorStackTrace}
+```
+<% }%>

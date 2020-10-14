@@ -413,28 +413,95 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_analyzeFlakey() throws Exception {
+  void test_analyzeFlakey_in_prs_without_flaky_tests() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
       "sendDataToElasticsearch",
       [Map.class],
       {m -> readJSON(file: "flake-results.json")}
     )
-
-    helper.registerAllowedMethod(
-      "githubPrComment",
-      [Map.class],
-      {m -> assertTrue(
-        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
-        )
-      }
-    )
+    helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
       flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
-      testsErrors: readJSON(file: 'flake-tests-errors.json')
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are not known flaky tests"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakey_in_prs_with_flaky_tests_already_reported() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
+      return [ foo: '123',bar: '456' ]
+      }
+    )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('githubCreateIssue', 0))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "`foo` reported in the issue #123"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakey_in_prs_with_flaky_tests_not_reported_yet() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
+      return [ 'Test / windows-3.6-none / test_send - tests.transports.test_urllib3': '',
+               bar: '' ]
+      }
+    )
+    helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** bar"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** Test / windows-3.6-none / test_send - tests.transports.test_urllib3"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "`bar` reported in the issue #100"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakey_in_prs_with_flaky_tests() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
+      return [ 'Test / windows-3.6-none / test_send - tests.transports.test_urllib3': '200',
+               bar: '' ]
+      }
+    )
+    helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** bar"))
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** Test / windows-3.6-none / test_send - tests.transports.test_urllib3"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "`bar` reported in the issue #100"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "`Test / windows-3.6-none / test_send - tests.transports.test_urllib3` reported in the issue #200"))
     assertJobStatusSuccess()
   }
 
@@ -446,15 +513,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       [Map.class],
       {m -> readJSON(file: "flake-results.json")}
     )
-
-    helper.registerAllowedMethod(
-      "githubPrComment",
-      [Map.class],
-      {m -> assertTrue(
-        m.message == '❄️ The following tests failed but also have a history of flakiness and may not be related to this change: [MOCK_TEST_1]'
-        )
-      }
-    )
     script.analyzeFlakey(
       flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
@@ -465,7 +523,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
     assertJobStatusSuccess()
   }
-
 
   @Test
   void test_analyzeFlakeyNoJobInfo() throws Exception {

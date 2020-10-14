@@ -145,7 +145,7 @@ function fetchAndPrepareTestsInfo() {
     if jq -e 'select(.code==404)' "${file}" > /dev/null 2>&1 ; then
         echo "${default}" > "${file}"
     else
-        normaliseTests "${file}"
+        normaliseTestsWithoutStacktrace "${file}"
     fi
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
@@ -226,8 +226,13 @@ function normaliseTests() {
     jqEdit 'map(del(._class))' "${file}"
     jqEdit 'map(del(.state))' "${file}"
     jqEdit 'map(del(.hasStdLog))' "${file}"
+}
+
+function normaliseTestsWithoutStacktrace() {
+    file=$1
+    normaliseTests "${file}"
     ## This will help to tidy up the file size quite a lot.
-    ## It might be useful to eexport it but let's go step by step
+    ## It might be useful to export it but lets go step by step
     jqEdit 'map(del(.errorStackTrace))' "${file}"
 }
 

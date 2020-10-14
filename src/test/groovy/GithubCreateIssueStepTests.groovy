@@ -18,6 +18,7 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCreateIssueStepTests extends ApmBasePipelineTest {
@@ -97,5 +98,32 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', '--assign u1,u2'))
     assertTrue(assertMethodCallContainsPattern('sh', '--labels l1,l2'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_returnIssue_success() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { return 'https://github.com/org/repo/issues/1' })
+    def result = script.call(title: 'foo', returnStdout: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
+    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo'"))
+    assertTrue(result.equals('https://github.com/org/repo/issues/1'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_returnIssue_failed() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('error: Unknown subcommand: creat') })
+    def result
+    try {
+      result = script.call(title: 'foo', returnStdout: true)
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
+    assertNull(result)
   }
 }

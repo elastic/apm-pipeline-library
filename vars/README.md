@@ -542,6 +542,23 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 * *secret-name*: Name of the secret on the the vault root path.
 
+## gh
+Wrapper to interact with the gh command line. It returns the stdout output.
+
+```
+  // List all the open issues with the label 
+  gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
+
+  // Create issue with title and body
+  gh(command: 'issue create', flags: [ title: "I found a bug", body: "Nothing works" ])
+```
+
+* command: The gh command to be executed title. Mandatory
+* flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
+
 ## git
 Override the `git` step to retry the checkout up to 3 times.
 
@@ -690,6 +707,7 @@ githubCreateIssue(title: 'Foo', description: 'Something else to be added', assig
 * milestone: The milestone name to add to the created issue. Optional
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+* returnStdout: Whether to return the just created issue. Optional. Default false.
 
 _NOTE_: Windows is not supported yet.
 
@@ -731,6 +749,18 @@ githubEnv()
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
 * `GIT_BASE_COMMIT`: On PRs points to the commit before make the merge, on branches is the same as GIT_COMMIT and GIT_SHA
+
+## githubIssues
+Look for the GitHub issues in the current project given the labels to be filtered with. It returns
+a dictionary with the issue id as primary key and then the status, title, labels and date values.
+
+```
+  // Look for all the open GitHub issues with labels foo and bar
+  githubIssues(labels: [ 'foo', 'bar' ])
+```
+
+* *labels*: list of labels to be filtered. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 
 ## githubPrCheckApproved
 If the current build is a PR, it would check if it is approved or created
@@ -1343,6 +1373,21 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## lookForGitHubIssues
+Look for all the open issues that were reported as flaky tests. It returns
+a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
+
+```
+  // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
+  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+```
+
+* *flakyList*: list of test-failures. Mandatory
+* *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
 
 ## matchesPrLabel
 If the current build is a PR, it would return true if the given label
