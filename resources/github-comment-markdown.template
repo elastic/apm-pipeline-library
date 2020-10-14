@@ -54,7 +54,8 @@
   ### Test errors [![${testsSummary?.failed}](https://img.shields.io/badge/${testsSummary?.failed}%20-red)](${jobUrl}/tests)
   <details><summary>Expand to view the tests failures</summary>
   <p>
-    <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ test -> %>
+    ${(testsSummary?.failed > 10) ? '> Show only the first 10 test failures' : ''}
+    <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
 * **Name**: `${test?.name}`
   * Age: ${test?.age}
   * Duration: ${test?.duration}
@@ -70,7 +71,8 @@
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
-  <% stepsErrors.each{ c -> %>
+  ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
+  <% stepsErrors?.take(10)?.each{ c -> %>
   * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
     * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
     <% if(c?.durationInMillis >= 0) {%>
