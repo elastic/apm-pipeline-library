@@ -524,6 +524,31 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakey_in_prs_with_more_than_3_flaky_tests_not_reported_yet() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
+      return [ 'test-a': '', 'test-b': '', 'test-c': '', 'test-d': '' ]
+      }
+    )
+    helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-a"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-b"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-c"))
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-d"))
+    assertTrue(assertMethodCallContainsPattern('log', "'Flaky Test [test-d]'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakeyThreshold() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(

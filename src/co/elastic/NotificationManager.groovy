@@ -71,6 +71,9 @@ def analyzeFlakey(Map params = [:]) {
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
+    // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
+    def numberOfSupportedIssues = 3
+    def numberOfCreatedtedIssues = 0
     tests.each { k, v ->
       def issue = v
       if (!v?.trim()) {
@@ -80,11 +83,18 @@ def analyzeFlakey(Map params = [:]) {
           "jobUrl": boURL,
           "testData": testsErrors?.find { it.name.equals(k) }
         ])
+        def title = "Flaky Test [${k}]"
         try {
-          retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-            issue = githubCreateIssue(title: "Flaky Test [${k}]", description: issueDescription, labels: labels, returnStdout: true)
+          if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
+            retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels, returnStdout: true)
+            }
+            numberOfCreatedtedIssues++
+          } else {
+            log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
           }
         } catch(err) {
+          log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
           issue = ''
         } finally {
           if(!issue?.trim()) {
