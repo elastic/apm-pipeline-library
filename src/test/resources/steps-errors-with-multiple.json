@@ -1,0 +1,513 @@
+[
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": "./mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "FOOOO"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": "./mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": "./mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
+    "displayName": "Notifies GitHub of the status of a Pull Request",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/58/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/59/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/59/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/59/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/60/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/60/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/60/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/61/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/61/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/61/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/62/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/62/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/62/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/63/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/63/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/63/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/64/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/64/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/64/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/65/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/65/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/65/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/66/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/66/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/66/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/67/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/67/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/67/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/68/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/68/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/68/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  },
+  {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+    "_links": {
+      "self": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/69/"
+      },
+      "actions": {
+        "_class": "io.jenkins.blueocean.rest.hal.Link",
+        "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/69/actions/"
+      }
+    },
+    "actions": [
+      {
+        "_class": "org.jenkinsci.plugins.workflow.support.actions.LogStorageAction",
+        "_links": {
+          "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/steps/69/log/"
+          }
+        },
+        "urlName": "log"
+      }
+    ],
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP"
+  }
+]

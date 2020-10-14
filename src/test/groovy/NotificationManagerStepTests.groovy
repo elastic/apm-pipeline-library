@@ -322,6 +322,24 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_unstable_and_multiple_steps_failures() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNSTABLE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-multiple.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Show only the first 10 steps failures'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_unknown() throws Exception {
     def script = loadScript(scriptName)
     script.notifyPR(
