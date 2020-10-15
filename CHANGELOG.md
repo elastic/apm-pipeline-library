@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.150 (15/10/2020)
+
+#### 🚀 Enhancements
+
+-  [flaky] Control number of issues to be created [#771](https://github.com/elastic/apm-pipeline-library/pull/771)
+-  [notification] show only up to 10 tests/steps failures [#772](https://github.com/elastic/apm-pipeline-library/pull/772)
+-  Enable dependabot[bot] [#770](https://github.com/elastic/apm-pipeline-library/pull/770)
+-  Flaky test comments [#754](https://github.com/elastic/apm-pipeline-library/pull/754)
+-  Grant running access for the dependabot user [#769](https://github.com/elastic/apm-pipeline-library/pull/769)
+-  cosmetic change slack comment [#768](https://github.com/elastic/apm-pipeline-library/pull/768)
+
+#### 🙈 No user affected
+
+-  [test-infra] add new darwin workers and slack notifications [#767](https://github.com/elastic/apm-pipeline-library/pull/767)
+
 ## v1.1.149 (13/10/2020)
 
 #### 🚀 Enhancements
