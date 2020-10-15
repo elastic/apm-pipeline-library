@@ -77,8 +77,8 @@ def call(Map args = [:]) {
           }
         }
 
-        // Should analyze flakey
-        if(analyzeFlakey) {
+        // Should analyze flakey but exclude it when aborted
+        if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
           data['es'] = es
           data['es_secret'] = secret
           data['flakyReportIdx'] = flakyReportIdx
