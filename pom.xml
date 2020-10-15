@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.150-SNAPSHOT</version>
+  <version>1.1.150</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -12,7 +12,7 @@
     <connection>scm:git:git@github.com:elastic/apm-pipeline-library.git</connection>
     <developerConnection>scm:git:git@github.com:elastic/apm-pipeline-library.git</developerConnection>
     <url>https://github.com/elastic/apm-pipeline-library</url>
-    <tag>HEAD</tag>
+    <tag>v1.1.150</tag>
   </scm>
 
   <properties>
