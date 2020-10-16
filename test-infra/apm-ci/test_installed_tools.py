@@ -9,6 +9,10 @@ def test_gvm_installed(host):
   cmd = host.run("gvm --version")
   assert cmd.rc == 0, "it is required for the apm-agent-go and apm-server"
 
+def test_gh_installed(host):
+  cmd = host.run("gh --version")
+  assert cmd.rc == 0, "it is required for the notifyBuildReport"
+
 def test_git_installed(host):
   cmd = host.run("git version")
   assert cmd.rc == 0, "it is required for all the APM projects"

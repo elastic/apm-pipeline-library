@@ -31,6 +31,10 @@ def test_git_installed(host):
   cmd = host.run("git version")
   assert cmd.rc == 0, "it is required for all the Beats projects"
 
+def test_gh_installed(host):
+  cmd = host.run("gh --version")
+  assert cmd.rc == 0, "it is required for the notifyBuildReport"
+
 def test_jq_installed(host):
   if host.check_output("uname -m") == "aarch64" :
     pytest.skip("jq is unsupported for aarch64 configuration")

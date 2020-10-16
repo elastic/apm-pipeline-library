@@ -1,5 +1,10 @@
 import testinfra
 
+def test_gh_installed(host):
+  ## TODO skip 32 bits
+  cmd = host.run("gh --version")
+  assert cmd.rc == 0, "it is required for the notifyBuildReport"
+
 def test_make_installed(host):
   cmd = host.run("make --version")
   assert cmd.rc == 0, "it is required for all the Beats projects"
