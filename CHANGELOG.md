@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.151 (16/10/2020)
+
+#### 🚀 Enhancements
+
+-  [flaky] enable if no aborted [#773](https://github.com/elastic/apm-pipeline-library/pull/773)
+
+#### 🐛 Bug Fixes
+
+-  Avoid using windows immutable workers [#774](https://github.com/elastic/apm-pipeline-library/pull/774)
+
 ## v1.1.150 (15/10/2020)
 
 #### 🚀 Enhancements
