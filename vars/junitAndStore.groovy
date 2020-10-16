@@ -41,7 +41,8 @@ populated later on with the runbld post build step.
 def call(Map args = [:]) {
   def stashedTestReports = args.containsKey('stashedTestReports') ? args.stashedTestReports : error('junitAndStore: stashedTestReports param is required')
   def testResults = args.containsKey('testResults') ? args.testResults : error('junitAndStore: testResults param is required')
-  junit(args)
+  def junitArgs = args.findAll { k,v -> !(k.equals('id') || k.equals('stashedTestReports')) }
+  junit(junitArgs)
   // args.id could be null in some cases, so let's use the currentmilliseconds
   def suffix = new java.util.Date().getTime()
   def stageName = args.id ? "${args.id?.replaceAll('[\\W]|_', '-')}-${suffix}" : "uncategorized-${suffix}"

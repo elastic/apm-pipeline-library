@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class JunitAndStoreStepTests extends ApmBasePipelineTest {
@@ -68,6 +69,8 @@ class JunitAndStoreStepTests extends ApmBasePipelineTest {
     script.call(stashedTestReports: [:], testResults: '*.xml', id: 'acme')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('junit', 'testResults=*.xml'))
+    assertFalse(assertMethodCallContainsPattern('junit', 'id'))
+    assertFalse(assertMethodCallContainsPattern('junit', 'stashedTestReports'))
     assertTrue(assertMethodCallContainsPattern('stash', 'includes=*.xml, allowEmpty=true, name=acme-'))
     assertJobStatusSuccess()
   }
