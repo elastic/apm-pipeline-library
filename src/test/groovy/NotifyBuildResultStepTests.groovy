@@ -268,4 +268,32 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
     assertTrue(assertMethodCallContainsPattern('unstash', 'builder'))
   }
+
+  @Test
+  void test_no_flakey_when_aborted() throws Exception {
+    // When aborted
+    binding.getVariable('currentBuild').result = "ABORTED"
+    binding.getVariable('currentBuild').currentResult = "ABORTED"
+
+    def script = loadScript(scriptName)
+    script.call(analyzeFlakey: true)
+    printCallStack()
+
+    // Then no flakey test analysis
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+  }
+
+  @Test
+  void test_flakey_when_unstable() throws Exception {
+    // When unstable
+    binding.getVariable('currentBuild').result = "UNSTABLE"
+    binding.getVariable('currentBuild').currentResult = "UNSTABLE"
+
+    def script = loadScript(scriptName)
+    script.call(analyzeFlakey: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+  }
 }
