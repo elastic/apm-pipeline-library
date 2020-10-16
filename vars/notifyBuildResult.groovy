@@ -49,7 +49,7 @@ def call(Map args = [:]) {
   def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
   def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
 
-  node('master || metal || immutable'){
+  node('master || metal || linux'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
