@@ -29,7 +29,7 @@ def call(Map args = [:]){
   if (isPR()) {
     def token = getGithubToken()
     def url = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments"
-    def comments = githubApiCall(token: token, url: url)
+    def comments = githubApiCall(token: token, url: url, noCache: true)
     return comments.reverse().find { comment ->
       if (users) {
         users.find { it == comment.user.login } && comment.body =~ "${pattern}"
