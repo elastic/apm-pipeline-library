@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.152 (19/10/2020)
+
+#### 🚀 Enhancements
+
+-  Support API calls without caching [#776](https://github.com/elastic/apm-pipeline-library/pull/776)
+
+#### 🙈 No user affected
+
+-  Avoid warning in JUnit when using args that are not defined [#775](https://github.com/elastic/apm-pipeline-library/pull/775)
+
 ## v1.1.151 (16/10/2020)
 
 #### 🚀 Enhancements
