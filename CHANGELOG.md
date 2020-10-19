@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.153 (19/10/2020)
+
+#### 🚀 Enhancements
+
+-  Support PHP ITs [#778](https://github.com/elastic/apm-pipeline-library/pull/778)
+
 ## v1.1.152 (19/10/2020)
 
 #### 🚀 Enhancements
