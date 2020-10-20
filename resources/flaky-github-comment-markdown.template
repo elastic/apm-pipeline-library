@@ -3,10 +3,14 @@
 :snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
     <% tests?.each{ k,v -> %>
 * **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
-<%}else {%>
-:grey_exclamation: There are not known flaky tests.
+<%} else if (testsSummary?.failed > 0) {%>
+:grey_exclamation: There are tests failures but not known flaky tests.
+<%} else if(testsSummary?.total > 0) {%>
+:green_heart: Tests Succeeded.
+<%} else {%>
+:grey_exclamation: There are not executed tests to be evaluated.
 <%}%>
-<% if(testsSummary?.total != 0) {%>
+<% if(testsSummary?.total > 0) {%>
 ### Test stats :test_tube:
 | Test         | Results                         |
 | ------------ | :-----------------------------: |
