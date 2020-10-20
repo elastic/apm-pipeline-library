@@ -1,14 +1,17 @@
-## :bug: Flaky test report
 <% if(tests) {%>
+## :bug: Flaky test report
 :snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
     <% tests?.each{ k,v -> %>
 * **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
 <%} else if (testsSummary?.failed > 0) {%>
+## :bug: Flaky test report
 :grey_exclamation: There are test failures but not known flaky tests.
 <%} else if(testsSummary?.total > 0) {%>
-:green_heart: Tests succeeded.
+## :green_heart: Flaky test report
+Tests succeeded.
 <%} else {%>
-:grey_exclamation: No test was executed to be analysed.
+## :grey_exclamation: Flaky test report
+No test was executed to be analysed.
 <%}%>
 <% if(testsSummary?.total > 0) {%>
 ### Test stats :test_tube:
