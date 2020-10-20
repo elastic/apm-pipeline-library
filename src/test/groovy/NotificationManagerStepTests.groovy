@@ -446,7 +446,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are tests failures but not known flaky tests."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are test failures but not known flaky tests."))
     assertJobStatusSuccess()
   }
 
@@ -578,7 +578,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: [:]
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are not executed tests to be analysed."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "No test was executed to be analysed."))
     assertJobStatusSuccess()
   }
 

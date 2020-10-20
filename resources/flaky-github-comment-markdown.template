@@ -4,11 +4,11 @@
     <% tests?.each{ k,v -> %>
 * **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
 <%} else if (testsSummary?.failed > 0) {%>
-:grey_exclamation: There are tests failures but not known flaky tests.
+:grey_exclamation: There are test failures but not known flaky tests.
 <%} else if(testsSummary?.total > 0) {%>
 :green_heart: Tests Succeeded.
 <%} else {%>
-:grey_exclamation: There are not executed tests to be analysed.
+:grey_exclamation: No test was executed to be analysed.
 <%}%>
 <% if(testsSummary?.total > 0) {%>
 ### Test stats :test_tube:
