@@ -8,7 +8,7 @@
 <%} else if(testsSummary?.total > 0) {%>
 :green_heart: Tests Succeeded.
 <%} else {%>
-:grey_exclamation: There are not executed tests to be evaluated.
+:grey_exclamation: There are not executed tests to be analysed.
 <%}%>
 <% if(testsSummary?.total > 0) {%>
 ### Test stats :test_tube:
