@@ -561,7 +561,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: [ "failed": 0, "passed": 120, "skipped": 0, "total": 120 ]
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Tests Succeeded."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Tests succeeded."))
     assertJobStatusSuccess()
   }
 

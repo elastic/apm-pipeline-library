@@ -6,7 +6,7 @@
 <%} else if (testsSummary?.failed > 0) {%>
 :grey_exclamation: There are test failures but not known flaky tests.
 <%} else if(testsSummary?.total > 0) {%>
-:green_heart: Tests Succeeded.
+:green_heart: Tests succeeded.
 <%} else {%>
 :grey_exclamation: No test was executed to be analysed.
 <%}%>
