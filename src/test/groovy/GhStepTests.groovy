@@ -28,6 +28,7 @@ class GhStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
   }
 
   @Test
@@ -64,6 +65,8 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label=foo"))
+    assertFalse(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertFalse(assertMethodCallContainsPattern('sh', "wget -O"))
     assertJobStatusSuccess()
   }
 
@@ -90,5 +93,26 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
     assertNull(result)
+  }
+
+  @Test
+  void test_without_gh_installed_by_default_with_wget() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_gh_installed_by_default_no_wget() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertJobStatusSuccess()
   }
 }
