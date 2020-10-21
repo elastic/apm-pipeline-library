@@ -22,7 +22,7 @@ import groovy.transform.Field
 @Field def results = [:]
 
 pipeline {
-  agent { label 'immutable && docker' }
+  agent { label 'ubuntu-18 && immutable && docker' }
   environment {
     BASE_DIR="src"
     NOTIFY_TO = credentials('notify-to')
@@ -116,13 +116,15 @@ pipeline {
             pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replaceFirst("-",":")
               tasks["${pythonVersion}"] = {
-                buildDockerImage(
-                  repo: 'https://github.com/elastic/apm-agent-python.git',
-                  tag: 'apm-agent-python',
-                  version: "${pythonIn}",
-                  folder: "tests",
-                  options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
-                  push: true)
+                node('ubuntu-18 && immutable && docker'){
+                  buildDockerImage(
+                    repo: 'https://github.com/elastic/apm-agent-python.git',
+                    tag: 'apm-agent-python',
+                    version: "${pythonIn}",
+                    folder: "tests",
+                    options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
+                    push: true)
+                }
               }
             }
             parallel(tasks)
@@ -161,13 +163,15 @@ pipeline {
             rubyVersions.findAll { element -> !element.contains('observability-ci') }.each { version ->
               def rubyVersion = version.replaceFirst(":","-")
               tasks["${rubyVersion}"] = {
-                buildDockerImage(
-                  repo: 'https://github.com/elastic/apm-agent-ruby.git',
-                  tag: 'apm-agent-ruby',
-                  version: "${rubyVersion}",
-                  folder: 'spec',
-                  options: "--build-arg RUBY_IMAGE='${version}'",
-                  push: true)
+                node('ubuntu-18 && immutable && docker'){
+                  buildDockerImage(
+                    repo: 'https://github.com/elastic/apm-agent-ruby.git',
+                    tag: 'apm-agent-ruby',
+                    version: "${rubyVersion}",
+                    folder: 'spec',
+                    options: "--build-arg RUBY_IMAGE='${version}'",
+                    push: true)
+                }
               }
             }
             parallel(tasks)
@@ -195,13 +199,15 @@ pipeline {
               // Versions are double quoted
               def nodejsVersion = version.replaceFirst('"', '')
               tasks["${version}"] = {
-                buildDockerImage(
-                  repo: 'https://github.com/elastic/apm-agent-nodejs.git',
-                  tag: 'apm-agent-nodejs',
-                  version: "${nodejsVersion}",
-                  folder: '.ci/docker/node-container',
-                  options: "--build-arg NODE_VERSION='${nodejsVersion}'",
-                  push: true)
+                node('ubuntu-18 && immutable && docker'){
+                  buildDockerImage(
+                    repo: 'https://github.com/elastic/apm-agent-nodejs.git',
+                    tag: 'apm-agent-nodejs',
+                    version: "${nodejsVersion}",
+                    folder: '.ci/docker/node-container',
+                    options: "--build-arg NODE_VERSION='${nodejsVersion}'",
+                    push: true)
+                }
               }
             }
             parallel(tasks)
@@ -253,6 +259,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C docker all-push')
           }
+          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
         }
       }
       post {
@@ -288,6 +295,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
           }
+          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
         }
       }
       post {
@@ -500,7 +508,7 @@ def buildDockerImage(args){
       withEnv(env){
         prepareWith()
         if (buildCommand.equals("")) {
-          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          sh(label: "build docker image", script: "docker build --force-rm ${options} -t ${image} .")
         } else {
           sh(label: "custom build docker image", script: "${buildCommand}")
         }
@@ -514,6 +522,7 @@ def buildDockerImage(args){
             }
           }
         }
+        sh(label: "clean docker image", script: "docker rmi ${image}")
       }
     }
   }
@@ -525,4 +534,5 @@ def pushDockerImageFromStore(imageTag, cacheTag){
   dockerLoginElasticRegistry()
   sh(label: 're-tag Docker image', script: "docker tag ${imageTag} ${cacheTag}")
   sh(label: "push Docker image to ${cacheTag}", script: "docker push ${cacheTag}")
+  sh(label: 'clean Docker images', script: "docker rmi ${imageTag}")
 }
