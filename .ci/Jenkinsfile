@@ -195,8 +195,8 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, slackComment: true,
-                        analyzeFlakey: true, flakyReportIdx: "reporter-apm-shared-apm-pipeline-library-mbp-master")
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true,
+                        flakyReportIdx: 'reporter-apm-shared-apm-pipeline-library-master')
     }
   }
 }
