@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.154 (21/10/2020)
+
+#### 🚀 Enhancements
+
+-  [flaky] categorise comments in failed or not failed tests [#779](https://github.com/elastic/apm-pipeline-library/pull/779)
+
+#### ⚙️ CI
+
+-  fix: clean Docker images after push [#780](https://github.com/elastic/apm-pipeline-library/pull/780)
+
 ## v1.1.153 (19/10/2020)
 
 #### 🚀 Enhancements
