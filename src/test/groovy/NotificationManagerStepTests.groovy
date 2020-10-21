@@ -431,6 +431,26 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_with_header() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifySlack(
+      build: readJSON(file: "build-info-manual.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "changeSet-info-manual.json"),
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json"),
+      header: '*Header*: this is a header',
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', '*Header*: this is a header'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakey_in_prs_without_flaky_tests() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
