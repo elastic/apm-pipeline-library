@@ -259,7 +259,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C docker all-push')
           }
-          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
+          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
         }
       }
       post {
@@ -295,7 +295,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
           }
-          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
+          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
         }
       }
       post {
