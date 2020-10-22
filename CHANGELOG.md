@@ -1,5 +1,37 @@
 # Changelog
 
+## v1.1.155 (22/10/2020)
+
+#### 🚀 Enhancements
+
+-  Install gh if not available [#782](https://github.com/elastic/apm-pipeline-library/pull/782)
+
+## v1.1.154 (21/10/2020)
+
+#### 🚀 Enhancements
+
+-  [flaky] categorise comments in failed or not failed tests [#779](https://github.com/elastic/apm-pipeline-library/pull/779)
+
+#### ⚙️ CI
+
+-  fix: clean Docker images after push [#780](https://github.com/elastic/apm-pipeline-library/pull/780)
+
+## v1.1.153 (19/10/2020)
+
+#### 🚀 Enhancements
+
+-  Support PHP ITs [#778](https://github.com/elastic/apm-pipeline-library/pull/778)
+
+## v1.1.152 (19/10/2020)
+
+#### 🚀 Enhancements
+
+-  Support API calls without caching [#776](https://github.com/elastic/apm-pipeline-library/pull/776)
+
+#### 🙈 No user affected
+
+-  Avoid warning in JUnit when using args that are not defined [#775](https://github.com/elastic/apm-pipeline-library/pull/775)
+
 ## v1.1.151 (16/10/2020)
 
 #### 🚀 Enhancements

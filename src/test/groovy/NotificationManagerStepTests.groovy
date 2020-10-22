@@ -446,7 +446,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are not known flaky tests"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are test failures but not known flaky tests."))
     assertJobStatusSuccess()
   }
 
@@ -545,6 +545,40 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-c"))
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-d"))
     assertTrue(assertMethodCallContainsPattern('log', "'Flaky Test [test-d]'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakey_in_prs_without_failed_tests() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: [:],
+      testsSummary: [ "failed": 0, "passed": 120, "skipped": 0, "total": 120 ]
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Tests succeeded."))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_analyzeFlakey_in_prs_without_executed_tests() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: [:],
+      testsSummary: [:]
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "No test was executed to be analysed."))
     assertJobStatusSuccess()
   }
 
