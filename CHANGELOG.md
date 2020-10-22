@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.155 (22/10/2020)
+
+#### 🚀 Enhancements
+
+-  Install gh if not available [#782](https://github.com/elastic/apm-pipeline-library/pull/782)
+
 ## v1.1.154 (21/10/2020)
 
 #### 🚀 Enhancements
