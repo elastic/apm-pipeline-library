@@ -110,13 +110,13 @@ pipeline {
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
-            dockerLoginElasticRegistry()
             def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replaceFirst("-",":")
               tasks["${pythonVersion}"] = {
                 node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-python.git',
                     tag: 'apm-agent-python',
@@ -155,7 +155,6 @@ pipeline {
             archiveArtifacts '*.log'
           }
           script {
-            dockerLoginElasticRegistry()
             def rubyVersions = readYaml(file: '.ci/.jenkins_ruby.yml')['RUBY_VERSION']
             def tasks = [:]
             // The ones with the observability-ci tag are already built at the very end
@@ -164,6 +163,7 @@ pipeline {
               def rubyVersion = version.replaceFirst(":","-")
               tasks["${rubyVersion}"] = {
                 node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-ruby.git',
                     tag: 'apm-agent-ruby',
