@@ -1,4 +1,5 @@
 import testinfra
+import pytest
 
 def test_dotnet_installed(host):
   cmd = host.run("dotnet --info")
@@ -13,6 +14,8 @@ def test_tar_installed(host):
   assert cmd.rc == 0, "it is required for the stashV2 and unstashV2 steps"
 
 def test_gh_installed(host):
-  ## TODO skip 32 bits
-  cmd = host.run("gh --version")
-  assert cmd.rc == 0, "it is required for the notifyBuildReport"
+  if host.system_info.arch == "x86_64" :
+    cmd = host.run("gh --version")
+    assert cmd.rc == 0, "it is required for the notifyBuildReport"
+  else :
+    pytest.skip("unsupported configuration")
