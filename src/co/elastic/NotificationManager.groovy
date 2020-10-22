@@ -65,7 +65,8 @@ def analyzeFlakey(Map params = [:]) {
         }
       }
     }
-    log(level: 'INFO', text: "analyzeFlakey: Flaky tests:${ret.join('\n')}")
+    log(level: 'INFO', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+    log(level: 'INFO', text: "analyzeFlakey: Flaky matched tests: ${ret.join('\n')}")
     def labels = 'flaky-test,ci-reported'
     def tests = lookForGitHubIssues(flakyList: ret, labelsFilter: labels.split(','))
     // Create issues if they were not created
