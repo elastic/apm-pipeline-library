@@ -14,7 +14,7 @@ def test_tar_installed(host):
   assert cmd.rc == 0, "it is required for the stashV2 and unstashV2 steps"
 
 def test_gh_installed(host):
-  if host.system_info.arch == "x86_64" :
+  if host.environment().get('ProgramFiles(x86)') :
     cmd = host.run("gh --version")
     assert cmd.rc == 0, "it is required for the notifyBuildReport"
   else :
