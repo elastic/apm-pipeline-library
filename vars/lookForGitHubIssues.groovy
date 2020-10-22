@@ -48,8 +48,10 @@ def call(Map args = [:]) {
       // no issues could be found, let's report the list of test failures without any issue details.
       list.each { output.put(it, '') }
     }
+    log(level: 'INFO', text: "lookForGitHubIssues: ${output}.")
     return output
   } else {
+    log(level: 'INFO', text: "lookForGitHubIssues: flakyList is empty.")
     return output
   }
 }
