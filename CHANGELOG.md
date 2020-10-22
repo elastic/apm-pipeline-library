@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.156 (22/10/2020)
+
+#### 🐛 Bug Fixes
+
+-  fix: make Docker login on the nodes [#787](https://github.com/elastic/apm-pipeline-library/pull/787)
+-  fix: reference expression [#785](https://github.com/elastic/apm-pipeline-library/pull/785)
+
+#### 🙈 No user affected
+
+-  [test-infra] gh validation [#777](https://github.com/elastic/apm-pipeline-library/pull/777)
+
 ## v1.1.155 (22/10/2020)
 
 #### 🚀 Enhancements
