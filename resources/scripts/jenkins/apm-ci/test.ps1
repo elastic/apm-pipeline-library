@@ -19,7 +19,7 @@ function Exec {
 }
 
 # Setup Python.
-exec { choco install python2 -y -r --no-progress --version 2.7.17 }
+exec { choco install python2 -y -r --no-progress --version 2.7.17 --force }
 refreshenv
 $env:PATH = "C:\Python27;C:\Python27\Scripts;$env:PATH"
 $env:PYTHON_ENV = "$env:TEMP\python-env"

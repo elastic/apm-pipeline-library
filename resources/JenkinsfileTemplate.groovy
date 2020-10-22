@@ -48,6 +48,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     PYTHONUTF8 = "1"
+    // Slack channerl where the build notifications will be sent by the notifyBuildResult step.
+    SLACK_CHANNEL = '#observablt-bots'
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
@@ -362,7 +364,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(prComment: true, slackComment: true)
     }
   }
 }
