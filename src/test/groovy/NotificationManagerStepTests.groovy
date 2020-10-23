@@ -696,13 +696,4 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'message=awesome'))
     assertJobStatusSuccess()
   }
-
-  @Test
-  void test_scrubName() throws Exception {
-    def script = loadScript(scriptName)
-    def ret = script.scrubName('a"b*c\\d<e|f,g>h/i?j%20k', '-')
-    printCallStack()
-    assertTrue(ret.equals('a-b-c-d-e-f-g-h-i-j-k'))
-    assertJobStatusSuccess()
-  }
 }
