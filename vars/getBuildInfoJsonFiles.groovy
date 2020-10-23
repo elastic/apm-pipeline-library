@@ -61,7 +61,7 @@ def call(Map args = [:]) {
         changeSet = readJSON(file: 'changeSet-info.json')
         logData = readFile(file: 'pipeline-log-summary.txt')
         stepsErrors = readJSON(file: 'steps-errors.json')
-        testsErrors = readJSON(file: 'tests-errors.json')
+        testsErrors = toJSON(readFile(file: 'tests-errors.json', encoding: 'UTF-8'))
         testsSummary = readJSON(file: 'tests-summary.json')
       }
     } catch(e) {
