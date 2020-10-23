@@ -60,7 +60,7 @@ def analyzeFlakey(Map params = [:]) {
 
     for (failedTest in testsErrors) {
       for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
-        if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
+        if ((flakeyTest["_source"]["test_name"] == scrubName(failedTest?.name)) && !(failedTest.name in ret)) {
           ret.add(failedTest.name)
         }
       }
@@ -333,4 +333,28 @@ def generateBuildReport(Map params = [:]) {
       writeFile(file: 'build.md', text: body)
       archiveArtifacts 'build.md'
     }
+}
+
+/**
+Certain characters are not allowed in the name of an Elasticsearch
+index. This method scrubs those characters and returns a clean string.
+*/
+def scrubName(name, replace_char="-") {
+  def output = name
+  bad_chars = [
+      '"',
+      '\\*',
+      '\\\\',
+      '\\<',
+      '\\|',
+      ',',
+      '>',
+      '/',
+      '\\?',
+      '%20' // This is not prohibited by ES but is common in our input
+  ]
+  bad_chars.each {
+    output = output.replaceAll(it, replace_char)
+  }
+  return output.toLowerCase()
 }
