@@ -11,6 +11,5 @@ githubCreateIssue(title: 'Foo', description: 'Something else to be added', assig
 * milestone: The milestone name to add to the created issue. Optional
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
-* returnStdout: Whether to return the just created issue. Optional. Default false.
 
 _NOTE_: Windows is not supported yet.

@@ -63,9 +63,9 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo'"))
-    assertFalse(assertMethodCallContainsPattern('sh', '--assign'))
-    assertFalse(assertMethodCallContainsPattern('sh', '--labels'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --title="foo"'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--assignee'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--label'))
     assertFalse(assertMethodCallContainsPattern('sh', '--milestone'))
     assertJobStatusSuccess()
   }
@@ -76,7 +76,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo'"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --title="foo"'))
     assertJobStatusSuccess()
   }
 
@@ -85,7 +85,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', milestone: 'm1', labels: 'l1')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo' --message 'bar' --assign v1v --labels l1 --milestone m1"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --assignee="v1v" --label="l1" --milestone="m1" --title="foo" --body="bar"'))
     assertJobStatusSuccess()
   }
 
@@ -94,36 +94,10 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo foo' --message 'bar \n something else'"))
-    assertTrue(assertMethodCallContainsPattern('sh', '--assign u1,u2'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--labels l1,l2'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--title="foo foo"'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--body="bar \n something else"'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--assignee="u1,u2"'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--label="l1,l2"'))
     assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_with_returnIssue_success() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { return 'https://github.com/org/repo/issues/1' })
-    def result = script.call(title: 'foo', returnStdout: true)
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
-    assertTrue(assertMethodCallContainsPattern('sh', "hub issue create --message 'foo'"))
-    assertTrue(result.equals('https://github.com/org/repo/issues/1'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_with_returnIssue_failed() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('error: Unknown subcommand: creat') })
-    def result
-    try {
-      result = script.call(title: 'foo', returnStdout: true)
-    } catch(err) {
-      // NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
-    assertNull(result)
   }
 }
