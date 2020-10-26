@@ -38,6 +38,8 @@ This method generates flakey test data from Jenkins test results
  * @param flakyReportIdx, what's the id.
  * @param flakyThreshold, to tweak the score.
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ * @param querySize The maximum value of results to be reported. Default 500
+ * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
 */ 
 def analyzeFlakey(Map params = [:]) {
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
@@ -46,18 +48,19 @@ def analyzeFlakey(Map params = [:]) {
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
     def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+    def querySize = params.get('querySize', 500)
+    def queryTimeout = params.get('queryTimeout', '20s')
 
-    if (!flakyReportIdx || !flakyReportIdx.trim()) {
-      error "Did not receive flakyReportIdx data" 
+    if (!flakyReportIdx?.trim()) {
+      error 'analyzeFlakey: did not receive flakyReportIdx data'
     }
-
-    def q = toJSON(["query":["range": ["test_score": ["gt": flakyThreshold]]]])
-    def c = '/' + flakyReportIdx + '/_search'
-    def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
+    def flakeyTestsRaw = sendDataToElasticsearch(es: es,
+                                                 secret: secret,
+                                                 data: queryFilter(queryTimeout, flakyThreshold),
+                                                 restCall: "/${flakyReportIdx}/_search?size=${querySize}")
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
     def ret = []
-
     for (failedTest in testsErrors) {
       for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
         if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
@@ -333,4 +336,18 @@ def generateBuildReport(Map params = [:]) {
       writeFile(file: 'build.md', text: body)
       archiveArtifacts 'build.md'
     }
+}
+
+def queryFilter(timeout, flakyThreshold) {
+  return toJSON([ "timeout": timeout,
+                  [ "sort":
+                    [ "timestamp": "desc" ],
+                    [ "test_score": "desc" ]
+                  ],
+                  [ "query":
+                    [ "range":
+                      [ "test_score": [ "gt": flakyThreshold ] ]
+                    ]
+                  ]
+                ])
 }
