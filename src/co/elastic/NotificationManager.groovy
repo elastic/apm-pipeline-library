@@ -54,6 +54,7 @@ def analyzeFlakey(Map params = [:]) {
     if (!flakyReportIdx?.trim()) {
       error 'analyzeFlakey: did not receive flakyReportIdx data'
     }
+    log(level: 'INFO', text: "analyzeFlakey: queryFilter: ${queryFilter(queryTimeout, flakyThreshold).toString()}")
     // Query only the test_name field since it's the only used and don't want to overkill the
     // jenkins instance when using the toJSON step since it reads in memory the json response.
     // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
