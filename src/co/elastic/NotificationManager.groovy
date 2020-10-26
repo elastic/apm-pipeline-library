@@ -54,10 +54,11 @@ def analyzeFlakey(Map params = [:]) {
     if (!flakyReportIdx?.trim()) {
       error 'analyzeFlakey: did not receive flakyReportIdx data'
     }
+    def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
     def flakeyTestsRaw = sendDataToElasticsearch(es: es,
                                                  secret: secret,
                                                  data: queryFilter(queryTimeout, flakyThreshold),
-                                                 restCall: "/${flakyReportIdx}/_search?size=${querySize}")
+                                                 restCall: query)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
     def ret = []
