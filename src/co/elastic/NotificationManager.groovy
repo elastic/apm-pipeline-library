@@ -239,6 +239,7 @@ def notifyPR(Map params = [:]) {
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
  * @param docsUrl URL with the preview docs
  * @param log String that contains the log
+ * @param header String that contains a custom header for the message (optional)
  * @param statsUrl URL to access to the stats
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
@@ -256,6 +257,7 @@ def notifySlack(Map args = [:]) {
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def enabled = args.get('enabled', false)
     def channel = args.containsKey('channel') ? args.channel : error('notifySlack: channel parameter is not required')
+    def header = args.containsKey('header') ? args.header : ''
     def credentialId = args.containsKey('credentialId') ? args.credentialId : error('notifySlack: credentialId parameter is not required')
 
     if (enabled) {
@@ -263,6 +265,7 @@ def notifySlack(Map args = [:]) {
         def statusSuccess = (buildStatus == "SUCCESS")
         def boURL = getBlueoceanDisplayURL()
         def body = buildTemplate([
+          "header": header,
           "template": 'slack-markdown.template',
           "build": build,
           "buildStatus": buildStatus,

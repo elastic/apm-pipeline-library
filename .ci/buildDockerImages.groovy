@@ -110,13 +110,13 @@ pipeline {
         dir('apm-agent-python'){
           git 'https://github.com/elastic/apm-agent-python.git'
           script {
-            dockerLoginElasticRegistry()
             def pythonVersions = readYaml(file: '.ci/.jenkins_python.yml')['PYTHON_VERSION']
             def tasks = [:]
             pythonVersions.each { pythonIn ->
               def pythonVersion = pythonIn.replaceFirst("-",":")
               tasks["${pythonVersion}"] = {
                 node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-python.git',
                     tag: 'apm-agent-python',
@@ -155,7 +155,6 @@ pipeline {
             archiveArtifacts '*.log'
           }
           script {
-            dockerLoginElasticRegistry()
             def rubyVersions = readYaml(file: '.ci/.jenkins_ruby.yml')['RUBY_VERSION']
             def tasks = [:]
             // The ones with the observability-ci tag are already built at the very end
@@ -164,6 +163,7 @@ pipeline {
               def rubyVersion = version.replaceFirst(":","-")
               tasks["${rubyVersion}"] = {
                 node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-ruby.git',
                     tag: 'apm-agent-ruby',
@@ -192,7 +192,6 @@ pipeline {
         dir('apm-agent-nodejs'){
           git 'https://github.com/elastic/apm-agent-nodejs.git'
           script {
-            dockerLoginElasticRegistry()
             def nodeVersions = readYaml(file: '.ci/.jenkins_nodejs.yml')['NODEJS_VERSION']
             def tasks = [:]
             nodeVersions.each { version ->
@@ -200,6 +199,7 @@ pipeline {
               def nodejsVersion = version.replaceFirst('"', '')
               tasks["${version}"] = {
                 node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-nodejs.git',
                     tag: 'apm-agent-nodejs',
@@ -259,7 +259,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C docker all-push')
           }
-          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
+          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
         }
       }
       post {
@@ -295,7 +295,7 @@ pipeline {
           retry(3){
             sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
           }
-          sh(label: 'clean Docker images', script: 'docker rmi $(docker images --filter=reference="docker.elastic.co/*:*" -q)')
+          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
         }
       }
       post {
@@ -522,7 +522,7 @@ def buildDockerImage(args){
             }
           }
         }
-        sh(label: "clean docker image", script: "docker rmi ${image}")
+        sh(label: "clean docker image", script: "docker rmi --force ${image}")
       }
     }
   }
@@ -534,5 +534,5 @@ def pushDockerImageFromStore(imageTag, cacheTag){
   dockerLoginElasticRegistry()
   sh(label: 're-tag Docker image', script: "docker tag ${imageTag} ${cacheTag}")
   sh(label: "push Docker image to ${cacheTag}", script: "docker push ${cacheTag}")
-  sh(label: 'clean Docker images', script: "docker rmi ${imageTag}")
+  sh(label: 'clean Docker images', script: "docker rmi --force ${imageTag}")
 }

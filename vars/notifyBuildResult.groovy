@@ -33,6 +33,9 @@ the flakey test analyser.
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
+
 **/
 
 import co.elastic.BuildException
@@ -56,6 +59,7 @@ def call(Map args = [:]) {
       def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
+      def slackHeader = args.containsKey('slackHeader') ? args.slackHeader : ''
       def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
       def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
@@ -96,6 +100,7 @@ def call(Map args = [:]) {
 
         // Should notify in slack if it's enabled
         if(notifySlackComment) {
+          data['header'] = slackHeader
           data['channel'] = slackChannel
           data['credentialId'] = slackCredentials
           data['enabled'] = slackNotify

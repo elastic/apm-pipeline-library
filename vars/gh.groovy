@@ -46,7 +46,35 @@ def call(Map args = [:]) {
         }
       }
     }
-    def output = sh(label: "gh ${command}", script: "gh ${command} ${flagsCommand}", returnStdout: true)
-    return output
+
+    if(isInstalled(tool: 'gh', flag: '--version')) {
+      return runCommand(command, flagsCommand)
+    } else {
+      def ghLocation = pwd(tmp: true)
+      downloadInstaller(ghLocation)
+      withEnv(["PATH+GH=${ghLocation}"]) {
+        return runCommand(command, flagsCommand)
+      }
+    }
+  }
+}
+
+def runCommand(command, flagsCommand) {
+  def output = sh(label: "gh ${command}", script: "gh ${command} ${flagsCommand}", returnStdout: true)
+  return output
+}
+
+def downloadInstaller(where) {
+  def url = 'https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.tar.gz'
+  def tarball = 'gh.tar.gz'
+  if(isInstalled(tool: 'wget', flag: '--version')) {
+    dir(where) {
+      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+        sh(label: 'download gh', script: "wget -O ${tarball} ${url}")
+        sh(label: 'untar gh', script: "tar -xpf ${tarball} --strip-components=2")
+      }
+    }
+  } else {
+    log(level: 'WARN', text: 'gh: wget is not available. gh will not be installed then.')
   }
 }
