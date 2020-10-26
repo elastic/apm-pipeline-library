@@ -344,7 +344,7 @@ def generateBuildReport(Map params = [:]) {
 }
 
 def queryFilter(timeout, flakyThreshold) {
-  return toJSON("""{
+  return """{
                 "timeout": "${timeout}",
                 "sort" : [
                   { "timestamp" : "desc" },
@@ -357,5 +357,5 @@ def queryFilter(timeout, flakyThreshold) {
                     }
                   }
                 }
-              }""")
+              }"""
 }
