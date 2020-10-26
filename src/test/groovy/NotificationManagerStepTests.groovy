@@ -462,11 +462,12 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.analyzeFlakey(
       flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
       es: "https://fake_url",
-      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are test failures but not known flaky tests."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Genuine test errors [![1]"))
     assertJobStatusSuccess()
   }
 

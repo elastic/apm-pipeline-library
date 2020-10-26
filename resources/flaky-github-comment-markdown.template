@@ -1,7 +1,7 @@
-<% if(tests) {%>
+<% if(flakyTests) {%>
 ## :bug: Flaky test report
 :snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
-    <% tests?.each{ k,v -> %>
+    <% flakyTests?.each{ k,v -> %>
 * **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
 <%} else if (testsSummary?.failed > 0) {%>
 ## :bug: Flaky test report
@@ -14,6 +14,9 @@ Tests succeeded.
 No test was executed to be analysed.
 <%}%>
 <% if(testsSummary?.total > 0) {%>
+<!-- BUILD SUMMARY-->
+<details><summary>Expand to view the summary</summary>
+<p>
 ### Test stats :test_tube:
 | Test         | Results                         |
 | ------------ | :-----------------------------: |
@@ -22,3 +25,12 @@ No test was executed to be analysed.
 | Skipped      | ${(testsSummary?.skipped) ?: 0} |
 | Total        | ${(testsSummary?.total) ?: 0}   |
 <%}%>
+
+<% if(!testsErrors?.isEmpty()) {%>
+### Genuine test errors [![${testsErrors?.size()}](https://img.shields.io/badge/${testsErrors?.size()}%20-red)](${jobUrl}/tests)
+:broken_heart: There are test failures but not known flaky tests, most likely a genuine test failure.
+<%   testsErrors?.each {%>* **Name**: `${it}`<%}%>
+<%}%>
+
+</p>
+</details>
