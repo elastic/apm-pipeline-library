@@ -617,7 +617,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       flakyThreshold: 0.5
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', '"gt" : 0.5'))
     assertJobStatusSuccess()
   }
 
