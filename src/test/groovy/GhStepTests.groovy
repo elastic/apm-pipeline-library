@@ -151,7 +151,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list')
     } catch(err) { println err}
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '--repo="foo/org"'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--repo="org/foo"'))
     assertJobStatusSuccess()
   }
 

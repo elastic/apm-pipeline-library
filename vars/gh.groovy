@@ -43,7 +43,7 @@ def call(Map args = [:]) {
   def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1', returnStatus: true) == 0
   if (!isGitWorkspace) {
     if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
-      flags['repo'] = "${env.REPO_NAME}/${env.ORG_NAME}"
+      flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
     }
   }
 
