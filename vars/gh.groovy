@@ -37,7 +37,7 @@ def call(Map args = [:]) {
     def flagsCommand = ''
     if (flags) {
       flags.each { k, v ->
-        if (v instanceof List) {
+        if (v instanceof java.util.ArrayList) {
           v.each { value ->
             flagsCommand += "--${k}=${value} "
           }
