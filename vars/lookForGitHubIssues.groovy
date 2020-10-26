@@ -29,6 +29,7 @@ def call(Map args = [:]) {
   def output = [:]
   if (list) {
     try {
+      log(level: 'DEBUG', text: "lookForGitHubIssues: flakyList ${flakyList?.join('\n')}.")
       // Filter all the issues given those labels.
       def issues = githubIssues(labels: labels, credentialsId: credentialsId)
       if (issues) {
