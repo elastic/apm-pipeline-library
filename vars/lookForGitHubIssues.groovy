@@ -29,7 +29,7 @@ def call(Map args = [:]) {
   def output = [:]
   if (list) {
     try {
-      log(level: 'INFO', text: "lookForGitHubIssues: flakyList ${list?.join('\n')}.")
+      log(level: 'DEBUG', text: "lookForGitHubIssues: flakyList ${list?.join('\n')}.")
       // Filter all the issues given those labels.
       def issues = githubIssues(labels: labels, credentialsId: credentialsId)
       if (issues) {
@@ -49,7 +49,7 @@ def call(Map args = [:]) {
       // no issues could be found, let's report the list of test failures without any issue details.
       list.each { output.put(it, '') }
     }
-    log(level: 'INFO', text: "lookForGitHubIssues: ${output}.")
+    log(level: 'DEBUG', text: "lookForGitHubIssues: ${output}.")
     return output
   } else {
     log(level: 'INFO', text: "lookForGitHubIssues: flakyList is empty.")

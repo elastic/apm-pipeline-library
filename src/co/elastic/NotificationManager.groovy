@@ -50,6 +50,7 @@ def analyzeFlakey(Map params = [:]) {
     def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
     def querySize = params.get('querySize', 500)
     def queryTimeout = params.get('queryTimeout', '20s')
+    def labels = 'flaky-test,ci-reported'
 
     if (!flakyReportIdx?.trim()) {
       error 'analyzeFlakey: did not receive flakyReportIdx data'
@@ -75,8 +76,7 @@ def analyzeFlakey(Map params = [:]) {
     log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
     log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
 
-    def labels = 'flaky-test,ci-reported'
-    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels.split(','))
+    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
