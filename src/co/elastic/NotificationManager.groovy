@@ -65,18 +65,18 @@ def analyzeFlakey(Map params = [:]) {
                                                  restCall: query)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
-    def ret = []
-    for (failedTest in testsErrors) {
-      for (flakeyTest in flakeyTestsParsed["hits"]["hits"]) {
-        if ((flakeyTest["_source"]["test_name"] == failedTest.name) && !(failedTest.name in ret)) {
-          ret.add(failedTest.name)
-        }
-      }
-    }
-    log(level: 'INFO', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
-    log(level: 'INFO', text: "analyzeFlakey: Flaky matched tests: ${ret.join('\n')}")
+    // Normalise both data structures with their names
+    // Intesection what tests are failing and also scored as flaky.
+    // Subset of genuine test failures, aka, those failures that were not scored as flaky previously.
+    def testFailures = testsErrors.collect { it.name }
+    def testFlaky = flakeyTestsParsed['hits']['hits'].collect { it['_source']['test_name'] }
+    def foundFlakyList = testFailures.intersect(testFlaky)
+    def genuineTestFailures = testFailures.minus(foundFlakyList)
+    log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+    log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
+
     def labels = 'flaky-test,ci-reported'
-    def tests = lookForGitHubIssues(flakyList: ret, labelsFilter: labels.split(','))
+    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels.split(','))
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
@@ -117,7 +117,9 @@ def analyzeFlakey(Map params = [:]) {
     // Decorate comment
     def body = buildTemplate([
       "template": 'flaky-github-comment-markdown.template',
-      "tests": flakyTestsWithIssues,
+      "flakyTests": flakyTestsWithIssues,
+      "jobUrl": boURL,
+      "testsErrors": genuineTestFailures,
       "testsSummary": testsSummary
     ])
     writeFile(file: 'flaky.md', text: body)
