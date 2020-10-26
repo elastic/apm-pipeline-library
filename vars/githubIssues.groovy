@@ -27,7 +27,7 @@ def call(Map args = [:]) {
   def output = [:]
   try {
     // filter all the issues given those labels.
-    def issues = gh(command: 'issue list', flags: [ label: labels, limit: 200])
+    def issues = gh(command: 'issue list', flags: [label: labels, limit: 200])
     if (issues?.trim()) {
       issues.split('\n').each { line ->
         def data = line.split('\t')
@@ -36,7 +36,7 @@ def call(Map args = [:]) {
     }
   } catch (err) {
     // no issues to be reported.
-    log(level: 'WARN', text: "githubIssues: It failed but let's notify the error but keep going. ${err.toString()}")
+    log(level: 'WARN', text: "githubIssues: It failed but let's notify the error but keep going. gh command returned: '${issues}' with error: ${err.toString()}")
   }
   return output
 }
