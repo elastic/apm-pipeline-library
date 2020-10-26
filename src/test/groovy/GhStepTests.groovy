@@ -83,7 +83,8 @@ class GhStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_failed() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.label.startsWith('gh')) { throw new Exception('unknown command "foo" for "gh issue"') }})
     def result
     try {
       result = script.call(command: 'issue foo')
@@ -125,6 +126,42 @@ class GhStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'gh issue list --label="bug,help wanted"'))
     assertFalse(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_outside_of_a_repo_without_variables() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    script.call(command: 'issue list')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', '--repo'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_outside_of_a_repo_with_variables() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    try {
+    script.call(command: 'issue list')
+    } catch(err) { println err}
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '--repo="foo/org"'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_within_a_repo() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { return 0 })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', '--repo'))
     assertJobStatusSuccess()
   }
 }

@@ -1,4 +1,6 @@
 Wrapper to interact with the gh command line. It returns the stdout output.
+It requires to be executed within the git workspace, otherwise it will use 
+`REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
   // List all the open issues with the label 

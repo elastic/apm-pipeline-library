@@ -32,7 +32,17 @@ def call(Map args = [:]) {
   }
   def command = args.containsKey('command') ? args.command : error('gh: command argument is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
-  def flags = args.get('flags', [])
+  def flags = args.get('flags', [:])
+
+  // Use the current location as the git repo otherwise uses the env variables to pass
+  // the repo information to the gh command
+  def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1', returnStatus: true) == 0
+  if (!isGitWorkspace) {
+    if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
+      flags['repo'] = "${env.REPO_NAME}/${env.ORG_NAME}"
+    }
+  }
+
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
     def flagsCommand = ''
     if (flags) {
