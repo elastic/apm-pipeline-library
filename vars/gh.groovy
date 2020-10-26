@@ -70,7 +70,7 @@ def downloadInstaller(where) {
   if(isInstalled(tool: 'wget', flag: '--version')) {
     dir(where) {
       retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        sh(label: 'download gh', script: "wget -O ${tarball} ${url}")
+        sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")
         sh(label: 'untar gh', script: "tar -xpf ${tarball} --strip-components=2")
       }
     }

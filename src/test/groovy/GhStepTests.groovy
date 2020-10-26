@@ -66,7 +66,7 @@ class GhStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label=foo"))
     assertFalse(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertFalse(assertMethodCallContainsPattern('sh', "wget -O"))
+    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
     assertJobStatusSuccess()
   }
 
@@ -102,7 +102,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertJobStatusSuccess()
   }
 
@@ -112,7 +112,7 @@ class GhStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     script.call(command: 'issue list')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertJobStatusSuccess()
   }
 }
