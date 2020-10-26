@@ -26,6 +26,10 @@
 
 */
 
+import groovy.transform.Field
+
+@Field def ghLocation = ''
+
 def call(Map args = [:]) {
   if(!isUnix()) {
     error 'gh: windows is not supported yet.'
@@ -58,13 +62,18 @@ def call(Map args = [:]) {
         }
       }
     }
-
-    if(isInstalled(tool: 'gh', flag: '--version')) {
-      return runCommand(command, flagsCommand)
+    if (ghLocation?.trim()) {
+      log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
     } else {
-      def ghLocation = pwd(tmp: true)
-      downloadInstaller(ghLocation)
-      withEnv(["PATH+GH=${ghLocation}"]) {
+      log(level: 'DEBUG', text: 'gh: set the ghLocation.')
+      ghLocation = pwd(tmp: true)
+    }
+    withEnv(["PATH+GH=${ghLocation}"]) {
+      if(isInstalled(tool: 'gh', flag: '--version')) {
+        return runCommand(command, flagsCommand)
+      } else {
+        def ghLocation = pwd(tmp: true)
+        downloadInstaller(ghLocation)
         return runCommand(command, flagsCommand)
       }
     }
