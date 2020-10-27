@@ -38,6 +38,8 @@ This method generates flakey test data from Jenkins test results
  * @param flakyReportIdx, what's the id.
  * @param flakyThreshold, to tweak the score.
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ * @param querySize The maximum value of results to be reported. Default 500
+ * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
 */ 
 def analyzeFlakey(Map params = [:]) {
     def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
@@ -46,14 +48,22 @@ def analyzeFlakey(Map params = [:]) {
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
     def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
     def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
+    def querySize = params.get('querySize', 500)
+    def queryTimeout = params.get('queryTimeout', '20s')
+    def labels = 'flaky-test,ci-reported'
 
-    if (!flakyReportIdx || !flakyReportIdx.trim()) {
-      error "Did not receive flakyReportIdx data" 
+    if (!flakyReportIdx?.trim()) {
+      error 'analyzeFlakey: did not receive flakyReportIdx data'
     }
 
-    def q = toJSON(["query":["range": ["test_score": ["gt": flakyThreshold]]]])
-    def c = '/' + flakyReportIdx + '/_search'
-    def flakeyTestsRaw = sendDataToElasticsearch(es: es, secret: secret, data: q, restCall: c)
+    // Query only the test_name field since it's the only used and don't want to overkill the
+    // jenkins instance when using the toJSON step since it reads in memory the json response.
+    // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
+    def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
+    def flakeyTestsRaw = sendDataToElasticsearch(es: es,
+                                                 secret: secret,
+                                                 data: queryFilter(queryTimeout, flakyThreshold),
+                                                 restCall: query)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
     // Normalise both data structures with their names
@@ -63,9 +73,10 @@ def analyzeFlakey(Map params = [:]) {
     def testFlaky = flakeyTestsParsed['hits']['hits'].collect { it['_source']['test_name'] }
     def foundFlakyList = testFailures.intersect(testFlaky)
     def genuineTestFailures = testFailures.minus(foundFlakyList)
+    log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+    log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
 
-    def labels = 'flaky-test,ci-reported'
-    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels.split(','))
+    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
     // Create issues if they were not created
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
@@ -74,18 +85,26 @@ def analyzeFlakey(Map params = [:]) {
     def numberOfCreatedtedIssues = 0
     tests.each { k, v ->
       def issue = v
-      if (!v?.trim()) {
-        def issueDescription = buildTemplate([
+      def issueDescription = buildTemplate([
           "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
-          "testData": testsErrors?.find { it.name.equals(k) }
-        ])
+          "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
+          "commit": env.GIT_BASE_COMMIT?.trim() ?: '',
+          "testData": testsErrors?.find { it.name.equals(k) }])
+      if (v?.trim()) {
+        try {
+          issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
+          githubCommentIssue(id: issueWithoutUrl, comment: issueDescription)
+        } catch(err) {
+          log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
+        }
+      } else {
         def title = "Flaky Test [${k}]"
         try {
           if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
             retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels, returnStdout: true)
+              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
             }
             numberOfCreatedtedIssues++
           } else {
@@ -332,4 +351,21 @@ def generateBuildReport(Map params = [:]) {
       writeFile(file: 'build.md', text: body)
       archiveArtifacts 'build.md'
     }
+}
+
+def queryFilter(timeout, flakyThreshold) {
+  return """{
+                "timeout": "${timeout}",
+                "sort" : [
+                  { "timestamp" : "desc" },
+                  { "test_score" : "desc" }
+                ],
+                "query" : {
+                  "range" : {
+                    "test_score" : {
+                      "gt" : ${flakyThreshold}
+                    }
+                  }
+                }
+              }"""
 }

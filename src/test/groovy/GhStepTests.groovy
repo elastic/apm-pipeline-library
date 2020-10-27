@@ -64,9 +64,9 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', flags: [ label: 'foo'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label=foo"))
-    assertFalse(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertFalse(assertMethodCallContainsPattern('sh', "wget -O"))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo'"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
     assertJobStatusSuccess()
   }
 
@@ -76,14 +76,15 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', flags: [ label: ['foo', 'bar'] ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label=foo --label=bar"))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo' --label='bar'"))
     assertJobStatusSuccess()
   }
 
   @Test
   void test_with_failed() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m.label.startsWith('gh')) { throw new Exception('unknown command "foo" for "gh issue"') }})
     def result
     try {
       result = script.call(command: 'issue foo')
@@ -102,7 +103,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertJobStatusSuccess()
   }
 
@@ -112,7 +113,91 @@ class GhStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     script.call(command: 'issue list')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -O'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_flags_and_spaces() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(command: 'issue list', flags: [ label: "bug,help wanted"])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='bug,help wanted'"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_outside_of_a_repo_without_variables() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    script.call(command: 'issue list')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', '--repo'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_outside_of_a_repo_with_variables() throws Exception {
+    def script = loadScript(scriptName)
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    try {
+    script.call(command: 'issue list')
+    } catch(err) { println err}
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "--repo='org/foo'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_within_a_repo() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { return 0 })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', '--repo'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_cache() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(command: 'issue list')
+    script.call(command: 'issue list')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(command: 'issue list')
+    script.call(command: 'issue list')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallContainsPattern('log', 'gh: get the ghLocation from cache.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'gh: set the ghLocation.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_normalisation() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(command: 'issue list', flags: [ label: "foo-'" ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo-\"'"))
     assertJobStatusSuccess()
   }
 }

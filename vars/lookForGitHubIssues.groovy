@@ -23,33 +23,36 @@
   lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
 */
 def call(Map args = [:]) {
-  def list = args.get('flakyList', [])
+  def flakyList = args.get('flakyList', [])
   def labels = args.get('labelsFilter', [])
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def output = [:]
-  if (list) {
+  if (flakyList) {
     try {
       // Filter all the issues given those labels.
       def issues = githubIssues(labels: labels, credentialsId: credentialsId)
       if (issues) {
         // for all the test failures and and github issues, let's look for the ones with
         // the test-name in the issue title
-        list.each { testName ->
-          issues.each { issue, data ->
-            if (data.title?.contains(testName)) {
-              output.put(testName, issue)
-            } else {
-              output.put(testName, '')
-            }
+        flakyList.each { testName ->
+          def issue = issues.find { issue, data -> data.title?.contains(testName) }
+          if(issue) {
+            log(level: 'DEBUG', text: "lookForGitHubIssues: issue ${issue.key} matches ${testName}.")
+            output[testName] = issue.key
+          } else {
+            log(level: 'DEBUG', text: "lookForGitHubIssues: no match for ${testName}.")
+            output[testName] = ''
           }
         }
       }
     } catch (err) {
       // no issues could be found, let's report the list of test failures without any issue details.
-      list.each { output.put(it, '') }
+      flakyList.each { output.put(it, '') }
     }
+    log(level: 'DEBUG', text: "lookForGitHubIssues: output ${output}.")
     return output
   } else {
+    log(level: 'WARN', text: "lookForGitHubIssues: flakyList is empty.")
     return output
   }
 }

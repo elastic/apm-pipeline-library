@@ -1,15 +1,17 @@
 ## Flaky Test
 
-* **Test Name:** ${testName}
+* **Test Name:** `${testName}`
 * **Artifact Link:** ${jobUrl}
+* **PR:** ${PR?.trim() ?: 'None'}
+* **Commit:** ${commit?.trim() ?: 'None'}
 
-<% if (testData?.errorDetails) {%>
+<% if (testData?.errorDetails?.trim()) {%>
 ### Error details
 ```
 ${testData.errorDetails}
 ```
 <% }%>
-<% if (testData?.errorStackTrace) {%>
+<% if (testData?.errorStackTrace?.trim()) {%>
 ### Stack Trace
 ```
 ${testData.errorStackTrace}

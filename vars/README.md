@@ -544,6 +544,8 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
+It requires to be executed within the git workspace, otherwise it will use 
+`REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
   // List all the open issues with the label 
@@ -694,6 +696,27 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 def ref = githubBranchRef()
 ```
 
+## githubCommentIssue
+Comment an existing GitHub issue
+
+```
+  // Add a new comment to the issue 123 using the REPO_NAME and ORG_NAME env variables
+  githubCommentIssue(id: 123, comment: 'My new comment')
+
+  // Add a new comment to the issue 123 from foo/repo
+  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, comment: 'My new comment')
+```
+
+* comment: The comment. Mandatory
+* id: The GitHub issue. Mandatory
+* org: The GitHub organisation. Optional. Default the ORG_REPO env variable
+* repo: The GitHub repository. Optional. Default the REPO_REPO env variable
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: 
+* Windows is not supported yet.
+* It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
+
 ## githubCreateIssue
 Create an Issue in GitHub as long as the command runs in the git repo.
 
@@ -708,7 +731,6 @@ githubCreateIssue(title: 'Foo', description: 'Something else to be added', assig
 * milestone: The milestone name to add to the created issue. Optional
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
-* returnStdout: Whether to return the just created issue. Optional. Default false.
 
 _NOTE_: Windows is not supported yet.
 
@@ -1584,6 +1606,9 @@ the flakey test analyser.
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
+
 ```
 * es: Elasticserach URL to send the report.
 * secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
@@ -1593,6 +1618,7 @@ the flakey test analyser.
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
+* slackHeader: What header to be added before the default comment. Default value uses ``.
 * slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
 * slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.

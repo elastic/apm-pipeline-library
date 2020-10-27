@@ -66,4 +66,14 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret['test-foo'] == 1)
   }
+
+  @Test
+  void test_with_error() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('force a failure') })
+    def ret = script.call(flakyList: [ 'test-foo' ])
+    println ret
+    printCallStack()
+    assertTrue(ret.containsKey('test-foo'))
+  }
 }

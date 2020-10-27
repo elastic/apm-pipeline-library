@@ -511,8 +511,8 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** bar"))
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** Test / windows-3.6-none / test_send - tests.transports.test_urllib3"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `bar`"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `Test / windows-3.6-none / test_send - tests.transports.test_urllib3`"))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "`bar` reported in the issue #100"))
     assertJobStatusSuccess()
@@ -536,8 +536,8 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** bar"))
-    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** Test / windows-3.6-none / test_send - tests.transports.test_urllib3"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `bar`"))
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `Test / windows-3.6-none / test_send - tests.transports.test_urllib3`"))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "`bar` reported in the issue #100"))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "`Test / windows-3.6-none / test_send - tests.transports.test_urllib3` reported in the issue #200"))
@@ -561,10 +561,10 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'flake-tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-a"))
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-b"))
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-c"))
-    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** test-d"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `test-a`"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `test-b`"))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `test-c`"))
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `test-d`"))
     assertTrue(assertMethodCallContainsPattern('log', "'Flaky Test [test-d]'"))
     assertJobStatusSuccess()
   }
@@ -618,7 +618,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       flakyThreshold: 0.5
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('toJSON', "0.5"))
+    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', '"gt" : 0.5'))
     assertJobStatusSuccess()
   }
 
@@ -635,7 +635,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Did not receive flakyReportIdx data'))
+    assertTrue(assertMethodCallContainsPattern('error', 'analyzeFlakey: did not receive flakyReportIdx data'))
     assertJobStatusFailure()
   }
 
