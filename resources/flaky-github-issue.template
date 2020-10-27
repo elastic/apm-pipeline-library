@@ -3,13 +3,13 @@
 * **Test Name:** ${testName}
 * **Artifact Link:** ${jobUrl}
 
-<% if (testData?.errorDetails) {%>
+<% if (testData?.errorDetails?.trim()) {%>
 ### Error details
 ```
 ${testData.errorDetails}
 ```
 <% }%>
-<% if (testData?.errorStackTrace) {%>
+<% if (testData?.errorStackTrace?.trim()) {%>
 ### Stack Trace
 ```
 ${testData.errorStackTrace}

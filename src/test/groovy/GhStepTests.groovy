@@ -64,7 +64,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', flags: [ label: 'foo'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'gh issue list --label="foo"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo'"))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
     assertJobStatusSuccess()
@@ -76,7 +76,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', flags: [ label: ['foo', 'bar'] ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'gh issue list --label="foo" --label="bar"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo' --label='bar'"))
     assertJobStatusSuccess()
   }
 
@@ -123,7 +123,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', flags: [ label: "bug,help wanted"])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'gh issue list --label="bug,help wanted"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='bug,help wanted'"))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
     assertJobStatusSuccess()
@@ -151,7 +151,7 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list')
     } catch(err) { println err}
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '--repo="org/foo"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "--repo='org/foo'"))
     assertJobStatusSuccess()
   }
 
@@ -188,6 +188,16 @@ class GhStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertTrue(assertMethodCallContainsPattern('log', 'gh: get the ghLocation from cache.'))
     assertTrue(assertMethodCallContainsPattern('log', 'gh: set the ghLocation.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_normalisation() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(command: 'issue list', flags: [ label: "foo-'" ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
+    assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo-\"'"))
     assertJobStatusSuccess()
   }
 }

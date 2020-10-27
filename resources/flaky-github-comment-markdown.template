@@ -2,7 +2,7 @@
 ## :bug: Flaky test report
 :snowflake: The following tests failed but also have a history of flakiness and may not be related to this change: 
     <% flakyTests?.each{ k,v -> %>
-* **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue #" + v : 'has not been reported yet.'}<%}%>
+* **Name**: `${k}` ${ (v?.trim()) ? "reported in the issue " + v : 'has not been reported yet.'}<%}%>
 <%} else if (testsSummary?.failed > 0) {%>
 ## :bug: Flaky test report
 :grey_exclamation: There are test failures but not known flaky tests.

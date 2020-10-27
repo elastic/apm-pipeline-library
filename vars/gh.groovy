@@ -53,11 +53,11 @@ def call(Map args = [:]) {
       flags.each { k, v ->
         if (v instanceof java.util.ArrayList || v instanceof List) {
           v.findAll { it.trim() }.each { value ->
-            flagsCommand += "--${k}=\"${value}\" "
+            flagsCommand += "--${k}='${value.replaceAll("'",'"')}' "
           }
         } else {
           if (v?.trim()) {
-            flagsCommand += "--${k}=\"${v}\" "
+            flagsCommand += "--${k}='${v.replaceAll("'",'"')}' "
           }
         }
       }
