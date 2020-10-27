@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.157 (27/10/2020)
+
+#### 🚀 Enhancements
+
+-  [flaky] report Flaky Tests in GitHub automatically [#791](https://github.com/elastic/apm-pipeline-library/pull/791)
+-  [flaky] report genuine test failures [#792](https://github.com/elastic/apm-pipeline-library/pull/792)
+
+#### 🙈 No user affected
+
+-  [flaky] fix markdown formatting [#795](https://github.com/elastic/apm-pipeline-library/pull/795)
+-  [flaky] enable for the apm-pipeline-library [#781](https://github.com/elastic/apm-pipeline-library/pull/781)
+-  [test-infra] gh not validated on Windows [#788](https://github.com/elastic/apm-pipeline-library/pull/788)
+-  [CI] windows-2019 got python2 newer [#786](https://github.com/elastic/apm-pipeline-library/pull/786)
+
 ## v1.1.156 (22/10/2020)
 
 #### 🐛 Bug Fixes
