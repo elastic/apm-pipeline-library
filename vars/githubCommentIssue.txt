@@ -1,0 +1,19 @@
+Comment an existing GitHub issue
+
+```
+  // Add a new comment to the issue 123 using the REPO_NAME and ORG_NAME env variables
+  githubCommentIssue(id: 123, comment: 'My new comment')
+
+  // Add a new comment to the issue 123 from foo/repo
+  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, comment: 'My new comment')
+```
+
+* comment: The comment. Mandatory
+* id: The GitHub issue. Mandatory
+* org: The GitHub organisation. Optional. Default the ORG_REPO env variable
+* repo: The GitHub repository. Optional. Default the REPO_REPO env variable
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: 
+* Windows is not supported yet.
+* It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
