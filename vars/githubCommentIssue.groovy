@@ -21,10 +21,10 @@
   NOTE: It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
   // Add a new comment to the issue 123 using the REPO_NAME and ORG_NAME env variables
-  githubCommentIssue(id: 123, body: 'My new comment')
+  githubCommentIssue(id: 123, comment: 'My new comment')
 
   // Add a new comment to the issue 123 from foo/repo
-  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, body: 'My new comment')
+  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, comment: 'My new comment')
 */
 
 import groovy.transform.Field

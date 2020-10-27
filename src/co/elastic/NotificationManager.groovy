@@ -89,11 +89,13 @@ def analyzeFlakey(Map params = [:]) {
           "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
+          "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
+          "commit": env.GIT_BASE_COMMIT?.trim() ?: '',
           "testData": testsErrors?.find { it.name.equals(k) }])
       if (v?.trim()) {
         try {
           issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
-          githubCommentIssue(id: issueWithoutUrl, body: issueDescription)
+          githubCommentIssue(id: issueWithoutUrl, comment: issueDescription)
         } catch(err) {
           log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
         }
