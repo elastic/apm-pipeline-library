@@ -63,7 +63,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --title="foo"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "issue create --title='foo'"))
     assertFalse(assertMethodCallContainsPattern('sh', '--assignee'))
     assertFalse(assertMethodCallContainsPattern('sh', '--label'))
     assertFalse(assertMethodCallContainsPattern('sh', '--milestone'))
@@ -76,7 +76,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --title="foo"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "issue create --title='foo'"))
     assertJobStatusSuccess()
   }
 
@@ -85,7 +85,7 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', milestone: 'm1', labels: 'l1')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'issue create --assignee="v1v" --label="l1" --milestone="m1" --title="foo" --body="bar"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "issue create --assignee='v1v' --label='l1' --milestone='m1' --title='foo' --body='bar'"))
     assertJobStatusSuccess()
   }
 
@@ -94,10 +94,10 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '--title="foo foo"'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--body="bar \n something else"'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--assignee="u1,u2"'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--label="l1,l2"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "--title='foo foo'"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--body='bar \n something else'"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--assignee='u1,u2'"))
+    assertTrue(assertMethodCallContainsPattern('sh', "--label='l1,l2'"))
     assertJobStatusSuccess()
   }
 }

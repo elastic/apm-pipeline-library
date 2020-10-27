@@ -23,11 +23,13 @@
 */
 def call(Map args = [:]) {
   def labels = args.get('labels', [])
+  def limit = args.get('limit', 200)
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def output = [:]
+  def issues
   try {
     // filter all the issues given those labels.
-    def issues = gh(command: 'issue list', flags: [label: labels, limit: 200])
+    issues = gh(command: 'issue list', flags: [label: labels, limit: limit])
     if (issues?.trim()) {
       issues.split('\n').each { line ->
         def data = line.split('\t')

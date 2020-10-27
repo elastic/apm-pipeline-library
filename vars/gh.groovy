@@ -40,7 +40,7 @@ def call(Map args = [:]) {
 
   // Use the current location as the git repo otherwise uses the env variables to pass
   // the repo information to the gh command
-  def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1', returnStatus: true) == 0
+  def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1 1> /dev/null 2>&1', returnStatus: true) == 0
   if (isGitWorkspace) {
     log(level: 'DEBUG', text: 'gh: running within a git workspace.')
   } else {
@@ -50,30 +50,32 @@ def call(Map args = [:]) {
     }
   }
 
-  withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-    def flagsCommand = ''
-    if (flags) {
-      flags.each { k, v ->
-        if (v instanceof java.util.ArrayList || v instanceof List) {
-          v.findAll { it }.each { value ->
-            flagsCommand += "--${k}='${value?.replaceAll("'",'"')}' "
-          }
-        } else {
-          if (v) {
-            flagsCommand += "--${k}='${v?.replaceAll("'",'"')}' "
+  if (ghLocation?.trim()) {
+    log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
+  } else {
+    log(level: 'DEBUG', text: 'gh: set the ghLocation.')
+    ghLocation = pwd(tmp: true)
+  }
+
+  withEnv(["PATH+GH=${ghLocation}"]) {
+    if(!isInstalled(tool: 'gh', flag: '--version')) {
+      downloadInstaller(ghLocation)
+    }
+    withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
+      def flagsCommand = ''
+      if (flags) {
+        flags.each { k, v ->
+          log(level: 'DEBUG', text: "gh: k ${k} - v ${v}")
+          if (v instanceof java.util.ArrayList || v instanceof List) {
+            v.findAll { it }.each { value ->
+              flagsCommand += "--${k}='${normalise(value)}' "
+            }
+          } else {
+            if (v) {
+              flagsCommand += "--${k}='${normalise(v)}' "
+            }
           }
         }
-      }
-    }
-    if (ghLocation?.trim()) {
-      log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
-    } else {
-      log(level: 'DEBUG', text: 'gh: set the ghLocation.')
-      ghLocation = pwd(tmp: true)
-    }
-    withEnv(["PATH+GH=${ghLocation}"]) {
-      if(!isInstalled(tool: 'gh', flag: '--version')) {
-        downloadInstaller(ghLocation)
       }
       return runCommand(command, flagsCommand)
     }
@@ -98,4 +100,14 @@ def downloadInstaller(where) {
   } else {
     log(level: 'WARN', text: 'gh: wget is not available. gh will not be installed then.')
   }
+}
+
+/**
+* Ensure ' is replaced to avoid any issues when using the markdown templating.
+*/
+def normalise(v) {
+  if (v instanceof String) {
+    return v?.toString()?.replaceAll("'",'"')
+  }
+  return v
 }
