@@ -27,6 +27,10 @@
   githubCommentIssue(org: 'foo', repo: 'repo', id: 123, body: 'My new comment')
 */
 
+import groovy.transform.Field
+
+@Field def hubLocation = ''
+
 def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCommentIssue: windows is not supported yet.'
@@ -40,8 +44,19 @@ def call(Map args = [:]) {
   if (!org?.trim() || !repo?.trim()) {
     error("githubCommentIssue: org/repo are empty ${org}/${repo}. Please use the org and repo arguments or set the ORG_NAME and REPO_NAME variables (if you use the gitCheckout step then it should be there)")
   }
-  withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-    return sh(label: 'Comment GitHub issue', script: "hub api repos/${org}/${repo}/issues/${id}/comments -f body='${comment}'", returnStdout: true).trim()
+
+  if (hubLocation?.trim()) {
+    log(level: 'DEBUG', text: 'githubCommentIssue: get the hubLocation from cache.')
+  } else {
+    log(level: 'DEBUG', text: 'githubCommentIssue: set the hubLocation.')
+    hubLocation = pwd(tmp: true)
+  }
+
+  withEnv(["PATH+HUB=${hubLocation}"]) {
+    downloadInstallerIfNeeded(hubLocation)
+    withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
+      return sh(label: 'Comment GitHub issue', script: "hub api repos/${org}/${repo}/issues/${id}/comments -f body='${comment}'", returnStdout: true).trim()
+    }
   }
 }
 
@@ -53,4 +68,23 @@ def normalise(v) {
     return v?.toString()?.replaceAll("'",'"')
   }
   return v
+}
+
+def downloadInstallerIfNeeded(where) {
+  def url = 'https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz'
+  def tarball = 'hub.tar.gz'
+  if(isInstalled(tool: 'hub', flag: '--version')) {
+    log(level: 'INFO', text: 'githubCommentIssue: hub is available.')
+    return
+  }
+  if(isInstalled(tool: 'wget', flag: '--version')) {
+    dir(where) {
+      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+        sh(label: 'download hub', script: "wget -q -O ${tarball} ${url}")
+        sh(label: 'untar hub', script: "tar -xpf ${tarball} --strip-components=2")
+      }
+    }
+  } else {
+    log(level: 'WARN', text: 'githubCommentIssue: wget is not available. hub will not be installed then.')
+  }
 }

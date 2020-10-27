@@ -100,6 +100,7 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(id: '1', comment: 'foo', org: 'acme', repo: 'my-repo')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+HUB'))
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('sh', "hub api repos/acme/my-repo/issues/1/comments -f body='foo'"))
     assertJobStatusSuccess()
@@ -130,6 +131,44 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "'bar'")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "body='\"bar\"'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_cache() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+HUB'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+HUB'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallContainsPattern('log', 'githubCommentIssue: get the hubLocation from cache.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'githubCommentIssue: set the hubLocation.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_hub_already_installed() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
+    script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+HUB'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertJobStatusSuccess()
   }
 }

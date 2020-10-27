@@ -85,18 +85,24 @@ def analyzeFlakey(Map params = [:]) {
     def numberOfCreatedtedIssues = 0
     tests.each { k, v ->
       def issue = v
-      if (!v?.trim()) {
-        def issueDescription = buildTemplate([
+      def issueDescription = buildTemplate([
           "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": boURL,
-          "testData": testsErrors?.find { it.name.equals(k) }
-        ])
+          "testData": testsErrors?.find { it.name.equals(k) }])
+      if (v?.trim()) {
+        try {
+          issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
+          githubCommentIssue(id: issueWithoutUrl, body: issueDescription)
+        } catch(err) {
+          log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
+        }
+      } else {
         def title = "Flaky Test [${k}]"
         try {
           if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
             retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels, returnStdout: true)
+              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
             }
             numberOfCreatedtedIssues++
           } else {
@@ -110,9 +116,6 @@ def analyzeFlakey(Map params = [:]) {
             issue = ''
           }
         }
-      } else {
-        // Report back to the existing issue with a comment
-        // TODO
       }
       flakyTestsWithIssues[k] = issue
     }
