@@ -41,7 +41,10 @@ def call(Map args = [:]) {
   // Use the current location as the git repo otherwise uses the env variables to pass
   // the repo information to the gh command
   def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1', returnStatus: true) == 0
-  if (!isGitWorkspace) {
+  if (isGitWorkspace) {
+    log(level: 'DEBUG', text: 'gh: running within a git workspace.')
+  } else {
+    log(level: 'DEBUG', text: 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set')
     if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
       flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
     }
@@ -52,12 +55,12 @@ def call(Map args = [:]) {
     if (flags) {
       flags.each { k, v ->
         if (v instanceof java.util.ArrayList || v instanceof List) {
-          v.findAll { it.trim() }.each { value ->
-            flagsCommand += "--${k}='${value.replaceAll("'",'"')}' "
+          v.findAll { it }.each { value ->
+            flagsCommand += "--${k}='${value?.replaceAll("'",'"')}' "
           }
         } else {
-          if (v?.trim()) {
-            flagsCommand += "--${k}='${v.replaceAll("'",'"')}' "
+          if (v) {
+            flagsCommand += "--${k}='${v?.replaceAll("'",'"')}' "
           }
         }
       }
@@ -69,13 +72,10 @@ def call(Map args = [:]) {
       ghLocation = pwd(tmp: true)
     }
     withEnv(["PATH+GH=${ghLocation}"]) {
-      if(isInstalled(tool: 'gh', flag: '--version')) {
-        return runCommand(command, flagsCommand)
-      } else {
-        def ghLocation = pwd(tmp: true)
+      if(!isInstalled(tool: 'gh', flag: '--version')) {
         downloadInstaller(ghLocation)
-        return runCommand(command, flagsCommand)
       }
+      return runCommand(command, flagsCommand)
     }
   }
 }

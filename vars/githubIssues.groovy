@@ -31,12 +31,13 @@ def call(Map args = [:]) {
     if (issues?.trim()) {
       issues.split('\n').each { line ->
         def data = line.split('\t')
-        output.put(data[0], [ state: data[1], title: data[2] ])
+        output.put("${data[0]}", [ state: data[1], title: data[2] ])
       }
     }
   } catch (err) {
     // no issues to be reported.
     log(level: 'WARN', text: "githubIssues: It failed but let's notify the error but keep going. gh command returned: '${issues}' with error: ${err.toString()}")
   }
+  log(level: 'DEBUG', text: "githubIssues: output ${output}.")
   return output
 }
