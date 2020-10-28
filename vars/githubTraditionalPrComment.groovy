@@ -47,7 +47,7 @@ def call(Map args = [:]){
     }
     // Ensure the data is transformed to Json and then toString.
     def transformedData = JsonOutput.toJson([ "body": "${message}" ])
-    def comment = githubApiCall(token: token, url: url, data: transformedData, method: method)
+    def comment = githubApiCall(token: token, url: url, data: transformedData, method: method, noCache: true)
     return comment.id
   } else {
     log(level: 'WARN', text: 'githubTraditionalPrComment: is only available for PRs.')
