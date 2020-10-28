@@ -28,8 +28,8 @@ def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCreatePullRequest: windows is not supported yet.'
   }
-  def title = args.containsKey('title') ? """--message '${args.title}'""" : error('githubCreatePullRequest: title argument is required.')
-  def description = args.containsKey('description') ? """--message '${args.description}'""" : ''
+  def title = args.containsKey('title') ? args.title : error('githubCreatePullRequest: title argument is required.')
+  def description = args.containsKey('description') ? args.description : ''
   def assign = args.containsKey('assign') ? "--assign ${args.assign}" : ''
   def reviewer = args.containsKey('reviewer') ? "--reviewer ${args.reviewer}" : ''
   def milestone = args.containsKey('milestone') ? "--milestone ${args.milestone}" : ''
@@ -52,7 +52,9 @@ def call(Map args = [:]) {
     """)
     try {
       output = sh(label: 'Create GitHub issue', returnStdout: true,
-                  script: "hub pull-request --push ${title} ${description} ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag}").trim()
+                  script: """hub pull-request --push ${draftFlag} ${assign} ${reviewer} ${labels} ${milestone} ${base} ${forceFlag} -F- <<<"${title}
+
+${description}" """).trim()
       return output
     } catch(e) {
       error "githubCreatePullRequest: error ${e}"
