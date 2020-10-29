@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.158 (29/10/2020)
+
+#### 🐛 Bug Fixes
+
+-  Fix cache for GH comments [#798](https://github.com/elastic/apm-pipeline-library/pull/798)
+
 ## v1.1.157 (27/10/2020)
 
 #### 🚀 Enhancements
