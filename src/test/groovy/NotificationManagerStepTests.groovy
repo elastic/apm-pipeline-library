@@ -451,6 +451,50 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_without_channel() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.notifySlack(
+        build: readJSON(file: "build-info.json"),
+        buildStatus: "ABORTED",
+        changeSet: readJSON(file: "changeSet-info.json"),
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"),
+        credentialId: 'test',
+        enabled: true
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: channel parameter is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_notify_slack_without_credentialId() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.notifySlack(
+        build: readJSON(file: "build-info.json"),
+        buildStatus: "ABORTED",
+        changeSet: readJSON(file: "changeSet-info.json"),
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"),
+        channel: 'test',
+        enabled: true
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: credentialId parameter is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_analyzeFlakey_in_prs_without_flaky_tests() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
