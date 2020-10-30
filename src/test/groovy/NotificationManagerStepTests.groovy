@@ -451,6 +451,50 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_without_build() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.notifySlack(
+        buildStatus: "ABORTED",
+        changeSet: readJSON(file: "changeSet-info.json"),
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"),
+        channel: 'test',
+        credentialId: 'test',
+        enabled: true
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: build parameter it is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
+  void test_notify_slack_without_build_status() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.notifySlack(
+        build: readJSON(file: "build-info.json"),
+        changeSet: readJSON(file: "changeSet-info.json"),
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"),
+        channel: 'test',
+        credentialId: 'test',
+        enabled: true
+      )
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: buildStatus parameter is not valid'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void test_notify_slack_without_channel() throws Exception {
     def script = loadScript(scriptName)
     try {
