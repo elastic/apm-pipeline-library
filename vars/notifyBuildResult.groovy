@@ -33,6 +33,9 @@ the flakey test analyser.
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
+ 
   // Notify build status for a PR as a GitHub comment, and send slack message with custom header
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
 
