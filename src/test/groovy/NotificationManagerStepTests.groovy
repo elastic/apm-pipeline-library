@@ -451,6 +451,33 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_with_multiple_channels() throws Exception {
+    def script = loadScript(scriptName)
+    try {
+      script.notifySlack(
+        build: readJSON(file: "build-info-manual.json"),
+        buildStatus: "SUCCESS",
+        changeSet: readJSON(file: "changeSet-info-manual.json"),
+        stepsErrors: readJSON(file: "steps-errors.json"),
+        testsErrors: readJSON(file: "tests-errors.json"),
+        testsSummary: readJSON(file: "tests-summary.json"),
+        channel: 'foo, bar, baaz',
+        credentialId: 'test',
+        enabled: true
+      )
+    }
+    catch(e) {
+      println e
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'notifySlack: Error with the slack comment'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=foo'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=bar'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=baaz'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_slack_without_build() throws Exception {
     def script = loadScript(scriptName)
     try {

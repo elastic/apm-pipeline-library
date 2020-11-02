@@ -301,7 +301,10 @@ def notifySlack(Map args = [:]) {
           "testsSummary": testsSummary
         ])
         def color = (buildStatus == "SUCCESS") ? 'good' : 'warning'
-        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentialId)
+        channel.split(',').each { chan ->
+          chan = chan?.trim()
+          slackSend(channel: chan, color: color, message: "${body}", tokenCredentialId: credentialId)
+        }
       }
     }
 }
