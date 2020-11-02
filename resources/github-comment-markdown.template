@@ -57,12 +57,11 @@
     ${(testsSummary?.failed > 10) ? '> Show only the first 10 test failures' : ''}
     <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
 * **Name**: `${test?.name}`
+<% age = "* Age: ${test?.age}"%>
 <% duration = (test?.duration >= 0 ) ? "(took ${Math.round(test.duration/1000/60)} min ${Math.round(test.duration/1000)%60} sec)" : ''%>
-<% errorDetails = (test?.errorDetails?.trim() && !test?.errorDetails.equals('null')) ? "* Error Details: ${test?.errorDetails}" : ''%>
-<% errorStackTrace = (test?.errorStackTrace?.trim() && !test?.errorStackTrace.equals('null')) ? "* Error Stacktrace: ${test?.errorStackTrace}" : ''%>
-  * Age: ${test?.age} ${duration}
-  ${errorDetails}
-  ${errorStackTrace}
+<% errorDetails = (test?.errorDetails?.trim() && !test?.errorDetails.equals('null')) ? "\n  * Error Details: ${test?.errorDetails}" : ''%>
+<% errorStackTrace = (test?.errorStackTrace?.trim() && !test?.errorStackTrace.equals('null')) ? "\n  * Error Stacktrace: ${test?.errorStackTrace}" : ''%>
+  ${age} ${duration} ${errorDetails} ${errorStackTrace}
     <%}%>
   </p>
   </details>
@@ -76,7 +75,7 @@
   <p>
   ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
   <% stepsErrors?.take(10)?.each{ c -> %>
-  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "* Description: ${c?.displayDescription}" : ''%>
+  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "* Description: `${c?.displayDescription}`" : ''%>
   <% duration = (c?.durationInMillis >= 0 ) ? "(took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec)" : ''%>
   <% url = (c?.url && c?.url != 'null') ? ". View log details on [here](${c?.url}/?start=0)" : ''%>
   * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}` ${duration} ${url}
