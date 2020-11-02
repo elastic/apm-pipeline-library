@@ -58,7 +58,7 @@
     <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
 * **Name**: `${test?.name}`
 <% age = "* Age: ${test?.age}"%>
-<% duration = (test?.duration >= 0 ) ? "(took ${Math.round(test.duration/1000/60)} min ${Math.round(test.duration/1000)%60} sec)" : ''%>
+<% duration = (test?.duration >= 0 ) ? "(took ${test.duration} sec)" : ''%>
 <% errorDetails = (test?.errorDetails?.trim() && !test?.errorDetails.equals('null')) ? "\n  * Error Details: ${test?.errorDetails}" : ''%>
 <% errorStackTrace = (test?.errorStackTrace?.trim() && !test?.errorStackTrace.equals('null')) ? "\n  * Error Stacktrace: ${test?.errorStackTrace}" : ''%>
   ${age} ${duration} ${errorDetails} ${errorStackTrace}
