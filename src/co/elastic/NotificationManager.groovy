@@ -302,8 +302,10 @@ def notifySlack(Map args = [:]) {
         ])
         def color = (buildStatus == "SUCCESS") ? 'good' : 'warning'
         channel.split(',').each { chan ->
-          chan = chan?.trim()
-          slackSend(channel: chan, color: color, message: "${body}", tokenCredentialId: credentialId)
+          if (chan?.trim()) {
+            // only send to slack when the channel is valid
+            slackSend(channel: chan?.trim(), color: color, message: "${body}", tokenCredentialId: credentialId)
+          }
         }
       }
     }
