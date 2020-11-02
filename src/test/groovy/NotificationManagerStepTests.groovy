@@ -498,6 +498,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'notifySlack: Error with the slack comment'))
+    assertTrue(assertMethodCallOccurrences('slackSend', 0))
     assertJobStatusSuccess()
   }
 
