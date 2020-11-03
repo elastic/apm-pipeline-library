@@ -355,6 +355,9 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('githubPrComment', '* Error Details: ```'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', '''* Error Stacktrace:
  ```'''))
+    // When one of the fields is empty/null then it should not be shown
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', ''''* Age: 1 (took 0.1 sec) 
+  * Error Details: ```'''))
     assertJobStatusSuccess()
   }
 

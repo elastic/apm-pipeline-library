@@ -7,5 +7,15 @@
     "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:filebeat.tests.system.test_harvester.Test%3Ajunit%2Ffilebeat.tests.system.test_harvester%2FTest%2FBuild_Test___filebeat_build___test_symlink_rotated",
     "name": "Build&Test / filebeat-build / test_symlink_rotated - filebeat.tests.system.test_harvester.Test",
     "status": "FAILED"
+  },
+  {
+    "COMMENT": "This will be used to evaluate null and empty strings are not shown in the GH comment",
+    "age": 1,
+    "duration": 0.1,
+    "errorDetails": null,
+    "errorStackTrace": "",
+    "id": "io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult:filebeat.tests.system.test_harvester.Test%3Ajunit%2Ffilebeat.tests.system.test_harvester%2FTest%2FBuild_Test___filebeat_build___test_symlink_rotated",
+    "name": "Build&Test / filebeat-build / foo - bar",
+    "status": "FAILED"
   }
 ]
