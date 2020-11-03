@@ -57,9 +57,11 @@
     ${(testsSummary?.failed > 10) ? '> Show only the first 10 test failures' : ''}
     <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
 * **Name**: `${test?.name}`
-  * Age: ${test?.age}
-  * Duration: ${test?.duration}
-  * Error Details: ${test?.errorDetails}
+<% age = "* Age: ${test?.age}"%>
+<% duration = (test?.duration >= 0 ) ? "(took ${test.duration} sec)" : ''%>
+<% errorDetails = (test?.errorDetails?.trim() && !test?.errorDetails.equals('null')) ? "\n  * Error Details: ${test?.errorDetails}" : ''%>
+<% errorStackTrace = (test?.errorStackTrace?.trim() && !test?.errorStackTrace.equals('null')) ? "\n  * Error Stacktrace: ${test?.errorStackTrace}" : ''%>
+  ${age} ${duration} ${errorDetails} ${errorStackTrace}
     <%}%>
   </p>
   </details>
@@ -73,15 +75,11 @@
   <p>
   ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
   <% stepsErrors?.take(10)?.each{ c -> %>
-  * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
-    * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
-    <% if(c?.durationInMillis >= 0) {%>
-    * Duration: ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec
-    <%}%>
-    * Start Time: ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}
-    <% if(c?.url && c?.url != 'null') {%>
-    * [log](${c?.url})
-    <%}%>
+  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "* Description: `${c?.displayDescription}`" : ''%>
+  <% duration = (c?.durationInMillis >= 0 ) ? "(took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec)" : ''%>
+  <% url = (c?.url && c?.url != 'null') ? ". View log details on [here](${c?.url}/?start=0)" : ''%>
+  * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}` ${duration} ${url}
+    ${description}
   <%}%>
   </p>
   </details>
