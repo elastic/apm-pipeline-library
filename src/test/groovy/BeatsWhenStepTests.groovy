@@ -195,6 +195,20 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenChangeset_branch_first_build() throws Exception {
+    env.remove('GIT_PREVIOUS_COMMIT')
+    env.remove('CHANGE_TARGET')
+    env.GIT_BASE_COMMIT = 'bar'
+    def script = loadScript(scriptName)
+    def changeset = 'Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']])
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
+  }
+
+  @Test
   void test_whenComments_and_no_environment_variable() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenComments()

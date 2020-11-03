@@ -300,6 +300,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('powershell', [Map.class], null)
     helper.registerAllowedMethod('powershell', [String.class], null)
     helper.registerAllowedMethod('pwd', [Map.class], { 'folder' })
+    helper.registerAllowedMethod('readFile', [String.class], { '' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)

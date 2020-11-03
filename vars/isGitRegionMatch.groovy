@@ -36,7 +36,7 @@ def call(Map params = [:]) {
   }
   def patterns = params.containsKey('patterns') ? params.patterns.toList() : error('isGitRegionMatch: Missing patterns argument.')
   def shouldMatchAll = params.get('shouldMatchAll', false)
-  def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT)
+  def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}")
   def to = params.get('to', env.GIT_BASE_COMMIT)
 
   if (patterns.isEmpty()) {
