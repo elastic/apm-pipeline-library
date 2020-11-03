@@ -524,4 +524,18 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
     def directoryExclussion = "((?!^${transformedDirectory}\\/).)*\$"
     return "^(${directoryExclussion}|((?!\\/module\\/).)*\$|.*\\.asciidoc|.*\\.png)"
   }
+
+  @Test
+  void test_branch_first_build() throws Exception {
+    env.remove('GIT_PREVIOUS_COMMIT')
+    env.remove('CHANGE_TARGET')
+    env.GIT_BASE_COMMIT = 'bar'
+    def script = loadScript(scriptName)
+    def changeset = 'foo/bar/file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def module = script.call(pattern: '([^\\/]+)\\/.*')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
+    assertJobStatusSuccess()
+  }
 }

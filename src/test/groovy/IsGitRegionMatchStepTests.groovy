@@ -303,4 +303,20 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     assertTrue(result)
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_branch_first_build() throws Exception {
+    env.remove('GIT_PREVIOUS_COMMIT')
+    env.remove('CHANGE_TARGET')
+    env.GIT_BASE_COMMIT = 'bar'
+    def script = loadScript(scriptName)
+    def changeset = 'file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '^file.txt' ])
+    printCallStack()
+    assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
+    assertJobStatusSuccess()
+  }
 }
