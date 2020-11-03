@@ -67,6 +67,8 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
     def script = loadScript(scriptName)
     def result = true
     env.remove('CHANGE_TARGET')
+    env.remove('GIT_PREVIOUS_COMMIT')
+    env.remove('GIT_BASE_COMMIT')
     def module = script.call(pattern: 'foo')
     printCallStack()
     assertEquals('', module)
@@ -177,8 +179,10 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   }
 
   @Test
-  void test_with_empty_change_target_env_variable() throws Exception {
+  void test_with_empty_change_target_env_variable_use_git_base_commit() throws Exception {
     env.CHANGE_TARGET = " "
+    env.GIT_PREVIOUS_COMMIT = " "
+    env.GIT_BASE_COMMIT = 'bar'
     def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -187,7 +191,7 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     })
     def module = script.call(pattern: 'foo')
     printCallStack()
-    assertEquals('', module)
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
     assertJobStatusSuccess()
   }
 
