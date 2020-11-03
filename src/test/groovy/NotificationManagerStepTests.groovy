@@ -473,7 +473,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('log', 'notifySlack: Error with the slack comment'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=foo'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=bar'))
-    assertTrue(assertMethodCallContainsPattern('slackSend', 'channel=baaz'))
+    assertFalse(assertMethodCallContainsPattern('slackSend', 'channel=baaz'))
     assertJobStatusSuccess()
   }
 
@@ -607,7 +607,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are test failures but not known flaky tests."))
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Genuine test errors [![1]"))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', "Genuine test errors [![1]"))
     assertJobStatusSuccess()
   }
 

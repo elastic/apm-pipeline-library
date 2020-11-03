@@ -89,7 +89,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
     assertTrue(obj.get("test").isEmpty())
-    assertFalse(obj.get("build").isEmpty())
+    assertTrue(obj.get("build").isEmpty())
   }
 
   @Test

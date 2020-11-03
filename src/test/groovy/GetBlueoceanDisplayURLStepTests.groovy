@@ -55,7 +55,7 @@ class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def url = script.call()
     printCallStack()
-    assertFalse(url.contains("${env.JOB_BASE_NAME}/wrong"))
+    assertTrue(url.contains("${env.JOB_BASE_NAME}/wrong"))
     assertJobStatusSuccess()
   }
 }
