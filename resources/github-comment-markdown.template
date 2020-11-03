@@ -59,8 +59,8 @@
 * **Name**: `${test?.name}`
 <% age = "* Age: ${test?.age}"%>
 <% duration = (test?.duration >= 0 ) ? "(took ${test.duration} sec)" : ''%>
-<% errorDetails = (test?.errorDetails?.trim() && !test?.errorDetails.equals('null')) ? "\n  * Error Details: ${test?.errorDetails}" : ''%>
-<% errorStackTrace = (test?.errorStackTrace?.trim() && !test?.errorStackTrace.equals('null')) ? "\n  * Error Stacktrace: ${test?.errorStackTrace}" : ''%>
+<% errorDetails = (test?.errorDetails && !test?.errorDetails?.equals('null')) ? "\n  * Error Details: ```${test?.errorDetails}```" : ''%>
+<% errorStackTrace = (test?.errorStackTrace && !test?.errorStackTrace?.equals('null')) ? "\n  * Error Stacktrace:\n ```\n ${test?.errorStackTrace} \n ```" : ''%>
   ${age} ${duration} ${errorDetails} ${errorStackTrace}
     <%}%>
   </p>
