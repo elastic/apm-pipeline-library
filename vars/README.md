@@ -467,7 +467,7 @@ evaluates the change list and returns the module name.
 
 * pattern: the regex pattern with the group to look for. Mandatory
 * exclude: the regex pattern with the files to be excluded from the search. Optional
-* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 **NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
@@ -1229,7 +1229,7 @@ evaluates the change list with the pattern list:
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
-* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
@@ -1605,6 +1605,9 @@ the flakey test analyser.
 
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
+
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
 
   // Notify build status for a PR as a GitHub comment, and send slack message with custom header
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')

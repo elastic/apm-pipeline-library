@@ -340,6 +340,28 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_unstable_and_long_stacktraces() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNSTABLE",
+      changeSet: [],
+      log: f.getText(),
+      stepsErrors: [],
+      testsErrors: readJSON(file: "tests-errors-with-long-stacktrace.json"),
+      testsSummary: readJSON(file: 'tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '* Error Details: ```'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '''* Error Stacktrace:
+ ```'''))
+    // When one of the fields is empty/null then it should not be shown
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', ''''* Age: 1 (took 0.1 sec) 
+  * Error Details: ```'''))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_unknown() throws Exception {
     def script = loadScript(scriptName)
     script.notifyPR(

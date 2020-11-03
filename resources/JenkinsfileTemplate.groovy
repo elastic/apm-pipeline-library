@@ -261,7 +261,7 @@ pipeline {
               warnError('installTools failed')
             }
             steps {
-              installTools([ [tool: 'nodejs', version: '12' ] ])
+              installTools([ [tool: 'yq', version: '3.3' ] ])
             }
           }
         }
@@ -416,7 +416,7 @@ def testWindows(params = [:]){
   def withExtra = params.containsKey('withExtra') ? params.withExtra : hasDocker("${PLATFORM}")
   deleteDir()
   unstash 'source'
-  if(isModermWindows("${PLATFORM}")){
+  if(isModernWindows("${PLATFORM}")){
     dir("${BASE_DIR}"){
       powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
     }
@@ -437,6 +437,6 @@ def hasDocker(platform){
   return platform.contains('docker')
 }
 
-def isModermWindows(platform){
+def isModernWindows(platform){
   return platform.contains('2019')
 }
