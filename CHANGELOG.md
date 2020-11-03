@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.159 (03/11/2020)
+
+#### 🐛 Bug Fixes
+
+-  Fix git diff for first builds in branches [#808](https://github.com/elastic/apm-pipeline-library/pull/808)
+-  GH comment with links to the the entire logs and cosmetic changes [#801](https://github.com/elastic/apm-pipeline-library/pull/801)
+-  cosmetic change to highlight when disabled [#800](https://github.com/elastic/apm-pipeline-library/pull/800)
+
+#### 🙈 No user affected
+
+-  cosmetic: code snippet and conditions [#807](https://github.com/elastic/apm-pipeline-library/pull/807)
+-  [test-infra] validate yq installation [#804](https://github.com/elastic/apm-pipeline-library/pull/804)
+-  [test-infra]  windows version [#802](https://github.com/elastic/apm-pipeline-library/pull/802)
+
+#### ⚙️ CI
+
+-  ci: cover Kibana PRs from 7*10^4 up to 10^7-1 [#799](https://github.com/elastic/apm-pipeline-library/pull/799)
+
 ## v1.1.158 (29/10/2020)
 
 #### 🐛 Bug Fixes
