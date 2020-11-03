@@ -275,9 +275,9 @@ def notifySlack(Map args = [:]) {
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def enabled = args.get('enabled', false)
-    def channel = args.containsKey('channel') ? args.channel : error('notifySlack: channel parameter is not required')
+    def channel = args.containsKey('channel') ? args.channel : error('notifySlack: channel parameter is required')
     def header = args.containsKey('header') ? args.header : ''
-    def credentialId = args.containsKey('credentialId') ? args.credentialId : error('notifySlack: credentialId parameter is not required')
+    def credentialId = args.containsKey('credentialId') ? args.credentialId : error('notifySlack: credentialId parameter is required')
 
     if (enabled) {
       catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
@@ -301,7 +301,12 @@ def notifySlack(Map args = [:]) {
           "testsSummary": testsSummary
         ])
         def color = (buildStatus == "SUCCESS") ? 'good' : 'warning'
-        slackSend(channel: channel, color: color, message: "${body}", tokenCredentialId: credentialId)
+        channel.split(',').each { chan ->
+          if (chan?.trim()) {
+            // only send to slack when the channel is valid
+            slackSend(channel: chan?.trim(), color: color, message: "${body}", tokenCredentialId: credentialId)
+          }
+        }
       }
     }
 }
