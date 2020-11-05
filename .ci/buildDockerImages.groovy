@@ -58,6 +58,7 @@ pipeline {
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
+    booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
   }
   stages {
     stage('Cache Weblogic Docker Image'){
@@ -368,6 +369,26 @@ pipeline {
           tag: "apm-proxy-be",
           version: "latest",
           folder: "tools/apm_proxy/backend",
+          push: true
+        )
+      }
+    }
+    stage('Build load-test orchestrator'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.load_orch}
+      }
+      steps{
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: "bandstand",
+          version: "latest",
+          folder: "apps/automation/bandstand",
           push: true
         )
       }
