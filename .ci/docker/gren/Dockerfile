@@ -1,4 +1,4 @@
-FROM node:14.5.0-stretch-slim
+FROM node:15.1.0-stretch-slim
 
 RUN apt-get update -qq -y \
   && apt-get install -qq -y --no-install-recommends git \
