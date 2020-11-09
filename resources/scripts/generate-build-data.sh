@@ -128,6 +128,8 @@ function fetchAndPrepareBuildInfo() {
 
 function fetchAndPrepareBuildReport() {
     fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
+
+    normaliseBuildReport "${file}"
 }
 
 function fetchAndPrepareTestsInfo() {
@@ -218,6 +220,17 @@ function normaliseBuild() {
     # shellcheck disable=SC2016
     jqAppend "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}"
     jqEdit '.state = "FINISHED"' "${file}"
+    jqEdit 'map(del(._links))' "${file}"
+    jqEdit 'map(del(._class))' "${file}"
+}
+
+function normaliseBuildReport() {
+    file=$1
+    jqEdit 'map(del(._links))' "${file}"
+    jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'map(del(.latestRun))' "${file}"
+    jqEdit 'map(del(.permissions))' "${file}"
+    jqEdit 'map(del(.parameters))' "${file}"
 }
 
 function normaliseTests() {
