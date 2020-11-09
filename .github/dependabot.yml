@@ -13,51 +13,6 @@ updates:
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
-    directory: "/.ci/docker/apache-ant"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-robots"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    directory: "/.ci/docker/codecov"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-robots"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    directory: "/.ci/docker/gren"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-robots"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    directory: "/.ci/docker/shellcheck"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-robots"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    directory: "/.ci/docker/yammlint"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-robots"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
     directory: "/local"
     # Check for updates once a week
     schedule:
