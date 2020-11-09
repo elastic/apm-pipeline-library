@@ -52,19 +52,18 @@
 <!-- TEST RESULTS IF ANY-->
 <% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
   ### Test errors [![${testsSummary?.failed}](https://img.shields.io/badge/${testsSummary?.failed}%20-red)](${jobUrl}/tests)
-  <details><summary>Expand to view the tests failures</summary>
-  <p>
+<details><summary>Expand to view the tests failures</summary><p>
     ${(testsSummary?.failed > 10) ? '> Show only the first 10 test failures' : ''}
     <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
-* **Name**: `${test?.name}`
-<% age = "* Age: ${test?.age}"%>
-<% duration = (test?.duration >= 0 ) ? "(took ${test.duration} sec)" : ''%>
-<% errorDetails = (test?.errorDetails && !test?.errorDetails?.equals('null')) ? "\n  * Error Details: ```${test?.errorDetails}```" : ''%>
-<% errorStackTrace = (test?.errorStackTrace && !test?.errorStackTrace?.equals('null')) ? "\n  * Error Stacktrace:\n ```\n ${test?.errorStackTrace} \n ```" : ''%>
-  ${age} ${duration} ${errorDetails} ${errorStackTrace}
+#### `${test?.name}`
+<% errorDetails = (test?.errorDetails && !test?.errorDetails?.equals('null')) ? "<details><summary>Expand to view the error details</summary><p>\n\n```\n ${test?.errorDetails} \n ```\n</p></details>" : '<li>no error details</li>'%>
+<% errorStackTrace = (test?.errorStackTrace && !test?.errorStackTrace?.equals('null')) ? "<details><summary>Expand to view the stacktrace</summary><p>\n\n```\n ${test?.errorStackTrace} \n ```\n</p></details>" : '<li>no stacktrace</li>'%>
+<ul>
+${errorDetails}
+${errorStackTrace}
+</ul>
     <%}%>
-  </p>
-  </details>
+</p></details>
 <%}%>
 
 <!-- STEPS ERRORS IF ANY-->
