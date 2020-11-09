@@ -31,8 +31,8 @@ No test was executed to be analysed.
 <% if(!testsErrors?.isEmpty()) {%>
 ### Genuine test errors [![${testsErrors?.size()}](https://img.shields.io/badge/${testsErrors?.size()}%20-red)](${jobUrl}/tests)
 :broken_heart: There are test failures but not known flaky tests, most likely a genuine test failure.
-<%   testsErrors?.each {%>
-        * **Name**: `${it}`<%}%>
+<%testsErrors?.each {%>
+* **Name**: `${it}`<%}%>
 <%}%>
 
 </p>
