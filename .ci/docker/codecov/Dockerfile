@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.12.1
 
 RUN apk update && apk  --no-cache  add bash curl git
 RUN curl -o /usr/local/bin/codecov.sh https://codecov.io/bash
