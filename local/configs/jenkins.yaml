@@ -133,6 +133,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/log.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/parentstream.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/pipelineManager.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/runWatcher.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/stashV2.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/superLinter.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/tar.dsl"

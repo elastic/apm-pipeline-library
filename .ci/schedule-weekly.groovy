@@ -37,9 +37,9 @@ pipeline {
     cron('H H(1-4) * * 1')
   }
   stages {
-    stage('Job') {
+    stage('Top 7 Days Test Failures Beats') {
       steps {
-        echo 'TBD'
+        runWatcher(watcher: '17635395-61cd-439a-963d-8e7bb6ab22b7', subject: '2020-11-09: Top failing Beats tests - last 7 days', sendEmail: true, to: 'victor.martinez@elastic.co')
       }
     }
   }
