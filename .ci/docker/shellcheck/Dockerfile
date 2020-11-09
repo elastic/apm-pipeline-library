@@ -20,7 +20,7 @@ RUN mkdir -p /out/bin && \
   cp shellcheck  /out/bin/
 
 # Resulting Alpine image
-FROM alpine:3.10.1
+FROM alpine:3.12.1
 COPY --from=build /out /
 RUN /bin/shellcheck -V
 WORKDIR /mnt
