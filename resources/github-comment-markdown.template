@@ -72,13 +72,17 @@ ${errorStackTrace}
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
+
   ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
   <% stepsErrors?.take(10)?.each{ c -> %>
-  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "* Description: `${c?.displayDescription}`" : ''%>
-  <% duration = (c?.durationInMillis >= 0 ) ? "(took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec)" : ''%>
-  <% url = (c?.url && c?.url != 'null') ? ". View log details on [here](${c?.url}/?start=0)" : ''%>
-  * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}` ${duration} ${url}
-    ${description}
+  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "<li>Description: <code>${c?.displayDescription}</code></l1>" : ''%>
+  <% duration = (c?.durationInMillis >= 0 ) ? "Took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec" : ''%>
+  <% url = (c?.url && c?.url != 'null') ? ". View more details on <a href=\"${c?.url}/?start=0\">here</a>" : ''%>
+#### `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
+<ul>
+<li>${duration} ${url}</li>
+${description}
+</ul>
   <%}%>
   </p>
   </details>
