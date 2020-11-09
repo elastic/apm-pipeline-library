@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-core</artifactId>
-      <version>2.179</version>
+      <version>2.265</version>
       <scope>test</scope>
     </dependency>
     <dependency>
