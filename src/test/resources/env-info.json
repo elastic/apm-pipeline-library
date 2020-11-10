@@ -1,0 +1,17 @@
+{
+  "BRANCH_NAME": "main",
+  "BUILD_DISPLAY_NAME": "#1",
+  "BUILD_ID": "1",
+  "BUILD_NUMBER": "1",
+  "BUILD_TAG": "jenkins-project-main-1",
+  "BUILD_URL": "http://localhost:18081/job/project/job/main/1/",
+  "GIT_COMMIT": "4f0aea0e892678e46d62fd0a156f9c9c4b670995",
+  "GIT_PREVIOUS_COMMIT": "4f0aea0e892678e46d62fd0a156f9c9c4b670995",
+  "GIT_PREVIOUS_SUCCESSFUL_COMMIT": "4f0aea0e892678e46d62fd0a156f9c9c4b670995",
+  "JOB_BASE_NAME": "main",
+  "JOB_DISPLAY_URL": "http://localhost:18081/job/project/job/main/display/redirect",
+  "JOB_NAME": "project/main",
+  "JOB_URL": "http://localhost:18081/job/project/job/main/",
+  "ORG_NAME": "acme",
+  "REPO_NAME": "project"
+}
