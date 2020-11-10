@@ -220,17 +220,17 @@ function normaliseBuild() {
     # shellcheck disable=SC2016
     jqAppend "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}"
     jqEdit '.state = "FINISHED"' "${file}"
-    jqEdit 'map(del(._links))' "${file}"
-    jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
 }
 
 function normaliseBuildReport() {
     file=$1
-    jqEdit 'map(del(._links))' "${file}"
-    jqEdit 'map(del(._class))' "${file}"
-    jqEdit 'map(del(.latestRun))' "${file}"
-    jqEdit 'map(del(.permissions))' "${file}"
-    jqEdit 'map(del(.parameters))' "${file}"
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
+    jqEdit 'del(.latestRun)' "${file}"
+    jqEdit 'del(.permissions)' "${file}"
+    jqEdit 'del(.parameters)' "${file}"
 }
 
 function normaliseTests() {
