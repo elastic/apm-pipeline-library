@@ -128,9 +128,15 @@ function fetchAndPrepareBuildInfo() {
 }
 
 function fetchAndPrepareBuildReport() {
-    fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
+    file=$1
+    url=$2
+    key=$3
+    default=$4
 
+    fetchAndDefault "${file}" "${url}" "${default}"
     normaliseBuildReport "${file}"
+    normaliseArtifacts "${file}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareTestsInfo() {
@@ -163,6 +169,7 @@ function fetchAndPrepareTestSummaryReport() {
 
     echo "INFO: fetchAndPrepareTestSummaryReport (see ${file})"
     fetch "$file" "$url"
+    normaliseTestsSummary "$file"
 
     ## BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
     if [ ! -e "${file}" ] ; then
@@ -248,6 +255,12 @@ function normaliseTestsWithoutStacktrace() {
     ## This will help to tidy up the file size quite a lot.
     ## It might be useful to export it but lets go step by step
     jqEdit 'map(del(.errorStackTrace))' "${file}"
+}
+
+function normaliseTestsSummary() {
+    file=$1
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
 }
 
 function normaliseSteps() {
