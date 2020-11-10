@@ -31,6 +31,7 @@ ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
 CHANGESET_INFO="changeSet-info.json"
+ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
 PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
@@ -123,13 +124,19 @@ function fetchAndPrepareBuildInfo() {
 
     normaliseBuild "${file}"
 
-    echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareBuildReport() {
-    fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
+    file=$1
+    url=$2
+    key=$3
+    default=$4
 
+    fetchAndDefault "${file}" "${url}" "${default}"
     normaliseBuildReport "${file}"
+    normaliseArtifacts "${file}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareTestsInfo() {
@@ -162,6 +169,7 @@ function fetchAndPrepareTestSummaryReport() {
 
     echo "INFO: fetchAndPrepareTestSummaryReport (see ${file})"
     fetch "$file" "$url"
+    normaliseTestsSummary "$file"
 
     ## BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
     if [ ! -e "${file}" ] ; then
@@ -249,6 +257,12 @@ function normaliseTestsWithoutStacktrace() {
     jqEdit 'map(del(.errorStackTrace))' "${file}"
 }
 
+function normaliseTestsSummary() {
+    file=$1
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
+}
+
 function normaliseSteps() {
     file=$1
     # shellcheck disable=SC2016
@@ -328,6 +342,35 @@ function jqAppend() {
     jq --arg a "${argument}" "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
 }
 
+function prepareEnvInfo() {
+    file=$1
+    key=$2
+
+    {
+        echo "{"
+        echo "  \"BRANCH_NAME\": \"${BRANCH_NAME}\","
+        echo "  \"BUILD_DISPLAY_NAME\": \"${BUILD_DISPLAY_NAME}\","
+        echo "  \"BUILD_ID\": \"${BUILD_ID}\","
+        echo "  \"BUILD_NUMBER\": \"${BUILD_NUMBER}\","
+        echo "  \"BUILD_TAG\": \"${BUILD_TAG}\","
+        echo "  \"BUILD_URL\": \"${BUILD_URL}\","
+        echo "  \"GIT_BASE_COMMIT\": \"${GIT_BASE_COMMIT}\","
+        echo "  \"GIT_COMMIT\": \"${GIT_COMMIT}\","
+        echo "  \"GIT_PREVIOUS_COMMIT\": \"${GIT_PREVIOUS_COMMIT}\","
+        echo "  \"GIT_PREVIOUS_SUCCESSFUL_COMMIT\": \"${GIT_PREVIOUS_SUCCESSFUL_COMMIT}\","
+        echo "  \"JOB_BASE_NAME\": \"${JOB_BASE_NAME}\","
+        echo "  \"JOB_DISPLAY_URL\": \"${JOB_DISPLAY_URL}\","
+        echo "  \"JOB_NAME\": \"${JOB_NAME}\","
+        echo "  \"JOB_URL\": \"${JOB_URL}\","
+        echo "  \"ORG_NAME\": \"${ORG_NAME}\","
+        echo "  \"REPO_NAME\": \"${REPO_NAME}\""
+        echo "}"
+    } > "${file}"
+
+    ## This is the last entry in the BUILD_REPORT therefore no , is required
+    echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
+}
+
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
 fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/?limit=10000" "${DEFAULT_HASH}"
 fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
@@ -347,6 +390,8 @@ fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000"
 ### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
+### prepareEnvInfo should run the last one since it's the last field to be added
+prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
 
 exit $STATUS

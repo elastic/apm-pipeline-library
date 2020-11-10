@@ -90,6 +90,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertTrue(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertFalse(obj.get("env").isEmpty())
   }
 
   @Test
@@ -112,6 +113,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertFalse(obj.get("env").isEmpty())
   }
 
   @Test
@@ -196,6 +198,21 @@ class GenerateBuildDataIntegrationTests {
     Map<String, String> env = pb.environment()
     env.put('JENKINS_URL', 'http://localhost:18081/')
     env.put('PIPELINE_LOG_LEVEL', 'INFO')
+    env.put('BRANCH_NAME', 'main')
+    env.put('BUILD_DISPLAY_NAME', '#1')
+    env.put('BUILD_ID', '1')
+    env.put('BUILD_NUMBER', '1')
+    env.put('BUILD_TAG', 'jenkins-project-main-1')
+    env.put('BUILD_URL', 'http://localhost:18081/job/project/job/main/1/')
+    env.put('GIT_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('GIT_PREVIOUS_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('GIT_PREVIOUS_SUCCESSFUL_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('JOB_BASE_NAME', 'main')
+    env.put('JOB_DISPLAY_URL', 'http://localhost:18081/job/project/job/main/display/redirect')
+    env.put('JOB_NAME', 'project/main')
+    env.put('JOB_URL', 'http://localhost:18081/job/project/job/main/')
+    env.put('ORG_NAME', 'acme')
+    env.put('REPO_NAME', 'project')
     File location = new File("target/${targetFolder}")
     location.mkdirs()
     pb.directory(location)
