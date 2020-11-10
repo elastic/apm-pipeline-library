@@ -18,6 +18,14 @@
 /**
  Run the given watcher and send an email if configured for such an action.
 
+ This particular step uses the watchers with the log action, if it's required to use
+ another action then it will be required to be implemented here. See // NOTE
+
+    // Run the given watcher and set the variable with the output
+    def output = runWatcher(watcher: 'my-watcher-id')
+
+    // Run the watcher and send an email
+    runWatcher(watcher: 'my-watcher-id', sendEmail: true, to: 'foo@acme.com, subject: 'Watcher output')
 */
 
 def call(Map args = [:]) {
@@ -28,20 +36,34 @@ def call(Map args = [:]) {
     def secret = args.get('secret', 'secret/observability-team/ci/jenkins-stats-cloud')
     def es = args.get('es', getVaultSecret(secret: secret)?.data.url)
 
+    // Proceed but notify with a warning
+    if (sendEmail && !to?.trim()) {
+        log(level: 'WARN', text: "runWatcher: email won't be sent since 'to' param is empty.")
+    }
+
     def query = "/_watcher/watch/${watcher}/_execute?pretty"
+
+    // For the run of all the actions for the given watcher. We could potentially implement certain customisation if required in the future.
     def response = sendDataToElasticsearch(es: es, secret: secret, restCall: query, data: """{ "action_modes" : { "_all" : "force_execute" } }""")
     def parsed = toJSON(response)
     if (parsed?.watch_record.result.actions) {
-        def body = parsed?.watch_record.result.actions.find { it.id?.equals('log') }?.logging?.logged_text
-        log(level: 'INFO', text: "runWatcher: The REST API call returned ${body}")
-        if (sendEmail && to?.trim()) {
-            mail(to: to,
-                subject: subject,
-                body: body,
-                mimeType: 'text/html'
-            )
+        // NOTE: current implementation for the log actions uses the data structure watch_record.result.actions['log']
+        def logAction = parsed?.watch_record.result.actions.find { it.id?.equals('log') }
+        if (logAction) {
+            def body = logAction.logging?.logged_text
+            log(level: 'DEBUG', text: "runWatcher: The REST API call returned ${body}")
+            if (sendEmail && to?.trim()) {
+                mail(to: to,
+                    subject: subject,
+                    body: body,
+                    mimeType: 'text/html'
+                )
+            }
+            return body
+        } else {
+            log(level: 'DEBUG', text: "runWatcher: The REST API call returned ${parsed}")
+            log(level: 'WARN', text: 'runWatcher: log action could not be found in the response. Try again with DEBUG log level to see the response')
         }
-        return body
     } else {
         log(level: 'WARN', text: "runWatcher: Didn't work")
     }

@@ -1753,6 +1753,9 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
 
+This particular step uses the watchers with the log action, if it's required to use
+another action then it will be required to be implemented here. See // NOTE
+
 ```
     def output = runWatcher(watcher: 'my-watcher-id')
 
