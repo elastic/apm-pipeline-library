@@ -42,6 +42,12 @@ def call(Map args = [:]) {
   def draftFlag = draft ? '--draft' : ''
   def forceFlag = force ? '--force' : ''
   def output = ''
+
+  // Some corner cases with single quotes in the description or title
+  if (description?.contains("'") || title?.contains("'")) {
+    error('githubCreatePullRequest: single quotes are not allowed.')
+  }
+
   withCredentials([
     usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')
   ]) {

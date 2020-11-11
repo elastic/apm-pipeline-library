@@ -152,4 +152,22 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
     assertTrue(ret.equals('https://github.com/acme/my-repo/pull/1'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_multiline_with_quotes() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sh', [Map.class], { s ->
+      return 'https://github.com/acme/my-repo/pull/1'
+    })
+    def actions = """
+        1. A single quote ' foo
+        1. Something else."""
+    try {
+      script.call(title: 'foo', description: "${actions}")
+    } catch(err) {
+      //NOOP
+    }
+    assertTrue(assertMethodCallContainsPattern('error', 'single quotes are not allowed'))
+    assertJobStatusFailure()
+  }
 }
