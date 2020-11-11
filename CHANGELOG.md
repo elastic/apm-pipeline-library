@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.160 (11/11/2020)
+
+#### 🙈 No user affected
+
+-  Add env variable to easily search in the future [#836](https://github.com/elastic/apm-pipeline-library/pull/836)
+-  Exclude _class,_links,latestRun,permissions and parameters to be populated [#831](https://github.com/elastic/apm-pipeline-library/pull/831)
+-  [cosmetic] simplify test errors report [#830](https://github.com/elastic/apm-pipeline-library/pull/830)
+-  [dependabot] disable docker images [#827](https://github.com/elastic/apm-pipeline-library/pull/827)
+-  [dependabot] Enable for maven and docker images [#809](https://github.com/elastic/apm-pipeline-library/pull/809)
+
+#### ⚙️ CI
+
+-  Support runWatcher and run on a weekly basis [#833](https://github.com/elastic/apm-pipeline-library/pull/833)
+-  Add docker build for bandstand orch [#821](https://github.com/elastic/apm-pipeline-library/pull/821)
+
 ## v1.1.159 (03/11/2020)
 
 #### 🐛 Bug Fixes
