@@ -28,8 +28,8 @@ def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCreatePullRequest: windows is not supported yet.'
   }
-  def title = args.containsKey('title') ? """--message '${args.title}'""" : error('githubCreatePullRequest: title argument is required.')
-  def description = args.containsKey('description') ? """--message '${args.description}'""" : ''
+  def titleValue = args.containsKey('title') ? args.title : error('githubCreatePullRequest: title argument is required.')
+  def descriptionValue = args.get('description', '')
   def assign = args.containsKey('assign') ? "--assign ${args.assign}" : ''
   def reviewer = args.containsKey('reviewer') ? "--reviewer ${args.reviewer}" : ''
   def milestone = args.containsKey('milestone') ? "--milestone ${args.milestone}" : ''
@@ -38,13 +38,14 @@ def call(Map args = [:]) {
   def base = args.containsKey('base') ? "--base ${args.base}" : ''
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
   def force = args.containsKey('force') ? args.force : false
+  def title = titleValue?.trim() ? """--message '${titleValue}'""" : ''
+  def description = descriptionValue?.trim() ? """--message '${descriptionValue}'""" : ''
 
   def draftFlag = draft ? '--draft' : ''
   def forceFlag = force ? '--force' : ''
   def output = ''
-
   // Some corner cases with single quotes in the description or title
-  if (description?.contains("'") || title?.contains("'")) {
+  if (descriptionValue.contains("'") || titleValue.contains("'")) {
     error('githubCreatePullRequest: single quotes are not allowed.')
   }
 
