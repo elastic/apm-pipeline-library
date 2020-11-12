@@ -114,6 +114,15 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
     assertFalse(obj.get("env").isEmpty())
+
+    // Then metadata is removed
+    assertNull(obj.get("changeSet")[0].author?._class)
+    assertNull(obj.get("changeSet")[0].author?._links)
+
+    // Then some duplicated entries don't exist anymore
+    assertNull(obj.get("build.branch"))
+    assertNull(obj.get("build.changeSet"))
+    assertNull(obj.get("build.pullRequest"))
   }
 
   @Test
