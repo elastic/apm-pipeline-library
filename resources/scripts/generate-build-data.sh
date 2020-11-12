@@ -134,8 +134,9 @@ function fetchAndPrepareBuildReport() {
     default=$4
 
     fetchAndDefault "${file}" "${url}" "${default}"
-    normaliseBuildReport "${file}"
     normaliseArtifacts "${file}"
+    normaliseBuildReport "${file}"
+    normaliseChangeset "${file}"
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
@@ -219,6 +220,9 @@ function normaliseArtifacts() {
     file=$1
     jqEdit 'map(del(._links))' "${file}"
     jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'map(del(.downloadable))' "${file}"
+    jqEdit 'map(del(.id))' "${file}"
+    jqEdit 'map(del(.url))' "${file}"
 }
 
 function normaliseBuild() {
@@ -230,6 +234,19 @@ function normaliseBuild() {
     jqEdit '.state = "FINISHED"' "${file}"
     jqEdit 'del(._links)' "${file}"
     jqEdit 'del(._class)' "${file}"
+    ## This is already duplicated, the responsible is the job
+    jqEdit 'del(.branch)' "${file}"
+    ## This is already duplicated, the responsible is the changeset
+    jqEdit 'del(.changeSet)' "${file}"
+    ## This is already duplicated, the responsible is the job
+    jqEdit 'del(.pullRequest)' "${file}"
+    jqEdit 'del(.causes[]._class)' "${file}"
+    jqEdit 'del(.replayable)' "${file}"
+
+    ## Transform relative path to absolute URL
+    artifactsZipFile=$(jq -r '.artifactsZipFile' "${file}")
+    # shellcheck disable=SC2016
+    jqAppend "${JENKINS_URL}${artifactsZipFile}" '.artifactsZipFile = $a' "${file}"
 }
 
 function normaliseBuildReport() {
@@ -239,6 +256,12 @@ function normaliseBuildReport() {
     jqEdit 'del(.latestRun)' "${file}"
     jqEdit 'del(.permissions)' "${file}"
     jqEdit 'del(.parameters)' "${file}"
+}
+
+function normaliseChangeset() {
+    file=$1
+    jqEdit 'del(.[].author._class)' "${file}"
+    jqEdit 'del(.[].author._links)' "${file}"
 }
 
 function normaliseTests() {
