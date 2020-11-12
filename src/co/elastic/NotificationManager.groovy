@@ -232,11 +232,11 @@ def notifyPR(Map args = [:]) {
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def disableGHComment = args.get('disableGHComment', false)
-
+    def body = ''
     catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
-      def body = buildTemplate([
+      body = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
         "buildStatus": buildStatus,
@@ -257,8 +257,8 @@ def notifyPR(Map args = [:]) {
         githubPrComment(commentFile: 'comment.id', message: body)
       }
       archiveArtifacts 'build.md'
-      return body
     }
+    return body
 }
 
 /**

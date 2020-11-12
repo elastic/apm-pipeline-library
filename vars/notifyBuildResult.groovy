@@ -90,6 +90,15 @@ def call(Map args = [:]) {
           }
         }
 
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            def prComment = notificationManager.notifyPR(data)
+            notifications << prComment
+          }
+        }
+
         // Should analyze flakey but exclude it when aborted
         if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
           data['es'] = es
@@ -98,14 +107,8 @@ def call(Map args = [:]) {
           data['flakyThreshold'] = flakyThreshold
           log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
           catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notifications << notificationManager.analyzeFlakey(data)
-          }
-        }
-        // Should notify if it is a PR and it's enabled
-        if(notifyPRComment && isPR()) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notifications << notificationManager.notifyPR(data)
+            def flakyComment = notificationManager.analyzeFlakey(data)
+            notifications << flakyComment
           }
         }
 
