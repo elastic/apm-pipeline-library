@@ -311,7 +311,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // with pr comment
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
     // with github pr comment
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=aggregate.id'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
 
   @Test
@@ -328,7 +328,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // with pr comment
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
     // with github pr comment
-    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=aggregate.id'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
 
 }

@@ -127,7 +127,8 @@ def call(Map args = [:]) {
 
         if (aggregateComments) {
           log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
-          githubPrComment(commentFile: 'aggregate.id', message: notifications?.join(''))
+          // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+          githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
         }
       }
 
