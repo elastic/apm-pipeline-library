@@ -128,7 +128,8 @@ def call(Map args = [:]) {
           notificationManager.generateBuildReport(data)
         }
 
-        if (aggregateComments) {
+        // Notify only if there are notifications and they should be aggregated
+        if (aggregateComments && notifications?.size() > 0) {
           log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
           // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
           githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
