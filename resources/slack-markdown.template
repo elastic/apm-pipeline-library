@@ -5,9 +5,9 @@
 <% pipelineUrl = String.format("<%spipeline|#%s>", jobUrl, build?.id ?: 'build')%>
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
 <% changesMessage = (changes?.url && changes?.msg) ? "${commitUrl} (by `${changes?.author?.id}`)" : "No push event to branch ${build?.pipeline}" %>
-<% stepsMessage = (steps?.size()!= 0) ? "`${steps?.size()}` (click ${artifactsUrl} and open `build.md` for further details)" : 0%>
+<% stepsMessage = (steps?.size()!= 0) ? "*Steps failures*: `${steps?.size()}` (click ${artifactsUrl} and open `build.md` for further details)" : ""%>
 <% if (header?.trim()) {%>${header}<%}%>
 *Build*: `${jenkinsText}` ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
 *Changes*: ${changesMessage}
 *Tests*: `${(testsSummary?.failed) ?: 0}` test/s failed out of ${(testsSummary?.total) ?: 0} (click ${testsUrl} for further details)
-*Steps failures*: ${stepsMessage}
+${stepsMessage}
