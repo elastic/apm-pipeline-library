@@ -119,7 +119,7 @@ def call(Map args = [:]) {
           data['credentialId'] = slackCredentials
           data['enabled'] = slackNotify
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
-          catchError(message: "There were some failures when notifying results slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
             notificationManager.notifySlack(data)
           }
         }
