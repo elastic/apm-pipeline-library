@@ -56,7 +56,7 @@ private static String makeRequest(URL url) throws IOException {
 private static URL constructURL(String host, ArrayList job) throws Exception {
     String delim = "%2F"
     String job_path = job.join(delim)
-    String uri = "http://${host}/buildStatus/text?job=${job_path}"
+    String uri = "https://${host}/buildStatus/text?job=${job_path}"
     URL url = new URL(uri)
     return url
 }
