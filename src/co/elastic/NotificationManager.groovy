@@ -79,8 +79,8 @@ def analyzeFlakey(Map args = [:]) {
       // Intesection what tests are failing and also scored as flaky.
       // Subset of genuine test failures, aka, those failures that were not scored as flaky previously.
       def testFailures = testsErrors.collect { it.name }
-      def testFlaky = flakeyTestsParsed['hits']['hits'].collect { it['_source']['test_name'] }
-      def foundFlakyList = testFailures.intersect(testFlaky)
+      def testFlaky = flakeyTestsParsed?.hits?.hits?.collect { it['_source']['test_name'] }
+      def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
       log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
       log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
