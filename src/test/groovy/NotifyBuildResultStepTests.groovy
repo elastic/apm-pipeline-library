@@ -331,4 +331,16 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
 
+  @Test
+  void test_no_flakey_and_no_prcomment_with_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: true, analyzeFlakey: false, notifyPRComment: false)
+    printCallStack()
+
+    // Then no github pr comment
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
 }
