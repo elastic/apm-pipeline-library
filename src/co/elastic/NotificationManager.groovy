@@ -52,76 +52,81 @@ def analyzeFlakey(Map args = [:]) {
     def querySize = args.get('querySize', 500)
     def queryTimeout = args.get('queryTimeout', '20s')
     def disableGHComment = args.get('disableGHComment', false)
+
     def labels = 'flaky-test,ci-reported'
+    def boURL = getBlueoceanDisplayURL()
+    def flakyTestsWithIssues = [:]
+    def genuineTestFailures = []
 
     if (!flakyReportIdx?.trim()) {
       error 'analyzeFlakey: did not receive flakyReportIdx data'
     }
 
-    // Query only the test_name field since it's the only used and don't want to overkill the
-    // jenkins instance when using the toJSON step since it reads in memory the json response.
-    // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
-    def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
-    def flakeyTestsRaw = sendDataToElasticsearch(es: es,
-                                                 secret: secret,
-                                                 data: queryFilter(queryTimeout, flakyThreshold),
-                                                 restCall: query)
-    def flakeyTestsParsed = toJSON(flakeyTestsRaw)
+    // Only if there are test failures to analyse
+    if(testsErrors.size() > 0) {
 
-    // Normalise both data structures with their names
-    // Intesection what tests are failing and also scored as flaky.
-    // Subset of genuine test failures, aka, those failures that were not scored as flaky previously.
-    def testFailures = testsErrors.collect { it.name }
-    def testFlaky = flakeyTestsParsed['hits']['hits'].collect { it['_source']['test_name'] }
-    def foundFlakyList = testFailures.intersect(testFlaky)
-    def genuineTestFailures = testFailures.minus(foundFlakyList)
-    log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
-    log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
+      // Query only the test_name field since it's the only used and don't want to overkill the
+      // jenkins instance when using the toJSON step since it reads in memory the json response.
+      // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
+      def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
+      def flakeyTestsRaw = sendDataToElasticsearch(es: es,
+                                                  secret: secret,
+                                                  data: queryFilter(queryTimeout, flakyThreshold),
+                                                  restCall: query)
+      def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
-    def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
-    // Create issues if they were not created
-    def boURL = getBlueoceanDisplayURL()
-    def flakyTestsWithIssues = [:]
-    // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
-    def numberOfSupportedIssues = 3
-    def numberOfCreatedtedIssues = 0
-    tests.each { k, v ->
-      def issue = v
-      def issueDescription = buildTemplate([
-          "template": 'flaky-github-issue.template',
-          "testName": k,
-          "jobUrl": boURL,
-          "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
-          "commit": env.GIT_BASE_COMMIT?.trim() ?: '',
-          "testData": testsErrors?.find { it.name.equals(k) }])
-      if (v?.trim()) {
-        try {
-          issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
-          githubCommentIssue(id: issueWithoutUrl, comment: issueDescription)
-        } catch(err) {
-          log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
-        }
-      } else {
-        def title = "Flaky Test [${k}]"
-        try {
-          if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
-            retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
+      // Normalise both data structures with their names
+      // Intesection what tests are failing and also scored as flaky.
+      // Subset of genuine test failures, aka, those failures that were not scored as flaky previously.
+      def testFailures = testsErrors.collect { it.name }
+      def testFlaky = flakeyTestsParsed['hits']['hits'].collect { it['_source']['test_name'] }
+      def foundFlakyList = testFailures.intersect(testFlaky)
+      genuineTestFailures = testFailures.minus(foundFlakyList)
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
+
+      def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
+      // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
+      def numberOfSupportedIssues = 3
+      def numberOfCreatedtedIssues = 0
+      tests.each { k, v ->
+        def issue = v
+        def issueDescription = buildTemplate([
+            "template": 'flaky-github-issue.template',
+            "testName": k,
+            "jobUrl": boURL,
+            "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
+            "commit": env.GIT_BASE_COMMIT?.trim() ?: '',
+            "testData": testsErrors?.find { it.name.equals(k) }])
+        if (v?.trim()) {
+          try {
+            issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
+            githubCommentIssue(id: issueWithoutUrl, comment: issueDescription)
+          } catch(err) {
+            log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
+          }
+        } else {
+          def title = "Flaky Test [${k}]"
+          try {
+            if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
+              retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+                issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
+              }
+              numberOfCreatedtedIssues++
+            } else {
+              log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
             }
-            numberOfCreatedtedIssues++
-          } else {
-            log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
-          }
-        } catch(err) {
-          log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
-          issue = ''
-        } finally {
-          if(!issue?.trim()) {
+          } catch(err) {
+            log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
             issue = ''
+          } finally {
+            if(!issue?.trim()) {
+              issue = ''
+            }
           }
         }
+        flakyTestsWithIssues[k] = issue
       }
-      flakyTestsWithIssues[k] = issue
     }
 
     // Decorate comment
