@@ -24,7 +24,7 @@ def call(Map params = [:]){
   def es = params.containsKey('es') ? params.es : error("sendDataToElasticsearch: Elasticsearch URL is not valid.")
   def secret = params.containsKey('secret') ? params.secret : error("sendDataToElasticsearch: secret is not valid.")
   def data = params.containsKey('data') ? params.data : error("sendDataToElasticsearch: data is not valid.")
-  def restCall = params.containsKey('restCall') ? params.restCall : "/ci-builds/_doc/"
+  def restCall = params.containsKey('restCall') ? params.restCall : "/jenkins-builds/_doc/"
   def contentType = params.containsKey('contentType') ? params.contentType : "application/json"
   def method = params.containsKey('method') ? params.method : "POST"
 

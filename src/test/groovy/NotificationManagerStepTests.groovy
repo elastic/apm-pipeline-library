@@ -432,6 +432,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Steps failures'))
     assertJobStatusSuccess()
   }
 
@@ -540,6 +541,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'notifySlack: Error with the slack comment'))
     assertTrue(assertMethodCallOccurrences('slackSend', 0))
+    assertJobStatusSuccess()
+  }
+
+
+  @Test
+  void test_notify_slack_without_steps_failures() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifySlack(
+      build: readJSON(file: "build-info-manual.json"),
+      buildStatus: "SUCCESS",
+      changeSet: [],
+      stepsErrors: [],
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json"),
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Build'))
+    assertFalse(assertMethodCallContainsPattern('slackSend', 'Steps failures'))
     assertJobStatusSuccess()
   }
 
