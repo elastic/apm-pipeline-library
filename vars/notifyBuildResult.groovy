@@ -66,11 +66,17 @@ def call(Map args = [:]) {
       def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
       def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
+      def aggregateComments = args.get('aggregateComments', true)
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
+
+        // Allow to aggregate the comments, for such it disables the default notifications.
+        data['disableGHComment'] = aggregateComments
+        def notifications = []
+
         def notificationManager = new NotificationManager()
         if(shouldNotify && !to?.empty){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
@@ -84,6 +90,15 @@ def call(Map args = [:]) {
           }
         }
 
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            def prComment = notificationManager.notifyPR(data)
+            notifications << prComment
+          }
+        }
+
         // Should analyze flakey but exclude it when aborted
         if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
           data['es'] = es
@@ -92,13 +107,9 @@ def call(Map args = [:]) {
           data['flakyThreshold'] = flakyThreshold
           log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
           catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notificationManager.analyzeFlakey(data)
+            def flakyComment = notificationManager.analyzeFlakey(data)
+            notifications << flakyComment
           }
-        }
-        // Should notify if it is a PR and it's enabled
-        if(notifyPRComment && isPR()) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          notificationManager.notifyPR(data)
         }
 
         // Should notify in slack if it's enabled
@@ -108,11 +119,19 @@ def call(Map args = [:]) {
           data['credentialId'] = slackCredentials
           data['enabled'] = slackNotify
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
-          notificationManager.notifySlack(data)
+          catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.notifySlack(data)
+          }
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
         catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           notificationManager.generateBuildReport(data)
+        }
+
+        if (aggregateComments) {
+          log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
+          // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+          githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
         }
       }
 

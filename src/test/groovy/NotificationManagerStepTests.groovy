@@ -396,6 +396,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_without_comment_notifications() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      disableGHComment: true,
+      docsUrl: 'foo',
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_slack_with_aborted_but_no_cancel_build() throws Exception {
     def script = loadScript(scriptName)
     script.notifySlack(
@@ -819,6 +840,24 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'analyzeFlakey: did not receive flakyReportIdx data'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_analyzeFlakey_without_comment_notifications() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      disableGHComment: true,
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: [:],
+      testsSummary: [:]
+    )
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+    assertJobStatusSuccess()
   }
 
   @Test

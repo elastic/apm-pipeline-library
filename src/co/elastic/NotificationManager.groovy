@@ -40,16 +40,18 @@ This method generates flakey test data from Jenkins test results
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  * @param querySize The maximum value of results to be reported. Default 500
  * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
+ * @param disableGHComment whether to disable the GH comment notification.
 */ 
-def analyzeFlakey(Map params = [:]) {
-    def es = params.containsKey('es') ? params.es : error('analyzeFlakey: es parameter is not valid') 
-    def secret = params.containsKey('es_secret') ? params.es_secret : null
-    def flakyReportIdx = params.containsKey('flakyReportIdx') ? params.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
-    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
-    def flakyThreshold = params.containsKey('flakyThreshold') ? params.flakyThreshold : 0.0
-    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
-    def querySize = params.get('querySize', 500)
-    def queryTimeout = params.get('queryTimeout', '20s')
+def analyzeFlakey(Map args = [:]) {
+    def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is not valid')
+    def secret = args.containsKey('es_secret') ? args.es_secret : null
+    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
+    def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
+    def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
+    def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
+    def querySize = args.get('querySize', 500)
+    def queryTimeout = args.get('queryTimeout', '20s')
+    def disableGHComment = args.get('disableGHComment', false)
     def labels = 'flaky-test,ci-reported'
 
     if (!flakyReportIdx?.trim()) {
@@ -131,8 +133,11 @@ def analyzeFlakey(Map params = [:]) {
       "testsSummary": testsSummary
     ])
     writeFile(file: 'flaky.md', text: body)
-    githubPrComment(commentFile: 'flaky.id', message: body)
+    if (!disableGHComment) {
+      githubPrComment(commentFile: 'flaky.id', message: body)
+    }
     archiveArtifacts 'flaky.md'
+    return body
 }
 
 /**
@@ -214,22 +219,24 @@ def notifyEmail(Map params = [:]) {
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ * @param disableGHComment whether to disable the GH comment notification.
  */
-def notifyPR(Map params = [:]) {
-    def build = params.containsKey('build') ? params.build : error('notifyPR: build parameter it is not valid')
-    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyPR: buildStatus parameter is not valid')
-    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
-    def docsUrl = params.get('docsUrl', null)
-    def log = params.containsKey('log') ? params.log : null
-    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
-    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
-    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
-    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
-
+def notifyPR(Map args = [:]) {
+    def build = args.containsKey('build') ? args.build : error('notifyPR: build parameter it is not valid')
+    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('notifyPR: buildStatus parameter is not valid')
+    def changeSet = args.containsKey('changeSet') ? args.changeSet : []
+    def docsUrl = args.get('docsUrl', null)
+    def log = args.containsKey('log') ? args.log : null
+    def statsUrl = args.containsKey('statsUrl') ? args.statsUrl : ''
+    def stepsErrors = args.containsKey('stepsErrors') ? args.stepsErrors : []
+    def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
+    def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
+    def disableGHComment = args.get('disableGHComment', false)
+    def body = ''
     catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
-      def body = buildTemplate([
+      body = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
         "buildStatus": buildStatus,
@@ -246,9 +253,12 @@ def notifyPR(Map params = [:]) {
         "testsSummary": testsSummary
       ])
       writeFile(file: 'build.md', text: body)
-      githubPrComment(commentFile: 'comment.id', message: body)
+      if (!disableGHComment) {
+        githubPrComment(commentFile: 'comment.id', message: body)
+      }
       archiveArtifacts 'build.md'
     }
+    return body
 }
 
 /**
