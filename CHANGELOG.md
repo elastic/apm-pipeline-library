@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.162 (17/11/2020)
+
+#### 🐛 Bug Fixes
+
+-  Skip notifications if no notifications are in the list to send [#847](https://github.com/elastic/apm-pipeline-library/pull/847)
+
 ## v1.1.161 (16/11/2020)
 
 #### 🚀 Enhancements
