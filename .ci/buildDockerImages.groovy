@@ -56,6 +56,7 @@ pipeline {
     booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
+    booleanParam(name: 'rum', defaultValue: 'false', description: '')
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
@@ -172,6 +173,46 @@ pipeline {
                     folder: 'spec',
                     options: "--build-arg RUBY_IMAGE='${version}'",
                     push: true)
+                }
+              }
+            }
+            parallel(tasks)
+          }
+        }
+      }
+    }
+    stage('Build agent RUM images'){
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent RUM images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.rum }
+      }
+      steps {
+        dir('apm-agent-nodejs'){
+          git 'https://github.com/elastic/apm-agent-rum-js.git'
+          script {
+            def imagesConfiguration = readYaml(file: '.ci/.jenkins_rum.yml')
+            def nodeVersions = imagesConfiguration['NODEJS_VERSION']
+            def libraries = imagesConfiguration['TEST_LIBRARIES']
+            def tasks = [:]
+            libraries.each { library ->
+              nodeVersions.each { version ->
+                // Versions are double quoted
+                def nodejsVersion = version.replaceFirst('"', '')
+                tasks["${library}-${version}"] = {
+                  node('ubuntu-18 && immutable && docker'){
+                    dockerLoginElasticRegistry()
+                    buildDockerImage(
+                      repo: 'https://github.com/elastic/apm-agent-rum-js.git',
+                      tag: "node-${library}",
+                      version: "${nodejsVersion}",
+                      folder: ".ci/docker/node-${library}",
+                      options: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
+                      push: true)
+                  }
                 }
               }
             }
