@@ -654,6 +654,23 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakey_in_prs_with_empty_flaky_tests() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: 'flake-empty-results.json')})
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "There are test failures but not known flaky tests."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "Genuine test errors [![1]"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakey_in_prs_without_flaky_tests() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod(
@@ -785,6 +802,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: [ "failed": 0, "passed": 120, "skipped": 0, "total": 120 ]
     )
     printCallStack()
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 0))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', "Tests succeeded."))
     assertJobStatusSuccess()
   }
