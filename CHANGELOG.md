@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.162 (17/11/2020)
+
+#### 🐛 Bug Fixes
+
+-  Skip notifications if no notifications are in the list to send [#847](https://github.com/elastic/apm-pipeline-library/pull/847)
+
+## v1.1.161 (16/11/2020)
+
+#### 🚀 Enhancements
+
+-  Aggregate GH Comments [#841](https://github.com/elastic/apm-pipeline-library/pull/841)
+
+#### 🙈 No user affected
+
+-  Revert "New ES index" [#842](https://github.com/elastic/apm-pipeline-library/pull/842)
+-  [notification] skip steps comment in slack if none [#845](https://github.com/elastic/apm-pipeline-library/pull/845)
+-  Remove duplicated metadata [#840](https://github.com/elastic/apm-pipeline-library/pull/840)
+-  [local] docker instance with fixed version [#838](https://github.com/elastic/apm-pipeline-library/pull/838)
+
 ## v1.1.160 (11/11/2020)
 
 #### 🙈 No user affected

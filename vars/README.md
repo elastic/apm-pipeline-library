@@ -1629,6 +1629,7 @@ emails on Failed builds that are not pull request.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * newPRComment: The map of the data to be populated as a comment. Default empty.
+* aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
 ## opbeansPipeline
 Opbeans Pipeline

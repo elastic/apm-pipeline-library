@@ -22,6 +22,7 @@ import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
@@ -295,5 +296,53 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+  }
+
+  @Test
+  @Ignore("Class does not have access to the built-in steps. Error: No signature of method: co.elastic.NotificationManager.catchError()")	
+  void test_flakey_and_prcomment_with_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: true, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+    // with pr comment
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    // with github pr comment
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_flakey_and_prcomment_without_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: false, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+    // with pr comment
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    // with github pr comment
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_no_flakey_and_no_prcomment_with_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: true, analyzeFlakey: false, notifyPRComment: false)
+    printCallStack()
+
+    // Then no github pr comment
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
 }
