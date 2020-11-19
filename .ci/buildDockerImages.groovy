@@ -191,7 +191,7 @@ pipeline {
         expression { return params.rum }
       }
       steps {
-        dir('apm-agent-nodejs'){
+        dir('apm-agent-rum-js'){
           git 'https://github.com/elastic/apm-agent-rum-js.git'
           script {
             def imagesConfiguration = readYaml(file: '.ci/.jenkins_rum.yml')
