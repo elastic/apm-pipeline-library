@@ -59,7 +59,7 @@ class BuildStatusTests extends ApmBasePipelineTest {
     @Test
     void test() throws Exception {
         def script = loadScript(scriptName)
-        def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'])
+        def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], ssl: false)
         assertTrue("Success" == result)
         assertJobStatusSuccess()
     }
@@ -67,7 +67,7 @@ class BuildStatusTests extends ApmBasePipelineTest {
     @Test
     void testBoolSuccess() throws Exception {
         def script = loadScript(scriptName)
-        def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], return_boolean: true)
+        def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], return_boolean: true, ssl: false)
         assertTrue(result)
     }
 
