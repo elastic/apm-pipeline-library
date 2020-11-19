@@ -53,10 +53,15 @@ private static String makeRequest(URL url) throws IOException {
     }
 }
 
-private static URL constructURL(String host, ArrayList job) throws Exception {
+private static URL constructURL(String host, ArrayList job, boolean ssl) throws Exception {
     String delim = "%2F"
     String job_path = job.join(delim)
-    String uri = "https://${host}/buildStatus/text?job=${job_path}"
+    String uri
+    if (ssl){
+      uri = "https://${host}/buildStatus/text?job=${job_path}"
+    } else {
+      uri = "http://${host}/buildStatus/text?job=${job_path}"
+    }
     URL url = new URL(uri)
     return url
 }
@@ -65,7 +70,8 @@ def call(Map params = [:]) {
     def host = params.get('host', 'localhost')
     def job = params.get('job', [])
     def return_boolean = params.get('return_boolean', false)
-    def result = makeRequest(constructURL(host, job))
+    def ssl = params.get('ssl', true)
+    def result = makeRequest(constructURL(host, job, ssl))
     if (return_boolean){
         if (result == "Success") {
             return true
