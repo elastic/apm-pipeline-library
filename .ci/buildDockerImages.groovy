@@ -45,58 +45,23 @@ pipeline {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
+    booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
+    booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
+    booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
+    booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'nodejs', defaultValue: 'false', description: '')
+    booleanParam(name: 'opbot', defaultValue: "false", description: "")
+    booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
+    booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'python', defaultValue: "false", description: "")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
-    booleanParam(name: 'weblogic', defaultValue: "false", description: "")
-    booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
-    booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
-    booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
-    booleanParam(name: 'opbot', defaultValue: "false", description: "")
-    booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
-    booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
+    booleanParam(name: 'rum', defaultValue: 'false', description: '')
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
-    booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
-    booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
+    booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
   }
   stages {
-    stage('Cache Weblogic Docker Image'){
-      environment {
-        IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
-        TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
-        HOME = "${env.WORKSPACE}"
-      }
-      options {
-        warnError('Cache Weblogic Docker Image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.weblogic }
-      }
-      steps {
-        deleteDir()
-        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
-      }
-    }
-    stage('Cache Oracle Instant Client Docker Image'){
-      environment {
-        IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
-        TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
-        HOME = "${env.WORKSPACE}"
-      }
-      options {
-        warnError('Cache Oracle Instant Client Docker Image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.oracle_instant_client }
-      }
-      steps {
-        deleteDir()
-        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
-      }
-    }
     stage('Build agent Python images'){
       options {
         skipDefaultCheckout()
@@ -124,6 +89,42 @@ pipeline {
                     version: "${pythonIn}",
                     folder: "tests",
                     options: "--build-arg PYTHON_IMAGE=${pythonVersion}",
+                    push: true)
+                }
+              }
+            }
+            parallel(tasks)
+          }
+        }
+      }
+    }
+    stage('Build agent Node.js images'){
+      options {
+        skipDefaultCheckout()
+        warnError('Build agent Node.js images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.nodejs }
+      }
+      steps {
+        dir('apm-agent-nodejs'){
+          git 'https://github.com/elastic/apm-agent-nodejs.git'
+          script {
+            def nodeVersions = readYaml(file: '.ci/.jenkins_nodejs.yml')['NODEJS_VERSION']
+            def tasks = [:]
+            nodeVersions.each { version ->
+              // Versions are double quoted
+              def nodejsVersion = version.replaceFirst('"', '')
+              tasks["${version}"] = {
+                node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
+                  buildDockerImage(
+                    repo: 'https://github.com/elastic/apm-agent-nodejs.git',
+                    tag: 'apm-agent-nodejs',
+                    version: "${nodejsVersion}",
+                    folder: '.ci/docker/node-container',
+                    options: "--build-arg NODE_VERSION='${nodejsVersion}'",
                     push: true)
                 }
               }
@@ -180,39 +181,107 @@ pipeline {
         }
       }
     }
-    stage('Build agent Node.js images'){
+    stage('Build agent RUM images'){
       options {
         skipDefaultCheckout()
-        warnError('Build agent Node.js images failed')
+        warnError('Build agent RUM images failed')
       }
       when{
         beforeAgent true
-        expression { return params.nodejs }
+        expression { return params.rum }
       }
       steps {
-        dir('apm-agent-nodejs'){
-          git 'https://github.com/elastic/apm-agent-nodejs.git'
+        dir('apm-agent-rum-js'){
+          git 'https://github.com/elastic/apm-agent-rum-js.git'
           script {
-            def nodeVersions = readYaml(file: '.ci/.jenkins_nodejs.yml')['NODEJS_VERSION']
+            def imagesConfiguration = readYaml(file: '.ci/.jenkins_rum.yml')
+            def nodeVersions = imagesConfiguration['NODEJS_VERSION']
+            def libraries = imagesConfiguration['TEST_LIBRARIES']
             def tasks = [:]
-            nodeVersions.each { version ->
-              // Versions are double quoted
-              def nodejsVersion = version.replaceFirst('"', '')
-              tasks["${version}"] = {
-                node('ubuntu-18 && immutable && docker'){
-                  dockerLoginElasticRegistry()
-                  buildDockerImage(
-                    repo: 'https://github.com/elastic/apm-agent-nodejs.git',
-                    tag: 'apm-agent-nodejs',
-                    version: "${nodejsVersion}",
-                    folder: '.ci/docker/node-container',
-                    options: "--build-arg NODE_VERSION='${nodejsVersion}'",
-                    push: true)
+            libraries.each { library ->
+              nodeVersions.each { version ->
+                // Versions are double quoted
+                def nodejsVersion = version.replaceFirst('"', '')
+                tasks["${library}-${version}"] = {
+                  node('ubuntu-18 && immutable && docker'){
+                    dockerLoginElasticRegistry()
+                    buildDockerImage(
+                      repo: 'https://github.com/elastic/apm-agent-rum-js.git',
+                      tag: "node-${library}",
+                      version: "${nodejsVersion}",
+                      folder: ".ci/docker/node-${library}",
+                      options: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
+                      push: true)
+                  }
                 }
               }
             }
             parallel(tasks)
           }
+        }
+      }
+    }
+    stage('Build APM Proxy'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.apm_proxy}
+      }
+      steps{
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          prepareWith: {dir("spoa-mirror"){git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/haproxytech/spoa-mirror.git"}},
+          tag: "apm-proxy",
+          version: "latest",
+          folder: "tools/apm_proxy/frontend",
+          push: true
+        )
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: "apm-proxy-be",
+          version: "latest",
+          folder: "tools/apm_proxy/backend",
+          push: true
+        )
+      }
+    }
+    stage('Build Apm Server test Docker images'){
+      options {
+        skipDefaultCheckout()
+        warnError('Build Apm Server Docker images failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.apm_integration_testing }
+      }
+      steps {
+        deleteDir()
+        checkout scm
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/apm-server.git',
+          tag: "apm-server",
+          version: "daily",
+          push: true
+        )
+        dir("apm-server-images"){
+          git('https://github.com/elastic/apm-server.git')
+          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
+          retry(3){
+            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
+          }
+          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/**/junit-*.xml")
         }
       }
     }
@@ -232,6 +301,73 @@ pipeline {
           repo: 'https://github.com/elastic/curator.git',
           tag: "curator",
           version: "daily",
+          push: true)
+      }
+    }
+    stage('Build flakey'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.flakey}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'flakey',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build Heartbeat'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.heartbeat}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: 'https://github.com/elastic/observability-robots'
+        dir("apps/beats/heartbeat"){
+          script{
+            sh("pip3 install pyyaml")
+            sh("python3 ./generate_heartbeat_configs.py")
+            def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
+            buildDockerImage(
+              repo: "https://github.com/elastic/observability-robots",
+              tag: 'obs-jenkins-heartbeat',
+              version: 'latest',
+              push: true,
+              prepareWith: writeClosure,
+              folder: "apps/beats/heartbeat"
+            )
+          }
+        }
+      }
+    }
+    stage('Build helm-kubernetes Docker hub image'){
+      options {
+        skipDefaultCheckout()
+        warnError('Build helm-kubernetes Docker hub image failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.helm_kubectl }
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/dtzar/helm-kubectl.git',
+          tag: "helm-kubectl",
+          version: "latest",
           push: true)
       }
     }
@@ -271,108 +407,6 @@ pipeline {
         }
       }
     }
-    stage('Build Apm Server test Docker images'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build Apm Server Docker images failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.apm_integration_testing }
-      }
-      steps {
-        deleteDir()
-        checkout scm
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/apm-server.git',
-          tag: "apm-server",
-          version: "daily",
-          push: true
-        )
-        dir("apm-server-images"){
-          git('https://github.com/elastic/apm-server.git')
-          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
-          retry(3){
-            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
-          }
-          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/**/junit-*.xml")
-        }
-      }
-    }
-    stage('Build helm-kubernetes Docker hub image'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build helm-kubernetes Docker hub image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.helm_kubectl }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/dtzar/helm-kubectl.git',
-          tag: "helm-kubectl",
-          version: "latest",
-          push: true)
-      }
-    }
-    stage('Build flakey'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.flakey}
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/observability-dev',
-          tag: 'flakey',
-          version: 'latest',
-          push: true,
-          folder: "apps/automation/jenkins-toolbox")
-      }
-    }
-    stage('Build APM Proxy'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.apm_proxy}
-      }
-      steps{
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/observability-dev',
-          prepareWith: {dir("spoa-mirror"){git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/haproxytech/spoa-mirror.git"}},
-          tag: "apm-proxy",
-          version: "latest",
-          folder: "tools/apm_proxy/frontend",
-          push: true
-        )
-        buildDockerImage(
-          repo: 'https://github.com/elastic/observability-dev',
-          tag: "apm-proxy-be",
-          version: "latest",
-          folder: "tools/apm_proxy/backend",
-          push: true
-        )
-      }
-    }
     stage('Build load-test orchestrator'){
       options {
         skipDefaultCheckout()
@@ -391,75 +425,6 @@ pipeline {
           folder: "apps/automation/bandstand",
           push: true
         )
-      }
-    }
-    stage('Build test-plans'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.testPlans}
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/observability-robots.git',
-          tag: 'test-plans',
-          buildCommand: 'make build',
-          pushCommand: 'make push',
-          push: true,
-          folder: "apps/test-plans")
-      }
-    }
-    stage('Build pickles'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.picklesdoc}
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/observability-robots.git',
-          tag: 'picklesdoc',
-          buildCommand: 'make build',
-          pushCommand: 'make push',
-          push: true,
-          folder: "apps/pickles")
-      }
-    }
-    stage('Build Heartbeat'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.heartbeat}
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: 'https://github.com/elastic/observability-robots'
-        dir("apps/beats/heartbeat"){
-          script{
-            sh("pip3 install pyyaml")
-            sh("python3 ./generate_heartbeat_configs.py")
-            def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
-            buildDockerImage(
-              repo: "https://github.com/elastic/observability-robots",
-              tag: 'obs-jenkins-heartbeat',
-              version: 'latest',
-              push: true,
-              prepareWith: writeClosure,
-              folder: "apps/beats/heartbeat"
-            )
-          }
-        }
       }
     }
     stage('Build opbot'){
@@ -490,6 +455,82 @@ pipeline {
         cleanup {
           deleteDir()
         }
+      }
+    }
+    stage('Cache Oracle Instant Client Docker Image'){
+      environment {
+        IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
+        HOME = "${env.WORKSPACE}"
+      }
+      options {
+        warnError('Cache Oracle Instant Client Docker Image failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.oracle_instant_client }
+      }
+      steps {
+        deleteDir()
+        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
+      }
+    }
+    stage('Build pickles'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.picklesdoc}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-robots.git',
+          tag: 'picklesdoc',
+          buildCommand: 'make build',
+          pushCommand: 'make push',
+          push: true,
+          folder: "apps/pickles")
+      }
+    }
+    stage('Build test-plans'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.testPlans}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-robots.git',
+          tag: 'test-plans',
+          buildCommand: 'make build',
+          pushCommand: 'make push',
+          push: true,
+          folder: "apps/test-plans")
+      }
+    }
+    stage('Cache Weblogic Docker Image'){
+      environment {
+        IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
+        TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
+        HOME = "${env.WORKSPACE}"
+      }
+      options {
+        warnError('Cache Weblogic Docker Image failed')
+      }
+      when{
+        beforeAgent true
+        expression { return params.weblogic }
+      }
+      steps {
+        deleteDir()
+        pushDockerImageFromStore("${IMAGE_TAG}", "${TAG_CACHE}")
       }
     }
   }
