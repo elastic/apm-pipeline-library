@@ -417,4 +417,12 @@ fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_H
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
 
+### For each entry in the test map then create a flatten document
+N=0
+jq -c '.test = (.test[])' "${BUILD_REPORT}" |
+while read -r json ; do
+  N=$((N+1))
+  echo "{ \"doc\" : ${json} }"  >> "${BUILD_REPORT}.bulk"
+done
+
 exit $STATUS

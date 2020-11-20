@@ -123,6 +123,10 @@ class GenerateBuildDataIntegrationTests {
     assertNull(obj.get("build.branch"))
     assertNull(obj.get("build.changeSet"))
     assertNull(obj.get("build.pullRequest"))
+
+    // Then a flatten test in the bulk file
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json.bulk").text)
+    assertEquals("Only one test entry that matches 1 age.", 1, obj.get("doc").test.age)
   }
 
   @Test

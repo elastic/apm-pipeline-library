@@ -140,6 +140,10 @@ def call(Map args = [:]) {
         timeout(5) {
           def datafile = readFile(file: 'build-report.json')
           sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+          if (fileExists('build-report.json.bulk')) {
+            datafile = readFile(file: 'build-report.json.bulk')
+            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/jenkins-flatten/_bulk/')
+          }
         }
       }
 
