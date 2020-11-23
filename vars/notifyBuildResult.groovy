@@ -143,7 +143,7 @@ def call(Map args = [:]) {
           def bulkFile = 'build-report-bulk.json'
           if (fileExists(bulkFile)) {
             datafile = readFile(file: bulkFile)
-            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-build/_bulk/')
+            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-builds/_bulk/')
           }
         }
       }
