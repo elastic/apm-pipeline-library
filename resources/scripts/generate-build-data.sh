@@ -423,7 +423,8 @@ N=0
 jq -c '.test = (.test[])' "${BUILD_REPORT}" |
 while read -r json ; do
   N=$((N+1))
-  echo "{ \"doc\" : ${json} }"  >> "${BUILD_BULK_REPORT}"
+  echo "{ \"index\":{} }" >> "${BUILD_BULK_REPORT}"
+  echo "${json}" >> "${BUILD_BULK_REPORT}"
 done
 
 exit $STATUS
