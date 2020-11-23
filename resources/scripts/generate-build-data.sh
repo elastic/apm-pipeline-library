@@ -30,6 +30,7 @@ STATUS=0
 ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
+BUILD_BULK_REPORT="build-report-bulk.json"
 CHANGESET_INFO="changeSet-info.json"
 ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
@@ -422,7 +423,7 @@ N=0
 jq -c '.test = (.test[])' "${BUILD_REPORT}" |
 while read -r json ; do
   N=$((N+1))
-  echo "{ \"doc\" : ${json} }"  >> "${BUILD_REPORT}.bulk"
+  echo "{ \"doc\" : ${json} }"  >> "${BUILD_BULK_REPORT}"
 done
 
 exit $STATUS
