@@ -24,6 +24,7 @@ pipeline {
     PIPELINE_LOG_LEVEL='INFO'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    JOB_GIT_CREDENTIALS = "f6c7695a-671e-4f4f-a331-acdce44ff9ba"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -86,6 +87,54 @@ pipeline {
           propagate: false,
           wait: false
         )
+      }
+    }
+    stage('Bump versions observability-test-environments'){
+      matrix {
+        axes {
+          axis {
+            name 'BRANCH'
+            values (
+              'dev',
+              'dev-next',
+              'release'
+            )
+          }
+        }
+        stages {
+          stage('Checkout'){
+            steps {
+              gitCheckout(basedir: '.', branch: env.BRANCH,
+                repo: 'git@github.com:elastic/observability-test-environments.git',
+                credentialsId: "${JOB_GIT_CREDENTIALS}",
+                githubNotifyFirstTimeContributor: false)
+            }
+          }
+          stage('Fetch latest version'){
+            steps {
+              echo 'TBD - Search the latest version'
+              // NOTE - probably we can delegate this particular logic to the repo.
+              setEnvVar('VERSION', 'NONE')
+            }
+          }
+          stage('Bump version'){
+            when {
+              beforeAgent true
+              expression { return !env.VERSION.equals('NONE') }
+            }
+            steps {
+              setupAPMGitEmail(global: true)
+              sh '''
+              .ci/scripts/bump_version.sh ${VERSION}
+              git config user.email
+              git checkout -b "update-version-${BRANCH}-$(date "+%Y%m%d%H%M%S")"
+              git add .
+              git commit -m "bump: version ${VERSION}"
+              git --no-pager log -1'''
+              githubCreatePullRequest(title: "bump: version ${VERSION}", labels: 'automation', description: "bump: version ${VERSION}")
+            }
+          }
+        }
       }
     }
     stage('Third-party license scan'){
