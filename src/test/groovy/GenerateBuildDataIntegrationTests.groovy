@@ -204,6 +204,24 @@ class GenerateBuildDataIntegrationTests {
     assertTrue(info.isEmpty())
   }
 
+  @Test
+  public void multiTestFailuresBuild() {
+    String targetFolder = "multiTestFailures"
+    String jobUrl = this.URL + "/multiTestFailures/"
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    printStdout(process)
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Then a flatten test in the bulk file
+    new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
+      def obj = JSONSerializer.toJSON(line)
+      assertNotNull("There are some entries in the bulk file.", obj)
+      if (obj?.doc?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.doc.test.age)
+      }
+    }
+  }
+
   Process runCommand(String targetFolder, String jobUrl, String buildUrl, String status, String runTime) {
     //Build command
     List<String> commands = new ArrayList<String>()
