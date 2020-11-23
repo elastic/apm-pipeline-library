@@ -129,8 +129,8 @@ class GenerateBuildDataIntegrationTests {
     new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
       obj = JSONSerializer.toJSON(line)
       assertNotNull("There are some entries in the bulk file.", obj)
-      if (obj?.job?.test?.age) {
-        assertEquals("Only one test entry that matches 1 age.", 1, obj.get("doc").test.age)
+      if (obj?.doc?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.doc.test.age)
       }
     }
   }
