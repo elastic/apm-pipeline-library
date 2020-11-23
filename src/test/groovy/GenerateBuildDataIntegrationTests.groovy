@@ -24,6 +24,7 @@ import org.junit.Test
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
@@ -125,8 +126,13 @@ class GenerateBuildDataIntegrationTests {
     assertNull(obj.get("build.pullRequest"))
 
     // Then a flatten test in the bulk file
-    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report-bulk.json").text)
-    assertEquals("Only one test entry that matches 1 age.", 1, obj.get("doc").test.age)
+    new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
+      obj = JSONSerializer.toJSON(line)
+      assertNotNull("There are some entries in the bulk file.", obj)
+      if (obj?.job?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.get("doc").test.age)
+      }
+    }
   }
 
   @Test
