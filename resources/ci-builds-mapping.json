@@ -27,32 +27,26 @@
           "causes": {
             "properties": {
               "shortDescription": {
-                "shortDescription" : {
-                  "type" : "keyword",
-                  "fields" : {
-                    "analyzed" : {
-                      "type" : "text"
-                    }
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
                   }
                 }
               },
               "userId": {
-                "shortDescription" : {
-                  "type" : "keyword",
-                  "fields" : {
-                    "analyzed" : {
-                      "type" : "text"
-                    }
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
                   }
                 }
               },
               "userName": {
-                "shortDescription" : {
-                  "type" : "keyword",
-                  "fields" : {
-                    "analyzed" : {
-                      "type" : "text"
-                    }
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
                   }
                 }
               }
