@@ -199,7 +199,7 @@ pipeline {
             def nodejsVersion = readFile("./dev-utils/.node-version").trim()
             def tasks = [:]
             libraries.each { library ->
-              tasks["${library}-${version}"] = {
+              tasks["${library}-${nodejsVersion}"] = {
                 node('ubuntu-18 && immutable && docker'){
                   dockerLoginElasticRegistry()
                   buildDockerImage(
