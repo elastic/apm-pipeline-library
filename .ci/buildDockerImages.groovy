@@ -195,24 +195,20 @@ pipeline {
           git 'https://github.com/elastic/apm-agent-rum-js.git'
           script {
             def imagesConfiguration = readYaml(file: '.ci/.jenkins_rum.yml')
-            def nodeVersions = imagesConfiguration['NODEJS_VERSION']
             def libraries = imagesConfiguration['TEST_LIBRARIES']
+            def nodejsVersion = readFile("./dev-utils/.node-version").trim()
             def tasks = [:]
             libraries.each { library ->
-              nodeVersions.each { version ->
-                // Versions are double quoted
-                def nodejsVersion = version.replaceFirst('"', '')
-                tasks["${library}-${version}"] = {
-                  node('ubuntu-18 && immutable && docker'){
-                    dockerLoginElasticRegistry()
-                    buildDockerImage(
-                      repo: 'https://github.com/elastic/apm-agent-rum-js.git',
-                      tag: "node-${library}",
-                      version: "${nodejsVersion}",
-                      folder: ".ci/docker/node-${library}",
-                      options: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
-                      push: true)
-                  }
+              tasks["${library}-${version}"] = {
+                node('ubuntu-18 && immutable && docker'){
+                  dockerLoginElasticRegistry()
+                  buildDockerImage(
+                    repo: 'https://github.com/elastic/apm-agent-rum-js.git',
+                    tag: "node-${library}",
+                    version: "${nodejsVersion}",
+                    folder: ".ci/docker/node-${library}",
+                    options: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
+                    push: true)
                 }
               }
             }
