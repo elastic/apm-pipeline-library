@@ -24,9 +24,25 @@
               }
             }
           },
-          "causes" : {
-            "properties" : {
-              "shortDescription" : {
+          "causes": {
+            "properties": {
+              "shortDescription": {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "userId": {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "userName": {
                 "type" : "keyword",
                 "fields" : {
                   "analyzed" : {

@@ -114,9 +114,11 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertNotNull(obj.get("build").causes.shortDescription)
     assertFalse(obj.get("env").isEmpty())
 
     // Then metadata is removed
+    assertNull(obj.get("build").actions)
     assertNull(obj.get("changeSet")[0].author?._class)
     assertNull(obj.get("changeSet")[0].author?._links)
 
@@ -129,8 +131,8 @@ class GenerateBuildDataIntegrationTests {
     new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
       obj = JSONSerializer.toJSON(line)
       assertNotNull("There are some entries in the bulk file.", obj)
-      if (obj?.doc?.test?.age) {
-        assertEquals("Only one test entry that matches 1 age.", 1, obj.doc.test.age)
+      if (obj?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.test.age)
       }
     }
   }
@@ -216,8 +218,8 @@ class GenerateBuildDataIntegrationTests {
     new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
       def obj = JSONSerializer.toJSON(line)
       assertNotNull("There are some entries in the bulk file.", obj)
-      if (obj?.doc?.test?.age) {
-        assertEquals("Only one test entry that matches 1 age.", 1, obj.doc.test.age)
+      if (obj?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.test.age)
       }
     }
   }

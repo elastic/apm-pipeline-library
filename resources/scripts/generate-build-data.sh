@@ -235,6 +235,7 @@ function normaliseBuild() {
     jqEdit '.state = "FINISHED"' "${file}"
     jqEdit 'del(._links)' "${file}"
     jqEdit 'del(._class)' "${file}"
+    jqEdit 'del(.actions)' "${file}"
     ## This is already duplicated, the responsible is the job
     jqEdit 'del(.branch)' "${file}"
     ## This is already duplicated, the responsible is the changeset
@@ -243,6 +244,9 @@ function normaliseBuild() {
     jqEdit 'del(.pullRequest)' "${file}"
     jqEdit 'del(.causes[]._class)' "${file}"
     jqEdit 'del(.replayable)' "${file}"
+    ## Lets flatten the causes by only getting the first entry.
+    ## There is two causes by default in the way CI builds run at the moment.
+    jqEdit '.causes = (.causes[0])' "${file}"
 
     ## Transform relative path to absolute URL
     artifactsZipFile=$(jq -r '.artifactsZipFile' "${file}")
@@ -254,6 +258,7 @@ function normaliseBuildReport() {
     file=$1
     jqEdit 'del(._links)' "${file}"
     jqEdit 'del(._class)' "${file}"
+    jqEdit 'del(.actions)' "${file}"
     jqEdit 'del(.latestRun)' "${file}"
     jqEdit 'del(.permissions)' "${file}"
     jqEdit 'del(.parameters)' "${file}"
@@ -424,7 +429,7 @@ jq -c '.test = (.test[])' "${BUILD_REPORT}" |
 while read -r json ; do
   N=$((N+1))
   echo "{ \"index\":{} }" >> "${BUILD_BULK_REPORT}"
-  echo "{ \"doc\": ${json} }" >> "${BUILD_BULK_REPORT}"
+  echo "${json}" >> "${BUILD_BULK_REPORT}"
 done
 
 exit $STATUS
