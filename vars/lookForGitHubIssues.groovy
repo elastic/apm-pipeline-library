@@ -44,6 +44,9 @@ def call(Map args = [:]) {
             output[testName] = ''
           }
         }
+      } else {
+        // no issues could be found, let's report the list of test failures without any issue details.
+        flakyList.each { output.put(it, '') }
       }
     } catch (err) {
       // no issues could be found, let's report the list of test failures without any issue details.
