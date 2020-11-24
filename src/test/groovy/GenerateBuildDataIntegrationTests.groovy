@@ -114,9 +114,11 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertNotNull(obj.get("build").causes.shortDescription)
     assertFalse(obj.get("env").isEmpty())
 
     // Then metadata is removed
+    assertNull(obj.get("build").actions)
     assertNull(obj.get("changeSet")[0].author?._class)
     assertNull(obj.get("changeSet")[0].author?._links)
 
