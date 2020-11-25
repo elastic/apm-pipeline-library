@@ -39,7 +39,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
     })
-    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('bulk') })
+    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('ci-') })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
 
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
@@ -351,13 +351,13 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test_bulk_update() throws Exception {
     // When PR and there is a builk file
     helper.registerAllowedMethod('isPR', { return true })
-    helper.registerAllowedMethod('fileExists', [String.class], { return it.contains('bulk') })
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
 
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
-    // Then sendDataToElasticsearch happens twice
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
+    // Then sendDataToElasticsearch happens three times
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
   }
 }

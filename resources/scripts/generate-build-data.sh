@@ -30,7 +30,8 @@ STATUS=0
 ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
-BUILD_BULK_REPORT="build-report-bulk.json"
+CI_TEST_BULK_REPORT="ci-test-report-bulk.json"
+CI_BUILD_REPORT="ci-build-report.json"
 CHANGESET_INFO="changeSet-info.json"
 ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
@@ -423,13 +424,19 @@ fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_H
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
 
+## Create specific files to store the test failures in individual
+## docs and overal build data.
+### Create a bulk with the build data and tests
 ### For each entry in the test map then create a flatten document
 N=0
 jq -c '.test = (.test[])' "${BUILD_REPORT}" |
 while read -r json ; do
   N=$((N+1))
-  echo "{ \"index\":{} }" >> "${BUILD_BULK_REPORT}"
-  echo "${json}" >> "${BUILD_BULK_REPORT}"
+  echo "{ \"index\":{} }" >> "${CI_TEST_BULK_REPORT}"
+  echo "${json}" >> "${CI_TEST_BULK_REPORT}"
 done
+
+### Create a document with the overall build data. (aka no tests)
+jq 'del(.test)' "${BUILD_REPORT}" > "${CI_BUILD_REPORT}"
 
 exit $STATUS
