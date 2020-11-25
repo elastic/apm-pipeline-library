@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.164 (25/11/2020)
+
+#### 🙈 No user affected
+
+-  [index] populate only test failures [#864](https://github.com/elastic/apm-pipeline-library/pull/864)
+-  fix archive files inside .git folder [#863](https://github.com/elastic/apm-pipeline-library/pull/863)
+-  [ignore] gitcmd files with the .git folder [#862](https://github.com/elastic/apm-pipeline-library/pull/862)
+
 ## v1.1.163 (25/11/2020)
 
 #### 🚀 Enhancements
