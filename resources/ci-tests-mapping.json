@@ -257,6 +257,14 @@
               }
             }
           },
+          "errorDetails" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
           "name" : {
             "type" : "keyword",
             "fields" : {
