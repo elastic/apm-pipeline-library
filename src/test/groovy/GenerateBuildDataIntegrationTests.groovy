@@ -128,13 +128,20 @@ class GenerateBuildDataIntegrationTests {
     assertNull(obj.get("build.pullRequest"))
 
     // Then a flatten test in the bulk file
-    new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
+    new File("target/${targetFolder}/ci-test-report-bulk.json").eachLine { line ->
       obj = JSONSerializer.toJSON(line)
       assertNotNull("There are some entries in the bulk file.", obj)
       if (obj?.test?.age) {
         assertEquals("Only one test entry that matches 1 age.", 1, obj.test.age)
       }
     }
+
+    // Then a build report without test
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/ci-build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertTrue(obj.get("test").isEmpty())
   }
 
   @Test
@@ -215,7 +222,7 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Then a flatten test in the bulk file
-    new File("target/${targetFolder}/build-report-bulk.json").eachLine { line ->
+    new File("target/${targetFolder}/ci-test-report-bulk.json").eachLine { line ->
       def obj = JSONSerializer.toJSON(line)
       assertNotNull("There are some entries in the bulk file.", obj)
       if (obj?.test?.age) {

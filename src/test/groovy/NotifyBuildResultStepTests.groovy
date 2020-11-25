@@ -351,13 +351,13 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test_bulk_update() throws Exception {
     // When PR and there is a builk file
     helper.registerAllowedMethod('isPR', { return true })
-    helper.registerAllowedMethod('fileExists', [String.class], { return it.contains('bulk') })
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
 
     def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
-    // Then sendDataToElasticsearch happens twice
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
+    // Then sendDataToElasticsearch happens three times
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
   }
 }

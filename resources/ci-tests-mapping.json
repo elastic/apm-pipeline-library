@@ -241,6 +241,35 @@
           }
         }
       },
+      "test" : {
+        "properties" : {
+          "age" : {
+            "type" : "long"
+          },
+          "duration" : {
+            "type" : "long"
+          },
+          "id" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "name" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "status" : {
+            "type" : "keyword"
+          }
+        }
+      },
       "test_summary" : {
         "properties" : {
           "existingFailed" : {
