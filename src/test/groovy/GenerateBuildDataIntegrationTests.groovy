@@ -141,7 +141,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
-    assertTrue(obj.get("test").isEmpty())
+    assertNull(obj.get("test"))
   }
 
   @Test

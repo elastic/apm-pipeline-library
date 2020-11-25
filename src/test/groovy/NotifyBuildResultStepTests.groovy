@@ -39,7 +39,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
     })
-    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('bulk') })
+    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('ci-') })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
 
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
