@@ -35,7 +35,9 @@ def call(Map params = [:]) {
       credentialsId: credentialsId,
       passwordVariable: 'GIT_PASSWORD',
       usernameVariable: 'GIT_USERNAME')]) {
-    def logFilename = fileExists('.git') ? ".git/${cmd}.log" : "${cmd}.log"
+    def folder = '.git'
+    def filename = "${cmd}.log"
+    def logFilename = fileExists(folder) ? "${folder}/${filename}" : "${filename}"
     def storeFlag = store ? "> ${logFilename} 2>&1" : ''
     try {
       sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
@@ -46,7 +48,13 @@ def call(Map params = [:]) {
       throw err
     } finally {
       if (store) {
-        archiveArtifacts(artifacts: "${logFilename}")
+        if (fileExists(folder)) {
+          dir(folder) {
+            archiveArtifacts(artifacts: "${filename}")
+          }
+        } else {
+          archiveArtifacts(artifacts: "${filename}")
+        }
       }
     }
   }
