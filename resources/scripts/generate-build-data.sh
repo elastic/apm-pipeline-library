@@ -424,12 +424,14 @@ fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_H
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
 
-## Create specific files to store the test failures in individual
-## docs and overal build data.
+## Create specific files to store the failed tests in individual
+## docs and overal build data. Excluded passed and skipped tests
+## since it requires some other strategy to bulk update instead
+## calling the entrypoint.
 ### Create a bulk with the build data and tests
 ### For each entry in the test map then create a flatten document
 N=0
-jq -c '.test = (.test[])' "${BUILD_REPORT}" |
+jq -c 'del( .test[] | select( .status != "FAILED" )) | .test = (.test[])' "${BUILD_REPORT}" |
 while read -r json ; do
   N=$((N+1))
   echo "{ \"index\":{} }" >> "${CI_TEST_BULK_REPORT}"
