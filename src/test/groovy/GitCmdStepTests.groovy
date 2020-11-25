@@ -97,7 +97,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
-    assertTrue(assertMethodCallContainsPattern('sh', '> push.log 2>&1'))
+    assertTrue(assertMethodCallContainsPattern('sh', '> .git/push.log 2>&1'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
     assertJobStatusSuccess()
   }
@@ -113,6 +113,15 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     } catch(e){
       //NOOP
     }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
+  }
+
+  @Test
+  void test_if_store_in_git_folder_no_exist() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('fileExists', [String.class], { return false })
+    script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
   }
