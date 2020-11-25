@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.1.163 (25/11/2020)
+
+#### 🚀 Enhancements
+
+-  Add certain latency to access to the google storage [#855](https://github.com/elastic/apm-pipeline-library/pull/855)
+
+#### 🐛 Bug Fixes
+
+-  Flaky causes NPE [#849](https://github.com/elastic/apm-pipeline-library/pull/849)
+
+#### 🙈 No user affected
+
+-  [index] bulk format and remove certain unused fields [#860](https://github.com/elastic/apm-pipeline-library/pull/860)
+-  If no GH Issues then use flaky test details [#858](https://github.com/elastic/apm-pipeline-library/pull/858)
+-  Bulk update with a flatten tests [#856](https://github.com/elastic/apm-pipeline-library/pull/856)
+
+#### ⚙️ CI
+
+-  chore: simplify RUM JS image [#859](https://github.com/elastic/apm-pipeline-library/pull/859)
+-  chore: add RUM images to the nightly build [#851](https://github.com/elastic/apm-pipeline-library/pull/851)
+
 ## v1.1.162 (17/11/2020)
 
 #### 🐛 Bug Fixes
