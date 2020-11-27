@@ -23,5 +23,5 @@
   }
 */
 def call(){
-  return (!isPR() && env.BRANCH_NAME?.trim())
+  return (!isPR() && env.BRANCH_NAME?.trim()) ? true : false
 }
