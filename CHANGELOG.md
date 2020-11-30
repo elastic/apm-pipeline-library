@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.165 (30/11/2020)
+
+#### 🐛 Bug Fixes
+
+-  Fix isBranch type [#865](https://github.com/elastic/apm-pipeline-library/pull/865)
+
 ## v1.1.164 (25/11/2020)
 
 #### 🙈 No user affected
