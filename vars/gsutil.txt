@@ -1,0 +1,12 @@
+Wrapper to interact with the gsutil command line. It returns the stdout output.
+
+```
+  // Copy file.txt into the bucket
+  gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
+
+```
+
+* command: The gsutil command to be executed. Mandatory
+* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+
+_NOTE_: Windows is not supported yet.

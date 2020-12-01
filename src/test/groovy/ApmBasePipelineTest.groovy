@@ -435,6 +435,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
+    helper.registerAllowedMethod('gsutil', [Map.class], { m ->
+      def script = loadScript('vars/gsutil.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('installTools', [List.class], { l ->
       def script = loadScript('vars/installTools.groovy')

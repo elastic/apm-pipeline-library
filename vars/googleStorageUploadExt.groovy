@@ -15,10 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-def call(args) {
+def call(Map args = [:]) {
   def credentialsId = args.get('credentialsId', env.JOB_GCS_CREDENTIALS)
   def bucket = args.containsKey('bucket') ? args.bucket : error('googleStorageUploadExt: bucket parameter is required')
-  def pattern = args.containsKey('pattern') ? args.pattern : error('pattern: bucket parameter is required')
+  def pattern = args.containsKey('pattern') ? args.pattern : error('pattern: pattern parameter is required')
   def sharedPublicly = args.get('sharedPublicly', false)
 
   def flags = ''
@@ -27,5 +27,5 @@ def call(args) {
     flags = '-a public-read'
   }
 
-  return gsutil(command: "cp ${pattern} ${bucket} ${flags}", credentialsId: credentialsId)
+  return gsutil(command: "cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
 }
