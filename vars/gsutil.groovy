@@ -24,7 +24,7 @@ def call(Map args = [:]) {
     error 'gsutil: windows is not supported yet.'
   }
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
-  def credentialsId = args.containsKey('credentialsId') ? args.command : error('gsutil: credentialsId argument is required.')
+  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
 
   if (gsUtilLocation?.trim()) {
     log(level: 'DEBUG', text: 'gsutil: get the gsutilLocation from cache.')
