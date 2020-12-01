@@ -272,6 +272,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('file', [Map.class], { [ variable: 'foo', secret: 'bar' ] })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
@@ -470,6 +471,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is32x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('is64', { return true })
     helper.registerAllowedMethod('is64x86', {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
