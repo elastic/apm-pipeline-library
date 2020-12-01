@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@feature/override-google-storage-step') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -28,6 +28,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
+    JOB_GCS_BUCKET = credentials('gcs-bucket')
+    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -102,6 +104,8 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            // try something else
+            googleStorageUploadExt(bucket: "${env.JOB_GCS_BUCKET}/test", pattern: '**/target/surefire-reports/TEST-*.xml', sharedPublicly: true)
           }
         }
       }
