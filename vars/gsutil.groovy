@@ -53,7 +53,7 @@ def downloadInstaller(where) {
     dir(where) {
       retryWithSleep(retries: 3, seconds: 5, backoff: true) {
         sh(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
-        sh(label: 'untar gsutil', script: "tar -xpf ${tarball}")
+        sh(label: 'untar gsutil', script: "tar -xpf ${tarball} --strip-components=1")
       }
     }
   } else {
