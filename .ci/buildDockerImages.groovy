@@ -47,6 +47,7 @@ pipeline {
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
+    booleanParam(name: 'apm_server', defaultValue: "false", description: "")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
@@ -252,7 +253,7 @@ pipeline {
       }
       when{
         beforeAgent true
-        expression { return params.apm_integration_testing }
+        expression { return params.apm_server }
       }
       steps {
         deleteDir()
