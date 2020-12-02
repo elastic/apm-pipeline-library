@@ -21,24 +21,23 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/googleStorageUploadExt.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.JOB_GCS_CREDENTIALS = 'secret'
+    script = loadScript('vars/googleStorageUploadExt.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
       script.call(bucket: 'gs://foo', pattern: 'file.txt')
     } catch(e){
       //NOOP
-      println e
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'gsutil: windows is not supported yet.'))
@@ -47,20 +46,18 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_bucket() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(err) {
       // NOOP
-      println err
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'googleStorageUploadExt: bucket parameter is required'))
+    assertJobStatusFailure()
   }
 
   @Test
   void test_without_pattern() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(bucket: 'gs://foo')
     } catch(err) {
@@ -68,25 +65,35 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'googleStorageUploadExt: pattern parameter is required'))
+    assertJobStatusFailure()
   }
 
   @Test
-  void test_with_gh_error() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('gsutil', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
-    def ret = script.call(bucket: 'gs://foo', pattern: 'file.txt')
+  void test_with_gsutil_error() throws Exception {
+    helper.registerAllowedMethod('gsutil', [Map.class], { throw new Exception('unknown command "foo" for "gsutil"') })
+    try {
+      script.call(bucket: 'gs://foo', pattern: 'file.txt')
+    } catch(err) {
+      // NOOP
+    }
     printCallStack()
-    assertTrue(ret.isEmpty())
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('gsutil', [Map.class], {
-      return '277	OPEN	Document pre-commit validation	2019-11-22 18:22:29 +0000 UTC' })
+    helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
     def ret = script.call(bucket: 'gs://foo', pattern: 'file.txt')
     printCallStack()
+    assertFalse(assertMethodCallContainsPattern('gsutil', '-a public-read'))
+    assertTrue(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
     assertFalse(ret.isEmpty())
   }
 
+  @Test
+  void test_with_shared_publically() throws Exception {
+    helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
+    script.call(bucket: 'gs://foo', pattern: 'file.txt', sharedPublicly: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('gsutil', '-a public-read file.txt gs://foo'))
+  }
 }

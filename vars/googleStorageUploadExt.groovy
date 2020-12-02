@@ -18,7 +18,7 @@
 def call(Map args = [:]) {
   def credentialsId = args.get('credentialsId', env.JOB_GCS_CREDENTIALS)
   def bucket = args.containsKey('bucket') ? args.bucket : error('googleStorageUploadExt: bucket parameter is required')
-  def pattern = args.containsKey('pattern') ? args.pattern : error('pattern: pattern parameter is required')
+  def pattern = args.containsKey('pattern') ? args.pattern : error('googleStorageUploadExt: pattern parameter is required')
   def sharedPublicly = args.get('sharedPublicly', false)
 
   def flags = ''
