@@ -73,6 +73,12 @@ credentials:
               id: gcs-bucket
               scope: GLOBAL
               secret: ${gcs_bucket}
+          - file:
+              description: "Secret File Description for apm-ci-gcs-plugin"
+              fileName: "elastic-observability.json"
+              id: "apm-ci-gcs-plugin-file-credentials"
+              scope: GLOBAL
+              secretBytes: "TO_BE_UPDATED_MANUALLY"
 
 unclassified:
   location:
@@ -128,6 +134,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/githubCreatePullRequest.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnv.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnvSCM.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/googleStorageUploadExt.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/installTools.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"
