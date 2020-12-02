@@ -22,18 +22,18 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GsutilStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gsutil.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
+    script = loadScript('vars/gsutil.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
       script.call()
@@ -47,7 +47,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_command() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e) {
@@ -60,7 +59,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_credentials() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(command: 'cp')
     } catch(e) {
@@ -73,7 +71,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_command() throws Exception {
-    def script = loadScript(scriptName)
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', ''))
@@ -85,7 +82,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_failed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if (m.label.startsWith('gsutil')) { throw new Exception('unknown command "foo" for "gsutil"') }})
     def result
@@ -102,7 +98,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_gh_installed_by_default_with_wget() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
@@ -113,7 +108,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_gh_installed_by_default_no_wget() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
@@ -123,13 +117,12 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_cache() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     try {
       script.call(command: 'cp', credentialsId: 'foo')
       script.call(command: 'cp', credentialsId: 'foo')
     } catch(e) {
-      println e
+      // NOOP
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
@@ -139,7 +132,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_cache_without_gsutil_installed_by_default_with_wget() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     script.call(command: 'cp', credentialsId: 'foo')
     script.call(command: 'cp', credentialsId: 'foo')
