@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.166 (04/12/2020)
+
+#### 🙈 No user affected
+
+-  [report] report one error signal if multiple [#870](https://github.com/elastic/apm-pipeline-library/pull/870)
+-  [daily] build docker images [#868](https://github.com/elastic/apm-pipeline-library/pull/868)
+
+#### ⚙️ CI
+
+-  [CI] runbld is now deprecated [#869](https://github.com/elastic/apm-pipeline-library/pull/869)
+
 ## v1.1.165 (30/11/2020)
 
 #### 🐛 Bug Fixes
