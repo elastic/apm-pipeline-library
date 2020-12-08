@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.167 (08/12/2020)
+
+#### 🚀 Enhancements
+
+-  [build][data] Enable data related to PRs branches/targets [#875](https://github.com/elastic/apm-pipeline-library/pull/875)
+
 ## v1.1.166 (04/12/2020)
 
 #### 🙈 No user affected
