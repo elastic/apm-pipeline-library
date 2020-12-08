@@ -40,7 +40,8 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcher(watcher: '17635395-61cd-439a-963d-8e7bb6ab22b7', subject: "${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcher(watcher: '17635395-61cd-439a-963d-8e7bb6ab22b7', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcher(watcher: '3a509751-f9e6-4381-91a7-2e6f44cd9734', subject: "[7.x] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
       }
     }
   }
