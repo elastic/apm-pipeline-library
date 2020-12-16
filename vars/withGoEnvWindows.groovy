@@ -52,7 +52,8 @@ def call(Map args = [:], Closure body) {
     "HOME=${env.WORKSPACE}",
     "PATH=${path}",
     "GOROOT=${goRoot}",
-    "GOPATH=${env.WORKSPACE}"
+    "GOPATH=${env.WORKSPACE}",
+    "USERPROFILE=${userProfile}"
   ]){
     def content = libraryResource('scripts/install-tools.bat')
     retryWithSleep(retries: 2, seconds: 5, backoff: true){
