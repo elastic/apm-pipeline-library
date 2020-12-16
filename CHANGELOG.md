@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.168 (16/12/2020)
+
+#### 🚀 Enhancements
+
+-  Support withHubCredentials step [#871](https://github.com/elastic/apm-pipeline-library/pull/871)
+
+#### 🙈 No user affected
+
+-  [beats] flaky weekly email per branch [#876](https://github.com/elastic/apm-pipeline-library/pull/876)
+
 ## v1.1.167 (08/12/2020)
 
 #### 🚀 Enhancements
