@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.169 (16/12/2020)
+
+#### 🚀 Enhancements
+
+-  Support Windows for withGoEnv [#878](https://github.com/elastic/apm-pipeline-library/pull/878)
+
 ## v1.1.168 (16/12/2020)
 
 #### 🚀 Enhancements
