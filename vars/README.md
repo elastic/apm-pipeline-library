@@ -2254,7 +2254,8 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withGoEnv
- Install Go and run some command in a pre-configured environment.
+ Install Go and run some command in a pre-configured environment multiplatform. For such
+ it's recommended to use the `cmd` step.
 
 ```
   withGoEnv(version: '1.14.2'){
@@ -2276,6 +2277,54 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvUnix
+ Install Go and run some command in a pre-configured environment for Unix.
+
+```
+  withGoEnvUnix(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvUnix(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvWindows
+ Install Go and run some command in a pre-configured environment for Windows.
+
+```
+  withGoEnvWindows(version: '1.14.2'){
+    bat(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvWindows(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       bat(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.
 
 ## withHubCredentials
 Configure the hub app to run the body closure.
