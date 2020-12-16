@@ -1,14 +1,13 @@
- Install Go and run some command in a pre-configured environment multiplatform. For such
- it's recommended to use the `cmd` step.
+ Install Go and run some command in a pre-configured environment for Unix.
 
 ```
-  withGoEnv(version: '1.14.2'){
+  withGoEnvUnix(version: '1.14.2'){
     sh(label: 'Go version', script: 'go version')
   }
 ```
 
 ```
-   withGoEnv(version: '1.14.2', pkgs: [
+   withGoEnvUnix(version: '1.14.2', pkgs: [
        "github.com/magefile/mage",
        "github.com/elastic/go-licenser",
        "golang.org/x/tools/cmd/goimports",

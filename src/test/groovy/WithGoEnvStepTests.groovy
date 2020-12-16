@@ -20,128 +20,32 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithGoEnvStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withGoEnv.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
-    env.PATH = '/foo/bin'
-    helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, b -> b() })
+    script = loadScript('vars/withGoEnv.groovy')
   }
 
   @Test
-  void test() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('nodeOS', [], { "linux" })
-    def isOK = false
-    script.call(version: "1.12.2"){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.linux.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.linux.amd64"
-        && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-    }
+  void test_is_windows() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { return false })
+    script.call(){}
     printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
+    assertTrue(assertMethodCallOccurrences('withGoEnvWindows', 1))
+    assertTrue(assertMethodCallOccurrences('withGoEnvUnix', 0))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testGoVersion() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('nodeOS', [], { "linux" })
-    env.GO_VERSION = "1.12.2"
-    def isOK = false
-    script.call(){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.linux.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.linux.amd64"
-        && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-    }
+  void test_is_linux() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { return true })
+    script.call(){}
     printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
+    assertTrue(assertMethodCallOccurrences('withGoEnvWindows', 0))
+    assertTrue(assertMethodCallOccurrences('withGoEnvUnix', 1))
     assertJobStatusSuccess()
   }
-
-  @Test
-  void testOS() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('nodeOS', [], { "HAL9000" })
-    env.GO_VERSION = "1.12.2"
-    def isOK = false
-    script.call(){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.HAL9000.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.HAL9000.amd64"
-        && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
-    assertJobStatusSuccess()
-  }
-
-@Test
-void testOSArg() throws Exception {
-  def script = loadScript(scriptName)
-  env.GO_VERSION = "1.12.2"
-  def isOK = false
-
-  script.call(os: 'custom-os'){
-    if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.custom-os.amd64/bin:/foo/bin"
-      && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.custom-os.amd64"
-      && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-  }
-  printCallStack()
-  assertTrue(isOK)
-  assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
-  assertJobStatusSuccess()
-}
-
-  @Test
-  void testPkgs() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('nodeOS', [], { "linux" })
-    def isOK = false
-    script.call(version: "1.12.2", pkgs: [ "P1", "P2" ]){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.linux.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.linux.amd64"
-        && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P1'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P2'))
-    assertJobStatusSuccess()
-  }
-
-
-  @Test
-  void testDefaultGoVersion() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('nodeOS', [], { "linux" })
-    def isOK = false
-    script.call(){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.14.2.linux.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.14.2.linux.amd64"
-        && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.14.2'))
-    assertJobStatusSuccess()
-  }
-
 }

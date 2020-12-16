@@ -458,6 +458,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
+    helper.registerAllowedMethod('is32', {
+      def script = loadScript('vars/is32.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('is32arm', {
       def script = loadScript('vars/is32arm.groovy')
       return script.call()
@@ -513,11 +517,17 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/withGoEnv.groovy')
       return script.call(m, c)
     })
-    helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
+    })
+    helper.registerAllowedMethod('withGoEnvWindows', [Map.class, Closure.class], { m, c ->
+      return true
+    })
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
       def script = loadScript('vars/withMageEnv.groovy')
       return script.call(c)
