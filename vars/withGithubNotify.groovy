@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Wrap the GitHub notify check step
+  Wrap the GitHub notify commit status or check step
 
   withGithubNotify(context: 'checkName', description: 'Execute something') {
     // block
@@ -26,36 +26,18 @@
     // block
   }
 */
-def call(Map params = [:], Closure body) {
-  def context = params.context
-  def description = params.containsKey('description') ? params.description : context
-  def redirect = params.tab ?: 'pipeline'
-  def isBo = params.get('isBlueOcean', false)
-
-  if (!context) {
-    error 'withGithubNotify: Missing arguments'
-  }
-
-  if (!redirect.startsWith('http')) {
-    if (isBo) {
-      redirect = getBlueoceanTabURL(redirect)
-    } else {
-      redirect = getTraditionalPageURL(redirect)
+def call(Map args = [:], Closure body) {
+  if (env.GITHUB_CHECK?.equals('true')) {
+    withGithubCheck(args) {
+      withAPM(){
+        body()
+      }
+    }
+  } else {
+    withGithubStatus(args) {
+      withAPM(){
+        body()
+      }
     }
   }
-
-  try {
-    notify(context, "${description} ...", 'PENDING', redirect)
-    withAPM(){
-      body()
-    }
-    notify(context, "${description} passed", 'SUCCESS', redirect)
-  } catch (err) {
-    notify(context, "${description} failed", 'FAILURE', redirect)
-    throw err
-  }
-}
-
-def notify(String context, String description, String status, String redirect) {
-  githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
 }

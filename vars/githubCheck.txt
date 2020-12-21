@@ -1,0 +1,17 @@
+Notify the GitHub check step
+
+```
+githubCheck(name: 'checkName', description: 'Execute something')
+```
+
+* name: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* body: 
+* secret: 
+* org: 
+* repository: 
+* commitId: 
+* status: 
+
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)

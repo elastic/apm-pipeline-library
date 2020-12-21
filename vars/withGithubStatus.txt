@@ -1,0 +1,22 @@
+Wrap the GitHub status check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubStatus(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubStatus(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubStatus(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub status check context. (Mandatory).
+* description: Description of the GitHub status check. If unset then it will use the description.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
+
+[Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
