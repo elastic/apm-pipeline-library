@@ -485,7 +485,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/nodeArch.groovy')
       return script.call()
     })
-    helper.registerAllowedMethod('githubCheck', [Map.class], null)
+    helper.registerAllowedMethod('githubCheck', [Map.class], { m ->
+      if(m.name.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)

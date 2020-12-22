@@ -28,7 +28,7 @@
 
 */
 def call(Map args = [:], Closure body) {
-  def context = args.containsKey('context') ? args.context : error('withGithubCheck: Missing arguments')
+  def context = args.containsKey('context') ? args.context : error('withGithubCheck: missing context argument')
   def description = args.get('description', context)
   def secret = args.get('secret', 'secret/observability-team/ci/github-app-token')
   def org = args.get('org', env.ORG_NAME)
@@ -55,7 +55,9 @@ def call(Map args = [:], Closure body) {
   ]
   try {
     githubCheck(parameters + [status: 'neutral'])
-    body()
+    withAPM(){
+      body()
+    }
     githubCheck(parameters + [status: 'success'])
   } catch (err) {
     githubCheck(parameters + [status: 'failure'])

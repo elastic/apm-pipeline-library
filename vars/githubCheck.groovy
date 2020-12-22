@@ -32,7 +32,7 @@ import static io.jsonwebtoken.SignatureAlgorithm.RS256
 
 */
 def call(Map args = [:]) {
-  def name = args.containsKey('name') ? args.name : error('githubCheck: Missing arguments')
+  def name = args.containsKey('name') ? args.name : error('githubCheck: missing name argument')
   def description = args.get('description', name)
   def body = args.get('body', '')
   def secret = args.get('secret', 'secret/observability-team/ci/github-app-token')
