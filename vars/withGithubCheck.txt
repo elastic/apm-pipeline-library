@@ -1,4 +1,4 @@
-Wrap the GitHub status check step
+Wrap the GitHub status check step by using the [githubCheck](#githubCheck) step.
 If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
 
 ```
@@ -17,10 +17,9 @@ withGithubCheck(context: 'Release', tab: 'artifacts') {
 
 * context: Name of the GitHub check context. (Mandatory).
 * description: Description of the GitHub check. If unset then it will use the context.
-* secret: 
-* org: 
-* repository: 
-* commitId:  
-* redirect: 
-
-[Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
+* secret: vault secret used to interact with the GitHub App, it should have the `privateKeyContent`, `installationId` and `appId` fields. Default: 'secret/observability-team/ci/github-app-token'
+* org: What's the GitHub organisation. Default `env.ORG_NAME`
+* repository: What's the GitHub repository. Default `env.REPO_NAME`
+* commitId: What's the sha commit. Default `env.GIT_BASE_COMMIT`
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.

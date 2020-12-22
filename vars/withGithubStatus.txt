@@ -17,6 +17,7 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 
 * context: Name of the GitHub status check context. (Mandatory).
 * description: Description of the GitHub status check. If unset then it will use the description.
-* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
