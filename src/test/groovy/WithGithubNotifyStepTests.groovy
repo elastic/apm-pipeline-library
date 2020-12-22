@@ -26,7 +26,6 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    helper.registerAllowedMethod('withAPM', [Closure.class], { body -> body() })
     script = loadScript('vars/withGithubNotify.groovy')
   }
 

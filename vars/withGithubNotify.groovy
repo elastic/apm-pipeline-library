@@ -29,15 +29,11 @@
 def call(Map args = [:], Closure body) {
   if (env.GITHUB_CHECK?.equals('true')) {
     withGithubCheck(args) {
-      withAPM(){
-        body()
-      }
+      body()
     }
   } else {
     withGithubStatus(args) {
-      withAPM(){
-        body()
-      }
+      body()
     }
   }
 }
