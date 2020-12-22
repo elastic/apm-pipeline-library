@@ -18,138 +18,53 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
-import static org.junit.Assert.assertFalse
 
 class WithGithubNotifyStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withGithubNotify.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.BUILD_ID = '4'
-    env.BRANCH_NAME = 'PR-60'
-    env.JENKINS_URL = 'http://jenkins.example.com:8080'
-
     helper.registerAllowedMethod('withAPM', [Closure.class], { body -> body() })
+    script = loadScript('vars/withGithubNotify.groovy')
   }
 
   @Test
-  void testMissingArguments() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.call(){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGithubNotify: Missing arguments'))
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void testMissingDescriptionArgument() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.call(description: 'foo'){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGithubNotify: Missing arguments'))
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void testSuccess() throws Exception {
-    def script = loadScript(scriptName)
+  void test_default_behaviour() throws Exception {
     def isOK = false
-    script.call(context: 'foo', description: 'bar') {
+    script.call(){
       isOK = true
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
-    assertJobStatusSuccess()
+    assertTrue(assertMethodCallOccurrences('withGithubStatus', 1))
+    assertTrue(assertMethodCallOccurrences('withGithubCheck', 0))
   }
 
   @Test
-  void testSuccessWithAllArguments() throws Exception {
-    def script = loadScript(scriptName)
+  void test_with_GITHUB_CHECK_false() throws Exception {
+    env.GITHUB_CHECK = 'false'
     def isOK = false
-    script.call(context: 'foo', description: 'bar', tab: 'tests', isBlueOcean: true) {
+    script.call(){
       isOK = true
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
-    assertJobStatusSuccess()
+    assertTrue(assertMethodCallOccurrences('withGithubStatus', 1))
+    assertTrue(assertMethodCallOccurrences('withGithubCheck', 0))
   }
 
   @Test
-  void testFailure() throws Exception {
-    def script = loadScript(scriptName)
+  void test_with_GITHUB_CHECK_true() throws Exception {
+    env.GITHUB_CHECK = 'true'
     def isOK = false
-    try{
-      script.call(context: 'failed') {
-        isOK = true
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertFalse(isOK)
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void testSuccessWithIsBlueOcean() throws Exception {
-    def script = loadScript(scriptName)
-    def isOK = false
-    script.call(context: 'foo', description: 'bar', tab: 'tests', isBlueOcean: false) {
+    script.call(){
       isOK = true
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('githubNotify', "${env.BRANCH_NAME}/${env.BUILD_ID}"))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testSuccessWithURL() throws Exception {
-    def script = loadScript(scriptName)
-    def isOK = false
-    script.call(context: 'foo', description: 'bar', tab: 'https://www.elastic.co') {
-      isOK = true
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('githubNotify', 'targetUrl=https://www.elastic.co'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testSuccessWithWrongTab() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], {
-      updateBuildStatus('FAILURE')
-      throw new Exception('getTraditionalPageURL: Unsupported type')
-    })
-    def isOK = false
-    try {
-      script.call(context: 'foo', description: 'bar', tab: 'htt://www.elastic.co') {
-        isOK = true
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertFalse(isOK)
-    assertFalse(assertMethodCallContainsPattern('githubNotify', 'targetUrl=htt://www.elastic.co'))
-    assertJobStatusFailure()
+    assertTrue(assertMethodCallOccurrences('withGithubStatus', 0))
+    assertTrue(assertMethodCallOccurrences('withGithubCheck', 1))
   }
 }

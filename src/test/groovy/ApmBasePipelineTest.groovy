@@ -485,6 +485,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/nodeArch.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('githubCheck', [Map.class], null)
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
@@ -518,6 +519,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/withGoEnv.groovy')
       return script.call(m, c)
