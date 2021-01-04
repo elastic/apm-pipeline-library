@@ -25,7 +25,7 @@ def method(){
  dummy(text: 'hello world')
 
 */
-def call(Map params = [:]) {
-  def text = params.containsKey('text') ? params.text : 'sample text'
+def call(Map args = [:]) {
+  def text = args.containsKey('text') ? args.text : 'sample text'
   log(level: 'INFO', text: 'I am a dummy step - ' + text)
 }
