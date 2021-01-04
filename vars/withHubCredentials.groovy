@@ -16,31 +16,37 @@
 // under the License.
 
 /**
- Install Go and run some command in a pre-configured environment.
-
-  withGoEnv(version: '1.14.2'){
-    cmd(label: 'Go version', script: 'go version')
+  Configure the hub app to run the body closure.
+  
+  withHubCredentials(credentialsId: 'credential') {
+    // block
   }
-
-   withGoEnv(version: '1.14.2', pkgs: [
-       "github.com/magefile/mage",
-       "github.com/elastic/go-licenser",
-       "golang.org/x/tools/cmd/goimports",
-   ]){
-       cmd(label: 'Run mage',script: 'mage -version')
-   }
-
-}
 
 */
 def call(Map args = [:], Closure body) {
-  if (isUnix()) {
-    withGoEnvUnix(args) {
+  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+  if(!isUnix()){
+    error('withHubCredentials: windows is not supported yet.')
+  }
+
+  withCredentials([usernamePassword(credentialsId: "${args.credentialsId}",
+                                    passwordVariable: 'GITHUB_TOKEN',
+                                    usernameVariable: 'GITHUB_USER')]) {
+    try {
+      dir("${env.HOME}/.config") {
+        writeFile(file: 'hub', text: """
+github.com:
+- user: ${GITHUB_USER}
+  oauth_token: ${GITHUB_TOKEN}
+  protocol: https""")
+      }
       body()
-    }
-  } else {
-    withGoEnvWindows(args) {
-      body()
+    } catch(e) {
+      error "withHubCredentials: error ${e}"
+    } finally {
+      dir("${env.HOME}/.config") {
+        deleteDir()
+      }
     }
   }
 }

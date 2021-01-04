@@ -166,7 +166,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * host: The Jenkins server to connect to. Defaults to `localhost`.
 * job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
         CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
-       
+
             https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
 
         In this case, the corresponding list would be formed as:
@@ -174,6 +174,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
             ['apm-agent-java', 'apm-agent-java-mbp', 'master']
 
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+* ssl: Set to `false` to disable SSL. Default is `true`.
 
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
@@ -1059,6 +1060,13 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `CHANGE_ID`
         - `ORG_NAME`
         - `REPO_NAME`
+
+## googleStorageUpload
+As long as we got some concurrency issues
+
+```
+googleStorageUpload(args)
+```
 
 ## httpRequest
 Step to make HTTP request and get the result.
@@ -2246,7 +2254,8 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withGoEnv
- Install Go and run some command in a pre-configured environment.
+ Install Go and run some command in a pre-configured environment multiplatform. For such
+ it's recommended to use the `cmd` step.
 
 ```
   withGoEnv(version: '1.14.2'){
@@ -2268,6 +2277,68 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvUnix
+ Install Go and run some command in a pre-configured environment for Unix.
+
+```
+  withGoEnvUnix(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvUnix(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvWindows
+ Install Go and run some command in a pre-configured environment for Windows.
+
+```
+  withGoEnvWindows(version: '1.14.2'){
+    bat(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvWindows(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       bat(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.
+
+## withHubCredentials
+Configure the hub app to run the body closure.
+  
+```
+  withHubCredentials(credentialsId: 'some-credentials') {
+    // block
+  }
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
+_NOTE:_
+* Windows agents are not supported.
 
 ## withMageEnv
 

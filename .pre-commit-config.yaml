@@ -7,7 +7,7 @@ repos:
     -   id: check-executables-have-shebangs
         exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: ^target/
+        exclude: (resources/flaky-watcher.json$|^target/)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml

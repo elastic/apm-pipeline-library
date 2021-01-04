@@ -1,5 +1,29 @@
 [
   {
+    "displayDescription": "Error 'hudson.AbortException: script returned exit code 2'",
+    "displayName": "Error signal",
+    "durationInMillis": 14,
+    "id": "4473",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22495/runs/6/steps/4473/log"
+  },
+  {
+    "displayDescription": "Error 'hudson.AbortException: script returned exit code 2'",
+    "displayName": "Error signal",
+    "durationInMillis": 14,
+    "id": "4473",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2019-05-29T12:08:57.040+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22495/runs/6/steps/4473/log"
+  },
+  {
     "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
       "self": {

@@ -1,0 +1,22 @@
+ Install Go and run some command in a pre-configured environment for Windows.
+
+```
+  withGoEnvWindows(version: '1.14.2'){
+    bat(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvWindows(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       bat(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.

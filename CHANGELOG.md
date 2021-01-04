@@ -1,5 +1,38 @@
 # Changelog
 
+## v1.1.169 (16/12/2020)
+
+#### 🚀 Enhancements
+
+-  Support Windows for withGoEnv [#878](https://github.com/elastic/apm-pipeline-library/pull/878)
+
+## v1.1.168 (16/12/2020)
+
+#### 🚀 Enhancements
+
+-  Support withHubCredentials step [#871](https://github.com/elastic/apm-pipeline-library/pull/871)
+
+#### 🙈 No user affected
+
+-  [beats] flaky weekly email per branch [#876](https://github.com/elastic/apm-pipeline-library/pull/876)
+
+## v1.1.167 (08/12/2020)
+
+#### 🚀 Enhancements
+
+-  [build][data] Enable data related to PRs branches/targets [#875](https://github.com/elastic/apm-pipeline-library/pull/875)
+
+## v1.1.166 (04/12/2020)
+
+#### 🙈 No user affected
+
+-  [report] report one error signal if multiple [#870](https://github.com/elastic/apm-pipeline-library/pull/870)
+-  [daily] build docker images [#868](https://github.com/elastic/apm-pipeline-library/pull/868)
+
+#### ⚙️ CI
+
+-  [CI] runbld is now deprecated [#869](https://github.com/elastic/apm-pipeline-library/pull/869)
+
 ## v1.1.165 (30/11/2020)
 
 #### 🐛 Bug Fixes
