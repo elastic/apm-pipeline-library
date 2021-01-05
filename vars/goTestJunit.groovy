@@ -16,17 +16,17 @@
 // under the License.
 
 /**
- Run Goi unit test and generate a JUnit report.
+ Run Go unit tests and generate a JUnit report.
 
- goTestJunit(options: '-v ./...', output: 'build/junit-report.xml')
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
 
 */
 def call(Map args = [:]) {
   def options = args.containsKey('options') ? args.options : ''
   def output = args.containsKey('output') ? args.output : 'junit-report.xml'
-  log(level: 'INFO', text: 'Running Go test an generating JUnit output' + text)
+  log(level: 'INFO', text: 'Running Go test an generating JUnit output')
 
-  withGoEnv(pkgs: ["github.com/jstemmer/go-junit-report"]){
-    cmd(label: 'Running Go tests' , script: "gotestsum --junitfile ${output} -- -v ${options}")
+  withGoEnv(pkgs: ["gotest.tools/gotestsum"]){
+    cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
   }
 }
