@@ -48,7 +48,12 @@ pipeline {
     stage('Update Labels') {
       agent { label 'linux && immutable' }
       steps {
-        updateLabels()
+        git("https://github.com/elastic/observability-dev.git")
+        dir('.github/labels') {
+          withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
+            sh 'github-labels-sync.sh "${GITHUB_TOKEN}"'
+          }
+        }
       }
     }
   }
@@ -56,37 +61,5 @@ pipeline {
     cleanup {
       notifyBuildResult()
     }
-  }
-}
-
-def updateLabels() {
-  git("https://github.com/elastic/observability-dev.git")
-  def projects = readYaml(file: '.github/labels-repos.yml')['projects']
-  withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
-    projects?.each { project ->
-      updateLabels(project, '.github/labels.yml')
-      def projectName = project.replaceAll('.*/', '')
-      def specificLabelsFile = ".github/${projectName}-labels.yml"
-      if (fileExists(specificLabelsFile)) {
-        updateLabels(project, specificLabelsFile)
-      }
-    }
-  }
-}
-
-def updateLabels(project, file='.github/labels.yml') {
-  withEnv(["PROJECT=${project}", "LABELS_FILE=${file}"]){
-    sh '''
-      set +x
-      docker run --rm -t \
-      -v $(pwd):/src \
-      -w /src \
-      docker.elastic.co/observability-ci/github-label-sync \
-        --dry-run \
-        --access-token ${GITHUB_TOKEN} \
-        ${PROJECT} \
-        --labels ${LABELS_FILE} \
-        --allow-added-labels
-    '''
   }
 }
