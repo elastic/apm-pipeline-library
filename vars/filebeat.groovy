@@ -69,7 +69,7 @@ def stop(Map args = [:]){
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
   sh(label: 'Stop filebeat', script: """
-    docker exec ${dockerID} chmod -R ugo+rw /output
+    docker exec ${config.id} chmod -R ugo+rw /output
     docker kill ${config.id}
   """)
   archiveArtifacts(artifacts: "**/${config.output}*", allowEmptyArchive: true)

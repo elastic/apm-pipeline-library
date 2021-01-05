@@ -76,4 +76,24 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "${workdir}:/output"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testStop() throws Exception {
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
+    def config = "filebeat_container_config.json"
+    def id = "fooID"
+    def output = "foo.log"
+    def workdir = "filebeatTest"
+
+    def script = loadScript(scriptName)
+    script.stop(
+      workdir: workdir,
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${config}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker exec ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertJobStatusSuccess()
+  }
 }
