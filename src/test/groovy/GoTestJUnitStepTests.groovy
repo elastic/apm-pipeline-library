@@ -38,16 +38,18 @@ class GoTestJUnitStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'gotestsum --format testname --junitfile junit-report.xml --'))
+    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=null'))
     assertJobStatusSuccess()
   }
 
   @Test
   void testArguments() throws Exception {
     def script = loadScript(scriptName)
-    script.call(options: '-foo -bar', output: 'foo.xml')
+    script.call(options: '-foo -bar', output: 'foo.xml', version: 'fooGo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-- -foo -bar'))
     assertTrue(assertMethodCallContainsPattern('sh', '--junitfile foo.xml'))
+    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=fooGo'))
     assertJobStatusSuccess()
   }
 }

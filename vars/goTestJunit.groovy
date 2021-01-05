@@ -24,9 +24,11 @@
 def call(Map args = [:]) {
   def options = args.containsKey('options') ? args.options : ''
   def output = args.containsKey('output') ? args.output : 'junit-report.xml'
+  def version = args.containsKey('version') ? args.version : null
+
   log(level: 'INFO', text: 'Running Go test an generating JUnit output')
 
-  withGoEnv(pkgs: ["gotest.tools/gotestsum"]){
+  withGoEnv(version: version, pkgs: ["gotest.tools/gotestsum"]){
     cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
   }
 }
