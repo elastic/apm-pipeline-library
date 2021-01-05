@@ -26,6 +26,7 @@ class WithGoEnvStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.GOPATH = "${env.WORKSPACE}"
     script = loadScript('vars/withGoEnv.groovy')
   }
 
