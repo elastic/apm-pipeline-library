@@ -68,6 +68,8 @@ def stop(Map args = [:]){
   def config = readJSON(file: "${workdir}/filebeat_container_config.json")
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
+  // we need to change the permission because the group others never will have permissions
+  // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
     docker exec ${config.id} chmod -R ugo+rw /output
     docker kill ${config.id}
