@@ -19,7 +19,6 @@
  Run Go unit tests and generate a JUnit report.
 
  goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
-
 */
 def call(Map args = [:]) {
   def options = args.containsKey('options') ? args.options : ''
