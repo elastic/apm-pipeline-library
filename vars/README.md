@@ -377,6 +377,12 @@ Print a text on color on a xterm.
   filebeat.stop()
 ```
 
+```
+  filebeat(){
+    ....
+  }
+```
+
 * *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
 * *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
 * *output:* log file to save all Docker containers logs (docker_logs.log).
@@ -405,6 +411,21 @@ pipeline {
           script {
             filebeat.stop(workdir: "${env.WORKSPACE}")
           }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}"){
+          sh('docker run busybox  ls')
         }
       }
     }

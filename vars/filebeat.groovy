@@ -26,6 +26,15 @@ def call(Map args = [:]) {
   start(args)
 }
 
+def call(Map args = [:], Closure body) {
+  try{
+    start(args)
+    body()
+  } finally {
+    stop(args)
+  }
+}
+
 def start(Map args = [:]) {
   def output = args.containsKey('output') ? args.output : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"

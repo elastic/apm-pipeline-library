@@ -43,6 +43,76 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testClosure() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
+    def stepConfig = "filebeat_container_config.json"
+    def id = "fooID"
+    def output = "foo.log"
+    def workdir = "filebeatTest"
+    def config = "bar.xml"
+    def image = "foo:latest"
+    def script = loadScript(scriptName)
+
+    script.call(
+      output: output,
+      config: config,
+      image: image,
+      workdir: workdir,
+      ){
+      print("OK")
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${config}"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
+
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker exec ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testClosureError() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
+    def stepConfig = "filebeat_container_config.json"
+    def id = "fooID"
+    def output = "foo.log"
+    def workdir = "filebeatTest"
+    def config = "bar.xml"
+    def image = "foo:latest"
+    def script = loadScript(scriptName)
+
+    try {
+      script.call(
+        output: output,
+        config: config,
+        image: image,
+        workdir: workdir,
+        ){
+        throw new Exception('Ooops!!')
+      }
+    } catch(e){
+      //NOOP
+    } finally {
+      printCallStack()
+      assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
+      assertTrue(assertMethodCallContainsPattern('writeFile', "file=${config}"))
+      assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
+      assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
+
+      assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
+      assertTrue(assertMethodCallContainsPattern('sh', "docker exec ${id}"))
+      assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+      assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    }
+  }
+
+  @Test
   void testConfigurationExists() throws Exception {
     def script = loadScript(scriptName)
     script.call()
