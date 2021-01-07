@@ -34,13 +34,14 @@
 
 */
 def call(Map args = [:], Closure body) {
-  checkGoPath()
   if (isUnix()) {
     withGoEnvUnix(args) {
+      checkGoPath()
       body()
     }
   } else {
     withGoEnvWindows(args) {
+      checkGoPath()
       body()
     }
   }
