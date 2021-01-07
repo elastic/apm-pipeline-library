@@ -273,6 +273,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       throw new Exception(s)
     })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
