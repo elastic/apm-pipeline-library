@@ -1061,6 +1061,38 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `ORG_NAME`
         - `REPO_NAME`
 
+## goTestJUnit
+ Run Go unit tests and generate a JUnit report.
+
+```
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
+```
+
+* *options:* Arguments used for `go test` see [gotestsum](https://pkg.go.dev/gotest.tools/gotestsum)
+* *output:* file path and name for the JUnit report output.
+
+```
+pipeline {
+  agent { label 'ubuntu' }
+
+  stages {
+    stage('GoTestJUnit') {
+      steps {
+        dir('src'){
+          git 'https://github.com/elastic/ecs-logging-go-zap.git'
+          goTestJUnit(options: '-v ./...', output: 'junit-report.xml')
+        }
+      }
+      post{
+        cleanup{
+          junit(testResults: 'src/junit-report.xml', allowEmptyResults: true)
+        }
+      }
+    }
+  }
+}
+```
+
 ## googleStorageUpload
 As long as we got some concurrency issues
 
