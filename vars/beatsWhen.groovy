@@ -37,6 +37,7 @@ Boolean call(Map args = [:]){
     if (whenChangeset(args)) { ret = true }
     if (whenComments(args)) { ret = true }
     if (whenLabels(args)) { ret = true }
+    if (whenNotChangeset(args)) { ret = true }
     if (whenParameters(args)) { ret = true }
     if (whenTags(args)) { ret = true }
   } else {
@@ -147,6 +148,16 @@ private Boolean whenLabels(Map args = [:]) {
     markdownReason(project: args.project, reason: "* ❕Label is `enabled` and does **NOT** match with the pattern `${args.content.get('labels').toString()}`.")
   } else {
     markdownReason(project: args.project, reason: '* ❕Label is `disabled`.')
+  }
+  return false
+}
+
+private Boolean whenNotChangeset(Map args = [:]) {
+  if (args.content?.get('not_changeset')) {
+    def arguments = args
+    arguments.content.changeset = args.content.get('not_changeset')
+    arguments.content.remove('changesetFunction')
+    return !whenChangeset(arguments)
   }
   return false
 }
