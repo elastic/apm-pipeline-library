@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.170 (07/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats] Support changeset exclusion [#889](https://github.com/elastic/apm-pipeline-library/pull/889)
+-  feat: filebeat pipeline step [#887](https://github.com/elastic/apm-pipeline-library/pull/887)
+-  feat: new goTestJunit step [#884](https://github.com/elastic/apm-pipeline-library/pull/884)
+
+#### 🙈 No user affected
+
+-  chore: rename argument [#885](https://github.com/elastic/apm-pipeline-library/pull/885)
+-  Use maven 4 alpha [#879](https://github.com/elastic/apm-pipeline-library/pull/879)
+
+#### ⚙️ CI
+
+-  [opbeans-php] Add docker build and cache [#888](https://github.com/elastic/apm-pipeline-library/pull/888)
+
 ## v1.1.169 (16/12/2020)
 
 #### 🚀 Enhancements
