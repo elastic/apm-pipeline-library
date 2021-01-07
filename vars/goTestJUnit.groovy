@@ -16,39 +16,18 @@
 // under the License.
 
 /**
- Install Go and run some command in a pre-configured environment.
+ Run Go unit tests and generate a JUnit report.
 
-  withGoEnv(version: '1.14.2'){
-    cmd(label: 'Go version', script: 'go version')
-  }
-
-   withGoEnv(version: '1.14.2', pkgs: [
-       "github.com/magefile/mage",
-       "github.com/elastic/go-licenser",
-       "golang.org/x/tools/cmd/goimports",
-   ]){
-       cmd(label: 'Run mage',script: 'mage -version')
-   }
-
-}
-
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
 */
-def call(Map args = [:], Closure body) {
-  if (isUnix()) {
-    withGoEnvUnix(args) {
-      checkGoPath()
-      body()
-    }
-  } else {
-    withGoEnvWindows(args) {
-      checkGoPath()
-      body()
-    }
-  }
-}
+def call(Map args = [:]) {
+  def options = args.containsKey('options') ? args.options : ''
+  def output = args.containsKey('output') ? args.output : 'junit-report.xml'
+  def version = args.containsKey('version') ? args.version : null
 
-def checkGoPath(){
-  if(fileExists(file: "${env.GOPATH}/go.mod")){
-    log(level: 'WARN', text: "${env.GOPATH}/go.mod file exists, go.mod cannot be in the GOPATH, try to checkout your code into a folder.")
+  log(level: 'INFO', text: 'Running Go test an generating JUnit output')
+
+  withGoEnv(version: version, pkgs: ["gotest.tools/gotestsum"]){
+    cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
   }
 }

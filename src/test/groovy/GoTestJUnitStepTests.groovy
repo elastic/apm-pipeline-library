@@ -19,34 +19,37 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithGoEnvStepTests extends ApmBasePipelineTest {
-  def script
+class GoTestJUnitStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/goTestJUnit.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.GOPATH = "${env.WORKSPACE}"
-    script = loadScript('vars/withGoEnv.groovy')
+    helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
+      c.call()
+    })
   }
 
   @Test
-  void test_is_windows() throws Exception {
-    helper.registerAllowedMethod('isUnix', [], { return false })
-    script.call(){}
+  void test() throws Exception {
+    def script = loadScript(scriptName)
+    script.call()
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('withGoEnvWindows', 1))
-    assertTrue(assertMethodCallOccurrences('withGoEnvUnix', 0))
+    assertTrue(assertMethodCallContainsPattern('sh', 'gotestsum --format testname --junitfile junit-report.xml --'))
+    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=null'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_is_linux() throws Exception {
-    helper.registerAllowedMethod('isUnix', [], { return true })
-    script.call(){}
+  void testArguments() throws Exception {
+    def script = loadScript(scriptName)
+    script.call(options: '-foo -bar', output: 'foo.xml', version: 'fooGo')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('withGoEnvWindows', 0))
-    assertTrue(assertMethodCallOccurrences('withGoEnvUnix', 1))
+    assertTrue(assertMethodCallContainsPattern('sh', '-- -foo -bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--junitfile foo.xml'))
+    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=fooGo'))
     assertJobStatusSuccess()
   }
 }

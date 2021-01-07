@@ -13,6 +13,7 @@ source /usr/local/bin/bash_standard_lib.sh
 # docker.elastic.co/observability-ci/it_dotnet
 # docker.elastic.co/observability-ci/it_opbeans-rum
 # docker.elastic.co/observability-ci/it_opbeans-ruby
+# docker.elastic.co/observability-ci/it_opbeans-php
 # docker.elastic.co/observability-ci/it_opbeans-python
 # docker.elastic.co/observability-ci/it_opbeans-node
 # docker.elastic.co/observability-ci/it_opbeans-java
