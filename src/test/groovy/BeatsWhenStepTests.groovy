@@ -302,6 +302,65 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_whenNotChangeset_and_no_data() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenNotChangeset()
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenNotChangeset_and_content_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci']])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenNotChangeset_and_content_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'Jenkinsfile'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenNotChangeset(content: [ not_changeset: ['^Jenkinsfile']])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenNotChangeset_content_and_macro() throws Exception {
+    def script = loadScript(scriptName)
+    def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@oss']],
+                                      changeset: [ oss: [ '^oss'] ])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_whenNotChangeset_content_and_macro_with_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'oss'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@oss']],
+                                      changeset: [ oss: [ '^oss'] ])
+    printCallStack()
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_whenNotChangeset_content_and_macro_without_match() throws Exception {
+    def script = loadScript(scriptName)
+    def changeset = 'oss'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@osss']],
+                                      changeset: [ oss: [ '^oss'] ])
+    printCallStack()
+    assertTrue(ret)
+  }
+
+  @Test
   void test_whenParameters_and_no_params() throws Exception {
     def script = loadScript(scriptName)
     def ret = script.whenParameters()
