@@ -7,7 +7,7 @@ repos:
     -   id: check-executables-have-shebangs
         exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: ^target/
+        exclude: (resources/flaky-watcher.json$|^target/)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml
@@ -28,7 +28,7 @@ repos:
         exclude: (^mvnw$|^target/)
 
 -   repo: https://github.com/adrienverge/yamllint.git
-    rev: master
+    rev: v1.25.0
     hooks:
     -   id: yamllint
         name: "Yaml: lint"

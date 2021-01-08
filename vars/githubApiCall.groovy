@@ -35,6 +35,7 @@ def call(Map params = [:]){
   def headers = ["Authorization": "token ${token}",
                  "User-Agent": "Elastic-Jenkins-APM"]
   def dryRun = params?.data
+  def noCache = params?.get('noCache', false)
 
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -43,7 +44,7 @@ def call(Map params = [:]){
     def json = "{}"
     try {
       def key = "${token}#${url}"
-      if(cache["${key}"] == null){
+      if(cache["${key}"] == null || noCache){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
         if(data) {
           log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to ${method}")

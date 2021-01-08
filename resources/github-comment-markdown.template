@@ -52,34 +52,40 @@
 <!-- TEST RESULTS IF ANY-->
 <% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
   ### Test errors [![${testsSummary?.failed}](https://img.shields.io/badge/${testsSummary?.failed}%20-red)](${jobUrl}/tests)
-  <details><summary>Expand to view the tests failures</summary>
-  <p>
-    <% testsErrors?.findAll{item -> item?.status == "FAILED"}.each{ test -> %>
-* **Name**: `${test?.name}`
-  * Age: ${test?.age}
-  * Duration: ${test?.duration}
-  * Error Details: ${test?.errorDetails}
+<details><summary>Expand to view the tests failures</summary><p>
+    ${(testsSummary?.failed > 10) ? '> Show only the first 10 test failures' : ''}
+    <% testsErrors?.findAll{item -> item?.status == "FAILED"}?.take(10)?.each { test -> %>
+##### `${test?.name}`
+<% errorDetails = (test?.errorDetails && !test?.errorDetails?.equals('null')) ? "<details><summary>Expand to view the error details</summary><p>\n\n```\n ${test?.errorDetails} \n ```\n</p></details>" : '<li>no error details</li>'%>
+<% errorStackTrace = (test?.errorStackTrace && !test?.errorStackTrace?.equals('null')) ? "<details><summary>Expand to view the stacktrace</summary><p>\n\n```\n ${test?.errorStackTrace} \n ```\n</p></details>" : '<li>no stacktrace</li>'%>
+<ul>
+${errorDetails}
+${errorStackTrace}
+</ul>
     <%}%>
-  </p>
-  </details>
+</p></details>
 <%}%>
 
-<!-- STEPS ERRORS IF ANY-->
+<!-- STEPS ERRORS IF ANY -->
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
+<% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
+<% stepsErrors = stepsErrors?.findAll{ !it?.displayName?.contains('Error signal') } %>
+<% if (errorSignal) { stepsErrors = stepsErrors << errorSignal }%>
 <% if (stepsErrors?.size() != 0) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
-  <% stepsErrors.each{ c -> %>
-  * **Name**: `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
-    * Description: ${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription : ''}
-    <% if(c?.durationInMillis >= 0) {%>
-    * Duration: ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec
-    <%}%>
-    * Start Time: ${c?.startTime && c?.startTime != 'null' ? c?.startTime : ''}
-    <% if(c?.url && c?.url != 'null') {%>
-    * [log](${c?.url})
-    <%}%>
+
+  ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
+  <% stepsErrors?.takeRight(10)?.each{ c -> %>
+  <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "<li>Description: <code>${c?.displayDescription}</code></l1>" : ''%>
+  <% duration = (c?.durationInMillis >= 0 ) ? "Took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec" : ''%>
+  <% url = (c?.url && c?.url != 'null') ? ". View more details on <a href=\"${c?.url}/?start=0\">here</a>" : ''%>
+##### `${c?.displayName && c?.displayName != 'null' ? c?.displayName : ''}`
+<ul>
+<li>${duration} ${url}</li>
+${description}
+</ul>
   <%}%>
   </p>
   </details>

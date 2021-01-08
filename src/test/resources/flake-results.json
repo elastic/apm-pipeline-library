@@ -123,6 +123,17 @@
             "test_name" : "MOCK_TEST_10",
             "timestamp" : "2020-06-05T08:19:46.427626"
           }
+        },
+        {
+          "_index" : "reporter-apm-agent-python-apm-agent-python-master",
+          "_type" : "_doc",
+          "_id" : "tnefg3IBP7Su_99Ykh8y",
+          "_score" : 1.0,
+          "_source" : {
+            "test_score" : 0.04,
+            "test_name" : "Test / windows-3.6-none / test_send - tests.transports.test_urllib3",
+            "timestamp" : "2020-06-05T08:19:46.427626"
+          }
         }
       ]
     }

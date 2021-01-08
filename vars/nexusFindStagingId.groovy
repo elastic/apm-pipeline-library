@@ -40,7 +40,7 @@ def call(Map params = [:]) {
   }
 
   def data = props?.data
-  def username = data?.user
+  def username = data?.username
   def password = data?.password
 
   def HttpURLConnection conn

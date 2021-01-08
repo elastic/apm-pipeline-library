@@ -62,10 +62,22 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     def result = true
     env.remove('CHANGE_TARGET')
+    env.remove('GIT_BASE_COMMIT')
     result = script.call(patterns: [ 'foo' ])
     printCallStack()
     assertFalse(result)
     assertTrue(assertMethodCallContainsPattern('echo', 'isGitRegionMatch: CHANGE_TARGET or GIT_PREVIOUS_COMMIT and GIT_BASE_COMMIT env variables are required to evaluate the changes.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_change_target_use_git_base_commit() throws Exception {
+    def script = loadScript(scriptName)
+    env.GIT_BASE_COMMIT = 'bar'
+    env.remove('CHANGE_TARGET')
+    script.call(patterns: [ 'foo' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
     assertJobStatusSuccess()
   }
 
@@ -301,6 +313,22 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     result = script.call(patterns: patterns)
     printCallStack()
     assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_branch_first_build() throws Exception {
+    env.remove('GIT_PREVIOUS_COMMIT')
+    env.remove('CHANGE_TARGET')
+    env.GIT_BASE_COMMIT = 'bar'
+    def script = loadScript(scriptName)
+    def changeset = 'file.txt'
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '^file.txt' ])
+    printCallStack()
+    assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('sh', 'bar...bar'))
     assertJobStatusSuccess()
   }
 }

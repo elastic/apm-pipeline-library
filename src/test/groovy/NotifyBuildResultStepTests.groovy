@@ -22,6 +22,7 @@ import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
@@ -38,6 +39,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
     })
+    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('ci-') })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
 
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
@@ -267,5 +269,95 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
     assertTrue(assertMethodCallContainsPattern('unstash', 'builder'))
+  }
+
+  @Test
+  void test_no_flakey_when_aborted() throws Exception {
+    // When aborted
+    binding.getVariable('currentBuild').result = "ABORTED"
+    binding.getVariable('currentBuild').currentResult = "ABORTED"
+
+    def script = loadScript(scriptName)
+    script.call(analyzeFlakey: true)
+    printCallStack()
+
+    // Then no flakey test analysis
+    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+  }
+
+  @Test
+  void test_flakey_when_unstable() throws Exception {
+    // When unstable
+    binding.getVariable('currentBuild').result = "UNSTABLE"
+    binding.getVariable('currentBuild').currentResult = "UNSTABLE"
+
+    def script = loadScript(scriptName)
+    script.call(analyzeFlakey: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+  }
+
+  @Test
+  @Ignore("Class does not have access to the built-in steps. Error: No signature of method: co.elastic.NotificationManager.catchError()")	
+  void test_flakey_and_prcomment_with_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: true, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+    // with pr comment
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    // with github pr comment
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_flakey_and_prcomment_without_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: false, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
+    printCallStack()
+
+    // Then flakey test analysis
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
+    // with pr comment
+    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    // with github pr comment
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_no_flakey_and_no_prcomment_with_aggregation() throws Exception {
+    // When PR
+    helper.registerAllowedMethod('isPR', { return true })
+
+    def script = loadScript(scriptName)
+    script.call(aggregateComments: true, analyzeFlakey: false, notifyPRComment: false)
+    printCallStack()
+
+    // Then no github pr comment
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_bulk_update() throws Exception {
+    // When PR and there is a builk file
+    helper.registerAllowedMethod('isPR', { return true })
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
+
+    def script = loadScript(scriptName)
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    printCallStack()
+
+    // Then sendDataToElasticsearch happens three times
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
   }
 }

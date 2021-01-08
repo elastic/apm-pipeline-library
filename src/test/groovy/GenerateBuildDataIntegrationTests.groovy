@@ -24,6 +24,7 @@ import org.junit.Test
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
@@ -90,6 +91,7 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertTrue(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertFalse(obj.get("env").isEmpty())
   }
 
   @Test
@@ -112,6 +114,34 @@ class GenerateBuildDataIntegrationTests {
     assertFalse(obj.get("artifacts").isEmpty())
     assertFalse(obj.get("test").isEmpty())
     assertFalse(obj.get("build").isEmpty())
+    assertNotNull(obj.get("build").causes.shortDescription)
+    assertFalse(obj.get("env").isEmpty())
+
+    // Then metadata is removed
+    assertNull(obj.get("build").actions)
+    assertNull(obj.get("changeSet")[0].author?._class)
+    assertNull(obj.get("changeSet")[0].author?._links)
+
+    // Then some duplicated entries don't exist anymore
+    assertNull(obj.get("build.branch"))
+    assertNull(obj.get("build.changeSet"))
+    assertNull(obj.get("build.pullRequest"))
+
+    // Then a flatten test in the bulk file
+    new File("target/${targetFolder}/ci-test-report-bulk.json").eachLine { line ->
+      obj = JSONSerializer.toJSON(line)
+      assertNotNull("There are some entries in the bulk file.", obj)
+      if (obj?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.test.age)
+      }
+    }
+
+    // Then a build report without test
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/ci-build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertNull(obj.get("test"))
   }
 
   @Test
@@ -183,6 +213,24 @@ class GenerateBuildDataIntegrationTests {
     assertTrue(info.isEmpty())
   }
 
+  @Test
+  public void multiTestFailuresBuild() {
+    String targetFolder = "multiTestFailures"
+    String jobUrl = this.URL + "/multiTestFailures/"
+    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    printStdout(process)
+    assertEquals("Process did finish successfully", 0, process.waitFor())
+
+    // Then a flatten test in the bulk file
+    new File("target/${targetFolder}/ci-test-report-bulk.json").eachLine { line ->
+      def obj = JSONSerializer.toJSON(line)
+      assertNotNull("There are some entries in the bulk file.", obj)
+      if (obj?.test?.age) {
+        assertEquals("Only one test entry that matches 1 age.", 1, obj.test.age)
+      }
+    }
+  }
+
   Process runCommand(String targetFolder, String jobUrl, String buildUrl, String status, String runTime) {
     //Build command
     List<String> commands = new ArrayList<String>()
@@ -196,6 +244,27 @@ class GenerateBuildDataIntegrationTests {
     Map<String, String> env = pb.environment()
     env.put('JENKINS_URL', 'http://localhost:18081/')
     env.put('PIPELINE_LOG_LEVEL', 'INFO')
+    env.put('BRANCH_NAME', 'main')
+    env.put('BUILD_DISPLAY_NAME', '#1')
+    env.put('BUILD_ID', '1')
+    env.put('BUILD_NUMBER', '1')
+    env.put('BUILD_TAG', 'jenkins-project-main-1')
+    env.put('BUILD_URL', 'http://localhost:18081/job/project/job/main/1/')
+    env.put('CHANGE_AUTHOR', 'v1v')
+    env.put('CHANGE_BRANCH', 'main')
+    env.put('CHANGE_FORK', 'v1v/project')
+    env.put('CHANGE_ID', '1')
+    env.put('CHANGE_TARGET', 'my-target')
+    env.put('CHANGE_URL', 'https://github.com/foo/project/issues/1')
+    env.put('GIT_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('GIT_PREVIOUS_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('GIT_PREVIOUS_SUCCESSFUL_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
+    env.put('JOB_BASE_NAME', 'main')
+    env.put('JOB_DISPLAY_URL', 'http://localhost:18081/job/project/job/main/display/redirect')
+    env.put('JOB_NAME', 'project/main')
+    env.put('JOB_URL', 'http://localhost:18081/job/project/job/main/')
+    env.put('ORG_NAME', 'acme')
+    env.put('REPO_NAME', 'project')
     File location = new File("target/${targetFolder}")
     location.mkdirs()
     pb.directory(location)

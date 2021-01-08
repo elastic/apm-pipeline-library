@@ -222,6 +222,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('archiveArtifacts', [String.class], null)
     helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
@@ -272,6 +273,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       throw new Exception(s)
     })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -298,6 +300,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('powershell', [Map.class], null)
     helper.registerAllowedMethod('powershell', [String.class], null)
+    helper.registerAllowedMethod('pwd', [Map.class], { 'folder' })
+    helper.registerAllowedMethod('readFile', [String.class], { '' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
@@ -395,6 +399,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
       getVaultSecret(s)
     })
+    helper.registerAllowedMethod('gh', [Map.class], { m ->
+      def script = loadScript('vars/gh.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('gitCmd', [Map.class], null)
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
@@ -403,6 +411,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
     helper.registerAllowedMethod('githubEnv', {
       def script = loadScript('vars/githubEnv.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('githubIssues', [Map.class], {
+      def script = loadScript('vars/githubIssues.groovy')
       return script.call()
     })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
@@ -447,6 +459,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
+    helper.registerAllowedMethod('is32', {
+      def script = loadScript('vars/is32.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('is32arm', {
       def script = loadScript('vars/is32arm.groovy')
       return script.call()
@@ -464,6 +480,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
     helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
     helper.registerAllowedMethod('nodeArch', [], {
       def script = loadScript('vars/nodeArch.groovy')
@@ -501,11 +518,17 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/withGoEnv.groovy')
       return script.call(m, c)
     })
-    helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
+    })
+    helper.registerAllowedMethod('withGoEnvWindows', [Map.class, Closure.class], { m, c ->
+      return true
+    })
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
       def script = loadScript('vars/withMageEnv.groovy')
       return script.call(c)
@@ -572,5 +595,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     return helper.callStack.findAll { call ->
       call.methodName == methodName
     }.size() == compare
+  }
+
+  def assertMethodCallPatternOccurrences(String methodName, String pattern, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.any { call ->
+      (callArgsToString(call) =~ pattern).count  == compare
+    }
   }
 }

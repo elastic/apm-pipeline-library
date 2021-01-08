@@ -30,7 +30,10 @@ STATUS=0
 ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
+CI_TEST_BULK_REPORT="ci-test-report-bulk.json"
+CI_BUILD_REPORT="ci-build-report.json"
 CHANGESET_INFO="changeSet-info.json"
+ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
 PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
@@ -123,11 +126,20 @@ function fetchAndPrepareBuildInfo() {
 
     normaliseBuild "${file}"
 
-    echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareBuildReport() {
-    fetchAndPrepare "$1" "$2" "$3" "$4" "${BUILD_REPORT}"
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+
+    fetchAndDefault "${file}" "${url}" "${default}"
+    normaliseArtifacts "${file}"
+    normaliseBuildReport "${file}"
+    normaliseChangeset "${file}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
 function fetchAndPrepareTestsInfo() {
@@ -145,7 +157,7 @@ function fetchAndPrepareTestsInfo() {
     if jq -e 'select(.code==404)' "${file}" > /dev/null 2>&1 ; then
         echo "${default}" > "${file}"
     else
-        normaliseTests "${file}"
+        normaliseTestsWithoutStacktrace "${file}"
     fi
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
@@ -160,6 +172,7 @@ function fetchAndPrepareTestSummaryReport() {
 
     echo "INFO: fetchAndPrepareTestSummaryReport (see ${file})"
     fetch "$file" "$url"
+    normaliseTestsSummary "$file"
 
     ## BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
     if [ ! -e "${file}" ] ; then
@@ -209,6 +222,9 @@ function normaliseArtifacts() {
     file=$1
     jqEdit 'map(del(._links))' "${file}"
     jqEdit 'map(del(._class))' "${file}"
+    jqEdit 'map(del(.downloadable))' "${file}"
+    jqEdit 'map(del(.id))' "${file}"
+    jqEdit 'map(del(.url))' "${file}"
 }
 
 function normaliseBuild() {
@@ -218,6 +234,41 @@ function normaliseBuild() {
     # shellcheck disable=SC2016
     jqAppend "${DURATION}" '.durationInMillis = ($a|tonumber)' "${file}"
     jqEdit '.state = "FINISHED"' "${file}"
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
+    jqEdit 'del(.actions)' "${file}"
+    ## This is already duplicated, the responsible is the job
+    jqEdit 'del(.branch)' "${file}"
+    ## This is already duplicated, the responsible is the changeset
+    jqEdit 'del(.changeSet)' "${file}"
+    ## This is already duplicated, the responsible is the job
+    jqEdit 'del(.pullRequest)' "${file}"
+    jqEdit 'del(.causes[]._class)' "${file}"
+    jqEdit 'del(.replayable)' "${file}"
+    ## Lets flatten the causes by only getting the first entry.
+    ## There is two causes by default in the way CI builds run at the moment.
+    jqEdit '.causes = (.causes[0])' "${file}"
+
+    ## Transform relative path to absolute URL
+    artifactsZipFile=$(jq -r '.artifactsZipFile' "${file}")
+    # shellcheck disable=SC2016
+    jqAppend "${JENKINS_URL}${artifactsZipFile}" '.artifactsZipFile = $a' "${file}"
+}
+
+function normaliseBuildReport() {
+    file=$1
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
+    jqEdit 'del(.actions)' "${file}"
+    jqEdit 'del(.latestRun)' "${file}"
+    jqEdit 'del(.permissions)' "${file}"
+    jqEdit 'del(.parameters)' "${file}"
+}
+
+function normaliseChangeset() {
+    file=$1
+    jqEdit 'del(.[].author._class)' "${file}"
+    jqEdit 'del(.[].author._links)' "${file}"
 }
 
 function normaliseTests() {
@@ -226,9 +277,20 @@ function normaliseTests() {
     jqEdit 'map(del(._class))' "${file}"
     jqEdit 'map(del(.state))' "${file}"
     jqEdit 'map(del(.hasStdLog))' "${file}"
+}
+
+function normaliseTestsWithoutStacktrace() {
+    file=$1
+    normaliseTests "${file}"
     ## This will help to tidy up the file size quite a lot.
-    ## It might be useful to eexport it but let's go step by step
+    ## It might be useful to export it but lets go step by step
     jqEdit 'map(del(.errorStackTrace))' "${file}"
+}
+
+function normaliseTestsSummary() {
+    file=$1
+    jqEdit 'del(._links)' "${file}"
+    jqEdit 'del(._class)' "${file}"
 }
 
 function normaliseSteps() {
@@ -310,6 +372,41 @@ function jqAppend() {
     jq --arg a "${argument}" "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
 }
 
+function prepareEnvInfo() {
+    file=$1
+    key=$2
+
+    {
+        echo "{"
+        echo "  \"BRANCH_NAME\": \"${BRANCH_NAME}\","
+        echo "  \"BUILD_DISPLAY_NAME\": \"${BUILD_DISPLAY_NAME}\","
+        echo "  \"BUILD_ID\": \"${BUILD_ID}\","
+        echo "  \"BUILD_NUMBER\": \"${BUILD_NUMBER}\","
+        echo "  \"BUILD_TAG\": \"${BUILD_TAG}\","
+        echo "  \"BUILD_URL\": \"${BUILD_URL}\","
+        echo "  \"CHANGE_AUTHOR\": \"${CHANGE_AUTHOR}\","
+        echo "  \"CHANGE_BRANCH\": \"${CHANGE_BRANCH}\","
+        echo "  \"CHANGE_FORK\": \"${CHANGE_FORK}\","
+        echo "  \"CHANGE_ID\": \"${CHANGE_ID}\","
+        echo "  \"CHANGE_TARGET\": \"${CHANGE_TARGET}\","
+        echo "  \"CHANGE_URL\": \"${CHANGE_URL}\","
+        echo "  \"GIT_BASE_COMMIT\": \"${GIT_BASE_COMMIT}\","
+        echo "  \"GIT_COMMIT\": \"${GIT_COMMIT}\","
+        echo "  \"GIT_PREVIOUS_COMMIT\": \"${GIT_PREVIOUS_COMMIT}\","
+        echo "  \"GIT_PREVIOUS_SUCCESSFUL_COMMIT\": \"${GIT_PREVIOUS_SUCCESSFUL_COMMIT}\","
+        echo "  \"JOB_BASE_NAME\": \"${JOB_BASE_NAME}\","
+        echo "  \"JOB_DISPLAY_URL\": \"${JOB_DISPLAY_URL}\","
+        echo "  \"JOB_NAME\": \"${JOB_NAME}\","
+        echo "  \"JOB_URL\": \"${JOB_URL}\","
+        echo "  \"ORG_NAME\": \"${ORG_NAME}\","
+        echo "  \"REPO_NAME\": \"${REPO_NAME}\""
+        echo "}"
+    } > "${file}"
+
+    ## This is the last entry in the BUILD_REPORT therefore no , is required
+    echo "\"${key}\": $(cat "${file}")" >> "${BUILD_REPORT}"
+}
+
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
 fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/?limit=10000" "${DEFAULT_HASH}"
 fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
@@ -329,6 +426,25 @@ fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000"
 ### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
+### prepareEnvInfo should run the last one since it's the last field to be added
+prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
+
+## Create specific files to store the failed tests in individual
+## docs and overal build data. Excluded passed and skipped tests
+## since it requires some other strategy to bulk update instead
+## calling the entrypoint.
+### Create a bulk with the build data and tests
+### For each entry in the test map then create a flatten document
+N=0
+jq -c 'del( .test[] | select( .status != "FAILED" )) | .test = (.test[])' "${BUILD_REPORT}" |
+while read -r json ; do
+  N=$((N+1))
+  echo "{ \"index\":{} }" >> "${CI_TEST_BULK_REPORT}"
+  echo "${json}" >> "${CI_TEST_BULK_REPORT}"
+done
+
+### Create a document with the overall build data. (aka no tests)
+jq 'del(.test)' "${BUILD_REPORT}" > "${CI_BUILD_REPORT}"
 
 exit $STATUS

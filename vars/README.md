@@ -166,7 +166,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * host: The Jenkins server to connect to. Defaults to `localhost`.
 * job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
         CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
-       
+
             https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
 
         In this case, the corresponding list would be formed as:
@@ -174,6 +174,7 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
             ['apm-agent-java', 'apm-agent-java-mbp', 'master']
 
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+* ssl: Set to `false` to disable SSL. Default is `true`.
 
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
@@ -364,6 +365,74 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## filebeat
+
+ This step run a filebeat Docker container to grab the Docker containers logs in a single file.
+ `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
+ the only argument need is the `workdir` if you set it on the `filebeat step` call.
+
+```
+  filebeat()
+  ...
+  filebeat.stop()
+```
+
+```
+  filebeat(){
+    ....
+  }
+```
+
+* *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
+* *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
+* *output:* log file to save all Docker containers logs (docker_logs.log).
+* *workdir:* Directory to use as root folder to read and write files (WORKSPACE).
+
+```
+  filebeat(config: 'filebeat.yml',
+    image: 'docker.elastic.co/beats/filebeat:7.10.1',
+    output: 'docker_logs.log',
+    workdir: "${env.WORKSPACE}")
+  ...
+  filebeat.stop(workdir: "${env.WORKSPACE}")
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}")
+        sh('docker run busybox  ls')
+      }
+      post {
+        cleanup{
+          script {
+            filebeat.stop(workdir: "${env.WORKSPACE}")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}"){
+          sh('docker run busybox  ls')
+        }
+      }
+    }
+  }
+}
+```
+
 ## generateChangelog
 Programatically generate a CHANGELOG
 
@@ -467,7 +536,7 @@ evaluates the change list and returns the module name.
 
 * pattern: the regex pattern with the group to look for. Mandatory
 * exclude: the regex pattern with the files to be excluded from the search. Optional
-* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 **NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
@@ -541,6 +610,25 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.
+
+## gh
+Wrapper to interact with the gh command line. It returns the stdout output.
+It requires to be executed within the git workspace, otherwise it will use 
+`REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
+
+```
+  // List all the open issues with the label 
+  gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
+
+  // Create issue with title and body
+  gh(command: 'issue create', flags: [ title: "I found a bug", body: "Nothing works" ])
+```
+
+* command: The gh command to be executed title. Mandatory
+* flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
 
 ## git
 Override the `git` step to retry the checkout up to 3 times.
@@ -666,6 +754,7 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * allowEmptyResponse: whether to allow empty responses. Default false.
 * method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
+* noCache: whether to force the API call without the already cached data if any. Default false.
 
 [Github REST API](https://developer.github.com/v3/)
 
@@ -675,6 +764,27 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 ```
 def ref = githubBranchRef()
 ```
+
+## githubCommentIssue
+Comment an existing GitHub issue
+
+```
+  // Add a new comment to the issue 123 using the REPO_NAME and ORG_NAME env variables
+  githubCommentIssue(id: 123, comment: 'My new comment')
+
+  // Add a new comment to the issue 123 from foo/repo
+  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, comment: 'My new comment')
+```
+
+* comment: The comment. Mandatory
+* id: The GitHub issue. Mandatory
+* org: The GitHub organisation. Optional. Default the ORG_REPO env variable
+* repo: The GitHub repository. Optional. Default the REPO_REPO env variable
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: 
+* Windows is not supported yet.
+* It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
 ## githubCreateIssue
 Create an Issue in GitHub as long as the command runs in the git repo.
@@ -731,6 +841,18 @@ githubEnv()
 * `GIT_SHA`: current commit SHA1, it sets this getting it from local repo.
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
 * `GIT_BASE_COMMIT`: On PRs points to the commit before make the merge, on branches is the same as GIT_COMMIT and GIT_SHA
+
+## githubIssues
+Look for the GitHub issues in the current project given the labels to be filtered with. It returns
+a dictionary with the issue id as primary key and then the status, title, labels and date values.
+
+```
+  // Look for all the open GitHub issues with labels foo and bar
+  githubIssues(labels: [ 'foo', 'bar' ])
+```
+
+* *labels*: list of labels to be filtered. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 
 ## githubPrCheckApproved
 If the current build is a PR, it would check if it is approved or created
@@ -1007,6 +1129,45 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `ORG_NAME`
         - `REPO_NAME`
 
+## goTestJUnit
+ Run Go unit tests and generate a JUnit report.
+
+```
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
+```
+
+* *options:* Arguments used for `go test` see [gotestsum](https://pkg.go.dev/gotest.tools/gotestsum)
+* *output:* file path and name for the JUnit report output.
+
+```
+pipeline {
+  agent { label 'ubuntu' }
+
+  stages {
+    stage('GoTestJUnit') {
+      steps {
+        dir('src'){
+          git 'https://github.com/elastic/ecs-logging-go-zap.git'
+          goTestJUnit(options: '-v ./...', output: 'junit-report.xml')
+        }
+      }
+      post{
+        cleanup{
+          junit(testResults: 'src/junit-report.xml', allowEmptyResults: true)
+        }
+      }
+    }
+  }
+}
+```
+
+## googleStorageUpload
+As long as we got some concurrency issues
+
+```
+googleStorageUpload(args)
+```
+
 ## httpRequest
 Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
@@ -1176,7 +1337,7 @@ evaluates the change list with the pattern list:
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
-* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
 * to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
 
 NOTE: This particular implementation requires to checkout with the step gitCheckout
@@ -1343,6 +1504,21 @@ the log level by default is INFO.
 
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
+
+## lookForGitHubIssues
+Look for all the open issues that were reported as flaky tests. It returns
+a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
+
+```
+  // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
+  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+```
+
+* *flakyList*: list of test-failures. Mandatory
+* *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
 
 ## matchesPrLabel
 If the current build is a PR, it would return true if the given label
@@ -1538,6 +1714,12 @@ the flakey test analyser.
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
+
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
+
 ```
 * es: Elasticserach URL to send the report.
 * secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
@@ -1547,6 +1729,7 @@ the flakey test analyser.
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
 * slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
+* slackHeader: What header to be added before the default comment. Default value uses ``.
 * slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
 * slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
@@ -1554,6 +1737,7 @@ emails on Failed builds that are not pull request.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * newPRComment: The map of the data to be populated as a comment. Default empty.
+* aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -1674,6 +1858,25 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runWatcher
+Run the given watcher and send an email if configured for such an action.
+
+This particular step uses the watchers with the log action, if it's required to use
+another action then it will be required to be implemented here. See // NOTE
+
+```
+    def output = runWatcher(watcher: 'my-watcher-id')
+
+    runWatcher(watcher: 'my-watcher-id', sendEmail: true, to: 'foo@acme.com, subject: 'Watcher output')
+```
+
+* *watcher*: the watcher id. Mandatory
+* *sendEmail*: whether to send an email. Optional. Default false
+* *to*: who should receive the email. Optional.
+* *subject*: what's the email subject. Optional. Default: `[Autogenerated]`
+* *secret*: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
+* *es*: Elasticserach URL to send the report. It can use the secret data if `url` field.
 
 ## runbld
 Populate the test output using the runbld approach. It depends on the *junitAndStore* step.
@@ -2151,7 +2354,8 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
 ## withGoEnv
- Install Go and run some command in a pre-configured environment.
+ Install Go and run some command in a pre-configured environment multiplatform. For such
+ it's recommended to use the `cmd` step.
 
 ```
   withGoEnv(version: '1.14.2'){
@@ -2173,6 +2377,68 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvUnix
+ Install Go and run some command in a pre-configured environment for Unix.
+
+```
+  withGoEnvUnix(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvUnix(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvWindows
+ Install Go and run some command in a pre-configured environment for Windows.
+
+```
+  withGoEnvWindows(version: '1.14.2'){
+    bat(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvWindows(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       bat(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.
+
+## withHubCredentials
+Configure the hub app to run the body closure.
+  
+```
+  withHubCredentials(credentialsId: 'some-credentials') {
+    // block
+  }
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
+_NOTE:_
+* Windows agents are not supported.
 
 ## withMageEnv
 

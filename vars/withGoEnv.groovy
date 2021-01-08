@@ -19,7 +19,7 @@
  Install Go and run some command in a pre-configured environment.
 
   withGoEnv(version: '1.14.2'){
-    sh(label: 'Go version', script: 'go version')
+    cmd(label: 'Go version', script: 'go version')
   }
 
    withGoEnv(version: '1.14.2', pkgs: [
@@ -27,34 +27,28 @@
        "github.com/elastic/go-licenser",
        "golang.org/x/tools/cmd/goimports",
    ]){
-       sh(label: 'Run mage',script: 'mage -version')
+       cmd(label: 'Run mage',script: 'mage -version')
    }
 
 }
 
 */
 def call(Map args = [:], Closure body) {
-  def goDefaultVersion = "" != "${env.GO_VERSION}" && env.GO_VERSION != null ? "${env.GO_VERSION}" : '1.14.2'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion
-  def pkgs = args.containsKey('pkgs') ? args.pkgs : []
-  def os = args.containsKey('os') ? args.os : nodeOS()
-  def lastCoordinate = version[-2..-1]
-  // gvm remove the last coordinate if it is 0
-  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.amd64"
-  withEnv([
-    "HOME=${env.WORKSPACE}",
-    "PATH=${env.WORKSPACE}/bin:${env.WORKSPACE}/${goDir}/bin:${env.PATH}",
-    "GOROOT=${env.WORKSPACE}/${goDir}",
-    "GOPATH=${env.WORKSPACE}"
-  ]){
-    retryWithSleep(retries: 3, seconds: 5, backoff: true){
-      sh(label: "Installing go ${version}", script: "gvm ${version}")
+  if (isUnix()) {
+    withGoEnvUnix(args) {
+      checkGoPath()
+      body()
     }
-    pkgs?.each{ p ->
-      retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        sh(label: "Installing ${p}", script: "go get -u ${p}")
-      }
+  } else {
+    withGoEnvWindows(args) {
+      checkGoPath()
+      body()
     }
-    body()
+  }
+}
+
+def checkGoPath(){
+  if(fileExists(file: "${env.GOPATH}/go.mod")){
+    log(level: 'WARN', text: "${env.GOPATH}/go.mod file exists, go.mod cannot be in the GOPATH, try to checkout your code into a folder.")
   }
 }

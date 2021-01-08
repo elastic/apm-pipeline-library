@@ -33,6 +33,12 @@ the flakey test analyser.
   // Notify build status for a PR as a GitHub comment, and send slack message if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
 
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
+ 
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
+
 **/
 
 import co.elastic.BuildException
@@ -49,21 +55,28 @@ def call(Map args = [:]) {
   def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
   def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
 
-  node('master || metal || immutable'){
+  node('master || metal || linux'){
     stage('Reporting build status'){
       def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
       def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
       def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
       def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
+      def slackHeader = args.containsKey('slackHeader') ? args.slackHeader : ''
       def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
       def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
+      def aggregateComments = args.get('aggregateComments', true)
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
+
+        // Allow to aggregate the comments, for such it disables the default notifications.
+        data['disableGHComment'] = aggregateComments
+        def notifications = []
+
         def notificationManager = new NotificationManager()
         if(shouldNotify && !to?.empty){
           log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
@@ -77,41 +90,68 @@ def call(Map args = [:]) {
           }
         }
 
-        // Should analyze flakey
-        if(analyzeFlakey) {
+        // Should notify if it is a PR and it's enabled
+        if(notifyPRComment && isPR()) {
+          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            def prComment = notificationManager.notifyPR(data)
+            notifications << prComment
+          }
+        }
+
+        // Should analyze flakey but exclude it when aborted
+        if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
           data['es'] = es
           data['es_secret'] = secret
           data['flakyReportIdx'] = flakyReportIdx
           data['flakyThreshold'] = flakyThreshold
           log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
           catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notificationManager.analyzeFlakey(data)
+            def flakyComment = notificationManager.analyzeFlakey(data)
+            notifications << flakyComment
           }
-        }
-        // Should notify if it is a PR and it's enabled
-        if(notifyPRComment && isPR()) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          notificationManager.notifyPR(data)
         }
 
         // Should notify in slack if it's enabled
         if(notifySlackComment) {
+          data['header'] = slackHeader
           data['channel'] = slackChannel
           data['credentialId'] = slackCredentials
           data['enabled'] = slackNotify
           log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
-          notificationManager.notifySlack(data)
+          catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+            notificationManager.notifySlack(data)
+          }
         }
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
         catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           notificationManager.generateBuildReport(data)
         }
+
+        // Notify only if there are notifications and they should be aggregated
+        if (aggregateComments && notifications?.size() > 0) {
+          log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
+          // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+          githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
+        }
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         timeout(5) {
+          // Deprecated index
           def datafile = readFile(file: 'build-report.json')
           sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+
+          // New indexes
+          def bulkFile = 'ci-test-report-bulk.json'
+          if (fileExists(bulkFile)) {
+            datafile = readFile(file: bulkFile)
+            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-tests/_bulk/')
+          }
+          datafile = 'ci-build-report.json'
+          if (fileExists(datafile)) {
+            sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
+          }
         }
       }
 

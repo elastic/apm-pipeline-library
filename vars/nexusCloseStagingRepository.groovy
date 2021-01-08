@@ -42,7 +42,7 @@ def call(Map params = [:]){
   }
 
   def vault_data = props?.data
-  def username = vault_data?.user
+  def username = vault_data?.username
   def password = vault_data?.password
 
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")

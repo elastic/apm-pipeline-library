@@ -48,6 +48,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     PYTHONUTF8 = "1"
+    // Slack channerl where the build notifications will be sent by the notifyBuildResult step.
+    SLACK_CHANNEL = '#observablt-bots'
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
@@ -259,7 +261,7 @@ pipeline {
               warnError('installTools failed')
             }
             steps {
-              installTools([ [tool: 'nodejs', version: '12' ] ])
+              installTools([ [tool: 'yq', version: '3.3' ] ])
             }
           }
         }
@@ -362,7 +364,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(prComment: true, slackComment: true)
     }
   }
 }
@@ -414,7 +416,7 @@ def testWindows(params = [:]){
   def withExtra = params.containsKey('withExtra') ? params.withExtra : hasDocker("${PLATFORM}")
   deleteDir()
   unstash 'source'
-  if(isModermWindows("${PLATFORM}")){
+  if(isModernWindows("${PLATFORM}")){
     dir("${BASE_DIR}"){
       powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
     }
@@ -435,6 +437,6 @@ def hasDocker(platform){
   return platform.contains('docker')
 }
 
-def isModermWindows(platform){
+def isModernWindows(platform){
   return platform.contains('2019')
 }

@@ -171,6 +171,18 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_noCache() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def script = loadScript(scriptName)
+    def ret0 = script.call(url: "dummy", token: "dummy")
+    def ret1 = script.call(url: "dummy", token: "dummy", noCache: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from GitHub.'))
+    assertFalse(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from cache.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testResponseNull() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       return null

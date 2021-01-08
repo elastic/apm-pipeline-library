@@ -83,7 +83,7 @@ def addComment(String details) {
     def comment = pullRequest.comment(details)
     id = comment?.id
   } catch (err) {
-    log(level: 'DEBUG', text: "githubPrComment: pullRequest.comment failed with message: ${err.toString()}")
+    log(level: 'WARN', text: "githubPrComment: pullRequest.comment failed with message: ${err.toString()}")
     id = githubTraditionalPrComment(message: details)
   }
   return id

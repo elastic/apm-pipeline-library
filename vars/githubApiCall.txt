@@ -10,5 +10,6 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * allowEmptyResponse: whether to allow empty responses. Default false.
 * method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
+* noCache: whether to force the API call without the already cached data if any. Default false.
 
 [Github REST API](https://developer.github.com/v3/)

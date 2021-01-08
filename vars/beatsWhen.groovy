@@ -31,16 +31,19 @@ Boolean call(Map args = [:]){
   def ret = false
 
   markdownReason(project: project, reason: "## Build reasons for `${project} ${description}`")
+  markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>\n")
   if (whenEnabled(args) || !isSkipCiBuildLabel(args)) {
-    markdownReason(project: project, reason: "<details><summary>Expand to view the reasons</summary><p>\n")
     if (whenBranches(args)) { ret = true }
     if (whenChangeset(args)) { ret = true }
     if (whenComments(args)) { ret = true }
     if (whenLabels(args)) { ret = true }
+    if (whenNotChangeset(args)) { ret = true }
     if (whenParameters(args)) { ret = true }
     if (whenTags(args)) { ret = true }
-    markdownReason(project: project, reason: "</p></details>")
+  } else {
+    markdownReason(project: args.project, reason: '* ❕Project is `disabled`.')
   }
+  markdownReason(project: project, reason: "</p></details>")
   markdownReason(project: project, reason: "#### Stages for `${project} ${description}` have been ${ret ? '✅ enabled' : '❕disabled'}\n")
   flushBuildReason()
   return ret
@@ -96,7 +99,8 @@ private Boolean whenChangeset(Map args = [:]) {
 
     // Gather the diff between the target branch and the current commit.
     def gitDiffFile = 'git-diff.txt'
-    def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : env.GIT_PREVIOUS_COMMIT
+    // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
+    def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
     sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
 
     // Search for any pattern that matches that particular
@@ -131,7 +135,7 @@ private Boolean whenComments(Map args = [:]) {
 }
 
 private boolean whenEnabled(Map args = [:]) {
-  return !args.content?.get('disabled')
+  return !args.content?.get('disabled', false)
 }
 
 private Boolean whenLabels(Map args = [:]) {
@@ -144,6 +148,16 @@ private Boolean whenLabels(Map args = [:]) {
     markdownReason(project: args.project, reason: "* ❕Label is `enabled` and does **NOT** match with the pattern `${args.content.get('labels').toString()}`.")
   } else {
     markdownReason(project: args.project, reason: '* ❕Label is `disabled`.')
+  }
+  return false
+}
+
+private Boolean whenNotChangeset(Map args = [:]) {
+  if (args.content?.get('not_changeset')) {
+    def arguments = args
+    arguments.content.changeset = args.content.get('not_changeset')
+    arguments.content.remove('changesetFunction')
+    return !whenChangeset(arguments)
   }
   return false
 }
