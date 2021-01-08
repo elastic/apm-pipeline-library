@@ -38,6 +38,7 @@ Boolean call(Map args = [:]){
     if (whenComments(args)) { ret = true }
     if (whenLabels(args)) { ret = true }
     if (whenNotChangeset(args)) { ret = true }
+    if (whenNotChangesetFullMatch(args)) { ret = true }
     if (whenParameters(args)) { ret = true }
     if (whenTags(args)) { ret = true }
   } else {
@@ -72,6 +73,7 @@ private Boolean whenChangeset(Map args = [:]) {
 
 private Boolean changeset(Map args = [:]) {
   def name = args.get('name', 'Changeset')
+  def partialMatch = args.get('partialMatch', true)
   // Gather macro changeset entries
   def macro = [:]
   args?.changeset?.each { k,v ->
@@ -115,10 +117,18 @@ private Boolean changeset(Map args = [:]) {
   def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
   sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
 
-  // Search for any pattern that matches that particular
+  // Search for any pattern that matches that particular if partialMatch or fullMatch
   def fileContent = readFile(gitDiffFile)
-  match = patterns?.find { pattern ->
-    fileContent?.split('\n').any { line -> line ==~ pattern }
+
+  def match = false
+  if (partialMatch) {
+    match = patterns?.find { pattern ->
+      fileContent?.split('\n').any { line -> line ==~ pattern }
+    }
+  } else {
+    match = patterns?.every { pattern ->
+      fileContent?.split('\n').every { line -> line ==~ pattern }
+    }
   }
   if (match) {
     markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the pattern `${match}`.")
@@ -166,6 +176,21 @@ private Boolean whenNotChangeset(Map args = [:]) {
   if (args.content?.get('not_changeset')) {
     def arguments = args
     arguments.content.changeset = args.content.get('not_changeset')
+    arguments.name = name
+    arguments.content.remove('changesetFunction')
+    return !whenChangeset(arguments)
+  } else {
+    markdownReason(project: args.project, reason: "* ❕${name} is `disabled`.")
+  }
+  return false
+}
+
+private Boolean whenNotChangesetFullMatch(Map args = [:]) {
+  def name = 'NotChangesetFullMatch'
+  if (args.content?.get('not_changeset_full_match')) {
+    def arguments = args
+    arguments.content.changeset = [ args.content.get('not_changeset_full_match') ]
+    arguments.partialMatch = false
     arguments.name = name
     arguments.content.remove('changesetFunction')
     return !whenChangeset(arguments)
