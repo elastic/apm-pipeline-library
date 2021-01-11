@@ -81,7 +81,7 @@ def stop(Map args = [:]){
   // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
     docker exec -t ${config.id} chmod -R ugo+rw /output || echo "Exit code \$?"
-    docker kill ${config.id} || echo "Exit code \$?"
+    docker stop --time 30 ${config.id} || echo "Exit code \$?"
   """)
   archiveArtifacts(artifacts: "**/${config.output}*", allowEmptyArchive: true)
 }

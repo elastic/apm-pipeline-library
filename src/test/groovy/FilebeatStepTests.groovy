@@ -70,7 +70,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     assertJobStatusSuccess()
   }
@@ -107,7 +107,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
       assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
-      assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+      assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
       assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     }
   }
@@ -162,7 +162,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${config}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "docker kill ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     assertJobStatusSuccess()
   }
