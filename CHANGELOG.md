@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.172 (11/01/2021)
+*No changelog for this release.*
+
 ## v1.1.171 (11/01/2021)
 
 #### 🚀 Enhancements
