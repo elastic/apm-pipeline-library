@@ -80,8 +80,8 @@ def stop(Map args = [:]){
   // we need to change the permission because the group others never will have permissions
   // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
-    docker exec ${config.id} chmod -R ugo+rw /output
-    docker kill ${config.id}
+    docker exec -t ${config.id} chmod -R ugo+rw /output || echo "Exit code \$?"
+    docker kill ${config.id} || echo "Exit code \$?"
   """)
   archiveArtifacts(artifacts: "**/${config.output}*", allowEmptyArchive: true)
 }
