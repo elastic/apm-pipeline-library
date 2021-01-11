@@ -59,6 +59,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       config: config,
       image: image,
       workdir: workdir,
+      timeout: "30",
       ){
       print("OK")
     }
@@ -93,6 +94,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
         config: config,
         image: image,
         workdir: workdir,
+        timeout: "30",
         ){
         throw new Exception('Ooops!!')
       }
