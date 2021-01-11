@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.171 (11/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support not_changeset_full_match for beats [#890](https://github.com/elastic/apm-pipeline-library/pull/890)
+
+#### 🐛 Bug Fixes
+
+-  fix: wait for docker exec to finish [#893](https://github.com/elastic/apm-pipeline-library/pull/893)
+
+#### 🙈 No user affected
+
+-  [CI][mvn4] Use lastSuccessfulBuild [#894](https://github.com/elastic/apm-pipeline-library/pull/894)
+
 ## v1.1.170 (07/01/2021)
 
 #### 🚀 Enhancements
