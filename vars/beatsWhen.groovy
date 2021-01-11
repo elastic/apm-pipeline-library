@@ -64,7 +64,7 @@ private Boolean whenChangeset(Map args = [:]) {
   if (args.content?.get('changeset')) {
     def arguments = args
     arguments.name = name
-    return changeset(args)
+    return changeset(arguments)
   } else {
     markdownReason(project: args.project, reason: "* ${name} is `disabled`.")
   }
