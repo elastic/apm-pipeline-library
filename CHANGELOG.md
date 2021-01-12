@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.173 (12/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use docker stop not kill [#895](https://github.com/elastic/apm-pipeline-library/pull/895)
+
 ## v1.1.172 (11/01/2021)
 *No changelog for this release.*
 
