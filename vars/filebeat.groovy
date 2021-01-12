@@ -46,7 +46,7 @@ def start(Map args = [:]) {
   log(level: 'INFO', text: 'Running Filebeat Docker container')
 
   configureFilebeat(configPath, output)
-  dockerID = sh(label: 'Run filebeat to grab container logs', script: """
+  def dockerID = sh(label: 'Run filebeat to grab container logs', script: """
     docker run \
       --detach \
       -v ${workdir}:/output \
