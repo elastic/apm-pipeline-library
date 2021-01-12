@@ -25,12 +25,39 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   // test resources file uses this value as filename
   String nodeName = 'worker-0676d01d9601f8191'
   String jsonConfig = "filebeat_container_" + nodeName + ".json"
+  String resources = "target/test-classes"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.NODE_NAME = nodeName
+    env.WORKSPACE = "filebeatTest"
+    helper.registerAllowedMethod('writeFile', [Map.class], { m ->
+      (new File("${resources}/${m.file}")).withWriter('UTF-8') { writer ->
+        writer.write(m.text)
+      }
+    })
+    helper.registerAllowedMethod('writeJSON', [Map.class], { m ->
+      def script = loadScript('vars/toJSON.groovy')
+      def json =  script.call(m.json)
+      (new File("${resources}/${m.file}")).withWriter('UTF-8') { writer ->
+        writer.write(json.toString())
+      }
+    })
+    helper.registerAllowedMethod('readJSON', [Map.class], { m ->
+      def jsonSlurper = new groovy.json.JsonSlurperClassic()
+      File f = new File("${resources}/${m.file}")
+      jsonText = f.getText()
+      return jsonSlurper.parseText(jsonText)
+    })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      def ret = "OK"
+      if(m.script.contains('docker run')){
+        ret = 'fooID'
+      }
+      return ret
+    })
   }
 
   @Test
@@ -40,7 +67,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'file=filebeat_conf.yml'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${env.WORKSPACE}/filebeat_conf.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: docker_logs.log'))
     assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
     assertJobStatusSuccess()
@@ -53,7 +80,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     def id = "fooID"
     def output = "foo.log"
-    def workdir = "filebeatTest"
+    def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
     def script = loadScript(scriptName)
@@ -67,9 +94,10 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       ){
       print("OK")
     }
+
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${config}"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
@@ -87,7 +115,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     def id = "fooID"
     def output = "foo.log"
-    def workdir = "filebeatTest"
+    def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
     def script = loadScript(scriptName)
@@ -107,7 +135,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     } finally {
       printCallStack()
       assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
-      assertTrue(assertMethodCallContainsPattern('writeFile', "file=${config}"))
+      assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
       assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
       assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
@@ -135,7 +163,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def output = "foo.log"
     def config = "bar.xml"
     def image = "foo:latest"
-    def workdir = "fooDir"
+    def workdir = "filebeatTest_1"
 
     def script = loadScript(scriptName)
     script.call(
@@ -146,7 +174,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${config}"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${workdir}:/output"))
@@ -159,7 +187,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     def id = "fooID"
     def output = "foo.log"
-    def workdir = "filebeatTest"
+    def workdir = "filebeatTest_1"
 
     def script = loadScript(scriptName)
     script.stop(
