@@ -386,6 +386,7 @@ Print a text on color on a xterm.
 * *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
 * *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
 * *output:* log file to save all Docker containers logs (docker_logs.log).
+* *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (WORKSPACE).
 
 ```
@@ -1138,6 +1139,7 @@ _NOTE_: To edit the existing comment is required these environment variables:
 
 * *options:* Arguments used for `go test` see [gotestsum](https://pkg.go.dev/gotest.tools/gotestsum)
 * *output:* file path and name for the JUnit report output.
+* *version:* Go version to install, see [withgoenv](#withgoenv)
 
 ```
 pipeline {
@@ -1148,7 +1150,7 @@ pipeline {
       steps {
         dir('src'){
           git 'https://github.com/elastic/ecs-logging-go-zap.git'
-          goTestJUnit(options: '-v ./...', output: 'junit-report.xml')
+          goTestJUnit(options: '-v ./...', output: 'junit-report.xml', version: '1.14.2')
         }
       }
       post{
