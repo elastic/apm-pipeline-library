@@ -72,12 +72,12 @@ def start(Map args = [:]) {
     timeout: timeout
   ]
 
-  writeJSON(file: "${workdir}/filebeat_container_config.json", json: json)
+  writeJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json", json: json)
 }
 
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
-  def config = readJSON(file: "${workdir}/filebeat_container_config.json")
+  def config = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
   def timeout = args.containsKey('timeout') ? args.timeout : config.timeout
 
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')

@@ -22,11 +22,15 @@ import static org.junit.Assert.assertFalse
 
 class FilebeatStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/filebeat.groovy'
+  // test resources file uses this value as filename
+  String nodeName = 'worker-0676d01d9601f8191'
+  String jsonConfig = "filebeat_container_" + nodeName + ".json"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.NODE_NAME = nodeName
   }
 
   @Test
@@ -46,7 +50,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   void testClosure() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def stepConfig = "filebeat_container_config.json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
@@ -69,7 +73,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
-    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
@@ -80,7 +84,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   void testClosureError() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def stepConfig = "filebeat_container_config.json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
@@ -107,7 +111,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
       assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
-      assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${stepConfig}"))
+      assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
       assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
       assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
       assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
@@ -152,7 +156,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   @Test
   void testStop() throws Exception {
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def config = "filebeat_container_config.json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
@@ -162,7 +166,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       workdir: workdir,
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${config}"))
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
