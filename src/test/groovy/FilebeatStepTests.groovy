@@ -24,6 +24,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   String scriptName = 'vars/filebeat.groovy'
   // test resources file uses this value as filename
   String nodeName = 'worker-0676d01d9601f8191'
+  String jsonConfig = "filebeat_container_" + nodeName + ".json"
 
   @Override
   @Before
@@ -49,7 +50,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   void testClosure() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def jsonConfig = "filebeat_container_" + nodeName + ".json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
@@ -83,7 +84,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   void testClosureError() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def jsonConfig = "filebeat_container_" + nodeName + ".json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
@@ -155,7 +156,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   @Test
   void testStop() throws Exception {
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-    def jsonConfig = "filebeat_container_" + nodeName + ".json"
+
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest"
