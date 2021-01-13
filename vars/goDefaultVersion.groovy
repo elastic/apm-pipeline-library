@@ -21,7 +21,7 @@
   goDefaultVersion()
 **/
 def call(Map args = [:]) {
-  def goDefaultVersion = '1.15.6'
+  def goDefaultVersion = defaultVersion()
   if(isGoVersionEnvVarSet()) {
     goDefaultVersion = "${env.GO_VERSION}"
   } else {
@@ -35,4 +35,8 @@ def call(Map args = [:]) {
 
 def isGoVersionEnvVarSet(){
   return env.GO_VERSION != null && "" != "${env.GO_VERSION}"
+}
+
+def defaultVersion(){
+  return '1.15.6'
 }

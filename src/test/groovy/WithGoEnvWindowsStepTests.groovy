@@ -109,13 +109,15 @@ void testOSArg() throws Exception {
   @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "windows" })
+    def scriptDV = loadScript('vars/goDefaultVersion.groovy')
+    def version = scriptDV.defaultVersion()
     def isOK = false
     script.call(){
-      isOK = definedVariables('1.14.2', 'windows')
+      isOK = definedVariables("${version}", 'windows')
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('bat', 'Installing Go 1.14.2'))
+    assertTrue(assertMethodCallContainsPattern('bat', "Installing Go ${version}"))
     assertJobStatusSuccess()
   }
 }

@@ -34,6 +34,8 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
 
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
+    helper.registerAllowedMethod('withGoEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('httpRequest', [Map.class], {
       return "{'errors': false}"
     })
