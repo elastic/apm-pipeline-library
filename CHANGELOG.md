@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.175 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use WS always [#898](https://github.com/elastic/apm-pipeline-library/pull/898)
+
 ## v1.1.174 (12/01/2021)
 *No changelog for this release.*
 
