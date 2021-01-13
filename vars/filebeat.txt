@@ -2,7 +2,7 @@
  This step run a filebeat Docker container to grab the Docker containers logs in a single file.
  `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
  the only argument need is the `workdir` if you set it on the `filebeat step` call.
- The output log files should be in a relative parth to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
+ The output log files should be in a relative path to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
 
 ```
   filebeat()
