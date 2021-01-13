@@ -58,6 +58,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('pwd', [], { 'filebeatTest' })
   }
 
   @Test
@@ -67,7 +68,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${env.WORKSPACE}/filebeat_conf.yml"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: docker_logs.log'))
     assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
     assertJobStatusSuccess()
