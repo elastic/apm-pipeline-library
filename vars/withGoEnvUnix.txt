@@ -17,6 +17,6 @@
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.

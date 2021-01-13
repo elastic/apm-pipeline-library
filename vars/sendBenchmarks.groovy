@@ -72,16 +72,13 @@ def call(Map params = [:]) {
         "BENCH_FILE=${benchFile}",
         "INDEX=${index}"]){
           if(index.equals('benchmark-go') || index.equals('benchmark-server')){
-            sh label: 'Sending benchmarks', script: '''#!/bin/bash
-            set +x -euo pipefail
-            GO_VERSION=${GO_VERSION:-"1.10.3"}
-            export GOPATH=${WORKSPACE}
-            export PATH=${GOPATH}/bin:${PATH}
-            eval "$(gvm ${GO_VERSION})"
-
-            go get -v -u github.com/elastic/gobench
-            gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}
-            '''
+            withGoEnv(){
+              sh label: 'Sending benchmarks', script: '''#!/bin/bash
+              set +x -euo pipefail
+              go get -v -u github.com/elastic/gobench
+              gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}
+              '''
+            }
           } else {
             def datafile = readFile(file: "${BENCH_FILE}")
             def messageBase64UrlPad = base64encode(text: "${CLOUD_USERNAME}:${CLOUD_PASSWORD}", encoding: "UTF-8")
