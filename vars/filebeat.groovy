@@ -41,15 +41,16 @@ def start(Map args = [:]) {
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
   def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
+  def configPath = "${workdir}/${config}"
 
   log(level: 'INFO', text: 'Running Filebeat Docker container')
 
-  configureFilebeat(config, output)
-  dockerID = sh(label: 'Run filebeat to grab container logs', script: """
+  configureFilebeat(configPath, output)
+  def dockerID = sh(label: 'Run filebeat to grab container logs', script: """
     docker run \
       --detach \
       -v ${workdir}:/output \
-      -v ${workdir}/${config}:/usr/share/filebeat/filebeat.yml \
+      -v ${configPath}:/usr/share/filebeat/filebeat.yml \
       -u 0:0 \
       -v /var/lib/docker/containers:/var/lib/docker/containers \
       -v /var/run/docker.sock:/var/run/docker.sock \
@@ -77,18 +78,18 @@ def start(Map args = [:]) {
 
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
-  def config = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
-  def timeout = args.containsKey('timeout') ? args.timeout : config.timeout
+  def stepConfig = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
+  def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
 
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
   // we need to change the permission because the group others never will have permissions
   // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
-    docker exec -t ${config.id} chmod -R ugo+rw /output || echo "Exit code \$?"
-    docker stop --time ${timeout} ${config.id} || echo "Exit code \$?"
+    docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
+    docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  archiveArtifacts(artifacts: "**/${config.output}*", allowEmptyArchive: true)
+  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
 }
 
 def configureFilebeat(config, output){
