@@ -39,7 +39,7 @@ def start(Map args = [:]) {
   def output = args.containsKey('output') ? args.output : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
-  def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
+  def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
   def configPath = "${workdir}/${config}"
 
@@ -77,7 +77,7 @@ def start(Map args = [:]) {
 }
 
 def stop(Map args = [:]){
-  def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
+  def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def stepConfig = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
   def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.176 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use current folder instead of the workspace [#900](https://github.com/elastic/apm-pipeline-library/pull/900)
+-  Fix issue when there is a build corruption with the GH PR comment [#899](https://github.com/elastic/apm-pipeline-library/pull/899)
+
 ## v1.1.175 (13/01/2021)
 
 #### 🐛 Bug Fixes
