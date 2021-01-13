@@ -21,12 +21,16 @@
   goDefaultVersion()
 **/
 def call(Map args = [:]) {
-  def goDefaultVersion = isGoVersionEnvVarSet() ? "${env.GO_VERSION}" : '1.15.6'
-  def goFileVersion = '.go-version'
-  if(!isGoVersionEnvVarSet() && fileExists(goFileVersion)){
-    goDefaultVersion = readFile(file: goFileVersion)?.trim()
+  def goDefaultVersion = '1.15.6'
+  if(isGoVersionEnvVarSet()) {
+    goDefaultVersion = "${env.GO_VERSION}"
+  } else {
+    def goFileVersion = '.go-version'
+    if (fileExists(goFileVersion)){
+      goDefaultVersion = readFile(file: goFileVersion)?.trim()
+    }
   }
-  return  goDefaultVersion
+  return goDefaultVersion
 }
 
 def isGoVersionEnvVarSet(){
