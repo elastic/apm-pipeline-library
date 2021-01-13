@@ -27,11 +27,11 @@
   stackVersions.edge(snapshot: true)
 
 **/
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   return [
-    edge(params),
-    dev(params),
-    release(params)
+    edge(args),
+    dev(args),
+    release(args)
   ]
 }
 
@@ -39,22 +39,22 @@ def snapshot(version){
   return "${version}-SNAPSHOT"
 }
 
-def version(value, params = [:]){
-  return "${value}${isSnapshot(params)}"
+def version(value, args = [:]){
+  return "${value}${isSnapshot(args)}"
 }
 
-def edge(Map params = [:]){
-  return version("8.0.0", params)
+def edge(Map args = [:]){
+  return version("8.0.0", args)
 }
 
-def dev(Map params = [:]){
-  return version("7.11.0", params)
+def dev(Map args = [:]){
+  return version("7.11.0", args)
 }
 
-def release(Map params = [:]){
-  return version("7.10.2", params)
+def release(Map args = [:]){
+  return version("7.10.2", args)
 }
 
-def isSnapshot(params){
-  return params.containsKey('snapshot') && params.snapshot ? "-SNAPSHOT" : ''
+def isSnapshot(args){
+  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
 }
