@@ -109,8 +109,8 @@ void testOSArg() throws Exception {
   @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "windows" })
-    def scriptDV = loadScript('vars/goDefaultVersion.groovy')
-    def version = scriptDV.defaultVersion()
+    def version = "1.15.1"
+    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def isOK = false
     script.call(){
       isOK = definedVariables("${version}", 'windows')

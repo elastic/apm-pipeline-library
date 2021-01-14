@@ -34,8 +34,8 @@ class GoTestJUnitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def scriptDV = loadScript('vars/goDefaultVersion.groovy')
-    def version = scriptDV.defaultVersion()
+    def version = "1.15.1"
+    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
