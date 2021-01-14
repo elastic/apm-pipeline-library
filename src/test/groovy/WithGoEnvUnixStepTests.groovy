@@ -122,8 +122,8 @@ void testOSArg() throws Exception {
   @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "linux" })
-    def scriptDV = loadScript('vars/goDefaultVersion.groovy')
-    def version = scriptDV.defaultVersion()
+    def version = "1.15.1"
+    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def isOK = false
     script.call(){
       if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go${version}.linux.amd64/bin:/foo/bin"
