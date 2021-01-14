@@ -58,14 +58,13 @@ def call(Map params = [:]) {
   if(index.equals('benchmark-go') || index.equals('benchmark-server')){
     def protocol = getProtocol(url)
     url = url - protocol
-    url = "${protocol}${user}:${password}@${url}"
-    gobench(url, benchFile, index)
+    gobench("${protocol}${user}:${password}@${url}", benchFile, index)
   } else {
-    cloudBecnhmarks(url, user, password, benchFile)
+    cloudBenchmarks(url, user, password, benchFile)
   }
 }
 
-def cloudBecnhmarks(realURL, user, password, benchFile) {
+def cloudBenchmarks(realURL, user, password, benchFile) {
   withEnvMask(vars: [
     [var: "CLOUD_ADDR", password: "${realURL}"],
     [var: "CLOUD_USERNAME", password: "${user}"],
