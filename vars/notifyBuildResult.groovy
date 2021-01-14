@@ -154,10 +154,6 @@ def call(Map args = [:]) {
           }
         }
       }
-
-      catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
-        deleteDir()
-      }
     }
   }
 }

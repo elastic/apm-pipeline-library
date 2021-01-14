@@ -53,7 +53,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
-    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
   }
 
   @Test
@@ -129,8 +128,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
     // Then unstable the stage
     assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
-    // Then cleanup the workspace
-    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
     assertJobStatusSuccess()
   }
 
@@ -151,8 +148,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 0))
     // Then unstable the stage
     assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
-    // Then cleanup the workspace
-    assertTrue(assertMethodCallOccurrences('deleteDir', 1))
     assertJobStatusSuccess()
   }
 
