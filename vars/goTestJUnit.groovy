@@ -23,7 +23,7 @@
 def call(Map args = [:]) {
   def options = args.containsKey('options') ? args.options : ''
   def output = args.containsKey('output') ? args.output : 'junit-report.xml'
-  def version = args.containsKey('version') ? args.version : null
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
 
   log(level: 'INFO', text: 'Running Go test an generating JUnit output')
 
