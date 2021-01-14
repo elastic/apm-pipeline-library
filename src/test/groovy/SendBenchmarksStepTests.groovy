@@ -34,6 +34,8 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
 
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
+    helper.registerAllowedMethod('withGoEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('httpRequest', [Map.class], {
       return "{'errors': false}"
     })
@@ -215,7 +217,9 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('withEnv', "URL_=${EXAMPLE_URL}, USER_=username, PASS_=user_password"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=URL_, password=${EXAMPLE_URL}"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=USER_, password=username"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=PASS_, password=user_password"))
     assertJobStatusSuccess()
   }
 

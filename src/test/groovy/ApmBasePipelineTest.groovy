@@ -435,6 +435,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
+    helper.registerAllowedMethod('goDefaultVersion', [],  {
+      def ret = '1.15.6'
+      if(env.GO_VERSION != null){
+        ret = env.GO_VERSION
+      }
+      return ret
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('installTools', [List.class], { l ->
       def script = loadScript('vars/installTools.groovy')

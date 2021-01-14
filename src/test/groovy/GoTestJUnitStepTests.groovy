@@ -34,11 +34,13 @@ class GoTestJUnitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
+    def version = "1.15.1"
+    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'gotestsum --format testname --junitfile junit-report.xml --'))
-    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=null'))
+    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', "version=${version}"))
     assertJobStatusSuccess()
   }
 

@@ -34,8 +34,7 @@
 
 */
 def call(Map args = [:], Closure body) {
-  def goDefaultVersion = "" != "${env.GO_VERSION}" && env.GO_VERSION != null ? "${env.GO_VERSION}" : '1.14.2'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
   def os = args.containsKey('os') ? args.os : nodeOS()
   def lastCoordinate = version[-2..-1]

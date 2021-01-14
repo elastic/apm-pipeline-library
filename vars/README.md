@@ -370,6 +370,7 @@ Print a text on color on a xterm.
  This step run a filebeat Docker container to grab the Docker containers logs in a single file.
  `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
  the only argument need is the `workdir` if you set it on the `filebeat step` call.
+ The output log files should be in a relative path to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
 
 ```
   filebeat()
@@ -387,7 +388,7 @@ Print a text on color on a xterm.
 * *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
 * *output:* log file to save all Docker containers logs (docker_logs.log).
 * *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
-* *workdir:* Directory to use as root folder to read and write files (WORKSPACE).
+* *workdir:* Directory to use as root folder to read and write files (current folder).
 
 ```
   filebeat(config: 'filebeat.yml',
@@ -1129,6 +1130,14 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `CHANGE_ID`
         - `ORG_NAME`
         - `REPO_NAME`
+
+## goDefaultVersion
+
+  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
+
+  ```
+  goDefaultVersion()
+  ```
 
 ## goTestJUnit
  Run Go unit tests and generate a JUnit report.
@@ -2032,6 +2041,19 @@ setupAPMGitEmail(global: true)
 
 * *global*: to configure the user and email account globally. Optional.
 
+## stackVersions
+
+  Return the version currently used for testing.
+
+  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
+  stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
+
+  stackVersions.edge() // '8.0.0'
+  stackVersions.dev() // '7.11.0'
+  stackVersions.release() // '7.10.2'
+  stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
+  stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+
 ## stashV2
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
@@ -2376,7 +2398,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
 
@@ -2400,7 +2422,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
 
@@ -2424,7 +2446,7 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
   }
 ```
 
-* version: Go version to install, if it is not set, it'll use GO_VERSION env var or '1.14.2'
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.
 
