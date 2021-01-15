@@ -34,14 +34,62 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
+  // triggers {
+  //   // most of then come from https://prow.k8s.io/command-help
+  //   issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+.*)?$')
+  // }
+  //http://JENKINS_URL/generic-webhook-trigger/invoke
   triggers {
-    // most of then come from https://prow.k8s.io/command-help
-    issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+.*)?$')
+    GenericTrigger(
+     genericVariables: [
+      [key: 'ref', value: '$.ref'],
+      [key: 'repo', value: '$.repository.name'],
+      [key: 'after', value: '$.after'],
+      [key: 'payload', value: '$'],
+      [key: 'comment_id', value: '$.comment.id'],
+      [key: 'payload', value: '$'],
+     ],
+    genericHeaderVariables: [
+     [key: 'x-github-event', regexpFilter: '']
+    ],
+     causeString: 'Triggered on $ref',
+     //tokenCredentialId: '',
+     printContributedVariables: true,
+     printPostContent: false,
+     silentResponse: true,
+     regexpFilterText: '$ref-$x_github_event',
+     //regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+)-push$'
+    )
   }
   parameters {
     string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
   }
   stages {
+    stage('Process GitHub Event') {
+      steps {
+          echo """
+          ref:${env.ref}
+          repo:${repo}
+          after:${env.after}
+          x_github_event:${env.x_github_event}
+          comment_id:${env.comment_id}
+          """
+          whenTrue("payload" == "${env.payload}"){
+            echo """
+            payload_action:${payload_action}
+            payload_repository_name:${payload_repository_name}
+            """
+          }
+          whenTrue("issue_comment" == "${env.x_github_event}"){
+            echo """
+            payload_comment_id:${payload_comment_id}
+            payload_comment_body:${payload_comment_body}
+            payload_issue_number:${payload_issue_number}
+            payload_pull_request_head_sha:${payload_pull_request_head_sha}
+            """
+          }
+      }
+    }
     /**
      Checkout the code and stash it, to use it on other stages.
     */
