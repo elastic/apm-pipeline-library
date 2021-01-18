@@ -24,14 +24,18 @@
   githubPrCheckApproved()
 */
 def call(Map params = [:]){
-  if(!isPR()){
+  def changeId =  params.get('changeId', env.CHANGE_ID)
+  def org = params.get('org', env.ORG_NAME)
+  def repo = params.get('repo', env.REPO_NAME)
+  def token = params.get('token', getGithubToken())
+
+  if(!changeId){
     return true
   }
   def approved = false
-  def token = getGithubToken()
-  def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
-  def pr = githubPrInfo(token: token, repo: repoName, pr: env.CHANGE_ID)
-  def reviews = githubPrReviews(token: token, repo: repoName, pr: env.CHANGE_ID)
+  def repoName = "${org}/${repo}"
+  def pr = githubPrInfo(token: token, repo: repoName, pr: changeId)
+  def reviews = githubPrReviews(token: token, repo: repoName, pr: changeId)
   def user = pr?.user?.login
   def userType = pr?.user?.type
 
