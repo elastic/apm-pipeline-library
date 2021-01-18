@@ -85,8 +85,8 @@ pipeline {
             payload_comment_id:${payload_comment_id}
             payload_comment_body:${payload_comment_body}
             payload_issue_number:${payload_issue_number}
-            payload_pull_request_head_sha:${payload_pull_request_head_sha}
             """
+            //payload_pull_request_head_sha:${payload_pull_request_head_sha}
           }
       }
     }
