@@ -32,14 +32,20 @@
     description: "Detect unicode non-breaking space character U+00A0 aka M-BM-"
     language: system
     entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
-    exclude: ^target/
+    exclude: >
+        (?x)^(
+            target/.*|.*/?\.*.(gif|jpg|png)
+        )$
 -   id: remove-unicode-non-breaking-spaces
     name: remove-unicode-non-breaking-spaces
     description: "Remove unicode non-breaking space character U+00A0 aka M-BM-"
     language: system
     entry: perl -pi* -e 's/\xc2\xa0/ /g && ($t = 1) && print STDERR $_; END{{exit
         $t}}'
-    exclude: ^target/
+    exclude: >
+        (?x)^(
+            target/.*|.*/?\.*.(gif|jpg|png)
+        )$
 -   id: check-en-dashes
     name: check-en-dashes
     description: "Detect the EXTREMELY confusing unicode character U+2013"
