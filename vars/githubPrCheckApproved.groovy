@@ -50,7 +50,7 @@ def call(Map params = [:]){
   approved = user != null && (isPrApproved(reviews) ||
                               hasWritePermission(token, repoName, user) ||
                               isAuthorizedBot(user, userType) ||
-                              isAuthorizedUser(user))
+                              isAuthorizedUser(repoName, user))
 
   if(!approved){
     def message = 'The PR is not allowed to run in the CI yet'
@@ -113,12 +113,12 @@ def isAuthorizedBot(login, type){
   Check if the PR come from a trusted user. For such it requires the access to
   the env variable REPO_NAME.
 */
-def isAuthorizedUser(login){
+def isAuthorizedUser(repo, login){
   log(level: 'DEBUG', text: "githubPrCheckApproved: isAuthorizedUser(${login})")
   def ret = false
-  if(env.REPO_NAME) {
+  if(repo) {
     try {
-      def fileContent = libraryResource("approval-list/${env.REPO_NAME}.yml")
+      def fileContent = libraryResource("approval-list/${repo}.yml")
       def authorizedUsers = readYaml(text: fileContent)['USERS']
       ret = authorizedUsers.any{ it.equals(login) }
     } catch(e) {
