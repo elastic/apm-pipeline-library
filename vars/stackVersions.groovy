@@ -16,18 +16,45 @@
 // under the License.
 
 /**
- Run Go unit tests and generate a JUnit report.
+  Return the version currently used for testing.
 
- goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
-*/
+  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
+
+  stackVersions.edge()
+  stackVersions.dev()
+  stackVersions.release()
+  stackVersions.snapshot(stackVersions.edge())
+  stackVersions.edge(snapshot: true)
+
+**/
 def call(Map args = [:]) {
-  def options = args.containsKey('options') ? args.options : ''
-  def output = args.containsKey('output') ? args.output : 'junit-report.xml'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion()
+  return [
+    edge(args),
+    dev(args),
+    release(args)
+  ]
+}
 
-  log(level: 'INFO', text: 'Running Go test an generating JUnit output')
+def snapshot(version){
+  return "${version}-SNAPSHOT"
+}
 
-  withGoEnv(version: version, pkgs: ["gotest.tools/gotestsum"]){
-    cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
-  }
+def version(value, args = [:]){
+  return "${value}${isSnapshot(args)}"
+}
+
+def edge(Map args = [:]){
+  return version("8.0.0", args)
+}
+
+def dev(Map args = [:]){
+  return version("7.11.0", args)
+}
+
+def release(Map args = [:]){
+  return version("7.10.2", args)
+}
+
+def isSnapshot(args){
+  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
 }

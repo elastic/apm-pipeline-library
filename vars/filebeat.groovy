@@ -39,15 +39,18 @@ def start(Map args = [:]) {
   def output = args.containsKey('output') ? args.output : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
-  def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
+  def workdir = args.containsKey('workdir') ? args.workdir : pwd()
+  def timeout = args.containsKey('timeout') ? args.timeout : "30"
+  def configPath = "${workdir}/${config}"
+
   log(level: 'INFO', text: 'Running Filebeat Docker container')
 
-  configureFilebeat(config, output)
-  dockerID = sh(label: 'Run filebeat to grab container logs', script: """
+  configureFilebeat(configPath, output)
+  def dockerID = sh(label: 'Run filebeat to grab container logs', script: """
     docker run \
       --detach \
       -v ${workdir}:/output \
-      -v ${workdir}/${config}:/usr/share/filebeat/filebeat.yml \
+      -v ${configPath}:/usr/share/filebeat/filebeat.yml \
       -u 0:0 \
       -v /var/lib/docker/containers:/var/lib/docker/containers \
       -v /var/run/docker.sock:/var/run/docker.sock \
@@ -66,24 +69,27 @@ def start(Map args = [:]) {
     output: output,
     config: config,
     image: image,
-    workdir: workdir
+    workdir: workdir,
+    timeout: timeout
   ]
 
-  writeJSON(file: "${workdir}/filebeat_container_config.json", json: json)
+  writeJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json", json: json)
 }
 
 def stop(Map args = [:]){
-  def workdir = args.containsKey('workdir') ? args.workdir : "${env.WORKSPACE}"
-  def config = readJSON(file: "${workdir}/filebeat_container_config.json")
+  def workdir = args.containsKey('workdir') ? args.workdir : pwd()
+  def stepConfig = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
+  def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
+
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
   // we need to change the permission because the group others never will have permissions
   // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
-    docker exec ${config.id} chmod -R ugo+rw /output
-    docker kill ${config.id}
+    docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
+    docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  archiveArtifacts(artifacts: "**/${config.output}*", allowEmptyArchive: true)
+  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
 }
 
 def configureFilebeat(config, output){

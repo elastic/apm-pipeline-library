@@ -19,39 +19,59 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class GoTestJUnitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/goTestJUnit.groovy'
+class StackVersionsStepTests extends ApmBasePipelineTest {
+  String scriptName = 'vars/stackVersions.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.GOPATH = "${env.WORKSPACE}"
-    helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
-      c.call()
-    })
   }
 
   @Test
   void test() throws Exception {
-    def version = "1.15.1"
-    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def script = loadScript(scriptName)
-    script.call()
+    def versions = script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'gotestsum --format testname --junitfile junit-report.xml --'))
-    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', "version=${version}"))
+    assertTrue(versions instanceof ArrayList)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testArguments() throws Exception {
+  void testEdge() throws Exception {
     def script = loadScript(scriptName)
-    script.call(options: '-foo -bar', output: 'foo.xml', version: 'fooGo')
+    def versions = script.edge()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '-- -foo -bar'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--junitfile foo.xml'))
-    assertTrue(assertMethodCallContainsPattern('withGoEnvUnix', 'version=fooGo'))
+    assertTrue(versions != "")
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testDev() throws Exception {
+    def script = loadScript(scriptName)
+    def versions = script.dev()
+    printCallStack()
+    assertTrue(versions != "")
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRelease() throws Exception {
+    def script = loadScript(scriptName)
+    def versions = script.release()
+    printCallStack()
+    assertTrue(versions != "")
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSnapshot() throws Exception {
+    def script = loadScript(scriptName)
+    def versions = script.edge(snapshot: true)
+    printCallStack()
+    assertTrue(versions != "")
+    assertTrue(versions.contains("-SNAPSHOT"))
+    assertTrue(versions.contains(script.edge()))
     assertJobStatusSuccess()
   }
 }

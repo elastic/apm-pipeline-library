@@ -23,15 +23,19 @@
 
 #### Build stats
 
-* Build Cause: `${build?.causes?.shortDescription}`
-<% if(!build?.description != null && !build?.description.equals('null')) {%>
+<% if(build?.causes?.shortDescription != null && !build?.causes?.shortDescription.equals('null')) {%>
+* Build Cause: `${build.causes.shortDescription}`
+<%}%>
+<% if(build?.description != null && !build?.description.equals('null')) {%>
 * Reason: `${build.description}`
 <%}%>
-* Start Time: ${build?.startTime}
+<% if(build?.startTime != null && !build?.startTime.equals('null')) {%>
+* * Start Time: ${build?.startTime}
+<%}%>
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec
 <%}%>
-<% if(build?.commitId != null && !build?.description.equals('null') && build?.commitId.toString().trim()) {%>
+<% if(build?.commitId != null && !build?.commitId.equals('null') && build?.commitId.toString().trim()) {%>
 * Commit: ${build?.commitId.split('\\+')[0]}
 <%}%>
 

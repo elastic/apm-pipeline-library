@@ -16,18 +16,27 @@
 // under the License.
 
 /**
- Run Go unit tests and generate a JUnit report.
+  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value.
 
- goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
-*/
+  goDefaultVersion()
+**/
 def call(Map args = [:]) {
-  def options = args.containsKey('options') ? args.options : ''
-  def output = args.containsKey('output') ? args.output : 'junit-report.xml'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion()
-
-  log(level: 'INFO', text: 'Running Go test an generating JUnit output')
-
-  withGoEnv(version: version, pkgs: ["gotest.tools/gotestsum"]){
-    cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
+  def goDefaultVersion = defaultVersion()
+  if(isGoVersionEnvVarSet()) {
+    goDefaultVersion = "${env.GO_VERSION}"
+  } else {
+    def goFileVersion = '.go-version'
+    if (fileExists(goFileVersion)){
+      goDefaultVersion = readFile(file: goFileVersion)?.trim()
+    }
   }
+  return goDefaultVersion
+}
+
+def isGoVersionEnvVarSet(){
+  return env.GO_VERSION != null && "" != "${env.GO_VERSION}"
+}
+
+def defaultVersion(){
+  return '1.15.6'
 }

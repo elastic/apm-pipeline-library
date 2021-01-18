@@ -38,6 +38,7 @@ Boolean call(Map args = [:]){
     if (whenComments(args)) { ret = true }
     if (whenLabels(args)) { ret = true }
     if (whenNotChangeset(args)) { ret = true }
+    if (whenNotChangesetFullMatch(args)) { ret = true }
     if (whenParameters(args)) { ret = true }
     if (whenTags(args)) { ret = true }
   } else {
@@ -59,63 +60,81 @@ private Boolean whenBranches(Map args = [:]) {
 }
 
 private Boolean whenChangeset(Map args = [:]) {
+  def name = 'Changeset'
   if (args.content?.get('changeset')) {
-    // Gather macro changeset entries
-    def macro = [:]
-    args?.changeset?.each { k,v ->
-      macro[k] = v
-    }
+    def arguments = args
+    arguments.name = name
+    return changeset(arguments)
+  } else {
+    markdownReason(project: args.project, reason: "* ${name} is `disabled`.")
+  }
+  return false
+}
 
-    // Create list of changeset patterns to be searched.
-    def patterns = []
-    args.content.changeset.each {
-      if (it.startsWith('@')){
-        def search = it.replaceAll('@', '')
-        macro[search].each { macroEntry ->
-          patterns << macroEntry
-        }
-      } else {
-        patterns << it
+private Boolean changeset(Map args = [:]) {
+  def name = args.get('name', 'Changeset')
+  def partialMatch = args.get('partialMatch', true)
+  // Gather macro changeset entries
+  def macro = [:]
+  args?.changeset?.each { k,v ->
+    macro[k] = v
+  }
+
+  // Create list of changeset patterns to be searched.
+  def patterns = []
+  args.content.changeset.each {
+    if (it.startsWith('@')){
+      def search = it.replaceAll('@', '')
+      macro[search].each { macroEntry ->
+        patterns << macroEntry
       }
+    } else {
+      patterns << it
     }
+  }
 
-    // If function then calculate the project dependencies on the fly.
-    if (args.get('changesetFunction')) {
-      def changesetFunction = args.changesetFunction
+  // If function then calculate the project dependencies on the fly.
+  if (args.get('changesetFunction')) {
+    def changesetFunction = args.changesetFunction
+    calculatedPatterns = changesetFunction.run(args)
+    patterns.addAll(calculatedPatterns)
+
+    // Search for some other project dependencies that are explicitly
+    // sett with the pattern #<project-folder>
+    args.content.changeset.findAll { it.startsWith('#') }.each {
+      Map newArgs = args
+      newArgs.project = it.replaceAll('#', '')
       calculatedPatterns = changesetFunction.run(args)
       patterns.addAll(calculatedPatterns)
-
-      // Search for some other project dependencies that are explicitly
-      // sett with the pattern #<project-folder>
-      args.content.changeset.findAll { it.startsWith('#') }.each {
-        Map newArgs = args
-        newArgs.project = it.replaceAll('#', '')
-        calculatedPatterns = changesetFunction.run(args)
-        patterns.addAll(calculatedPatterns)
-      }
     }
+  }
 
-    // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
+  // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
 
-    // Gather the diff between the target branch and the current commit.
-    def gitDiffFile = 'git-diff.txt'
-    // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
-    def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
-    sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
+  // Gather the diff between the target branch and the current commit.
+  def gitDiffFile = 'git-diff.txt'
+  // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
+  def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
+  sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
 
-    // Search for any pattern that matches that particular
-    def fileContent = readFile(gitDiffFile)
+  // Search for any pattern that matches that particular if partialMatch or fullMatch
+  def fileContent = readFile(gitDiffFile)
+
+  def match = false
+  if (partialMatch) {
     match = patterns?.find { pattern ->
       fileContent?.split('\n').any { line -> line ==~ pattern }
     }
-    if (match) {
-      markdownReason(project: args.project, reason: "* ✅ Changeset is `enabled` and matches with the pattern `${match}`.")
-      return true
-    } else {
-      markdownReason(project: args.project, reason: "* ❕Changeset is `enabled` and does **NOT** match with the pattern `${fileContent}`.")
-    }
   } else {
-    markdownReason(project: args.project, reason: '* ❕Changeset is `disabled`.')
+    match = patterns?.every { pattern ->
+      fileContent?.split('\n').every { line -> line ==~ pattern }
+    }
+  }
+  if (match) {
+    markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the pattern `${match}`.")
+    return true
+  } else {
+    markdownReason(project: args.project, reason: "* ${name} is `enabled` and does **NOT** match with the pattern `${fileContent}`.")
   }
   return false
 }
@@ -153,11 +172,30 @@ private Boolean whenLabels(Map args = [:]) {
 }
 
 private Boolean whenNotChangeset(Map args = [:]) {
+  def name = 'NotChangeset'
   if (args.content?.get('not_changeset')) {
     def arguments = args
     arguments.content.changeset = args.content.get('not_changeset')
+    arguments.name = name
     arguments.content.remove('changesetFunction')
     return !whenChangeset(arguments)
+  } else {
+    markdownReason(project: args.project, reason: "* ❕${name} is `disabled`.")
+  }
+  return false
+}
+
+private Boolean whenNotChangesetFullMatch(Map args = [:]) {
+  def name = 'NotChangesetFullMatch'
+  if (args.content?.get('not_changeset_full_match')) {
+    def arguments = args
+    arguments.content.changeset = [ args.content.get('not_changeset_full_match') ]
+    arguments.partialMatch = false
+    arguments.name = name
+    arguments.content.remove('changesetFunction')
+    return !whenChangeset(arguments)
+  } else {
+    markdownReason(project: args.project, reason: "* ❕${name} is `disabled`.")
   }
   return false
 }

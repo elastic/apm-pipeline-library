@@ -1,0 +1,6 @@
+
+  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
+
+  ```
+  goDefaultVersion()
+  ```
