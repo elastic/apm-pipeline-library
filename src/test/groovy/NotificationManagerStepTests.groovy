@@ -441,6 +441,44 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_failure_and_github_environmental_issue() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_failure_and_github_environmental_issue_and_further_errors() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-also-github-environmental-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_slack_with_aborted_but_no_cancel_build() throws Exception {
     def script = loadScript(scriptName)
     script.notifySlack(

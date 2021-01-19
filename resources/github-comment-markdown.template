@@ -71,10 +71,14 @@ ${errorStackTrace}
 <%}%>
 
 <!-- STEPS ERRORS IF ANY -->
+<% errorGitHub = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Notifies GitHub')}%>
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
 <% stepsErrors = stepsErrors?.findAll{ !it?.displayName?.contains('Error signal') } %>
 <% if (errorSignal) { stepsErrors = stepsErrors << errorSignal }%>
+<% if (stepsErrors?.size() <= 0 && !buildStatus?.equals('SUCCESS') && errorGitHub) {%>
+  <% stepsErrors = stepsErrors << errorGitHub %>
+<%}%>
 <% if (stepsErrors?.size() != 0) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
