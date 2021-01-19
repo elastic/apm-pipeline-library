@@ -34,10 +34,6 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
-  // triggers {
-  //   // most of then come from https://prow.k8s.io/command-help
-  //   issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+.*)?$')
-  // }
   //http://JENKINS_URL/generic-webhook-trigger/invoke
   triggers {
     GenericTrigger(
