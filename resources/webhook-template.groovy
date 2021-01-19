@@ -53,12 +53,13 @@ pipeline {
      [key: 'x-github-event', regexpFilter: '']
     ],
      causeString: 'Triggered on $ref',
+     //Allow to use a credential as a secret to trigger the webhook
      //tokenCredentialId: '',
      printContributedVariables: true,
      printPostContent: false,
      silentResponse: true,
      regexpFilterText: '$ref-$x_github_event',
-     //regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+)-push$'
+     regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+)-comment$'
     )
   }
   parameters {
