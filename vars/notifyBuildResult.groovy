@@ -112,17 +112,8 @@ def call(Map args = [:]) {
           }
         }
 
-        // Should notify in slack if it's enabled
-        if(notifySlackComment) {
-          data['header'] = slackHeader
-          data['channel'] = slackChannel
-          data['credentialId'] = slackCredentials
-          data['enabled'] = slackNotify
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
-          catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notificationManager.notifySlack(data)
-          }
-        }
+        notifySlack(when: notifySlackComment, data: data, slackHeader: slackHeader, slackChannel: slackChannel, slackCredentials: slackCredentials, slackNotify: slackNotify)
+
         log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
         catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           notificationManager.generateBuildReport(data)
@@ -181,4 +172,18 @@ def customisedEmail(String email) {
     }
   }
   return []
+}
+
+def notifySlack(def args=[:]) {
+  if(args.when) {
+    def data = args.data
+    data['header'] = args.slackHeader
+    data['channel'] = args.slackChannel
+    data['credentialId'] = args.slackCredentials
+    data['enabled'] = args.slackNotify
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
+    catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      (new NotificationManager()).notifySlack(data)
+    }
+  }
 }
