@@ -72,3 +72,9 @@
     language: script
     entry: .ci/scripts/gherkin-lint.sh
     files: \.feature$
+-   id: check-markdown-lint
+    name: check-markdown-lint
+    description: "Check markdown links targeting public URLs are not broken, requires docker."
+    language: script
+    entry: .ci/scripts/markdown-lint.sh
+    files: \.md$

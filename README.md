@@ -175,6 +175,7 @@ Some hooks might require some extra tools such as:
 * Check yaml
 * Check xml
 * Check bash syntax
+* Check broken links in markdown
 * End-of-file-fixer
 * Ensure neither abstract classes nor traits are used in the shared library.
 * Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.
@@ -254,6 +255,7 @@ Add this to your `.pre-commit-config.yaml`
 * check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
 * remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
 * check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
+* check-markdown-lint - Check markdown links targeting public URLs are not broken, requires docker.
 
 ## Test Infra
 
