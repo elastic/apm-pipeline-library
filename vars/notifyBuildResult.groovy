@@ -93,16 +93,10 @@ def call(Map args = [:]) {
         }
 
         // Should analyze flakey but exclude it when aborted
-        if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
-          data['es'] = es
-          data['es_secret'] = secret
-          data['flakyReportIdx'] = flakyReportIdx
-          data['flakyThreshold'] = flakyThreshold
-          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
-          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            def flakyComment = notificationManager.analyzeFlakey(data)
-            notifications << flakyComment
-          }
+        def flakyComment = analyzeFlaky(when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'),
+                                        data: data, es: es, secret: secret, flakyReportIdx: flakyReportIdx, flakyThreshold: flakyThreshold)
+        if (flakyComment) {
+          notifications << flakyComment
         }
 
         notifySlack(when: notifySlackComment, data: data, slackHeader: slackHeader, slackChannel: slackChannel, slackCredentials: slackCredentials, slackNotify: slackNotify)
@@ -152,6 +146,21 @@ def addGitHubCustomComment(def args=[:]) {
   }
 }
 
+def analyzeFlaky(def args=[:]) {
+  if(args.when) {
+    def content = args.data
+    content['es'] = args.es
+    content['es_secret'] = args.secret
+    content['flakyReportIdx'] = args.flakyReportIdx
+    content['flakyThreshold'] = args.flakyThreshold
+    log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+    catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def flakyComment = (new NotificationManager()).analyzeFlakey(content)
+      return flakyComment
+    }
+  }
+}
+
 def customisedEmail(String email) {
   if (email) {
     // default name should be the REPO env variable.
@@ -186,6 +195,7 @@ def notifyEmail(def args=[:]) {
     (new NotificationManager()).notifyEmail(args.data)
   }
 }
+
 def notifySlack(def args=[:]) {
   if(args.when) {
     def data = args.data
