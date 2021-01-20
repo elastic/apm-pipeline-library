@@ -246,7 +246,7 @@ Add this to your `.pre-commit-config.yaml`
 
 ### Available hooks
 
-* check-bash-syntax - Check Shell scripts syntax corectness, requires bash
+* check-bash-syntax - Check Shell scripts syntax correctness, requires bash
 * check-abstract-classes-and-trait - Ensure neither abstract classes nor traits are used
 * check-jsonslurper-class - Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper
 * check-jenkins-pipelines - Check the syntax of the Jenkinsfiles, requires docker and jenkins up and running.
@@ -254,7 +254,7 @@ Add this to your `.pre-commit-config.yaml`
 * remove-unicode-non-breaking-spaces - Remove unicode non-breaking space character U+00A0 aka M-BM-
 * check-en-dashes - Detect the EXTREMELY confusing unicode character U+2013
 * remove-en-dashes - Remove the EXTREMELY confusing unicode character U+2013
-* check-gherkin-lint - Check Gherkin feature syntax corectness, requires docker.
+* check-gherkin-lint - Check Gherkin feature syntax correctness, requires docker.
 * check-markdown-lint - Check markdown links targeting public URLs are not broken, requires docker.
 
 ## Test Infra
