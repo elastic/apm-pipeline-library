@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-IMAGE="ghcr.io/tcort/markdown-link-check:3"
+IMAGE="ghcr.io/tcort/markdown-link-check:3.8.5"
 docker pull "${IMAGE}" > /dev/null || true
 
 for f in **/*.md
