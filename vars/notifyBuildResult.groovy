@@ -82,17 +82,11 @@ def call(Map args = [:]) {
         addGitHubCustomComment(newPRComment: newPRComment)
 
         // Should notify if it is a PR and it's enabled
-        def prComment = createGitHubComment(when: (notifyPRComment && isPR()), data: data)
-        if (prComment) {
-          notifications << prComment
-        }
+        createGitHubComment(when: (notifyPRComment && isPR()), data: data, notifications: notifications)
 
         // Should analyze flakey but exclude it when aborted
-        def flakyComment = analyzeFlaky(when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'),
-                                        data: data, es: es, secret: secret, flakyReportIdx: flakyReportIdx, flakyThreshold: flakyThreshold)
-        if (flakyComment) {
-          notifications << flakyComment
-        }
+        analyzeFlaky(when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'),
+                     data: data, es: es, secret: secret, flakyReportIdx: flakyReportIdx, flakyThreshold: flakyThreshold, notifications: notifications)
 
         notifySlack(when: notifySlackComment, data: data, slackHeader: slackHeader, slackChannel: slackChannel, slackCredentials: slackCredentials, slackNotify: slackNotify)
 
@@ -164,7 +158,7 @@ def analyzeFlaky(def args=[:]) {
     log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
     catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       def flakyComment = (new NotificationManager()).analyzeFlakey(content)
-      return flakyComment
+      args.notifications << flakyComment
     }
   }
 }
@@ -174,7 +168,7 @@ def createGitHubComment(def args=[:]) {
     log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
     catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       def prComment = (new NotificationManager()).notifyPR(args.data)
-      return prComment
+      args.notifications << prComment
     }
   }
 }
