@@ -81,12 +81,7 @@ def call(Map args = [:]) {
 
         notifyEmail(data: data, when: (shouldNotify && !to?.empty))
 
-        newPRComment.findAll { k, v ->
-          catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            unstash v
-            notificationManager.customPRComment(commentFile: k, file: v)
-          }
-        }
+        addGitHubCustomComment(newPRComment: newPRComment)
 
         // Should notify if it is a PR and it's enabled
         if(notifyPRComment && isPR()) {
@@ -144,6 +139,15 @@ def call(Map args = [:]) {
       catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
         deleteDir()
       }
+    }
+  }
+}
+
+def addGitHubCustomComment(def args=[:]) {
+  args.newPRComment.findAll { k, v ->
+    catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      unstash v
+      (new NotificationManager()).customPRComment(commentFile: k, file: v)
     }
   }
 }
