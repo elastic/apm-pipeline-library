@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.178 (20/01/2021)
+
+#### 🚀 Enhancements
+
+-  [pre-commit] exclude gif/png files [#909](https://github.com/elastic/apm-pipeline-library/pull/909)
+
+#### 🐛 Bug Fixes
+
+-  Add resilience when GitHub got some glitches [#911](https://github.com/elastic/apm-pipeline-library/pull/911)
+
+#### ⚙️ CI
+
+-  feat: add a pre-commit hook detecting broken markdown links [#914](https://github.com/elastic/apm-pipeline-library/pull/914)
+
 ## v1.1.177 (15/01/2021)
 
 #### 🚀 Enhancements
