@@ -77,8 +77,6 @@ def call(Map args = [:]) {
         data['disableGHComment'] = aggregateComments
         def notifications = []
 
-        def notificationManager = new NotificationManager()
-
         notifyEmail(data: data, when: (shouldNotify && !to?.empty))
 
         addGitHubCustomComment(newPRComment: newPRComment)
