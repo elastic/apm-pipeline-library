@@ -84,12 +84,9 @@ def call(Map args = [:]) {
         addGitHubCustomComment(newPRComment: newPRComment)
 
         // Should notify if it is a PR and it's enabled
-        if(notifyPRComment && isPR()) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            def prComment = notificationManager.notifyPR(data)
-            notifications << prComment
-          }
+        def prComment = createGitHubComment(when: (notifyPRComment && isPR()), data: data)
+        if (prComment) {
+          notifications << prComment
         }
 
         // Should analyze flakey but exclude it when aborted
@@ -157,6 +154,16 @@ def analyzeFlaky(def args=[:]) {
     catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       def flakyComment = (new NotificationManager()).analyzeFlakey(content)
       return flakyComment
+    }
+  }
+}
+
+def createGitHubComment(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+    catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def prComment = (new NotificationManager()).notifyPR(args.data)
+      return prComment
     }
   }
 }
