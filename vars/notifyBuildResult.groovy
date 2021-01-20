@@ -130,6 +130,10 @@ def call(Map args = [:]) {
 
 def aggregateGitHubComments(def args=[:]) {
   if (args.when) {
+    if (nextBuild) {
+      log(level: 'INFO', text: 'notifyBuildResult: Notifications was already done in a younger build.')
+      return
+    }
     log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
     // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
     githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
