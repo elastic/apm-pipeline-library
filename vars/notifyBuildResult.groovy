@@ -78,10 +78,8 @@ def call(Map args = [:]) {
         def notifications = []
 
         def notificationManager = new NotificationManager()
-        if(shouldNotify && !to?.empty){
-          log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
-          notificationManager.notifyEmail(data)
-        }
+
+        notifyEmail(data: data, when: (shouldNotify && !to?.empty))
 
         newPRComment.findAll { k, v ->
           catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -178,6 +176,12 @@ def generateBuildReport(def args=[:]) {
   }
 }
 
+def notifyEmail(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+    (new NotificationManager()).notifyEmail(args.data)
+  }
+}
 def notifySlack(def args=[:]) {
   if(args.when) {
     def data = args.data
