@@ -114,10 +114,7 @@ def call(Map args = [:]) {
 
         notifySlack(when: notifySlackComment, data: data, slackHeader: slackHeader, slackChannel: slackChannel, slackCredentials: slackCredentials, slackNotify: slackNotify)
 
-        log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
-        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-          notificationManager.generateBuildReport(data)
-        }
+        generateBuildReport(data: data)
 
         // Notify only if there are notifications and they should be aggregated
         if (aggregateComments && notifications?.size() > 0) {
@@ -172,6 +169,13 @@ def customisedEmail(String email) {
     }
   }
   return []
+}
+
+def generateBuildReport(def args=[:]) {
+  log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+  catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    (new NotificationManager()).generateBuildReport(data)
+  }
 }
 
 def notifySlack(def args=[:]) {
