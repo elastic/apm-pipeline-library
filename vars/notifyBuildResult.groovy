@@ -132,7 +132,7 @@ def aggregateGitHubComments(def args=[:]) {
   if (args.when) {
     try {
       // As long as there is no a new build running.
-      if (!nextBuild?.isBuilding()) {
+      if (nextBuild && !nextBuild?.isBuilding()) {
         log(level: 'INFO', text: 'aggregateGitHubComments: Notification was already done in a younger build.')
         return
       }
