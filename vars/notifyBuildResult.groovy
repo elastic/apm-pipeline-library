@@ -133,9 +133,12 @@ def aggregateGitHubComments(def args=[:]) {
     } catch(err) {
       log(level: 'WARN', text: 'aggregateGitHubComments: could not fetch the nextBuild.')
     }
-    log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
     // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
     githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
+  } else {
+    log(level: 'DEBUG', text: "aggregateGitHubComments: is disabled. ${args.notifications?.join('')}")
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
   }
 }
 
