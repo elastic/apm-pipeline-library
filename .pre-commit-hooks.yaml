@@ -1,6 +1,6 @@
 -   id: check-bash-syntax
     name: check-bash-syntax
-    description: "Check Shell scripts syntax corectness, requires bash"
+    description: "Check Shell scripts syntax correctness, requires bash"
     language: system
     entry: bash -n
     files: \.sh$
@@ -68,7 +68,13 @@
     verbose: true
 -   id: check-gherkin-lint
     name: check-gherkin-lint
-    description: "Check Gherkin feature syntax corectness, requires docker."
+    description: "Check Gherkin feature syntax correctness, requires docker."
     language: script
     entry: .ci/scripts/gherkin-lint.sh
     files: \.feature$
+-   id: check-markdown-lint
+    name: check-markdown-lint
+    description: "Check markdown links targeting public URLs are not broken, requires docker."
+    language: script
+    entry: .ci/scripts/markdown-lint.sh
+    files: \.md$
