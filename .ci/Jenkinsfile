@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@test/gh-comment-1') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
