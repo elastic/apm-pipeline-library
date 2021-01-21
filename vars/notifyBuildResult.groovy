@@ -144,7 +144,6 @@ def aggregateGitHubComments(def args=[:]) {
     // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
     githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
   } else {
-    log(level: 'DEBUG', text: "aggregateGitHubComments: is disabled. ${args.notifications?.join('')}")
     log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
   }
 }
