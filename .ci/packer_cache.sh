@@ -35,6 +35,7 @@ docker.elastic.co/observability-ci/golang-mage
 docker.elastic.co/observability-ci/gren
 docker.elastic.co/observability-ci/shellcheck
 docker.elastic.co/observability-ci/yamllint
+ghcr.io/tcort/markdown-link-check:3.8.5
 widerplan/jenkins-job-builder
 github/super-linter:latest
 "

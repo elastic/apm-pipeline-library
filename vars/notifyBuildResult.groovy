@@ -72,61 +72,32 @@ def call(Map args = [:]) {
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
+        data['es'] = es
+        data['es_secret'] = secret
+        data['flakyReportIdx'] = flakyReportIdx
+        data['flakyThreshold'] = flakyThreshold
+        data['header'] = slackHeader
+        data['channel'] = slackChannel
+        data['credentialId'] = slackCredentials
+        data['enabled'] = slackNotify
 
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
         def notifications = []
 
-        def notificationManager = new NotificationManager()
-        if(shouldNotify && !to?.empty){
-          log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
-          notificationManager.notifyEmail(data)
-        }
+        notifyEmail(data: data, when: (shouldNotify && !to?.empty))
 
-        newPRComment.findAll { k, v ->
-          catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            unstash v
-            notificationManager.customPRComment(commentFile: k, file: v)
-          }
-        }
+        addGitHubCustomComment(newPRComment: newPRComment)
 
         // Should notify if it is a PR and it's enabled
-        if(notifyPRComment && isPR()) {
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
-          catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            def prComment = notificationManager.notifyPR(data)
-            notifications << prComment
-          }
-        }
+        createGitHubComment(data: data, notifications: notifications, when: (notifyPRComment && isPR()))
 
         // Should analyze flakey but exclude it when aborted
-        if(analyzeFlakey && currentBuild.currentResult != 'ABORTED') {
-          data['es'] = es
-          data['es_secret'] = secret
-          data['flakyReportIdx'] = flakyReportIdx
-          data['flakyThreshold'] = flakyThreshold
-          log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
-          catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            def flakyComment = notificationManager.analyzeFlakey(data)
-            notifications << flakyComment
-          }
-        }
+        analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
 
-        // Should notify in slack if it's enabled
-        if(notifySlackComment) {
-          data['header'] = slackHeader
-          data['channel'] = slackChannel
-          data['credentialId'] = slackCredentials
-          data['enabled'] = slackNotify
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
-          catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            notificationManager.notifySlack(data)
-          }
-        }
-        log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
-        catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-          notificationManager.generateBuildReport(data)
-        }
+        notifySlack(data: data, when: notifySlackComment)
+
+        generateBuildReport(data: data)
 
         // Notify only if there are notifications and they should be aggregated
         if (aggregateComments && notifications?.size() > 0) {
@@ -162,6 +133,35 @@ def call(Map args = [:]) {
   }
 }
 
+def addGitHubCustomComment(def args=[:]) {
+  args.newPRComment.findAll { k, v ->
+    catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      unstash v
+      (new NotificationManager()).customPRComment(commentFile: k, file: v)
+    }
+  }
+}
+
+def analyzeFlaky(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+    catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def flakyComment = (new NotificationManager()).analyzeFlakey(args.data)
+      args.notifications << flakyComment
+    }
+  }
+}
+
+def createGitHubComment(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+    catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def prComment = (new NotificationManager()).notifyPR(args.data)
+      args.notifications << prComment
+    }
+  }
+}
+
 def customisedEmail(String email) {
   if (email) {
     // default name should be the REPO env variable.
@@ -181,4 +181,27 @@ def customisedEmail(String email) {
     }
   }
   return []
+}
+
+def generateBuildReport(def args=[:]) {
+  log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+  catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    (new NotificationManager()).generateBuildReport(args.data)
+  }
+}
+
+def notifyEmail(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+    (new NotificationManager()).notifyEmail(args.data)
+  }
+}
+
+def notifySlack(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
+    catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      (new NotificationManager()).notifySlack(args.data)
+    }
+  }
 }
