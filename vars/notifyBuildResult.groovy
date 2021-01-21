@@ -72,6 +72,14 @@ def call(Map args = [:]) {
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
+        data['es'] = args.es
+        data['es_secret'] = args.secret
+        data['flakyReportIdx'] = args.flakyReportIdx
+        data['flakyThreshold'] = args.flakyThreshold
+        data['header'] = args.slackHeader
+        data['channel'] = args.slackChannel
+        data['credentialId'] = args.slackCredentials
+        data['enabled'] = args.slackNotify
 
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
@@ -82,13 +90,12 @@ def call(Map args = [:]) {
         addGitHubCustomComment(newPRComment: newPRComment)
 
         // Should notify if it is a PR and it's enabled
-        createGitHubComment(when: (notifyPRComment && isPR()), data: data, notifications: notifications)
+        createGitHubComment(data: data, notifications: notifications, when: (notifyPRComment && isPR()))
 
         // Should analyze flakey but exclude it when aborted
-        analyzeFlaky(when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'),
-                     data: data, es: es, secret: secret, flakyReportIdx: flakyReportIdx, flakyThreshold: flakyThreshold, notifications: notifications)
+        analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
 
-        notifySlack(when: notifySlackComment, data: data, slackHeader: slackHeader, slackChannel: slackChannel, slackCredentials: slackCredentials, slackNotify: slackNotify)
+        notifySlack(data: data, when: notifySlackComment)
 
         generateBuildReport(data: data)
 
@@ -153,14 +160,9 @@ def addGitHubCustomComment(def args=[:]) {
 
 def analyzeFlaky(def args=[:]) {
   if(args.when) {
-    def content = args.data
-    content['es'] = args.es
-    content['es_secret'] = args.secret
-    content['flakyReportIdx'] = args.flakyReportIdx
-    content['flakyThreshold'] = args.flakyThreshold
     log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
     catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-      def flakyComment = (new NotificationManager()).analyzeFlakey(content)
+      def flakyComment = (new NotificationManager()).analyzeFlakey(args.data)
       args.notifications << flakyComment
     }
   }
@@ -213,14 +215,9 @@ def notifyEmail(def args=[:]) {
 
 def notifySlack(def args=[:]) {
   if(args.when) {
-    def data = args.data
-    data['header'] = args.slackHeader
-    data['channel'] = args.slackChannel
-    data['credentialId'] = args.slackCredentials
-    data['enabled'] = args.slackNotify
     log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
     catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-      (new NotificationManager()).notifySlack(data)
+      (new NotificationManager()).notifySlack(args.data)
     }
   }
 }
