@@ -72,14 +72,14 @@ def call(Map args = [:]) {
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
         data['statsUrl'] = statsURL
-        data['es'] = args.es
-        data['es_secret'] = args.secret
-        data['flakyReportIdx'] = args.flakyReportIdx
-        data['flakyThreshold'] = args.flakyThreshold
-        data['header'] = args.slackHeader
-        data['channel'] = args.slackChannel
-        data['credentialId'] = args.slackCredentials
-        data['enabled'] = args.slackNotify
+        data['es'] = es
+        data['es_secret'] = secret
+        data['flakyReportIdx'] = flakyReportIdx
+        data['flakyThreshold'] = flakyThreshold
+        data['header'] = slackHeader
+        data['channel'] = slackChannel
+        data['credentialId'] = slackCredentials
+        data['enabled'] = slackNotify
 
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
