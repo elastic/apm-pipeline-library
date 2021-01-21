@@ -17,6 +17,7 @@
 
 import co.elastic.BuildException
 import co.elastic.NotificationManager
+import co.elastic.mock.RunWrapperMock
 import co.elastic.mock.StepsMock
 import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
@@ -34,7 +35,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-
+    binding.setVariable('nextBuild', null)
     env.NOTIFY_TO = "myName@example.com"
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
@@ -359,5 +360,39 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
     // Then sendDataToElasticsearch happens three times
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_latest_build() throws Exception {
+    def script = loadScript(scriptName)
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should happen
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should not happen
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
 }

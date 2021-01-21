@@ -100,11 +100,7 @@ def call(Map args = [:]) {
         generateBuildReport(data: data)
 
         // Notify only if there are notifications and they should be aggregated
-        if (aggregateComments && notifications?.size() > 0) {
-          log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
-          // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
-          githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
-        }
+        aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -130,6 +126,25 @@ def call(Map args = [:]) {
         deleteDir()
       }
     }
+  }
+}
+
+def aggregateGitHubComments(def args=[:]) {
+  if (args.when) {
+    try {
+      // As long as there is no a new build running.
+      if (nextBuild && !nextBuild?.isBuilding()) {
+        log(level: 'INFO', text: 'aggregateGitHubComments: Notification was already done in a younger build.')
+        return
+      }
+    } catch(err) {
+      log(level: 'WARN', text: 'aggregateGitHubComments: could not fetch the nextBuild.')
+    }
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
+    // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+    githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
   }
 }
 
