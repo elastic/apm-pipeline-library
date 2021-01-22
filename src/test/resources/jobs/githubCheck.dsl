@@ -7,20 +7,20 @@ DSL = '''pipeline {
   stages {
     stage('githubCheck') {
       steps {
-        githubCheck(name: 'name',
+        githubCheck(name: 'githubCheck-step',
                     description: 'Execute something',
-                    org: "v1v",
-                    repository: "ansible-role-jenkins_plugin_cli",
-                    commitId: "01bdb5ccf3a4a2028dab121bf892126b1db571d2",
+                    org: 'elastic',
+                    repository: 'apm-pipeline-library',
+                    commitId: '69e3ea411a363ec113766c78a29d4091c6dd2760',
                     status: 'failure',
                     detailsUrl: "${env.BUILD_URL}",
                     body: """### MARKDOWN \n\n #### Snippet \n ```bash\ntest```"""
         )
-        withGithubCheck(context: 'name',
+        withGithubCheck(context: 'withGithubCheck-step',
                         description: 'Execute something',
-                        org: "v1v",
-                        repository: "ansible-role-jenkins_plugin_cli",
-                        commitId: "01bdb5ccf3a4a2028dab121bf892126b1db571d2",
+                        org: 'elastic',
+                        repository: 'apm-pipeline-library',
+                        commitId: '69e3ea411a363ec113766c78a29d4091c6dd2760',
                         status: 'failure',
                         detailsUrl: "${env.BUILD_URL}",
                         body: """### MARKDOWN \n\n #### Snippet \n ```bash\ntest```""") {
