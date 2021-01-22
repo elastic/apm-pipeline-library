@@ -30,7 +30,7 @@
 def call(Map args = [:], Closure body) {
   def context = args.containsKey('context') ? args.context : error('withGithubCheck: missing context argument')
   def description = args.get('description', context)
-  def secret = args.get('secret', 'secret/observability-team/ci/github-app-token')
+  def secret = args.get('secret', 'secret/observability-team/ci/github-app')
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)

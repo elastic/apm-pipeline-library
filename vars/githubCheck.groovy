@@ -35,7 +35,7 @@ def call(Map args = [:]) {
   def name = args.containsKey('name') ? args.name : error('githubCheck: missing name argument')
   def description = args.get('description', name)
   def body = args.get('body', '')
-  def secret = args.get('secret', 'secret/observability-team/ci/github-app-token')
+  def secret = args.get('secret', 'secret/observability-team/ci/github-app')
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
@@ -47,9 +47,9 @@ def call(Map args = [:]) {
   if(props?.errors){
     error "Unable to get credentials from the vault: ${props.errors.toString()}"
   }
-  def privateKeyContent = props?.data?.privateKeyContent
-  def installationId = props?.data?.installationId
-  def appId = props?.data?.appId
+  def privateKeyContent = props?.data?.get('key')
+  def installationId = props?.data?.get('installation_id')
+  def appId = props?.data?.get('app_id')
   // End read secrets from vault
 
   // App login details
