@@ -64,3 +64,7 @@ def call(Map args = [:], Closure body) {
     throw err
   }
 }
+
+boolean isAvailable(Map args = [:]) {
+  return (args.get('org', env.ORG_NAME) && args.get('repository', env.REPO_NAME) && args.get('commitId', env.GIT_BASE_COMMIT))
+}
