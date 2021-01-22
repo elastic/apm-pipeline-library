@@ -75,6 +75,16 @@ pipeline {
               push: true)
           }
         }
+        stage('Opbeans-php') {
+          agent { label 'docker' }
+          options { skipDefaultCheckout() }
+          steps {
+            buildDockerImage(repo: 'https://github.com/elastic/opbeans-php.git',
+              tag: "opbeans-php",
+              version: "${params.version}",
+              push: true)
+          }
+        }
         stage('Opbeans-python') {
           agent { label 'docker' }
           options { skipDefaultCheckout() }

@@ -144,4 +144,23 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('githubNotify', 'targetUrl=htt://www.elastic.co'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_when_github_is_not_accessible_then_retry_with_some_sleep() throws Exception {
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if (m.status == 'FAILURE') {
+        throw new Exception("Server returned HTTP response code: 500, message: '500 Internal Server Error'")
+      }
+    })
+    try {
+      script.call(context: 'foo', description: 'bar') {
+        throw new Exception('Force failure')
+      }
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', '2 of 2 tries'))
+    assertJobStatusFailure()
+  }
 }

@@ -1,0 +1,68 @@
+
+ This step run a filebeat Docker container to grab the Docker containers logs in a single file.
+ `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
+ the only argument need is the `workdir` if you set it on the `filebeat step` call.
+ The output log files should be in a relative path to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
+
+```
+  filebeat()
+  ...
+  filebeat.stop()
+```
+
+```
+  filebeat(){
+    ....
+  }
+```
+
+* *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
+* *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
+* *output:* log file to save all Docker containers logs (docker_logs.log).
+* *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
+* *workdir:* Directory to use as root folder to read and write files (current folder).
+
+```
+  filebeat(config: 'filebeat.yml',
+    image: 'docker.elastic.co/beats/filebeat:7.10.1',
+    output: 'docker_logs.log',
+    workdir: "${env.WORKSPACE}")
+  ...
+  filebeat.stop(workdir: "${env.WORKSPACE}")
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}")
+        sh('docker run busybox  ls')
+      }
+      post {
+        cleanup{
+          script {
+            filebeat.stop(workdir: "${env.WORKSPACE}")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}"){
+          sh('docker run busybox  ls')
+        }
+      }
+    }
+  }
+}
+```

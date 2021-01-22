@@ -418,6 +418,67 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_corrupted_builds() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "corrupted/build-info.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "corrupted/changeSet-info.json"),
+      docsUrl: 'foo',
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "corrupted/steps-errors.json"),
+      testsErrors: readJSON(file: "corrupted/tests-errors.json"),
+      testsSummary: readJSON(file: "corrupted/tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Build Cause'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Reason'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Start Time'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_failure_and_github_environmental_issue() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_failure_and_github_environmental_issue_and_further_errors() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-also-github-environmental-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_slack_with_aborted_but_no_cancel_build() throws Exception {
     def script = loadScript(scriptName)
     script.notifySlack(

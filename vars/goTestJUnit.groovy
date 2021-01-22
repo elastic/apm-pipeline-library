@@ -15,31 +15,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic.mock
-
 /**
- * Mock RunWrapper class.
- */
-public class RunWrapperMock implements Serializable {
+ Run Go unit tests and generate a JUnit report.
 
-  def rawBuild
-  def previousBuild
-  def number
-  def result
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
+*/
+def call(Map args = [:]) {
+  def options = args.containsKey('options') ? args.options : ''
+  def output = args.containsKey('output') ? args.output : 'junit-report.xml'
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
 
-  public RunWrapperMock(Map params = [:]) {
-    this.rawBuild = params.rawBuild
-    this.previousBuild = params.previousBuild
-    this.number = params.number
-    this.result = (params.result ?: 'UNKNOWN')
+  log(level: 'INFO', text: 'Running Go test an generating JUnit output')
+
+  withGoEnv(version: version, pkgs: ["gotest.tools/gotestsum"]){
+    cmd(label: 'Running Go tests' , script: "gotestsum --format testname --junitfile ${output} -- ${options}")
   }
-
-  public RunWrapperMock getPreviousBuild() {
-    return previousBuild
-  }
-
-  public boolean isBuilding() {
-    return this.result.equals('RUNNING')
-  }
-
 }

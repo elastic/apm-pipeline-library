@@ -52,5 +52,7 @@ def call(Map args = [:], Closure body) {
 }
 
 def notify(String context, String description, String status, String redirect) {
-  githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
+  retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+    githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
+  }
 }

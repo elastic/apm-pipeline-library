@@ -15,31 +15,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic.mock
-
 /**
- * Mock RunWrapper class.
- */
-public class RunWrapperMock implements Serializable {
+  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value.
 
-  def rawBuild
-  def previousBuild
-  def number
-  def result
-
-  public RunWrapperMock(Map params = [:]) {
-    this.rawBuild = params.rawBuild
-    this.previousBuild = params.previousBuild
-    this.number = params.number
-    this.result = (params.result ?: 'UNKNOWN')
+  goDefaultVersion()
+**/
+def call(Map args = [:]) {
+  def goDefaultVersion = defaultVersion()
+  if(isGoVersionEnvVarSet()) {
+    goDefaultVersion = "${env.GO_VERSION}"
+  } else {
+    def goFileVersion = '.go-version'
+    if (fileExists(goFileVersion)){
+      goDefaultVersion = readFile(file: goFileVersion)?.trim()
+    }
   }
+  return goDefaultVersion
+}
 
-  public RunWrapperMock getPreviousBuild() {
-    return previousBuild
-  }
+def isGoVersionEnvVarSet(){
+  return env.GO_VERSION != null && "" != "${env.GO_VERSION}"
+}
 
-  public boolean isBuilding() {
-    return this.result.equals('RUNNING')
-  }
-
+def defaultVersion(){
+  return '1.15.6'
 }

@@ -36,11 +36,19 @@
 def call(Map args = [:], Closure body) {
   if (isUnix()) {
     withGoEnvUnix(args) {
+      checkGoPath()
       body()
     }
   } else {
     withGoEnvWindows(args) {
+      checkGoPath()
       body()
     }
+  }
+}
+
+def checkGoPath(){
+  if(fileExists(file: "${env.GOPATH}/go.mod")){
+    log(level: 'WARN', text: "${env.GOPATH}/go.mod file exists, go.mod cannot be in the GOPATH, try to checkout your code into a folder.")
   }
 }

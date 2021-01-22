@@ -122,17 +122,19 @@ void testOSArg() throws Exception {
   @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "linux" })
+    def version = "1.15.1"
+    helper.registerAllowedMethod('goDefaultVersion', [], { version })
     def isOK = false
     script.call(){
-      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.14.2.linux.amd64/bin:/foo/bin"
-        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.14.2.linux.amd64"
+      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go${version}.linux.amd64/bin:/foo/bin"
+        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go${version}.linux.amd64"
         && binding.getVariable("GOPATH") == "WS" ){
         isOK = true
       }
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.14.2'))
+    assertTrue(assertMethodCallContainsPattern('sh', "Installing go ${version}"))
     assertJobStatusSuccess()
   }
 

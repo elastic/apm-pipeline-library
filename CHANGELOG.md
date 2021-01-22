@@ -1,5 +1,83 @@
 # Changelog
 
+## v1.1.178 (20/01/2021)
+
+#### 🚀 Enhancements
+
+-  [pre-commit] exclude gif/png files [#909](https://github.com/elastic/apm-pipeline-library/pull/909)
+
+#### 🐛 Bug Fixes
+
+-  Add resilience when GitHub got some glitches [#911](https://github.com/elastic/apm-pipeline-library/pull/911)
+
+#### ⚙️ CI
+
+-  feat: add a pre-commit hook detecting broken markdown links [#914](https://github.com/elastic/apm-pipeline-library/pull/914)
+
+## v1.1.177 (15/01/2021)
+
+#### 🚀 Enhancements
+
+-  feat: use goDefaultVersion [#903](https://github.com/elastic/apm-pipeline-library/pull/903)
+-  feat: add stackVersions step [#902](https://github.com/elastic/apm-pipeline-library/pull/902)
+-  feat: goDefaultVersion step [#901](https://github.com/elastic/apm-pipeline-library/pull/901)
+
+## v1.1.176 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use current folder instead of the workspace [#900](https://github.com/elastic/apm-pipeline-library/pull/900)
+-  Fix issue when there is a build corruption with the GH PR comment [#899](https://github.com/elastic/apm-pipeline-library/pull/899)
+
+## v1.1.175 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use WS always [#898](https://github.com/elastic/apm-pipeline-library/pull/898)
+
+## v1.1.174 (12/01/2021)
+*No changelog for this release.*
+
+## v1.1.173 (12/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use docker stop not kill [#895](https://github.com/elastic/apm-pipeline-library/pull/895)
+
+## v1.1.172 (11/01/2021)
+*No changelog for this release.*
+
+## v1.1.171 (11/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support not_changeset_full_match for beats [#890](https://github.com/elastic/apm-pipeline-library/pull/890)
+
+#### 🐛 Bug Fixes
+
+-  fix: wait for docker exec to finish [#893](https://github.com/elastic/apm-pipeline-library/pull/893)
+
+#### 🙈 No user affected
+
+-  [CI][mvn4] Use lastSuccessfulBuild [#894](https://github.com/elastic/apm-pipeline-library/pull/894)
+
+## v1.1.170 (07/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats] Support changeset exclusion [#889](https://github.com/elastic/apm-pipeline-library/pull/889)
+-  feat: filebeat pipeline step [#887](https://github.com/elastic/apm-pipeline-library/pull/887)
+-  feat: new goTestJunit step [#884](https://github.com/elastic/apm-pipeline-library/pull/884)
+
+#### 🙈 No user affected
+
+-  chore: rename argument [#885](https://github.com/elastic/apm-pipeline-library/pull/885)
+-  Use maven 4 alpha [#879](https://github.com/elastic/apm-pipeline-library/pull/879)
+
+#### ⚙️ CI
+
+-  [opbeans-php] Add docker build and cache [#888](https://github.com/elastic/apm-pipeline-library/pull/888)
+
 ## v1.1.169 (16/12/2020)
 
 #### 🚀 Enhancements

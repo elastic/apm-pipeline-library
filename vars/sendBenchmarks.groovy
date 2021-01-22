@@ -53,53 +53,51 @@ def call(Map params = [:]) {
   }
 
   def url = params.containsKey('url') ? params.url : data.url
-  def protocol = getProtocol(url)
-  url = url - protocol
-  def urlAuth = "${protocol}${user}:${password}@${url}"
 
   log(level: 'INFO', text: "Benchmarks: sending data...")
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: 'CLOUD_URL', password: "${urlAuth}"],
-    [var: 'CLOUD_ADDR', password: "${protocol}${url}"],
-    [var: 'CLOUD_USERNAME', password: "${user}"],
-    [var: 'CLOUD_PASSWORD', password: "${password}"],
-    ]]) {
-      withEnv([
-        "CLOUD_URL=${urlAuth}",
-        "CLOUD_ADDR=${protocol}${url}",
-        "CLOUD_USERNAME=${user}",
-        "CLOUD_PASSWORD=${password}",
-        "BENCH_FILE=${benchFile}",
-        "INDEX=${index}"]){
-          if(index.equals('benchmark-go') || index.equals('benchmark-server')){
-            sh label: 'Sending benchmarks', script: '''#!/bin/bash
-            set +x -euo pipefail
-            GO_VERSION=${GO_VERSION:-"1.10.3"}
-            export GOPATH=${WORKSPACE}
-            export PATH=${GOPATH}/bin:${PATH}
-            eval "$(gvm ${GO_VERSION})"
+  if(index.equals('benchmark-go') || index.equals('benchmark-server')){
+    def protocol = getProtocol(url)
+    url = url - protocol
+    gobench("${protocol}${user}:${password}@${url}", benchFile, index)
+  } else {
+    cloudBenchmarks(url, user, password, benchFile)
+  }
+}
 
-            go get -v -u github.com/elastic/gobench
-            gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}
-            '''
-          } else {
-            def datafile = readFile(file: "${BENCH_FILE}")
-            def messageBase64UrlPad = base64encode(text: "${CLOUD_USERNAME}:${CLOUD_PASSWORD}", encoding: "UTF-8")
+def cloudBenchmarks(realURL, user, password, benchFile) {
+  withEnvMask(vars: [
+    [var: "CLOUD_ADDR", password: "${realURL}"],
+    [var: "CLOUD_USERNAME", password: "${user}"],
+    [var: "CLOUD_PASSWORD", password: "${password}"],
+    [var: "BENCH_FILE", password: "${benchFile}"]
+  ]) {
+    def datafile = readFile(file: "${BENCH_FILE}")
+    def messageBase64UrlPad = base64encode(text: "${CLOUD_USERNAME}:${CLOUD_PASSWORD}", encoding: "UTF-8")
 
-            def response = httpRequest(url: "${CLOUD_ADDR}/_bulk", method: "POST",
-                headers: [
-                    "Content-Type": "application/json",
-                    "Authorization": "Basic ${messageBase64UrlPad}"],
-                data: datafile.toString() + "\n")
-            log(level: 'DEBUG', text: "Benchmarks: response ${response}")
+    def response = httpRequest(url: "${CLOUD_ADDR}/_bulk", method: "POST",
+      headers: [
+        "Content-Type" : "application/json",
+        "Authorization": "Basic ${messageBase64UrlPad}"],
+      data: datafile.toString() + "\n")
+    log(level: 'DEBUG', text: "Benchmarks: response ${response}")
 
-            def jsonResponse = toJSON(response)
-            if (jsonResponse.errors) {
-              error "Benchmarks: there was a response with an error. Review response ${response}"
-            }
-          }
-      }
-   }
+    def jsonResponse = toJSON(response)
+    if (jsonResponse.errors) {
+      error "Benchmarks: there was a response with an error. Review response ${response}"
+    }
+  }
+}
+
+def gobench(url, benchFile, index) {
+  withEnvMask(vars: [
+    [var: "CLOUD_URL", password: "${url}"],
+    [var: "BENCH_FILE", password: "${benchFile}"],
+    [var: "INDEX", password: "${index}"]
+  ]) {
+    withGoEnv(pkgs: ['github.com/elastic/gobench']) {
+      sh label: 'Sending benchmarks', script: 'gobench -index ${INDEX} -es "${CLOUD_URL}" < ${BENCH_FILE}'
+    }
+  }
 }
 
 /**
@@ -130,14 +128,12 @@ def prepareAndRun(Map params = [:], Closure body) {
   }
 
   log(level: 'INFO', text: 'sendBenchmark: run script...')
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-    [var: urlVar, password: "${url}"],
-    [var: userVar, password: "${user}"],
-    [var: passVar, password: "${password}"]
-    ]]) {
-    withEnv(["${urlVar}=${url}", "${userVar}=${user}", "${passVar}=${password}"]){
-      body()
-    }
+  withEnvMask(vars: [
+      [var: urlVar, password: "${url}"],
+      [var: userVar, password: "${user}"],
+      [var: passVar, password: "${password}"]
+  ]){
+    body()
   }
 }
 

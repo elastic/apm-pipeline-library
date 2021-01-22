@@ -15,31 +15,46 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic.mock
-
 /**
- * Mock RunWrapper class.
- */
-public class RunWrapperMock implements Serializable {
+  Return the version currently used for testing.
 
-  def rawBuild
-  def previousBuild
-  def number
-  def result
+  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
 
-  public RunWrapperMock(Map params = [:]) {
-    this.rawBuild = params.rawBuild
-    this.previousBuild = params.previousBuild
-    this.number = params.number
-    this.result = (params.result ?: 'UNKNOWN')
-  }
+  stackVersions.edge()
+  stackVersions.dev()
+  stackVersions.release()
+  stackVersions.snapshot(stackVersions.edge())
+  stackVersions.edge(snapshot: true)
 
-  public RunWrapperMock getPreviousBuild() {
-    return previousBuild
-  }
+**/
+def call(Map args = [:]) {
+  return [
+    edge(args),
+    dev(args),
+    release(args)
+  ]
+}
 
-  public boolean isBuilding() {
-    return this.result.equals('RUNNING')
-  }
+def snapshot(version){
+  return "${version}-SNAPSHOT"
+}
 
+def version(value, args = [:]){
+  return "${value}${isSnapshot(args)}"
+}
+
+def edge(Map args = [:]){
+  return version("8.0.0", args)
+}
+
+def dev(Map args = [:]){
+  return version("7.11.0", args)
+}
+
+def release(Map args = [:]){
+  return version("7.10.2", args)
+}
+
+def isSnapshot(args){
+  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
 }

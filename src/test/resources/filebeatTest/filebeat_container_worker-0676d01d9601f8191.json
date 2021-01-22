@@ -1,0 +1,8 @@
+{
+  "id": "fooID",
+  "output": "foo.log",
+  "config": "bar.xml",
+  "image": "foo: latest",
+  "workdir": "fooDir",
+  "timeout": "30"
+}
