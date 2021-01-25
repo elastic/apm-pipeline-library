@@ -127,6 +127,7 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getPreviousCheckNameRunIdIfExists_when_match() throws Exception {
+    // When githubApiCall returns a list
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       return [ check_runs: [[
                   name: 'bar',
@@ -137,14 +138,17 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
                 ]
              ]]
     })
+    // and calling the getPreviousCheckNameRunIdIfExists with a already created checkName
     def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
     printCallStack()
+    // Then the result matches the expected id.
     assertSame(ret, '2')
     assertJobStatusSuccess()
   }
 
   @Test
   void test_getPreviousCheckNameRunIdIfExists_when_no_match() throws Exception {
+    // When githubApiCall returns a list
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       return [ check_runs: [[
                               name: 'bar',
@@ -152,28 +156,35 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
                             ]
       ]]
     })
+    // and calling the getPreviousCheckNameRunIdIfExists with an unexisting checkName
     def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
     printCallStack()
+    // Then the result is Null
     assertNull(ret)
     assertJobStatusSuccess()
   }
 
   @Test
   void test_getPreviousCheckNameRunIdIfExists_when_exception() throws Exception {
+    // When githubApiCall throws an error
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       throw new Exception('Forced a failure')
     })
+    // and calling the getPreviousCheckNameRunIdIfExists with some arguments
     def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
     printCallStack()
+    // Then the result is FALSE
     assertFalse(ret)
     assertJobStatusSuccess()
   }
 
   @Test
   void test_setCheckName_with_default() throws Exception {
+    // When calling the setCheckName with the default arguments
     script.setCheckName(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check',
                         commitId: 'abcdef', checkRunId: '1')
     printCallStack()
+    // Then API Call is correct and SHA commit is required
     assertTrue(assertMethodCallContainsPattern('githubApiCall', 'https://api.github.com/repos/acme/foo/check-runs'))
     assertTrue(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
     assertJobStatusSuccess()
@@ -181,8 +192,10 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_setCheckName_with_patch_method_and_default() throws Exception {
+    // When calling the setCheckName with the PATCH method
     script.setCheckName(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1', method: 'PATCH')
     printCallStack()
+    // Then API Call is correct and no SHA commit is required
     assertTrue(assertMethodCallContainsPattern('githubApiCall', 'https://api.github.com/repos/acme/foo/check-runs'))
     assertFalse(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
     assertJobStatusSuccess()
@@ -190,16 +203,20 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_createCheck() throws Exception {
+    // When calling the createCheck method
     script.createCheck(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1')
     printCallStack()
+    // Then SHA commit is required
     assertTrue(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
     assertJobStatusSuccess()
   }
 
   @Test
   void test_updateCheck() throws Exception {
+    // When calling the updateCheck method
     script.updateCheck(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1')
     printCallStack()
+    // Then no SHA commit is required
     assertFalse(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
     assertJobStatusSuccess()
   }
