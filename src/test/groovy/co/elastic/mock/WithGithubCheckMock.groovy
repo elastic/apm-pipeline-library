@@ -15,25 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
+package co.elastic.mock
+
 /**
-  Wrap the GitHub notify commit status or check step
-
-  withGithubNotify(context: 'checkName', description: 'Execute something') {
-    // block
-  }
-
-  withGithubNotify(context: 'checkName', description: 'Execute something', isBlueOcean: false) {
-    // block
-  }
-*/
-def call(Map args = [:], Closure body) {
-  if (withGithubCheck.isAvailable(args) && env.GITHUB_CHECK?.equals('true')) {
-    withGithubCheck(args) {
-      body()
-    }
-  } else {
-    withGithubStatus(args) {
-      body()
-    }
-  }
+ * Mock withGithubCheck step.
+ */
+class WithGithubCheckMock implements Serializable {
+  private boolean available
+  WithGithubCheckMock(boolean available) { this.available = available }
+  boolean isAvailable(Map args = [:]) { return this.available }
 }

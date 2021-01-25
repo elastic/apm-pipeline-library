@@ -28,6 +28,7 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
+    GITHUB_CHECK = 'true'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
