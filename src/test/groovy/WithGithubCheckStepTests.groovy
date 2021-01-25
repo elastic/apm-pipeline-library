@@ -136,4 +136,28 @@ class WithGithubCheckStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('githubCheck', 'detailsUrl=htt://www.elastic.co'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_isAvailable_without_env() throws Exception {
+    def isOK = script.isAvailable()
+    printCallStack()
+    assertFalse(isOK)
+  }
+
+  @Test
+  void test_isAvailable_with_arguments() throws Exception {
+    def isOK = script.isAvailable(org: 'acme', repository: 'foo', commitId: 'abcde')
+    printCallStack()
+    assertTrue(isOK)
+  }
+
+  @Test
+  void test_isAvailable_with_env() throws Exception {
+    addEnvVar('ORG_NAME', 'acme')
+    addEnvVar('REPO_NAME', 'foo')
+    addEnvVar('GIT_BASE_COMMIT', 'abcde')
+    def isOK = script.isAvailable(org: 'acme', repository: 'foo', commitId: 'abcde')
+    printCallStack()
+    assertTrue(isOK)
+  }
 }
