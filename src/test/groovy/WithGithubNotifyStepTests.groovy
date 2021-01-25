@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.WithGithubCheckMock
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -26,6 +27,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    binding.setProperty('withGithubCheck', new WithGithubCheckMock(true))
     script = loadScript('vars/withGithubNotify.groovy')
   }
 
@@ -65,5 +67,19 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
     assertTrue(isOK)
     assertTrue(assertMethodCallOccurrences('withGithubStatus', 0))
     assertTrue(assertMethodCallOccurrences('withGithubCheck', 1))
+  }
+
+  @Test
+  void test_with_GITHUB_CHECK_true_and_not_available() throws Exception {
+    env.GITHUB_CHECK = 'true'
+    binding.setProperty('withGithubCheck', new WithGithubCheckMock(false))
+    def isOK = false
+    script.call(){
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallOccurrences('withGithubStatus', 1))
+    assertTrue(assertMethodCallOccurrences('withGithubCheck', 0))
   }
 }
