@@ -121,9 +121,11 @@ def setCheckName(Map args = [:]) {
                  'status': "in_progress",
                  'conclusion': "${status}",
                  'completed_at': "${when}",
-                 'output': output,
-                 'details_url': detailsUrl
+                 'output': output
                ]
+    if (detailsUrl?.trim()) {
+      data['details_url'] = detailsUrl
+    }
     def url = "https://api.github.com/repos/${org}/${repository}/check-runs"
 
     if (method == 'POST') {

@@ -782,7 +782,7 @@ githubCheck(name: 'checkName', description: 'Execute something')
 * repository: What's the GitHub repository. Default `env.REPO_NAME`
 * commitId: What's the sha commit. Default `env.GIT_BASE_COMMIT`
 * status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
-* detailsUrl: The URL of the integrator's site that has the full details of the check. If the integrator does not provide this, then the homepage of the GitHub app is used.
+* detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
 
 [GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
 

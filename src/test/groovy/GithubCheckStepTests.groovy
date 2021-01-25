@@ -195,9 +195,20 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
     // When calling the setCheckName with the PATCH method
     script.setCheckName(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1', method: 'PATCH')
     printCallStack()
-    // Then API Call is correct and no SHA commit is required
+    // Then API Call is correct, no details_url is used and no SHA commit is required
     assertTrue(assertMethodCallContainsPattern('githubApiCall', 'https://api.github.com/repos/acme/foo/check-runs'))
+    assertFalse(assertMethodCallContainsPattern('githubApiCall', 'details_url='))
     assertFalse(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_setCheckName_with_detailsUrl() throws Exception {
+    // When calling the setCheckName with the PATCH method
+    script.setCheckName(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1', detailsUrl: 'https://acme.co.uk')
+    printCallStack()
+    // Then API Call is correct and details_url is used
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'details_url=https://acme.co.uk'))
     assertJobStatusSuccess()
   }
 
