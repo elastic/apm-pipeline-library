@@ -395,4 +395,51 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then github pr comment should not happen
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+    // Then it should run the closure correctly
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should not run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_the_very_first_build() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', null)
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertTrue(ret)
+  }
 }
