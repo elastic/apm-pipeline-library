@@ -101,6 +101,8 @@ def call(Map args = [:]) {
 
         // Notify only if there are notifications and they should be aggregated
         aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
+
+        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -140,6 +142,17 @@ def notifyIfNewBuildNotRunning(Closure body) {
     log(level: 'WARN', text: 'notifyIfPossible: could not fetch the nextBuild.')
   }
   body()
+}
+
+def aggregateGitHubCheck(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubCheck: aggregate all the messages in one single GitHub check.')
+      githubCheck(name: 'status', body: args.notifications?.join(''), status: success, detailsUrl: 'https://')
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')
+  }
 }
 
 def aggregateGitHubComments(def args=[:]) {
