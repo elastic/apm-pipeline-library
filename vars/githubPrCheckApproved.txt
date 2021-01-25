@@ -15,5 +15,5 @@ githubPrCheckApproved(org: 'elastic', repo: 'apm-pipeline-library', changeId: 10
 
 * *org:* GitHub organization/owner of the repository (by default ORG_NAME).
 * *repo:* GitHub repository name (by default REPO_NAME).
-* *changeId:* Pull request Id number (by default CHANGE_ID).
+* *changeId:* Pull request ID number (by default CHANGE_ID).
 * *token:* GitHub token to access to the API (by default [getGithubToken()](#getGithubToken)).
