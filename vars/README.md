@@ -777,7 +777,7 @@ githubCheck(name: 'checkName', description: 'Execute something')
 * name: Name of the GitHub check context. (Mandatory).
 * description: Description of the GitHub check. If unset then it will use the `name`.
 * body: The details of the check run. This parameter supports Markdown. Optional.
-* secret: vault secret used to interact with the GitHub App, it should have the `privateKeyContent`, `installationId` and `appId` fields. Default: 'secret/observability-team/ci/github-app-token'
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
 * org: What's the GitHub organisation. Default `env.ORG_NAME)`
 * repository: What's the GitHub repository. Default `env.REPO_NAME`
 * commitId: What's the sha commit. Default `env.GIT_BASE_COMMIT`
@@ -2392,7 +2392,7 @@ withGithubCheck(context: 'Release', tab: 'artifacts') {
 
 * context: Name of the GitHub check context. (Mandatory).
 * description: Description of the GitHub check. If unset then it will use the context.
-* secret: vault secret used to interact with the GitHub App, it should have the `privateKeyContent`, `installationId` and `appId` fields. Default: 'secret/observability-team/ci/github-app-token'
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
 * org: What's the GitHub organisation. Default `env.ORG_NAME`
 * repository: What's the GitHub repository. Default `env.REPO_NAME`
 * commitId: What's the sha commit. Default `env.GIT_BASE_COMMIT`
