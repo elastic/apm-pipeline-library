@@ -45,7 +45,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_GITHUB_CHECK_false() throws Exception {
-    env.GITHUB_CHECK = 'false'
+    addEnvVar('GITHUB_CHECK', 'false')
     def isOK = false
     script.call(){
       isOK = true
@@ -58,7 +58,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_GITHUB_CHECK_true() throws Exception {
-    env.GITHUB_CHECK = 'true'
+    addEnvVar('GITHUB_CHECK', 'true')
     def isOK = false
     script.call(){
       isOK = true
@@ -71,7 +71,7 @@ class WithGithubNotifyStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_GITHUB_CHECK_true_and_not_available() throws Exception {
-    env.GITHUB_CHECK = 'true'
+    addEnvVar('GITHUB_CHECK', 'true')
     binding.setProperty('withGithubCheck', new WithGithubCheckMock(false))
     def isOK = false
     script.call(){

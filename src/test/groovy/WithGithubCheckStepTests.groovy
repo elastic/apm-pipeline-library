@@ -27,10 +27,10 @@ class WithGithubCheckStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.BUILD_ID = '4'
-    env.BRANCH_NAME = 'PR-60'
-    env.GIT_BASE_COMMIT = 'abcdef'
-    env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    addEnvVar('BUILD_ID', '4')
+    addEnvVar('BRANCH_NAME', 'PR-60')
+    addEnvVar('GIT_BASE_COMMIT', 'abcdef')
+    addEnvVar('JENKINS_URL', 'http://jenkins.example.com:8080')
     script = loadScript('vars/withGithubCheck.groovy')
     helper.registerAllowedMethod('withAPM', [Closure.class], { body -> body() })
   }

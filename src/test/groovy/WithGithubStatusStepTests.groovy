@@ -27,9 +27,9 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.BUILD_ID = '4'
-    env.BRANCH_NAME = 'PR-60'
-    env.JENKINS_URL = 'http://jenkins.example.com:8080'
+    addEnvVar('BUILD_ID', '4')
+    addEnvVar('BRANCH_NAME', 'PR-60')
+    addEnvVar('JENKINS_URL', 'http://jenkins.example.com:8080')
     script = loadScript('vars/withGithubStatus.groovy')
     helper.registerAllowedMethod('withAPM', [Closure.class], { body -> body() })
   }
