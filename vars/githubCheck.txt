@@ -8,9 +8,9 @@ githubCheck(name: 'checkName', description: 'Execute something')
 * description: Description of the GitHub check. If unset then it will use the `name`.
 * body: The details of the check run. This parameter supports Markdown. Optional.
 * secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
-* org: What's the GitHub organisation. Default `env.ORG_NAME)`
-* repository: What's the GitHub repository. Default `env.REPO_NAME`
-* commitId: What's the sha commit. Default `env.GIT_BASE_COMMIT`
+* org: The GitHub organisation. Default: `env.ORG_NAME)`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
 * status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
 * detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
 
