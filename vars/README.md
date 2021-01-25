@@ -760,6 +760,17 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 [Github REST API](https://developer.github.com/v3/)
 
+## githubAppToken
+Get the GitHub APP token given the vault secret
+
+```
+def token = githubAppToken()
+```
+
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
+
 ## githubBranchRef
 return the branch name, if we are in a branch, or the git ref, if we are in a PR.
 
