@@ -102,7 +102,8 @@ def call(Map args = [:]) {
         // Notify only if there are notifications and they should be aggregated
         aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
 
-        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
+        // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
+        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -148,7 +149,22 @@ def aggregateGitHubCheck(def args=[:]) {
   if (args.when) {
     notifyIfNewBuildNotRunning() {
       log(level: 'DEBUG', text: 'aggregateGitHubCheck: aggregate all the messages in one single GitHub check.')
-      githubCheck(name: 'status', body: args.notifications?.join(''), status: success, detailsUrl: 'https://')
+      def status = 'neutral'
+      switch (currentBuild.currentResult) {
+        case 'SUCCESS':
+          status = 'success'
+          break
+        case 'FAILURE':
+          status = 'failure'
+          break
+        case 'ABORTED':
+          status = 'cancelled'
+          break
+        case 'UNSTABLE':
+          status = 'failure'
+          break
+      }
+      githubCheck(name: 'status', body: args.notifications?.join(''), status: status, detailsUrl: env.BUILD_URL)
     }
   } else {
     log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')

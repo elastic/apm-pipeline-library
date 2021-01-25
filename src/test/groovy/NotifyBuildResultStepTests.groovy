@@ -397,6 +397,41 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_aggregateGitHubCheck_with_latest_build() throws Exception {
+    def script = loadScript(scriptName)
+    binding.getVariable('currentBuild').currentResult = 'ABORTED'
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status=cancelled'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should not happen
+    assertFalse(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
   void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_running() throws Exception {
     def script = loadScript(scriptName)
     // When there is already a new build still running
