@@ -188,4 +188,19 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_createCheck() throws Exception {
+    script.createCheck(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_updateCheck() throws Exception {
+    script.updateCheck(token: 'my-token', org: 'acme', repository: 'foo', checkName: 'my-check', commitId: 'abcdef', checkRunId: '1')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubApiCall', 'head_sha=abcdef'))
+    assertJobStatusSuccess()
+  }
 }
