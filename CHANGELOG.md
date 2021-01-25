@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.179 (25/01/2021)
+
+#### 🚀 Enhancements
+
+-  feat: example job to manane webhooks [#912](https://github.com/elastic/apm-pipeline-library/pull/912)
+
+#### 🐛 Bug Fixes
+
+-  Skip GitHub comment for old build when the next adjacent build has already finished [#917](https://github.com/elastic/apm-pipeline-library/pull/917)
+
+#### 🙈 No user affected
+
+-  [refactor] notifyBuildResult [#916](https://github.com/elastic/apm-pipeline-library/pull/916)
+
 ## v1.1.178 (20/01/2021)
 
 #### 🚀 Enhancements
