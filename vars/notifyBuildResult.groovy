@@ -164,7 +164,11 @@ def aggregateGitHubCheck(def args=[:]) {
           status = 'failure'
           break
       }
-      githubCheck(name: 'status', body: args.notifications?.join(''), status: status, detailsUrl: env.BUILD_URL)
+      githubCheck(name: 'Status',
+                  description: 'For further details please the `DETAILS` section',
+                  body: args.notifications?.join(''),
+                  status: status,
+                  detailsUrl: env.BUILD_URL)
     }
   } else {
     log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')
