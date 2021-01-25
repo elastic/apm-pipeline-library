@@ -570,7 +570,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return [data: [ value: 'mytoken' ]]
     }
     if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
-      return [data: [ key: 'secret', installation_id: '123', app_id: '42' ]]
+      return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]
     }
     if(VaultSecret.SECRET_NOT_VALID.equals(s)){
       return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]

@@ -45,6 +45,21 @@ class GithubAppTokenStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_default() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [token: 1]
+    })
+    try {
+    script.call()
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('wrap', 'MaskPasswordsBuildWrapper'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_getToken_success() throws Exception {
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       return [token: 1]
