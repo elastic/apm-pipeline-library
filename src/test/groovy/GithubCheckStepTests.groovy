@@ -18,6 +18,8 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertNull
+import static org.junit.Assert.assertSame
 import static org.junit.Assert.assertTrue
 
 class GithubCheckStepTests extends ApmBasePipelineTest {
@@ -122,5 +124,52 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'getJsonWebToken: Failed to create a JWT'))
     assertJobStatusFailure()
   }
+
+  @Test
+  void test_getPreviousCheckNameRunIdIfExists_when_match() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [ check_runs: [[
+                  name: 'bar',
+                  id: '1'
+                ],[
+                  name: 'my-check',
+                  id: '2'
+                ]
+             ]]
+    })
+    def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
+    printCallStack()
+    assertSame(ret, '2')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getPreviousCheckNameRunIdIfExists_when_no_match() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return [ check_runs: [[
+                              name: 'bar',
+                              id: '1'
+                            ]
+      ]]
+    })
+    def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
+    printCallStack()
+    assertNull(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_getPreviousCheckNameRunIdIfExists_when_exception() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      throw new Exception('Forced a failure')
+    })
+    def ret = script.getPreviousCheckNameRunIdIfExists(token: 'token', org: 'acme', repository: 'foo', commitId: 'abcdef', checkName: 'my-check')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
   // setCheckName
+
+
 }
