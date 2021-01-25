@@ -50,10 +50,12 @@ def call(Map args = [:]) {
 
 def getJsonWebToken(Map args=[:]) {
   try {
+    // 50 seconds
+    def expirationTime = 50000l
     return Jwts.builder()
             .setSubject('RS256')
             .signWith(RS256, getRSAPrivateKey(args.privateKeyContent))
-            .setExpiration(new Date((new Date()).getTime() + 50000l))
+            .setExpiration(new Date((new Date()).getTime() + expirationTime))
             .setIssuedAt(new Date(System.currentTimeMillis() + 1000))
             .setIssuer(args.appId)
             .compact()
@@ -82,12 +84,14 @@ def getRSAPrivateKey(privateKeyPEM) {
 
 def getToken(Map args=[:]) {
   try {
-    return githubApiCall(authorizationType: 'Bearer',
-                         token: args.jsonWebToken,
-                         url: "https://api.github.com/app/installations/${args.installationId}/access_tokens",
-                         headers: ['Accept': 'application/vnd.github.v3+json'],
-                         forceMethod: true,
-                         noCache: true)?.token
+    wrap([$class: 'MaskPasswordsBuildWrapper', varMaskRegexes: [[regex: 'token:[^,]*']]]) {
+      return githubApiCall(authorizationType: 'Bearer',
+                          token: args.jsonWebToken,
+                          url: "https://api.github.com/app/installations/${args.installationId}/access_tokens",
+                          headers: ['Accept': 'application/vnd.github.v3+json'],
+                          forceMethod: true,
+                          noCache: true)?.token
+    }
   } catch(Exception e){
     log(level: 'ERROR', text: "Exception: ${e}")
     error 'getToken: Failed to create a JWT'
