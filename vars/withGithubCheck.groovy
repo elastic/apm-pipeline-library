@@ -51,7 +51,8 @@ def call(Map args = [:], Closure body) {
     description: description,
     detailsUrl: redirect,
     org: org,
-    repository: repository
+    repository: repository,
+    secret: secret
   ]
   try {
     githubCheck(parameters + [status: 'neutral'])
