@@ -23,11 +23,11 @@
 
   githubPrCheckApproved()
 */
-def call(Map params = [:]){
-  def changeId =  params.get('changeId', env.CHANGE_ID)
-  def org = params.get('org', env.ORG_NAME)
-  def repo = params.get('repo', env.REPO_NAME)
-  def token = params.get('token', getGithubToken())
+def call(Map args = [:]){
+  def changeId =  args.get('changeId', env.CHANGE_ID)
+  def org = args.get('org', env.ORG_NAME)
+  def repo = args.get('repo', env.REPO_NAME)
+  def token = args.get('token', getGithubToken())
 
   if(!changeId){
     return true
