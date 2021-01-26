@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.180 (26/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats][go] support for ARM arch64 [#924](https://github.com/elastic/apm-pipeline-library/pull/924)
+-  Create GitHub Check with the digested Build data [#921](https://github.com/elastic/apm-pipeline-library/pull/921)
+-  GitHub check step [#881](https://github.com/elastic/apm-pipeline-library/pull/881)
+
+#### 🐛 Bug Fixes
+
+-  Delegate GitHub PR comments condition to the githubPrComment step [#925](https://github.com/elastic/apm-pipeline-library/pull/925)
+-  fix: retry wait for filebeat [#922](https://github.com/elastic/apm-pipeline-library/pull/922)
+-  Mask the GitHub app generated token [#920](https://github.com/elastic/apm-pipeline-library/pull/920)
+
 ## v1.1.179 (25/01/2021)
 
 #### 🚀 Enhancements
