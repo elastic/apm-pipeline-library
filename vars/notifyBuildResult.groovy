@@ -101,6 +101,9 @@ def call(Map args = [:]) {
 
         // Notify only if there are notifications and they should be aggregated
         aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
+
+        // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
+        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -129,20 +132,55 @@ def call(Map args = [:]) {
   }
 }
 
+def notifyIfNewBuildNotRunning(Closure body) {
+  try {
+    // As long as there is no a new build running.
+    if (nextBuild && !nextBuild?.isBuilding()) {
+      log(level: 'INFO', text: 'notifyIfPossible: notification was already done in a younger build.')
+      return
+    }
+  } catch(err) {
+    log(level: 'WARN', text: 'notifyIfPossible: could not fetch the nextBuild.')
+  }
+  body()
+}
+
+def aggregateGitHubCheck(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubCheck: aggregate all the messages in one single GitHub check.')
+      def status = 'neutral'
+      switch (currentBuild.currentResult) {
+        case 'SUCCESS':
+          status = 'success'
+          break
+        case 'FAILURE':
+          status = 'failure'
+          break
+        case 'ABORTED':
+          status = 'cancelled'
+          break
+        case 'UNSTABLE':
+          status = 'failure'
+          break
+      }
+      githubCheck(name: '.Status',
+                  description: args.notifications?.join(''),
+                  status: status,
+                  detailsUrl: env.BUILD_URL)
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')
+  }
+}
+
 def aggregateGitHubComments(def args=[:]) {
   if (args.when) {
-    try {
-      // As long as there is no a new build running.
-      if (nextBuild && !nextBuild?.isBuilding()) {
-        log(level: 'INFO', text: 'aggregateGitHubComments: Notification was already done in a younger build.')
-        return
-      }
-    } catch(err) {
-      log(level: 'WARN', text: 'aggregateGitHubComments: could not fetch the nextBuild.')
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
+      // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+      githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
     }
-    log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
-    // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
-    githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
   } else {
     log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
   }
