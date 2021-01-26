@@ -60,8 +60,16 @@ def start(Map args = [:]) {
         -E http.enabled=true
   """, returnStdout: true)?.trim()
   sh(label: 'Wait for Filebeat', script: """
-    docker exec ${dockerID} \
+    N=0
+    until docker exec ${dockerID} \
       curl -sSfI --retry 10 --retry-delay 5 --max-time 5 'http://localhost:5066/stats?pretty'
+    do
+      sleep 5
+      if [ \${N} -gt 6 ]; then
+        break;
+      fi
+      N=\$((\${N} + 1))
+    done
   """)
 
   def json = [
