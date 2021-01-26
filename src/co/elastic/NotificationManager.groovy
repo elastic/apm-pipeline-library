@@ -215,53 +215,24 @@ def notifyEmail(Map params = [:]) {
 
 /**
  * This method sends a GitHub comment with data from Jenkins
- * @param build
- * @param buildStatus String with job result
- * @param changeSet list of change set, see src/test/resources/changeSet-info.json
- * @param docsUrl URL with the preview docs
- * @param log String that contains the log
- * @param statsUrl URL to access to the stats
- * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
- * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
- * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
+ * @param comment the content of the message, see generateBuildReport()
  * @param disableGHComment whether to disable the GH comment notification.
+ * @param see generateBuildReport(), if required to use the previous behaviour
  */
 def notifyPR(Map args = [:]) {
-    def build = args.containsKey('build') ? args.build : error('notifyPR: build parameter it is not valid')
-    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('notifyPR: buildStatus parameter is not valid')
-    def changeSet = args.containsKey('changeSet') ? args.changeSet : []
-    def docsUrl = args.get('docsUrl', null)
-    def log = args.containsKey('log') ? args.log : null
-    def statsUrl = args.containsKey('statsUrl') ? args.statsUrl : ''
-    def stepsErrors = args.containsKey('stepsErrors') ? args.stepsErrors : []
-    def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
-    def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def disableGHComment = args.get('disableGHComment', false)
-    def body = ''
+    def body = args.get('comment', '')
+
+    // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
+    if (!body.trim()) {
+      def arguments = args
+      arguments['archiveFile'] = false
+      body = generateBuildReport(arguments)
+    }
     catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
-      def statusSuccess = (buildStatus == "SUCCESS")
-      def boURL = getBlueoceanDisplayURL()
-      body = buildTemplate([
-        "template": 'github-comment-markdown.template',
-        "build": build,
-        "buildStatus": buildStatus,
-        "changeSet": changeSet,
-        "docsUrl": docsUrl,
-        "jenkinsText": env.JOB_NAME,
-        "jenkinsUrl": env.JENKINS_URL,
-        "jobUrl": boURL,
-        "log": log,
-        "statsUrl": statsUrl,
-        "statusSuccess": statusSuccess,
-        "stepsErrors": stepsErrors,
-        "testsErrors": testsErrors,
-        "testsSummary": testsSummary
-      ])
-      writeFile(file: 'build.md', text: body)
       if (!disableGHComment) {
         githubPrComment(commentFile: 'comment.id', message: body)
       }
-      archiveArtifacts 'build.md'
     }
     return body
 }
@@ -327,7 +298,7 @@ def notifySlack(Map args = [:]) {
 }
 
 /**
- * This method generates the build report and archive it
+ * This method generates the build report, archive it and returns the build report
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
@@ -338,21 +309,22 @@ def notifySlack(Map args = [:]) {
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  */
-def generateBuildReport(Map params = [:]) {
-    def build = params.containsKey('build') ? params.build : error('generateBuildReport: build parameter it is not valid')
-    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('generateBuildReport: buildStatus parameter is not valid')
-    def changeSet = params.containsKey('changeSet') ? params.changeSet : []
-    def docsUrl = params.get('docsUrl', null)
-    def log = params.containsKey('log') ? params.log : null
-    def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
-    def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
-    def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
-    def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
-
+def generateBuildReport(Map args = [:]) {
+    def build = args.containsKey('build') ? args.build : error('generateBuildReport: build parameter it is not valid')
+    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('generateBuildReport: buildStatus parameter is not valid')
+    def changeSet = args.get('changeSet', [])
+    def docsUrl = args.get('docsUrl', null)
+    def log = args.get('log', null)
+    def statsUrl = args.get('statsUrl', '')
+    def stepsErrors = args.get('stepsErrors', [])
+    def testsErrors = args.get('testsErrors'), [])
+    def testsSummary = args.contgetainsKey('testsSummary', null)
+    def archiveFile = args.get('archiveFile', true)
+    def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
-      def body = buildTemplate([
+      output = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
         "buildStatus": buildStatus,
@@ -368,9 +340,12 @@ def generateBuildReport(Map params = [:]) {
         "testsErrors": testsErrors,
         "testsSummary": testsSummary
       ])
-      writeFile(file: 'build.md', text: body)
-      archiveArtifacts 'build.md'
+      if (archiveFile) {
+        writeFile(file: 'build.md', text: output)
+        archiveArtifacts 'build.md'
+      }
     }
+    return output
 }
 
 def queryFilter(timeout, flakyThreshold) {
