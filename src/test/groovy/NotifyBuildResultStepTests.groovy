@@ -53,7 +53,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     assertTrue(assertMethodCallOccurrences('deleteDir', 1))
   }
 
@@ -224,7 +224,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
@@ -233,7 +233,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
@@ -313,7 +313,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
@@ -330,7 +330,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
