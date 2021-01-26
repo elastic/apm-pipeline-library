@@ -49,6 +49,23 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_arm64() throws Exception {
+    helper.registerAllowedMethod('isArm', { return true })
+    def isOK = false
+    script.call(version: "1.12.2"){
+      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.linux.arm64/bin:/foo/bin"
+        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.linux.arm64"
+        && binding.getVariable("GOPATH") == "WS" ){
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "linux" })
     env.GO_VERSION = "1.12.2"
