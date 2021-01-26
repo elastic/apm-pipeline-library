@@ -37,9 +37,10 @@ def call(Map args = [:], Closure body) {
   def version = args.containsKey('version') ? args.version : goDefaultVersion()
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
   def os = args.containsKey('os') ? args.os : nodeOS()
+  def arch = (isArm()) ? 'arm64' : 'amd64'
   def lastCoordinate = version[-2..-1]
   // gvm remove the last coordinate if it is 0
-  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.amd64"
+  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.${arch}"
   withEnv([
     "HOME=${env.WORKSPACE}",
     "PATH=${env.WORKSPACE}/bin:${env.WORKSPACE}/${goDir}/bin:${env.PATH}",
