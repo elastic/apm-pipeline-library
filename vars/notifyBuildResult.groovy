@@ -165,8 +165,7 @@ def aggregateGitHubCheck(def args=[:]) {
           break
       }
       githubCheck(name: 'Status',
-                  description: 'For further details please the `DETAILS` section',
-                  body: args.notifications?.join(''),
+                  description: args.notifications?.join(''),
                   status: status,
                   detailsUrl: env.BUILD_URL)
     }
