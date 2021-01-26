@@ -68,7 +68,7 @@ def start(Map args = [:]) {
       if [ \${N} -gt 6 ]; then
         break;
       fi
-      N=$((\${N} + 1))
+      N=\$((\${N} + 1))
     done
   """)
 
