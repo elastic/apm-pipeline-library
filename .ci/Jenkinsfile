@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library("apm@$BRANCH_NAME") _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -52,6 +52,7 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
+        library("apm@$BRANCH_NAME")
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
