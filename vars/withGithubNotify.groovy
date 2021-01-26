@@ -27,6 +27,7 @@
   }
 */
 def call(Map args = [:], Closure body) {
+  echo 'FOOOOOO'
   if (withGithubCheck.isAvailable(args) && env.GITHUB_CHECK?.equals('true')) {
     withGithubCheck(args) {
       body()
