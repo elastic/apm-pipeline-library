@@ -164,7 +164,7 @@ def aggregateGitHubCheck(def args=[:]) {
           status = 'failure'
           break
       }
-      githubCheck(name: 'Status',
+      githubCheck(name: '.Status',
                   description: args.notifications?.join(''),
                   status: status,
                   detailsUrl: env.BUILD_URL)
