@@ -214,7 +214,7 @@ def notifyEmail(Map params = [:]) {
 }
 
 /**
- * This method sends a GitHub comment with data from Jenkins
+ * This method sends a GitHub comment with data from Jenkins. It uses generateBuildReport()
  * @param comment the content of the message, see generateBuildReport()
  * @param disableGHComment whether to disable the GH comment notification.
  * @param see generateBuildReport(), if required to use the previous behaviour
@@ -299,6 +299,7 @@ def notifySlack(Map args = [:]) {
 
 /**
  * This method generates the build report, archive it and returns the build report
+ * @param archiveFile whether to create and archive the file.
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
@@ -317,8 +318,8 @@ def generateBuildReport(Map args = [:]) {
     def log = args.get('log', null)
     def statsUrl = args.get('statsUrl', '')
     def stepsErrors = args.get('stepsErrors', [])
-    def testsErrors = args.get('testsErrors'), [])
-    def testsSummary = args.contgetainsKey('testsSummary', null)
+    def testsErrors = args.get('testsErrors', [])
+    def testsSummary = args.get('testsSummary', null)
     def archiveFile = args.get('archiveFile', true)
     def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {

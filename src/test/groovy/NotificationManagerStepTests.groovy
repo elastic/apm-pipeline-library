@@ -199,7 +199,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: buildStatus parameter is not valid'))
+    assertTrue(assertMethodCallContainsPattern('error', 'buildStatus parameter is not valid'))
     assertJobStatusFailure()
   }
 
@@ -220,7 +220,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: build parameter it is not valid'))
+    assertTrue(assertMethodCallContainsPattern('error', 'build parameter it is not valid'))
     assertJobStatusFailure()
   }
 
@@ -456,6 +456,16 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_a_generated_comment() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(comment: 'My Comment')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'My Comment'))
     assertJobStatusSuccess()
   }
 
@@ -960,6 +970,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildReport_without_archive() throws Exception {
+    def script = loadScript(scriptName)
+    script.generateBuildReport(
+      build: readJSON(file: 'build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'changeSet-info.json'),
+      docsUrl: 'foo',
+      log: f.getText(),
+      statsUrl: 'https://ecs.example.com/app/kibana',
+      stepsErrors: readJSON(file: 'steps-errors.json'),
+      testsErrors: readJSON(file: 'tests-errors.json'),
+      testsSummary: readJSON(file: 'tests-summary.json'),
+      archiveFile: false
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
+    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
   }
 
