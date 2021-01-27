@@ -41,6 +41,7 @@ This method generates flakey test data from Jenkins test results
  * @param querySize The maximum value of results to be reported. Default 500
  * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
  * @param disableGHComment whether to disable the GH comment notification.
+ * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
 */ 
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is not valid')
@@ -52,6 +53,7 @@ def analyzeFlakey(Map args = [:]) {
     def querySize = args.get('querySize', 500)
     def queryTimeout = args.get('queryTimeout', '20s')
     def disableGHComment = args.get('disableGHComment', false)
+    def disableGHIssueCreation = args.get('disableGHIssueCreation', false)
 
     def labels = 'flaky-test,ci-reported'
     def boURL = getBlueoceanDisplayURL()
@@ -106,13 +108,18 @@ def analyzeFlakey(Map args = [:]) {
             log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
           }
         } else {
-          def data = createFlakyIssue(numberOfSupportedIssues: numberOfSupportedIssues,
-                                      numberOfCreatedtedIssues: numberOfCreatedtedIssues,
-                                      title: "Flaky Test [${k}]",
-                                      issueDescription: issueDescription,
-                                      labels: labels)
-          numberOfCreatedtedIssues = data.numberOfCreatedtedIssues
-          issue = data.issue
+          def title = "Flaky Test [${k}]"
+          if (disableGHIssueCreation) {
+            log(level: 'INFO', text: "'${title}' issue has not been created since GitHub issues creation has been disabled.")
+          } else {
+            def data = createFlakyIssue(numberOfSupportedIssues: numberOfSupportedIssues,
+                                        numberOfCreatedtedIssues: numberOfCreatedtedIssues,
+                                        title: title,
+                                        issueDescription: issueDescription,
+                                        labels: labels)
+            numberOfCreatedtedIssues = data.numberOfCreatedtedIssues
+            issue = data.issue
+          }
         }
         flakyTestsWithIssues[k] = issue
       }
