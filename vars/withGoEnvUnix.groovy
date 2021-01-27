@@ -63,7 +63,7 @@ def installGo(Map args = [:]) {
 def installPackages(Map args = [:]) {
   // GOARCH is required to be able to install the given packages for the specific arch
   def arch = (env.GOARCH?.trim()) ?: goArch()
-  log(level: 'DEBUG', text: "installPackages: GOARCH=${GOARCH}")
+  log(level: 'DEBUG', text: "installPackages: GOARCH=${arch}")
   withEnv(["GOARCH=${arch}"]){
     args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
