@@ -17,10 +17,18 @@
 
 // Being able to test the library itself when running builds on a PR basis
 if (env.CHANGE_ID.trim()) {
-  library("apm@$BRANCH_NAME")
+  println 'load the library with the given branch'
+  library("apm@$CHANGE_ID")
 } else {
+  println 'load the library with @Library annotation'
   @Library('apm@master') _
 }
+import com.cloudbees.groovy.cps.NonCPS
+@NonCPS
+def printParams() {
+  env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
+}
+printParams()
 
 pipeline {
   agent { label 'linux && immutable' }
