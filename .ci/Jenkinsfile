@@ -16,8 +16,6 @@
 // under the License.
 
 // Being able to test the library itself when running builds on a PR basis
-println "${env.BRANCH_NAME}"
-env?.each { k,v -> println "env.${k}=$v"}
 if (env.CHANGE_ID.trim()) {
   library("apm@$BRANCH_NAME")
 } else {
