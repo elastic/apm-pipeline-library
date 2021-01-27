@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.181 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Use GOARCH to install the package for that particular architecture [#928](https://github.com/elastic/apm-pipeline-library/pull/928)
+
+#### 🙈 No user affected
+
+-  Refactor notifyPR and generateBuildReport [#926](https://github.com/elastic/apm-pipeline-library/pull/926)
+
 ## v1.1.180 (26/01/2021)
 
 #### 🚀 Enhancements
