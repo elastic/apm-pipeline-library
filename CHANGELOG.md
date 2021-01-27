@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.182 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support disable GitHub issue creation for flaky tests [#929](https://github.com/elastic/apm-pipeline-library/pull/929)
+
+#### 🐛 Bug Fixes
+
+-  Return the build digested output [#931](https://github.com/elastic/apm-pipeline-library/pull/931)
+
+#### 🙈 No user affected
+
+-  Debug Go Environment [#932](https://github.com/elastic/apm-pipeline-library/pull/932)
+
 ## v1.1.181 (27/01/2021)
 
 #### 🚀 Enhancements
