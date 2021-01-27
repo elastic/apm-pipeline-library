@@ -2506,6 +2506,10 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
 
+
+NOTE: If the `GOARCH` environment variable is defined then it will be used to install the given packages for that architecture,
+      otherwise it will be evaluated on the fly.
+
 ## withGoEnvWindows
  Install Go and run some command in a pre-configured environment for Windows.
 

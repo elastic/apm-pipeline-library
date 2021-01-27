@@ -155,4 +155,43 @@ void testOSArg() throws Exception {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_installPackages_with_env_variable() throws Exception {
+    addEnvVar('GOARCH', 'amd64')
+    script.installPackages(pkgs: [ "P1", "P2" ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOARCH=amd64'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P1'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_installPackages_without_env_variable() throws Exception {
+    helper.registerAllowedMethod('isArm', { return true })
+    script.installPackages(pkgs: [ "P1", "P2" ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOARCH=arm64'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P1'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_goArch_for_arm() throws Exception {
+    helper.registerAllowedMethod('isArm', { return true })
+    assertTrue(script.goArch().equals('arm64'))
+  }
+
+  @Test
+  void test_goArch_for_linux() throws Exception {
+    helper.registerAllowedMethod('isUnix', { return true })
+    assertTrue(script.goArch().equals('amd64'))
+  }
+
+  @Test
+  void test_goArch_for_windows() throws Exception {
+    helper.registerAllowedMethod('isUnix', { return false })
+    assertTrue(script.goArch().equals('amd64'))
+  }
 }

@@ -47,14 +47,36 @@ def call(Map args = [:], Closure body) {
     "GOROOT=${env.WORKSPACE}/${goDir}",
     "GOPATH=${env.WORKSPACE}"
   ]){
-    retryWithSleep(retries: 3, seconds: 5, backoff: true){
-      sh(label: "Installing go ${version}", script: "gvm ${version}")
-    }
-    pkgs?.each{ p ->
+    installGo(version: version)
+    installPackages(pkgs: pkgs)
+    body()
+  }
+}
+
+def installGo(Map args = [:]) {
+  retryWithSleep(retries: 3, seconds: 5, backoff: true){
+    sh(label: "Installing go ${args.version}", script: "gvm ${args.version}")
+  }
+}
+
+def installPackages(Map args = [:]) {
+  // GOARCH is required to be able to install the given packages for the specific arch
+  def arch = (env.GOARCH?.trim()) ?: goArch()
+  withEnv(["GOARCH=${arch}"]){
+    args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
         sh(label: "Installing ${p}", script: "go get -u ${p}")
       }
     }
-    body()
   }
+}
+
+def goArch() {
+  // Unsupported architectures:
+  //    darwin for arm64 in case isArm() needs a tweak
+  //    MIPS, PPC, RISC, S390X, WASM
+  if(isArm()) {
+    return 'arm64'
+  }
+  return 'amd64'
 }
