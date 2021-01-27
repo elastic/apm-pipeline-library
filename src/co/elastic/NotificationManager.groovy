@@ -106,24 +106,13 @@ def analyzeFlakey(Map args = [:]) {
             log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
           }
         } else {
-          def title = "Flaky Test [${k}]"
-          try {
-            if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
-              retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-                issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
-              }
-              numberOfCreatedtedIssues++
-            } else {
-              log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
-            }
-          } catch(err) {
-            log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
-            issue = ''
-          } finally {
-            if(!issue?.trim()) {
-              issue = ''
-            }
-          }
+          def data = createFlakyIssue(numberOfSupportedIssues: numberOfSupportedIssues,
+                                      numberOfCreatedtedIssues: numberOfCreatedtedIssues,
+                                      title: "Flaky Test [${k}]",
+                                      issueDescription: issueDescription,
+                                      labels: labels)
+          numberOfCreatedtedIssues = data.numberOfCreatedtedIssues
+          issue = data.issue
         }
         flakyTestsWithIssues[k] = issue
       }
@@ -143,6 +132,27 @@ def analyzeFlakey(Map args = [:]) {
     }
     archiveArtifacts 'flaky.md'
     return body
+}
+
+def createFlakyIssue(Map args=[:]) {
+  def output = ''
+  try {
+    if (args.numberOfCreatedtedIssues < args.numberOfSupportedIssues) {
+      retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+        output = githubCreateIssue(title: args.title, description: args.issueDescription, labels: args.labels)
+      }
+      args.numberOfCreatedtedIssues++
+    } else {
+      log(level: 'INFO', text: "'${args.title}' issue has not been created since ${args.numberOfSupportedIssues} issues has been created.")
+    }
+  } catch(err) {
+    log(level: 'WARN', text: "Something bad happened when creating '${args.title}' issue. See: ${err.toString()}")
+  } finally {
+    if(!output?.trim()) {
+      output = ''
+    }
+  }
+  return [issue: output, numberOfCreatedtedIssues: args.numberOfCreatedtedIssues]
 }
 
 /**
