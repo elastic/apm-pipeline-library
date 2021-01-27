@@ -470,6 +470,23 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_a_null_comment() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(comment: null,
+                    build: readJSON(file: "build-info.json"),
+                    buildStatus: "FAILURE",
+                    changeSet: readJSON(file: "changeSet-info.json"),
+                    log: f.getText(),
+                    statsUrl: "https://ecs.example.com/app/kibana",
+                    stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
+                    testsErrors: [],
+                    testsSummary: readJSON(file: "tests-summary.json"))
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_failure_and_github_environmental_issue_and_further_errors() throws Exception {
     def script = loadScript(scriptName)
     script.notifyPR(

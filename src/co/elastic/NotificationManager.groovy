@@ -241,7 +241,7 @@ def notifyPR(Map args = [:]) {
     def body = args.get('comment', '')
 
     // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
-    if (!body.trim()) {
+    if (!body?.trim()) {
       def arguments = args
       arguments['archiveFile'] = false
       body = generateBuildReport(arguments)

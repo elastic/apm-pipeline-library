@@ -240,7 +240,7 @@ def customisedEmail(String email) {
 def generateBuildReport(def args=[:]) {
   log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
   catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    (new NotificationManager()).generateBuildReport(args.data)
+    return (new NotificationManager()).generateBuildReport(args.data)
   }
 }
 
