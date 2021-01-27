@@ -47,20 +47,20 @@ def call(Map args = [:], Closure body) {
     "GOROOT=${env.WORKSPACE}/${goDir}",
     "GOPATH=${env.WORKSPACE}"
   ]){
-    installGo(version)
-    installPackages(pkgs)
+    installGo(version: version)
+    installPackages(pkgs: pkgs)
     body()
   }
 }
 
-def installGo(version) {
+def installGo(Map args = [:]) {
   retryWithSleep(retries: 3, seconds: 5, backoff: true){
-    sh(label: "Installing go ${version}", script: "gvm ${version}")
+    sh(label: "Installing go ${args.version}", script: "gvm ${args.version}")
   }
 }
 
-def installPackages(pkgs) {
-  pkgs?.each{ p ->
+def installPackages(Map args = [:]) {
+  args.pkgs?.each{ p ->
     retryWithSleep(retries: 3, seconds: 5, backoff: true){
       sh(label: "Installing ${p}", script: "go get -u ${p}")
     }
