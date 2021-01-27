@@ -72,7 +72,11 @@ def installPackages(Map args = [:]) {
 }
 
 def goArch() {
-  // TODO
-  def arch = (isArm()) ? 'arm64' : 'amd64'
-  return 'TODO'
+  // Unsupported architectures:
+  //    darwin for arm64 in case isArm() needs a tweak
+  //    MIPS, PPC, RISC, S390X, WASM
+  if(isArm()) {
+    return 'arm64'
+  }
+  return 'amd64'
 }
