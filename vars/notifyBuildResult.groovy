@@ -83,6 +83,8 @@ def call(Map args = [:]) {
 
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
+        // Generate digested data to be consumed later on by the createGitHubComment.
+        data['comment'] = generateBuildReport(data: data)
         def notifications = []
 
         notifyEmail(data: data, when: (shouldNotify && !to?.empty))
@@ -95,8 +97,6 @@ def call(Map args = [:]) {
         analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
 
         notifySlack(data: data, when: notifySlackComment)
-
-        generateBuildReport(data: data)
 
         // Notify only if there are notifications and they should be aggregated
         aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
