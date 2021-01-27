@@ -87,8 +87,10 @@ def debugGoEnv() {
   // For debugging purposes only
   if (env?.PIPELINE_LOG_LEVEL?.equals('DEBUG')) {
     sh(label: "Debugging go", script: '''
-      go env
+      go env || true
+      find . -name go -type f -ls || true
       find . -name go -type f | xargs file || true
+      find . -name mage -type f -ls || true
       find . -name mage -type f | xargs file || true
     ''', returnStatus: true)
   }
