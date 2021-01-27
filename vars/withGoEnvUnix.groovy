@@ -49,6 +49,7 @@ def call(Map args = [:], Closure body) {
   ]){
     installGo(version: version)
     installPackages(pkgs: pkgs)
+    debugGoEnv()
     body()
   }
 }
@@ -62,6 +63,7 @@ def installGo(Map args = [:]) {
 def installPackages(Map args = [:]) {
   // GOARCH is required to be able to install the given packages for the specific arch
   def arch = (env.GOARCH?.trim()) ?: goArch()
+  log(level: 'DEBUG', text: "installPackages: GOARCH=${arch}")
   withEnv(["GOARCH=${arch}"]){
     args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
@@ -79,4 +81,17 @@ def goArch() {
     return 'arm64'
   }
   return 'amd64'
+}
+
+def debugGoEnv() {
+  // For debugging purposes only
+  if (env?.PIPELINE_LOG_LEVEL?.equals('DEBUG')) {
+    sh(label: "Debugging go", script: '''
+      go env || true
+      find . -name go -type f -ls || true
+      find . -name go -type f | xargs file || true
+      find . -name mage -type f -ls || true
+      find . -name mage -type f | xargs file || true
+    ''', returnStatus: true)
+  }
 }
