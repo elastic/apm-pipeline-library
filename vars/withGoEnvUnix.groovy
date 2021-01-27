@@ -60,9 +60,19 @@ def installGo(Map args = [:]) {
 }
 
 def installPackages(Map args = [:]) {
-  args.pkgs?.each{ p ->
-    retryWithSleep(retries: 3, seconds: 5, backoff: true){
-      sh(label: "Installing ${p}", script: "go get -u ${p}")
+  // GOARCH is required to be able to install the given packages for the specific arch
+  def arch = (env.GOARCH?.trim()) ?: goArch()
+  withEnv(["GOARCH=${arch}"]){
+    args.pkgs?.each{ p ->
+      retryWithSleep(retries: 3, seconds: 5, backoff: true){
+        sh(label: "Installing ${p}", script: "go get -u ${p}")
+      }
     }
   }
+}
+
+def goArch() {
+  // TODO
+  def arch = (isArm()) ? 'arm64' : 'amd64'
+  return 'TODO'
 }
