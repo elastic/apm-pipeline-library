@@ -67,6 +67,7 @@ def call(Map args = [:]) {
       def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
       def aggregateComments = args.get('aggregateComments', true)
+      def flakyDisableGHIssueCreation = args.get('flakyDisableGHIssueCreation', false)
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
@@ -81,6 +82,7 @@ def call(Map args = [:]) {
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
 
+        data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
         // Generate digested data to be consumed later on by the createGitHubComment.

@@ -41,6 +41,7 @@ This method generates flakey test data from Jenkins test results
  * @param querySize The maximum value of results to be reported. Default 500
  * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
  * @param disableGHComment whether to disable the GH comment notification.
+ * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
 */ 
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is not valid')
@@ -52,6 +53,7 @@ def analyzeFlakey(Map args = [:]) {
     def querySize = args.get('querySize', 500)
     def queryTimeout = args.get('queryTimeout', '20s')
     def disableGHComment = args.get('disableGHComment', false)
+    def disableGHIssueCreation = args.get('disableGHIssueCreation', false)
 
     def labels = 'flaky-test,ci-reported'
     def boURL = getBlueoceanDisplayURL()
@@ -107,22 +109,16 @@ def analyzeFlakey(Map args = [:]) {
           }
         } else {
           def title = "Flaky Test [${k}]"
-          try {
-            if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
-              retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-                issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
-              }
-              numberOfCreatedtedIssues++
-            } else {
-              log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
-            }
-          } catch(err) {
-            log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
-            issue = ''
-          } finally {
-            if(!issue?.trim()) {
-              issue = ''
-            }
+          if (disableGHIssueCreation) {
+            log(level: 'INFO', text: "'${title}' issue has not been created since GitHub issues creation has been disabled.")
+          } else {
+            def data = createFlakyIssue(numberOfSupportedIssues: numberOfSupportedIssues,
+                                        numberOfCreatedtedIssues: numberOfCreatedtedIssues,
+                                        title: title,
+                                        issueDescription: issueDescription,
+                                        labels: labels)
+            numberOfCreatedtedIssues = data.numberOfCreatedtedIssues
+            issue = data.issue
           }
         }
         flakyTestsWithIssues[k] = issue
@@ -143,6 +139,27 @@ def analyzeFlakey(Map args = [:]) {
     }
     archiveArtifacts 'flaky.md'
     return body
+}
+
+def createFlakyIssue(Map args=[:]) {
+  def output = ''
+  try {
+    if (args.numberOfCreatedtedIssues < args.numberOfSupportedIssues) {
+      retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+        output = githubCreateIssue(title: args.title, description: args.issueDescription, labels: args.labels)
+      }
+      args.numberOfCreatedtedIssues++
+    } else {
+      log(level: 'INFO', text: "'${args.title}' issue has not been created since ${args.numberOfSupportedIssues} issues has been created.")
+    }
+  } catch(err) {
+    log(level: 'WARN', text: "Something bad happened when creating '${args.title}' issue. See: ${err.toString()}")
+  } finally {
+    if(!output?.trim()) {
+      output = ''
+    }
+  }
+  return [issue: output, numberOfCreatedtedIssues: args.numberOfCreatedtedIssues]
 }
 
 /**
