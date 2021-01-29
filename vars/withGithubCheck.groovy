@@ -92,7 +92,7 @@ def getStageLogUrl(flowNode = null) {
   if(!flowNode) {
     flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
   }
-  log(level: 'INFO', text: "flowNode: ${flowNode?.getFunctionName()}")
+  log(level: 'INFO', text: "flowNode: ${flowNode?.getDisplayName()}")
   if(isStageNode(flowNode)) {
     return "/${flowNode.url}log/?start=0"
   }
