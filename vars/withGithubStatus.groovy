@@ -29,19 +29,9 @@
 def call(Map args = [:], Closure body) {
   def context = args.containsKey('context') ? args.context : error('withGithubStatus: missing context argument')
   def description = args.get('description', context)
-  def redirect = args.get('tab', 'pipeline')
-  def isBo = args.get('isBlueOcean', false)
 
-  // To be refactored
-  if (!redirect.startsWith('http')) {
-    if (isBo) {
-      redirect = getBlueoceanTabURL(redirect)
-    } else {
-      redirect = getTraditionalPageURL(redirect)
-    }
-  }
-  //
-  
+  def redirect = detailsURL(tab: args.get('tab', 'pipeline'), isBlueOcean: args.get('isBlueOcean', false))
+
   try {
     notify(context, "${description} ...", 'PENDING', redirect)
     withAPM(){
