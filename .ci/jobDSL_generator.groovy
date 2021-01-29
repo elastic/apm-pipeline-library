@@ -81,6 +81,7 @@ pipeline {
               [$class: 'AttachmentPublisher']
             ],
             testResults:"${BASE_DIR}/.ci/jobsDSL/build/test-results/test/TEST-*.xml"
+          )
         }
       }
     }
