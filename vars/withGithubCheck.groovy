@@ -88,7 +88,7 @@ def getStageLogUrl(flowNode = null) {
     return "/${flowNode.url}log/?start=0"
   }
 
-  return flowNode?.parents?.findResult { getNodeWsUrl(it) }
+  return flowNode?.parents?.findResult { getStageLogUrl(it) }
 }
 
 private boolean isStageNode(node = null) {
