@@ -15,6 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import org.jenkinsci.plugins.workflow.graph.StepNode
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor
+
 /**
   Wrap the GitHub notify check step
 
@@ -38,6 +41,13 @@ def call(Map args = [:], Closure body) {
   def isBo = args.get('isBlueOcean', false)
 
   if (!redirect.startsWith('http')) {
+
+    // Let's now support a link to the stage logs
+    if (redirect.equals('pipeline')) {
+      redirect = getStageLogUrl()
+    }
+
+    // Get the URL for the given tab.
     if (isBo) {
       redirect = getBlueoceanTabURL(redirect)
     } else {
@@ -68,4 +78,24 @@ def call(Map args = [:], Closure body) {
 
 boolean isAvailable(Map args = [:]) {
   return (args.get('org', env.ORG_NAME) && args.get('repository', env.REPO_NAME) && args.get('commitId', env.GIT_BASE_COMMIT))
+}
+
+def getStageLogUrl(flowNode = null) {
+  if(!flowNode) {
+    flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
+  }
+  if(isStageNode(flowNode)) {
+    return "/${flowNode.url}log/?start=0"
+  }
+
+  return flowNode?.parents?.findResult { getNodeWsUrl(it) }
+}
+
+private boolean isStageNode(node = null) {
+  if (node instanceof StepNode) {
+    StepDescriptor d = ((StepNode) node).getDescriptor()
+    return d != null && d.getFunctionName().equals("stage")
+  } else {
+    return false
+  }
 }
