@@ -15,28 +15,85 @@
 // specific language governing permissions and limitations
 // under the License.
 
+def repos(){
+  return [
+    "apm-pipeline-library",
+    "apm-integration-testing"
+  ]
+}
+
 pipeline {
-    agent {label 'master'}
-    stages {
-        stage('Generate Jobs') {
-            steps {
-                checkout([$class: 'GitSCM',
-                  branches: [[name: '*/jobDSL']],
-                  doGenerateSubmoduleConfigurations: false,
-                  extensions: [],
-                  submoduleCfg: [],
-                  userRemoteConfigs: [[
-                    credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
-                    url: 'http://github.com/kuisathaverat/apm-pipeline-library.git'
-                ]]])
-                jobDsl(failOnMissingPlugin: true,
-                    removedConfigFilesAction: 'DELETE',
-                    removedJobAction: 'DELETE',
-                    removedViewAction: 'DELETE',
-                    targets: '.ci/jobsDSL/**/*.dsl',
-                    unstableOnDeprecation: true
-                )
+  agent {label 'master'}
+  environment {
+    REPO = 'apm-pipeline-library'
+    BASE_DIR = "src/github.com/elastic/${env.REPO}"
+    NOTIFY_TO = credentials('notify-to')
+    PIPELINE_LOG_LEVEL = 'DEBUG'
+    LANG = "C.UTF-8"
+    LC_ALL = "C.UTF-8"
+    SLACK_CHANNEL = '#observablt-bots'
+    GITHUB_CHECK = 'true'
+  }
+  options {
+    timeout(time: 1, unit: 'HOURS')
+    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+    timestamps()
+    ansiColor('xterm')
+    disableResume()
+    durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  stages {
+    stage('Checkout jobs'){
+      steps {
+        deleteDir()
+        gitCheckout(basedir: "${BASE_DIR}")
+        script {
+          repos().each{ repo ->
+            dir("${repo}"){
+              checkout([$class: 'GitSCM',
+              branches: [[name: '*/jobDSL']],
+              doGenerateSubmoduleConfigurations: false,
+              extensions: [],
+              submoduleCfg: [],
+              userRemoteConfigs: [[
+              credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+              url: "http://github.com/kuisathaverat/${repo}.git"
+              ]]])
+              sh(label: 'Copy jobDSL files',
+                script: "cp -R .ci/jobsDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobsDSL/jobs",
+                returnStatus: true
+              )
             }
+          }
         }
+      }
     }
+    stage('Unit test'){
+      steps {
+        dir("${BASE_DIR}/.ci/jobsDSL"){
+          sh(label: 'Run tests', script: './gradlew clean test')
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            testDataPublishers: [
+              [$class: 'AttachmentPublisher']
+            ],
+            testResults:"${BASE_DIR}/.ci/jobsDSL/build/test-results/test/TEST-*.xml"
+        }
+      }
+    }
+    stage('Generate Jobs') {
+      steps {
+        jobDsl(failOnMissingPlugin: true,
+          removedConfigFilesAction: 'DELETE',
+          removedJobAction: 'DELETE',
+          removedViewAction: 'DELETE',
+          targets:" ${BASE_DIR}/.ci/jobsDSL/jobs/**/*.groovy",
+          unstableOnDeprecation: true
+        )
+      }
+    }
+  }
 }
