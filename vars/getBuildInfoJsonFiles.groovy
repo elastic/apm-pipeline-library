@@ -30,12 +30,8 @@ def call(Map args = [:]) {
   if(!isUnix()){
     error('getBuildInfoJsonFiles: windows is not supported yet.')
   }
-  def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
-  restURLJob = restURLJob.replace("/job/","/")
-  restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
-  if (!restURLJob.endsWith('/')) {
-    restURLJob += '/'
-  }
+
+  def restURLJob = getBlueoceanRestURLJob(args)
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   def scriptFile = 'generate-build-data.sh'

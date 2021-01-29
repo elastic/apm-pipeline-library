@@ -74,7 +74,12 @@ String detailsUrl(redirect, isBo=false) {
 
   // If pipeline then let's point to the BLueOcean Stage URL
   if (redirect.equals('pipeline')) {
-    return getStageLogUrl()
+    def stageId = getStageId()
+    if (stageId) {
+      def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+      return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}log/?start=0"
+    }
+    return null
   }
 
   // Get the URL for the given tab.
@@ -88,13 +93,13 @@ boolean isAvailable(Map args = [:]) {
   return (args.get('org', env.ORG_NAME) && args.get('repository', env.REPO_NAME) && args.get('commitId', env.GIT_BASE_COMMIT))
 }
 
-def getStageLogUrl(flowNode = null) {
+def getStageId(flowNode = null) {
   if(!flowNode) {
     flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
   }
   log(level: 'INFO', text: "flowNode: ${flowNode?.getDisplayName()}")
   if(isStageNode(flowNode)) {
-    return "/${flowNode.url}log/?start=0"
+    return flowNode.id
   }
 
   return flowNode?.parents?.findResult { getStageLogUrl(it) }
