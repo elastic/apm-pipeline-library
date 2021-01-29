@@ -37,23 +37,7 @@ def call(Map args = [:], Closure body) {
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
-  def redirect = args.get('tab', 'pipeline')
-  def isBo = args.get('isBlueOcean', false)
-
-  if (!redirect.startsWith('http')) {
-
-    // Let's now support a link to the stage logs
-    if (redirect.equals('pipeline')) {
-      redirect = getStageLogUrl()
-    }
-
-    // Get the URL for the given tab.
-    if (isBo) {
-      redirect = getBlueoceanTabURL(redirect)
-    } else {
-      redirect = getTraditionalPageURL(redirect)
-    }
-  }
+  def redirect = detailsUrl(args.get('tab', 'pipeline'), args.get('isBlueOcean', false))
 
   def parameters = [
     name: context,
@@ -74,6 +58,24 @@ def call(Map args = [:], Closure body) {
     githubCheck(parameters + [status: 'failure'])
     throw err
   }
+}
+
+String detailsUrl(redirect, isBo=false) {
+  // Use the https
+  if (redirect.startsWith('http')) {
+    return redirect
+  }
+
+  // If pipeline then let's point to the BLueOcean Stage URL
+  if (redirect.equals('pipeline')) {
+    return getStageLogUrl()
+  }
+
+  // Get the URL for the given tab.
+  if (isBo) {
+    return getBlueoceanTabURL(redirect)
+  }
+  return getTraditionalPageURL(redirect)
 }
 
 boolean isAvailable(Map args = [:]) {
