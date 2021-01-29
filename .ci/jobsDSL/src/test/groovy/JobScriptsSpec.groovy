@@ -16,6 +16,7 @@ class JobScriptsSpec extends Specification {
     def 'test script #file.name'(File file) {
         given:
         def jobManagement = new JenkinsJobManagement(System.out, [:], new File('.'))
+        new DslScriptLoader(jobManagement).runScript(new File('jobs/folders.groovy').text)
 
         when:
         new DslScriptLoader(jobManagement).runScript(file.text)
