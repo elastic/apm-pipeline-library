@@ -39,6 +39,9 @@ def call(Map args = [:], Closure body) {
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
   def redirect = detailsUrl(args.get('tab', 'pipeline'), args.get('isBlueOcean', false))
 
+  log(level: 'INFO', text: "redirect: ${redirect}")
+
+
   def parameters = [
     name: context,
     commitId: commitId,
@@ -86,6 +89,7 @@ def getStageLogUrl(flowNode = null) {
   if(!flowNode) {
     flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
   }
+  log(level: 'INFO', text: "flowNode: ${flowNode?.getFunctionName()}")
   if(isStageNode(flowNode)) {
     return "/${flowNode.url}log/?start=0"
   }
