@@ -86,7 +86,7 @@ def call(Map args = [:]) {
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
         // Generate digested data to be consumed later on by the createGitHubComment.
-        data['comment'] = generateBuildReport(data: data)
+        data['comment_disabled'] = generateBuildReport(data: data)
         def notifications = []
 
         notifyEmail(data: data, when: (shouldNotify && !to?.empty))
