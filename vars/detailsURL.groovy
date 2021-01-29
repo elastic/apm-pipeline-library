@@ -16,16 +16,7 @@
 // under the License.
 
 /**
-  Wrap the GitHub notify check step
-
-  withGithubCheck(context: 'checkName', description: 'Execute something') {
-    // block
-  }
-
-  withGithubCheck(context: 'checkName', description: 'Execute something', isBlueOcean: false) {
-    // block
-  }
-
+  Generate the details URL to be added to the GitHub notifications.
 */
 def call(Map args = [:]) {
   def tab = args.get('tab', 'pipeline')
@@ -34,17 +25,15 @@ def call(Map args = [:]) {
   if (tab.startsWith('http')) {
     return tab
   }
-  // If pipeline then let's point to the BLueOcean Stage URL
-  if (tab.equals('pipeline')) {
-    def stageId = getStageId()
-    if (stageId) {
-      def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
-      return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
-    }
-    return null
+
+  // Let's point to the Blue Ocean stage logs if possible
+  def stageId = getStageId()
+  if (stageId) {
+    def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+    return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
   }
 
-  // Get the URL for the given tab.
+  // Get the URL for the given tab if no other option
   if (isBlueOcean) {
     return getBlueoceanTabURL(tab)
   }
