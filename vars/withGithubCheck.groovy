@@ -41,6 +41,9 @@ def call(Map args = [:], Closure body) {
 
   log(level: 'INFO', text: "redirect: ${redirect}")
 
+  if (!redirect?.trim()) {
+    redirect = getCurrentStage()
+  }
 
   def parameters = [
     name: context,
