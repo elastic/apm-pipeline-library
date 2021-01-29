@@ -33,6 +33,7 @@ pipeline {
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
     GITHUB_CHECK = 'true'
+    BRANCH_NAME = "${params.branch_specifier}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -41,6 +42,9 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  parameters {
+    string(name: 'branch_specifier', defaultValue: 'jobDSL', description: 'the Git branch specifier to scan.')
   }
   stages {
     stage('Checkout jobs'){
@@ -51,13 +55,13 @@ pipeline {
           repos().each{ repo ->
             dir("${repo}"){
               checkout([$class: 'GitSCM',
-              branches: [[name: '*/jobDSL']],
+              branches: [[name: '*/master']],
               doGenerateSubmoduleConfigurations: false,
               extensions: [],
               submoduleCfg: [],
               userRemoteConfigs: [[
               credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
-              url: "http://github.com/kuisathaverat/${repo}.git"
+              url: "http://github.com/elastic/${repo}.git"
               ]]])
               sh(label: 'Copy jobDSL files',
                 script: "cp -R .ci/jobsDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobsDSL/jobs",
