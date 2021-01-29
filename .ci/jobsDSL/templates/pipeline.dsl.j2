@@ -15,9 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//pip install j2cli
-//  JOB_NAME=apm-pipeline-library-mbp REPO=apm-pipeline-library JENKINSFILE=.ci/Jenkinsfile j2 --format=env .ci/jobsDSL/template_pipeline.dsl.j2
-
 pipelineJob("{{ JOB_NAME }}") {
   displayName('Job {{ JOB_NAME }}')
   description('Job {{ JOB_NAME }} description')

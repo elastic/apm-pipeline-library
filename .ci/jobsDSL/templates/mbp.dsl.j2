@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//pip install j2cli
-//  JOB_NAME=apm-pipeline-library-mbp REPO=apm-pipeline-library JENKINSFILE=.ci/Jenkinsfile j2 --format=env .ci/jobsDSL/template_mbp.dsl.j2
 multibranchPipelineJob('{{ JOB_NAME }}') {
   primaryView('All')
   displayName('Job {{ JOB_NAME }}')
