@@ -32,6 +32,7 @@ def call(Map args = [:], Closure body) {
   def redirect = args.get('tab', 'pipeline')
   def isBo = args.get('isBlueOcean', false)
 
+  // To be refactored
   if (!redirect.startsWith('http')) {
     if (isBo) {
       redirect = getBlueoceanTabURL(redirect)
@@ -39,6 +40,8 @@ def call(Map args = [:], Closure body) {
       redirect = getTraditionalPageURL(redirect)
     }
   }
+  //
+  
   try {
     notify(context, "${description} ...", 'PENDING', redirect)
     withAPM(){

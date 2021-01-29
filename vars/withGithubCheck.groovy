@@ -15,9 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.jenkinsci.plugins.workflow.graph.StepNode
-import org.jenkinsci.plugins.workflow.steps.StepDescriptor
-
 /**
   Wrap the GitHub notify check step
 
@@ -37,8 +34,10 @@ def call(Map args = [:], Closure body) {
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
-  def redirect = detailsUrl(args.get('tab', 'pipeline'), args.get('isBlueOcean', false))
+  
+  def redirect = detailsURL(tab: args.get('tab', 'pipeline'), isBlueOcean: args.get('isBlueOcean', false))
 
+  // TBD -> whether to use the detailsURL or this implementation.!
   if (!redirect?.trim()) {
     redirect = getCurrentStage()?.getUrl() + "log/?start=0"
   }
@@ -66,50 +65,6 @@ def call(Map args = [:], Closure body) {
   }
 }
 
-String detailsUrl(redirect, isBo=false) {
-  // Use the https
-  if (redirect.startsWith('http')) {
-    return redirect
-  }
-
-  // If pipeline then let's point to the BLueOcean Stage URL
-  if (redirect.equals('pipeline')) {
-    def stageId = getStageId()
-    if (stageId) {
-      def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
-      return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}log/?start=0"
-    }
-    return null
-  }
-
-  // Get the URL for the given tab.
-  if (isBo) {
-    return getBlueoceanTabURL(redirect)
-  }
-  return getTraditionalPageURL(redirect)
-}
-
 boolean isAvailable(Map args = [:]) {
   return (args.get('org', env.ORG_NAME) && args.get('repository', env.REPO_NAME) && args.get('commitId', env.GIT_BASE_COMMIT))
-}
-
-def getStageId(flowNode = null) {
-  if(!flowNode) {
-    flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
-  }
-  log(level: 'INFO', text: "flowNode: ${flowNode?.getDisplayName()}")
-  if(isStageNode(flowNode)) {
-    return flowNode.id
-  }
-
-  return flowNode?.parents?.findResult { getStageLogUrl(it) }
-}
-
-private boolean isStageNode(node = null) {
-  if (node instanceof StepNode) {
-    StepDescriptor d = ((StepNode) node).getDescriptor()
-    return d != null && d.getFunctionName().equals("stage")
-  } else {
-    return false
-  }
 }
