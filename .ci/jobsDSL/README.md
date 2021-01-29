@@ -64,7 +64,18 @@ like display name , description and so on.
 
 # Test locally
 
+We can test if the syntax of the joDSL definition is correct,
+to do that we have to execute the unit test we have using the following commands.
 
+```
+cd .ci/jobsDSL
+./gradlew clean test
+```
 
-https://github.com/jenkinsci/job-dsl-plugin/blob/master/docs/Testing-DSL-Scripts.md
-https://github.com/sheehan/job-dsl-gradle-example
+when the test finish you can check the result in the junit report
+`.ci/jobsDSL/build/test-results/test/TEST-JobScriptsSpec.xml` or the HTML report
+``.ci/jobsDSL/build/reports/tests/test/index.html`
+
+This unit test is based on the official documentation of the JobDSL plugin, see the following links:
+* https://github.com/jenkinsci/job-dsl-plugin/blob/master/docs/Testing-DSL-Scripts.md
+* https://github.com/sheehan/job-dsl-gradle-example
