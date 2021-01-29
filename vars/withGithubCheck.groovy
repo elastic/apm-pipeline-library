@@ -39,11 +39,11 @@ def call(Map args = [:], Closure body) {
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
   def redirect = detailsUrl(args.get('tab', 'pipeline'), args.get('isBlueOcean', false))
 
-  log(level: 'INFO', text: "redirect: ${redirect}")
-
   if (!redirect?.trim()) {
-    redirect = getCurrentStage()
+    redirect = getCurrentStage()?.getUrl() + "log/?start=0"
   }
+
+  log(level: 'INFO', text: "redirect: ${redirect}")
 
   def parameters = [
     name: context,
