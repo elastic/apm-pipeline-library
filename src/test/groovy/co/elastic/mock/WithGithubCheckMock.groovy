@@ -18,28 +18,10 @@
 package co.elastic.mock
 
 /**
- * Mock RunWrapper class.
+ * Mock withGithubCheck step.
  */
-public class RunWrapperMock implements Serializable {
-
-  def rawBuild
-  def previousBuild
-  def number
-  def result
-
-  public RunWrapperMock(Map params = [:]) {
-    this.rawBuild = params.rawBuild
-    this.previousBuild = params.previousBuild
-    this.number = params.number
-    this.result = (params.result ?: 'UNKNOWN')
-  }
-
-  public RunWrapperMock getPreviousBuild() {
-    return previousBuild
-  }
-
-  public boolean isBuilding() {
-    return this.result.equals('RUNNING')
-  }
-
+class WithGithubCheckMock implements Serializable {
+  private boolean available
+  WithGithubCheckMock(boolean available) { this.available = available }
+  boolean isAvailable(Map args = [:]) { return this.available }
 }

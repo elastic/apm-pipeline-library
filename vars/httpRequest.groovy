@@ -15,9 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.apache.commons.io.IOUtils
-import java.net.URLConnection
 import com.cloudbees.groovy.cps.NonCPS
+import java.lang.reflect.Field
+import java.net.URLConnection
+import org.apache.commons.io.IOUtils
+import sun.net.www.protocol.https.HttpsURLConnectionImpl
 
 /**
   Step to make HTTP request and get the result.
@@ -45,10 +47,10 @@ def call(Map params = [:]){
   URLConnection con
   try {
     con = obj.openConnection()
-    // Let's support the PATCH method https://stackoverflow.com/a/32503192
+    // Let's support the PATCH method
+    // See https://stackoverflow.com/questions/25163131/httpurlconnection-invalid-http-method-patch/46323891#46323891
     if (method.equals('PATCH')) {
-      conn.setRequestProperty("X-HTTP-Method-Override", 'PATCH')
-      con.setRequestMethod('POST')
+      setRequestMethod(con, method)
     } else {
       con.setRequestMethod(method)
     }
@@ -83,5 +85,25 @@ def call(Map params = [:]){
   } catch(e){
     con = null
     throw new Exception("httpRequest: Failure connecting to the service ${url} : ${e?.getMessage()}")
+  }
+}
+
+// See https://stackoverflow.com/questions/25163131/httpurlconnection-invalid-http-method-patch/46323891#46323891
+@NonCPS
+def setRequestMethod(HttpURLConnection c,  String requestMethod) {
+  try {
+    final Object target
+    if (c instanceof HttpsURLConnectionImpl) {
+      final Field delegate = HttpsURLConnectionImpl.class.getDeclaredField("delegate")
+      delegate.setAccessible(true)
+      target = delegate.get(c)
+    } else {
+      target = c
+    }
+    final Field f = HttpURLConnection.class.getDeclaredField("method")
+    f.setAccessible(true)
+    f.set(target, requestMethod)
+  } catch (IllegalAccessException | NoSuchFieldException ex) {
+    throw new AssertionError(ex)
   }
 }

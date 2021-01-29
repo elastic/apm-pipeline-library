@@ -760,12 +760,42 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 [Github REST API](https://developer.github.com/v3/)
 
+## githubAppToken
+Get the GitHub APP token given the vault secret
+
+```
+def token = githubAppToken()
+```
+
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
+
 ## githubBranchRef
 return the branch name, if we are in a branch, or the git ref, if we are in a PR.
 
 ```
 def ref = githubBranchRef()
 ```
+
+## githubCheck
+Notify the GitHub check step either by using the existing one or creating a new one.
+
+```
+githubCheck(name: 'checkName', description: 'Execute something')
+```
+
+* name: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the `name`.
+* body: The details of the check run. This parameter supports Markdown. Optional.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME)`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
+* detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
 
 ## githubCommentIssue
 Comment an existing GitHub issue
@@ -1747,6 +1777,7 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
+* flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
@@ -2353,9 +2384,36 @@ _NOTE:_
 * This particular implementation requires to checkout with the step gitCheckout
 * Windows agents are not supported.
 
-## withGithubNotify
-Wrap the GitHub notify check step
+## withGithubCheck
+Wrap the GitHub status check step by using the [githubCheck](#githubCheck) step.
 If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubCheck(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubCheck(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubCheck(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## withGithubNotify
+Wrap the GitHub notify step either for GitHub status check or GitHub check, for such,
+it uses the `GITHUB_CHECK` environment variable to enable the GitHub Check.
 
 ```
 withGithubNotify(context: 'Build', description: 'Execute something') {
@@ -2371,9 +2429,32 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 }
 ```
 
-* context: Name of the GH check context. (Mandatory).
-* description: Description of the GH check. If unset then it will use the description.
-* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* Further parameters are defined in [withGithubCheck](#withGithubCheck) and [withGithubStatus](#withGithubStatus).
+
+## withGithubStatus
+Wrap the GitHub status check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubStatus(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubStatus(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubStatus(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub status check context. (Mandatory).
+* description: Description of the GitHub status check. If unset then it will use the description.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
@@ -2425,6 +2506,10 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+
+NOTE: If the `GOARCH` environment variable is defined then it will be used to install the given packages for that architecture,
+      otherwise it will be evaluated on the fly.
 
 ## withGoEnvWindows
  Install Go and run some command in a pre-configured environment for Windows.

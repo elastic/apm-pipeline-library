@@ -199,7 +199,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: buildStatus parameter is not valid'))
+    assertTrue(assertMethodCallContainsPattern('error', 'buildStatus parameter is not valid'))
     assertJobStatusFailure()
   }
 
@@ -220,7 +220,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyPR: build parameter it is not valid'))
+    assertTrue(assertMethodCallContainsPattern('error', 'build parameter it is not valid'))
     assertJobStatusFailure()
   }
 
@@ -456,6 +456,33 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Notifies GitHub of the status of a Pull Request'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_a_generated_comment() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(comment: 'My Comment')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'My Comment'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_a_null_comment() throws Exception {
+    def script = loadScript(scriptName)
+    script.notifyPR(comment: null,
+                    build: readJSON(file: "build-info.json"),
+                    buildStatus: "FAILURE",
+                    changeSet: readJSON(file: "changeSet-info.json"),
+                    log: f.getText(),
+                    statsUrl: "https://ecs.example.com/app/kibana",
+                    stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
+                    testsErrors: [],
+                    testsSummary: readJSON(file: "tests-summary.json"))
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertJobStatusSuccess()
   }
 
@@ -852,6 +879,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_analyzeFlakey_in_prs_with_flaky_tests_and_disabled_issue_creation() throws Exception {
+    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [ bar: '' ] })
+    helper.registerAllowedMethod('isPR', { return true })
+    script.analyzeFlakey(
+      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      es: "https://fake_url",
+      testsErrors: readJSON(file: 'flake-tests-errors.json'),
+      testsSummary: readJSON(file: 'flake-tests-summary.json'),
+      disableGHIssueCreation: true
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', "**Test Name:** `bar`"))
+    assertTrue(assertMethodCallContainsPattern('log', "issue has not been created since GitHub issues creation has been disabled."))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "The following tests failed"))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', "`bar` has not been reported yet"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakey_in_prs_without_failed_tests() throws Exception {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
@@ -960,6 +1008,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildReport_without_archive() throws Exception {
+    def script = loadScript(scriptName)
+    script.generateBuildReport(
+      build: readJSON(file: 'build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'changeSet-info.json'),
+      docsUrl: 'foo',
+      log: f.getText(),
+      statsUrl: 'https://ecs.example.com/app/kibana',
+      stepsErrors: readJSON(file: 'steps-errors.json'),
+      testsErrors: readJSON(file: 'tests-errors.json'),
+      testsSummary: readJSON(file: 'tests-summary.json'),
+      archiveFile: false
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
+    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
   }
 

@@ -28,12 +28,15 @@ import groovy.transform.Field
 */
 def call(Map params = [:]){
   def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
+  def authorizationType = params.get('authorizationType', 'token')
   def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
   def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
   def data = params?.data
   def method = params.get('method', 'POST')
-  def headers = ["Authorization": "token ${token}",
-                 "User-Agent": "Elastic-Jenkins-APM"]
+  def forceMethod = params.get('forceMethod', false)
+  def extraHeaders = params.get('headers', [:])
+  def headers = ["Authorization": "${authorizationType} ${token}",
+                 "User-Agent": "Elastic-Jenkins-APM"] + extraHeaders
   def dryRun = params?.data
   def noCache = params?.get('noCache', false)
 
@@ -46,12 +49,18 @@ def call(Map params = [:]){
       def key = "${token}#${url}"
       if(cache["${key}"] == null || noCache){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
+        def parameters = [url: url, headers: headers]
         if(data) {
           log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to ${method}")
           headers.put("Content-Type", "application/json")
-          json = httpRequest(url: url, method: method, headers: headers, data: toJSON(data).toString())
+          // toJSON(data).toString() caused some issues with metadata entries in the output.
+          json = httpRequest(parameters + [method: method, data: new groovy.json.JsonBuilder(data).toPrettyString()])
         } else {
-          json = httpRequest(url: url, headers: headers)
+          // Force default method from GET to POST if it's not overriden
+          if (forceMethod) {
+            parameters << [method: method]
+          }
+          json = httpRequest(parameters)
         }
         cache["${key}"] = json
       } else {

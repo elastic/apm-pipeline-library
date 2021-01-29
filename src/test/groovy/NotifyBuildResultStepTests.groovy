@@ -17,6 +17,7 @@
 
 import co.elastic.BuildException
 import co.elastic.NotificationManager
+import co.elastic.mock.RunWrapperMock
 import co.elastic.mock.StepsMock
 import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
@@ -34,7 +35,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-
+    binding.setVariable('nextBuild', null)
     env.NOTIFY_TO = "myName@example.com"
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
@@ -52,7 +53,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
@@ -218,7 +219,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
@@ -227,7 +228,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
@@ -307,7 +308,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
@@ -324,7 +325,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
@@ -354,5 +355,121 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
     // Then sendDataToElasticsearch happens three times
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_latest_build() throws Exception {
+    def script = loadScript(scriptName)
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should happen
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should not happen
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_latest_build() throws Exception {
+    def script = loadScript(scriptName)
+    binding.getVariable('currentBuild').currentResult = 'ABORTED'
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status=cancelled'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should not happen
+    assertFalse(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_running() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+    // Then it should run the closure correctly
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_already_finished() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should not run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_the_very_first_build() throws Exception {
+    def script = loadScript(scriptName)
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', null)
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertTrue(ret)
   }
 }
