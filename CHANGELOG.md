@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.183 (29/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  Consumers of githubApiCall should not transform JSON [#934](https://github.com/elastic/apm-pipeline-library/pull/934)
+
 ## v1.1.182 (27/01/2021)
 
 #### 🚀 Enhancements
