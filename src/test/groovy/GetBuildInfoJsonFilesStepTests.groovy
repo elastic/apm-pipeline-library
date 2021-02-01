@@ -34,6 +34,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], { m -> 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/' })
     def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
