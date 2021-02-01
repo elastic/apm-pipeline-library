@@ -41,7 +41,7 @@ j2 --format=env .ci/jobsDSL/template/pipeline.groovy.j2 > .ci/jobsDSL/jobs/my-ne
 ```
 
 Now you can edit the `.ci/jobsDSL/jobs/my-new-pipeline.groovy` to edit the details of the jobs,
-like display name , description and so on.
+like display name, description and so on.
 
 # Create a new Multibranch Pipeline
 
