@@ -44,4 +44,13 @@ class GetBlueoceanRestURLJobStepTests extends ApmBasePipelineTest {
     assertTrue(ret.contains('http://jenkins.example.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_success_with_jenkins_url_without_ending_in_slash() throws Exception {
+    addEnvVar('JENKINS_URL', 'http://jenkins.example.com:8080')
+    def ret = script.call(jobURL: 'http://jenkins.example.com:8080/job/acme/job/foo')
+    printCallStack()
+    assertTrue(ret.contains('http://jenkins.example.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/'))
+    assertJobStatusSuccess()
+  }
 }

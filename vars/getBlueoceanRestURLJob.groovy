@@ -23,9 +23,10 @@
 
 def call(Map args = [:]) {
   def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBlueoceanRestURLJob: jobURL parameter is required.')
-  def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
+  def jenkinsUrl = (env.JENKINS_URL.endsWith('/')) ? env.JENKINS_URL : env.JENKINS_URL + '/'
+  def restURLJob = "${jobURL}" - "${jenkinsUrl}job/"
   restURLJob = restURLJob.replace("/job/","/")
-  restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  restURLJob = "${jenkinsUrl}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
   if (!restURLJob.endsWith('/')) {
     restURLJob += '/'
   }
