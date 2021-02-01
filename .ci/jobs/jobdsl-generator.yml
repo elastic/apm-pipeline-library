@@ -1,7 +1,7 @@
 - job:
     name: apm-shared/jobdsl-generator
     display-name: JobDSL Generator
-    description: This job process the *.dsl files in .ci/jobsDSL folder and create/update jobs.
+    description: This job process the *.groovy files in .ci/jobDSL folder and create/update jobs.
     view: APM-CI
     project-type: pipeline
     parameters:
@@ -10,7 +10,7 @@
           default: master
           description: the Git branch specifier to build
     pipeline-scm:
-      script-path: .ci/jobDSL_generator.groovy
+      script-path: .ci/jobdsl-generator.groovy
       scm:
         - git:
             url: git@github.com:elastic/apm-pipeline-library.git

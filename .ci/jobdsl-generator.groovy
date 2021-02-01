@@ -64,7 +64,7 @@ pipeline {
               url: "http://github.com/elastic/${repo}.git"
               ]]])
               sh(label: 'Copy jobDSL files',
-                script: "cp -R .ci/jobsDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobsDSL/jobs",
+                script: "cp -R .ci/jobDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobDSL/jobs",
                 returnStatus: true
               )
             }
@@ -74,7 +74,7 @@ pipeline {
     }
     stage('Unit test'){
       steps {
-        dir("${BASE_DIR}/.ci/jobsDSL"){
+        dir("${BASE_DIR}/.ci/jobDSL"){
           sh(label: 'Run tests', script: './gradlew clean test')
         }
       }
@@ -84,7 +84,7 @@ pipeline {
             testDataPublishers: [
               [$class: 'AttachmentPublisher']
             ],
-            testResults:"${BASE_DIR}/.ci/jobsDSL/build/test-results/test/TEST-*.xml"
+            testResults:"${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml"
           )
         }
       }
@@ -95,7 +95,7 @@ pipeline {
           removedConfigFilesAction: 'DELETE',
           removedJobAction: 'DELETE',
           removedViewAction: 'DELETE',
-          targets:" ${BASE_DIR}/.ci/jobsDSL/jobs/**/*.groovy",
+          targets:" ${BASE_DIR}/.ci/jobDSL/jobs/**/*.groovy",
           unstableOnDeprecation: true
         )
       }
