@@ -1,7 +1,7 @@
 - job:
     name: apm-shared/jobdsl-generator
     display-name: JobDSL Generator
-    description: This job process the *.groovy files in .ci/jobDSL folder and create/update jobs.
+    description: This job process the *.groovy files in .ci/jobDSL folder and create/update/delete jobs.
     view: APM-CI
     project-type: pipeline
     parameters:
