@@ -16,14 +16,13 @@
 // under the License.
 
 /**
-  Given the jobURL and the build number then returns its BlueOcean REST URL
+  Given the jobURL then returns its BlueOcean REST URL
 
-  getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+  getBlueoceanRestURLJob(jobURL: env.JOB_URL)
 */
 
 def call(Map args = [:]) {
   def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBlueoceanRestURLJob: jobURL parameter is required.')
-  def buildNumber = args.containsKey('buildNumber') ? args.buildNumber : error('getBlueoceanRestURLJob: buildNumber parameter is required.')
   def restURLJob = "${jobURL}" - "${env.JENKINS_URL}job/"
   restURLJob = restURLJob.replace("/job/","/")
   restURLJob = "${env.JENKINS_URL}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
@@ -32,8 +31,3 @@ def call(Map args = [:]) {
   }
   return restURLJob
 }
-
-
-http://jenkins.example.com:8080/job/acme/job/foo - http://jenkins.example.com:8080/job/
-
-foo

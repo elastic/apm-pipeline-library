@@ -31,7 +31,7 @@ def call(Map args = [:]) {
     error('getBuildInfoJsonFiles: windows is not supported yet.')
   }
 
-  def restURLJob = getBlueoceanRestURLJob(args)
+  def restURLJob = getBlueoceanRestURLJob(jobURL: jobURL)
   def restURLBuild = "${restURLJob}runs/${buildNumber}"
 
   def scriptFile = 'generate-build-data.sh'

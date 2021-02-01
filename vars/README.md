@@ -493,14 +493,13 @@ def URL = getBlueoceanDisplayURL()
 [Powershell plugin](https://plugins.jenkins.io/powershell)
 
 ## getBlueoceanRestURLJob
-Given the job URL and the build number then returns its BlueOcean Rest URL
+Given the job URL then returns its BlueOcean Rest URL
 
 ```
-    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
 ```
 
 * jobURL: the job URL. Mandatory
-* buildNumber: the build id. Mandatory
 
 ## getBlueoceanTabURL
 Provides the specific Blueocean URL tab for the current build/run

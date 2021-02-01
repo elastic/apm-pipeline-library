@@ -31,7 +31,7 @@ def call(Map args = [:]) {
   // Let's point to the Blue Ocean stage logs if possible
   def stageId = getStageId()
   if (stageId) {
-    def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+    def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
     return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
   }
 
