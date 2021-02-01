@@ -23,7 +23,7 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 def call(Map args = [:]) {
   def tab = args.get('tab', 'pipeline')
   def isBlueOcean = args.get('isBlueOcean', false)
-  // Use the https
+
   if (tab.startsWith('http')) {
     return tab
   }
