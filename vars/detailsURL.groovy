@@ -16,7 +16,9 @@
 // under the License.
 
 /**
-  Generate the details URL to be added to the GitHub notifications.
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
 */
 def call(Map args = [:]) {
   def tab = args.get('tab', 'pipeline')

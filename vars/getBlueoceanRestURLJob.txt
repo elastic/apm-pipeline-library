@@ -1,0 +1,8 @@
+Given the job URL and the build number then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
+```
+
+* jobURL: the job URL. Mandatory
+* buildNumber: the build id. Mandatory
