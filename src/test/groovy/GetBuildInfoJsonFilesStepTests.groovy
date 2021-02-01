@@ -34,6 +34,7 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     def script = loadScript(scriptName)
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], { m -> 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/' })
     def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
@@ -76,40 +77,24 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_parameters() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('jobURL') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_buildNumber_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('buildNumber') {
       script.call(jobURL: 'foo')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call(jobURL: '', buildNumber: '')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getBuildInfoJsonFiles: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }

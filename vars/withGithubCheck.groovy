@@ -34,16 +34,10 @@ def call(Map args = [:], Closure body) {
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
-  def redirect = args.get('tab', 'pipeline')
-  def isBo = args.get('isBlueOcean', false)
+  def tab = args.get('tab', 'pipeline')
+  def isBlueOcean = args.get('isBlueOcean', false)
 
-  if (!redirect.startsWith('http')) {
-    if (isBo) {
-      redirect = getBlueoceanTabURL(redirect)
-    } else {
-      redirect = getTraditionalPageURL(redirect)
-    }
-  }
+  def redirect = detailsURL(tab: tab, isBlueOcean: isBlueOcean)
 
   def parameters = [
     name: context,
