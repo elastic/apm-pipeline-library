@@ -25,8 +25,8 @@ import groovy.transform.Field
 * then it verifies if the project or stage should be enabled.
 */
 Boolean call(Map args = [:]){
-  def project = args.containsKey('project') ? args.project : error('beatsWhen: project param is required')
-  def content = args.containsKey('content') ? args.content : error('beatsWhen: content param is required')
+  def project = args.containsKey('project') ? args.project : error('beatsWhen: project parameter is required')
+  def content = args.containsKey('content') ? args.content : error('beatsWhen: content parameter is required')
   def description = args.get('description', '')
   def ret = false
 

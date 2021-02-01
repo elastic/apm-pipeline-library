@@ -34,7 +34,7 @@
   }
 */
 def call(Map params = [:]) {
-  def name = params.containsKey('name') ? params.name : error('unstashV2: name param is required.')
+  def name = params.containsKey('name') ? params.name : error('unstashV2: name parameter is required.')
   def bucket = params.containsKey('bucket') ? params.bucket : ''
   def credentialsId = params.containsKey('credentialsId') ? params.credentialsId : ''
   def filename = "${name}.tgz"
@@ -44,7 +44,7 @@ def call(Map params = [:]) {
       log(level: 'WARNING', text: 'unstashV2: JOB_GCS_BUCKET is set. bucket param got precedency instead.')
     }
   } else {
-    bucket = env.JOB_GCS_BUCKET ?: error('unstashV2: bucket param is required or JOB_GCS_BUCKET env variable.')
+    bucket = env.JOB_GCS_BUCKET ?: error('unstashV2: bucket parameter is required or JOB_GCS_BUCKET env variable.')
   }
 
   if (credentialsId.trim()) {
@@ -52,7 +52,7 @@ def call(Map params = [:]) {
       log(level: 'WARNING', text: 'unstashV2: JOB_GCS_CREDENTIALS is set. credentialsId param got precedency instead.')
     }
   } else {
-    credentialsId = env.JOB_GCS_CREDENTIALS ?: error('unstashV2: credentialsId param is required or JOB_GCS_CREDENTIALS env variable.')
+    credentialsId = env.JOB_GCS_CREDENTIALS ?: error('unstashV2: credentialsId parameter is required or JOB_GCS_CREDENTIALS env variable.')
   }
 
   if (!env.JOB_NAME || !env.BUILD_ID) {

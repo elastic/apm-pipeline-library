@@ -34,26 +34,16 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_user_parameter() throws Exception {
-    try {
-      script.call()
-    } catch(e) {
-      //NOOP
+    testMissingArgument('user') {
+      ret = script.call()
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'user param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_team_parameter() throws Exception {
-    try {
-      script.call(user: 'foo')
-    } catch(e) {
-      //NOOP
+    testMissingArgument('team') {
+      ret = script.call(user: 'foo')
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'team param is required'))
-    assertJobStatusFailure()
   }
 
   @Test

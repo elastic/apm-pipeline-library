@@ -40,40 +40,25 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
   @Test
   void test_missing_data_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('data') {
       script.call()
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'data param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_missing_template_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('template') {
       script.call(data: 'foo.json')
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'template param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_missing_output_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('output') {
       script.call(data: 'foo.json', template: 'foo.j2')
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'output param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
