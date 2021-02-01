@@ -73,6 +73,16 @@ start: master
 	@>&2 printf '\n'
 	@>&2 printf 'Jenkins master now running at http://localhost:18080\n'
 
+# Start all the services
+.PHONY: start-all
+start-all:
+	env \
+		VAULT_TOKEN=${VAULT_TOKEN} \
+		docker-compose \
+			--log-level ${LOG_LEVEL} \
+			--file docker-compose.yml \
+			up --detach --no-recreate
+
 .PHONY: start-linux-worker
 start-linux-worker:  ## Start the local linux worker
 	VAGRANT_CWD=workers/linux/ vagrant up --provision

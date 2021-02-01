@@ -1,0 +1,44 @@
+extensions:
+  zpages:
+    endpoint: :55679
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: '127.0.0.1:4317'
+  hostmetrics:
+    collection_interval: 1m
+    scrapers:
+      cpu:
+      load:
+      memory:
+
+processors:
+  batch: null
+  queued_retry: null
+
+exporters:
+  elastic:
+    apm_server_url: 'http://apm-server:8200'
+  logging:
+    loglevel: info
+
+service:
+  pipelines:
+    metrics:
+      receivers:
+        - otlp
+        - hostmetrics
+      exporters:
+        - logging
+        - elastic
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - batch
+      exporters:
+        - elastic
+        - logging
+  extensions: [zpages]
