@@ -28,7 +28,7 @@
 
 def call(List params = []){
   if (params.isEmpty()) {
-    error("installTools: missing params, please use the format [ [tool: 'foo', version: 'x.y.z'(, exclude: 'rc')?] , ...] tool param.")
+    error("installTools: missing parameters, please use the format [ [tool: 'foo', version: 'x.y.z'(, exclude: 'rc')?] , ...] tool param.")
   }
   params.each { item ->
     installTool(item)
@@ -36,8 +36,8 @@ def call(List params = []){
 }
 
 private installTool(Map params) {
-  def tool = params.containsKey('tool') ? params.tool : error('installTools: missing tool param.')
-  def version = params.containsKey('version') ? params.version : error('installTools: missing version param.')
+  def tool = params.containsKey('tool') ? params.tool : error('installTools: tool parameter is required.')
+  def version = params.containsKey('version') ? params.version : error('installTools: version parameter is required.')
   def exclude = params.containsKey('exclude') ? params.exclude : ''
   def provider = params.containsKey('provider') ? params.provider : ''
   def extraArgs = params.containsKey('extraArgs') ? params.extraArgs : ''

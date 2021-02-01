@@ -35,14 +35,9 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
   @Test
   void test_missing_label_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('label') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'label parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

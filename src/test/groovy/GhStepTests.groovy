@@ -48,14 +48,9 @@ class GhStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_args() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('command') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gh: command argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

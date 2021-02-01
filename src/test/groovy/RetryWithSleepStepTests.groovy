@@ -32,15 +32,9 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
   @Test
   void test_missing_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.call() {
-        //
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('retries') {
+      script.call(){ }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'retries parameter is required'))
   }
 
   @Test

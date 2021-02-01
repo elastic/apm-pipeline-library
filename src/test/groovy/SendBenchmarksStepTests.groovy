@@ -116,61 +116,33 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   @Test
   void testMissingSecretArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun() {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('secret') {
+      script.prepareAndRun() { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: secret argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingUrlArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString()) {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('url_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString()) { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: url_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingUserArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_') {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('user_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_') { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: user_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingPassArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_') {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('pass_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_') { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: pass_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

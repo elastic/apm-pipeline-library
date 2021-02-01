@@ -47,14 +47,9 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_params() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('title') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCreateIssue: title argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

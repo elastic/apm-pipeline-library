@@ -47,27 +47,17 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_params() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('comment') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCommentIssue: comment argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_id() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('id') {
       script.call(comment: 'foo')
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCommentIssue: id argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
