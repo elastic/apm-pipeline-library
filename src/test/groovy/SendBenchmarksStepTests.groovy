@@ -102,15 +102,9 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'sendBenchmarks: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -198,17 +192,9 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   @Test
   void testPrepareAndRunInWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.prepareAndRun() {
-
-      }
-    } catch(e){
-      //NOOP
+    testWindows() {
+      script.prepareAndRun() { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test

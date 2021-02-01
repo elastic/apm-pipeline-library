@@ -85,14 +85,8 @@ class RunbldStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'runbld: windows is not supported yet'))
-    assertJobStatusFailure()
   }
 }

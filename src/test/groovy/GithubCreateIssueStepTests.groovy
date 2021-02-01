@@ -33,15 +33,9 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCreateIssue: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test

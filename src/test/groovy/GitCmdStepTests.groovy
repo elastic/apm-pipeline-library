@@ -122,14 +122,8 @@ class GitCmdStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gitCmd: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }
