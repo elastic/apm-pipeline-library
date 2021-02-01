@@ -29,8 +29,10 @@
 def call(Map args = [:], Closure body) {
   def context = args.containsKey('context') ? args.context : error('withGithubStatus: missing context argument')
   def description = args.get('description', context)
+  def tab = args.get('tab', 'pipeline')
+  def isBlueOcean = args.get('isBlueOcean', false)
 
-  def redirect = detailsURL(tab: args.get('tab', 'pipeline'), isBlueOcean: args.get('isBlueOcean', false))
+  def redirect = detailsURL(tab: tab, isBlueOcean: isBlueOcean)
 
   try {
     notify(context, "${description} ...", 'PENDING', redirect)

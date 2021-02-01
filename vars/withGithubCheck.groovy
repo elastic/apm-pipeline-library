@@ -34,7 +34,10 @@ def call(Map args = [:], Closure body) {
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
-  def redirect = detailsURL(tab: args.get('tab', 'pipeline'), isBlueOcean: args.get('isBlueOcean', false))
+  def tab = args.get('tab', 'pipeline')
+  def isBlueOcean = args.get('isBlueOcean', false)
+
+  def redirect = detailsURL(tab: tab, isBlueOcean: isBlueOcean)
 
   def parameters = [
     name: context,
