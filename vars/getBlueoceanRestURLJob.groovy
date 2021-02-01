@@ -32,3 +32,8 @@ def call(Map args = [:]) {
   }
   return restURLJob
 }
+
+
+http://jenkins.example.com:8080/job/acme/job/foo - http://jenkins.example.com:8080/job/
+
+foo

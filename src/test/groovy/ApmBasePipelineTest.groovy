@@ -24,6 +24,7 @@ import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static org.junit.Assert.assertTrue
 
 class ApmBasePipelineTest extends DeclarativePipelineTest {
   Map env = [:]
@@ -389,6 +390,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       true
     })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], null)
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
@@ -622,5 +624,16 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }.any { call ->
       (callArgsToString(call) =~ pattern).count  == compare
     }
+  }
+
+  def testMissingArgument(String parameter, Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${parameter} parameter is required"))
+    assertJobStatusFailure()
   }
 }
