@@ -369,6 +369,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/createFileFromTemplate.groovy')
       return script.call(m)
     })
+    helper.registerAllowedMethod('detailsURL', [Map.class],  { m ->
+      def script = loadScript('vars/detailsURL.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
