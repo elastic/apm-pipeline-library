@@ -34,15 +34,7 @@ def call(Map args = [:], Closure body) {
   def org = args.get('org', env.ORG_NAME)
   def repository = args.get('repository', env.REPO_NAME)
   def commitId = args.get('commitId', env.GIT_BASE_COMMIT)
-  
   def redirect = detailsURL(tab: args.get('tab', 'pipeline'), isBlueOcean: args.get('isBlueOcean', false))
-
-  // TBD -> whether to use the detailsURL or this implementation.!
-  if (!redirect?.trim()) {
-    redirect = getCurrentStage()?.getUrl() + "log/?start=0"
-  }
-
-  log(level: 'INFO', text: "redirect: ${redirect}")
 
   def parameters = [
     name: context,
