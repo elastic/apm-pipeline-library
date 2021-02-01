@@ -30,7 +30,7 @@ def search(flowNode = null) {
   if(!flowNode) {
     flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
   }
-  log(level: 'INFO', text: "flowNode: ${flowNode?.getDisplayName()}")
+  log(level: 'DEBUG', text: "flowNode: ${flowNode?.getDisplayName()}")
   if(isStageNode(flowNode)) {
     return flowNode.id
   }
