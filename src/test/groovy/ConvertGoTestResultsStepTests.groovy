@@ -45,13 +45,9 @@ class ConvertGoTestResultsStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('sh', [Map.class], { m -> m.script  })
-    try {
+    testMissingArgument('input') {
       script.call(output: "dummyOUT")
-    } catch(e){
-      assertTrue(e.getMessage() == "convertGoTestResults: missing input file")
     }
-    printCallStack()
-    assertJobStatusFailure()
   }
 
   @Test
@@ -59,12 +55,8 @@ class ConvertGoTestResultsStepTests extends ApmBasePipelineTest {
     def script = loadScript(scriptName)
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('sh', [Map.class], { m -> m.script  })
-    try {
+    testMissingArgument('output') {
       script.call(input: "dummyIN")
-    } catch(e){
-      assertTrue(e.getMessage() == "convertGoTestResults: missing output file")
     }
-    printCallStack()
-    assertJobStatusFailure()
   }
 }

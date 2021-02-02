@@ -15,33 +15,34 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.junit.Before
-import org.junit.Test
-import static org.junit.Assert.assertTrue
+import org.jenkinsci.plugins.workflow.graph.StepNode
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
-class GitChangelogStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitChangelog.groovy'
+/**
+  Get the stage id in the current context.
+*/
 
-  @Override
-  @Before
-  void setUp() throws Exception {
-    super.setUp()
+def call() {
+  return search()
+}
+
+def search(flowNode = null) {
+  if(!flowNode) {
+    flowNode = getContext(org.jenkinsci.plugins.workflow.graph.FlowNode)
+  }
+  log(level: 'DEBUG', text: "flowNode: ${flowNode?.getDisplayName()}")
+  if(isStageNode(flowNode)) {
+    return flowNode.id
   }
 
-  @Test
-  void test() throws Exception {
-    def script = loadScript(scriptName)
-    String ret = script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
-    assertTrue(ret.equals('OK'))
-  }
+  return flowNode?.parents?.findResult { search(it) }
+}
 
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    testWindows() {
-      script.call()
-    }
+private boolean isStageNode(node = null) {
+  if (node instanceof StepNode) {
+    StepDescriptor d = ((StepNode) node).getDescriptor()
+    return d != null && d.getFunctionName().equals("stage")
+  } else {
+    return false
   }
 }

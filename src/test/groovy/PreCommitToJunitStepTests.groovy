@@ -37,27 +37,17 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
   @Test
   void testMissingInputArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('input') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'preCommitToJunit: input parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingOutputArgument() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('output') {
       script.call(input: 'pre-commit.txt')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'preCommitToJunit: output parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

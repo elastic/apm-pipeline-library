@@ -34,27 +34,17 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   @Test
   void testWithoutpatterns() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('patterns') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: Missing patterns argument.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testWithEmptypatterns() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('patterns', 'with values.') {
       script.call(patterns: [])
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: Missing patterns with values.'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -195,15 +185,9 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'isGitRegionMatch: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test

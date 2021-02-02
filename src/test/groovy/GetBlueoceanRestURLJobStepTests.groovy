@@ -19,36 +19,38 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setupAPMGitEmail.groovy'
+class GetBlueoceanRestURLJobStepTests extends ApmBasePipelineTest {
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getBlueoceanRestURLJob.groovy')
   }
 
   @Test
-  void test_default() throws Exception {
-    def script = loadScript(scriptName)
-    script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'config  user.email'))
-  }
-
-  @Test
-  void test_global() throws Exception {
-    def script = loadScript(scriptName)
-    script.call(global: true)
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'config --global user.email'))
-  }
-
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    testWindows() {
+  void test_missing_jobURL() throws Exception {
+    testMissingArgument('jobURL') {
       script.call()
     }
+  }
+
+  @Test
+  void test_success() throws Exception {
+    addEnvVar('JENKINS_URL', 'http://jenkins.example.com:8080/')
+    def ret = script.call(jobURL: 'http://jenkins.example.com:8080/job/acme/job/foo')
+    printCallStack()
+    assertTrue(ret.contains('http://jenkins.example.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_success_with_jenkins_url_without_ending_in_slash() throws Exception {
+    addEnvVar('JENKINS_URL', 'http://jenkins.example.com:8080')
+    def ret = script.call(jobURL: 'http://jenkins.example.com:8080/job/acme/job/foo')
+    printCallStack()
+    assertTrue(ret.contains('http://jenkins.example.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/'))
+    assertJobStatusSuccess()
   }
 }

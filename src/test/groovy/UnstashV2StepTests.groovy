@@ -34,40 +34,25 @@ class UnstashV2StepTests extends ApmBasePipelineTest {
   @Test
   void test_without_name_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('name') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'unstashV2: name param is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_bucket_param_without_env_variable() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('bucket', 'parameter is required or JOB_GCS_BUCKET env variable') {
       script.call(name: 'source')
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'unstashV2: bucket param is required or JOB_GCS_BUCKET env variable.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_credentialsId_param_without_env_variable() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('credentialsId', 'parameter is required or JOB_GCS_CREDENTIALS env variable') {
       script.call(name: 'source', bucket: 'foo')
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'unstashV2: credentialsId param is required or JOB_GCS_CREDENTIALS env variable.'))
-    assertJobStatusFailure()
   }
 
   @Test

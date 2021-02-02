@@ -31,27 +31,17 @@ class WriteVaultSecretStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_secret_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('secret') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'writeVaultSecret: secret parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_data_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('data') {
       script.call(secret: 'foo')
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'writeVaultSecret: data parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

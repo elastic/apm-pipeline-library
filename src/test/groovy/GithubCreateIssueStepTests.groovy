@@ -33,28 +33,17 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCreateIssue: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_params() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('title') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubCreateIssue: title argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test

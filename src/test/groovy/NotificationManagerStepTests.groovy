@@ -89,7 +89,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void testNoBuildInfo() throws Exception {
     def script = loadScript(scriptName)
     env.TEST = "testNoBuildInfo"
-    try{
+    testMissingArgument('build') {
       script.notifyEmail(
         buildStatus: "FAILURE",
         emailRecipients: ["me@example.com"],
@@ -100,21 +100,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
-    } catch(e){
-      //NOOP
-      println e.toString()
-      e.printStackTrace(System.out);
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: build parameter it is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testNoBuildStatus() throws Exception {
     def script = loadScript(scriptName)
     env.TEST = "testNoBuildStatus"
-    try{
+    testMissingArgument('buildStatus') {
       script.notifyEmail(
         build: readJSON(file: "build-info.json"),
         emailRecipients: ["me@example.com"],
@@ -125,21 +118,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
-    } catch(e){
-      //NOOP
-      println e.toString()
-      e.printStackTrace(System.out);
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: buildStatus parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testNoEmailRecipients() throws Exception {
     def script = loadScript(scriptName)
     env.TEST = "testNoEmailRecipients"
-    try{
+    testMissingArgument('emailRecipients') {
       script.notifyEmail(
         build: readJSON(file: "build-info.json"),
         buildStatus: "FAILURE",
@@ -150,14 +136,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
-    } catch(e){
-      //NOOP
-      println e.toString()
-      e.printStackTrace(System.out);
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifyEmail: emailRecipients parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -185,7 +164,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void testNoBuildStatus_notify_pr() throws Exception {
     def script = loadScript(scriptName)
     env.TEST = "testNoBuildStatus"
-    try{
+    testMissingArgument('buildStatus') {
       script.notifyPR(
         build: readJSON(file: "build-info.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
@@ -195,19 +174,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsErrors: readJSON(file: "tests-errors.json"),
         testsSummary: readJSON(file: "tests-summary.json")
       )
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'buildStatus parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testNoBuildInfo_notify_pr() throws Exception {
     def script = loadScript(scriptName)
     env.TEST = "testNoBuildInfo"
-    try {
+    testMissingArgument('build') {
       script.notifyPR(
         buildStatus: "FAILURE",
         changeSet: readJSON(file: "changeSet-info.json"),
@@ -216,12 +190,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         stepsErrors: readJSON(file: "steps-errors.json"),
         testsErrors: readJSON(file: "tests-errors.json"),
         testsSummary: readJSON(file: "tests-summary.json"))
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'build parameter it is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -657,7 +626,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void test_notify_slack_without_build() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('build') {
       script.notifySlack(
         buildStatus: "ABORTED",
         changeSet: readJSON(file: "changeSet-info.json"),
@@ -668,18 +637,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         credentialId: 'test',
         enabled: true
       )
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: build parameter it is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_notify_slack_without_build_status() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('buildStatus') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
@@ -690,18 +654,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         credentialId: 'test',
         enabled: true
       )
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: buildStatus parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_notify_slack_without_channel() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('channel') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
         buildStatus: "ABORTED",
@@ -712,18 +671,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         credentialId: 'test',
         enabled: true
       )
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: channel parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_notify_slack_without_credentialId() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('credentialId') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
         buildStatus: "ABORTED",
@@ -734,12 +688,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         channel: 'test',
         enabled: true
       )
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'notifySlack: credentialId parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -1035,27 +984,17 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void test_customPRComment_without_file_argument() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('file') {
       script.customPRComment()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'file parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_customPRComment_without_commentFile_argument() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('commentFile') {
       script.customPRComment(file: 'foo')
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'commentFile parameter is not valid'))
-    assertJobStatusFailure()
   }
 
   @Test

@@ -52,14 +52,9 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
   @Test
   void test_without_pattern_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('pattern') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Missing pattern argument.'))
-    assertJobStatusFailure()
   }
 
   @Test

@@ -17,38 +17,23 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setupAPMGitEmail.groovy'
+class GetStageIdStepTests extends ApmBasePipelineTest {
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getStageId.groovy')
   }
 
   @Test
   void test_default() throws Exception {
-    def script = loadScript(scriptName)
-    script.call()
+    def id = script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'config  user.email'))
-  }
-
-  @Test
-  void test_global() throws Exception {
-    def script = loadScript(scriptName)
-    script.call(global: true)
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'config --global user.email'))
-  }
-
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    testWindows() {
-      script.call()
-    }
+    assertJobStatusSuccess()
   }
 }

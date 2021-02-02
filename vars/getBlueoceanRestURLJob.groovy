@@ -15,33 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.junit.Before
-import org.junit.Test
-import static org.junit.Assert.assertTrue
+/**
+  Given the jobURL then returns its BlueOcean REST URL
 
-class GitChangelogStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitChangelog.groovy'
+  getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+*/
 
-  @Override
-  @Before
-  void setUp() throws Exception {
-    super.setUp()
+def call(Map args = [:]) {
+  def jobURL = args.containsKey('jobURL') ? args.jobURL : error('getBlueoceanRestURLJob: jobURL parameter is required.')
+  def jenkinsUrl = (env.JENKINS_URL.endsWith('/')) ? env.JENKINS_URL : env.JENKINS_URL + '/'
+  def restURLJob = "${jobURL}" - "${jenkinsUrl}job/"
+  restURLJob = restURLJob.replace("/job/","/")
+  restURLJob = "${jenkinsUrl}blue/rest/organizations/jenkins/pipelines/${restURLJob}"
+  if (!restURLJob.endsWith('/')) {
+    restURLJob += '/'
   }
-
-  @Test
-  void test() throws Exception {
-    def script = loadScript(scriptName)
-    String ret = script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
-    assertTrue(ret.equals('OK'))
-  }
-
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    testWindows() {
-      script.call()
-    }
-  }
+  return restURLJob
 }

@@ -53,13 +53,9 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   @Test
   void test_missing_details_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('message') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'message parameter is required'))
   }
 
   @Test

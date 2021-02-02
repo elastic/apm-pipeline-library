@@ -18,54 +18,49 @@
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
-import static org.junit.Assert.assertFalse
 
-class MatchesPrLabelStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/matchesPrLabel.groovy'
+class DetailsURLStepTests extends ApmBasePipelineTest {
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    env.ORG_NAME = 'org'
-    env.REPO_NAME = 'repo'
-    helper.registerAllowedMethod('githubPrLabels', [], { return [ 'bar', 'foo' ] })
+    script = loadScript('vars/detailsURL.groovy')
   }
 
   @Test
-  void test_missing_label_parameter() throws Exception {
-    def script = loadScript(scriptName)
-    testMissingArgument('label') {
-      script.call()
-    }
-  }
-
-  @Test
-  void test_branch() throws Exception {
-    def script = loadScript(scriptName)
-    def ret = script.call(label: 'foo')
+  void test_default_with_blueocean() throws Exception {
+    def url = script.call(isBlueOcean: true)
     printCallStack()
-    assertFalse(ret)
+    assertTrue(assertMethodCallContainsPattern('getBlueoceanTabURL', 'pipeline'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_pr_without_match() throws Exception {
-    def script = loadScript(scriptName)
-    env.CHANGE_ID = 1
-    def ret = script.call(label: 'unmatch')
+  void test_default_without_blueocean() throws Exception {
+    def url = script.call(isBlueOcean: false)
     printCallStack()
-    assertFalse(ret)
+    assertTrue(assertMethodCallContainsPattern('getTraditionalPageURL', 'pipeline'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_pr_with_match() throws Exception {
-    def script = loadScript(scriptName)
-    env.CHANGE_ID = 1
-    def ret = script.call(label: 'foo')
+  void test_with_http() throws Exception {
+    def url = script.call(tab: 'http://foo')
     printCallStack()
-    assertTrue(ret)
+    assertTrue(url.equals('http://foo'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_stage() throws Exception {
+    addEnvVar('BUILD_NUMBER', '1')
+    helper.registerAllowedMethod('getStageId', [], { 2 })
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], { m -> 'http://jenkins.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/' })
+    def url = script.call()
+    printCallStack()
+    assertTrue(url.trim().equals('http://jenkins.com:8080/blue/rest/organizations/jenkins/pipelines/acme/foo/runs/1/nodes/2/log/?start=0'))
     assertJobStatusSuccess()
   }
 }

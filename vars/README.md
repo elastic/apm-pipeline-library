@@ -303,6 +303,16 @@ Create a file given a Jinja template and the data in a JSON format
 * output: the name of the file to be transformed. Mandatory.
 * localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
 
+## detailsURL
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+```
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+```
+
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
@@ -482,6 +492,15 @@ def URL = getBlueoceanDisplayURL()
 
 [Powershell plugin](https://plugins.jenkins.io/powershell)
 
+## getBlueoceanRestURLJob
+Given the job URL then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+```
+
+* jobURL: the job URL. Mandatory
+
 ## getBlueoceanTabURL
 Provides the specific Blueocean URL tab for the current build/run
 
@@ -578,6 +597,13 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
+
+## getStageId
+Get the stage ID in the current context.
+
+```
+def stage = getStageId()
+```
 
 ## getTraditionalPageURL
 Provides the specific traditional URL tab for the current build/run

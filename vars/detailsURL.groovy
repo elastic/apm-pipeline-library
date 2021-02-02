@@ -15,33 +15,29 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import org.junit.Before
-import org.junit.Test
-import static org.junit.Assert.assertTrue
+/**
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
 
-class GitChangelogStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitChangelog.groovy'
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+*/
+def call(Map args = [:]) {
+  def tab = args.get('tab', 'pipeline')
+  def isBlueOcean = args.get('isBlueOcean', false)
 
-  @Override
-  @Before
-  void setUp() throws Exception {
-    super.setUp()
+  if (tab.startsWith('http')) {
+    return tab
   }
 
-  @Test
-  void test() throws Exception {
-    def script = loadScript(scriptName)
-    String ret = script.call()
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
-    assertTrue(ret.equals('OK'))
+  // Let's point to the Blue Ocean stage logs if possible
+  def stageId = getStageId()
+  if (stageId) {
+    def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+    return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
   }
 
-  @Test
-  void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    testWindows() {
-      script.call()
-    }
+  // Get the URL for the given tab if no other option
+  if (isBlueOcean) {
+    return getBlueoceanTabURL(tab)
   }
+  return getTraditionalPageURL(tab)
 }
