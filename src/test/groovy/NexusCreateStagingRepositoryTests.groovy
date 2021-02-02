@@ -103,7 +103,7 @@ class NexusStagingCreate500Tests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     // System.println(this.handleRequest)
     super.setUp()
-    script = loadScript('vars/nexusCreateStagingRepository')
+    script = loadScript('vars/nexusCreateStagingRepository.groovy')
       profile_start_context.setHandler({ exchange ->
         String response = shInterceptor();
         exchange.responseHeaders.set("Content-Type", "application/json")
