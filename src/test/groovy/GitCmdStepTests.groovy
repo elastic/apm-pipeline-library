@@ -27,8 +27,11 @@ class GitCmdStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    binding.setVariable("ORG_NAME", "my_org")
-    binding.setVariable("REPO_NAME", "my_repo")
+    addEnvVar("ORG_NAME", "my_org")
+    addEnvVar("REPO_NAME", "my_repo")
+    addEnvVar('GIT_PASSWORD', 'password')
+    addEnvVar('GIT_USERNAME', 'username')
+    helper.registerAllowedMethod('readFile', [String.class], { return 'git clone https://username:password@repo.git' })
   }
 
   @Test
@@ -108,6 +111,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
+    assertTrue(assertMethodCallContainsPattern('readFile', 'push.log'))
   }
 
   @Test
@@ -117,6 +121,7 @@ class GitCmdStepTests extends ApmBasePipelineTest {
     script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'push.log'))
+    assertTrue(assertMethodCallContainsPattern('readFile', 'push.log'))
   }
 
   @Test
