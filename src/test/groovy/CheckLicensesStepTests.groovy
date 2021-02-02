@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class CheckLicensesStepTests extends ApmBasePipelineTest {
-  static final String scriptName = 'vars/checkLicenses.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.BASE_DIR = 'base'
+    script = loadScript('vars/checkLicenses.groovy')
   }
 
   @Test
   void testSuccessWithoutArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -39,7 +38,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithExtArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(ext: '.foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-ext .foo'))
@@ -48,7 +46,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithEnvAndAllTheEnvironmentVariables() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/${env.BASE_DIR}]"))
@@ -58,7 +55,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
   @Test
   void testWithEnvAndNoBaseDirVariable() throws Exception {
     env.BASE_DIR = ''
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', "[HOME=${env.WORKSPACE}/]"))
@@ -67,7 +63,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithExcludeArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(exclude: './bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-exclude ./bar'))
@@ -76,7 +71,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithLicenseArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(license: 'Elastic')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-license Elastic'))
@@ -85,7 +79,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithLicensorArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(licensor: 'Foo S.A.')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-licensor "Foo S.A."'))
@@ -94,7 +87,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithSkipArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(skip: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-d'))
@@ -103,7 +95,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithJunitArgument() throws Exception {
-    def script = loadScript(scriptName)
     script.call(skip: true, junit: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', '<testcase/>'))
@@ -112,7 +103,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWarningsWithJunitArgument() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [Map.class], { 'foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
@@ -122,7 +112,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWarningsWithJunitArgumentAndHiddenFolders() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [Map.class], { '.foo/bar/file.java: is missing the license header' })
     script.call(skip: true, junit: true)
     printCallStack()
@@ -132,7 +121,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingSkipWhenJunitArgument() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(junit: true)
     } catch(e){
@@ -145,7 +133,6 @@ class CheckLicensesStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

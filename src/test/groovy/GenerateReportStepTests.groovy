@@ -21,18 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GenerateReportStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/generateReport.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/generateReport.groovy')
     env.CHANGE_TARGET = 'master'
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -40,7 +39,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_id_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('id') {
       script.call()
     }
@@ -48,7 +46,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_input_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('input') {
       script.call(id: 'bundlesize')
     }
@@ -56,7 +53,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_template() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_TARGET')
     script.call(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: false)
     printCallStack()
@@ -67,7 +63,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_compare() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_TARGET')
     script.call(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', compare: false)
     printCallStack()
@@ -80,7 +75,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_pull_request() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_TARGET')
     script.call(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
     printCallStack()
@@ -92,7 +86,6 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pull_request() throws Exception {
-    def script = loadScript(scriptName)
     script.call(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('copyArtifacts', 1))

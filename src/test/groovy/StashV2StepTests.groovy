@@ -22,18 +22,17 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class StashV2StepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/stashV2.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/stashV2.groovy')
     helper.registerAllowedMethod('tar', [Map.class], null)
   }
 
   @Test
   void test_without_name_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('name') {
       script.call()
     }
@@ -41,7 +40,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_bucket_param_without_env_variable() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('bucket', 'parameter is required or JOB_GCS_BUCKET env variable') {
       script.call(name: 'source')
     }
@@ -49,7 +47,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_credentialsId_param_without_env_variable() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('credentialsId', 'parameter is required or JOB_GCS_CREDENTIALS env variable') {
       script.call(name: 'source', bucket: 'foo')
     }
@@ -57,7 +54,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_bucket_precedence() throws Exception {
-    def script = loadScript(scriptName)
     env.JOB_GCS_BUCKET = 'bar'
     script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
@@ -71,7 +67,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_credentialsId_precedence() throws Exception {
-    def script = loadScript(scriptName)
     env.JOB_GCS_CREDENTIALS = 'bar'
     script.call(name: 'source', bucket: 'foo', credentialsId: 'my-super-credentials')
     printCallStack()
@@ -85,7 +80,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_linux_with_parameters() throws Exception {
-    def script = loadScript(scriptName)
     def bucketUri = script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'got precedency instead.'))
@@ -97,7 +91,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows_with_parameters() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')
     printCallStack()
@@ -109,7 +102,6 @@ class StashV2StepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_build_context() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('BUILD_ID')
     try {
       script.call(name: 'source', bucket: 'foo', credentialsId: 'secret')

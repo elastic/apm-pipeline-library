@@ -21,20 +21,19 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class NotificationManagerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'src/co/elastic/NotificationManager.groovy'
   def f
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('src/co/elastic/NotificationManager.groovy')
     f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "test"
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
@@ -53,7 +52,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMinParams() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testMinParams"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
@@ -67,7 +65,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFAILURE() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testFAILURE"
     script.notifyEmail(
       build: readJSON(file: "build-info.json"),
@@ -87,7 +84,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoBuildInfo() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testNoBuildInfo"
     testMissingArgument('build') {
       script.notifyEmail(
@@ -105,7 +101,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoBuildStatus() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testNoBuildStatus"
     testMissingArgument('buildStatus') {
       script.notifyEmail(
@@ -123,7 +118,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoEmailRecipients() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testNoEmailRecipients"
     testMissingArgument('emailRecipients') {
       script.notifyEmail(
@@ -141,7 +135,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
@@ -162,7 +155,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoBuildStatus_notify_pr() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testNoBuildStatus"
     testMissingArgument('buildStatus') {
       script.notifyPR(
@@ -179,7 +171,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoBuildInfo_notify_pr() throws Exception {
-    def script = loadScript(scriptName)
     env.TEST = "testNoBuildInfo"
     testMissingArgument('build') {
       script.notifyPR(
@@ -195,7 +186,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_aborted_but_no_cancel_build() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "ABORTED",
@@ -214,7 +204,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_aborted() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info_aborted.json"),
       buildStatus: "ABORTED",
@@ -234,7 +223,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_failure() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
@@ -252,7 +240,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_unstable() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
@@ -274,7 +261,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_unstable_and_no_tests_failures() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
@@ -292,7 +278,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_unstable_and_multiple_steps_failures() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
@@ -311,7 +296,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_unstable_and_long_stacktraces() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
@@ -331,7 +315,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_unknown() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNKNOWN",
@@ -349,7 +332,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_foo() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "foo",
@@ -367,7 +349,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_without_comment_notifications() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "SUCCESS",
@@ -388,7 +369,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_corrupted_builds() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "corrupted/build-info.json"),
       buildStatus: "SUCCESS",
@@ -411,7 +391,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_failure_and_github_environmental_issue() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
@@ -430,7 +409,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_a_generated_comment() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(comment: 'My Comment')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
@@ -440,7 +418,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_a_null_comment() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(comment: null,
                     build: readJSON(file: "build-info.json"),
                     buildStatus: "FAILURE",
@@ -457,7 +434,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_pr_with_failure_and_github_environmental_issue_and_further_errors() throws Exception {
-    def script = loadScript(scriptName)
     script.notifyPR(
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
@@ -476,7 +452,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_aborted_but_no_cancel_build() throws Exception {
-    def script = loadScript(scriptName)
     script.notifySlack(
       build: readJSON(file: "build-info.json"),
       buildStatus: "ABORTED",
@@ -496,7 +471,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_aborted_but_no_cancel_build_and_disabled() throws Exception {
-    def script = loadScript(scriptName)
     script.notifySlack(
       build: readJSON(file: "build-info.json"),
       buildStatus: "ABORTED",
@@ -512,7 +486,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_aborted_and_no_commit_history() throws Exception {
-    def script = loadScript(scriptName)
     script.notifySlack(
       build: readJSON(file: "build-info-manual.json"),
       buildStatus: "ABORTED",
@@ -532,7 +505,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_header() throws Exception {
-    def script = loadScript(scriptName)
     script.notifySlack(
       build: readJSON(file: "build-info-manual.json"),
       buildStatus: "SUCCESS",
@@ -552,7 +524,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_multiple_channels() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.notifySlack(
         build: readJSON(file: "build-info-manual.json"),
@@ -579,7 +550,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_multiple_wrong_channels() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.notifySlack(
         build: readJSON(file: "build-info-manual.json"),
@@ -605,7 +575,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_without_steps_failures() throws Exception {
-    def script = loadScript(scriptName)
     script.notifySlack(
       build: readJSON(file: "build-info-manual.json"),
       buildStatus: "SUCCESS",
@@ -625,7 +594,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_without_build() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('build') {
       script.notifySlack(
         buildStatus: "ABORTED",
@@ -642,7 +610,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_without_build_status() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('buildStatus') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
@@ -659,7 +626,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_without_channel() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('channel') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
@@ -676,7 +642,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_without_credentialId() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('credentialId') {
       script.notifySlack(
         build: readJSON(file: "build-info.json"),
@@ -693,7 +658,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_empty_flaky_tests() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: 'flake-empty-results.json')})
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
@@ -710,7 +674,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_without_flaky_tests() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(
       "sendDataToElasticsearch",
       [Map.class],
@@ -731,7 +694,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_flaky_tests_already_reported() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
       return [ foo: '123',bar: '456' ]
@@ -753,7 +715,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_flaky_tests_not_reported_yet() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
       return [ 'Test / windows-3.6-none / test_send - tests.transports.test_urllib3': '',
@@ -778,7 +739,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_flaky_tests() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
       return [ 'Test / windows-3.6-none / test_send - tests.transports.test_urllib3': '200',
@@ -804,7 +764,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_more_than_3_flaky_tests_not_reported_yet() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {
       return [ 'test-a': '', 'test-b': '', 'test-c': '', 'test-d': '' ]
@@ -829,7 +788,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_with_flaky_tests_and_disabled_issue_creation() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [ bar: '' ] })
     helper.registerAllowedMethod('isPR', { return true })
@@ -850,7 +808,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_without_failed_tests() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
@@ -868,7 +825,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_in_prs_without_executed_tests() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
@@ -885,7 +841,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakeyThreshold() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(
       "sendDataToElasticsearch",
       [Map.class],
@@ -904,7 +859,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakeyNoJobInfo() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.analyzeFlakey(
         flakyReportIdx: '',
@@ -921,7 +875,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_analyzeFlakey_without_comment_notifications() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
@@ -939,7 +892,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_generateBuildReport() throws Exception {
-    def script = loadScript(scriptName)
     script.generateBuildReport(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
@@ -962,7 +914,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_generateBuildReport_without_archive() throws Exception {
-    def script = loadScript(scriptName)
     script.generateBuildReport(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
@@ -983,7 +934,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_customPRComment_without_file_argument() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('file') {
       script.customPRComment()
     }
@@ -991,7 +941,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_customPRComment_without_commentFile_argument() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('commentFile') {
       script.customPRComment(file: 'foo')
     }
@@ -999,7 +948,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_customPRComment() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [Map.class], { 'awesome' })
     script.customPRComment(file: 'foo', commentFile: 'bar')
     printCallStack()
