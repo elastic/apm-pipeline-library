@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class BuildStatusTests extends ApmBasePipelineTest {
-    def script
 
 
     // Build a small test server
