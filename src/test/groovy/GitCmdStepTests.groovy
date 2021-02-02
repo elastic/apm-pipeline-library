@@ -21,12 +21,12 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitCmdStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitCmd.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/gitCmd.groovy')
     addEnvVar("ORG_NAME", "my_org")
     addEnvVar("REPO_NAME", "my_repo")
     addEnvVar('GIT_PASSWORD', 'password')
@@ -36,7 +36,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: 'push')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', '> push.log'))
@@ -46,7 +45,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: "my_credentials", args: '-f')
     printCallStack()
     assertJobStatusSuccess()
@@ -54,7 +52,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoCmd() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('cmd') {
       script.call(credentialsId: "my_credentials", args: '-f')
     }
@@ -62,7 +59,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParamsWithEmptyCredentials() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: '', args: '-f')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('usernamePassword', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'))
@@ -71,7 +67,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParamsWithAnotherCredentials() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: "push", credentialsId: 'foo', args: '-f')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('usernamePassword', 'foo'))
@@ -80,7 +75,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCmdIsPopulated() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: 'push', credentialsId: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
@@ -89,7 +83,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_less_verbose_output() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=git push'))
@@ -100,7 +93,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_if_store_with_error_works() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], {
       throw new Exception('Force Failure an error')
     })
@@ -116,7 +108,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_if_store_in_git_folder_no_exist() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false })
     script.call(cmd: 'push', credentialsId: 'foo', store: true)
     printCallStack()
@@ -126,7 +117,6 @@ class GitCmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

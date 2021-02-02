@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GenerateChangelogTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/generateChangelog.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/generateChangelog.groovy')
   }
 
   @Test
   void test() throws Exception {
     env.REPO_NAME = "apm-pipeline-library"
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "docker run --name tmp_changelog_instance"))
@@ -45,7 +44,6 @@ class GenerateChangelogTests extends ApmBasePipelineTest {
 
   @Test
   void testNoRepoSetFails() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call()
     } catch(e) {

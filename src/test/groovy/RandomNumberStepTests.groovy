@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class RandomNumberStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/randomNumber.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/randomNumber.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def i = script.call()
     printCallStack()
     assertTrue(i > 0 && i <= 100)
@@ -39,7 +38,6 @@ class RandomNumberStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def i = script.call(max: 2, min: 1)
     printCallStack()
     assertTrue(i >= 1 && i <= 2)

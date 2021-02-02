@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GitPushStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitPush.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/gitPush.groovy')
     binding.setVariable("BUILD_TAG", "tag")
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('gitCmd', 'credentialsId=,'))
@@ -40,7 +39,6 @@ class GitPushStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call(args: "-f", credentialsId: "my_credentials")
     printCallStack()
     assertJobStatusSuccess()

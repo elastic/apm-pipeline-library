@@ -21,17 +21,16 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class DockerLogsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/dockerLogs.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/dockerLogs.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/docker-logs.sh'))
@@ -43,7 +42,6 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_fail_never_false() throws Exception {
-    def script = loadScript(scriptName)
     script.call(failNever: false)
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'docker-logs.sh "" "docker-compose.yml" || true'))
@@ -52,7 +50,6 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_all_parameters() throws Exception {
-    def script = loadScript(scriptName)
     script.call(step: 'foo', dockerCompose: 'bar/docker-compose.yml', failNever: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker-logs.sh "foo" "bar/docker-compose.yml" || true'))
@@ -61,7 +58,6 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_failure_with_failNever_false() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { s ->
       updateBuildStatus('FAILURE')
       throw new Exception('Failed')
@@ -78,7 +74,6 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_normalise_step() throws Exception {
-    def script = loadScript(scriptName)
     assertTrue(script.normalise('foo').equals('foo'))
     assertTrue(script.normalise('foo;bar').equals('foo/bar'))
     assertTrue(script.normalise('--f.o o--').equals('_f_o_o_'))
@@ -86,7 +81,6 @@ class DockerLogsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

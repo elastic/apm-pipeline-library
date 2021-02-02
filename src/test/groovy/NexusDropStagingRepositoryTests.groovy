@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusDropStagingRepositoryTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusDropStagingRepository.groovy'
 
   def shInterceptor = {
     return """{
@@ -43,6 +42,7 @@ class NexusDropStagingRepositoryTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nexusDropStagingRepository.groovy')
 
       profile_drop_context.setHandler({ exchange ->
         String response = shInterceptor();
@@ -64,7 +64,6 @@ class NexusDropStagingRepositoryTests extends ApmBasePipelineTest {
 
   @Test
   void testDrop() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',

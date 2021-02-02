@@ -21,12 +21,12 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitCheckoutStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitCheckout.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/gitCheckout.groovy')
     env.WORKSPACE = 'WS'
     env.remove('BRANCH_NAME')
     binding.getVariable('currentBuild').getBuildCauses = {
@@ -36,7 +36,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     script.call()
@@ -47,7 +46,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testBaseDir() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder')
@@ -58,7 +56,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testBranch() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -72,7 +69,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testReferenceRepo() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -88,7 +84,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pull_request_with_shallow() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = [
       branches: [ 'BRANCH' ],
       doGenerateSubmoduleConfigurations: [],
@@ -109,7 +104,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMergeRemoteRepo() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -124,7 +118,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMergeTargetRepo() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -138,7 +131,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testRepo_without_GIT_URL() throws Exception {
-    def script = loadScript(scriptName)
     def org = 'org'
     def repo = 'repo'
     def repoUrl = "git@github.com:${org}/${repo}.git"
@@ -152,7 +144,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testRepo_with_GIT_URL() throws Exception {
-    def script = loadScript(scriptName)
     def org = 'org'
     def repo = 'repo'
     env.GIT_URL = "git@github.com:${org}/${repo}.git"
@@ -166,7 +157,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorBranchIncomplete() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master')
@@ -179,7 +169,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorBranchAndBranchNameVariable() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     try {
@@ -194,7 +183,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorNoBranchAndNoBranchNameVariable() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder')
@@ -208,7 +196,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorBranchNoCredentials() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master',
@@ -223,7 +210,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorBranchNoRepo() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master',
@@ -238,7 +224,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorEmptyBranch() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: '', credentialsId: 'credentials-id',
@@ -254,7 +239,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   @Test
   void testUserTriggered() throws Exception {
     helper.registerAllowedMethod("isUserTrigger", {return true})
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master',
@@ -270,7 +254,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   @Test
   void testCommentTriggered() throws Exception {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master',
@@ -286,7 +269,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   @Test
   void testUpstreamTriggered() throws Exception {
     helper.registerAllowedMethod('isUpstreamTrigger', {return true})
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     try {
       script.call(basedir: 'sub-folder', branch: 'master',
@@ -301,7 +283,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFirstTimeContributorWithoutNotify() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubPrCheckApproved', [], {
       updateBuildStatus('FAILURE')
       throw new Exception('githubPrCheckApproved: The PR is not allowed to run in the CI yet')
@@ -321,7 +302,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFirstTimeContributorWithNotify() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubPrCheckApproved', [], {
       updateBuildStatus('FAILURE')
       throw new Exception('githubPrCheckApproved: The PR is not allowed to run in the CI yet')
@@ -340,7 +320,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithoutFirstTimeContributorWithNotify() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
@@ -351,7 +330,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithFirstTimeContributorWithoutNotify() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: false)
@@ -363,7 +341,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   @Test
   void testWithFirstTimeContributorWithNotifyAndCommentTrigger() throws Exception {
     helper.registerAllowedMethod("isCommentTrigger", {return true})
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'BRANCH'
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', githubNotifyFirstTimeContributor: true)
@@ -374,7 +351,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithShallowAndMergeTarget() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
         repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -389,7 +365,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDisabledShallowAndDepth() throws Exception {
-    def script = loadScript(scriptName)
     script.scm = 'SCM'
     script.call(basedir: 'sub-folder', branch: 'master',
       repo: 'git@github.com:elastic/apm-pipeline-library.git',
@@ -402,7 +377,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsDefaultSCM() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.isDefaultSCM(null))
     env.BRANCH_NAME = 'master'
     assertTrue(script.isDefaultSCM(null))
@@ -412,7 +386,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsDefaultSCMWithCustomisation() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'master'
     script.scm = [ extensions: [] ]
     script.call(repo: 'git@github.com:elastic/apm-pipeline-library.git', shallow: false)
@@ -423,7 +396,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsDefaultSCMWithoutCustomisation() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'master'
     script.scm = [ extensions: [] ]
     script.call()
@@ -434,7 +406,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isUpstreamTriggerWithExclusions_with_build_cause_and_approved() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
     binding.getVariable('currentBuild').getBuildCauses = {
@@ -458,7 +429,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isUpstreamTriggerWithExclusions_with_build_cause_and_not_approved() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return false })
     binding.getVariable('currentBuild').getBuildCauses = {
@@ -482,7 +452,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isUpstreamTriggerWithExclusions_with_different_build_cause() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return true })
     binding.getVariable('currentBuild').getBuildCauses = {
       return [
@@ -505,7 +474,6 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isUpstreamTriggerWithExclusions_with_no_build_cause() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     def ret = script.isUpstreamTriggerWithExclusions()
     printCallStack()
