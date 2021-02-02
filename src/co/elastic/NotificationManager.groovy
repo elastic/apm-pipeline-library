@@ -348,6 +348,7 @@ def generateBuildReport(Map args = [:]) {
         "buildStatus": buildStatus,
         "changeSet": changeSet,
         "docsUrl": docsUrl,
+        "env": env,
         "jenkinsText": env.JOB_NAME,
         "jenkinsUrl": env.JENKINS_URL,
         "jobUrl": boURL,
