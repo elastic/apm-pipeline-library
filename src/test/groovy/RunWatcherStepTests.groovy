@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class RunWatcherStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

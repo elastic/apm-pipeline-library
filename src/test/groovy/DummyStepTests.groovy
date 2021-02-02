@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class DummyStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/dummy.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/dummy.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(text: "dummy")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'I am a dummy step - dummy'))

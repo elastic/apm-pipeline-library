@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse
 
 class IsMemberOfStepTests extends ApmBasePipelineTest {
 
-  def script
 
   @Override
   @Before

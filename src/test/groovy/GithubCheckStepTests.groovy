@@ -23,7 +23,6 @@ import static org.junit.Assert.assertSame
 import static org.junit.Assert.assertTrue
 
 class GithubCheckStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

@@ -21,12 +21,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class MatchesPrLabelStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/matchesPrLabel.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/matchesPrLabel.groovy')
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
     helper.registerAllowedMethod('githubPrLabels', [], { return [ 'bar', 'foo' ] })
@@ -34,7 +34,6 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_label_parameter() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('label') {
       script.call()
     }
@@ -42,7 +41,6 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_branch() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(label: 'foo')
     printCallStack()
     assertFalse(ret)
@@ -51,7 +49,6 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pr_without_match() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call(label: 'unmatch')
     printCallStack()
@@ -61,7 +58,6 @@ class MatchesPrLabelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pr_with_match() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call(label: 'foo')
     printCallStack()

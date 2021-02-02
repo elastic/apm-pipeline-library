@@ -21,17 +21,16 @@ import net.sf.json.JSONObject
 import static org.junit.Assert.assertTrue
 
 class ToJSONStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/toJSON.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/toJSON.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def obj = script.call("{'dummy': 'value'}")
     printCallStack()
     assertTrue(obj instanceof JSONObject)
@@ -40,7 +39,6 @@ class ToJSONStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoJSON() throws Exception {
-    def script = loadScript(scriptName)
     def obj = script.call("")
     printCallStack()
     assertTrue(obj == null)
@@ -49,7 +47,6 @@ class ToJSONStepTests extends ApmBasePipelineTest {
 
   @Test
   void testPOJO() throws Exception {
-    def script = loadScript(scriptName)
     def pojo = [p1: 'value', p2: 'value']
     def obj = script.call(pojo)
     printCallStack()

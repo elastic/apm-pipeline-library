@@ -30,7 +30,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusTests extends ApmBasePipelineTest {
-  String scriptName = 'src/co/elastic/Nexus.groovy'
 
   def shInterceptor = {
     return """{
@@ -54,6 +53,7 @@ class NexusTests extends ApmBasePipelineTest {
     // System.println(this.handleRequest)
     tmpFile.write("Oh, hello there. This is a test file for NexusTests")
     super.setUp()
+    script = loadScript('src/co/elastic/Nexus.groovy')
     root_context.setHandler({ exchange ->
       String response = shInterceptor();
       exchange.responseHeaders.set("Content-Type", "application/json")
@@ -84,7 +84,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testAcceptProperty() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
@@ -96,7 +95,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testURL() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
@@ -108,7 +106,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testAddData() throws Exception {
-    def script = loadScript(scriptName)
     def conn = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
@@ -123,7 +120,6 @@ class NexusTests extends ApmBasePipelineTest {
   @Test
   void testGetData() throws Exception {
     helper.registerAllowedMethod("reader", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     def data
     def conn = script.createConnection(
       "http://localhost:9999",
@@ -143,7 +139,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testcheckResponse() throws Exception {
-    def script = loadScript(scriptName)
     def conn = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
@@ -155,7 +150,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testcheckBadResponse() throws Exception {
-    def script = loadScript(scriptName)
     def conn = script.createConnection(
       "http://localhost:9999",
       "dummy_user",
@@ -168,7 +162,6 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testUpload() throws Exception {
-    def script = loadScript(scriptName)
     assertNull(script.upload(
       "http://localhost:9999",
       "dummy_user",
@@ -184,7 +177,6 @@ class NexusTests extends ApmBasePipelineTest {
     def filehandle = new File("/tmp/nexus_hash_file")
     filehandle.write("Oh, hello there. This is a test file for NexusTests")
     def algorithm = 'SHA'
-    def script = loadScript(scriptName)
     def ret = script.generateHashFile(filehandle, algorithm)
     assertTrue(ret.toString().equals(filehandle.toString()+".SHA"))
     def hashFile = new File("/tmp/nexus_hash_file.SHA")
@@ -193,34 +185,29 @@ class NexusTests extends ApmBasePipelineTest {
 
   @Test
   void testGetSnapshotsUrl() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.getSnapshotsURL('http://oss.sonatype.org')
     assertTrue(ret.equals("http://oss.sonatype.org/content/repositories/snapshots"))
   }
 
   @Test
   void testgetStagingURL() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.getStagingURL('http://oss.sonatype.org')
     assertTrue(ret.equals("http://oss.sonatype.org/service/local/staging"))
   }
 
   @Test
   void testGetStagingRepositoryURL() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.getStagingRepositoryURL('http://oss.sonatype.org', 'dummy_id')
     assertTrue(ret.equals("http://oss.sonatype.org/service/local/repositories/dummy_id/content"))
   }
 
   @Test
   void testIs5xxError() throws Exception {
-    def script = loadScript(scriptName)
     assertTrue(script.is5xxError(500))
   }
 
   @Test
   void testIsNot5xxError() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.is5xxError(404))
   }
 }

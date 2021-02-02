@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusCreateStagingRepository.groovy'
 
   def shInterceptor = {
     return """{
@@ -44,6 +43,7 @@ class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nexusCreateStagingRepository.groovy')
     root_context.setHandler({ exchange ->
       String response = shInterceptor();
       exchange.responseHeaders.set("Content-Type", "application/json")
@@ -74,7 +74,6 @@ class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
 
   @Test
   void testCreate() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
@@ -86,7 +85,6 @@ class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
 }
 
 class NexusStagingCreate500Tests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusCreateStagingRepository.groovy'
 
   def shInterceptor = {
     return """{
@@ -105,7 +103,7 @@ class NexusStagingCreate500Tests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     // System.println(this.handleRequest)
     super.setUp()
-
+    script = loadScript('vars/nexusCreateStagingRepository.groovy')
       profile_start_context.setHandler({ exchange ->
         String response = shInterceptor();
         exchange.responseHeaders.set("Content-Type", "application/json")
@@ -130,7 +128,6 @@ class NexusStagingCreate500Tests extends ApmBasePipelineTest {
     doesn't deal with a service never returning anything BUT a 500
     which is what this test does but we don't need to look that far
     ahead in this case */
-    def script = loadScript(scriptName)
     def ret
     try {
       ret = script.call(

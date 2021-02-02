@@ -21,18 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class TarStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/tar.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/tar.groovy')
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
   }
 
   @Test
   void test_with_all_the_parameters() throws Exception {
-    def script = loadScript(scriptName)
     script.call(file:'archive.tgz', dir: 'folder', allowMissing: false, archive: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'archive.tgz'))
@@ -42,7 +41,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_error_and_without_allowMissing() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { throw new Exception("Error") })
     script.call(file:'archive.tgz', dir: 'folder', allowMissing: false, archive: true)
     printCallStack()
@@ -51,7 +49,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_allowMissing() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [String.class], { throw new Exception("Error") })
     script.call(file:'archive.tgz', dir: 'folder', allowMissing: true, archive: false)
     printCallStack()
@@ -61,7 +58,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_error_without_failNever() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('Error') })
     try {
       script.call(file:'archive.tgz', dir: 'folder', failNever: false, archive: true)
@@ -76,7 +72,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod("isUnix", [], {false})
     script.call(file:'archive.tgz', dir: 'folder', allowMissing: true, archive: true)
     printCallStack()
@@ -87,7 +82,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_compressWithTar() throws Exception {
-    def script = loadScript(scriptName)
     script.compressWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=archive.tgz'))
@@ -99,7 +93,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_compressWithTar_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     script.compressWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
@@ -112,7 +105,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_compressWith7z_linux() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.compressWith7z(file:'archive.tgz', dir: 'folder')
     } catch(e) {
@@ -126,7 +118,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_compressWith7z_windows_without_7z_installed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return false })
     script.compressWith7z(file:'archive.tgz', dir: 'folder')
@@ -141,7 +132,6 @@ class TarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_compressWith7z_windows_with_7z_installed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return true })
     script.compressWith7z(file:'archive.tgz', dir: 'folder')

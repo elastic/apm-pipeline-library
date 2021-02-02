@@ -21,18 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class IsInstalledStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isInstalled.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isInstalled.groovy')
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
   }
 
   @Test
   void test_without_tool_parameter() throws Exception {
-    def script = loadScript(scriptName)
     def ret = false
     testMissingArgument('tool') {
       ret = script.call()
@@ -42,7 +41,6 @@ class IsInstalledStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_tool() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(tool: 'docker')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker'))
@@ -53,7 +51,6 @@ class IsInstalledStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_tool_with_flag() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(tool: 'docker', flag: '--version')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker --version >/dev/null'))
@@ -63,7 +60,6 @@ class IsInstalledStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_tool_with_flag_in_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     def ret = script.call(tool: 'docker', flag: '--version')
     printCallStack()

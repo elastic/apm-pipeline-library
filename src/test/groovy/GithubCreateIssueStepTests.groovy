@@ -22,17 +22,16 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCreateIssueStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubCreateIssue.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubCreateIssue.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -40,7 +39,6 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_params() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('title') {
       script.call()
     }
@@ -48,7 +46,6 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_title() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
@@ -61,7 +58,6 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_title_with_credentials() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
@@ -71,7 +67,6 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_all_the_arguments() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', milestone: 'm1', labels: 'l1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "issue create --assignee='v1v' --label='l1' --milestone='m1' --title='foo' --body='bar'"))
@@ -80,7 +75,6 @@ class GithubCreateIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_some_cornercases() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "--title='foo foo'"))

@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithNpmrcStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withNpmrc.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withNpmrc.groovy')
     env.HOME = '/foo'
   }
 
   @Test
   void testDefaultParameters() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -47,7 +46,6 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
   @Test
   void testDefaultParametersAndWindows() throws Exception {
     helper.registerAllowedMethod('isUnix', [ ], { false })
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -60,7 +58,6 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithAllParameters() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(path: '/bar', npmrcFile: 'mytoken', registry: 'foo-bar', secret: VaultSecret.SECRET_NPMRC.toString()) {
       isOK = true
@@ -76,7 +73,6 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithBodyError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call {
         throw new Exception('Mock an error')
@@ -92,7 +88,6 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_SecretError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_ERROR.toString()){
         //NOOP
@@ -107,7 +102,6 @@ class WithNpmrcStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_SecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: 'secretNotExists'){
         //NOOP

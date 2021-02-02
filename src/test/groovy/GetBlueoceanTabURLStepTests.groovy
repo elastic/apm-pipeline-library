@@ -21,17 +21,16 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
-  String scriptName = "vars/getBlueoceanTabURL.groovy"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getBlueoceanTabURL.groovy')
   }
 
   @Test
   void testMissingArguments() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){
@@ -44,7 +43,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWrongTypeArgument() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call('unknown')
     } catch(e){
@@ -57,7 +55,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithTestsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('tests')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/tests"))
@@ -66,7 +63,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithChangesTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('changes')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/changes"))
@@ -75,7 +71,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithPipelineTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('pipeline')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/pipeline"))
@@ -84,7 +79,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithArtifactsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('artifacts')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/artifacts"))
@@ -93,7 +87,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithCoberturaTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('cobertura')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/cobertura"))
@@ -102,7 +95,6 @@ class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithGcsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('gcs')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/gcsObjects"))
