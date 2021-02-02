@@ -45,25 +45,17 @@ class AxisStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
-  @Test(expected = Exception.class)
   void testMissingName() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      def v = script.call(null, [])
-    } finally {
-      printCallStack()
-      assertTrue(assertMethodCallContainsPattern('error', 'name argument missing.'))
+    testMissingArgument('name', 'argument missing') {
+      script.call(null, [])
     }
   }
 
-  @Test(expected = Exception.class)
   void testMissingValues() throws Exception {
     def script = loadScript(scriptName)
-    try {
-      def v = script.call('foo', null)
-    } finally {
-      printCallStack()
-      assertTrue(assertMethodCallContainsPattern('error', 'values argument missing.'))
+    testMissingArgument('values', 'argument missing') {
+      script.call('foo', null)
     }
   }
 }

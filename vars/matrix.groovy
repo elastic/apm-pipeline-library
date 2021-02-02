@@ -20,7 +20,7 @@
 
 */
 def call(Map args = [:], Closure body) {
-  def axes = args.containsKey('axes') ? args.axes : error('axes argument missing.')
+  def axes = args.containsKey('axes') ? args.axes : error('axes parameter is required.')
   def excludes = args.get('excludes', [])
   def agent = args.get('agent')
 
