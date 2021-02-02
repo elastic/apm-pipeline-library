@@ -27,21 +27,24 @@ services:
         target: /var/pipeline-library
         read_only: true
     ports:
-      - "18080:8080"
-      - "50000:50000"
+      - "127.0.0.1:18080:8080"
+      - "127.0.0.1:50000:50000"
     networks:
       apm-pipeline-library:
 
-  otel-collector:
-    image: otel/opentelemetry-collector:0.19.0
-    command: ["--config=/etc/config.yaml"]
+  otel-collector-contrib:
+    image: otel/opentelemetry-collector-contrib:0.19.0
+    command: ["--config=/etc/config.yaml", "--log-level=debug"]
     volumes:
       - ./opentelemetry-collector-exporter-elastic.yaml:/etc/config.yaml
     ports:
-      - "1888:1888"   # pprof extension
-      - "13133:13133" # health_check extension
-      - "4317"        # OTLP gRPC receiver
-      - "55670:55679" # zpages extension
+      - "127.0.0.1:1888:1888"   # pprof extension
+      - "127.0.0.1:13133:13133" # health_check extension
+      - "127.0.0.1:4317:4317"   # OTLP gRPC receiver
+      - "127.0.0.1:55679:55679" # zpages extension
+    depends_on:
+      apm-server:
+        condition: service_healthy
     networks:
       apm-pipeline-library:
 

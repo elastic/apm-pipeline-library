@@ -104,7 +104,7 @@ unclassified:
     globalConfigEmail: username@example.com
 
   openTelemetry:
-    endpoint: "localhost:4317"
+    endpoint: "otel-collector-contrib:4317"
     useTls: false
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
