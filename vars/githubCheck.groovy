@@ -24,7 +24,7 @@ import java.util.Date
 
 */
 def call(Map args = [:]) {
-  def name = args.containsKey('name') ? args.name : error('githubCheck: missing name argument')
+  def name = args.containsKey('name') ? args.name : error('githubCheck: name parameter is required')
   def description = args.get('description', name)
   def body = args.get('body', '')
   def secret = args.get('secret', 'secret/observability-team/ci/github-app')

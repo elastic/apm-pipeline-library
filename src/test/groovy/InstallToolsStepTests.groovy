@@ -32,27 +32,17 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
   @Test
   void test_without_arguments() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('missing parameters,', '') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'installTools: missing params'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_with_some_missing_arguments() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('version') {
       script.installTool([ tool: 'python3' ])
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'installTools: missing version param'))
-    assertJobStatusFailure()
   }
 
   @Test

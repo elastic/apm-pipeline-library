@@ -19,9 +19,9 @@
 * Given the YAML definition then it creates all the stages
 */
 Map call(Map args = [:]){
-  def project = args.containsKey('project') ? args.project : error('beatsStages: project param is required')
-  def content = args.containsKey('content') ? args.content : error('beatsStages: content param is required')
-  def function = args.containsKey('function') ? args.function : error('beatsStages: function param is required')
+  def project = args.containsKey('project') ? args.project : error('beatsStages: project parameter is required')
+  def content = args.containsKey('content') ? args.content : error('beatsStages: content parameter is required')
+  def function = args.containsKey('function') ? args.function : error('beatsStages: function parameter is required')
   def defaultNode = content.containsKey('platform') ? content.platform : error('beatsStages: platform entry in the content is required.')
 
   def mapOfStages = [:]

@@ -34,14 +34,9 @@ class GithubCheckStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_name_argument() throws Exception {
-    try {
+    testMissingArgument('name') {
       script.call()
-    } catch(err) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'missing name argument'))
-    assertJobStatusFailure()
   }
 
   @Test

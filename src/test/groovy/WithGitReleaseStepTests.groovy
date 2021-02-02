@@ -53,18 +53,9 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    def isOK = false
-    try {
-      script.call() {
-        isOK = true
-      }
-    } catch(e){
-      //NOOP
+    testWindows() {
+      script.call(){}
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGitRelease: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test

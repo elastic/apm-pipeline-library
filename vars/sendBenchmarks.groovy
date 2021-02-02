@@ -108,10 +108,10 @@ def prepareAndRun(Map params = [:], Closure body) {
   if(!isUnix()){
     error('prepareAndRun: windows is not supported yet.')
   }
-  def secret = params.containsKey('secret') ? params.secret : error('prepareAndRun: secret argument is required.')
-  def urlVar = params.containsKey('url_var') ? params.url_var : error('prepareAndRun: url_var argument is required.')
-  def userVar = params.containsKey('user_var') ? params.user_var : error('prepareAndRun: user_var argument is required.')
-  def passVar = params.containsKey('pass_var') ? params.pass_var : error('prepareAndRun: pass_var argument is required.')
+  def secret = params.containsKey('secret') ? params.secret : error('prepareAndRun: secret parameter is required.')
+  def urlVar = params.containsKey('url_var') ? params.url_var : error('prepareAndRun: url_var parameter is required.')
+  def userVar = params.containsKey('user_var') ? params.user_var : error('prepareAndRun: user_var parameter is required.')
+  def passVar = params.containsKey('pass_var') ? params.pass_var : error('prepareAndRun: pass_var parameter is required.')
 
   def props = getVaultSecret(secret: secret)
   if(props?.errors){

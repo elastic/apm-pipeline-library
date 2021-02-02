@@ -28,7 +28,7 @@ def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCreatePullRequest: windows is not supported yet.'
   }
-  def titleValue = args.containsKey('title') ? args.title : error('githubCreatePullRequest: title argument is required.')
+  def titleValue = args.containsKey('title') ? args.title : error('githubCreatePullRequest: title parameter is required.')
   def descriptionValue = args.get('description', '')
   def assign = args.containsKey('assign') ? "--assign ${args.assign}" : ''
   def reviewer = args.containsKey('reviewer') ? "--reviewer ${args.reviewer}" : ''

@@ -80,13 +80,9 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
   @Test
   void test_missing_pattern_parameter() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('pattern') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'pattern parameter is required'))
   }
 
   @Test

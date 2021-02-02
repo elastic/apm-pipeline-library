@@ -44,9 +44,9 @@ This method generates flakey test data from Jenkins test results
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
 */ 
 def analyzeFlakey(Map args = [:]) {
-    def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is not valid')
+    def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
     def secret = args.containsKey('es_secret') ? args.es_secret : null
-    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
+    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is required')
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
@@ -168,8 +168,8 @@ This method generates a custom PR comment with the given data
  * @param commentFile
 */
 def customPRComment(Map args = [:]) {
-    def file = args.containsKey('file') ? args.file : error('customPRComment: file parameter is not valid')
-    def commentFile = args.containsKey('commentFile') ? args.commentFile : error('customPRComment: commentFile parameter is not valid')
+    def file = args.containsKey('file') ? args.file : error('customPRComment: file parameter is required')
+    def commentFile = args.containsKey('commentFile') ? args.commentFile : error('customPRComment: commentFile parameter is required')
     def msg = readFile(file: file)
     githubPrComment(message: msg, commentFile: "${commentFile}")
 }
@@ -187,9 +187,9 @@ def customPRComment(Map args = [:]) {
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  */
 def notifyEmail(Map params = [:]) {
-    def build = params.containsKey('build') ? params.build : error('notifyEmail: build parameter it is not valid')
-    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyEmail: buildStatus parameter is not valid')
-    def emailRecipients = params.containsKey('emailRecipients') ? params.emailRecipients : error('notifyEmail: emailRecipients parameter is not valid')
+    def build = params.containsKey('build') ? params.build : error('notifyEmail: build parameter is required')
+    def buildStatus = params.containsKey('buildStatus') ? params.buildStatus : error('notifyEmail: buildStatus parameter is required')
+    def emailRecipients = params.containsKey('emailRecipients') ? params.emailRecipients : error('notifyEmail: emailRecipients parameter is required')
     def testsSummary = params.containsKey('testsSummary') ? params.testsSummary : null
     def changeSet = params.containsKey('changeSet') ? params.changeSet : []
     def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
@@ -268,8 +268,8 @@ def notifyPR(Map args = [:]) {
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  */
 def notifySlack(Map args = [:]) {
-    def build = args.containsKey('build') ? args.build : error('notifySlack: build parameter it is not valid')
-    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('notifySlack: buildStatus parameter is not valid')
+    def build = args.containsKey('build') ? args.build : error('notifySlack: build parameter is required')
+    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('notifySlack: buildStatus parameter is required')
     def changeSet = args.containsKey('changeSet') ? args.changeSet : []
     def docsUrl = args.get('docsUrl', null)
     def log = args.containsKey('log') ? args.log : null
@@ -328,8 +328,8 @@ def notifySlack(Map args = [:]) {
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  */
 def generateBuildReport(Map args = [:]) {
-    def build = args.containsKey('build') ? args.build : error('generateBuildReport: build parameter it is not valid')
-    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('generateBuildReport: buildStatus parameter is not valid')
+    def build = args.containsKey('build') ? args.build : error('generateBuildReport: build parameter is required')
+    def buildStatus = args.containsKey('buildStatus') ? args.buildStatus : error('generateBuildReport: buildStatus parameter is required')
     def changeSet = args.get('changeSet', [])
     def docsUrl = args.get('docsUrl', null)
     def log = args.get('log', null)

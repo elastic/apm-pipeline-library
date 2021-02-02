@@ -632,14 +632,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
   }
 
-  def testMissingArgument(String parameter, Closure body) {
+  def testMissingArgument(String parameter='', String message='parameter is required', Closure body) {
     try {
       body()
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', "${parameter} parameter is required"))
+    assertTrue(assertMethodCallContainsPattern('error', "${parameter} ${message}"))
     assertJobStatusFailure()
   }
 
