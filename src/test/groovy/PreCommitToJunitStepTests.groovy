@@ -95,7 +95,8 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_null() throws Exception {
-    script.toJunit('1', null, '2')
+    def ret = script.toJunit('foo', null, 'bar')
     printCallStack()
+    assertTrue(ret.contains('name="foo" />'))
   }
 }
