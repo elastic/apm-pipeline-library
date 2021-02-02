@@ -86,6 +86,11 @@ pipeline {
           setEnvVar('GITHUB_PULL_REQUEST', 'TBD')
         }
       }
+      post {
+        unsuccessful {
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'critical', phase: 'events')
+        }
+      }
     }
     stage('Trigger Pull Request') {
       when {
@@ -95,15 +100,28 @@ pipeline {
         notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'started')
         addGitHubLabels(pr: env.GITHUB_PULL_REQUEST, labels: 'merge-queue-running')
         triggerJob(pr: env.GITHUB_PULL_REQUEST)
+      }
+      post {
+        unsuccessful {
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'failed', phase: 'trigger')
+        }
+        success {
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'completed', phase: 'trigger')
+        }
+      }
+    }
+    stage('Change GitHub labels') {
+      when {
+        expression { return env.MERGE_QUEUE?.equals('true') }
+      }
+      steps {
         addGitHubLabels(pr: env.GITHUB_PULL_REQUEST, labels: 'merge-queue-success')
         unassignGitHubLabels(pr: env.GITHUB_PULL_REQUEST, labels: [ 'merge-queue-running', 'ready-to-merge' ])
       }
       post {
         unsuccessful {
-          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'failed')
-        }
-        success {
-          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'completed')  
+          // notify to the merge-queue owner that the automation failed.
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'critical', phase: 'labels')
         }
       }
     }
@@ -112,7 +130,17 @@ pipeline {
         expression { return env.MERGE_QUEUE?.equals('true') }
       }
       steps {
+        notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'failed')
         merge(pr: env.GITHUB_PULL_REQUEST, type: 'squash-rebase')
+      }
+      post {
+        unsuccessful {
+          // notify to the merge-queue owner that the automation failed.
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'critical', phase: 'merge')
+        }
+        success {
+          notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'completed', phase: 'merge')
+        }
       }
     }
   }
@@ -128,4 +156,9 @@ def shouldBeTriggered() {
          env.GITHUB_LABEL?.contains('ready-to-merge') &&
          env.GITHUB_CHECKS?.contains('true') &&
          env.GITHUB_APPROVALS?.contains('passed')
+}
+
+def notifyMergeQueue(Map args = [:]) {
+    // if critical then reports in slack to the system admin!
+    // report also as a GitHub comment.
 }
