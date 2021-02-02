@@ -25,17 +25,16 @@ import static org.junit.Assert.assertTrue
 import static org.hamcrest.CoreMatchers.is
 
 public class BuildStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/build.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/build.groovy')
   }
 
   @Test
   void testSuccess() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
@@ -45,7 +44,6 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNestedJob() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(job: 'nested/foo')
     printCallStack()
     assertTrue(result != null)
@@ -55,28 +53,24 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void testException() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('nested » foo #1', 'nested/foo')
     assertTrue(result.contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
   }
 
   @Test
   void testExceptionWithoutTheFormat() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('nested » foo', 'nested/foo')
     assertTrue(result.contains("Can not determine redirect link"))
   }
 
   @Test
   void testAnotherObject() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('AnotherObject', 'foo')
     assertTrue(result.contains("Can not determine redirect link"))
   }
 
   @Test
   void test_throwBuildException() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
     } catch (e) {
@@ -89,7 +83,6 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_propagage_failure_with_null_object() throws Exception {
-    def script = loadScript(scriptName)
     script.propagateFailure(null)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))
@@ -97,7 +90,6 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_propagage_failure_with_an_object() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.propagateFailure(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {

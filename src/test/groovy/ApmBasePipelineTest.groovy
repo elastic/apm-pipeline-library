@@ -27,6 +27,7 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class ApmBasePipelineTest extends DeclarativePipelineTest {
+  def script
   Map env = [:]
   Map params = [:]
 

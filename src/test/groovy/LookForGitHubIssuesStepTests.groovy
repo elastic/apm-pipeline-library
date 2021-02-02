@@ -21,17 +21,16 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/lookForGitHubIssues.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/lookForGitHubIssues.groovy')
   }
 
   @Test
   void test_with_no_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret.isEmpty())
@@ -39,7 +38,6 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_githubIssues_error() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
     def ret = script.call(flakyList: [ 'test-foo' ])
     printCallStack()
@@ -48,7 +46,6 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], {
       return [ 1 : [ state: 'OPEN', title: 'title' ]] })
     def ret = script.call(flakyList: [ 'test-foo' ])
@@ -58,7 +55,6 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], {
       return [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]] })
     def ret = script.call(flakyList: [ 'test-foo' ])
@@ -69,7 +65,6 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_error() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('force a failure') })
     def ret = script.call(flakyList: [ 'test-foo' ])
     println ret

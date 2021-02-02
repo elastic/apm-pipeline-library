@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SuperLinterStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/superLinter.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/superLinter.groovy')
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       return 0
     })
@@ -33,7 +33,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_failNever_false() throws Exception {
-    def script = loadScript(scriptName)
     script.call(failNever: false)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e RUN_LOCAL=true -e DISABLE_ERRORS=false'))
@@ -43,7 +42,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_failNever_true() throws Exception {
-    def script = loadScript(scriptName)
     script.call(failNever: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e RUN_LOCAL=true -e DISABLE_ERRORS=true'))
@@ -52,7 +50,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_envs() throws Exception {
-    def script = loadScript(scriptName)
     script.call(envs: [ 'foo=bar', 'var=value'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-e foo=bar -e var=value'))
@@ -61,7 +58,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_junit_true() throws Exception {
-    def script = loadScript(scriptName)
     script.call(junit: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('tap2Junit', 1))
@@ -70,7 +66,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_junit_false() throws Exception {
-    def script = loadScript(scriptName)
     script.call(junit: false)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('tap2Junit', 0))
@@ -79,7 +74,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_installation_error_with_not_failNever() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m?.label?.contains('Install super-linter')){
@@ -99,7 +93,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_superlinter_error_and_not_failNever() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m?.label?.contains('Run super-linter')){
@@ -118,7 +111,6 @@ class SuperLinterStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_superlinter_error_and_failNever() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m?.label?.contains('Run super-linter')){

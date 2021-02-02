@@ -23,17 +23,16 @@ import static org.junit.Assert.assertTrue
 import co.elastic.mock.beats.RunCommand
 
 class BeatsStagesStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/beatsStages.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/beatsStages.groovy')
   }
 
   @Test
   void test_with_no_data() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('project') {
       script.call()
     }
@@ -41,7 +40,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_no_project() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('content') {
       script.call(project: 'foo')
     }
@@ -49,7 +47,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_no_platform() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(project: 'foo', content: [:], function: new RunCommand(steps: this))
     } catch (e) {
@@ -62,7 +59,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_no_function() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('function') {
       script.call(project: 'foo', content: [:])
     }
@@ -70,7 +66,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_simple() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(project: 'foo', content: [
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
@@ -87,7 +82,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiple() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(project: 'foo', content: [
       "platform" : [ "linux && ubuntu-16" ],
       "stages": [
@@ -110,7 +104,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiple_when_without_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('beatsWhen', [Map.class], {return false})
     def ret = script.call(project: 'foo', content: [
       "platform" : [ "linux && ubuntu-16" ],
@@ -139,7 +132,6 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiple_when_with_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('beatsWhen', [Map.class], { return true })
     def ret = script.call(project: 'foo', content: [
       "platform" : [ "linux && ubuntu-16" ],

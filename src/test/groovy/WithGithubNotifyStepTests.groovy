@@ -21,7 +21,6 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithGithubNotifyStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before
