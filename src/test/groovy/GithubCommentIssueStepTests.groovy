@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCommentIssueStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

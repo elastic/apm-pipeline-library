@@ -29,7 +29,6 @@ import co.elastic.Nexus
 
 
 class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class UnstashV2StepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

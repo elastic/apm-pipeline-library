@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat
 import static org.hamcrest.CoreMatchers.is
 
 class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

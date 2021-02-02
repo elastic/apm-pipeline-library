@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsBranchIndexTriggerStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

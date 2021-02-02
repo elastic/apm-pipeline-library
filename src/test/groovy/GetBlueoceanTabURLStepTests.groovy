@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class GetBlueoceanTabURLStepTests extends ApmBasePipelineTest {
-  def script= "vars/getBlueoceanTabURL.groovy"
 
   @Override
   @Before

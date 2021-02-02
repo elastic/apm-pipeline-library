@@ -20,7 +20,6 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SetEnvVarStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

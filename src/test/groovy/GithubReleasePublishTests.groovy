@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import net.sf.json.JSONArray
 
 class GithubReleasePublishTests extends ApmBasePipelineTest {
-  def script
 
   def apiInterceptor = { return toJSON([
       "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",

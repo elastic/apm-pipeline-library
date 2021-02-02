@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue
 import co.elastic.mock.beats.RunCommand
 
 class BeatsStagesStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

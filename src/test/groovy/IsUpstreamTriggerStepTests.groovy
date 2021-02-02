@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

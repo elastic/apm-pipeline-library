@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
-  def script
 
   def commentInterceptor = [
     id: 1,

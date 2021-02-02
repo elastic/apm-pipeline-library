@@ -21,7 +21,6 @@ import net.sf.json.JSONObject
 import static org.junit.Assert.assertTrue
 
 class ToJSONStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

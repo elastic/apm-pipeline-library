@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
 class AgentMappingStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

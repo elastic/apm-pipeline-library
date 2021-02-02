@@ -21,7 +21,6 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class LogStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

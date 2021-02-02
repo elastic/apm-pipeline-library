@@ -21,7 +21,6 @@ import java.util.Base64
 import static org.junit.Assert.assertTrue
 
 class Base64decodeStepTests extends ApmBasePipelineTest {
-  def script
   def text = "dummy"
   def encoding = "UTF-8"
 

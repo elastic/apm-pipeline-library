@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
-  def script
 
   def commentInterceptor = [[	
       url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",	

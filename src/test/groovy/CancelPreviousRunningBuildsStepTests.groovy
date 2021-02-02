@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
-  def script
 
   def runBuilding = new RunMock(building: true)
   def runNotBuilding = new RunMock(building: false)

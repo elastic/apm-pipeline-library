@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class GetGitMatchingGroupStepTests extends ApmBasePipelineTest {
-  def script
 
   def beatsPattern = '^[a-z0-9]+beat\\/module\\/([^\\/]+)\\/.*'
   def beatsXpackPattern = '^x-pack\\/[a-z0-9]+beat\\/module\\/([^\\/]+)\\/.*'

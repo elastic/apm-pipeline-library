@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals
 
 
 class MvnVersionTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

@@ -21,7 +21,6 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GetGitCommitShaStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

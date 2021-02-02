@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class NotificationManagerStepTests extends ApmBasePipelineTest {
-  def script
   def f
 
   @Override

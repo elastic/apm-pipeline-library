@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class FilebeatStepTests extends ApmBasePipelineTest {
-  def script
   // test resources file uses this value as filename
   String nodeName = 'worker-0676d01d9601f8191'
   String jsonConfig = "filebeat_container_" + nodeName + ".json"

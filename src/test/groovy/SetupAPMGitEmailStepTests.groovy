@@ -20,7 +20,6 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

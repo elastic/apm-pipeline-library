@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
-  def script
 
   def shInterceptor = {
     return """{
@@ -86,7 +85,6 @@ class NexusCreateStagingRepositoryTests extends ApmBasePipelineTest {
 }
 
 class NexusStagingCreate500Tests extends ApmBasePipelineTest {
-  def script
 
   def shInterceptor = {
     return """{

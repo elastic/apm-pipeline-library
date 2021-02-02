@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue
 import static org.hamcrest.CoreMatchers.is
 
 public class BuildStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

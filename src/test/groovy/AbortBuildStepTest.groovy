@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class AbortBuildStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

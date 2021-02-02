@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotEquals
 
 class GoDefaultVersionStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

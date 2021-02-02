@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import org.apache.commons.io.FileUtils
 
 class PreCommitToJunitStepTests extends ApmBasePipelineTest {
-  def script
   String compareWith = 'src/test/resources/preCommitToJunit/output'
 
   @Override

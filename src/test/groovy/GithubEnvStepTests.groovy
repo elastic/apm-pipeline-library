@@ -21,7 +21,6 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GithubEnvStepTests extends ApmBasePipelineTest {
-  def script
   String SHA1 = "${SHA}11"
 
   @Override

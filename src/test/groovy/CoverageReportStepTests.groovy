@@ -19,7 +19,6 @@ import org.junit.Before
 import org.junit.Test
 
 class CoverageReportStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before

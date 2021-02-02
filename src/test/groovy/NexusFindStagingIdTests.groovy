@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusFindStagingIdTests extends ApmBasePipelineTest {
-  def script
 
   def shInterceptor = {
     return """
