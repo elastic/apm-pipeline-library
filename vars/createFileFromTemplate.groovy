@@ -30,9 +30,9 @@ def call(Map args = [:]) {
   if(!isUnix()){
     error('createFileFromTemplate: windows is not supported yet.')
   }
-  def data = args.containsKey('data') ? args.data : error('createFileFromTemplate: data param is required.')
-  def template = args.containsKey('template') ? args.template : error('createFileFromTemplate: template param is required.')
-  def output = args.containsKey('output') ? args.output : error('createFileFromTemplate: output param is required.')
+  def data = args.containsKey('data') ? args.data : error('createFileFromTemplate: data parameter is required.')
+  def template = args.containsKey('template') ? args.template : error('createFileFromTemplate: template parameter is required.')
+  def output = args.containsKey('output') ? args.output : error('createFileFromTemplate: output parameter is required.')
   def localTemplate = args.get('localTemplate', false)
   
   if(!localTemplate) {

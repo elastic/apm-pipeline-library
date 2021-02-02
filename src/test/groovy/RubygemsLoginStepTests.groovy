@@ -31,33 +31,17 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.call() {
-        // NOOP
-      }
-    } catch(e){
-      //NOOP
+    testWindows() {
+      script.call() {}
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testWindowsWithApi() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.withApi() {
-        // NOOP
-      }
-    } catch(e){
-      //NOOP
+    testWindows() {
+      script.withApi() {}
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'rubygemsLogin.withApi: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test

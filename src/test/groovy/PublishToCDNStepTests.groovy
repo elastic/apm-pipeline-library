@@ -33,54 +33,33 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_source() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('source') {
       script.call(target: 'bar')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: Missing source argument.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_target() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('target') {
       script.call(source: 'foo')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: Missing target argument.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_secret() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('secret') {
       script.call(source: 'foo', target: 'bar')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'publishToCDN: Missing secret argument.'))
-    assertJobStatusFailure()
   }
 
   @Test

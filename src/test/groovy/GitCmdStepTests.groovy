@@ -52,16 +52,9 @@ class GitCmdStepTests extends ApmBasePipelineTest {
   @Test
   void testNoCmd() throws Exception {
     def script = loadScript(scriptName)
-    try{
+    testMissingArgument('cmd') {
       script.call(credentialsId: "my_credentials", args: '-f')
-    } catch(err){
-      //NOOP
-      println err.toString()
-      err.printStackTrace(System.out);
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gitCmd: missing git command'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -129,14 +122,8 @@ class GitCmdStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gitCmd: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }

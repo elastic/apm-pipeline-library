@@ -33,41 +33,25 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], {false})
-    try {
+    testWindows() {
       script.call()
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_missing_id_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('id') {
       script.call()
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'id param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_missing_input_param() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('input') {
       script.call(id: 'bundlesize')
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'input param is required'))
-    assertJobStatusFailure()
   }
 
   @Test

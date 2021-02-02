@@ -34,15 +34,10 @@ class IsInstalledStepTests extends ApmBasePipelineTest {
   void test_without_tool_parameter() throws Exception {
     def script = loadScript(scriptName)
     def ret = false
-    try {
+    testMissingArgument('tool') {
       ret = script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'tool param is required'))
     assertFalse(ret)
-    assertJobStatusFailure()
   }
 
   @Test

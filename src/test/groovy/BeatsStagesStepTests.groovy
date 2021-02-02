@@ -34,27 +34,17 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_no_data() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('project') {
       script.call()
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'project param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_with_no_project() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('content') {
       script.call(project: 'foo')
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'content param is required'))
-    assertJobStatusFailure()
   }
 
   @Test
@@ -73,14 +63,9 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_no_function() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('function') {
       script.call(project: 'foo', content: [:])
-    } catch (e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'function param is required'))
-    assertJobStatusFailure()
   }
 
   @Test

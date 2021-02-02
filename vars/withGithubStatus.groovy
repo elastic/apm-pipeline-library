@@ -27,7 +27,7 @@
   }
 */
 def call(Map args = [:], Closure body) {
-  def context = args.containsKey('context') ? args.context : error('withGithubStatus: missing context argument')
+  def context = args.containsKey('context') ? args.context : error('withGithubStatus: context parameter is required.')
   def description = args.get('description', context)
   def tab = args.get('tab', 'pipeline')
   def isBlueOcean = args.get('isBlueOcean', false)

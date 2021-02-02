@@ -46,8 +46,8 @@ def call(Map args = [:]) {
   if(!isUnix()){
     error('runbld: windows is not supported yet.')
   }
-  def project = args.containsKey('project') ? args.project : error('runbld: project param is required')
-  def stashedTestReports = args.containsKey('stashedTestReports') ? args.stashedTestReports : error('runbld: stashedTestReports param is required')
+  def project = args.containsKey('project') ? args.project : error('runbld: project parameter is required')
+  def stashedTestReports = args.containsKey('stashedTestReports') ? args.stashedTestReports : error('runbld: stashedTestReports parameter is required')
 
   catchError(buildResult: 'SUCCESS', message: 'runbld post build action failed.') {
     if (stashedTestReports) {

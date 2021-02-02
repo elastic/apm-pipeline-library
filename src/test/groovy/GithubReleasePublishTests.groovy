@@ -88,13 +88,9 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   void testNoId() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('id') {
       script.call(url: "dummy", token: "dummy", name: "Release v1.0.0")
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'id param is required'))
   }
 
   @Test

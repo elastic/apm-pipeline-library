@@ -37,16 +37,11 @@ class WithGithubCheckStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_arguments() throws Exception {
-    try {
-      script.call(){
+    testMissingArgument('context') {
+      script.call() {
         //NOOP
       }
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGithubCheck: missing context argument'))
-    assertJobStatusFailure()
   }
 
   @Test

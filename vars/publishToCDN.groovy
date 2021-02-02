@@ -34,9 +34,9 @@ def call(Map params = [:]){
   def install = params.get('install', true)
   def forceInstall = params.get('forceInstall', true)
   def headers = params.containsKey('headers') ? params.headers.toList() : []
-  def source = params.containsKey('source') ? params.source : error('publishToCDN: Missing source argument.')
-  def target = params.containsKey('target') ? params.target : error('publishToCDN: Missing target argument.')
-  def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: Missing secret argument.')
+  def source = params.containsKey('source') ? params.source : error('publishToCDN: source parameter is required.')
+  def target = params.containsKey('target') ? params.target : error('publishToCDN: target parameter is required.')
+  def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: secret parameter is required.')
   def keyFile = 'service-account.json'
 
   def installPath = "${env.HOME}/google-cloud-sdk"

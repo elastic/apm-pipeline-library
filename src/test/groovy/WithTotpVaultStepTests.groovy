@@ -31,16 +31,11 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
   @Test
   void test_MissingArguments() throws Exception {
     def script = loadScript(scriptName)
-    try {
+    testMissingArgument('code_var_name') {
       script.call(secret: VaultSecret.SECRET.toString()){
         //NOOP
       }
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withTotpVault: Missing code_var_name'))
-    assertJobStatusFailure()
   }
 
   @Test
