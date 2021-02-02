@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/sendDataToElasticsearch.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/sendDataToElasticsearch.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET.toString(), data: '{"field":"value"}')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('httpRequest', 1))
@@ -39,7 +39,6 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoEsURL() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: VaultSecret.SECRET.toString(), data: '{"field":"value"}')
     } catch(e){
@@ -52,7 +51,6 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoSecret() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(es: "https://ecs.example.com:9200", data: '{"field":"value"}')
     } catch(e){
@@ -65,7 +63,6 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoData() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET.toString())
     } catch(e){
@@ -78,7 +75,6 @@ class SendDataToElasticsearchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testInvalidSecret() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(es: "https://ecs.example.com:9200", secret: VaultSecret.SECRET_NOT_VALID.toString(), data: '{"field":"value"}')
     } catch(e){

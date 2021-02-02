@@ -21,18 +21,18 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class UntarStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/untar.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/untar.groovy')
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
   }
 
   @Test
   void test_with_all_the_parameters() throws Exception {
-    def script = loadScript(scriptName)
     script.call(file:'archive.tgz', dir: 'folder', failNever: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('bat', 0))
@@ -41,7 +41,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_error_and_with_failNever() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if (!m.script.contains('rm')) {
         throw new Exception('Error')
@@ -55,7 +54,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_error_without_failNever() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { throw new Exception('Error') })
     try {
       script.call(file:'archive.tgz', dir: 'folder', failNever: false)
@@ -70,7 +68,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     script.call(file:'archive.tgz', dir: 'folder')
     printCallStack()
@@ -81,7 +78,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWithTar() throws Exception {
-    def script = loadScript(scriptName)
     script.extractWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'mkdir -p folder &&'))
@@ -93,7 +89,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWithTar_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     script.extractWithTar(file:'archive.tgz', dir: 'folder')
     printCallStack()
@@ -106,7 +101,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWithTar_without_dir() throws Exception {
-    def script = loadScript(scriptName)
     script.extractWithTar(file:'archive.tgz')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-xpf archive.tgz'))
@@ -115,7 +109,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWith7z_linux() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.extractWith7z(file:'archive.tgz', dir: 'folder')
     } catch(e) {
@@ -129,7 +122,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWith7z_windows_without_7z_installed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return false })
     script.extractWith7z(file:'archive.tgz', dir: 'folder')
@@ -144,7 +136,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWith7z_windows_with_7z_installed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return true })
     script.extractWith7z(file:'archive.tgz', dir: 'folder')
@@ -157,7 +148,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_extractWith7z_windows_transformation() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     script.extractWith7z(file:'archive.tgz', dir: '.')
     printCallStack()
@@ -167,7 +157,6 @@ class UntarStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_tarCommand_in_windows_transformation() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], {false})
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
     def ret = script.tarCommand(file:'archive.tgz', dir: '.')

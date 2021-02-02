@@ -20,12 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class CodecovStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/codecov.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/codecov.groovy')
 
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
@@ -47,7 +48,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoRepo() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Codecov: No repository specified.'))
@@ -56,7 +56,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoToken() throws Exception {
-    def script = loadScript(scriptName)
     script.call(repo: "noToken", secret: "secret-bad")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Codecov: Repository not found: noToken'))
@@ -65,7 +64,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('dir', 'ws'))
@@ -76,7 +74,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_flags() throws Exception {
-    def script = loadScript(scriptName)
     script.call(repo: 'repo', flags: 'foo', secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('dir', '.'))
@@ -86,7 +83,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCache() throws Exception {
-    def script = loadScript(scriptName)
     script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     script.call(repo: "repo", basedir: "ws", secret: VaultSecret.SECRET_CODECOV.toString())
     printCallStack()
@@ -97,7 +93,6 @@ class CodecovStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

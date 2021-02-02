@@ -21,17 +21,17 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
 class AgentMappingStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/agentMapping.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/agentMapping.groovy')
   }
 
   @Test
   void testEmptyArgumentInEnvVar() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.envVar('')
     } catch(e){
@@ -44,7 +44,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testEmptyArgumentInYamlVar() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.agentVar('')
     } catch(e){
@@ -57,7 +56,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testEmptyArgumentInID() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.id('')
     } catch(e){
@@ -70,7 +68,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNullArgumentInApp() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.app(null)
     } catch(e){
@@ -83,7 +80,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNullArgumentInOpbeansApp() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.opbeansApp(null)
     } catch(e){
@@ -96,7 +92,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNullArgumentInYamlVersionFile() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.yamlVersionFile(null)
     } catch(e){
@@ -109,7 +104,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetIntEnvVar() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.envVar('dotnet')
     printCallStack()
     assertTrue(value.contains('DOTNET'))
@@ -118,7 +112,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetInAgentVar() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.agentVar('dotnet')
     printCallStack()
     assertTrue(value.contains('DOTNET'))
@@ -127,7 +120,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetInId() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.id('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
@@ -136,7 +128,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetInApp() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.app('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
@@ -145,7 +136,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetInOpbeansApp() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.opbeansApp('.NET')
     printCallStack()
     assertTrue(value.equals('dotnet'))
@@ -154,7 +144,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDotnetInYamlVersionFile() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.yamlVersionFile('dotnet')
     printCallStack()
     assertTrue(value.equals('tests/versions/dotnet.yml'))
@@ -163,7 +152,6 @@ class AgentMappingStepTests extends ApmBasePipelineTest {
 
   @Test
   void testUnexistingKeyInYamlVersionFile() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.yamlVersionFile('foo')
     printCallStack()
     assertNull(value)

@@ -20,19 +20,19 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithAPMStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withAPM.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withAPM.groovy')
   }
 
   @Test
   void test() throws Exception {
     def isOK = false
     helper.registerAllowedMethod('apmCli', [Map.class],{'OK'})
-    def script = loadScript(scriptName)
     script.call(){
       isOK = true
     }
@@ -47,7 +47,6 @@ class WithAPMStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('apmCli', [Map.class],{ m ->
        isOK = m.result == 'failure'
     })
-    def script = loadScript(scriptName)
     try {
       script.call(){
         thrown new Exception("Error")
@@ -65,7 +64,6 @@ class WithAPMStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('apmCli', [Map.class], {m ->
        isOK = m.var == 'foo'
     })
-    def script = loadScript(scriptName)
     script.call(var: "foo"){
       isOK &= true
     }

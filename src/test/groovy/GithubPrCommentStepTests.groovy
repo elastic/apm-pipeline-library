@@ -23,12 +23,13 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GithubPrCommentStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubPrComment.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubPrComment.groovy')
     env.GIT_BASE_COMMIT = '1'
     env.ORG_NAME = 'elastic'
     env.REPO_NAME = 'apm-pipeline-library'
@@ -38,7 +39,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testInBranch() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_ID')
     script.call()
     printCallStack()
@@ -48,7 +48,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testInPr() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -56,7 +55,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCommentTemplateWithFailure() throws Exception {
-    def script = loadScript(scriptName)
     binding.getVariable('currentBuild').currentResult = 'FAILURE'
     def result = script.commentTemplate()
     printCallStack()
@@ -65,7 +63,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCommentTemplateWithDefault() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.commentTemplate()
     printCallStack()
     assertFalse(result.contains('Further details'))
@@ -73,7 +70,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCommentTemplateWithDetails() throws Exception {
-    def script = loadScript(scriptName)
     env.RUN_DISPLAY_URL = ''
     def result = script.commentTemplate(details: 'foo')
     printCallStack()
@@ -85,7 +81,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCreateBuildInfoWithRunDisplay() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.commentTemplate()
     printCallStack()
     assertTrue(result.contains('redirect'))
@@ -94,7 +89,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testAddCommentForUnexisting() throws Exception {
-    def script = loadScript(scriptName)
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('githubTraditionalPrComment', 0))
@@ -106,7 +100,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void testAddCommentForUnexistingComment_with_file() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return true} )
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
@@ -121,7 +114,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_addOrEditComment_fallback_to_traditional() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
@@ -137,7 +129,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_addOrEditComment_fallback_to_addComment() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
     helper.registerAllowedMethod('githubTraditionalPrComment', [Map.class], {
@@ -156,7 +147,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_override_default_message() throws Exception {
-    def script = loadScript(scriptName)
     def obj = script(message: 'foo')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('commentTemplate', ''))
@@ -165,7 +155,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentFromFile_with_file() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return true} )
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
     def ret = script.getCommentFromFile(commentFile: 'comment.id')
@@ -178,7 +167,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentFromFile_without_file() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false} )
     def ret = script.getCommentFromFile(commentFile: 'comment.id')
     printCallStack()
@@ -190,7 +178,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentIfAny_with_file_match() {
-	  def script = loadScript(scriptName)
+	  
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
     def ret = script.getCommentIfAny(commentFile: 'comment.id')
@@ -201,7 +189,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentIfAny_without_file_match_and_pr_comment_match() {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false } )
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], {
       return [
@@ -226,7 +213,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentIfAny_without_any_match() {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false } )
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
     def ret = script.getCommentIfAny(commentFile: 'comment.id')
@@ -238,7 +224,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentIfAny_without_any_match_and_an_exception() {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { return false } )
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], { throw new Exception('Force failure') })
     def ret = script.getCommentIfAny(commentFile: 'comment.id')
@@ -251,7 +236,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_metadata() {
-    def script = loadScript(scriptName)
     def ret = script.metadata(commentFile: 'foo')
     printCallStack()
     assertTrue(ret.equals('<!--COMMENT_GENERATED_WITH_ID_foo-->'))
@@ -260,7 +244,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_addComment_fallback_to_githubTraditionalPrComment() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.addComment('error')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubTraditionalPrComment', 'message=error'))
@@ -269,7 +252,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_editComment_fallback_to_githubTraditionalPrComment() throws Exception {
-    def script = loadScript(scriptName)
     script.editComment(PullRequestMock.ERROR, 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubTraditionalPrComment', "message=foo, id=${PullRequestMock.ERROR}"))

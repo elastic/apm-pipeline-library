@@ -25,7 +25,7 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class BuildStatusTests extends ApmBasePipelineTest {
-    String scriptName = 'vars/buildStatus.groovy'
+    def script
 
 
     // Build a small test server
@@ -37,18 +37,18 @@ class BuildStatusTests extends ApmBasePipelineTest {
     @Override
     @Before
     void setUp() throws Exception {
-    super.setUp()
-
-    job_status_context.setHandler({ exchange ->
-    String response = "Success"
-    exchange.responseHeaders.set("Content-Type", "text/plain;charset=utf-8")
-    exchange.sendResponseHeaders(200, response.getBytes().length);
-    OutputStream os = exchange.getResponseBody();
-    os.write(response.getBytes());
-    os.close();
-    exchange.Send
-    });
-    ws.start()
+        super.setUp()
+        script = loadScript('vars/buildStatus.groovy')
+        job_status_context.setHandler({ exchange ->
+        String response = "Success"
+        exchange.responseHeaders.set("Content-Type", "text/plain;charset=utf-8")
+        exchange.sendResponseHeaders(200, response.getBytes().length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+        exchange.Send
+        });
+        ws.start()
     }
 
     @After
@@ -58,7 +58,6 @@ class BuildStatusTests extends ApmBasePipelineTest {
 
     @Test
     void test() throws Exception {
-        def script = loadScript(scriptName)
         def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], ssl: false)
         assertTrue("Success" == result)
         assertJobStatusSuccess()
@@ -66,7 +65,6 @@ class BuildStatusTests extends ApmBasePipelineTest {
 
     @Test
     void testBoolSuccess() throws Exception {
-        def script = loadScript(scriptName)
         def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], return_boolean: true, ssl: false)
         assertTrue(result)
     }

@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/createFileFromTemplate.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/createFileFromTemplate.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -39,7 +39,6 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_data_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('data') {
       script.call()
     }
@@ -47,7 +46,6 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_template_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('template') {
       script.call(data: 'foo.json')
     }
@@ -55,7 +53,6 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_output_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('output') {
       script.call(data: 'foo.json', template: 'foo.j2')
     }
@@ -63,7 +60,6 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_local() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(data: 'foo.json', template: 'foo.j2', output: 'foo.md')
     } catch (e) {
@@ -77,7 +73,6 @@ class CreateFileFromTemplateStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_local() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(data: 'foo.json', template: 'foo.j2', output: 'foo.md', localTemplate: true)
     } catch (e) {

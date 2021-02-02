@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GithubIssuesStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubIssues.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubIssues.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -39,7 +39,6 @@ class GithubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_no_data() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('gh', [Map.class], { return '' })
     def ret = script.call()
     printCallStack()
@@ -48,7 +47,6 @@ class GithubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_gh_error() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('gh', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
     def ret = script.call()
     printCallStack()
@@ -57,7 +55,6 @@ class GithubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_single_row() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('gh', [Map.class], {
       return '277	OPEN	Document pre-commit validation	2019-11-22 18:22:29 +0000 UTC' })
     def ret = script.call()
@@ -67,7 +64,6 @@ class GithubIssuesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_multiple_data() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('gh', [Map.class], {
       return '''277	OPEN	Document pre-commit validation	2019-11-22 18:22:29 +0000 UTC
 300	OPEN	Foo bar	2020-10-10 18:22:29 +0000 UTC'''})

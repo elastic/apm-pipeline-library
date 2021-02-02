@@ -22,12 +22,13 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsBranchIndexTriggerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isBranchIndexTrigger.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isBranchIndexTrigger.groovy')
   }
 
   @Test
@@ -41,7 +42,6 @@ class IsBranchIndexTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -60,7 +60,6 @@ class IsBranchIndexTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -79,7 +78,6 @@ class IsBranchIndexTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)

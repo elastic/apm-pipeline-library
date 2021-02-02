@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
-  String scriptName = "vars/getBlueoceanDisplayURL.groovy"
+  def script= "vars/getBlueoceanDisplayURL.groovy"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getBlueoceanDisplayURL.groovy')
   }
 
   @Test
   void testSuccess() throws Exception {
-    def script = loadScript(scriptName)
     def redirectURL = "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
     def url = script.call()
     printCallStack()
@@ -41,7 +41,6 @@ class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithADifferentJenkinsURL() throws Exception {
-    def script = loadScript(scriptName)
     env.JENKINS_URL = "http://jenkins/"
     def redirectURL = "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp%2F${env.JOB_BASE_NAME}/detail/${env.JOB_BASE_NAME}/${env.BUILD_NUMBER}/"
     def url = script.call()
@@ -52,7 +51,6 @@ class GetBlueoceanDisplayURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWrongURL() throws Exception {
-    def script = loadScript(scriptName)
     def url = script.call()
     printCallStack()
     assertFalse(url.contains("${env.JOB_BASE_NAME}/wrong"))

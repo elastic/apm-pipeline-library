@@ -21,17 +21,17 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class LogStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/log.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/log.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     script.call(text: "message")
     printCallStack()
@@ -46,7 +46,6 @@ class LogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDebug() throws Exception {
-    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
     script.call(level: 'DEBUG', text: "message")
     printCallStack()
@@ -61,7 +60,6 @@ class LogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testInfo() throws Exception {
-    def script = loadScript(scriptName)
     script.call(level: 'INFO', text: "message")
     printCallStack()
     assertTrue(helper.callStack.findAll { call ->
@@ -75,7 +73,6 @@ class LogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWarn() throws Exception {
-    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'WARN'
     script.call(level: 'WARN', text: "message")
     printCallStack()
@@ -90,7 +87,6 @@ class LogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testError() throws Exception {
-    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'ERROR'
     script.call(level: 'ERROR', text: "message")
     printCallStack()
@@ -105,7 +101,6 @@ class LogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testLevel() throws Exception {
-    def script = loadScript(scriptName)
     env.PIPELINE_LOG_LEVEL = 'WARN'
     script.call(level: 'DEBUG', text: "messageDEBUG")
     script.call(level: 'INFO', text: "messageINFO")

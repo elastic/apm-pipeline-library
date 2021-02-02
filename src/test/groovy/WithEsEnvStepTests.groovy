@@ -20,12 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithEsEnvStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withEsEnv.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withEsEnv.groovy')
 
     env.BRANCH_NAME = 'branch'
     env.CHANGE_ID = '29480a51'
@@ -36,7 +37,6 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: VaultSecret.SECRET.toString()){
       isOK = true
@@ -48,7 +48,6 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(url: 'https://es.example.com', secret: VaultSecret.SECRET.toString()){
       if(binding.getVariable("CLOUD_URL") == "https://username:user_password@es.example.com"
@@ -65,7 +64,6 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: 'secretNotExists'){
         //NOOP
@@ -80,7 +78,6 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_ERROR.toString()){
         //NOOP
@@ -95,7 +92,6 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWrongProtocol() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET.toString(), url: 'ht://wrong.example.com'){
         //NOOP

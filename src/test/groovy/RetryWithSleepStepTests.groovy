@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class RetryWithSleepStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/retryWithSleep.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/retryWithSleep.groovy')
   }
 
   @Test
   void test_missing_parameter() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('retries') {
       script.call(){ }
     }
@@ -39,7 +39,6 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_retry() throws Exception {
-    def script = loadScript(scriptName)
     def ret = false
     script.call(retries: 3) {
       ret = true
@@ -52,7 +51,6 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_retry_with_sleep_first() throws Exception {
-    def script = loadScript(scriptName)
     def ret = false
     script.call(retries: 3, sleepFirst: true) {
       ret = true
@@ -65,7 +63,6 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_retry_with_errors() throws Exception {
-    def script = loadScript(scriptName)
     def ret = false
     try {
       script.call(retries: 3) {
@@ -83,7 +80,6 @@ class RetryWithSleepStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_retry_with_errors_with_backoff() throws Exception {
-    def script = loadScript(scriptName)
     def ret = false
     try {
       script.call(retries: 3, backoff: true) {

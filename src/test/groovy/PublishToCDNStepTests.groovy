@@ -21,18 +21,18 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class PublishToCDNStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/publishToCDN.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/publishToCDN.groovy')
     env.HOME = '/home'
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -40,7 +40,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_source() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('source') {
       script.call(target: 'bar')
     }
@@ -48,7 +47,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_target() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('target') {
       script.call(source: 'foo')
     }
@@ -56,7 +54,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_secret() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('secret') {
       script.call(source: 'foo', target: 'bar')
     }
@@ -64,7 +61,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_secret_error() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_ERROR.toString())
     } catch(e){
@@ -78,7 +74,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_install() throws Exception {
-    def script = loadScript(scriptName)
     script.call(install: false, source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString())
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'https://sdk.cloud.google.com'))
@@ -89,7 +84,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), headers: ['my_header'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'rm -rf /home/google-cloud-sdk'))
@@ -104,7 +98,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_force_install() throws Exception {
-    def script = loadScript(scriptName)
     script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), forceInstall: false)
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'rm -rf /home/google-cloud-sdk'))
@@ -113,7 +106,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiple_headers() throws Exception {
-    def script = loadScript(scriptName)
     script.call(source: 'foo', target: 'gs://bar', secret: VaultSecret.SECRET_GCP.toString(), headers: ['my_header', 'my_second_header'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-h my_header -h my_second_header'))
@@ -123,7 +115,6 @@ class PublishToCDNStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_error_when_pushing() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m.label.contains('Upload')) {
         updateBuildStatus('FAILURE')

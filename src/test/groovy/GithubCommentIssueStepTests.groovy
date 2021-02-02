@@ -22,17 +22,17 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCommentIssueStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubCommentIssue.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubCommentIssue.groovy')
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -40,7 +40,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_params() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('comment') {
       script.call()
     }
@@ -48,7 +47,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_id() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('id') {
       script.call(comment: 'foo')
     }
@@ -56,7 +54,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_org_repo() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('ORG_NAME')
     try {
       script.call(id: '1', comment: 'foo')
@@ -70,7 +67,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_env_variables() throws Exception {
-    def script = loadScript(scriptName)
     env.ORG_NAME = 'acme'
     env.REPO_NAME = 'foo'
     script.call(id: '1', comment: 'foo')
@@ -81,7 +77,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
   
   @Test
   void test_with_all_the_arguments() throws Exception {
-    def script = loadScript(scriptName)
     script.call(id: '1', comment: 'foo', org: 'acme', repo: 'my-repo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+HUB'))
@@ -92,7 +87,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_credentials() throws Exception {
-    def script = loadScript(scriptName)
     script.call(id: '1', comment: 'foo', org: 'acme', repo: 'my-repo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, variable=GITHUB_TOKEN'))
@@ -102,7 +96,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiple_lines() throws Exception {
-    def script = loadScript(scriptName)
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: 'bar \n something else')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "body='bar \n something else'"))
@@ -111,7 +104,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_normalisation() throws Exception {
-    def script = loadScript(scriptName)
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "'bar'")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "body='\"bar\"'"))
@@ -120,7 +112,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_cache() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")
@@ -132,7 +123,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")
@@ -146,7 +136,6 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_hub_already_installed() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "foo")
     script.call(id: '1', org: 'acme', repo: 'my-repo', comment: "bar")

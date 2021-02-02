@@ -20,18 +20,18 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GitCreateTagStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitCreateTag.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/gitCreateTag.groovy')
     binding.setVariable('BUILD_TAG', 'foo')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "git tag -a -m 'chore: Create tag foo' 'foo'"))
@@ -41,7 +41,6 @@ class GitCreateTagStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call(tag: "my_tag", credentialsId: "my_credentials")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "git tag -a -m 'chore: Create tag my_tag' 'my_tag'"))
@@ -50,7 +49,6 @@ class GitCreateTagStepTests extends ApmBasePipelineTest {
 
   @Test
   void testPushArgs() throws Exception {
-    def script = loadScript(scriptName)
     script.call(tag: "my_tag", pushArgs: '-f')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('gitPush', 'args=--tags -f'))
@@ -59,7 +57,6 @@ class GitCreateTagStepTests extends ApmBasePipelineTest {
 
   @Test
   void testTagArgs() throws Exception {
-    def script = loadScript(scriptName)
     script.call(tag: 'my_tag', tagArgs: '-f')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "git tag -a -m 'chore: Create tag my_tag' 'my_tag' -f"))

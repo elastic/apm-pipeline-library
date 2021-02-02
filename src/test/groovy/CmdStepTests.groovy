@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class CmdStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/cmd.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/cmd.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(script: 'echo hi', returnStdout: false)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'script=echo hi, returnStdout=false'))
@@ -42,7 +42,6 @@ class CmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(script: 'echo hi')
     printCallStack()
@@ -54,7 +53,6 @@ class CmdStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows_with_returnStdout() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(script: 'echo hi', returnStdout: true)
     printCallStack()

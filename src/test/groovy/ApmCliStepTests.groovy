@@ -20,18 +20,18 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class ApmCliStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/apmCli.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/apmCli.groovy')
     env.STAGE_NAME = "fooStage"
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'text=apmCli: [url:https://apm.example.com:8200, token:password, serviceName:serviceFoo'))
@@ -46,7 +46,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFull() throws Exception {
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo",
       transactionName: "foo",
       spanName: "spanFoo",
@@ -70,7 +69,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSpanCmd() throws Exception {
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo", spanCommand: "cmdFoo")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=APM_CLI_SPAN_NAME, password=cmdFoo'))
@@ -80,7 +78,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNOOP() throws Exception {
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'apmCli: not executed.'))
@@ -97,7 +94,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
           ]
     })
 
-    def script = loadScript(scriptName)
     script.call(apmCliConfig: "secret/oblt/apm", serviceName: "serviceFoo")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=APM_CLI_SERVER_URL, password=https://vaultapm.example.com:8200'))
@@ -108,7 +104,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
   @Test
   void testServiceNameEnv() throws Exception {
     env.APM_CLI_SERVICE_NAME = "fooEnv"
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=APM_CLI_SERVICE_NAME, password=fooEnv'))
@@ -117,7 +112,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParentTransaction() throws Exception {
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo", parentTransaction: "parentFoo")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=APM_CLI_PARENT_TRANSACTION, password=parentFoo'))
@@ -127,7 +121,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
   @Test
   void testParentTransactionEnv() throws Exception {
     env.APM_CLI_PARENT_TRANSACTION = "parentFooEnv"
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=APM_CLI_PARENT_TRANSACTION, password=parentFooEnv'))
@@ -136,7 +129,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
 
   @Test
   void testBeginEnd() throws Exception {
-    def script = loadScript(scriptName)
     script.transactions['fooStage'] = true;
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo")
     printCallStack()
@@ -148,7 +140,6 @@ class ApmCliStepTests extends ApmBasePipelineTest {
   void testSavedParentTransaction() throws Exception {
     helper.registerAllowedMethod('readFile', [Map.class],{'fooID'})
 
-    def script = loadScript(scriptName)
     script.call(url: "https://apm.example.com:8200", token: "password", serviceName: "serviceFoo", saveTsID: true)
     printCallStack()
     assertTrue(env.APM_CLI_PARENT_TRANSACTION == 'fooID')

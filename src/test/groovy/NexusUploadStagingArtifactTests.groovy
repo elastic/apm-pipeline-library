@@ -29,12 +29,13 @@ import co.elastic.Nexus
 
 
 class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusUploadStagingArtifact.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nexusUploadStagingArtifact.groovy')
   }
 
   @Test
@@ -46,7 +47,6 @@ class NexusUploadStagingArtifactTests extends ApmBasePipelineTest {
     nexusMock.demand.generateHashFile(2){fh, enc -> new File("/tmp/dummy")}
     nexusMock.demand.upload(3){ url, username, password, path, fh -> 200 }
 
-    def script = loadScript(scriptName)
 
     nexusMock.use {
       def ret = script.call(

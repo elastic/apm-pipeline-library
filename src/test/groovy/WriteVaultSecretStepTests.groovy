@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WriteVaultSecretStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/writeVaultSecret.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/writeVaultSecret.groovy')
   }
 
   @Test
   void test_without_secret_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('secret') {
       script.call()
     }
@@ -38,7 +38,6 @@ class WriteVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_data_param() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('data') {
       script.call(secret: 'foo')
     }
@@ -46,7 +45,6 @@ class WriteVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(secret: VaultSecret.ALLOWED.toString(), data: [ 'foo': 'bar'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('httpRequest', "url=${env.VAULT_ADDR}/v1/${VaultSecret.ALLOWED.toString()}"))

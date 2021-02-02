@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WhenTrueStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/whenTrue.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/whenTrue.groovy')
   }
 
   @Test
   void testTrue() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(true){
       isOK = true
@@ -42,7 +42,6 @@ class WhenTrueStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFalse() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = true
     script.call(false){
       isOK = false

@@ -21,7 +21,7 @@ import java.util.Base64
 import static org.junit.Assert.assertTrue
 
 class Base64decodeStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/base64decode.groovy'
+  def script
   def text = "dummy"
   def encoding = "UTF-8"
 
@@ -29,11 +29,11 @@ class Base64decodeStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/base64decode.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(input: "ZHVtbXk=")
     printCallStack()
     assertTrue(text == result)
@@ -42,7 +42,6 @@ class Base64decodeStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(input: "ZHVtbXk=", encoding: "UTF-8")
     printCallStack()
     assertTrue(text == result)

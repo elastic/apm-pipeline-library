@@ -21,18 +21,18 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotEquals
 
 class GoDefaultVersionStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/goDefaultVersion.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/goDefaultVersion.groovy')
     helper.registerAllowedMethod('fileExists', [String.class], { false })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     String version = script.call()
     printCallStack()
     assertNotEquals("", version)
@@ -41,7 +41,6 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
 
   @Test
   void testGoVersionEnvVar() throws Exception {
-    def script = loadScript(scriptName)
     env.GO_VERSION = "foo"
     String version = script.call()
     printCallStack()
@@ -51,7 +50,6 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
 
   @Test
   void testGoVersionFromFile() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('readFile', [Map.class], { 'fooFromFile\n' })
     String version = script.call()
@@ -62,7 +60,6 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
 
   @Test
   void testGoVersionEnvVarPrecedence() throws Exception {
-    def script = loadScript(scriptName)
     env.GO_VERSION = "foo"
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('readFile', [Map.class], { 'fooFromFile\n' })

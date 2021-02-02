@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class HttpRequestStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/httpRequest.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/httpRequest.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def body = script.call(url: "https://www.google.com", debug: 'true')
     printCallStack()
     assertTrue(body != null)
@@ -39,7 +39,6 @@ class HttpRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void testGetWithParams() throws Exception {
-    def script = loadScript(scriptName)
     def body = script.call(url: "https://www.google.com",
       method: "GET", headers: ["User-Agent": "dummy"], debug: 'true')
     printCallStack()
@@ -49,7 +48,7 @@ class HttpRequestStepTests extends ApmBasePipelineTest {
 
 @Test
 void testResponseCodeOnly() throws Exception {
-  def script = loadScript(scriptName)
+  
   def response_code = script.call(url: "https://www.google.com",
     response_code_only: true)
   printCallStack()
@@ -59,7 +58,6 @@ void testResponseCodeOnly() throws Exception {
 
   @Test
   void testPostWithParams() throws Exception {
-    def script = loadScript(scriptName)
     def body = script.call(url: "https://duckduckgo.com",
       method: "POST",
       headers: ["User-Agent": "dummy"],
@@ -71,7 +69,6 @@ void testResponseCodeOnly() throws Exception {
 
   @Test
   void testNoURL() throws Exception {
-    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call()
@@ -84,7 +81,6 @@ void testResponseCodeOnly() throws Exception {
 
   @Test
   void testInvalidURL() throws Exception {
-    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "htttttp://google.com")
@@ -97,7 +93,6 @@ void testResponseCodeOnly() throws Exception {
 
   @Test
   void testConnectionError() throws Exception {
-    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "https://thisdomaindoesnotexistforsure.com")
@@ -110,7 +105,6 @@ void testResponseCodeOnly() throws Exception {
 
   @Test
   void testHttpError() throws Exception {
-    def script = loadScript(scriptName)
     def message = ""
     try {
       script.call(url: "https://google.com",

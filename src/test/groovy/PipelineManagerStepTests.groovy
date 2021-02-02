@@ -21,17 +21,17 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class PipelineManagerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/pipelineManager.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/pipelineManager.groovy')
   }
 
   @Test
   void testEmpty() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -39,7 +39,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testUnknown() throws Exception {
-    def script = loadScript(scriptName)
     script.call(unknown: [:])
     printCallStack()
     assertJobStatusSuccess()
@@ -47,7 +46,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFirstTime() throws Exception {
-    def script = loadScript(scriptName)
     script.call(firstTimeContributor: [ when: 'ALWAYS' ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'firstTimeContributor step is not available yet.'))
@@ -56,7 +54,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCancelPreviousRunningBuilds() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cancelPreviousRunningBuilds: [ when: 'TAG' ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'cancelPreviousRunningBuilds step is not enabled'))
@@ -65,7 +62,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCancelPreviousRunningBuildsWhenAlways() throws Exception {
-    def script = loadScript(scriptName)
     script.call(cancelPreviousRunningBuilds: [ when: 'ALWAYS' ])
     printCallStack()
     assertJobStatusSuccess()
@@ -74,7 +70,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
   @Test
   void testApmTracesWhenAlways() throws Exception {
     helper.registerAllowedMethod('apmCli', [Map.class], {'OK'})
-    def script = loadScript(scriptName)
     script.call(apmTraces: [ when: 'ALWAYS' ])
     assertTrue(assertMethodCallContainsPattern('log', 'apmTraces is enabled.'))
     assertTrue(env.APM_CLI_SERVICE_NAME == env.JOB_NAME)
@@ -84,7 +79,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDefaultAndEmptyWhen() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.isEnabled('unknwon'))
     assertFalse(script.isEnabled(''))
     assertFalse(script.isEnabled(null))
@@ -92,13 +86,11 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWhenAlways() throws Exception {
-    def script = loadScript(scriptName)
     assertTrue(script.isEnabled('ALWAYS'))
   }
 
   @Test
   void testWhenBranch() throws Exception {
-    def script = loadScript(scriptName)
     assertTrue(script.isEnabled('BRANCH'))
     env.CHANGE_ID = ''
     assertTrue(script.isEnabled('BRANCH'))
@@ -108,7 +100,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWhenPr() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.isEnabled('PR'))
     env.CHANGE_ID = ''
     assertFalse(script.isEnabled('PR'))
@@ -118,7 +109,6 @@ class PipelineManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWhenTag() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.isEnabled('TAG'))
     env.TAG_NAME = ''
     assertFalse(script.isEnabled('TAG'))

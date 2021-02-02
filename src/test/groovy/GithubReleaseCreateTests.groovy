@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue
 import net.sf.json.JSONArray
 
 class GithubReleaseCreateTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubReleaseCreate.groovy'
+  def script
 
   def shInterceptor = { return toJSON([
       "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
@@ -68,15 +68,15 @@ class GithubReleaseCreateTests extends ApmBasePipelineTest {
   @Override
   @Before
   void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/githubReleaseCreate.groovy')
     env.ORG_NAME = 'dummy_org'
     env.REPO_NAME = 'dummy_repo'
-    super.setUp()
   }
 
   @Test
   void test() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     script.BUILD_TAG = "dummy_tag"
     def ret = script.call(url: "dummy", token: "dummy")
     printCallStack()
@@ -87,7 +87,6 @@ class GithubReleaseCreateTests extends ApmBasePipelineTest {
   @Test
   void testNoOrg() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     env.remove("ORG_NAME")  // Will be reset by setUp()
     try {
       script.call(url: "dummy", token: "dummy")
@@ -101,7 +100,6 @@ class GithubReleaseCreateTests extends ApmBasePipelineTest {
   @Test
   void testNoRepo() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     env.remove("REPO_NAME")  // Will be reset by setUp()
     try {
       script.call(url: "dummy", token: "dummy")

@@ -20,18 +20,18 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class DummyDeclarativePipelineStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/dummyDeclarativePipeline.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
-    binding.setProperty('BASE_DIR', '/')
     super.setUp()
+    binding.setProperty('BASE_DIR', '/')
+    script = loadScript('vars/dummyDeclarativePipeline.groovy')
   }
 
   @Test
   void test_with_defaults() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Checkout'))
@@ -42,7 +42,6 @@ class DummyDeclarativePipelineStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_foo_params() throws Exception {
-    def script = loadScript(scriptName)
     params.FOO = 'BAR'
     script.call()
     printCallStack()

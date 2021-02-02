@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GitChangelogStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/gitChangelog.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/gitChangelog.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     String ret = script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
@@ -39,7 +39,6 @@ class GitChangelogStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

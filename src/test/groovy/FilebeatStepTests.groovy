@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class FilebeatStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/filebeat.groovy'
+  def script
   // test resources file uses this value as filename
   String nodeName = 'worker-0676d01d9601f8191'
   String jsonConfig = "filebeat_container_" + nodeName + ".json"
@@ -31,6 +31,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/filebeat.groovy')
     env.NODE_NAME = nodeName
     env.WORKSPACE = "filebeatTest"
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
@@ -64,7 +65,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   @Test
   void test() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
@@ -84,7 +84,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
-    def script = loadScript(scriptName)
 
     script.call(
       output: output,
@@ -119,7 +118,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
-    def script = loadScript(scriptName)
 
     try {
       script.call(
@@ -149,7 +147,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
   @Test
   void testConfigurationExists() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
@@ -166,7 +163,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def image = "foo:latest"
     def workdir = "filebeatTest_1"
 
-    def script = loadScript(scriptName)
     script.call(
       output: output,
       config: config,
@@ -190,7 +186,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def output = "foo.log"
     def workdir = "filebeatTest_1"
 
-    def script = loadScript(scriptName)
     script.stop(
       workdir: workdir,
     )

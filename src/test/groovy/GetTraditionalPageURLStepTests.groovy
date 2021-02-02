@@ -21,17 +21,17 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getTraditionalPageURL.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getTraditionalPageURL.groovy')
   }
 
   @Test
   void testMissingArguments() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){
@@ -44,7 +44,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWrongTypeArgument() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call('unknown')
     } catch(e){
@@ -57,7 +56,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithTestsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('tests')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/testReport"))
@@ -66,7 +64,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithChangesTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('changes')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/changes"))
@@ -75,7 +72,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithPipelineTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('pipeline')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/"))
@@ -84,7 +80,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithArtifactsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('artifacts')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/artifact"))
@@ -93,7 +88,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithCoberturaTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('cobertura')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/cobertura"))
@@ -102,7 +96,6 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithGcsTab() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call('gcs')
     printCallStack()
     assertTrue(ret.contains("${env.BRANCH_NAME}/${env.BUILD_ID}/gcsObjects"))

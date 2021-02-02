@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class StackVersionsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/stackVersions.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/stackVersions.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def versions = script.call()
     printCallStack()
     assertTrue(versions instanceof ArrayList)
@@ -39,7 +39,6 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testEdge() throws Exception {
-    def script = loadScript(scriptName)
     def versions = script.edge()
     printCallStack()
     assertTrue(versions != "")
@@ -48,7 +47,6 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDev() throws Exception {
-    def script = loadScript(scriptName)
     def versions = script.dev()
     printCallStack()
     assertTrue(versions != "")
@@ -57,7 +55,6 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testRelease() throws Exception {
-    def script = loadScript(scriptName)
     def versions = script.release()
     printCallStack()
     assertTrue(versions != "")
@@ -66,7 +63,6 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSnapshot() throws Exception {
-    def script = loadScript(scriptName)
     def versions = script.edge(snapshot: true)
     printCallStack()
     assertTrue(versions != "")

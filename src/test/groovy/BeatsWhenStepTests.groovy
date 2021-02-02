@@ -23,17 +23,17 @@ import static org.junit.Assert.assertTrue
 import co.elastic.mock.beats.GetProjectDependencies
 
 class BeatsWhenStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/beatsWhen.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/beatsWhen.groovy')
   }
 
   @Test
   void test_with_no_data() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('project') {
       script.call()
     }
@@ -41,7 +41,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_no_project() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('content') {
       script.call(project: 'foo')
     }
@@ -49,7 +48,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_description() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(project: 'foo', description: 'bar', content: [:])
     printCallStack()
     assertFalse(ret)
@@ -58,7 +56,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenBranches_and_no_environment_variable() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenBranches()
     printCallStack()
     assertFalse(ret)
@@ -66,7 +63,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenBranches_and_environment_variable_but_no_data() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'branch'
     def ret = script.whenBranches(content: [:])
     printCallStack()
@@ -75,7 +71,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenBranches_and_environment_variable_with_data() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'branch'
     def ret = script.whenBranches(content: [ branches: true])
     printCallStack()
@@ -84,7 +79,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenBranches_and_environment_variable_with_data_and_prs() throws Exception {
-    def script = loadScript(scriptName)
     env.BRANCH_NAME = 'branch'
     env.CHANGE_ID = 'PR-1'
     def ret = script.whenBranches(content: [ branches: true])
@@ -94,7 +88,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_and_no_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenChangeset()
     printCallStack()
     assertFalse(ret)
@@ -102,7 +95,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_and_content() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^.ci']])
@@ -112,7 +104,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_and_content_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']])
@@ -122,7 +113,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_and_macro() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
                                    changeset: [ oss: [ '^oss'] ])
     printCallStack()
@@ -131,7 +121,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_and_macro_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@oss']],
@@ -142,7 +131,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_and_macro_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^.ci', '@osss']],
@@ -153,7 +141,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_and_function_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'projectA/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
@@ -164,7 +151,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_with_project_dependency_and_function_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'projectA/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['#generator/common/beatgen']],
@@ -175,7 +161,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenChangeset_content_and_function_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']],
@@ -189,7 +174,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
     env.remove('GIT_PREVIOUS_COMMIT')
     env.remove('CHANGE_TARGET')
     env.GIT_BASE_COMMIT = 'bar'
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenChangeset(content: [ changeset: ['^Jenkinsfile']])
@@ -200,7 +184,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenComments_and_no_environment_variable() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenComments()
     printCallStack()
     assertFalse(ret)
@@ -208,7 +191,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenComments_and_environment_variable_but_no_data() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'branch'
     def ret = script.whenComments(content: [:])
     printCallStack()
@@ -217,7 +199,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenComments_and_environment_variable_with_match() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = '/test foo'
     def ret = script.whenComments(content: [ comments: ['/test foo']])
     printCallStack()
@@ -226,7 +207,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenComments_and_environment_variable_without_match() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = '/test foo'
     def ret = script.whenComments(content: [ comments: ['/run bla', '/test bar']])
     printCallStack()
@@ -235,7 +215,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenEnabled_without_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenEnabled()
     printCallStack()
     assertTrue(ret)
@@ -243,7 +222,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenEnabled_with_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenEnabled(content: [:])
     printCallStack()
     assertTrue(ret)
@@ -251,7 +229,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenEnabled_with_disabled() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenEnabled(content: [ disabled: true])
     printCallStack()
     assertFalse(ret)
@@ -259,7 +236,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenEnabled_with_no_disabled() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenEnabled(content: [ disabled: false])
     printCallStack()
     assertTrue(ret)
@@ -267,7 +243,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenLabels_and_no_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenLabels(content: [:])
     printCallStack()
     assertFalse(ret)
@@ -275,7 +250,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenLabels_with_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { true })
     def ret = script.whenLabels(content: [ labels: ['foo']])
     printCallStack()
@@ -284,7 +258,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenLabels_without_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
     def ret = script.whenLabels(content: [ labels: ['foo']])
     printCallStack()
@@ -293,7 +266,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_and_no_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenNotChangeset()
     printCallStack()
     assertFalse(ret)
@@ -301,7 +273,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_and_content_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci']])
@@ -311,7 +282,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_and_content_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangeset(content: [ not_changeset: ['^Jenkinsfile']])
@@ -321,7 +291,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_content_and_macro() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@oss']],
                                       changeset: [ oss: [ '^oss'] ])
     printCallStack()
@@ -330,7 +299,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_content_and_macro_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@oss']],
@@ -341,7 +309,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangeset_content_and_macro_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangeset(content: [ not_changeset: ['^.ci', '@osss']],
@@ -352,7 +319,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_no_data() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenNotChangesetFullMatch()
     printCallStack()
     assertFalse(ret)
@@ -360,7 +326,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_content_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangesetFullMatch(content: [ not_changeset_full_match: '^.ci'])
@@ -370,7 +335,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_content_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'Jenkinsfile'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangesetFullMatch(content: [ not_changeset_full_match: '^Jenkinsfile'])
@@ -380,7 +344,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_content_with_full_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''.ci/Jenkinsfile
 .ci/jobs
 '''
@@ -392,7 +355,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_content_without_full_match_no_matches() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''.ci/Jenkinsfile
 .ci/jobs
 '''
@@ -404,7 +366,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_and_content_without_full_match_with_partial_matches() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''.ci/Jenkinsfile
 .foo/jobs
 '''
@@ -416,7 +377,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_content_and_macro() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenNotChangesetFullMatch(content: [ not_changeset_full_match: '@oss'],
                                                changeset: [ oss: [ '^oss'] ])
     printCallStack()
@@ -425,7 +385,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenNotChangesetFullMatch_content_and_macro_with_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'oss'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def ret = script.whenNotChangesetFullMatch(content: [ not_changeset_full_match: '@oss'],
@@ -436,7 +395,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenParameters_and_no_params() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenParameters()
     printCallStack()
     assertFalse(ret)
@@ -444,14 +402,12 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenParameters_and_params_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     printCallStack()
     assertFalse(ret)
   }
 
   void test_whenParameters_and_params_with_match() throws Exception {
-    def script = loadScript(scriptName)
     params.bar = true
     def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     printCallStack()
@@ -459,7 +415,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
   }
 
   void test_whenParameters_and_params_with_match_but_disabled() throws Exception {
-    def script = loadScript(scriptName)
     params.bar = false
     def ret = script.whenParameters(content: [ parameters : [ 'foo', 'bar']])
     printCallStack()
@@ -468,7 +423,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenTags_and_no_environment_variable() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.whenTags()
     printCallStack()
     assertFalse(ret)
@@ -476,7 +430,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenTags_and_environment_variable_but_no_data() throws Exception {
-    def script = loadScript(scriptName)
     env.TAG_NAME = 'tag'
     def ret = script.whenTags(content: [:])
     printCallStack()
@@ -485,7 +438,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_whenTags_and_environment_variable_with_data() throws Exception {
-    def script = loadScript(scriptName)
     env.TAG_NAME = 'tag'
     def ret = script.whenTags(content: [ tags: true])
     printCallStack()
@@ -494,7 +446,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isSkipCiBuildLabel_without_content() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
     def ret = script.isSkipCiBuildLabel(content: [:])
     printCallStack()
@@ -503,7 +454,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isSkipCiBuildLabel_with_label_enabled_and_pr_without_label_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { false })
     def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': true ])
     printCallStack()
@@ -512,7 +462,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isSkipCiBuildLabel_with_label_enabled_and_pr_with_label_match() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('matchesPrLabel', [Map.class], { true })
     def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': true ])
     printCallStack()
@@ -521,7 +470,6 @@ class BeatsWhenStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isSkipCiBuildLabel_with_label_disabled() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.isSkipCiBuildLabel(content: [ 'skip-ci-build-label': false ])
     printCallStack()
     assertFalse(ret)

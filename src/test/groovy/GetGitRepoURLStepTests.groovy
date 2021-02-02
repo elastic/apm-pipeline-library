@@ -21,18 +21,18 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GetGitRepoURLStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getGitRepoURL.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getGitRepoURL.groovy')
   }
 
   @Test
   void test() throws Exception {
     String url = 'http://github.com/org/repo.git'
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git config --get remote.origin.url'.equals(map.script)) {
           return url
@@ -47,7 +47,6 @@ class GetGitRepoURLStepTests extends ApmBasePipelineTest {
   @Test
   void test_no_git_repo() throws Exception {
     String url = 'http://github.com/org/repo.git'
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       throw new Exception('hudson.AbortException: script returned exit code 1')
     })
@@ -61,7 +60,6 @@ class GetGitRepoURLStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }

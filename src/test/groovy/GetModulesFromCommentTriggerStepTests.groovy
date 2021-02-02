@@ -23,17 +23,17 @@ import static org.junit.Assert.assertThat
 import static org.hamcrest.CoreMatchers.is
 
 class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getModulesFromCommentTrigger.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getModulesFromCommentTrigger.groovy')
   }
 
   @Test
   void testWithoutComment() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret.isEmpty());
@@ -42,7 +42,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentWithoutMatch() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'something'
     def actual = script.call()
     printCallStack()
@@ -52,7 +51,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentWithAListOfModules() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'jenkins run the tests for the module mysql,finalhandler,redis'
     def actual = script.call()
     printCallStack()
@@ -63,7 +61,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentWithAListOfModulesWithSpaces() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'jenkins run the tests for the module mysql version2,finalhandler,redis'
     def actual = script.call()
     printCallStack()
@@ -74,7 +71,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentWithOneModule() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'jenkins run the tests for the module _ALL_'
     def actual = script.call()
     printCallStack()
@@ -85,7 +81,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentAndRegex() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'foo,bar'
     def actual = script.call(regex: '(.+)')
     printCallStack()
@@ -96,7 +91,6 @@ class GetModulesFromCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithCommentRegexAndDelimiter() throws Exception {
-    def script = loadScript(scriptName)
     env.GITHUB_COMMENT = 'foo bar'
     def actual = script.call(regex: '(.+)', delimiter: ' ')
     printCallStack()

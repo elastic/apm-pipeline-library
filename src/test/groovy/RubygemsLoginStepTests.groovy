@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class RubygemsLoginStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/rubygemsLogin.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/rubygemsLogin.groovy')
   }
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call() {}
     }
@@ -38,7 +38,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindowsWithApi() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.withApi() {}
     }
@@ -46,7 +45,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingSecret() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call() {
         // NOOP
@@ -62,7 +60,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingSecretWithApi() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.withApi() {
         // NOOP
@@ -78,7 +75,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: VaultSecret.SECRET_NOT_VALID.toString()) {
         // NOOP
@@ -94,7 +90,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretNotFoundWithApi() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.withApi(secret: VaultSecret.SECRET_NOT_VALID.toString()) {
         // NOOP
@@ -110,7 +105,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretError() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: VaultSecret.SECRET_ERROR.toString()) {
         // NOOP
@@ -126,7 +120,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretErrorWithApi() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.withApi(secret: VaultSecret.SECRET_ERROR.toString()) {
         // NOOP
@@ -142,7 +135,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccess() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: VaultSecret.SECRET_NAME.toString()) {
       isOK = true
@@ -156,7 +148,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithApi() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.withApi(secret: VaultSecret.SECRET_NAME.toString()) {
       isOK = true
@@ -170,7 +161,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithBodyError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_NAME.toString()) {
         updateBuildStatus('FAILURE')
@@ -186,7 +176,6 @@ class RubygemsLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithBodyErrorWithApi() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.withApi(secret: VaultSecret.SECRET_NAME.toString()) {
         updateBuildStatus('FAILURE')

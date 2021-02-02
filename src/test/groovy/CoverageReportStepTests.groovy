@@ -19,17 +19,17 @@ import org.junit.Before
 import org.junit.Test
 
 class CoverageReportStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/coverageReport.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/coverageReport.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call("folder")
     printCallStack()
     assertJobStatusSuccess()

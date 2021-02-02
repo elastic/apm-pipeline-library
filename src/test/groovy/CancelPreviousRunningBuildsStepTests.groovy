@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/cancelPreviousRunningBuilds.groovy'
+  def script
 
   def runBuilding = new RunMock(building: true)
   def runNotBuilding = new RunMock(building: false)
@@ -38,12 +38,12 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/cancelPreviousRunningBuilds.groovy')
     binding.setVariable('currentBuild', build2)
   }
 
   @Test
   void testDefault() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', '10'))
@@ -51,7 +51,6 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithZeroBuilds() throws Exception {
-    def script = loadScript(scriptName)
     binding.setVariable('currentBuild', build6)
     script.call(maxBuildsToSearch: 0)
     printCallStack()
@@ -61,7 +60,6 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDefaultWithMoreBuilds() throws Exception {
-    def script = loadScript(scriptName)
     binding.setVariable('currentBuild', build6)
     script.call()
     printCallStack()
@@ -73,7 +71,6 @@ public class CancelPreviousRunningBuildsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWith2MaxBuildsToSearch() throws Exception {
-    def script = loadScript(scriptName)
     binding.setVariable('currentBuild', build6)
     script.call(maxBuildsToSearch: 2)
     printCallStack()

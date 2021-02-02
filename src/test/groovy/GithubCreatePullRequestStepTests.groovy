@@ -22,19 +22,19 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubCreatePullRequest.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubCreatePullRequest.groovy')
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -42,7 +42,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_params() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('title') {
       script.call()
     }
@@ -50,7 +49,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_title() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken, passwordVariable=GITHUB_TOKEN, usernameVariable=GITHUB_USER'))
@@ -68,7 +66,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_title_with_credentials() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo', credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=bar, passwordVariable=GITHUB_TOKEN, usernameVariable=GITHUB_USER'))
@@ -78,7 +75,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_all_the_arguments() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo', description: 'bar', assign: 'v1v', reviewer: 'r2p2', milestone: 'm1', labels: 'l1', base: 'master', draft: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo' --message 'bar' --draft --assign v1v --reviewer r2p2 --labels l1 --milestone m1 --base master"))
@@ -87,7 +83,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_some_cornercases() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo foo', description: 'bar \n something else', reviewer: 'u3,u4', assign: 'u1,u2', labels: 'l1,l2')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request --push --message 'foo foo' --message 'bar \n something else'"))
@@ -106,7 +101,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
         'OK'
       }
     })
-    def script = loadScript(scriptName)
     def ret
     try {
       ret = script.call(title: 'foo')
@@ -123,7 +117,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_force() throws Exception {
-    def script = loadScript(scriptName)
     script.call(title: 'foo', force: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "--force"))
@@ -132,7 +125,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_stdout() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { s ->
       return 'https://github.com/acme/my-repo/pull/1'
     })
@@ -144,7 +136,6 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_multiline_with_quotes() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { s ->
       return 'https://github.com/acme/my-repo/pull/1'
     })

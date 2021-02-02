@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class NodeArchStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nodeArch.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nodeArch.groovy')
   }
 
   @Test
   void test_i386() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "i386 foo bar"
     def value = script.call()
     printCallStack()
@@ -40,7 +40,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_x86_64() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar x86_64"
     def value = script.call()
     printCallStack()
@@ -50,7 +49,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_arm() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar arm"
     def value = script.call()
     printCallStack()
@@ -60,7 +58,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_arm_with_aarch64() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar arm aarch64"
     def value = script.call()
     printCallStack()
@@ -70,7 +67,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notFound() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"
     try {
       def value = script.call()
@@ -83,7 +79,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_label_conflict() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "i386 x86_64"
     try {
       def value = script.call()
@@ -96,7 +91,6 @@ class NodeArchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_x86_64_with_swarm_label() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "swarm x86_64"
     def value = script.call()
     printCallStack()

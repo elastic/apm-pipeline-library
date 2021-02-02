@@ -20,12 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithHubCredentialsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withHubCredentials.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withHubCredentials.groovy')
     env.GITHUB_USER = 'user'
     env.GITHUB_TOKEN = 'token'
     env.HOME = '/home'
@@ -33,7 +34,6 @@ class WithHubCredentialsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -48,7 +48,6 @@ class WithHubCredentialsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call() { }
     }
@@ -56,7 +55,6 @@ class WithHubCredentialsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_body_error() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call {
         throw new Exception('Mock an error')

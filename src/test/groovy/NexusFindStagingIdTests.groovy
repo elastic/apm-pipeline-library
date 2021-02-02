@@ -25,7 +25,7 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusFindStagingIdTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusFindStagingId.groovy'
+  def script
 
   def shInterceptor = {
     return """
@@ -49,6 +49,7 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nexusFindStagingId.groovy')
     root_context.setHandler({ exchange ->
       String response = shInterceptor();
       exchange.responseHeaders.set("Content-Type", "application/json")
@@ -79,7 +80,6 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
 
   @Test
   void testFind() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
@@ -90,7 +90,6 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
 
   @Test
   void testFindFail() throws Exception {
-    def script = loadScript(scriptName)
     def caughtException = false
     try {
       script.call(

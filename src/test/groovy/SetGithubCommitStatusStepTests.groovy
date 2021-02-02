@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SetGithubCommitStatusStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setGithubCommitStatus.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/setGithubCommitStatus.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -38,7 +38,6 @@ class SetGithubCommitStatusStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call(repoUrl: REPO_URL, commitSha: SHA, message: 'Build result.', state: "SUCCESS")
     printCallStack()
     assertJobStatusSuccess()

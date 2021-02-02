@@ -20,17 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubRepoGetUserPermission.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubRepoGetUserPermission.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def pr = script.call(token: 'token', repo: 'org/repo', user: 1)
     printCallStack()
     assertTrue(pr instanceof java.util.ArrayList)
@@ -39,7 +39,6 @@ class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorNoRepo() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(token: 'token', user: 1)
     } catch(e){
@@ -51,7 +50,6 @@ class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorNoUser() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(token: 'token', repo: 'org/repo')
     } catch(e){

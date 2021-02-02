@@ -20,22 +20,23 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithSecretVaultStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withSecretVault.groovy'
+  def script
 
   @Override
   @Before
   void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/withSecretVault.groovy')
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo" 
     env.GITHUB_TOKEN = "TOKEN"
-    super.setUp()
   }
 
 @Test
 void testUserKey() throws Exception {
-  def script = loadScript(scriptName)
+  
   def isOK = false
   try {
     
@@ -55,7 +56,7 @@ void testUserKey() throws Exception {
 
 @Test
 void testPassKey() throws Exception {
-  def script = loadScript(scriptName)
+  
   def isOK = false
   try {
     
@@ -75,7 +76,6 @@ void testPassKey() throws Exception {
 
   @Test
   void testMissingArguments() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo'){
         //NOOP
@@ -90,7 +90,6 @@ void testPassKey() throws Exception {
 
   @Test
   void testSecretError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_ERROR.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
@@ -105,7 +104,6 @@ void testPassKey() throws Exception {
 
   @Test
   void testSecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
@@ -120,7 +118,6 @@ void testPassKey() throws Exception {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
       isOK = true
@@ -133,7 +130,6 @@ void testPassKey() throws Exception {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'U1', pass_var_name: 'P1'){
       if(binding.getVariable("U1") == "username"
