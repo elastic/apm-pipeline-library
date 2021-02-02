@@ -146,7 +146,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_override_default_message() throws Exception {
-    def obj = script(message: 'foo')
+    def obj = script.call(message: 'foo')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('commentTemplate', ''))
     assertJobStatusSuccess()
@@ -177,7 +177,6 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getCommentIfAny_with_file_match() {
-	  
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
     def ret = script.getCommentIfAny(commentFile: 'comment.id')
