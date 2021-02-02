@@ -1,6 +1,5 @@
 disable-github-multibranch-status
 filesystem_scm
-hashicorp-vault-plugin
 job-dsl
 opentelemetry::https://storage.googleapis.com/apm-ci-temp/plugins/opentelemetry.hpi
 ssh-agent
