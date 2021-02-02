@@ -1,0 +1,20 @@
+---
+- job:
+    name: apm-shared/apm-pipeline-library-merge-queue
+    display-name: Merge Queue
+    description: Merge Queue for the APM Pipeline library
+    view: APM-CI
+    project-type: pipeline
+    pipeline-scm:
+      script-path: .ci/merge-queue.groovy
+      scm:
+        - git:
+            url: git@github.com:elastic/apm-pipeline-library.git
+            refspec: +refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/pr/*
+            wipe-workspace: 'True'
+            name: origin
+            shallow-clone: true
+            credentials-id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
+            reference-repo: /var/lib/jenkins/.git-references/apm-pipeline-library.git
+            branches:
+              - master
