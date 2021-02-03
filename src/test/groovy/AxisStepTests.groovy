@@ -36,7 +36,7 @@ class AxisStepTests extends ApmBasePipelineTest {
     def v = script.call('foo', [1, 2])
     printCallStack()
     assertEquals(v.size(), 2)
-    // Remember to convert GStringImpl to String before compare it to a String
+    // Remember to convert GStringImpl to String before comparing it to a String
     // org.codehaus.groovy.runtime.GStringImpl<1> is not a java.lang.String<1>
     assertEquals(v[0].name.toString(), 'foo')
     assertEquals(v[0].value.toString(), '1')
