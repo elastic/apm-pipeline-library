@@ -1,0 +1,15 @@
+EVENTS:
+  labels:
+    - ready-to-merge
+  reviews: 2
+  comment: 'add to merge-queue'
+
+FILTER:
+  target_branch:
+    - master
+
+LABELS:
+  running: merge-queue-running
+  failed: merge-queue-failed
+  completed: merge-queue-completed
+  success: merge-queue-success

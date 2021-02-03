@@ -35,49 +35,24 @@ pipeline {
   }
   triggers {
     GenericTrigger(
-     genericVariables: [
-      [key: 'ref', value: '$.ref'],
-      [key: 'repo', value: '$.repository.name'],
-      [key: 'after', value: '$.after'],
-      [key: 'payload', value: '$'],
-      [key: 'comment_id', value: '$.comment.id'],
-      [key: 'payload', value: '$'],
-     ],
-    genericHeaderVariables: [
-     [key: 'x-github-event', regexpFilter: '']
-    ],
-     causeString: 'Triggered on $ref',
-     printContributedVariables: true,
-     printPostContent: false,
-     silentResponse: true,
-     regexpFilterText: '$ref-$x_github_event',
-     regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+)-comment$'
+      genericVariables: [
+        [key: 'action', value: '$.action'],         // This is the event
+        [key: 'label', value: '$.label.name'],      // Label name
+        [key: 'review', value: '$.review.state'],   // Review status
+        [key: 'comment_id', value: '$.comment.id'], // Comment
+        [key: 'ref', value: '$.ref'],
+        [key: 'repo', value: '$.repository.name'],
+        [key: 'payload', value: '$'],
+      ],
+      causeString: 'Triggered on $ref',
+      printContributedVariables: true,
+      printPostContent: false,
+      silentResponse: false
     )
   }
   stages {
     stage('Process GitHub Events') {
       steps {
-        echo """
-          ref:${env.ref}
-          repo:${repo}
-          after:${env.after}
-          x_github_event:${env.x_github_event}
-          comment_id:${env.comment_id}
-        """
-        whenTrue("payload" == "${env.payload}"){
-          echo """
-            payload_action:${payload_action}
-            payload_repository_name:${payload_repository_name}
-          """
-        }
-        whenTrue("issue_comment" == "${env.x_github_event}"){
-          echo """
-            payload_comment_id:${payload_comment_id}
-            payload_comment_body:${payload_comment_body}
-            payload_issue_number:${payload_issue_number}
-          """
-          setEnvVar('GITHUB_COMMENT', payload_comment_body.split('\n')[0])
-        }
         whenTrue(shouldBeTriggered()) {
           // when E label ready-to-merge but no merge-queue-running/merge-queue-success
           // when E approvals.size() > 1
@@ -142,11 +117,6 @@ pipeline {
           notifyMergeQueue(pr: env.GITHUB_PULL_REQUEST, status: 'completed', phase: 'merge')
         }
       }
-    }
-  }
-  post {
-    cleanup {
-      notifyBuildResult(prComment: false, slackComment: true, analyzeFlakey: false)
     }
   }
 }

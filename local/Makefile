@@ -38,6 +38,12 @@ master:
 			--file docker-compose.yml \
 			up --detach --no-recreate jenkins
 
+.PHONY: public
+public:  ## Expose the local Jenkins master on the internet
+public: master 
+	@env \
+		ngrok http 18080
+
 .PHONY: pull
 pull:  ## Pull required images for all Jenkins-related processes
 	@env \
