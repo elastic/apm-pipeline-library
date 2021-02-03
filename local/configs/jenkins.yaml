@@ -102,6 +102,10 @@ unclassified:
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
+
+  openTelemetry:
+    endpoint: "otel-collector-contrib:4317"
+    useTls: false
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/beats.dsl"
