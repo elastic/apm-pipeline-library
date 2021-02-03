@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue
 
 class JunitAndStoreStepTests extends ApmBasePipelineTest {
 
-  def script
 
   @Override
   @Before

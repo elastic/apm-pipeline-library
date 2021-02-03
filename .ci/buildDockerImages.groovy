@@ -51,6 +51,7 @@ pipeline {
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
+    booleanParam(name: 'integrations_reporter', defaultValue: "false", description: "Integrations reporter [https://github.com/elastic/observability-dev/tree/master/apps/automation/integrations/reporter]")
     booleanParam(name: 'nodejs', defaultValue: 'false', description: '')
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
@@ -318,6 +319,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build integrations test reporter'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.integrations_reporter}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'integrations-test-reporter',
+          version: 'latest',
+          push: true,
+          folder: "/apps/automation/integrations/reporter")
       }
     }
     stage('Build Heartbeat'){

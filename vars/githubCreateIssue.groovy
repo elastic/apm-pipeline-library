@@ -31,7 +31,7 @@ def call(Map args = [:]) {
   def description = args.get('description', '')
   def labels = args.get('labels', '')
   def milestone = args.get('milestone', '')
-  def title = args.containsKey('title') ? args.title : error('githubCreateIssue: title argument is required.')
+  def title = args.containsKey('title') ? args.title : error('githubCreateIssue: title parameter is required.')
   withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
     def value = gh(command: 'issue create', flags: [ assignee: assignee,
                                                      label: labels,

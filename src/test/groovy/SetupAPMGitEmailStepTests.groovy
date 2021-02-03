@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setupAPMGitEmail.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/setupAPMGitEmail.groovy')
   }
 
   @Test
   void test_default() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'config  user.email'))
@@ -38,7 +37,6 @@ class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_global() throws Exception {
-    def script = loadScript(scriptName)
     script.call(global: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'config --global user.email'))
@@ -46,15 +44,8 @@ class SetupAPMGitEmailStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'setupAPMGitEmail: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }

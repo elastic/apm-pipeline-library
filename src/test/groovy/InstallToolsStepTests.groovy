@@ -21,43 +21,30 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class InstallToolsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/installTools.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/installTools.groovy')
   }
 
   @Test
   void test_without_arguments() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('missing parameters,', '') {
       script.call()
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'installTools: missing params'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_with_some_missing_arguments() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('version') {
       script.installTool([ tool: 'python3' ])
-    } catch(e) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'installTools: missing version param'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_with_unsupported_provider_in_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
       script.installTool([ tool: 'python3', provider: 'foo', version: '1' ])
@@ -71,7 +58,6 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_install_tool_in_linux() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.installTool([ tool: 'foo', version: 'x.y.z' ])
     } catch(e) {
@@ -84,7 +70,6 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_install_tool_in_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.installTool([ tool: 'foo', version: 'x.y.z' ])
     printCallStack()
@@ -94,7 +79,6 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_install_multiple_tools_in_windows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call([[ tool: 'foo', version: 'x.y.z', exclude: 'rc' ], [ tool: 'bar', version: 'z.y.x' ]])
     printCallStack()
@@ -105,7 +89,6 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_install_tool_in_windows_with_all_flags_and_choco() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.installTool([ tool: 'foo', version: 'x.y.z', provider: 'choco', extraArgs: "--foo 'bar' 'foo'" ])
     printCallStack()

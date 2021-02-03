@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class WithGithubStatusStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before
@@ -36,30 +35,16 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingArguments() throws Exception {
-    try {
-      script.call(){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('context') {
+      script.call() { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGithubStatus: missing context argument'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingDescriptionArgument() throws Exception {
-    try {
-      script.call(description: 'foo'){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('context') {
+      script.call(description: 'foo') { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGithubStatus: missing context argument'))
-    assertJobStatusFailure()
   }
 
   @Test

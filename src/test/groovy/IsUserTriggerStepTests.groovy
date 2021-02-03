@@ -22,12 +22,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsUserTriggerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isUserTrigger.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isUserTrigger.groovy')
   }
 
   @Test
@@ -43,7 +43,6 @@ class IsUserTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -62,7 +61,6 @@ class IsUserTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -82,7 +80,6 @@ class IsUserTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -101,7 +98,6 @@ class IsUserTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)

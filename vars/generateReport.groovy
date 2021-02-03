@@ -31,8 +31,8 @@ def call(Map args = [:]) {
   if(!isUnix()){
     error('generateReport: windows is not supported yet.')
   }
-  def id = args.containsKey('id') ? args.id : error('generateReport: id param is required.')
-  def input = args.containsKey('input') ? args.input : error('generateReport: input param is required.')
+  def id = args.containsKey('id') ? args.id : error('generateReport: id parameter is required.')
+  def input = args.containsKey('input') ? args.input : error('generateReport: input parameter is required.')
   def output = args.get('output', 'build')
   def template = args.get('template', true)
   def templateFormat = args.get('templateFormat', 'md')

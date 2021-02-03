@@ -51,9 +51,9 @@ def call(Map params = [:]) {
 
 def toJunit(String name, String status, String message) {
   String output = "<testcase classname=\"pre_commit.lint\" name=\"${name}\""
-  if (status?.toLowerCase().contains('skipped')) {
+  if (status?.toLowerCase()?.contains('skipped')) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
-  } else if (status?.toLowerCase().contains('failed')) {
+  } else if (status?.toLowerCase()?.contains('failed')) {
     output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else {
     output += " />"

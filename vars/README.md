@@ -303,6 +303,16 @@ Create a file given a Jinja template and the data in a JSON format
 * output: the name of the file to be transformed. Mandatory.
 * localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
 
+## detailsURL
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+```
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+```
+
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
@@ -482,6 +492,15 @@ def URL = getBlueoceanDisplayURL()
 
 [Powershell plugin](https://plugins.jenkins.io/powershell)
 
+## getBlueoceanRestURLJob
+Given the job URL then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+```
+
+* jobURL: the job URL. Mandatory
+
 ## getBlueoceanTabURL
 Provides the specific Blueocean URL tab for the current build/run
 
@@ -578,6 +597,13 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
+
+## getStageId
+Get the stage ID in the current context.
+
+```
+def stage = getStageId()
+```
 
 ## getTraditionalPageURL
 Provides the specific traditional URL tab for the current build/run
@@ -1777,6 +1803,7 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
+* flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
@@ -2505,6 +2532,10 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+
+NOTE: If the `GOARCH` environment variable is defined then it will be used to install the given packages for that architecture,
+      otherwise it will be evaluated on the fly.
 
 ## withGoEnvWindows
  Install Go and run some command in a pre-configured environment for Windows.

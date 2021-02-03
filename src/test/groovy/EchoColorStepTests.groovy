@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class EchoColorStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/echoColor.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/echoColor.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('echo', "\u001B[31;40m[ERROR]\u001B[0m"))

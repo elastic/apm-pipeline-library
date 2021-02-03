@@ -20,32 +20,25 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithTotpVaultStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withTotpVault.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withTotpVault.groovy')
   }
 
   @Test
   void test_MissingArguments() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('code_var_name') {
       script.call(secret: VaultSecret.SECRET.toString()){
         //NOOP
       }
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withTotpVault: Missing code_var_name'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_SecretError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_ERROR.toString(), code_var_name: 'bar'){
         //NOOP
@@ -60,7 +53,6 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_SecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       script.call(secret: 'secretNotExists', code_var_name: 'bar'){
         //NOOP
@@ -75,7 +67,6 @@ class WithTotpVaultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_variable_is_created() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(secret: VaultSecret.SECRET_TOTP.toString(), code_var_name: 'VAULT_TOTP'){
       isOK = (binding.getVariable('VAULT_TOTP') == '123456')

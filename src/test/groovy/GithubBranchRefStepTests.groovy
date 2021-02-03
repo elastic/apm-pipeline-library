@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GithubBranchRefStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubBranchRef.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubBranchRef.groovy')
 
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
@@ -49,7 +49,6 @@ class GithubBranchRefStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret == 'username/master')
@@ -59,7 +58,6 @@ class GithubBranchRefStepTests extends ApmBasePipelineTest {
   @Test
   void testNoPR() throws Exception {
     env.CHANGE_ID = null
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret == 'master')
@@ -70,7 +68,6 @@ class GithubBranchRefStepTests extends ApmBasePipelineTest {
   void testEnvError() throws Exception {
     env.ORG_NAME = null
     env.REPO_NAME = null
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){

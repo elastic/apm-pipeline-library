@@ -1,0 +1,7 @@
+Given the job URL then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+```
+
+* jobURL: the job URL. Mandatory

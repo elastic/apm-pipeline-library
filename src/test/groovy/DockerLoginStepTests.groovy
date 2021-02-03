@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class DockerLoginStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/dockerLogin.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/dockerLogin.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"'))
@@ -39,7 +38,6 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testRegistry() throws Exception {
-    def script = loadScript(scriptName)
     script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: "other.docker.io")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "other.docker.io"'))
@@ -48,7 +46,6 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
@@ -58,7 +55,6 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
 
   @Test
   void testRegistryInWindows() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(secret: VaultSecret.SECRET_NAME.toString(), registry: 'other.docker.io')
     printCallStack()

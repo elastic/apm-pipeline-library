@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubPrLatestComment.groovy'
 
   def commentInterceptor = [[	
       url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",	
@@ -69,6 +68,7 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubPrLatestComment.groovy')
     env.ORG_NAME = 'elastic'
     env.REPO_NAME = 'apm-pipeline-library'
     env.CHANGE_ID = 'PR-1'
@@ -79,19 +79,13 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_pattern_parameter() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('pattern') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'pattern parameter is required'))
   }
 
   @Test
   void test_in_a_branch() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_ID')
     script.call(pattern: 'foo', users: [])
     printCallStack()
@@ -101,7 +95,6 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_existing_match() throws Exception {	
-    def script = loadScript(scriptName)
     def obj = script.call(pattern: '<!--COMMENT_GENERATED-->', users: ['elasticmachine'])
     printCallStack()
     assertNotNull(obj)
@@ -109,7 +102,6 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_existing_match_and_no_users_to_filter_with() throws Exception {	
-    def script = loadScript(scriptName)
     def obj = script.call(pattern: '<!--COMMENT_GENERATED-->')
     printCallStack()
     assertNotNull(obj)
@@ -117,7 +109,6 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_an_existing_match_from_another_user() throws Exception {	
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('githubApiCall', [Map.class], {	
       return commentInterceptorFromSomeoneElse	
     })
