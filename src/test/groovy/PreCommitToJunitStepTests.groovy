@@ -92,4 +92,11 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
                                       new File("target/${file}"), 'UTF-8'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_null() throws Exception {
+    def ret = script.toJunit('foo', null, 'bar')
+    printCallStack()
+    assertTrue(ret.contains('name="foo" />'))
+  }
 }
