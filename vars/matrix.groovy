@@ -51,7 +51,7 @@ def withNode(agent, Closure body){
 }
 
 def buildAxes(list){
-    def listEnv = listToListOfList(axisToEnv(list[0]))
+    def listEnv = toListOfLists(axisToEnv(list[0]))
     for(def i=1; i<list.size(); i++){
         listEnv = addToEachListItem(listEnv, axisToEnv(list[i]))
     }
@@ -71,15 +71,15 @@ def addToEachListItem(list, items){
     return newList
 }
 
-def axisToEnv(list){
-    def newList = []
-    list.each { item ->
-        newList.add("${item.name}=${item.value}")
+def axisToEnv(axis){
+    def newEnv = []
+    axis.each { item ->
+        newEnv.add("${item.name}=${item.value}")
     }
-    return newList
+    return newEnv
 }
 
-def listToListOfList(list){
+def toListOfLists(list){
     def newList = []
     list.each { item ->
         def newListItem = []
