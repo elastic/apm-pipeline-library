@@ -337,7 +337,11 @@ pipeline {
           tag: 'integrations-test-reporter',
           version: 'latest',
           push: true,
+<<<<<<< HEAD
           folder: "apps/automation/integrations/reporter")
+=======
+          folder: "/apps/automation/integrations/reporter")
+>>>>>>> master
       }
     }
     stage('Build Heartbeat'){
