@@ -655,4 +655,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet.'))
     assertJobStatusFailure()
   }
+
+  def printCallStack(Closure body){
+    try {
+      body()
+    } finally {
+      printCallStack()
+    }
+  }
 }

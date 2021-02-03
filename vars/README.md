@@ -84,6 +84,15 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## axis
+Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
+from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
+
+```
+def v = axis('MY_VAR', [1, 2, 3, 4, 5])
+def vs = axis('MY_VAR', ["1", "2", "3", "4", "5"])
+```
+
 ## base64decode
 Decode a base64 input to string
 
@@ -1598,6 +1607,46 @@ matches with the list of assigned labels in the PR.
   ```
 
 NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
+
+## matrix
+Matrix parallel task execution in parallel implemented on a step.
+It compose a matrix of parallel tasks, each task has a set of enviroment variables
+created from the axes values.
+
+* **agent:** Jenkins agent labels to provision a new agent for parallel task.
+* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+each pair has a variable name and a vector of values (see #axis)
+* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+when we create the parallel tasks (axes-excludes=parallel tasks).
+
+```
+pipeline {
+  agent any
+
+  stages {
+    stage('Matrix sample') {
+      steps {
+
+        matrix(
+          agent: 'linux',
+          axes:[
+            axis('VAR_NAME_00', [ 1, 2 ]),
+            axis('VAR_NAME_01', [ 'a', 'b', 'c', 'd', 'e' ])
+          ],
+          excludes: [
+            axis('VAR_NAME_00', [ 1 ]),
+            axis('VAR_NAME_01', [ 'd', 'e' ]),
+          ]
+          ) {
+            echo "${VAR_NAME_00} - ${VAR_NAME_01}"
+          }
+
+        }
+      }
+    }
+  }
+
+```
 
 ## mvnVersion
 Get a project version from Maven
