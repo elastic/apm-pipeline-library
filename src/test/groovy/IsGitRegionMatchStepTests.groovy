@@ -21,19 +21,18 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isGitRegionMatch.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isGitRegionMatch.groovy')
     env.CHANGE_TARGET = 'foo'
     env.GIT_BASE_COMMIT = 'bar'
   }
 
   @Test
   void testWithoutpatterns() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('patterns') {
       script.call()
     }
@@ -41,7 +40,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithEmptypatterns() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('patterns', 'with values.') {
       script.call(patterns: [])
     }
@@ -49,7 +47,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithoutEnvVariables() throws Exception {
-    def script = loadScript(scriptName)
     def result = true
     env.remove('CHANGE_TARGET')
     env.remove('GIT_BASE_COMMIT')
@@ -62,7 +59,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_change_target_use_git_base_commit() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     env.remove('CHANGE_TARGET')
     script.call(patterns: [ 'foo' ])
@@ -73,7 +69,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSimpleMatch() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def result = false
@@ -88,7 +83,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testSimpleMatchPreviousCommit() throws Exception {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
-    def script = loadScript(scriptName)
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def result = false
@@ -100,7 +94,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSimpleMatchWithoutShouldMatchAll() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def result = false
@@ -112,7 +105,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testComplexMatch() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -131,7 +123,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testComplexWithShouldMatchAll() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def result = false
@@ -143,7 +134,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMultiplePatternMatchWithShouldMatchAll() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = ''' foo/bar/file.txt
                       | foo/bar/xxx/file.txt
                     '''.stripMargin().stripIndent()
@@ -158,7 +148,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSimpleUnmatch() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     printCallStack()
@@ -169,7 +158,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMultiplePatternUnmatchWithShouldMatchAll() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = ''' foo/bar/file.txt
                       | foo
                     '''.stripMargin().stripIndent()
@@ -184,7 +172,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     testWindows() {
       script.call()
     }
@@ -192,7 +179,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoChangerequest() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -208,7 +194,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   void testChangerequest() throws Exception {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -223,7 +208,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   @Test
   void testChangerTargetEmpty() throws Exception {
     env.CHANGE_TARGET = " "
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -237,7 +221,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithFrom() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = ''' foo/bar/file.txt
                     '''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -251,7 +234,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithFromAndTo() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = ''' foo/bar/file.txt
                     '''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -265,7 +247,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testFromAndToWithEmptyValues() throws Exception {
-    def script = loadScript(scriptName)
     def result = false
     result = script.call(patterns: [ '^foo/.*/file.txt' ], from: '', to: '')
     printCallStack()
@@ -276,7 +257,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testToWithEmptyValue() throws Exception {
-    def script = loadScript(scriptName)
     def result = false
     result = script.call(patterns: [ '^foo/.*/file.txt' ], to: '')
     printCallStack()
@@ -287,7 +267,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMultiplePatternMatchWithArrayString() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = ''' foo
                       | bar
                     '''.stripMargin().stripIndent()
@@ -305,7 +284,6 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
     env.remove('GIT_PREVIOUS_COMMIT')
     env.remove('CHANGE_TARGET')
     env.GIT_BASE_COMMIT = 'bar'
-    def script = loadScript(scriptName)
     def changeset = 'file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def result = false

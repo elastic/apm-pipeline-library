@@ -21,13 +21,13 @@ import static org.junit.Assert.assertTrue
 import org.apache.commons.io.FileUtils
 
 class PreCommitToJunitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/preCommitToJunit.groovy'
   String compareWith = 'src/test/resources/preCommitToJunit/output'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/preCommitToJunit.groovy')
 
     helper.registerAllowedMethod('readFile', [Map.class], { m ->
       return (new File("src/test/resources/preCommitToJunit/${m.file}")).text
@@ -36,7 +36,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingInputArgument() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('input') {
       script.call()
     }
@@ -44,7 +43,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMissingOutputArgument() throws Exception {
-    def script = loadScript(scriptName)
     testMissingArgument('output') {
       script.call(input: 'pre-commit.txt')
     }
@@ -52,7 +50,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithSimpleCommitStages() throws Exception {
-    def script = loadScript(scriptName)
     def file = 'simple.xml'
     script.call(input: 'simple.txt', output: file)
     printCallStack()
@@ -64,7 +61,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithAllPreCommitStages() throws Exception {
-    def script = loadScript(scriptName)
     def file = 'pre-commit.xml'
     script.call(input: 'pre-commit.txt', output: file)
     printCallStack()
@@ -77,7 +73,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithSkippedPreCommitStages() throws Exception {
-    def script = loadScript(scriptName)
     def file = 'skipped.xml'
     script.call(input: 'skipped.txt', output: file)
     printCallStack()
@@ -89,7 +84,6 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithGherkinDefects() throws Exception {
-    def script = loadScript(scriptName)
     def file = 'gherkin.xml'
     script.call(input: 'gherkin.txt', output: file)
     printCallStack()
@@ -97,5 +91,12 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
                                       new File("${compareWith}/${file}"),
                                       new File("target/${file}"), 'UTF-8'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_null() throws Exception {
+    def ret = script.toJunit('foo', null, 'bar')
+    printCallStack()
+    assertTrue(ret.contains('name="foo" />'))
   }
 }

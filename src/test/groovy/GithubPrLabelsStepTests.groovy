@@ -21,12 +21,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class GithubPrLabelsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubPrLabels.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubPrLabels.groovy')
     env.ORG_NAME = 'org'
     env.REPO_NAME = 'repo'
 
@@ -40,7 +40,6 @@ class GithubPrLabelsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_branch() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret.isEmpty())
@@ -49,7 +48,6 @@ class GithubPrLabelsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_pr() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_ID = 1
     def ret = script.call()
     printCallStack()
