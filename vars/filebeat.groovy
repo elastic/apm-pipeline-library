@@ -41,6 +41,7 @@ def start(Map args = [:]) {
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
+  def archiveOnlyOnFail = args.get('archiveOnlyOnFail', false)
   def configPath = "${workdir}/${config}"
 
   log(level: 'INFO', text: 'Running Filebeat Docker container')
@@ -78,7 +79,8 @@ def start(Map args = [:]) {
     config: config,
     image: image,
     workdir: workdir,
-    timeout: timeout
+    timeout: timeout,
+    archiveOnlyOnFail: archiveOnlyOnFail
   ]
 
   writeJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json", json: json)
@@ -88,6 +90,7 @@ def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def stepConfig = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
   def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
+  def archiveOnlyOnFail = stepConfig.get('archiveOnlyOnFail', false)
 
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
@@ -97,7 +100,9 @@ def stop(Map args = [:]){
     docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
+  if(archiveOnlyOnFail == false || (archiveOnlyOnFail && isBuildFailure())){
+    archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
+  }
 }
 
 def configureFilebeat(config, output){
