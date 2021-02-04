@@ -99,6 +99,21 @@ unclassified:
                   - wildcard: "src/test/**"
                   - wildcard: "target/**"
                   - wildcard: "test-infra/**"
+      - name: "cloud"
+        defaultVersion: "master"
+        retriever:
+          modernSCM:
+            scm:
+              github:
+                configuredByUrl: true
+                credentialsId: "2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken"
+                id: "d84cb940-87bd-460f-a28f-c5459bdaa373"
+                repoOwner: "elastic"
+                repository: "cloud-pipeline-library"
+                repositoryUrl: "https://github.com/elastic/cloud-pipeline-library.git"
+                traits:
+                - "gitBranchDiscovery":
+                  strategyId: 1
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
