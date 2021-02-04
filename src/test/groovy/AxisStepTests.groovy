@@ -45,6 +45,7 @@ class AxisStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
   void testMissingName() throws Exception {
     def script = loadScript(scriptName)
     testMissingArgument('name', 'argument missing') {
@@ -52,6 +53,7 @@ class AxisStepTests extends ApmBasePipelineTest {
     }
   }
 
+  @Test
   void testMissingValues() throws Exception {
     def script = loadScript(scriptName)
     testMissingArgument('values', 'argument missing') {
