@@ -22,9 +22,9 @@
   gitDeleteTag()
 */
 
-def call(Map params = [:]) {
-  def tag =  params.containsKey('tag') ? params.tag : "${BUILD_TAG}"
-  def credentialsId =  params.get('credentialsId', '')
+def call(Map args = [:]) {
+  def tag =  args.containsKey('tag') ? args.tag : "${BUILD_TAG}"
+  def credentialsId =  args.get('credentialsId', '')
   gitCmd(credentialsId: credentialsId, cmd: 'fetch', args: '--tags')
   sh(label: "delete tag", script: "git tag -d '${tag}'")
   gitPush(credentialsId: credentialsId, args: '--tags')

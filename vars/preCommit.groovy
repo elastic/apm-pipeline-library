@@ -27,12 +27,12 @@
 
   preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
 */
-def call(Map params = [:]) {
-  def junitFlag = params.get('junit', true)
-  def commit = params.get('commit', env.GIT_BASE_COMMIT)
-  def credentialsId = params.get('credentialsId', 'f6c7695a-671e-4f4f-a331-acdce44ff9ba')
-  def registry = params.get('registry', 'docker.elastic.co')
-  def secretRegistry = params.get('secretRegistry', 'secret/observability-team/ci/docker-registry/prod')
+def call(Map args = [:]) {
+  def junitFlag = args.get('junit', true)
+  def commit = args.get('commit', env.GIT_BASE_COMMIT)
+  def credentialsId = args.get('credentialsId', 'f6c7695a-671e-4f4f-a331-acdce44ff9ba')
+  def registry = args.get('registry', 'docker.elastic.co')
+  def secretRegistry = args.get('secretRegistry', 'secret/observability-team/ci/docker-registry/prod')
 
   if (!commit?.trim()) {
     commit = env.GIT_BASE_COMMIT ?: error('preCommit: git commit to compare with is required.')

@@ -22,11 +22,11 @@
   gitCreateTag()
 */
 
-def call(Map params = [:]) {
-  def tag =  params.get('tag', "${BUILD_TAG}")
-  def tagArgs =  params.get('tagArgs', '')
-  def pushArgs = params.get('pushArgs', '')
-  def credentialsId = params.get('credentialsId', '')
+def call(Map args = [:]) {
+  def tag =  args.get('tag', "${BUILD_TAG}")
+  def tagArgs =  args.get('tagArgs', '')
+  def pushArgs = args.get('pushArgs', '')
+  def credentialsId = args.get('credentialsId', '')
   sh(label: "create tag", script: "git tag -a -m 'chore: Create tag ${tag}' '${tag}' ${tagArgs}")
   gitPush(credentialsId: credentialsId, args: "--tags ${pushArgs}")
 }

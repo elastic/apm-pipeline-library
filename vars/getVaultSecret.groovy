@@ -22,8 +22,8 @@ import net.sf.json.JSONObject
 
   def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 */
-def call(Map params = [:]){
-  def secret = params.containsKey('secret') ? params.secret : error("getVaultSecret: No valid secret to looking for.")
+def call(Map args = [:]){
+  def secret = args.containsKey('secret') ? args.secret : error("getVaultSecret: No valid secret to looking for.")
   return readSecret(secret)
 }
 

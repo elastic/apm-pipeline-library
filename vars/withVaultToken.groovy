@@ -22,10 +22,10 @@
   }
 */
 
-def call(Map params = [:], Closure body) {
+def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withVaultToken')
-  def path = params.containsKey('path') ? params.path : env.WORKSPACE
-  def tokenFile = params.containsKey('tokenFile') ? params.tokenFile : '.vault-token'
+  def path = args.containsKey('path') ? args.path : env.WORKSPACE
+  def tokenFile = args.containsKey('tokenFile') ? args.tokenFile : '.vault-token'
   getVaultSecret.readSecretWrapper {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.

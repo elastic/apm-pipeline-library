@@ -31,14 +31,14 @@
   dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: false)
 
 */
-def call(Map params = [:]){
+def call(Map args = [:]){
   if(!isUnix()){
     error('dockerLogs: windows is not supported yet.')
   }
 
-  def label = params.get('step', '')
-  def dockerCompose = params.get('dockerCompose', 'docker-compose.yml')
-  def failNever = params.get('failNever', true)
+  def label = args.get('step', '')
+  def dockerCompose = args.get('dockerCompose', 'docker-compose.yml')
+  def failNever = args.get('failNever', true)
 
   def flag = failNever ? '|| true' : ''
   def normaliseLabel = normalise(label)

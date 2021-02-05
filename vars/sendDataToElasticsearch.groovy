@@ -20,13 +20,13 @@
 
   sendDataToElasticsearch(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field": "value"}')
 */
-def call(Map params = [:]){
-  def es = params.containsKey('es') ? params.es : error("sendDataToElasticsearch: Elasticsearch URL is not valid.")
-  def secret = params.containsKey('secret') ? params.secret : error("sendDataToElasticsearch: secret is not valid.")
-  def data = params.containsKey('data') ? params.data : error("sendDataToElasticsearch: data is not valid.")
-  def restCall = params.containsKey('restCall') ? params.restCall : "/jenkins-builds/_doc/"
-  def contentType = params.containsKey('contentType') ? params.contentType : "application/json"
-  def method = params.containsKey('method') ? params.method : "POST"
+def call(Map args = [:]){
+  def es = args.containsKey('es') ? args.es : error("sendDataToElasticsearch: Elasticsearch URL is not valid.")
+  def secret = args.containsKey('secret') ? args.secret : error("sendDataToElasticsearch: secret is not valid.")
+  def data = args.containsKey('data') ? args.data : error("sendDataToElasticsearch: data is not valid.")
+  def restCall = args.containsKey('restCall') ? args.restCall : "/jenkins-builds/_doc/"
+  def contentType = args.containsKey('contentType') ? args.contentType : "application/json"
+  def method = args.containsKey('method') ? args.method : "POST"
 
   def props = getVaultSecret(secret: secret)
   if(props?.errors){

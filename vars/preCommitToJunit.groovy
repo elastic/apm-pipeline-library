@@ -20,9 +20,9 @@
 
   preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 */
-def call(Map params = [:]) {
-  def input = params.containsKey('input') ? params.input : error('preCommitToJunit: input parameter is required.')
-  def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
+def call(Map args = [:]) {
+  def input = args.containsKey('input') ? args.input : error('preCommitToJunit: input parameter is required.')
+  def output = args.containsKey('output') ? args.output : error('preCommitToJunit: output parameter is required.')
 
   def content = readFile(file: input)
   def id, status, message = '', inprogress = false

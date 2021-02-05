@@ -28,8 +28,8 @@ void call(Map args = [:]){
      FORCE_COLOR = "2"
      GIT_URL = "git@github.com:elastic/kibana.git"
      ES_GIT_URL = "git@github.com:elastic/elasticsearch.git"
-     TEST_BROWSER_HEADLESS = "${params.TEST_BROWSER_HEADLESS}"
-     TEST_ES_FROM = "${params.TEST_ES_FROM}"
+     TEST_BROWSER_HEADLESS = "${args.TEST_BROWSER_HEADLESS}"
+     TEST_ES_FROM = "${args.TEST_ES_FROM}"
    }
    options {
      //timeout(time: 5, unit: 'HOURS')
@@ -89,7 +89,7 @@ void call(Map args = [:]){
            }
            when {
              beforeAgent true
-             expression { return params.build_oss_ci }
+             expression { return args.build_oss_ci }
            }
            steps {
              buildOSSSteps()
@@ -105,7 +105,7 @@ void call(Map args = [:]){
            }
            when {
              beforeAgent true
-             expression { return params.build_no_oss_ci }
+             expression { return args.build_no_oss_ci }
            }
            steps {
              buildNoOSSSteps()
@@ -124,7 +124,7 @@ void call(Map args = [:]){
        }
        when {
          beforeAgent true
-         expression { return params.intake_ci }
+         expression { return args.intake_ci }
        }
        steps {
          kibanaIntakeSteps()
@@ -142,7 +142,7 @@ void call(Map args = [:]){
        }
        when {
          beforeAgent true
-         expression { return params.ciGroup_ci }
+         expression { return args.ciGroup_ci }
        }
        steps {
          kibanaGroupSteps()
@@ -161,7 +161,7 @@ void call(Map args = [:]){
        }
        when {
          beforeAgent true
-         expression { return params.x_pack_intake_ci }
+         expression { return args.x_pack_intake_ci }
        }
        steps {
          xPackIntakeSteps()
@@ -181,7 +181,7 @@ void call(Map args = [:]){
        }
        when {
          beforeAgent true
-         expression { return params.x_pack_ciGroup_ci }
+         expression { return args.x_pack_ciGroup_ci }
        }
        steps {
          xPackGroupSteps()
@@ -285,7 +285,7 @@ def installNodeJs(nodeVersion, pakages = null){
 def checkoutES(){
 //  useCache('es-source'){
     dir("${ES_BASE_DIR}"){
-      checkout([$class: 'GitSCM', branches: [[name: "${params.ES_VERSION}"]],
+      checkout([$class: 'GitSCM', branches: [[name: "${args.ES_VERSION}"]],
         doGenerateSubmoduleConfigurations: false,
         extensions: [[$class: 'CloneOption',
           depth: 1,
@@ -309,7 +309,7 @@ def checkoutES(){
 */
 def checkoutKibana(){
 //  useCache('source'){
-    gitCheckout(basedir: "${BASE_DIR}", branch: params.branch_specifier,
+    gitCheckout(basedir: "${BASE_DIR}", branch: args.branch_specifier,
       repo: "${GIT_URL}",
       credentialsId: "${JOB_GIT_CREDENTIALS}",
       reference: "/var/lib/jenkins/.git-references/kibana.git",
