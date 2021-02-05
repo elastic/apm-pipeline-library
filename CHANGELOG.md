@@ -1,5 +1,38 @@
 # Changelog
 
+## v1.1.184 (05/02/2021)
+
+#### 🚀 Enhancements
+
+-  feat: custom matrix step [#938](https://github.com/elastic/apm-pipeline-library/pull/938)
+-  feat: use JobsDSL to create jobs [#933](https://github.com/elastic/apm-pipeline-library/pull/933)
+-  Access dynamically to the stage BlueOcean URL linked to the GH Check/Status [#935](https://github.com/elastic/apm-pipeline-library/pull/935)
+
+#### 🐛 Bug Fixes
+
+-  fix: resize the partition size to 100GB to use all the space [#953](https://github.com/elastic/apm-pipeline-library/pull/953)
+-  fix: GO_VERSION can be undefined [#954](https://github.com/elastic/apm-pipeline-library/pull/954)
+
+#### 📚 Documentation
+
+-  [docs][matrix] explain the new step [#948](https://github.com/elastic/apm-pipeline-library/pull/948)
+
+#### 🙈 No user affected
+
+-  Enable opentelemetry locally [#937](https://github.com/elastic/apm-pipeline-library/pull/937)
+-  chore: bump Go version to 1.15.7 [#951](https://github.com/elastic/apm-pipeline-library/pull/951)
+-  Show build and test trends as PR comments and GitHub .Status check [#942](https://github.com/elastic/apm-pipeline-library/pull/942)
+-  refactor loadscript [#941](https://github.com/elastic/apm-pipeline-library/pull/941)
+-  Add /test trigger comment [#943](https://github.com/elastic/apm-pipeline-library/pull/943)
+-  mask credentials when using gitCmd [#940](https://github.com/elastic/apm-pipeline-library/pull/940)
+-  Refactor parameters and windows UTs validations [#939](https://github.com/elastic/apm-pipeline-library/pull/939)
+-  [CI] support sending a PR to each ecs agent when spec change [#936](https://github.com/elastic/apm-pipeline-library/pull/936)
+
+#### ⚙️ CI
+
+-  Docker integrations [#947](https://github.com/elastic/apm-pipeline-library/pull/947)
+-  Add Docker build for integrations test reporter [#946](https://github.com/elastic/apm-pipeline-library/pull/946)
+
 ## v1.1.183 (29/01/2021)
 
 #### 🐛 Bug Fixes
