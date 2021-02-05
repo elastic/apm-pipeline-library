@@ -143,7 +143,6 @@ pipeline {
         log(level: 'INFO', text: "I'm running as there was a GitHub comment with the 'benchmark tests'")
       }
     }
-
     stage('Check Unix Workers'){
       when {
         beforeAgent true
@@ -162,6 +161,9 @@ pipeline {
         // with the same name will workaround the issue. see JENKINS-41929
         PARAM_WITH_DEFAULT_VALUE = "${params?.PARAM_WITH_DEFAULT_VALUE}"
       }
+      // Use matrix primitive supported by the declarative pipeline.
+      // If you need dynamic axis generation or the exclusion list is massive,
+      // we do recommend to see the stage('Matrix step') that solves this particular scenarios.
       matrix {
         agent { label "${PLATFORM}" }
         axes {
@@ -220,7 +222,6 @@ pipeline {
         }
       }
     }
-
     stage('Check Windows Workers'){
       when {
         beforeAgent true
@@ -272,7 +273,6 @@ pipeline {
         }
       }
     }
-
     stage('Check Static Workers'){
       when {
         beforeAgent true
@@ -358,6 +358,25 @@ pipeline {
               junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
             }
           }
+        }
+      }
+    }
+    // Use matrix step within a steps closure if you need dynamic axis generation 
+    // or the exclusion list is massive.
+    stage('Matrix step') {
+      steps {
+        matrix(
+          // agent: 'linux', // If you would like to use a specific agent for each dynamic stage.
+          axes:[
+            axis('OS', [ 'linux', 'windows', 'darwin' ]),
+            axis('PLATFORM', [ '386', 'amd64', 'arm64', 'armv7' ])
+          ],
+          excludes: [
+            axis('OS', [ 'darwin' ]),
+            axis('PLATFORM', [ '386', 'armv7' ]),
+          ]
+        ) {
+          echo "${OS} - ${PLATFORM}"
         }
       }
     }

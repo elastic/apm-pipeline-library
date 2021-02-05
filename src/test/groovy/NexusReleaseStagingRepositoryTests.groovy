@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 class NexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nexusReleaseStagingRepository.groovy'
 
   def shInterceptor = {
     return """
@@ -48,6 +47,7 @@ class NexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nexusReleaseStagingRepository.groovy')
 
     profile_start_context.setHandler({ exchange ->
       String response = shInterceptor();
@@ -69,7 +69,6 @@ class NexusReleaseStagingRepositoryTests extends ApmBasePipelineTest {
 
   @Test
   void testFind() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',

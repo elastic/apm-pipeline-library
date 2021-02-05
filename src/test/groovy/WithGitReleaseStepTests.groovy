@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithGitReleaseStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withGitRelease.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withGitRelease.groovy')
     env.GITHUB_USER = 'user'
     env.GITHUB_TOKEN = 'token'
     env.GIT_BASE_COMMIT = 'commit'
@@ -35,7 +35,6 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -52,24 +51,13 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    def isOK = false
-    try {
-      script.call() {
-        isOK = true
-      }
-    } catch(e){
-      //NOOP
+    testWindows() {
+      script.call(){}
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withGitRelease: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_with_body_error() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call {
         throw new Exception('Mock an error')
@@ -87,7 +75,6 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_base_commit() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('GIT_BASE_COMMIT')
     try {
       script.call(){
@@ -103,7 +90,6 @@ class WithGitReleaseStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_branch_name() throws Exception {
-    def script = loadScript(scriptName)
     // When running simple pipelines but no Multibranch Pipelines
     env.remove('BRANCH_NAME')
     try {

@@ -30,7 +30,7 @@
 * Reason: `${build.description}`
 <%}%>
 <% if(build?.startTime != null && !build?.startTime.equals('null')) {%>
-* * Start Time: ${build?.startTime}
+* Start Time: ${build?.startTime}
 <%}%>
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec
@@ -48,6 +48,15 @@
 | Passed       | ${(testsSummary?.passed) ?: 0}  |
 | Skipped      | ${(testsSummary?.skipped) ?: 0} |
 | Total        | ${(testsSummary?.total) ?: 0}   |
+<%}%>
+
+#### Trends :test_tube:
+
+<% if(env?.JOB_URL != null && !env?.JOB_URL.equals('null')) {%>
+![Image of Build Times](${env?.JOB_URL}buildTimeGraph/png)
+<%}%>
+<% if(env?.BUILD_URL != null && !env?.BUILD_URL.equals('null') && testsSummary?.total != 0) {%>
+![Image of Tests](${env?.BUILD_URL}testReport/history/countGraph/png?start=0&amp;end=25)
 <%}%>
 
 </p>
@@ -71,10 +80,14 @@ ${errorStackTrace}
 <%}%>
 
 <!-- STEPS ERRORS IF ANY -->
+<% errorGitHub = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Notifies GitHub')}%>
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
 <% stepsErrors = stepsErrors?.findAll{ !it?.displayName?.contains('Error signal') } %>
 <% if (errorSignal) { stepsErrors = stepsErrors << errorSignal }%>
+<% if (stepsErrors?.size() <= 0 && !buildStatus?.equals('SUCCESS') && errorGitHub) {%>
+  <% stepsErrors = stepsErrors << errorGitHub %>
+<%}%>
 <% if (stepsErrors?.size() != 0) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>

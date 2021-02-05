@@ -27,7 +27,7 @@
   }
 */
 def call(Map args = [:]) {
-  def tool = args.containsKey('tool') ? args.tool : error('isInstalled: tool param is required')
+  def tool = args.containsKey('tool') ? args.tool : error('isInstalled: tool parameter is required')
   def flag = args.get('flag', '')
 
   def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'

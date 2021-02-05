@@ -26,7 +26,7 @@ def call(Map params = [:]) {
   if(!isUnix()){
     error('gitCmd: windows is not supported yet.')
   }
-  def cmd =  params.containsKey('cmd') ? params.cmd : error('gitCmd: missing git command')
+  def cmd =  params.containsKey('cmd') ? params.cmd : error('gitCmd: cmd parameter is required')
   def args =  params.containsKey('args') ? params.args : ''
   def credentialsId = (params.containsKey('credentialsId') && params.credentialsId.trim()) ? params.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
   def store = params.get('store', false)
@@ -40,22 +40,37 @@ def call(Map params = [:]) {
     def logFilename = fileExists(folder) ? "${folder}/${filename}" : "${filename}"
     def storeFlag = store ? "> ${logFilename} 2>&1" : ''
     try {
-      sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${ORG_NAME}/${REPO_NAME}.git ${args} ${storeFlag}")
+      sh(label: "Git ${cmd}", script: "git ${cmd} https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/${env.ORG_NAME}/${env.REPO_NAME}.git ${args} ${storeFlag}")
     } catch(err) {
       if (store) {
         log(level: 'WARN', text: "gitCmd failed, further details in the archived file '${logFilename}'")
       }
       throw err
     } finally {
-      if (store) {
-        if (fileExists(folder)) {
-          dir(folder) {
-            archiveArtifacts(artifacts: "${filename}")
-          }
-        } else {
-          archiveArtifacts(artifacts: "${filename}")
-        }
-      }
+      storeWithMaskedCredentials(filename: filename, store: store, folder: folder)
     }
   }
+}
+
+def storeWithMaskedCredentials(Map args=[:]) {
+  def store = args.get('store', false)
+  def folder = args.get('folder')
+  def filename = args.get('filename')
+
+  if (store) {
+    if (fileExists(folder)) {
+      dir(folder) {
+        maskCredentials(filename)
+      }
+    } else {
+      maskCredentials(filename)
+    }
+  }
+}
+
+def maskCredentials(filename) {
+  def fileContent = readFile(filename)
+  def maskedContent = fileContent.replaceAll(env.GIT_PASSWORD, 'hidden').replaceAll(env.GIT_USERNAME, 'hidden')
+  writeFile(file: filename, text: maskedContent)
+  archiveArtifacts(artifacts: "${filename}")
 }

@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class NodeOSStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/nodeOS.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/nodeOS.groovy')
     helper.registerAllowedMethod('isArm', { false })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "linux foo bar"
     def value = script.call()
     printCallStack()
@@ -41,7 +40,6 @@ class NodeOSStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar windows"
     def value = script.call()
     printCallStack()
@@ -51,7 +49,6 @@ class NodeOSStepTests extends ApmBasePipelineTest {
 
   @Test
   void testDarwin() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo darwin bar"
     def value = script.call()
     printCallStack()
@@ -61,7 +58,6 @@ class NodeOSStepTests extends ApmBasePipelineTest {
 
   @Test
   void testArm_is_linux() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('isArm', { true })
     env.NODE_LABELS = "foo arm bar"
     def value = script.call()
@@ -72,7 +68,6 @@ class NodeOSStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNotFound() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "foo bar"
     try {
       def value = script.call()
@@ -87,7 +82,6 @@ class NodeOSStepTests extends ApmBasePipelineTest {
 
   @Test
   void testLabelConflict() throws Exception {
-    def script = loadScript(scriptName)
     env.NODE_LABELS = "linux windows"
     try {
       def value = script.call()

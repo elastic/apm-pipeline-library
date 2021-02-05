@@ -1,5 +1,77 @@
 # Changelog
 
+## v1.1.183 (29/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  Consumers of githubApiCall should not transform JSON [#934](https://github.com/elastic/apm-pipeline-library/pull/934)
+
+## v1.1.182 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support disable GitHub issue creation for flaky tests [#929](https://github.com/elastic/apm-pipeline-library/pull/929)
+
+#### 🐛 Bug Fixes
+
+-  Return the build digested output [#931](https://github.com/elastic/apm-pipeline-library/pull/931)
+
+#### 🙈 No user affected
+
+-  Debug Go Environment [#932](https://github.com/elastic/apm-pipeline-library/pull/932)
+
+## v1.1.181 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Use GOARCH to install the package for that particular architecture [#928](https://github.com/elastic/apm-pipeline-library/pull/928)
+
+#### 🙈 No user affected
+
+-  Refactor notifyPR and generateBuildReport [#926](https://github.com/elastic/apm-pipeline-library/pull/926)
+
+## v1.1.180 (26/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats][go] support for ARM arch64 [#924](https://github.com/elastic/apm-pipeline-library/pull/924)
+-  Create GitHub Check with the digested Build data [#921](https://github.com/elastic/apm-pipeline-library/pull/921)
+-  GitHub check step [#881](https://github.com/elastic/apm-pipeline-library/pull/881)
+
+#### 🐛 Bug Fixes
+
+-  Delegate GitHub PR comments condition to the githubPrComment step [#925](https://github.com/elastic/apm-pipeline-library/pull/925)
+-  fix: retry wait for filebeat [#922](https://github.com/elastic/apm-pipeline-library/pull/922)
+-  Mask the GitHub app generated token [#920](https://github.com/elastic/apm-pipeline-library/pull/920)
+
+## v1.1.179 (25/01/2021)
+
+#### 🚀 Enhancements
+
+-  feat: example job to manane webhooks [#912](https://github.com/elastic/apm-pipeline-library/pull/912)
+
+#### 🐛 Bug Fixes
+
+-  Skip GitHub comment for old build when the next adjacent build has already finished [#917](https://github.com/elastic/apm-pipeline-library/pull/917)
+
+#### 🙈 No user affected
+
+-  [refactor] notifyBuildResult [#916](https://github.com/elastic/apm-pipeline-library/pull/916)
+
+## v1.1.178 (20/01/2021)
+
+#### 🚀 Enhancements
+
+-  [pre-commit] exclude gif/png files [#909](https://github.com/elastic/apm-pipeline-library/pull/909)
+
+#### 🐛 Bug Fixes
+
+-  Add resilience when GitHub got some glitches [#911](https://github.com/elastic/apm-pipeline-library/pull/911)
+
+#### ⚙️ CI
+
+-  feat: add a pre-commit hook detecting broken markdown links [#914](https://github.com/elastic/apm-pipeline-library/pull/914)
+
 ## v1.1.177 (15/01/2021)
 
 #### 🚀 Enhancements

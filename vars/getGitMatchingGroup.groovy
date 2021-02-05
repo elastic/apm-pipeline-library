@@ -35,7 +35,7 @@
 
 */
 def call(Map params = [:]) {
-  def pattern = params.containsKey('pattern') ? params.pattern : error('getGitMatchingGroup: Missing pattern argument.')
+  def pattern = params.containsKey('pattern') ? params.pattern : error('getGitMatchingGroup: pattern parameter is required.')
   def exclude = params.get('exclude', '')
   def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}")
   def to = params.get('to', env.GIT_BASE_COMMIT)

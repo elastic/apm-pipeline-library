@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class Tap2JunitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/tap2Junit.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/tap2Junit.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'node:12-alpine'))
@@ -43,7 +42,6 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_suffix() throws Exception {
-    def script = loadScript(scriptName)
     script.call(suffix: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('junit', 'foo'))
@@ -52,7 +50,6 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_nodeVersion() throws Exception {
-    def script = loadScript(scriptName)
     script.call(nodeVersion: 'foo:latest')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'foo:latest'))
@@ -61,7 +58,6 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_package() throws Exception {
-    def script = loadScript(scriptName)
     script.call(package: 'foo.bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '--package="foo.bar"'))
@@ -70,7 +66,6 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_pattern() throws Exception {
-    def script = loadScript(scriptName)
     script.call(pattern: 'foo.*')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'for i in "foo.*"'))

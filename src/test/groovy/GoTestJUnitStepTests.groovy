@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GoTestJUnitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/goTestJUnit.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/goTestJUnit.groovy')
     env.GOPATH = "${env.WORKSPACE}"
     helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
       c.call()
@@ -36,7 +36,6 @@ class GoTestJUnitStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def version = "1.15.1"
     helper.registerAllowedMethod('goDefaultVersion', [], { version })
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'gotestsum --format testname --junitfile junit-report.xml --'))
@@ -46,7 +45,6 @@ class GoTestJUnitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testArguments() throws Exception {
-    def script = loadScript(scriptName)
     script.call(options: '-foo -bar', output: 'foo.xml', version: 'fooGo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '-- -foo -bar'))
