@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.185 (08/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
+
+#### 🐛 Bug Fixes
+
+- [**backport-to-7.x**][**ready-to-merge**] Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
+
+#### 📚 Documentation
+
+- [**backport-to-7.x**][**ready-to-merge**] docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
+
+#### 🙈 No user affected
+
+- [**backport-to-7.x**][**ready-to-merge**] Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
+
 ## v1.1.184 (05/02/2021)
 
 #### 🚀 Enhancements
