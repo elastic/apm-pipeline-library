@@ -44,7 +44,6 @@ pipelineJob("{{ JOB_NAME }}") {
         }
       }
       lightweight(true)
-      sandbox(true)
       scriptPath("{{ JENKINSFILE }}")
     }
   }

@@ -16,8 +16,8 @@
 // under the License.
 
 pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
-  displayName('Job apm-shared/oblt-test-env/custom_kibana')
-  description('Job apm-shared/oblt-test-env/custom_kibana description')
+  displayName('Custom Kibana - Undeploy')
+  description('Job to undeploy Custom Kibana deployments')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }
@@ -44,7 +44,6 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
         }
       }
       lightweight(true)
-      sandbox(true)
       scriptPath(".ci/customKibanaUndeploy.groovy")
     }
   }
