@@ -59,7 +59,8 @@ pipeline {
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           script {
             dir("${BASE_DIR}"){
-              env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
+              setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
+              setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
             }
           }
         }
@@ -126,6 +127,19 @@ pipeline {
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+          }
+        }
+      }
+    }
+    stage('Test JobDSL') {
+      when {
+        beforeAgent true
+        expression { return env.TEST_JOBDSL == "true" }
+      }
+      steps {
+        withGithubNotify(context: 'Check Pipelines') {
+          dir("${BASE_DIR}/.ci/jobDSL"){
+            sh(label: 'Run tests', script: './gradlew clean test')
           }
         }
       }
