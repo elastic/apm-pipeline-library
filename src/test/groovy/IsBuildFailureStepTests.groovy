@@ -17,47 +17,41 @@
 
 import org.junit.Before
 import org.junit.Test
-import java.lang.Exception
-import static org.junit.Assert.assertEquals
+import co.elastic.mock.RunWrapperMock
 import static org.junit.Assert.assertTrue
 
-class AxisStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/axis.groovy'
+class IsBuildFailureStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isBuildFailure.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
-    def v = script.call('foo', [1, 2])
+    def ret = script.call()
     printCallStack()
-    assertEquals(v.size(), 2)
-    // Remember to convert GStringImpl to String before comparing it to a String
-    // org.codehaus.groovy.runtime.GStringImpl<1> is not a java.lang.String<1>
-    assertEquals(v[0].name.toString(), 'foo')
-    assertEquals(v[0].value.toString(), '1')
-    assertEquals(v[1].name.toString(), 'foo')
-    assertEquals(v[1].value.toString(), '2')
+    assertTrue(ret == false)
     assertJobStatusSuccess()
   }
 
   @Test
-  void testMissingName() throws Exception {
-    def script = loadScript(scriptName)
-    testMissingArgument('name', 'argument missing') {
-      script.call(null, [])
-    }
+  void testFailure() throws Exception {
+    binding.setVariable('currentBuild', new RunWrapperMock(result: 'FAILURE'))
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusFailure()
   }
 
   @Test
-  void testMissingValues() throws Exception {
-    def script = loadScript(scriptName)
-    testMissingArgument('values', 'argument missing') {
-      script.call('foo', null)
-    }
+  void testUnstable() throws Exception {
+    binding.setVariable('currentBuild', new RunWrapperMock(result: 'UNSTABLE'))
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusUnstable()
   }
 }
