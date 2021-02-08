@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom_kibana") {
-  displayName('Job apm-shared/oblt-test-env/custom_kibana')
-  description('Job apm-shared/oblt-test-env/custom_kibana description')
+pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
+  displayName('Job apm-shared/oblt-test-env/custom-kibana')
+  description('Job apm-shared/oblt-test-env/custom-kibana description')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }

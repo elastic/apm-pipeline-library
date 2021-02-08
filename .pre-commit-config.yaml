@@ -45,6 +45,7 @@ repos:
     -   id: check-jsonslurper-class
     -   id: check-jenkins-pipelines
         files: ^(.ci/(.*\.groovy|Jenkinsfile)|Jenkinsfile|resources/JenkinsfileTemplate.groovy)$
+        exclude: ^.ci/jobDSL
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
