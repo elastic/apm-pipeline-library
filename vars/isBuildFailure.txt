@@ -1,0 +1,8 @@
+
+  Return true if the build status is FAILURE or UNSTABLE
+
+  ```
+  if(isBuildFailure()){
+    echo("The build failed")
+  }
+  ```
