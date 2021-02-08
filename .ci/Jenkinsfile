@@ -141,6 +141,16 @@ pipeline {
           }
         }
       }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            testDataPublishers: [
+              [$class: 'AttachmentPublisher']
+            ],
+            testResults:"${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml"
+          )
+        }
+      }
     }
     stage('Test infra') {
       when {
