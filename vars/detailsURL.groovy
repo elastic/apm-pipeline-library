@@ -29,11 +29,12 @@ def call(Map args = [:]) {
   }
 
   // Let's point to the Blue Ocean stage logs if possible
-  def stageId = getStageId()
-  if (stageId) {
-    def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
-    return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
-  }
+  // See https://github.com/elastic/apm-pipeline-library/issues/961
+  //def stageId = getStageId()
+  //if (stageId) {
+  //  def restURLJob = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+  //  return "${restURLJob}runs/${env.BUILD_NUMBER}/nodes/${stageId}/log/?start=0"
+  //}
 
   // Get the URL for the given tab if no other option
   if (isBlueOcean) {
