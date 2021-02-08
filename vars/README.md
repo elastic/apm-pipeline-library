@@ -408,6 +408,7 @@ Print a text on color on a xterm.
 * *output:* log file to save all Docker containers logs (docker_logs.log).
 * *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
   filebeat(config: 'filebeat.yml',
@@ -1370,6 +1371,16 @@ Check it the build was triggered by a Branch index.
 ```
 def branchIndexTrigger = isBranchIndexTrigger()
 ```
+
+## isBuildFailure
+
+  Return true if the build status is FAILURE or UNSTABLE
+
+  ```
+  if(isBuildFailure()){
+    echo("The build failed")
+  }
+  ```
 
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
