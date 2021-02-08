@@ -2116,6 +2116,10 @@ It sets an environment variable with either a string or boolean value as a param
   }
 ```
 
+NOTE: It creates a new environment variable, but it is not possible to overwrite
+the value of an environment variable defined in a `environment block`
+see https://stackoverflow.com/questions/53541489/updating-environment-global-variable-in-jenkins-pipeline-from-the-stage-level
+
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
 
