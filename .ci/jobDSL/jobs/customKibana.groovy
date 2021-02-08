@@ -44,6 +44,7 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
         }
       }
       lightweight(true)
+      sandbox(true)
       scriptPath(".ci/customKibana.groovy")
     }
   }
