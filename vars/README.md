@@ -408,6 +408,7 @@ Print a text on color on a xterm.
 * *output:* log file to save all Docker containers logs (docker_logs.log).
 * *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
   filebeat(config: 'filebeat.yml',
@@ -1371,6 +1372,16 @@ Check it the build was triggered by a Branch index.
 def branchIndexTrigger = isBranchIndexTrigger()
 ```
 
+## isBuildFailure
+
+  Return true if the build status is FAILURE or UNSTABLE
+
+  ```
+  if(isBuildFailure()){
+    echo("The build failed")
+  }
+  ```
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
@@ -2104,6 +2115,10 @@ It sets an environment variable with either a string or boolean value as a param
     env.MY_ENV_VAR = 'value')
   }
 ```
+
+NOTE: It creates a new environment variable, but it is not possible to overwrite
+the value of an environment variable defined in a `environment block`
+see https://stackoverflow.com/questions/53541489/updating-environment-global-variable-in-jenkins-pipeline-from-the-stage-level
 
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
