@@ -57,11 +57,9 @@ pipeline {
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          script {
-            dir("${BASE_DIR}"){
-              setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
-              setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
-            }
+          dir("${BASE_DIR}"){
+            setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
+            setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
           }
         }
       }
@@ -137,7 +135,7 @@ pipeline {
         expression { return env.TEST_JOBDSL == "true" }
       }
       steps {
-        withGithubNotify(context: 'Check Pipelines') {
+        withGithubNotify(context: 'Check JobDSL') {
           dir("${BASE_DIR}/.ci/jobDSL"){
             sh(label: 'Run tests', script: './gradlew clean test')
           }
