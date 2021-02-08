@@ -1,0 +1,21 @@
+pull_request_rules:
+  - name: Automatic squash and merge on approval with success checks and ready-to-merge label
+    conditions:
+      - "#approved-reviews-by>=2"
+      - check-success=apm-ci/pr-merge
+      - check-success=CLA
+      - check-success=Test
+      - label=ready-to-merge
+      - base=master
+    actions:
+      merge:
+        method: squash
+        strict: smart+fasttrack
+  - name: backport patches to 7.x branch
+    conditions:
+      - base=master
+      - label=backport-to-7.x
+    actions:
+      backport:
+        branches:
+          - 7.x
