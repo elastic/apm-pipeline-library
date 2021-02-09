@@ -24,8 +24,8 @@
 **/
 
 def call(Map args = [:]) {
-  def testsReport = args.containsKey('input') ? args.input : error('convertGoTestResults: missing input file')
-  def junitReport = args.containsKey('output') ? args.output : error('convertGoTestResults: missing output file')
+  def testsReport = args.containsKey('input') ? args.input : error('convertGoTestResults: input parameter is required')
+  def junitReport = args.containsKey('output') ? args.output : error('convertGoTestResults: output parameter is required')
   withMageEnv(){
     sh(
       label: 'Convert test results to JUnit',

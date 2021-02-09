@@ -23,12 +23,12 @@
 
   git scm
 */
-def call(params) {
+def call(args) {
   log(level: 'INFO', text: 'Override default git')
 
   def ret
   retryWithSleep(retries: 3, seconds: 20) {
-    ret = steps.git(params)
+    ret = steps.git(args)
   }
   return ret
 }

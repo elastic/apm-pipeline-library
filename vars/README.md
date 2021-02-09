@@ -84,6 +84,15 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## axis
+Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
+from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
+
+```
+def v = axis('MY_VAR', [1, 2, 3, 4, 5])
+def vs = axis('MY_VAR', ["1", "2", "3", "4", "5"])
+```
+
 ## base64decode
 Decode a base64 input to string
 
@@ -303,6 +312,16 @@ Create a file given a Jinja template and the data in a JSON format
 * output: the name of the file to be transformed. Mandatory.
 * localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
 
+## detailsURL
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+```
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+```
+
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
@@ -389,6 +408,7 @@ Print a text on color on a xterm.
 * *output:* log file to save all Docker containers logs (docker_logs.log).
 * *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
   filebeat(config: 'filebeat.yml',
@@ -481,6 +501,15 @@ def URL = getBlueoceanDisplayURL()
 ```
 
 [Powershell plugin](https://plugins.jenkins.io/powershell)
+
+## getBlueoceanRestURLJob
+Given the job URL then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+```
+
+* jobURL: the job URL. Mandatory
 
 ## getBlueoceanTabURL
 Provides the specific Blueocean URL tab for the current build/run
@@ -578,6 +607,13 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
+
+## getStageId
+Get the stage ID in the current context.
+
+```
+def stage = getStageId()
+```
 
 ## getTraditionalPageURL
 Provides the specific traditional URL tab for the current build/run
@@ -760,12 +796,42 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 
 [Github REST API](https://developer.github.com/v3/)
 
+## githubAppToken
+Get the GitHub APP token given the vault secret
+
+```
+def token = githubAppToken()
+```
+
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
+
 ## githubBranchRef
 return the branch name, if we are in a branch, or the git ref, if we are in a PR.
 
 ```
 def ref = githubBranchRef()
 ```
+
+## githubCheck
+Notify the GitHub check step either by using the existing one or creating a new one.
+
+```
+githubCheck(name: 'checkName', description: 'Execute something')
+```
+
+* name: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the `name`.
+* body: The details of the check run. This parameter supports Markdown. Optional.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME)`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
+* detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
 
 ## githubCommentIssue
 Comment an existing GitHub issue
@@ -1315,6 +1381,16 @@ Check it the build was triggered by a Branch index.
 def branchIndexTrigger = isBranchIndexTrigger()
 ```
 
+## isBuildFailure
+
+  Return true if the build status is FAILURE or UNSTABLE
+
+  ```
+  if(isBuildFailure()){
+    echo("The build failed")
+  }
+  ```
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
@@ -1552,6 +1628,46 @@ matches with the list of assigned labels in the PR.
 
 NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
 
+## matrix
+Matrix parallel task execution in parallel implemented on a step.
+It compose a matrix of parallel tasks, each task has a set of enviroment variables
+created from the axes values.
+
+* **agent:** Jenkins agent labels to provision a new agent for parallel task.
+* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+each pair has a variable name and a vector of values (see #axis)
+* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+when we create the parallel tasks (axes-excludes=parallel tasks).
+
+```
+pipeline {
+  agent any
+
+  stages {
+    stage('Matrix sample') {
+      steps {
+
+        matrix(
+          agent: 'linux',
+          axes:[
+            axis('VAR_NAME_00', [ 1, 2 ]),
+            axis('VAR_NAME_01', [ 'a', 'b', 'c', 'd', 'e' ])
+          ],
+          excludes: [
+            axis('VAR_NAME_00', [ 1 ]),
+            axis('VAR_NAME_01', [ 'd', 'e' ]),
+          ]
+          ) {
+            echo "${VAR_NAME_00} - ${VAR_NAME_01}"
+          }
+
+        }
+      }
+    }
+  }
+
+```
+
 ## mvnVersion
 Get a project version from Maven
 
@@ -1756,6 +1872,7 @@ emails on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
 * flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
 * flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
+* flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
@@ -2007,6 +2124,10 @@ It sets an environment variable with either a string or boolean value as a param
     env.MY_ENV_VAR = 'value')
   }
 ```
+
+NOTE: It creates a new environment variable, but it is not possible to overwrite
+the value of an environment variable defined in a `environment block`
+see https://stackoverflow.com/questions/53541489/updating-environment-global-variable-in-jenkins-pipeline-from-the-stage-level
 
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
@@ -2362,9 +2483,36 @@ _NOTE:_
 * This particular implementation requires to checkout with the step gitCheckout
 * Windows agents are not supported.
 
-## withGithubNotify
-Wrap the GitHub notify check step
+## withGithubCheck
+Wrap the GitHub status check step by using the [githubCheck](#githubCheck) step.
 If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubCheck(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubCheck(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubCheck(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## withGithubNotify
+Wrap the GitHub notify step either for GitHub status check or GitHub check, for such,
+it uses the `GITHUB_CHECK` environment variable to enable the GitHub Check.
 
 ```
 withGithubNotify(context: 'Build', description: 'Execute something') {
@@ -2380,9 +2528,32 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 }
 ```
 
-* context: Name of the GH check context. (Mandatory).
-* description: Description of the GH check. If unset then it will use the description.
-* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* Further parameters are defined in [withGithubCheck](#withGithubCheck) and [withGithubStatus](#withGithubStatus).
+
+## withGithubStatus
+Wrap the GitHub status check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubStatus(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubStatus(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubStatus(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub status check context. (Mandatory).
+* description: Description of the GitHub status check. If unset then it will use the description.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
@@ -2434,6 +2605,10 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 * pkgs: Go packages to install with Go get before to execute any command.
 * os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+
+NOTE: If the `GOARCH` environment variable is defined then it will be used to install the given packages for that architecture,
+      otherwise it will be evaluated on the fly.
 
 ## withGoEnvWindows
  Install Go and run some command in a pre-configured environment for Windows.

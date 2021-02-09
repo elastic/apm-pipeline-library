@@ -27,11 +27,11 @@
 **/
 import co.elastic.Nexus
 
-def call(Map params = [:]) {
-  String url = params.get('url', 'https://oss.sonatype.org')
-  String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
-  String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply group id')
-  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
+def call(Map args = [:]) {
+  String url = args.get('url', 'https://oss.sonatype.org')
+  String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
+  String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
+  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
   def props = getVaultSecret(secret: secret)
 

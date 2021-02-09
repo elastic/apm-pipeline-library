@@ -20,43 +20,30 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WriteVaultSecretStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/writeVaultSecret.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/writeVaultSecret.groovy')
   }
 
   @Test
   void test_without_secret_param() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('secret') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'writeVaultSecret: secret parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_data_param() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('data') {
       script.call(secret: 'foo')
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'writeVaultSecret: data parameter is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(secret: VaultSecret.ALLOWED.toString(), data: [ 'foo': 'bar'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('httpRequest', "url=${env.VAULT_ADDR}/v1/${VaultSecret.ALLOWED.toString()}"))

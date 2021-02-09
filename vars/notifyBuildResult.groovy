@@ -67,6 +67,7 @@ def call(Map args = [:]) {
       def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
       def aggregateComments = args.get('aggregateComments', true)
+      def flakyDisableGHIssueCreation = args.get('flakyDisableGHIssueCreation', false)
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
@@ -81,30 +82,29 @@ def call(Map args = [:]) {
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
 
+        data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
+        // Generate digested data to be consumed later on by the createGitHubComment.
+        data['comment'] = generateBuildReport(data: data)
         def notifications = []
 
         notifyEmail(data: data, when: (shouldNotify && !to?.empty))
 
         addGitHubCustomComment(newPRComment: newPRComment)
 
-        // Should notify if it is a PR and it's enabled
-        createGitHubComment(data: data, notifications: notifications, when: (notifyPRComment && isPR()))
+        createGitHubComment(data: data, notifications: notifications, when: notifyPRComment)
 
         // Should analyze flakey but exclude it when aborted
         analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
 
         notifySlack(data: data, when: notifySlackComment)
 
-        generateBuildReport(data: data)
-
         // Notify only if there are notifications and they should be aggregated
-        if (aggregateComments && notifications?.size() > 0) {
-          log(level: 'DEBUG', text: 'notifyBuildResult: aggregate all the messages in one single GH Comment.')
-          // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
-          githubPrComment(commentFile: 'comment.id', message: notifications?.join(''))
-        }
+        aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
+
+        // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
+        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -133,6 +133,60 @@ def call(Map args = [:]) {
   }
 }
 
+def notifyIfNewBuildNotRunning(Closure body) {
+  try {
+    // As long as there is no a new build running.
+    if (nextBuild && !nextBuild?.isBuilding()) {
+      log(level: 'INFO', text: 'notifyIfPossible: notification was already done in a younger build.')
+      return
+    }
+  } catch(err) {
+    log(level: 'WARN', text: 'notifyIfPossible: could not fetch the nextBuild.')
+  }
+  body()
+}
+
+def aggregateGitHubCheck(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubCheck: aggregate all the messages in one single GitHub check.')
+      def status = 'neutral'
+      switch (currentBuild.currentResult) {
+        case 'SUCCESS':
+          status = 'success'
+          break
+        case 'FAILURE':
+          status = 'failure'
+          break
+        case 'ABORTED':
+          status = 'cancelled'
+          break
+        case 'UNSTABLE':
+          status = 'failure'
+          break
+      }
+      githubCheck(name: '.Status',
+                  description: args.notifications?.join(''),
+                  status: status,
+                  detailsUrl: env.BUILD_URL)
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')
+  }
+}
+
+def aggregateGitHubComments(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
+      // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+      githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
+  }
+}
+
 def addGitHubCustomComment(def args=[:]) {
   args.newPRComment.findAll { k, v ->
     catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -154,7 +208,7 @@ def analyzeFlaky(def args=[:]) {
 
 def createGitHubComment(def args=[:]) {
   if(args.when) {
-    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in the PR.")
+    log(level: 'DEBUG', text: "createGitHubComment: Create GitHub comment.")
     catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       def prComment = (new NotificationManager()).notifyPR(args.data)
       args.notifications << prComment
@@ -186,7 +240,7 @@ def customisedEmail(String email) {
 def generateBuildReport(def args=[:]) {
   log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
   catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    (new NotificationManager()).generateBuildReport(args.data)
+    return (new NotificationManager()).generateBuildReport(args.data)
   }
 }
 

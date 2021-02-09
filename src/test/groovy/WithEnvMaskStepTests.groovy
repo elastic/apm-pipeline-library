@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithEnvMaskStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withEnvMask.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withEnvMask.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(vars: [
       [var: "CYPRESS_user", password: "user"],
@@ -45,7 +44,6 @@ class WithEnvMaskStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNull() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(vars: null){
       isOK = true
@@ -57,7 +55,6 @@ class WithEnvMaskStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(vars: [
       [var: "CYPRESS_user", password: "user"],

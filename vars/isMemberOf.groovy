@@ -27,8 +27,8 @@ import com.cloudbees.groovy.cps.NonCPS
 */
 
 def call(Map args = [:]) {
-  def user = args.containsKey('user') ? args.user : error('isMemberOf: user param is required')
-  def team = args.containsKey('team') ? args.team : error('isMemberOf: team param is required')
+  def user = args.containsKey('user') ? args.user : error('isMemberOf: user parameter is required')
+  def team = args.containsKey('team') ? args.team : error('isMemberOf: team parameter is required')
   def org = args.containsKey('org') ? args.org : 'elastic'
   def token = getGithubToken()
   if (team in List) {

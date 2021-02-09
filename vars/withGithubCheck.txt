@@ -1,0 +1,25 @@
+Wrap the GitHub status check step by using the [githubCheck](#githubCheck) step.
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubCheck(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubCheck(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubCheck(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.

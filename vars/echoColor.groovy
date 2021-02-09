@@ -63,10 +63,10 @@ echoColor(text: '[ERROR]', colorfg: 'red', colorbg: 'black')
 'white': '107'
 ]
 
-def call(Map params = [:]) {
-  def text = params.containsKey('text') ? params.text : ''
-  def colorfg = params.containsKey('colorfg') ? params.colorfg : 'default'
-  def colorbg = params.containsKey('colorbg') ? params.colorbg : 'default'
+def call(Map args = [:]) {
+  def text = args.containsKey('text') ? args.text : ''
+  def colorfg = args.containsKey('colorfg') ? args.colorfg : 'default'
+  def colorbg = args.containsKey('colorbg') ? args.colorbg : 'default'
 
   def colorfgValue = colorsfgMap[colorfg.toLowerCase()]
   def colorbgValue = colorsbgMap[colorbg.toLowerCase()]

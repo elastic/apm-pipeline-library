@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithMageEnvStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withMageEnv.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withMageEnv.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
     def isOK = false
     script.call(){
@@ -44,7 +43,6 @@ class WithMageEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testVersion() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
     def isOK = false
     script.call(version: "1.12.2"){
@@ -58,7 +56,6 @@ class WithMageEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testPkgs() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
     def isOK = false
     script.call(pkgs: ["foo"]){

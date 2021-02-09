@@ -177,14 +177,20 @@ function fetchAndPrepareTestSummaryReport() {
     ## BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
     if [ ! -e "${file}" ] ; then
         if [ -e "${testsFile}" ] ; then
-            {
-                echo "{"
-                echo "\"total\": $(jq '. | length' "${testsFile}"),"
-                echo "\"passed\": $(jq 'map(select(.status |contains("PASSED"))) | length' "${testsFile}"),"
-                echo "\"failed\": $(jq 'map(select(.status |contains("FAILED"))) | length' "${testsFile}"),"
-                echo "\"skipped\": $(jq 'map(select(.status |contains("SKIPPED"))) | length' "${testsFile}")"
-                echo "}"
-            } > "${file}"
+            ## In case the testfile contains empty values
+            total=$(jq '. | length' "${testsFile}")
+            if [[ $total =~ ^[0-9]+$ ]] ; then
+                {
+                    echo "{"
+                    echo "\"total\": ${total},"
+                    echo "\"passed\": $(jq 'map(select(.status |contains("PASSED"))) | length' "${testsFile}"),"
+                    echo "\"failed\": $(jq 'map(select(.status |contains("FAILED"))) | length' "${testsFile}"),"
+                    echo "\"skipped\": $(jq 'map(select(.status |contains("SKIPPED"))) | length' "${testsFile}")"
+                    echo "}"
+                } > "${file}"
+            else
+                echo "${default}" > "${file}"
+            fi
         else
             echo "${default}" > "${file}"
         fi

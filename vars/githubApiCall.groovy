@@ -26,16 +26,19 @@ import groovy.transform.Field
   githubApiCall(token: token, url: "https://api.github.com/repos/${repoName}/pulls/${prID}")
 
 */
-def call(Map params = [:]){
-  def token =  params.containsKey('token') ? params.token : error('githubApiCall: no valid Github token.')
-  def url =  params.containsKey('url') ? params.url : error('githubApiCall: no valid Github REST API URL.')
-  def allowEmptyResponse = params.containsKey('allowEmptyResponse') ? params.allowEmptyResponse : false
-  def data = params?.data
-  def method = params.get('method', 'POST')
-  def headers = ["Authorization": "token ${token}",
-                 "User-Agent": "Elastic-Jenkins-APM"]
-  def dryRun = params?.data
-  def noCache = params?.get('noCache', false)
+def call(Map args = [:]){
+  def token =  args.containsKey('token') ? args.token : error('githubApiCall: no valid Github token.')
+  def authorizationType = args.get('authorizationType', 'token')
+  def url =  args.containsKey('url') ? args.url : error('githubApiCall: no valid Github REST API URL.')
+  def allowEmptyResponse = args.containsKey('allowEmptyResponse') ? args.allowEmptyResponse : false
+  def data = args?.data
+  def method = args.get('method', 'POST')
+  def forceMethod = args.get('forceMethod', false)
+  def extraHeaders = args.get('headers', [:])
+  def headers = ["Authorization": "${authorizationType} ${token}",
+                 "User-Agent": "Elastic-Jenkins-APM"] + extraHeaders
+  def dryRun = args?.data
+  def noCache = args?.get('noCache', false)
 
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -46,12 +49,18 @@ def call(Map params = [:]){
       def key = "${token}#${url}"
       if(cache["${key}"] == null || noCache){
         log(level: 'DEBUG', text: "githubApiCall: get the JSON from GitHub.")
+        def parameters = [url: url, headers: headers]
         if(data) {
           log(level: 'DEBUG', text: "gitHubApiCall: found data param. Switching to ${method}")
           headers.put("Content-Type", "application/json")
-          json = httpRequest(url: url, method: method, headers: headers, data: toJSON(data).toString())
+          // toJSON(data).toString() caused some issues with metadata entries in the output.
+          json = httpRequest(parameters + [method: method, data: new groovy.json.JsonBuilder(data).toPrettyString()])
         } else {
-          json = httpRequest(url: url, headers: headers)
+          // Force default method from GET to POST if it's not overriden
+          if (forceMethod) {
+            parameters << [method: method]
+          }
+          json = httpRequest(parameters)
         }
         cache["${key}"] = json
       } else {

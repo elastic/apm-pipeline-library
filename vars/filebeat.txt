@@ -21,6 +21,7 @@
 * *output:* log file to save all Docker containers logs (docker_logs.log).
 * *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
   filebeat(config: 'filebeat.yml',

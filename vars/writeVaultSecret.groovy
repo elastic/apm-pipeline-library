@@ -22,9 +22,9 @@
 */
 import groovy.json.JsonOutput
 
-def call(Map params = [:]) {
-  def secret = params.containsKey('secret') ? params.secret : error ('writeVaultSecret: secret parameter is required.')
-  def data = params.containsKey('data') ? params.data : error ('writeVaultSecret: data parameter is required.')
+def call(Map args = [:]) {
+  def secret = args.containsKey('secret') ? args.secret : error ('writeVaultSecret: secret parameter is required.')
+  def data = args.containsKey('data') ? args.data : error ('writeVaultSecret: data parameter is required.')
 
   // Ensure the data is transformed to Json and then toString.
   def transformedData = JsonOutput.toJson(data)

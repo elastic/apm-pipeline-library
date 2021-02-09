@@ -26,7 +26,7 @@
     entry: .ci/scripts/validate.sh
     language: script
     verbose: true
-    exclude: ^target/
+    exclude: ^(target/|.ci/jobsDSL)
 -   id: check-unicode-non-breaking-spaces
     name: check-unicode-non-breaking-spaces
     description: "Detect unicode non-breaking space character U+00A0 aka M-BM-"
@@ -34,7 +34,7 @@
     entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
     exclude: >
         (?x)^(
-            target/.*|.*/?\.*.(gif|jpg|png)
+            target/.*|.*/?\.*.(gif|jpg|png|jar|war)
         )$
 -   id: remove-unicode-non-breaking-spaces
     name: remove-unicode-non-breaking-spaces
@@ -44,7 +44,7 @@
         $t}}'
     exclude: >
         (?x)^(
-            target/.*|.*/?\.*.(gif|jpg|png)
+            target/.*|.*/?\.*.(gif|jpg|png|jar|war)
         )$
 -   id: check-en-dashes
     name: check-en-dashes

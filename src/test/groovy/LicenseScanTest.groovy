@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class LicenseScanTest extends ApmBasePipelineTest {
-  String scriptName = 'vars/licenseScan.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/licenseScan.groovy')
 
     helper.registerAllowedMethod('sh', [Map.class],{m -> return 0})
   }
@@ -35,7 +35,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/*.go'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -51,7 +50,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/package.json'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -67,7 +65,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/*.rb' || m.glob ==  '**/Gemfile'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -83,7 +80,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/*.py' || m.glob ==  '**/requirements.txt'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -98,7 +94,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/*.php' || m.glob ==  '**/composer.json'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -114,7 +109,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/build.xml'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -130,7 +124,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/pom.xml'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -146,7 +139,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/build.gradle'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()
@@ -162,7 +154,6 @@ class LicenseScanTest extends ApmBasePipelineTest {
     helper.registerAllowedMethod('findFiles', [Map.class], {
       m -> return m.glob == '**/*.csproj'
     })
-    def script = loadScript(scriptName)
     script.call()
 
     printCallStack()

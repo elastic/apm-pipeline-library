@@ -22,18 +22,18 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getBuildInfoJsonFiles.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getBuildInfoJsonFiles.groovy')
     env.JENKINS_URL = 'http://jenkins.example.com/'
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], { m -> 'http://jenkins.example.com/blue/rest/organizations/jenkins/pipelines/myJob/' })
     def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('writeFile', 'generate-build-data.sh'))
@@ -48,7 +48,6 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_failed_script() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('sh', [Map.class], { m ->
       if(m.label == 'generate-build-data'){
         return 1
@@ -65,7 +64,6 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_returnData() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(jobURL: 'http://jenkins.example.com/job/myJob', buildNumber: '1', returnData: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('timeout', 1))
@@ -75,41 +73,22 @@ class GetBuildInfoJsonFilesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_parameters() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('jobURL') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'jobURL parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_buildNumber_parameter() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('buildNumber') {
       script.call(jobURL: 'foo')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'buildNumber parameter is required'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call(jobURL: '', buildNumber: '')
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getBuildInfoJsonFiles: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }

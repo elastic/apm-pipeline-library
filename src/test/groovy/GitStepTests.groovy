@@ -21,17 +21,16 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/git.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/git.groovy')
   }
 
   @Test
   void testRetry() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){

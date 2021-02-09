@@ -26,21 +26,21 @@
   ])
 */
 
-def call(List params = []){
-  if (params.isEmpty()) {
-    error("installTools: missing params, please use the format [ [tool: 'foo', version: 'x.y.z'(, exclude: 'rc')?] , ...] tool param.")
+def call(List args = []){
+  if (args.isEmpty()) {
+    error("installTools: missing parameters, please use the format [ [tool: 'foo', version: 'x.y.z'(, exclude: 'rc')?] , ...] tool param.")
   }
-  params.each { item ->
+  args.each { item ->
     installTool(item)
   }
 }
 
-private installTool(Map params) {
-  def tool = params.containsKey('tool') ? params.tool : error('installTools: missing tool param.')
-  def version = params.containsKey('version') ? params.version : error('installTools: missing version param.')
-  def exclude = params.containsKey('exclude') ? params.exclude : ''
-  def provider = params.containsKey('provider') ? params.provider : ''
-  def extraArgs = params.containsKey('extraArgs') ? params.extraArgs : ''
+private installTool(Map args) {
+  def tool = args.containsKey('tool') ? args.tool : error('installTools: tool parameter is required.')
+  def version = args.containsKey('version') ? args.version : error('installTools: version parameter is required.')
+  def exclude = args.containsKey('exclude') ? args.exclude : ''
+  def provider = args.containsKey('provider') ? args.provider : ''
+  def extraArgs = args.containsKey('extraArgs') ? args.extraArgs : ''
 
   if(isUnix()) {
     error 'TBD: install in linux'

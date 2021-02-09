@@ -23,12 +23,12 @@
     //block
   }
 */
-def call(Map params = [:], Closure body) {
-  def secret = params?.secret
-  def user_variable = params?.user_var_name
-  def user_key = params.containsKey('user_key') ? params.user_key : 'user'
-  def pass_variable = params?.pass_var_name
-  def pass_key = params.containsKey('pass_key') ? params.pass_key : 'password'
+def call(Map args = [:], Closure body) {
+  def secret = args?.secret
+  def user_variable = args?.user_var_name
+  def user_key = args.containsKey('user_key') ? args.user_key : 'user'
+  def pass_variable = args?.pass_var_name
+  def pass_key = args.containsKey('pass_key') ? args.pass_key : 'password'
 
   if (!secret || !user_variable || !pass_variable) {
     error "withSecretVault: Missing variables"

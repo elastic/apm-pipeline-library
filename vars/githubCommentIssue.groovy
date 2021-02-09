@@ -35,9 +35,9 @@ def call(Map args = [:]) {
   if(!isUnix()) {
     error 'githubCommentIssue: windows is not supported yet.'
   }
-  def comment = args.containsKey('comment') ? normalise(args.comment) : error('githubCommentIssue: comment argument is required.')
+  def comment = args.containsKey('comment') ? normalise(args.comment) : error('githubCommentIssue: comment parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
-  def id = args.containsKey('id') ? args.id : error('githubCommentIssue: id argument is required.')
+  def id = args.containsKey('id') ? args.id : error('githubCommentIssue: id parameter is required.')
   def org = args.containsKey('org') ? args.org : env.ORG_NAME
   def repo = args.containsKey('repo') ? args.repo : env.REPO_NAME
 

@@ -20,9 +20,9 @@
 
   preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 */
-def call(Map params = [:]) {
-  def input = params.containsKey('input') ? params.input : error('preCommitToJunit: input parameter is required.')
-  def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
+def call(Map args = [:]) {
+  def input = args.containsKey('input') ? args.input : error('preCommitToJunit: input parameter is required.')
+  def output = args.containsKey('output') ? args.output : error('preCommitToJunit: output parameter is required.')
 
   def content = readFile(file: input)
   def id, status, message = '', inprogress = false
@@ -51,9 +51,9 @@ def call(Map params = [:]) {
 
 def toJunit(String name, String status, String message) {
   String output = "<testcase classname=\"pre_commit.lint\" name=\"${name}\""
-  if (status?.toLowerCase().contains('skipped')) {
+  if (status?.toLowerCase()?.contains('skipped')) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
-  } else if (status?.toLowerCase().contains('failed')) {
+  } else if (status?.toLowerCase()?.contains('failed')) {
     output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else {
     output += " />"
