@@ -4,6 +4,15 @@
     description: This job process the *.groovy files in .ci/jobDSL folder and create/update/delete jobs.
     view: APM-CI
     project-type: pipeline
+    properties:
+        - raw:
+            xml: |
+              <org.jenkinsci.plugins.authorizeproject.AuthorizeProjectProperty plugin="authorize-project@1.3.0">
+                <strategy class="org.jenkinsci.plugins.authorizeproject.strategy.SpecificUsersAuthorizationStrategy">
+                  <userid>local-admin</userid>
+                  <dontRestrictJobConfiguration>false</dontRestrictJobConfiguration>
+                </strategy>
+              </org.jenkinsci.plugins.authorizeproject.AuthorizeProjectProperty>
     parameters:
       - string:
           name: branch_specifier
