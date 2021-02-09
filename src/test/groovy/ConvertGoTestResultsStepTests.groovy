@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class ConvertGoTestResultsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/convertGoTestResults.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/convertGoTestResults.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('sh', [Map.class], { m -> m.script  })
     script.call(input: "dummyIN", output: "dummyOUT")
@@ -42,29 +41,19 @@ class ConvertGoTestResultsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoInput() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('sh', [Map.class], { m -> m.script  })
-    try {
+    testMissingArgument('input') {
       script.call(output: "dummyOUT")
-    } catch(e){
-      assertTrue(e.getMessage() == "convertGoTestResults: missing input file")
     }
-    printCallStack()
-    assertJobStatusFailure()
   }
 
   @Test
   void testNoOutput() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { b -> b()  })
     helper.registerAllowedMethod('sh', [Map.class], { m -> m.script  })
-    try {
+    testMissingArgument('output') {
       script.call(input: "dummyIN")
-    } catch(e){
-      assertTrue(e.getMessage() == "convertGoTestResults: missing output file")
     }
-    printCallStack()
-    assertJobStatusFailure()
   }
 }

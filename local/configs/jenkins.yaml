@@ -102,6 +102,10 @@ unclassified:
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
+
+  openTelemetry:
+    endpoint: "otel-collector-contrib:4317"
+    useTls: false
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/beats.dsl"
@@ -124,6 +128,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/git.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitBaseCommit.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gitCheckout.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/githubCheck.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubCreateIssue.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubCreatePullRequest.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnv.dsl"

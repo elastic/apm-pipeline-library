@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GetGithubTokenStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getGithubToken.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getGithubToken.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.call()
     printCallStack()
     assertTrue(value == "dummyValue")
@@ -39,7 +38,6 @@ class GetGithubTokenStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCredentialsId() throws Exception {
-    def script = loadScript(scriptName)
     def value = script.call(credentialsId: "dummy")
     printCallStack()
     assertTrue(value == "dummyValue")

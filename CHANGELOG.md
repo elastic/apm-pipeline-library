@@ -1,5 +1,192 @@
 # Changelog
 
+## v1.1.185 (08/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
+
+#### 🐛 Bug Fixes
+
+- [**backport-to-7.x**][**ready-to-merge**] Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
+
+#### 📚 Documentation
+
+- [**backport-to-7.x**][**ready-to-merge**] docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
+
+#### 🙈 No user affected
+
+- [**backport-to-7.x**][**ready-to-merge**] Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
+
+## v1.1.184 (05/02/2021)
+
+#### 🚀 Enhancements
+
+-  feat: custom matrix step [#938](https://github.com/elastic/apm-pipeline-library/pull/938)
+-  feat: use JobsDSL to create jobs [#933](https://github.com/elastic/apm-pipeline-library/pull/933)
+-  Access dynamically to the stage BlueOcean URL linked to the GH Check/Status [#935](https://github.com/elastic/apm-pipeline-library/pull/935)
+
+#### 🐛 Bug Fixes
+
+-  fix: resize the partition size to 100GB to use all the space [#953](https://github.com/elastic/apm-pipeline-library/pull/953)
+-  fix: GO_VERSION can be undefined [#954](https://github.com/elastic/apm-pipeline-library/pull/954)
+
+#### 📚 Documentation
+
+-  [docs][matrix] explain the new step [#948](https://github.com/elastic/apm-pipeline-library/pull/948)
+
+#### 🙈 No user affected
+
+-  Enable opentelemetry locally [#937](https://github.com/elastic/apm-pipeline-library/pull/937)
+-  chore: bump Go version to 1.15.7 [#951](https://github.com/elastic/apm-pipeline-library/pull/951)
+-  Show build and test trends as PR comments and GitHub .Status check [#942](https://github.com/elastic/apm-pipeline-library/pull/942)
+-  refactor loadscript [#941](https://github.com/elastic/apm-pipeline-library/pull/941)
+-  Add /test trigger comment [#943](https://github.com/elastic/apm-pipeline-library/pull/943)
+-  mask credentials when using gitCmd [#940](https://github.com/elastic/apm-pipeline-library/pull/940)
+-  Refactor parameters and windows UTs validations [#939](https://github.com/elastic/apm-pipeline-library/pull/939)
+-  [CI] support sending a PR to each ecs agent when spec change [#936](https://github.com/elastic/apm-pipeline-library/pull/936)
+
+#### ⚙️ CI
+
+-  Docker integrations [#947](https://github.com/elastic/apm-pipeline-library/pull/947)
+-  Add Docker build for integrations test reporter [#946](https://github.com/elastic/apm-pipeline-library/pull/946)
+
+## v1.1.183 (29/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  Consumers of githubApiCall should not transform JSON [#934](https://github.com/elastic/apm-pipeline-library/pull/934)
+
+## v1.1.182 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support disable GitHub issue creation for flaky tests [#929](https://github.com/elastic/apm-pipeline-library/pull/929)
+
+#### 🐛 Bug Fixes
+
+-  Return the build digested output [#931](https://github.com/elastic/apm-pipeline-library/pull/931)
+
+#### 🙈 No user affected
+
+-  Debug Go Environment [#932](https://github.com/elastic/apm-pipeline-library/pull/932)
+
+## v1.1.181 (27/01/2021)
+
+#### 🚀 Enhancements
+
+-  Use GOARCH to install the package for that particular architecture [#928](https://github.com/elastic/apm-pipeline-library/pull/928)
+
+#### 🙈 No user affected
+
+-  Refactor notifyPR and generateBuildReport [#926](https://github.com/elastic/apm-pipeline-library/pull/926)
+
+## v1.1.180 (26/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats][go] support for ARM arch64 [#924](https://github.com/elastic/apm-pipeline-library/pull/924)
+-  Create GitHub Check with the digested Build data [#921](https://github.com/elastic/apm-pipeline-library/pull/921)
+-  GitHub check step [#881](https://github.com/elastic/apm-pipeline-library/pull/881)
+
+#### 🐛 Bug Fixes
+
+-  Delegate GitHub PR comments condition to the githubPrComment step [#925](https://github.com/elastic/apm-pipeline-library/pull/925)
+-  fix: retry wait for filebeat [#922](https://github.com/elastic/apm-pipeline-library/pull/922)
+-  Mask the GitHub app generated token [#920](https://github.com/elastic/apm-pipeline-library/pull/920)
+
+## v1.1.179 (25/01/2021)
+
+#### 🚀 Enhancements
+
+-  feat: example job to manane webhooks [#912](https://github.com/elastic/apm-pipeline-library/pull/912)
+
+#### 🐛 Bug Fixes
+
+-  Skip GitHub comment for old build when the next adjacent build has already finished [#917](https://github.com/elastic/apm-pipeline-library/pull/917)
+
+#### 🙈 No user affected
+
+-  [refactor] notifyBuildResult [#916](https://github.com/elastic/apm-pipeline-library/pull/916)
+
+## v1.1.178 (20/01/2021)
+
+#### 🚀 Enhancements
+
+-  [pre-commit] exclude gif/png files [#909](https://github.com/elastic/apm-pipeline-library/pull/909)
+
+#### 🐛 Bug Fixes
+
+-  Add resilience when GitHub got some glitches [#911](https://github.com/elastic/apm-pipeline-library/pull/911)
+
+#### ⚙️ CI
+
+-  feat: add a pre-commit hook detecting broken markdown links [#914](https://github.com/elastic/apm-pipeline-library/pull/914)
+
+## v1.1.177 (15/01/2021)
+
+#### 🚀 Enhancements
+
+-  feat: use goDefaultVersion [#903](https://github.com/elastic/apm-pipeline-library/pull/903)
+-  feat: add stackVersions step [#902](https://github.com/elastic/apm-pipeline-library/pull/902)
+-  feat: goDefaultVersion step [#901](https://github.com/elastic/apm-pipeline-library/pull/901)
+
+## v1.1.176 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use current folder instead of the workspace [#900](https://github.com/elastic/apm-pipeline-library/pull/900)
+-  Fix issue when there is a build corruption with the GH PR comment [#899](https://github.com/elastic/apm-pipeline-library/pull/899)
+
+## v1.1.175 (13/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use WS always [#898](https://github.com/elastic/apm-pipeline-library/pull/898)
+
+## v1.1.174 (12/01/2021)
+*No changelog for this release.*
+
+## v1.1.173 (12/01/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: use docker stop not kill [#895](https://github.com/elastic/apm-pipeline-library/pull/895)
+
+## v1.1.172 (11/01/2021)
+*No changelog for this release.*
+
+## v1.1.171 (11/01/2021)
+
+#### 🚀 Enhancements
+
+-  Support not_changeset_full_match for beats [#890](https://github.com/elastic/apm-pipeline-library/pull/890)
+
+#### 🐛 Bug Fixes
+
+-  fix: wait for docker exec to finish [#893](https://github.com/elastic/apm-pipeline-library/pull/893)
+
+#### 🙈 No user affected
+
+-  [CI][mvn4] Use lastSuccessfulBuild [#894](https://github.com/elastic/apm-pipeline-library/pull/894)
+
+## v1.1.170 (07/01/2021)
+
+#### 🚀 Enhancements
+
+-  [beats] Support changeset exclusion [#889](https://github.com/elastic/apm-pipeline-library/pull/889)
+-  feat: filebeat pipeline step [#887](https://github.com/elastic/apm-pipeline-library/pull/887)
+-  feat: new goTestJunit step [#884](https://github.com/elastic/apm-pipeline-library/pull/884)
+
+#### 🙈 No user affected
+
+-  chore: rename argument [#885](https://github.com/elastic/apm-pipeline-library/pull/885)
+-  Use maven 4 alpha [#879](https://github.com/elastic/apm-pipeline-library/pull/879)
+
+#### ⚙️ CI
+
+-  [opbeans-php] Add docker build and cache [#888](https://github.com/elastic/apm-pipeline-library/pull/888)
+
 ## v1.1.169 (16/12/2020)
 
 #### 🚀 Enhancements

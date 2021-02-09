@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubTraditionalPrComment.groovy'
 
   def commentInterceptor = [
     id: 1,
@@ -42,6 +41,7 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubTraditionalPrComment.groovy')
     env.ORG_NAME = 'octocat'
     env.REPO_NAME = 'Hello-World'
     env.CHANGE_ID = 'PR-1'
@@ -52,19 +52,13 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_details_parameter() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('message') {
       script.call()
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'message parameter is required'))
   }
 
   @Test
   void test_in_a_branch() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('CHANGE_ID')
     script.call(message: 'foo')
     printCallStack()
@@ -74,7 +68,6 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_add_a_new_comment() throws Exception {	
-    def script = loadScript(scriptName)
     def obj = script.call(message: 'Me too')
     printCallStack()
     assertEquals(obj, 1)
@@ -83,7 +76,6 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_edit_a_comment() throws Exception {	
-    def script = loadScript(scriptName)
     def obj = script.call(message: 'Me too', id: 1)
     printCallStack()
     assertEquals(obj, 1)

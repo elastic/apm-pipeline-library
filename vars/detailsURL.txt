@@ -1,0 +1,8 @@
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+```
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+```
+
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.

@@ -34,27 +34,64 @@
 
 */
 def call(Map args = [:], Closure body) {
-  def goDefaultVersion = "" != "${env.GO_VERSION}" && env.GO_VERSION != null ? "${env.GO_VERSION}" : '1.14.2'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
   def os = args.containsKey('os') ? args.os : nodeOS()
+  def arch = (isArm()) ? 'arm64' : 'amd64'
   def lastCoordinate = version[-2..-1]
   // gvm remove the last coordinate if it is 0
-  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.amd64"
+  def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.${arch}"
   withEnv([
     "HOME=${env.WORKSPACE}",
     "PATH=${env.WORKSPACE}/bin:${env.WORKSPACE}/${goDir}/bin:${env.PATH}",
     "GOROOT=${env.WORKSPACE}/${goDir}",
     "GOPATH=${env.WORKSPACE}"
   ]){
-    retryWithSleep(retries: 3, seconds: 5, backoff: true){
-      sh(label: "Installing go ${version}", script: "gvm ${version}")
-    }
-    pkgs?.each{ p ->
+    installGo(version: version)
+    installPackages(pkgs: pkgs)
+    debugGoEnv()
+    body()
+  }
+}
+
+def installGo(Map args = [:]) {
+  retryWithSleep(retries: 3, seconds: 5, backoff: true){
+    sh(label: "Installing go ${args.version}", script: "gvm ${args.version}")
+  }
+}
+
+def installPackages(Map args = [:]) {
+  // GOARCH is required to be able to install the given packages for the specific arch
+  def arch = (env.GOARCH?.trim()) ?: goArch()
+  log(level: 'DEBUG', text: "installPackages: GOARCH=${arch}")
+  withEnv(["GOARCH=${arch}"]){
+    args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
         sh(label: "Installing ${p}", script: "go get -u ${p}")
       }
     }
-    body()
+  }
+}
+
+def goArch() {
+  // Unsupported architectures:
+  //    darwin for arm64 in case isArm() needs a tweak
+  //    MIPS, PPC, RISC, S390X, WASM
+  if(isArm()) {
+    return 'arm64'
+  }
+  return 'amd64'
+}
+
+def debugGoEnv() {
+  // For debugging purposes only
+  if (env?.PIPELINE_LOG_LEVEL?.equals('DEBUG')) {
+    sh(label: "Debugging go", script: '''
+      go env || true
+      find . -name go -type f -ls || true
+      find . -name go -type f | xargs file || true
+      find . -name mage -type f -ls || true
+      find . -name mage -type f | xargs file || true
+    ''', returnStatus: true)
   }
 }

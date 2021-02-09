@@ -21,13 +21,13 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GithubEnvStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubEnv.groovy'
   String SHA1 = "${SHA}11"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubEnv.groovy')
 
     env.GIT_URL = null
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
@@ -42,7 +42,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoGitURL() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue('org'.equals(binding.getVariable('env').ORG_NAME))
@@ -53,7 +52,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testGitUrl() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_URL = REPO_URL
     script.call()
     printCallStack()
@@ -65,7 +63,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testChangeTarget() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     script.call()
@@ -78,7 +75,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMerge() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-list HEAD --parents -1'.equals(map.script)) {
           return "${SHA} ${SHA} ${SHA}"
@@ -95,7 +91,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSshUrl() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_URL = 'git@github.com:org/repo.git'
     script.call()
     printCallStack()
@@ -107,7 +102,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnNoMergeChangesInPR() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     env.GIT_COMMIT = SHA
@@ -122,7 +116,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnNoGitCommit() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_TARGET = "NotEmpty"
     env.CHANGE_ID = "NotEmpty"
     env.GIT_COMMIT = null
@@ -137,7 +130,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnMergeChangesInPR() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_ID = "NotEmpty"
     env.CHANGE_TARGET = "NotEmpty"
     env.GIT_COMMIT = 'different'
@@ -154,7 +146,6 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testChangeTargetBaseCommitOnBranch() throws Exception {
-    def script = loadScript(scriptName)
     env.CHANGE_ID = null
     env.CHANGE_TARGET = null
     env.GIT_COMMIT = SHA
@@ -169,15 +160,8 @@ class GithubEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'githubEnv: windows is not supported yet'))
-    assertJobStatusFailure()
   }
 }

@@ -34,7 +34,7 @@ def call(Map args = [:]) {
   if(!isUnix()) {
     error 'gh: windows is not supported yet.'
   }
-  def command = args.containsKey('command') ? args.command : error('gh: command argument is required.')
+  def command = args.containsKey('command') ? args.command : error('gh: command parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def flags = args.get('flags', [:])
 

@@ -38,4 +38,8 @@ public class RunWrapperMock implements Serializable {
     return previousBuild
   }
 
+  public boolean isBuilding() {
+    return this.result.equals('RUNNING')
+  }
+
 }

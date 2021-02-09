@@ -22,18 +22,17 @@ import static org.junit.Assert.assertEquals
 
 
 class MvnVersionTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/mvnVersion.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/mvnVersion.groovy')
     helper.registerAllowedMethod('sh', [Map.class], { return "1.1.82-SNAPSHOT" })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -41,7 +40,6 @@ class MvnVersionTests extends ApmBasePipelineTest {
 
   @Test
   void testCall() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', './mvnw help:evaluate -Dexpression=project.version -q -DforceStdout')) 
@@ -49,14 +47,12 @@ class MvnVersionTests extends ApmBasePipelineTest {
 
   @Test
   void testVersion() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call()
     assertEquals("1.1.82-SNAPSHOT", ret)
   }
 
   @Test
   void testQualifiers() throws Exception {
-    def script = loadScript(scriptName)
     def ret = script.call(showQualifiers:false)
     assertEquals("1.1.82", ret)
   }

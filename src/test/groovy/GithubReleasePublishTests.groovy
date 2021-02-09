@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import net.sf.json.JSONArray
 
 class GithubReleasePublishTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubReleasePublish.groovy'
 
   def apiInterceptor = { return toJSON([
       "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
@@ -68,15 +67,15 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   @Override
   @Before
   void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/githubReleasePublish.groovy')
     env.ORG_NAME = 'dummy_org'
     env.REPO_NAME = 'dummy_repo'
-    super.setUp()
   }
 
   @Test
   void test() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
-    def script = loadScript(scriptName)
     script.BUILD_TAG = "dummy_tag"
     def ret = script.call(url: "dummy", token: "dummy", id: 1, name: "Release v1.0.0")
     printCallStack()
@@ -87,20 +86,14 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   @Test
   void testNoId() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('id') {
       script.call(url: "dummy", token: "dummy", name: "Release v1.0.0")
-    } catch(e) {
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'id param is required'))
   }
 
   @Test
   void testNoName() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
-    def script = loadScript(scriptName)
     try {
       script.call(url: "dummy", token: "dummy", id: 1)
     } catch(e) {
@@ -113,7 +106,6 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   @Test
   void testNoOrg() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
-    def script = loadScript(scriptName)
     env.remove("ORG_NAME")  // Will be reset by setUp()
     try {
       script.call(url: "dummy", token: "dummy", name: "Release v1.0.0")
@@ -127,7 +119,6 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
   @Test
   void testNoRepo() throws Exception {
     helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
-    def script = loadScript(scriptName)
     env.remove("REPO_NAME")  // Will be reset by setUp()
     try {
       script.call(url: "dummy", token: "dummy")

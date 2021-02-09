@@ -34,8 +34,7 @@
 
 */
 def call(Map args = [:], Closure body) {
-  def goDefaultVersion = "" != "${env.GO_VERSION}" && env.GO_VERSION != null ? "${env.GO_VERSION}" : '1.14.2'
-  def version = args.containsKey('version') ? args.version : goDefaultVersion
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
   def pkgs = args.containsKey('pkgs') ? args.pkgs : []
   def os = args.containsKey('os') ? args.os : nodeOS()
   def mingwArch = is32() ? '32' : '64'
@@ -53,7 +52,8 @@ def call(Map args = [:], Closure body) {
     "PATH=${path}",
     "GOROOT=${goRoot}",
     "GOPATH=${env.WORKSPACE}",
-    "USERPROFILE=${userProfile}"
+    "USERPROFILE=${userProfile}",
+    "GO_VERSION=${version}"
   ]){
     def content = libraryResource('scripts/install-tools.bat')
     retryWithSleep(retries: 2, seconds: 5, backoff: true){

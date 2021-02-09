@@ -21,18 +21,17 @@ import static com.lesfurets.jenkins.unit.MethodSignature.method
 import static org.junit.Assert.assertTrue
 
 class GetGitCommitShaStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getGitCommitSha.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getGitCommitSha.groovy')
   }
 
   @Test
   void test() throws Exception {
     String sha = '29480a51'
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod(method('sh', Map.class), { map ->
       if ('git rev-parse HEAD'.equals(map.script)) {
           return sha
@@ -46,15 +45,8 @@ class GetGitCommitShaStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getGitCommitSha: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 }

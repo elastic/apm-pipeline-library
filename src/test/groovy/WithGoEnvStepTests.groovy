@@ -20,12 +20,12 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithGoEnvStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    env.GOPATH = "${env.WORKSPACE}"
     script = loadScript('vars/withGoEnv.groovy')
   }
 
