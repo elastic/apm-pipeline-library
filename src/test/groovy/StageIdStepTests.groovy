@@ -20,13 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class GetStageIdStepTests extends ApmBasePipelineTest {
+class StageIdStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/getStageId.groovy')
+    script = loadScript('vars/stageId.groovy')
   }
 
   @Test
