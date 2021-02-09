@@ -107,6 +107,7 @@ unclassified:
     endpoint: "otel-collector-contrib:4317"
     useTls: false
 jobs:
+  - file: ".ci/jobs/apm-shared.yml"
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/beats.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/getBuildInfoJsonFiles.dsl"
