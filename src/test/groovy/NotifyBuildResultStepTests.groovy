@@ -17,6 +17,7 @@
 
 import co.elastic.BuildException
 import co.elastic.NotificationManager
+import co.elastic.mock.RunWrapperMock
 import co.elastic.mock.StepsMock
 import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
@@ -28,13 +29,13 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class NotifyBuildResultStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/notifyBuildResult.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-
+    script = loadScript('vars/notifyBuildResult.groovy')
+    binding.setVariable('nextBuild', null)
     env.NOTIFY_TO = "myName@example.com"
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
@@ -47,19 +48,17 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email'))
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     assertTrue(assertMethodCallOccurrences('deleteDir', 1))
   }
 
   @Test
   void testPullRequest() throws Exception {
     env.CHANGE_ID = "123"
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
@@ -71,7 +70,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void testFailureBuild() throws Exception {
     // binding.getVariable('currentBuild').result = 'FAILURE' cannot be used otherwise the stage won't be executed!
     binding.getVariable('currentBuild').currentResult = 'FAILURE'
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
@@ -82,7 +80,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
@@ -93,7 +90,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithoutParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
@@ -103,7 +99,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithoutSecret() throws Exception {
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
@@ -121,7 +116,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
@@ -143,7 +137,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
@@ -158,7 +151,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCustomisedEmailWithEmptyOrNull() throws Exception {
-    def script = loadScript(scriptName)
     assertTrue(script.customisedEmail('').equals([]))
     assertTrue(script.customisedEmail(null).equals([]))
     assertJobStatusSuccess()
@@ -166,7 +158,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCustomisedEmailWithoutJOB_NAME() throws Exception {
-    def script = loadScript(scriptName)
     env.REPO = 'foo'
     env.remove('JOB_NAME')
     def result = script.customisedEmail('build-apm@example.com')
@@ -176,7 +167,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCustomisedEmailWithJOB_NAME() throws Exception {
-    def script = loadScript(scriptName)
     env.REPO = 'foo'
     env.JOB_NAME = 'folder1/folder2/foo'
     assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm+folder1@example.com']))
@@ -185,7 +175,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void testCustomisedEmailWithEmptyEnv() throws Exception {
-    def script = loadScript(scriptName)
     env.REPO = ''
     env.JOB_NAME = ''
     assertTrue(script.customisedEmail('build-apm@example.com').equals(['build-apm@example.com']))
@@ -194,7 +183,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_email_without_NOTIFY_TO() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('NOTIFY_TO')
     script.call(shouldNotify: true)
     printCallStack()
@@ -203,7 +191,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_email_with_NOTIFY_TO() throws Exception {
-    def script = loadScript(scriptName)
     script.call(shouldNotify: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
@@ -211,7 +198,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_email_with_to() throws Exception {
-    def script = loadScript(scriptName)
     script.call(shouldNotify: true, to: ['foo@acme.com'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
@@ -220,24 +206,21 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_notify_pr() throws Exception {
     env.CHANGE_ID = "123"
-    def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
   void test_notify_pr_in_a_branch() throws Exception {
     env.remove('CHANGE_ID')
-    def script = loadScript(scriptName)
     script.call(prComment: true)
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
   }
 
   @Test
   void test_generateBuildReport() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generate build report.'))
@@ -246,7 +229,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_newPRComment_without_entries() throws Exception {
     env.CHANGE_ID = "123"
-    def script = loadScript(scriptName)
     script.call(newPRComment: [:])
     printCallStack()
     assertTrue(assertMethodCallOccurrences('unstash', 0))
@@ -255,7 +237,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_newPRComment_with_entries() throws Exception {
     env.CHANGE_ID = "123"
-    def script = loadScript(scriptName)
     script.call(newPRComment: [ 'foo': 'bar'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
@@ -264,7 +245,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void test_newPRComment_with_multiples_entries() throws Exception {
     env.CHANGE_ID = "123"
-    def script = loadScript(scriptName)
     script.call(newPRComment: [ 'foo': 'bar', 'bob': 'builder' ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('unstash', 'bar'))
@@ -277,7 +257,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "ABORTED"
     binding.getVariable('currentBuild').currentResult = "ABORTED"
 
-    def script = loadScript(scriptName)
     script.call(analyzeFlakey: true)
     printCallStack()
 
@@ -291,7 +270,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "UNSTABLE"
     binding.getVariable('currentBuild').currentResult = "UNSTABLE"
 
-    def script = loadScript(scriptName)
     script.call(analyzeFlakey: true)
     printCallStack()
 
@@ -305,14 +283,13 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When PR
     helper.registerAllowedMethod('isPR', { return true })
 
-    def script = loadScript(scriptName)
     script.call(aggregateComments: true, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
     printCallStack()
 
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
@@ -322,14 +299,13 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When PR
     helper.registerAllowedMethod('isPR', { return true })
 
-    def script = loadScript(scriptName)
     script.call(aggregateComments: false, analyzeFlakey: true, flakyReportIdx: 'foo', notifyPRComment: true)
     printCallStack()
 
     // Then flakey test analysis
     assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Generating flakey test analysis'))
     // with pr comment
-    assertTrue(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results in the PR.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'createGitHubComment: Create GitHub comment.'))
     // with github pr comment
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
   }
@@ -339,7 +315,6 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When PR
     helper.registerAllowedMethod('isPR', { return true })
 
-    def script = loadScript(scriptName)
     script.call(aggregateComments: true, analyzeFlakey: false, notifyPRComment: false)
     printCallStack()
 
@@ -353,11 +328,117 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isPR', { return true })
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
 
-    def script = loadScript(scriptName)
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
     // Then sendDataToElasticsearch happens three times
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_latest_build() throws Exception {
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_running() throws Exception {
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should happen
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubComments_with_previous_build_and_new_build_already_finished() throws Exception {
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubComments(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then github pr comment should not happen
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'commentFile=comment.id'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_latest_build() throws Exception {
+    binding.getVariable('currentBuild').currentResult = 'ABORTED'
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status=cancelled'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_running() throws Exception {
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should happen
+    assertTrue(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
+  void test_aggregateGitHubCheck_with_previous_build_and_new_build_already_finished() throws Exception {
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    script.aggregateGitHubCheck(when: true, notifications: ['foo'])
+    printCallStack()
+
+    // Then githubCheck should not happen
+    assertFalse(assertMethodCallContainsPattern('githubCheck', 'status'))
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_running() throws Exception {
+    // When there is already a new build still running
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'RUNNING'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+    // Then it should run the closure correctly
+    assertTrue(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_previous_build_and_new_build_already_finished() throws Exception {
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', new RunWrapperMock(rawBuild: null, number: 1, result: 'SUCCESS'))
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should not run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertFalse(ret)
+  }
+
+  @Test
+  void test_notifyIfNewBuildNotRunning_with_the_very_first_build() throws Exception {
+    // When there is already a new build that finished.
+    binding.setVariable('nextBuild', null)
+    def ret = false
+    script.notifyIfNewBuildNotRunning() {
+      println 'It should run the closure'
+      ret = true
+    }
+    printCallStack()
+
+    // Then it should not run the closure
+    assertTrue(ret)
   }
 }

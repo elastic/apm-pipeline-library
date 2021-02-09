@@ -23,12 +23,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class AbortBuildStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/abortBuild.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/abortBuild.groovy')
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
@@ -38,7 +38,6 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
   void test_RunningBuild() throws Exception {
     def runBuilding = new RunMock(building: true)
     def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'FAILURE')
-    def script = loadScript(scriptName)
     script.call(build: build, message: "let's stop it")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "let's stop it"))
@@ -48,7 +47,6 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
   void test_RunningBuild_default_message() throws Exception {
     def runBuilding = new RunMock(building: true)
     def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'FAILURE')
-    def script = loadScript(scriptName)
     script.call(build: build)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Force to abort the build'))
@@ -58,7 +56,6 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
   void test_NotRunningBuild() throws Exception {
     def notRunBuilding = new RunMock(building: false)
     def build = new RunWrapperMock(rawBuild: notRunBuilding, number: 1, result: 'FAILURE')
-    def script = loadScript(scriptName)
     script.call(build: build, message: "let's stop it")
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', "let's stop it"))
@@ -66,7 +63,6 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_null_build() throws Exception {
-    def script = loadScript(scriptName)
     script.call(build: null)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Build or rawBuild do not have any valid value'))
@@ -74,7 +70,6 @@ class AbortBuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_null_rawbuild() throws Exception {
-    def script = loadScript(scriptName)
     def build = new RunWrapperMock(rawBuild: null, number: 1, result: 'FAILURE')
     script.call(build: build)
     printCallStack()

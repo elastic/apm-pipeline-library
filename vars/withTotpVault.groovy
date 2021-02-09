@@ -24,8 +24,8 @@
   }
 */
 def call(Map params = [:], Closure body) {
-  def secret = params.containsKey('secret') ? params.secret : error('withTotpVault: Missing secret parameter')
-  def code_var_name = params.containsKey('code_var_name') ? params.code_var_name : error('withTotpVault: Missing code_var_name parameter')
+  def secret = params.containsKey('secret') ? params.secret : error('withTotpVault: secret parameter is required')
+  def code_var_name = params.containsKey('code_var_name') ? params.code_var_name : error('withTotpVault: code_var_name parameter is required')
 
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {

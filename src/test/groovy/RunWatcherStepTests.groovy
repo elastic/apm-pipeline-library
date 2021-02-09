@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 class RunWatcherStepTests extends ApmBasePipelineTest {
-  def script
 
   @Override
   @Before
@@ -38,14 +37,9 @@ class RunWatcherStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_without_arguments() throws Exception {
-    try {
+    testMissingArgument('watcher') {
       script.call()
-    } catch(err) {
-      // NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'watcher param is required'))
-    assertJobStatusFailure()
   }
 
   @Test

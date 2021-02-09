@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class WithVaultTokenStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/withVaultToken.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/withVaultToken.groovy')
     env.WORKSPACE = '/foo'
   }
 
   @Test
   void testDefaultParameters() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -46,7 +45,6 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
   @Test
   void testDefaultParametersAndWindows() throws Exception {
     helper.registerAllowedMethod('isUnix', [ ], { false })
-    def script = loadScript(scriptName)
     def isOK = false
     script.call {
       isOK = true
@@ -59,7 +57,6 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithAllParameters() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.call(path: '/bar', tokenFile: 'mytoken') {
       isOK = true
@@ -73,7 +70,6 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithBodyError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call {
         throw new Exception('Mock an error')

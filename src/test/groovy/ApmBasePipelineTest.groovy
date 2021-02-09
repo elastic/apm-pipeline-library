@@ -24,8 +24,10 @@ import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static org.junit.Assert.assertTrue
 
 class ApmBasePipelineTest extends DeclarativePipelineTest {
+  def script
   Map env = [:]
   Map params = [:]
 
@@ -38,7 +40,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
-    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'),
+    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
     SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
 
@@ -274,6 +276,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('file', [Map.class], { [ variable: 'foo', secret: 'bar' ] })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { true })
+    helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -367,6 +371,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/createFileFromTemplate.groovy')
       return script.call(m)
     })
+    helper.registerAllowedMethod('detailsURL', [Map.class],  { m ->
+      def script = loadScript('vars/detailsURL.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
@@ -389,9 +397,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       true
     })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], null)
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
+    helper.registerAllowedMethod('getStageId', [], null)
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
@@ -435,6 +445,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
+    helper.registerAllowedMethod('goDefaultVersion', [],  {
+      def ret = '1.15.6'
+      if(env.GO_VERSION != null){
+        ret = env.GO_VERSION
+      }
+      return ret
+    })
     helper.registerAllowedMethod('gsutil', [Map.class], { m ->
       def script = loadScript('vars/gsutil.groovy')
       return script.call(m)
@@ -444,6 +461,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/installTools.groovy')
       return script.call(l)
     })
+    helper.registerAllowedMethod('isArm', { return false })
     helper.registerAllowedMethod('isBranch', {
       def script = loadScript('vars/isBranch.groovy')
       return script.call()
@@ -491,6 +509,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/nodeArch.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('githubCheck', [Map.class], { m ->
+      if(m.name.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
@@ -524,6 +548,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/withGoEnv.groovy')
       return script.call(m, c)
@@ -558,6 +584,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_GCP.equals(s)){
       return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
+      return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]
     }
     if(VaultSecret.SECRET_NOT_VALID.equals(s)){
       return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
@@ -607,6 +636,37 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       call.methodName == methodName
     }.any { call ->
       (callArgsToString(call) =~ pattern).count  == compare
+    }
+  }
+
+  def testMissingArgument(String parameter='', String message='parameter is required', Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${parameter} ${message}"))
+    assertJobStatusFailure()
+  }
+
+  def testWindows(Closure body) {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet.'))
+    assertJobStatusFailure()
+  }
+
+  def printCallStack(Closure body){
+    try {
+      body()
+    } finally {
+      printCallStack()
     }
   }
 }

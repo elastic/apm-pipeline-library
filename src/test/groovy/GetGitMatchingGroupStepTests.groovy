@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class GetGitMatchingGroupStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getGitMatchingGroup.groovy'
 
   def beatsPattern = '^[a-z0-9]+beat\\/module\\/([^\\/]+)\\/.*'
   def beatsXpackPattern = '^x-pack\\/[a-z0-9]+beat\\/module\\/([^\\/]+)\\/.*'
@@ -45,26 +44,20 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getGitMatchingGroup.groovy')
     env.CHANGE_TARGET = 'foo'
     env.GIT_BASE_COMMIT = 'bar'
   }
 
   @Test
   void test_without_pattern_parameter() throws Exception {
-    def script = loadScript(scriptName)
-    try {
+    testMissingArgument('pattern') {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Missing pattern argument.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void test_without_env_variables() throws Exception {
-    def script = loadScript(scriptName)
     def result = true
     env.remove('CHANGE_TARGET')
     env.remove('GIT_PREVIOUS_COMMIT')
@@ -78,7 +71,6 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
 
   @Test
   void test_simple_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')
@@ -92,7 +84,6 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
   void test_simple_match_with_previous_commit_env_variable() throws Exception {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')
@@ -103,7 +94,6 @@ metricbeat/module/zookeeper/server/_meta/docs.asciidoc'''.stripMargin().stripInd
 
   @Test
   void test_multiple_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''foo/bar/file.txt
 foo/bar/subfolder'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -114,7 +104,6 @@ foo/bar/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_multiple_match_2() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''filebeat/README.md
 filebeat/Dockerfile
 filebeat/docs/faq.asciidoc
@@ -127,7 +116,6 @@ filebeat/autodiscover/builder/hints/config.go'''.stripMargin().stripIndent()
 
   @Test
   void test_multiple_without_match() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = '''foo/bar/file.txt
 bar/foo/subfolder'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -139,7 +127,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_simple_unmatch() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '^unknown.txt')
@@ -151,7 +138,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_windows() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('isUnix', [], { false })
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
@@ -166,7 +152,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
   void test_without_change_request_env_variable() throws Exception {
     env.GIT_PREVIOUS_COMMIT = "foo-1"
     env.remove('CHANGE_TARGET')
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -183,7 +168,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
     env.CHANGE_TARGET = " "
     env.GIT_PREVIOUS_COMMIT = " "
     env.GIT_BASE_COMMIT = 'bar'
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -197,7 +181,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_with_from_parameter() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/anotherfolder/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*', from: 'something')
@@ -209,7 +192,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_with_from_and_to_parameters() throws Exception {
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     helper.registerAllowedMethod('sh', [Map.class], { m ->
@@ -224,7 +206,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_with_empty_values_for_from_and_to_parameters() throws Exception {
-    def script = loadScript(scriptName)
     def module = script.call(pattern: '^foo/.*/file.txt', from: '', to: '')
     printCallStack()
     assertEquals('', module)
@@ -234,7 +215,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_with_empty_value_for_to_parameter() throws Exception {
-    def script = loadScript(scriptName)
     def module = script.call(pattern: '^foo/.*/file.txt', to: '')
     printCallStack()
     assertEquals('', module)
@@ -244,7 +224,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_multiple_match_with_real_data_with_exclude() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
     def module = script.call(pattern: beatsPattern, exclude: beatsExcludePattern)
     assertEquals('zookeeper', module)
@@ -253,7 +232,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_multiple_match_with_real_data_without_exclude() throws Exception {
-    def script = loadScript(scriptName)
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
     def module = script.call(pattern: beatsPattern)
     assertEquals('', module)
@@ -262,7 +240,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_is_excluded() throws Exception {
-    def script = loadScript(scriptName)
     assertFalse(script.isExcluded('', ''))
     assertFalse(script.isExcluded('metricbeat/module/googlecloud/fields.go', beatsExcludePattern))
     assertTrue(script.isExcluded('metricbeat/zookeeper.asciido', beatsExcludePattern))
@@ -270,7 +247,6 @@ bar/foo/subfolder'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_beats_pr18369() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''metricbeat/docs/fields.asciidoc
 metricbeat/docs/images/metricbeat-googlecloud-load-balancing-https-overview.png
 metricbeat/docs/images/metricbeat-googlecloud-load-balancing-l3-overview.png
@@ -290,7 +266,6 @@ x-pack/metricbeat/module/googlecloud/stackdriver/metricset.go'''.stripMargin().s
 
   @Test
   void test_unmatch_in_beats_pr18369_with_oss_pattern() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''metricbeat/docs/fields.asciidoc
 metricbeat/docs/images/metricbeat-googlecloud-load-balancing-https-overview.png
 metricbeat/docs/images/metricbeat-googlecloud-load-balancing-l3-overview.png
@@ -310,7 +285,6 @@ x-pack/metricbeat/module/googlecloud/stackdriver/metricset.go'''.stripMargin().s
 
   @Test
   void test_match_in_beats_pr18609() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''libbeat/esleg/eslegclient/bulkapi.go
 metricbeat/module/elasticsearch/elasticsearch.go
 metricbeat/module/elasticsearch/ml_job/ml_job.go'''.stripMargin().stripIndent()
@@ -322,7 +296,6 @@ metricbeat/module/elasticsearch/ml_job/ml_job.go'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_beats_pr18608() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 libbeat/cmd/instance/beat.go
 libbeat/docs/monitoring/monitoring-beats.asciidoc
@@ -344,7 +317,6 @@ libbeat/tests/system/test_monitoring.py'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_beats_pr18541() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''libbeat/dashboards/config.go
 libbeat/dashboards/dashboards.go
 libbeat/dashboards/decode.go
@@ -359,7 +331,6 @@ libbeat/dashboards/modify_json.go'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_beats_pr18425() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''filebeat/docs/modules/googlecloud.asciidoc
 x-pack/filebeat/module/googlecloud/_meta/docs.asciidoc'''.stripMargin().stripIndent()
     helper.registerAllowedMethod('readFile', [String.class], { return realData })
@@ -370,7 +341,6 @@ x-pack/filebeat/module/googlecloud/_meta/docs.asciidoc'''.stripMargin().stripInd
 
   @Test
   void test_match_in_beats_pr18095() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 filebeat/docs/modules/logstash.asciidoc
 filebeat/module/logstash/_meta/docs.asciidoc
@@ -394,7 +364,6 @@ filebeat/module/logstash/slowlog/manifest.yml'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_beats_with_multiple_files_to_be_excluded() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 libbeat/esleg/eslegclient/bulkapi.go
 metricbeat/docs/modules/zookeeper.png
@@ -408,7 +377,6 @@ metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripInden
 
   @Test
   void test_unmatch_in_beats_with_multiple_files_to_be_excluded() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 libbeat/esleg/eslegclient/bulkapi.go
 metricbeat/docs/modules/zookeeper.png
@@ -423,7 +391,6 @@ metricbeat/module/zookeeper/connection/connection.go'''.stripMargin().stripInden
 
   @Test
   void test_match_in_beats_with_multiple_files_to_be_excluded_and_xpack() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 libbeat/esleg/eslegclient/bulkapi.go
 metricbeat/docs/modules/zookeeper.png
@@ -438,7 +405,6 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
 
   @Test
   void test_unmatch_in_beats_with_multiple_files_to_be_excluded_and_xpack() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 libbeat/esleg/eslegclient/bulkapi.go
 metricbeat/docs/modules/zookeeper.png
@@ -455,7 +421,6 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
 
   @Test
   void test_match_auditbeat_with_dynamic_exclude_pattern() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
 auditbeat/module/auditd/audit.go
@@ -472,7 +437,6 @@ go.sum'''.stripMargin().stripIndent()
 
   @Test
   void test_match_auditbeat_and_metricbeat_with_dynamic_exclude_pattern() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
 auditbeat/module/auditd/audit.go
@@ -491,7 +455,6 @@ go.sum'''.stripMargin().stripIndent()
 
   @Test
   void test_unmatch_in_metricbeat_and_auditbeat_with_multi_modules_and_dynamic_exclude_pattern() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 NOTICE.txt
 auditbeat/module/system/system.go
@@ -510,7 +473,6 @@ go.sum'''.stripMargin().stripIndent()
 
   @Test
   void test_match_in_metricbeat_and_xpack_auditbeat_with_dynamic_exclude_pattern() throws Exception {
-    def script = loadScript(scriptName)
     def realData = '''CHANGELOG.next.asciidoc
 metricbeat/module/zookeeper/connection/_meta/docs.asciidoc
 metricbeat/module/zookeeper/connection/connection.go
@@ -534,7 +496,6 @@ x-pack/auditbeat/module/system/fields.go'''.stripMargin().stripIndent()
     env.remove('GIT_PREVIOUS_COMMIT')
     env.remove('CHANGE_TARGET')
     env.GIT_BASE_COMMIT = 'bar'
-    def script = loadScript(scriptName)
     def changeset = 'foo/bar/file.txt'
     helper.registerAllowedMethod('readFile', [String.class], { return changeset })
     def module = script.call(pattern: '([^\\/]+)\\/.*')

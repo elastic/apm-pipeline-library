@@ -16,3 +16,7 @@ It sets an environment variable with either a string or boolean value as a param
     env.MY_ENV_VAR = 'value')
   }
 ```
+
+NOTE: It creates a new environment variable, but it is not possible to overwrite
+the value of an environment variable defined in a `environment block`
+see https://stackoverflow.com/questions/53541489/updating-environment-global-variable-in-jenkins-pipeline-from-the-stage-level
