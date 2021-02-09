@@ -18,9 +18,9 @@
 /**
   Get the Pull Request reviews from the Github REST API.
 */
-def call(Map params = [:]){
-  def token =  params?.token
-  def repo = params.containsKey('repo') ? params.repo : error('githubPrReviews: no valid repository.')
-  def pr =  params.containsKey('pr') ? params.pr : error('githubPrReviews: no valid PR ID.')
+def call(Map args = [:]){
+  def token =  args?.token
+  def repo = args.containsKey('repo') ? args.repo : error('githubPrReviews: no valid repository.')
+  def pr =  args.containsKey('pr') ? args.pr : error('githubPrReviews: no valid PR ID.')
   return githubApiCall(token: token, url:"https://api.github.com/repos/${repo}/pulls/${pr}/reviews")
 }

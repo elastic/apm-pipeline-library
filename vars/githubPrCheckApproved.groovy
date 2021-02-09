@@ -23,7 +23,7 @@
 
   githubPrCheckApproved()
 */
-def call(Map params = [:]){
+def call(Map args = [:]){
   if(!isPR()){
     return true
   }

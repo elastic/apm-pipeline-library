@@ -27,11 +27,11 @@
     sh 'gem push x.y.z'
   }
 */
-def call(Map params = [:], Closure body) {
+def call(Map args = [:], Closure body) {
   if(!isUnix()){
     error('rubygemsLogin: windows is not supported yet.')
   }
-  def secret = params.containsKey('secret') ? params.secret : error('rubygemsLogin: No valid secret to looking for.')
+  def secret = args.containsKey('secret') ? args.secret : error('rubygemsLogin: No valid secret to looking for.')
 
   def props = getVaultSecret(secret: secret)
 
@@ -70,11 +70,11 @@ def call(Map params = [:], Closure body) {
   }
 }
 
-def withApi(Map params = [:], Closure body) {
+def withApi(Map args = [:], Closure body) {
   if(!isUnix()){
     error('rubygemsLogin.withApi: windows is not supported yet.')
   }
-  def secret = params.containsKey('secret') ? params.secret : error('rubygemsLogin.withApi: No valid secret to looking for.')
+  def secret = args.containsKey('secret') ? args.secret : error('rubygemsLogin.withApi: No valid secret to looking for.')
 
   def props = getVaultSecret(secret: secret)
 

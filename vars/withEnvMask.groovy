@@ -51,10 +51,10 @@
   }
 */
 
-def call(Map params = [], Closure body){
-  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: params.vars]){
+def call(Map args = [], Closure body){
+  wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: args.vars]){
     def varsEnv = []
-    params.vars.each{ item ->
+    args.vars.each{ item ->
       varsEnv += "${item.var}=${item.password}"
     }
     withEnv(varsEnv) {

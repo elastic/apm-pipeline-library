@@ -29,29 +29,29 @@
     reference: '/var/lib/jenkins/reference-repo.git')
 
 */
-def call(Map params = [:]){
-  def basedir =  params.containsKey('basedir') ? params.basedir : "src"
-  def repo =  params?.repo
-  def credentialsId =  params?.credentialsId
-  def branch =  params?.branch
-  def reference = params?.reference
-  def mergeRemote = params.containsKey('mergeRemote') ? params.mergeRemote : "origin"
-  def mergeTarget = params?.mergeTarget
-  def notify = params.containsKey('githubNotifyFirstTimeContributor') ? params.get('githubNotifyFirstTimeContributor') : false
-  def shallowValue = params.containsKey('shallow') ? params.get('shallow') : false
-  def depthValue = params.containsKey('depth') ? params.get('depth') : 5
-  def retryValue = params.containsKey('retry') ? params.get('retry') : 3
+def call(Map args = [:]){
+  def basedir =  args.containsKey('basedir') ? args.basedir : "src"
+  def repo =  args?.repo
+  def credentialsId =  args?.credentialsId
+  def branch =  args?.branch
+  def reference = args?.reference
+  def mergeRemote = args.containsKey('mergeRemote') ? args.mergeRemote : "origin"
+  def mergeTarget = args?.mergeTarget
+  def notify = args.containsKey('githubNotifyFirstTimeContributor') ? args.get('githubNotifyFirstTimeContributor') : false
+  def shallowValue = args.containsKey('shallow') ? args.get('shallow') : false
+  def depthValue = args.containsKey('depth') ? args.get('depth') : 5
+  def retryValue = args.containsKey('retry') ? args.get('retry') : 3
   def refspec = '+refs/pull/*/head:refs/remotes/origin/pr/*'
 
-  if(!env?.GIT_URL && params.repo) {
-    log(level: 'DEBUG', text: 'Override GIT_URL with the params.repo to support simple pipeline rather than multibranch pipelines only.')
-    env.GIT_URL = params.repo
+  if(!env?.GIT_URL && args.repo) {
+    log(level: 'DEBUG', text: 'Override GIT_URL with the args.repo to support simple pipeline rather than multibranch pipelines only.')
+    env.GIT_URL = args.repo
   }
 
   // isCustomised
-  def customised = params.containsKey('mergeRemote') || params.containsKey('shallow') || params.containsKey('depth') ||
-                   params.containsKey('reference') || params.containsKey('mergeTarget') || params.containsKey('credentialsId') ||
-                   params.containsKey('repo') || params.containsKey('branch')
+  def customised = args.containsKey('mergeRemote') || args.containsKey('shallow') || args.containsKey('depth') ||
+                   args.containsKey('reference') || args.containsKey('mergeTarget') || args.containsKey('credentialsId') ||
+                   args.containsKey('repo') || args.containsKey('branch')
 
   def githubCheckContext = 'CI-approved contributor'
   def extensions = []

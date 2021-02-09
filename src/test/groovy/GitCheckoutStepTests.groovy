@@ -137,7 +137,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     script.scm = 'SCM'
     script.call(repo: repoUrl, branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the args.rep'))
     assertTrue(repoUrl.equals(binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }

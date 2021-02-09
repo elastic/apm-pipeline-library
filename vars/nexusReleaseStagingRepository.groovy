@@ -28,12 +28,12 @@
 import co.elastic.Nexus
 import net.sf.json.JSONArray
 
-def call(Map params = [:]) {
+def call(Map args = [:]) {
 
-  String url = params.get('url', 'https://oss.sonatype.org')
-  String stagingProfileId = params.containsKey('stagingProfileId') ? params.stagingProfileId : error('Must supply stagingProfileId')
-  String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
-  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
+  String url = args.get('url', 'https://oss.sonatype.org')
+  String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
+  String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
+  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
   def props = getVaultSecret(secret: secret)
 

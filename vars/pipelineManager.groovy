@@ -27,10 +27,10 @@
   -  The order is important in the map
 */
 
-def call(Map params = [:]) {
-  def cancel = params.get('cancelPreviousRunningBuilds', null)
-  def firstTime = params.get('firstTimeContributor', null)
-  def apmTraces = params.get('apmTraces', null)
+def call(Map args = [:]) {
+  def cancel = args.get('cancelPreviousRunningBuilds', null)
+  def firstTime = args.get('firstTimeContributor', null)
+  def apmTraces = args.get('apmTraces', null)
 
   if (cancel) {
     def when = cancel.get('when', 'always')

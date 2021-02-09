@@ -21,13 +21,13 @@
  dummyDeclarativePipeline()
 
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   pipeline {
     agent { label 'linux && immutable' }
     environment {
       BASE_DIR = 'src/github.com/elastic'
       // ? required for the testing.
-      FOO = "${params?.FOO}"
+      FOO = "${args?.FOO}"
     }
     options {
       timeout(time: 1, unit: 'HOURS')
