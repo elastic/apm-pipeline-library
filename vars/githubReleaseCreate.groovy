@@ -34,7 +34,7 @@ documentation page on releases:
   https://developer.github.com/v3/repos/releases/#create-a-release
 */
 
-def call(Map params = [:]){
+def call(Map args = [:]){
   // Gather variables and verify them
   if(env.ORG_NAME == null || env.REPO_NAME == null){
     error('gitHubReleaseCreate: Environment not initialized. Try to call githubEnv step before')
@@ -43,11 +43,11 @@ def call(Map params = [:]){
 
   def token = getGithubToken()
 
-  def tagName =  params.get('tagName', "${BUILD_TAG}")
-  def releaseName = params.get('releaseName', '')
-  def body = params.get('body', '')
-  def draft = params.get('draft', false)
-  def preRelease = params.get('preRelease', false)
+  def tagName =  args.get('tagName', "${BUILD_TAG}")
+  def releaseName = args.get('releaseName', '')
+  def body = args.get('body', '')
+  def draft = args.get('draft', false)
+  def preRelease = args.get('preRelease', false)
 
   // Construct GitHub API URL
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases"

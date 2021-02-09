@@ -18,11 +18,11 @@
 /**
  Configure the git email for the current workspace or globally.
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()){
     error('setupAPMGitEmail: windows is not supported yet.')
   }
-  def flag = params.containsKey('global') ? (params.global ? '--global' : '') : ''
+  def flag = args.containsKey('global') ? (args.global ? '--global' : '') : ''
   sh(label: 'Git config', script: """
     git config ${flag} user.name apmmachine
     git config ${flag} user.email infra-root+apmmachine@elastic.co

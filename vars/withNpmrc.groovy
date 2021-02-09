@@ -22,11 +22,11 @@
   }
 */
 
-def call(Map params = [:], Closure body) {
-  def path = params.containsKey('path') ? params.path : env.HOME
-  def registry = params.containsKey('registry') ? params.registry : 'registry.npmjs.org'
-  def npmrcFile = params.containsKey('npmrcFile') ? params.npmrcFile : '.npmrc'
-  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/elastic-observability-npmjs'
+def call(Map args = [:], Closure body) {
+  def path = args.containsKey('path') ? args.path : env.HOME
+  def registry = args.containsKey('registry') ? args.registry : 'registry.npmjs.org'
+  def npmrcFile = args.containsKey('npmrcFile') ? args.npmrcFile : '.npmrc'
+  def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/elastic-observability-npmjs'
 
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {

@@ -24,17 +24,17 @@
 
   cmd(label: 'foo', script: 'git fetch --all')
 */
-def call(Map params = [:]) {
-  def returnStdout = params.get('returnStdout', false)
-  
+def call(Map args = [:]) {
+  def returnStdout = args.get('returnStdout', false)
+
   if (isUnix()) {
-    return sh(params)
+    return sh(args)
   } else {
     if(returnStdout) {
       def command = """@echo off
-                    ${params.script}"""
-      params.script = command
+                    ${args.script}"""
+      args.script = command
     }
-    return bat(params)
+    return bat(args)
   }
 }
