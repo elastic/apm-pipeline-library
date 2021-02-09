@@ -49,6 +49,7 @@ pipeline {
     booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
     booleanParam(name: 'apm_server', defaultValue: "false", description: "")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'flakeyv2', defaultValue: "false", description: "Flake V2 detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'integrations_reporter', defaultValue: "false", description: "Integrations reporter [https://github.com/elastic/observability-dev/tree/master/apps/automation/integrations/reporter]")
@@ -319,6 +320,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/jenkins-toolbox")
+      }
+    }
+    stage('Build flake v2'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.flakeyv2}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'flakeyv2',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/flaky-test-analyzer")
       }
     }
     stage('Build integrations test reporter'){
