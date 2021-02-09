@@ -44,7 +44,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   parameters {
-    string(name: 'branch_specifier', defaultValue: 'jobDSL', description: 'the Git branch specifier to scan.')
+    string(name: 'branch_specifier', defaultValue: 'master', description: 'the Git branch specifier to scan.')
   }
   stages {
     stage('Checkout jobs'){
@@ -91,11 +91,14 @@ pipeline {
     }
     stage('Generate Jobs') {
       steps {
-        jobDsl(failOnMissingPlugin: true,
+        jobDsl(
+          failOnMissingPlugin: true,
+          failOnSeedCollision: true,
           removedConfigFilesAction: 'DELETE',
           removedJobAction: 'DELETE',
           removedViewAction: 'DELETE',
-          targets:" ${BASE_DIR}/.ci/jobDSL/jobs/**/*.groovy",
+          sandbox: true,
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/**/*.groovy",
           unstableOnDeprecation: true
         )
       }
