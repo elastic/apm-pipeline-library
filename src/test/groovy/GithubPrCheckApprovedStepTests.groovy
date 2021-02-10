@@ -244,7 +244,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   void test_isAuthorizedUser_that_it_exists_in_the_approval_list() throws Exception {
     env.REPO_NAME = 'apm-agent-go'
     helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
-    def ret = script.isAuthorizedUser('v1v')
+    def ret = script.isAuthorizedUser(env.REPO_NAME , 'v1v')
     printCallStack()
     assertTrue(ret)
     assertJobStatusSuccess()
@@ -254,7 +254,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   void test_isAuthorizedUser_that_it_is_quite_similar_to_an_existing_one_in_the_approval_list() throws Exception {
     env.REPO_NAME = 'apm-agent-go'
     helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v1', 'another']] })
-    def ret = script.isAuthorizedUser('v1v')
+    def ret = script.isAuthorizedUser(env.REPO_NAME, 'v1v')
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
@@ -264,7 +264,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   void test_isAuthorizedUser_with_an_existing_user_in_the_approval_list() throws Exception {
     env.REPO_NAME = 'apm-agent-go'
     helper.registerAllowedMethod('readYaml', [Map.class], { '' })
-    def ret = script.isAuthorizedUser('foo')
+    def ret = script.isAuthorizedUser(env.REPO_NAME, 'foo')
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
@@ -276,7 +276,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('libraryResource', [String.class], {
       throw new Exception('Force the approval file does not exist')
     })
-    def ret = script.isAuthorizedUser('foo')
+    def ret = script.isAuthorizedUser(env.REPO_NAME, 'foo')
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
@@ -284,7 +284,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isAuthorizedUser_that_it_exists_in_the_approval_list_without_env_repo_name() throws Exception {
-    def ret = script.isAuthorizedUser('v1v')
+    def ret = script.isAuthorizedUser(env.REPO_NAME, 'v1v')
     helper.registerAllowedMethod('readYaml', [Map.class], { [ 'USERS' : ['v1v', 'another']] })
     printCallStack()
     assertFalse(ret)
@@ -304,7 +304,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
-    assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/apm-agent-go.yml'))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/org/apm-agent-go.yml'))
     assertJobStatusSuccess()
   }
 }

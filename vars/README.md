@@ -934,6 +934,15 @@ githubPrCheckApproved()
 
 NOTE: `REPO_NAME` env variable is required, so gitHubEnv step is the one in charge
 
+```
+githubPrCheckApproved(org: 'elastic', repo: 'apm-pipeline-library', changeId: 1000, token: "env.GITHUB_TOKEN")
+```
+
+* *org:* GitHub organization/owner of the repository (by default ORG_NAME).
+* *repo:* GitHub repository name (by default REPO_NAME).
+* *changeId:* Pull request ID number (by default CHANGE_ID).
+* *token:* GitHub token to access to the API (by default [getGithubToken()](#getGithubToken)).
+
 ## githubPrComment
 Add a comment or edit an existing comment in the GitHub.
 
@@ -2750,4 +2759,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
