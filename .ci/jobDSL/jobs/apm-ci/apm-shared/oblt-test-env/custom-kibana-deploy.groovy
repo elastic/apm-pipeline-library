@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
+pipelineJob("apm-shared/oblt-test-env/oblt-test-env-custom-kibana-build") {
   displayName('Custom Kibana - Deploy')
   description('Job to deploy Custom Kibana deployments')
   parameters {
