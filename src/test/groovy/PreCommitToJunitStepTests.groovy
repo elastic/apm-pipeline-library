@@ -51,7 +51,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
   @Test
   void testSuccessWithSimpleCommitStages() throws Exception {
     def file = 'simple.xml'
-    script.call(input: 'simple.txt', output: file)
+    script.call(input: 'simple.txt', output: file, reportSkipped: true)
     printCallStack()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
@@ -62,7 +62,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
   @Test
   void testSuccessWithAllPreCommitStages() throws Exception {
     def file = 'pre-commit.xml'
-    script.call(input: 'pre-commit.txt', output: file)
+    script.call(input: 'pre-commit.txt', output: file, reportSkipped: true)
     printCallStack()
     assertJobStatusSuccess()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
@@ -74,7 +74,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
   @Test
   void testSuccessWithSkippedPreCommitStages() throws Exception {
     def file = 'skipped.xml'
-    script.call(input: 'skipped.txt', output: file)
+    script.call(input: 'skipped.txt', output: file, reportSkipped: true)
     printCallStack()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
@@ -85,7 +85,7 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
   @Test
   void testSuccessWithGherkinDefects() throws Exception {
     def file = 'gherkin.xml'
-    script.call(input: 'gherkin.txt', output: file)
+    script.call(input: 'gherkin.txt', output: file, reportSkipped: true)
     printCallStack()
     assertTrue("The files differ!", FileUtils.contentEqualsIgnoreEOL(
                                       new File("${compareWith}/${file}"),
@@ -98,5 +98,20 @@ class PreCommitToJunitStepTests extends ApmBasePipelineTest {
     def ret = script.toJunit('foo', null, 'bar')
     printCallStack()
     assertTrue(ret.contains('name="foo" />'))
+  }
+
+  @Test
+  void test_reportSkipped_enabled() throws Exception {
+    def ret = script.toJunit('foo', 'skipped', 'isortno files to check', true)
+    printCallStack()
+    assertTrue(ret.contains('<testcase classname="pre_commit.lint" name="foo"><skipped message="skipped"/><system-out>'))
+  }
+
+  @Test
+  void test_reportSkipped_disabled() throws Exception {
+    def ret = script.toJunit('foo', 'skipped', 'isortno files to check', false)
+    printCallStack()
+    println ret
+    assertTrue(ret.equals('<testcase classname="pre_commit.lint" name="foo" />'))
   }
 }
