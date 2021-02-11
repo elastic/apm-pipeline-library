@@ -20,9 +20,16 @@
 
   preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 */
+<<<<<<< HEAD
 def call(Map params = [:]) {
   def input = params.containsKey('input') ? params.input : error('preCommitToJunit: input parameter is required.')
   def output = params.containsKey('output') ? params.output : error('preCommitToJunit: output parameter is required.')
+=======
+def call(Map args = [:]) {
+  def input = args.containsKey('input') ? args.input : error('preCommitToJunit: input parameter is required.')
+  def output = args.containsKey('output') ? args.output : error('preCommitToJunit: output parameter is required.')
+  def reportSkipped = args.get('reportSkipped', false)
+>>>>>>> ef76384d... Disable/Enable pre-commit skipped tests in the report (#977)
 
   def content = readFile(file: input)
   def id, status, message = '', inprogress = false
@@ -31,7 +38,7 @@ def call(Map params = [:]) {
     def matcher = line =~ '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$'
     if (matcher.find()) {
       if (id) {
-        data += toJunit(id, status, message)
+        data += toJunit(id, status, message, reportSkipped)
       }
       id = matcher.group(1).replaceAll(/[\W_&&[^\s]]/, '').replaceAll('\\.\\.\\.','').trim()
       status = matcher.group(2)
@@ -42,16 +49,16 @@ def call(Map params = [:]) {
     }
   }
   if (inprogress) {
-    data += toJunit(id, status, message)
+    data += toJunit(id, status, message, reportSkipped)
   }
   data += '</testsuite>'
 
   writeFile file: output, text: data, encoding: 'UTF-8'
 }
 
-def toJunit(String name, String status, String message) {
+def toJunit(String name, String status, String message, reportSkipped=false) {
   String output = "<testcase classname=\"pre_commit.lint\" name=\"${name}\""
-  if (status?.toLowerCase()?.contains('skipped')) {
+  if (status?.toLowerCase()?.contains('skipped') && reportSkipped) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else if (status?.toLowerCase()?.contains('failed')) {
     output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"

@@ -1906,6 +1906,10 @@ Parse the pre-commit log file and generates a junit report
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
 
+* input: the pre-commit output. Mandatory
+* output: the junit output. Mandatory
+* enableSkipped: whether to report skipped linting stages. Optional. Default false
+
 ## publishToCDN
 Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
 with the given headers.
