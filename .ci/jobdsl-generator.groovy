@@ -47,6 +47,11 @@ pipeline {
       }
     }
     stage('Unit test'){
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         dir("${BASE_DIR}/.ci/jobDSL"){
           sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
