@@ -43,11 +43,11 @@ multibranchPipelineJob('apm-shared/oblt-test-env/test-mbp') {
           // Build origin branches.
           buildOriginBranch(false)
           // Build origin branches also filed as PRs.
-          buildOriginBranchWithPR(true)
+          buildOriginBranchWithPR(false)
           // Build origin PRs (unmerged head).
           buildOriginPRHead(false)
           // Build origin PRs (merged with base branch).
-          buildOriginPRMerge(false)
+          buildOriginPRMerge(true)
 
           // The behaviours control what is discovered from the GitHub repository.
           traits {

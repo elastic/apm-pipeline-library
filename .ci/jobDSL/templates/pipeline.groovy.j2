@@ -44,6 +44,7 @@ pipelineJob("{{ JOB_NAME }}") {
         }
       }
       //if you set it to true you can not use branch_specifier parameter
+      // https://issues.jenkins.io/browse/JENKINS-28447?focusedCommentId=393785&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-393785
       lightweight(false)
       scriptPath("{{ JENKINSFILE }}")
     }
