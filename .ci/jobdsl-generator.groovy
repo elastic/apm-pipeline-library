@@ -15,13 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-def repos(){
-  return [
-    "apm-pipeline-library",
-    "apm-integration-testing"
-  ]
-}
-
 pipeline {
   agent {label 'master'}
   environment {
@@ -51,25 +44,6 @@ pipeline {
       steps {
         deleteDir()
         gitCheckout(basedir: "${BASE_DIR}")
-        script {
-          repos().each{ repo ->
-            dir("${repo}"){
-              checkout([$class: 'GitSCM',
-              branches: [[name: '*/master']],
-              doGenerateSubmoduleConfigurations: false,
-              extensions: [],
-              submoduleCfg: [],
-              userRemoteConfigs: [[
-              credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
-              url: "http://github.com/elastic/${repo}.git"
-              ]]])
-              sh(label: 'Copy jobDSL files',
-                script: "cp -R .ci/jobDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobDSL/jobs",
-                returnStatus: true
-              )
-            }
-          }
-        }
       }
     }
     stage('Unit test'){
