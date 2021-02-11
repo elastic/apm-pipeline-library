@@ -37,13 +37,13 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
             github("elastic/observability-test-environments", "ssh")
             credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           }
-          branch("\$branch_specifier")
+          branch("${branch_specifier}")
           extensions {
             wipeOutWorkspace()
           }
         }
       }
-      lightweight(true)
+      lightweight(false)
       scriptPath(".ci/customKibana.groovy")
     }
   }
