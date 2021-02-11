@@ -23,11 +23,12 @@ import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+import hudson.CustomJenkinsRule
 
 class JobScriptsSpec extends Specification {
     @Shared
     @ClassRule
-    JenkinsRule jenkinsRule = new JenkinsRule()
+    CustomJenkinsRule jenkinsRule = new CustomJenkinsRule()
 
     @Unroll
     def 'test folder script #file.name'(File file) {
