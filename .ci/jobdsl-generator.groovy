@@ -72,6 +72,16 @@ pipeline {
           removedJobAction: 'DELETE',
           removedViewAction: 'DELETE',
           sandbox: true,
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/**/folder.groovy",
+          unstableOnDeprecation: true
+        )
+        jobDsl(
+          failOnMissingPlugin: true,
+          failOnSeedCollision: true,
+          removedConfigFilesAction: 'DELETE',
+          removedJobAction: 'DELETE',
+          removedViewAction: 'DELETE',
+          sandbox: true,
           targets: "${BASE_DIR}/.ci/jobDSL/jobs/**/*.groovy",
           unstableOnDeprecation: true
         )
