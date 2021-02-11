@@ -65,30 +65,12 @@ multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
                 honorRefspec(false)
               }
             }
-            // Disables notifications (commit status updates) to GitHub for builds.
-            //disableStatusUpdateTrait()
-            // Discovers other specified refs on the repository.
-            //discoverOtherRefsTrait {
-              // The pattern under /refs on the remote repository to discover, can contain a wildcard.
-              //ref('')
-              // Mapping for how the ref can be named in for example the @Library.
-              //nameMapping('')
-            //}
             // Discovers branches on the repository.
             // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/BranchDiscoveryTrait.java#L55-L70
             gitHubBranchDiscovery{
               // Determines which branches are discovered.
               strategyId(1)
             }
-            // Discovers pull requests where the origin repository is the same as the target repository.
-            // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-            //gitHubPullRequestDiscovery {
-              // Determines how pull requests are discovered: Merging the pull request with the current target branch revision Discover each pull request once with the discovered revision corresponding to the result of merging with the current revision of the target branch.
-              //strategyId(1)
-            //}
-            //originPullRequestDiscoveryTrait {
-              //strategyId(3) //build both the head and merge refs
-            //}
             // Discovers tags on the repository.
             gitHubTagDiscovery()
             // filers heads
@@ -117,26 +99,6 @@ multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
           }
           // Builds regular branches whenever a change is detected.
           buildRegularBranches()
-          // Builds branches only if none of the sub strategies match.
-          //buildNamedBranches {
-            // The rules to use when matching a branch name.
-            //filters {
-              // Matches the name verbatim.
-              //exact {
-                // The name to match.
-                //name('master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
-              // Matches the name against a regular expression.
-              //regex {
-                // A Java regular expression to restrict the names.
-                //regex('.*/master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
-            //}
-          //}
           // Builds tags (subject to a configurable tag age time window)
           buildTags {
             atLeastDays('-1')
@@ -149,20 +111,20 @@ multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
       }
     }
   }
-  configure {
-    // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
-    // https://issues.jenkins.io/browse/JENKINS-60874
-    // Discovers pull requests where the origin repository is the same as the target repository.
-    // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-    def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
-    traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
-      strategyId 1
-      trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
-    }
-    traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
-      strategyId 1
-    }
-  }
+  // configure {
+  //   // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
+  //   // https://issues.jenkins.io/browse/JENKINS-60874
+  //   // Discovers pull requests where the origin repository is the same as the target repository.
+  //   // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
+  //   def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
+  //   traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
+  //     strategyId 1
+  //     trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
+  //   }
+  //   traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
+  //     strategyId 1
+  //   }
+  // }
   factory {
     workflowBranchProjectFactory {
       scriptPath('.ci/Jenkinsfile')
