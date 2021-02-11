@@ -1960,6 +1960,24 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
+## releaseNotification
+Send notifications with the release status by email and slack.
+
+If body is slack format based then it will be transformed to the email format
+  
+```
+releaseNotification(slackColor: 'good',
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
+```
+
+* body: this is the body email that will be also added to the subject when using slack notifications. Optional
+* slackChannel: the slack channel, multiple channels may be provided as a comma, semicolon, or space delimited string. Default `env.SLACK_CHANNEL`
+* slackColor: an optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0)
+* slackCredentialsId: the slack credentialsId. Default 'jenkins-slack-integration-token'
+* subject: this is subject email that will be also aggregated to the body when using slack notifications. Optional
+* to: who should receive an email. Default `env.NOTIFY_TO`
+
 ## retryWithSleep
 Retry a command for a specified number of times until the command exits successfully.
 
@@ -2759,3 +2777,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
