@@ -111,20 +111,20 @@ multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
       }
     }
   }
-  // configure {
-  //   // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
-  //   // https://issues.jenkins.io/browse/JENKINS-60874
-  //   // Discovers pull requests where the origin repository is the same as the target repository.
-  //   // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-  //   def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
-  //   traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
-  //     strategyId 1
-  //     trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
-  //   }
-  //   traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
-  //     strategyId 1
-  //   }
-  // }
+  configure {
+    // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
+    // https://issues.jenkins.io/browse/JENKINS-60874
+    // Discovers pull requests where the origin repository is the same as the target repository.
+    // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
+    def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
+    traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
+      strategyId 1
+      trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
+    }
+    traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
+      strategyId 1
+    }
+  }
   factory {
     workflowBranchProjectFactory {
       scriptPath('.ci/Jenkinsfile')
