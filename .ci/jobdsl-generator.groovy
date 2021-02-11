@@ -75,7 +75,7 @@ pipeline {
     stage('Unit test'){
       steps {
         dir("${BASE_DIR}/.ci/jobDSL"){
-          sh(label: 'Run tests', script: './gradlew clean test')
+          sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
         }
       }
       post {

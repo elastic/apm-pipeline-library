@@ -69,7 +69,7 @@ to do that we have to execute the unit test we have using the following commands
 
 ```
 cd .ci/jobDSL
-./gradlew clean test
+./gradlew clean test --stacktrace
 ```
 
 when the test finish you can check the result in the junit report
