@@ -35,20 +35,6 @@ multibranchPipelineJob('apm-shared/oblt-test-env/test-mbp') {
           repository('apm-pipeline-library')
           repositoryUrl('https://github.com/elastic/apm-pipeline-library.git')
           configuredByUrl(true)
-          // we have to use deprecated setting until https://issues.jenkins.io/browse/JENKINS-63788 is fixed
-          // Build fork PRs (unmerged head).
-          buildForkPRHead(false)
-          // Build fork PRs (merged with base branch).
-          buildForkPRMerge(true)
-          // Build origin branches.
-          buildOriginBranch(false)
-          // Build origin branches also filed as PRs.
-          buildOriginBranchWithPR(false)
-          // Build origin PRs (unmerged head).
-          buildOriginPRHead(false)
-          // Build origin PRs (merged with base branch).
-          buildOriginPRMerge(true)
-
           // The behaviours control what is discovered from the GitHub repository.
           traits {
             checkoutOptionTrait {
@@ -125,6 +111,7 @@ multibranchPipelineJob('apm-shared/oblt-test-env/test-mbp') {
       }
     }
   }
+  // this configuration is broken due https://issues.jenkins.io/browse/JENKINS-63788
   // configure {
   //   // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
   //   // https://issues.jenkins.io/browse/JENKINS-60874
