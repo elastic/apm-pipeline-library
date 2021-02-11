@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
+multibranchPipelineJob('apm-shared/oblt-test-env/test-mbp') {
   primaryView('All')
   displayName('Job apm-shared/oblt-test-env/oblt-test-env-custom-kibana')
   description('Job apm-shared/oblt-test-env/oblt-test-env-custom-kibana description')
@@ -35,7 +35,7 @@ multibranchPipelineJob('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') {
           repository('apm-pipeline-library')
           repositoryUrl('https://github.com/elastic/apm-pipeline-library.git')
           configuredByUrl(true)
-
+          // we have to use deprecated setting until https://issues.jenkins.io/browse/JENKINS-63788 is fixed
           // Build fork PRs (unmerged head).
           buildForkPRHead(false)
           // Build fork PRs (merged with base branch).
