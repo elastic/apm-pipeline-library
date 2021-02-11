@@ -19,7 +19,11 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
   displayName('Custom Kibana - Deploy')
   description('Job to deploy Custom Kibana deployments')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    gitParam("branch_specifier"){
+      description "the Git branch specifier to build."
+      type 'BRANCH'
+      defaltValue "*/master"
+    }
   }
   disabled(false)
   quietPeriod(10)
