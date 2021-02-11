@@ -15,10 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-multibranchPipelineJob('apm-shared/oblt-test-env/test-mbp') {
+multibranchPipelineJob('apm-shared/test-mbp') {
   primaryView('All')
-  displayName('Job apm-shared/oblt-test-env/oblt-test-env-custom-kibana')
-  description('Job apm-shared/oblt-test-env/oblt-test-env-custom-kibana description')
+  displayName('Job apm-shared/test-mbp')
+  description('Job apm-shared/test-mbp')
   orphanedItemStrategy {
     discardOldItems {
       numToKeep(20)
