@@ -37,7 +37,7 @@ jenkins:
         retentionTimeMinutes: 10
         runAsUser: "jenkins-gce"
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
-        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/apm-ci-ubuntu-1804-lts-a075d8a8"
+        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/elastic-apm-ci-ubuntu-1804-lts-20210201222928"
         zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f"
       credentialsId: "elastic-observability"
       instanceCapStr: "300"
