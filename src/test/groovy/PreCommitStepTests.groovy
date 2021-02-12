@@ -20,18 +20,17 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class PreCommitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/preCommit.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/preCommit.groovy')
     env.HOME = '/home'
   }
 
   @Test
   void testMissingCommitArgument() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(commit: '')
     } catch(e){
@@ -44,7 +43,6 @@ class PreCommitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithoutCommitAndEnvVariable() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){
@@ -57,7 +55,6 @@ class PreCommitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithEnvVariable() throws Exception {
-    def script = loadScript(scriptName)
     env.GIT_BASE_COMMIT = 'bar'
     script.call()
     printCallStack()
@@ -69,7 +66,6 @@ class PreCommitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithAllArguments() throws Exception {
-    def script = loadScript(scriptName)
     script.call(commit: 'foo', junit: true, credentialsId: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sshagent', '[bar]'))
@@ -80,7 +76,6 @@ class PreCommitStepTests extends ApmBasePipelineTest {
   }
 
   void testWithRegistryAndSecret() throws Exception {
-    def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: 'bar', secretRegistry: 'mysecret')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=mysecret, registry=bar}'))
@@ -88,7 +83,6 @@ class PreCommitStepTests extends ApmBasePipelineTest {
   }
 
   void testWithEmptyRegistryAndSecret() throws Exception {
-    def script = loadScript(scriptName)
     script.call(commit: 'foo', registry: '', secretRegistry: '')
     printCallStack()
     assertFalse(assertMethodCall('dockerLogin'))
@@ -97,22 +91,39 @@ class PreCommitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWithDefaultParameters() throws Exception {
-    def script = loadScript(scriptName)
     script.call(commit: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sshagent', '[f6c7695a-671e-4f4f-a331-acdce44ff9ba]'))
-    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/apm-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
+    assertTrue(assertMethodCallContainsPattern('dockerLogin', '{secret=secret/observability-team/ci/docker-registry/prod, registry=docker.elastic.co}'))
     assertJobStatusSuccess()
   }
 
   @Test
   void testWithoutHome() throws Exception {
-    def script = loadScript(scriptName)
     env.remove('HOME')
     script.call(commit: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', "HOME=${env.WORKSPACE}"))
     assertTrue(assertMethodCallContainsPattern('sh', "PATH=${env.WORKSPACE}/bin"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_installation_error() throws Exception {
+    env.GIT_BASE_COMMIT = 'bar'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if(m?.label?.contains('Install precommit hooks')){
+        throw new Exception('Timeout when reaching github')
+      }
+    })
+    try {
+      script.call()
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('sh', 3))
+    assertTrue(assertMethodCallContainsPattern('sh', "label=Install precommit"))
+    assertJobStatusFailure()
   }
 }

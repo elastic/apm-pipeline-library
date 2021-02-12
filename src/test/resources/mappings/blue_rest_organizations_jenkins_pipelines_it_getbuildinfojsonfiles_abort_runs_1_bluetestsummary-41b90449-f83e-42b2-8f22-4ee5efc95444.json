@@ -1,0 +1,25 @@
+{
+  "id" : "41b90449-f83e-42b2-8f22-4ee5efc95444",
+  "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_abort_runs_1_bluetestsummary",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/blueTestSummary/",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"_class\":\"io.jenkins.blueocean.rest.model.BlueTestSummary\",\"_links\":{\"self\":{\"_class\":\"io.jenkins.blueocean.rest.hal.Link\",\"href\":\"/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/abort/runs/1//blueTestSummary/\"}},\"existingFailed\":0,\"failed\":0,\"fixed\":0,\"passed\":0,\"regressions\":0,\"skipped\":0,\"total\":0}",
+    "headers" : {
+      "Date" : "Thu, 30 Apr 2020 11:46:20 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "7f9ea7cf",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "X-Jenkins" : "2.230",
+      "X-Jenkins-Session" : "7f9ea7cf",
+      "Content-Type" : "application/json;charset=utf-8",
+      "Server" : "Jetty(9.4.27.v20200227)"
+    }
+  },
+  "uuid" : "41b90449-f83e-42b2-8f22-4ee5efc95444",
+  "persistent" : true,
+  "insertionIndex" : 27
+}

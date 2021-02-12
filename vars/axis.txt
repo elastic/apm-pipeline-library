@@ -1,0 +1,7 @@
+Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
+from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
+
+```
+def v = axis('MY_VAR', [1, 2, 3, 4, 5])
+def vs = axis('MY_VAR', ["1", "2", "3", "4", "5"])
+```

@@ -1,4 +1,4 @@
-<testsuite><testcase classname="pre_commit.lint" name="Check gherkin lint"><error message="error"/><system-out><![CDATA[hookid: check-gherkin-lint
+<?xml version="1.0" encoding="UTF-8"?><testsuite><testcase classname="pre_commit.lint" name="Check gherkin lint"><error message="error"/><system-out><![CDATA[hookid: check-gherkin-lint
 
 BadScenarioName - Prefer to rely just on Given and When steps when name your scenario to keep it stable
   features/apache.feature (3): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file

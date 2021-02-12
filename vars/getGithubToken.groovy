@@ -18,8 +18,8 @@
 /**
   return the Github token.
 */
-def call(Map params = [:]){
-  def credentialsId = params.containsKey('credentialsId') ? params.credentialsId : "2a9602aa-ab9f-4e52-baf3-b71ca88469c7"
+def call(Map args = [:]){
+  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : "2a9602aa-ab9f-4e52-baf3-b71ca88469c7"
   def githubToken
   withCredentials([[
     variable: "GITHUB_TOKEN",

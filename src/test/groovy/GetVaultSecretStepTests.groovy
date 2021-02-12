@@ -21,12 +21,12 @@ import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
 
 class GetVaultSecretStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/getVaultSecret.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/getVaultSecret.groovy')
 
     helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
       if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
@@ -40,7 +40,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def jsonValue = script.call("secret")
     assertTrue(jsonValue.plaintext == '12345')
     printCallStack()
@@ -49,7 +48,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMap() throws Exception {
-    def script = loadScript(scriptName)
     def jsonValue = script.call(secret: "secret/apm-team/ci/secret")
     assertTrue(jsonValue.plaintext == '12345')
     printCallStack()
@@ -58,7 +56,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoSecret() throws Exception {
-    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call()
     } catch(e) {
@@ -75,7 +72,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       }
     })
 
-    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call("secret")
     } catch(e) {
@@ -96,7 +92,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       }
     })
 
-    def script = loadScript(scriptName)
     try {
       def jsonValue = script.call("secret")
     } catch(e) {
@@ -108,7 +103,6 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testReadSecretWrapper() throws Exception {
-    def script = loadScript(scriptName)
     script.readSecretWrapper {
       // TODO
     }

@@ -1,4 +1,18 @@
 # Steps Documentation
+## abortBuild
+Abort the given build with the given message
+
+```
+// Kill the current build with the default message.
+abortBuild(build: currentBuild)
+
+// Kill the previous build for the current run and set its description message.
+abortBuild(build: currentBuild.getPreviousBuild, message: 'Abort previous build')
+```
+
+* build: the RunBuild to be aborted. Mandatory
+* message: what's the message to be exposed as an error and in the build description. Optional. Default to 'Force to abort the build'
+
 ## agentMapping
 Return the value for the given key.
 
@@ -7,7 +21,76 @@ Return the value for the given key.
   agentMapping.agentVar('.NET')
   agentMapping.app('Python')
   agentMapping.id('All')
+  agentMapping.opbeansApp('Python')
   agentMapping.yamlVersionFile('UI')
+```
+
+## apmCli
+ApmCli report APM transactions/span to an APM server.
+
+```
+apmCli(
+  apmCliConfig : "secrets/oblt/apm",
+  serviceName : "service01"
+)
+```
+
+```
+apmCli(
+  apmCliConfig : "secrets/oblt/apm",
+  serviceName : "service01",
+  transactionName : "test",
+  spanName : "ITs",
+  spanCommand: "make run-its",
+  spanLabel: '{"type": "IT"}'
+)
+```
+
+```
+apmCli(
+  url : "https://apm.example.com:8200",
+  token: "${TOKEN}"
+  serviceName : "service01",
+  transactionName : "test",
+  spanName : "ITs",
+  spanCommand: "make run-its",
+  spanLabel: '{"type": "IT"}'
+)
+```
+
+* apmCliConfig : Vault secret to read the `url` and `token` of the APM server.
+(`{"value": {"url": "https://apm.example.com:8200", "token": "WS1DFER1WES2"}}`)
+* serviceName : the service name used to report the APM data,
+if the environment variable `APM_CLI_SERVICE_NAME` and no value set
+the `APM_CLI_SERVICE_NAME` value is used by default.
+It is mandatory to pass a serviceName. If a service name is no passes apmCli do nothing.
+* url : The URL of the APM server (conflicts with apmCliConfig)
+* token : The token to access the APM server (conflicts with apmCliConfig)
+* saveTsID : if true the current transaction ID is saved on a text file (tsID.txt)
+and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
+* transactionName: Name of the transaction to report, it is mandatory.
+By default the "STAGE_NAME" environment variable is used.
+* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* spanName : Name of the span to report.
+* spanCommand Command to execute as span,
+if spanName is no set, spanCommand param would be used as span name.
+* spanLabel : label to add to the span (`{"type": "arabica"}`)
+* result : Result of the transaction, the default values is `success`
+
+You can enable apm traces by configuring the [pipelineManager](#pipelinemanager) step,
+by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
+
+```
+  pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
+```
+
+## axis
+Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
+from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
+
+```
+def v = axis('MY_VAR', [1, 2, 3, 4, 5])
+def vs = axis('MY_VAR', ["1", "2", "3", "4", "5"])
 ```
 
 ## base64decode
@@ -24,6 +107,56 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+## beatsStages
+<p>
+    Given the YAML definition then it creates all the stages
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
+        <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+    </ul>
+</p>
+
+<pre>
+    script {
+        def mapParallelTasks = [:]
+        beatsStages(project: 'auditbeat', content: readYaml(file: 'auditbeat/Jenkinsfile.yml'), function: this.&myFunction)
+        parallel(mapParallelTasks)
+    }
+
+    def myFunction(Map args = [:]) {
+        ...
+    }
+</pre>
+
+## beatsWhen
+<p>
+    Given the YAML definition and the changeset global macros
+    then it verifies if the project or stage should be enabled.
+
+    The list of step's params and the related default values are:
+    <ul>
+        <li>project: the name of the project. Mandatory</li>
+        <li>content: the content with the when section. Mandatory</li>
+        <li>changeset: the global changeset. Optional</li>
+        <li>description: the description to be used in the markdown generation with the build reasons. Optional</li>
+        <li>changesetFunction: the function to be called. Should implement the class BeatsFunction. Optional</li>
+    </ul>
+</p>
+
+<pre>
+    whenTrue(beatsWhen(project: 'auditbeat', changesetFunction: this.&getProjectDependencies
+                       content: readYaml(file: 'auditbeat/Jenkinsfile.yml')))
+        ...
+    }
+
+    def getProjectDependencies(Map args = [:]) {
+        ...
+    }
+</pre>
+
 ## build
 Override the `build` step to highlight in BO the URL to the downstream job.
 
@@ -32,6 +165,25 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 ```
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
+## buildStatus
+Fetch the current build status for a given job
+```
+def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']), return_bool: false)
+```
+
+* host: The Jenkins server to connect to. Defaults to `localhost`.
+* job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
+        CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
+
+            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
+
+        In this case, the corresponding list would be formed as:
+
+            ['apm-agent-java', 'apm-agent-java-mbp', 'master']
+
+* as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
+* ssl: Set to `false` to disable SSL. Default is `true`.
 
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
@@ -85,6 +237,31 @@ Override the `checkout` step to retry the checkout up to 3 times.
 checkout scm
 ```
 
+## cmd
+Wrapper to run bat or sh steps based on the OS system.
+
+ _NOTE_: bat with returnStdout requires @echo off to bypass the known issue
+          https://issues.jenkins-ci.org/browse/JENKINS-44569
+          Therefore it will be included automatically!
+
+For instance:
+```
+    if (isUnix) {
+        sh(label: 'foo', script: 'git fetch --all')
+    } else {
+        bat(label: 'foo', script: 'git fetch --all')
+    }
+```
+
+Could be simplified with:
+    
+```
+    cmd(label: 'foo', script: 'git fetch --all')
+```
+
+Parameters:
+* See `sh` and `bat` steps
+
 ## codecov
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
@@ -100,12 +277,50 @@ It requires to initialise the pipeline with githubEnv() first.
 
 [Original source](https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groovy)
 
+## convertGoTestResults
+  Converts the Go test result output to JUnit result file
+
+```
+  sh(label: 'Run test', script: 'go test -v ./...|tee unit-report.txt')
+  convertGoTestResults(input: 'unit-report.txt', output: 'junit-report.xml')
+```
+
+* input: file contains the verbose Go test output.
+* output: where to save the JUnit report.
+
 ## coverageReport
  Grab the coverage files, and create the report in Jenkins.
 
 ```
  coverageReport("path_to_base_folder")
 ```
+
+## createFileFromTemplate
+
+Create a file given a Jinja template and the data in a JSON format
+
+```
+  // if the template to be used is the one in the shared library
+  createFileFromTemplate(data: 'my-data.json', template: 'my-template.md.j2', output: 'file.md')
+
+  // if the template to be used is another one in the local workspace
+  createFileFromTemplate(data: 'my-data.json', template: 'src/foo/templates/my-template.md.j2', output: 'file.md', localTemplate: true)
+```
+
+* data: JSON file with the data to be consumed in the template. Mandatory.
+* template: jinja template to be used. Mandatory.
+* output: the name of the file to be transformed. Mandatory.
+* localTemplate: whether to use the template in the local workspace. Optional. Default `false`.
+
+## detailsURL
+Generate the details URL to be added to the GitHub notifications. When possible it will look for the stage logs URL in BlueOcean.
+
+```
+  def url = detailsURL(tab: 'artifacts', isBlueOcean: true)
+```
+
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
@@ -122,11 +337,41 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
 
+## dockerLogs
+Archive all the docker containers in the current context.
+
+```
+// Archive all the docker logs in the current context
+dockerLogs()
+
+// Archive all the docker logs in the current context using the step name 'test'
+//  and the test/docker-compose.yml file
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml')
+
+// Archive all the docker logs in the current context using the step name 'test',
+//  the test/docker-compose.yml file and fail if any errors when gathering the docker
+//  log files
+dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: false)
+```
+
+* *step*: If running multiple times in the same build then this will ensure the folder name will be unique. Optional
+* *dockerCompose*: What's the docker-compose file to be exposed. Optional. Default ''
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
+
+_NOTE_: Windows is not supported.
+
 ## dummy
 A sample of a step implemantetion.
 
 ```
 dummy(text: 'hello world')
+```
+
+## dummyDeclarativePipeline
+A sample of a step implementation as a declarative pipeline.
+
+```
+dummyDeclarativePipeline()
 ```
 
 ## echoColor
@@ -139,6 +384,115 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## filebeat
+
+ This step run a filebeat Docker container to grab the Docker containers logs in a single file.
+ `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
+ the only argument need is the `workdir` if you set it on the `filebeat step` call.
+ The output log files should be in a relative path to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
+
+```
+  filebeat()
+  ...
+  filebeat.stop()
+```
+
+```
+  filebeat(){
+    ....
+  }
+```
+
+* *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
+* *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
+* *output:* log file to save all Docker containers logs (docker_logs.log).
+* *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
+* *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
+
+```
+  filebeat(config: 'filebeat.yml',
+    image: 'docker.elastic.co/beats/filebeat:7.10.1',
+    output: 'docker_logs.log',
+    workdir: "${env.WORKSPACE}")
+  ...
+  filebeat.stop(workdir: "${env.WORKSPACE}")
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}")
+        sh('docker run busybox  ls')
+      }
+      post {
+        cleanup{
+          script {
+            filebeat.stop(workdir: "${env.WORKSPACE}")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        filebeat(workdir: "${env.WORKSPACE}"){
+          sh('docker run busybox  ls')
+        }
+      }
+    }
+  }
+}
+```
+
+## generateChangelog
+Programatically generate a CHANGELOG
+
+```
+generateChangelog(
+  user: 'elastic',
+  repo: 'apm-pipeline-library
+)
+```
+
+* user: The GitHub user the repo belongs to. (Default: elastic)
+* repo: The GitHub repo to generate the CHANGELOG for. If this
+        is not present, the `REPO_NAME` environment variable is
+        used.
+
+[GitHub Changelog Generator documentation](https://github.com/github-changelog-generator/github-changelog-generator)
+
+## generateReport
+Generate a report using the `id` script and compare the output with the `TARGET_BRANCH`
+variable if exists. Then it creates a report using the template `id`.
+
+This particular step is quite opinionated, and it relies on the id as the name of the
+script, template and outputs that are generated.
+
+```
+  // This will create a report with the name `bundlesize.md` and `bundlesize.json` in the build folder.
+  generateReport(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
+```
+
+* id: The id that matches the script name to run and the jinja template if triggered. Mandatory
+* input: The input required to be used when generating the reports. Mandatory
+* output: The input required to be used when generating the reports. Optional. Default 'build'
+* template: Whether to generate a report with the template with id name. Optional. Default 'true'
+* templateFormat: What's the report extension generated with the template. Optional. Default 'md'
+* compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
+
+_NOTE_: It only supports *nix.
+
 ## getBlueoceanDisplayURL
 Provides the Blueocean URL for the current build/run
 
@@ -147,6 +501,15 @@ def URL = getBlueoceanDisplayURL()
 ```
 
 [Powershell plugin](https://plugins.jenkins.io/powershell)
+
+## getBlueoceanRestURLJob
+Given the job URL then returns its BlueOcean Rest URL
+
+```
+    def URL = getBlueoceanRestURLJob(jobURL: env.JOB_URL)
+```
+
+* jobURL: the job URL. Mandatory
 
 ## getBlueoceanTabURL
 Provides the specific Blueocean URL tab for the current build/run
@@ -167,8 +530,12 @@ Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
 
 ```
-  getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
+  getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER)
 ```
+
+* jobURL: the job URL. Mandatory
+* buildNumber: the build id. Mandatory
+* returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -178,6 +545,32 @@ In other cases, you probably has to use this step.
 ```
 def sha = getGitCommitSha()
 ```
+
+## getGitMatchingGroup
+Given the regex pattern, the CHANGE_TARGET, GIT_SHA env variables then it
+evaluates the change list and returns the module name.
+
+- When exact match then all the files should match those patterns then it
+  returns the region otherwise and empty string.
+
+  NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+```
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*')
+  whenTrue(module.trim()) {
+    // ...
+  }
+
+  // Exclude the asciidoc files from the search.
+  def module = getGitMatchingGroup(pattern: '([^\\/]+)\\/.*', exclude: '.*\\.asciidoc')
+```
+
+* pattern: the regex pattern with the group to look for. Mandatory
+* exclude: the regex pattern with the files to be excluded from the search. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET} otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+**NOTE**: This particular implementation requires to checkout with the step `gitCheckout`
 
 ## getGitRepoURL
 Get the current git repository url from the .git folder.
@@ -215,6 +608,13 @@ def modules = getModulesFromCommentTrigger(regex: 'module\\W+(.+)')
 * *regex*: the regex to search in the comment. The default one is the `'(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'`. Optional
 * *delimiter*: the delimiter to use. The default one is the `,`. Optional
 
+## getStageId
+Get the stage ID in the current context.
+
+```
+def stage = getStageId()
+```
+
 ## getTraditionalPageURL
 Provides the specific traditional URL tab for the current build/run
 
@@ -248,6 +648,25 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.
+
+## gh
+Wrapper to interact with the gh command line. It returns the stdout output.
+It requires to be executed within the git workspace, otherwise it will use 
+`REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
+
+```
+  // List all the open issues with the label 
+  gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
+
+  // Create issue with title and body
+  gh(command: 'issue create', flags: [ title: "I found a bug", body: "Nothing works" ])
+```
+
+* command: The gh command to be executed title. Mandatory
+* flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
 
 ## git
 Override the `git` step to retry the checkout up to 3 times.
@@ -293,9 +712,11 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *branch*: the branch to checkout from the repo.
 * *reference*: Repository to be used as reference repository.
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
-* *shallow*: Whether to enable the shallow cloning. Default: true
+* *shallow*: Whether to enable the shallow cloning. Default: false
 * *depth*: Set shallow clone depth. Default: 5
 * *retry*: Set the number of retries if there are issues when cloning. Default: 3
+
+_NOTE_: 'shallow' is forced to be disabled when running on Pull Requests
 
 ## gitCmd
 Execute a git command against the git repo, using the credentials passed.
@@ -308,6 +729,7 @@ It requires to initialise the pipeline with githubEnv() first.
 * credentialsId: the credentials to access the repo.
 * cmd: Git command (tag, push, ...)
 * args: additional arguments passed to `git` command.
+* store: Whether to redirect the output to a file and archive it. Optional. Default value 'false'
 
 ## gitCreateTag
 Create a git TAG named ${BUILD_TAG} and push it to the git repo.
@@ -368,9 +790,22 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * token: String to use as authentication token.
 * url: URL of the Github API call.
 * allowEmptyResponse: whether to allow empty responses. Default false.
+* method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
+* noCache: whether to force the API call without the already cached data if any. Default false.
 
 [Github REST API](https://developer.github.com/v3/)
+
+## githubAppToken
+Get the GitHub APP token given the vault secret
+
+```
+def token = githubAppToken()
+```
+
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
 
 ## githubBranchRef
 return the branch name, if we are in a branch, or the git ref, if we are in a PR.
@@ -378,6 +813,88 @@ return the branch name, if we are in a branch, or the git ref, if we are in a PR
 ```
 def ref = githubBranchRef()
 ```
+
+## githubCheck
+Notify the GitHub check step either by using the existing one or creating a new one.
+
+```
+githubCheck(name: 'checkName', description: 'Execute something')
+```
+
+* name: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the `name`.
+* body: The details of the check run. This parameter supports Markdown. Optional.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME)`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
+* detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)
+
+## githubCommentIssue
+Comment an existing GitHub issue
+
+```
+  // Add a new comment to the issue 123 using the REPO_NAME and ORG_NAME env variables
+  githubCommentIssue(id: 123, comment: 'My new comment')
+
+  // Add a new comment to the issue 123 from foo/repo
+  githubCommentIssue(org: 'foo', repo: 'repo', id: 123, comment: 'My new comment')
+```
+
+* comment: The comment. Mandatory
+* id: The GitHub issue. Mandatory
+* org: The GitHub organisation. Optional. Default the ORG_REPO env variable
+* repo: The GitHub repository. Optional. Default the REPO_REPO env variable
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: 
+* Windows is not supported yet.
+* It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
+
+## githubCreateIssue
+Create an Issue in GitHub as long as the command runs in the git repo.
+
+```
+githubCreateIssue(title: 'Foo')
+githubCreateIssue(title: 'Foo', description: 'Something else to be added', assign: 'v1v', labels: 'automation')
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) to assign to the created issue. Optional.
+* milestone: The milestone name to add to the created issue. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this issue. Optional.
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
+_NOTE_: Windows is not supported yet.
+
+## githubCreatePullRequest
+Create a Pull Request in GitHub as long as the command runs in the git repo and
+there are commited changes.
+
+```
+githubCreatePullRequest(title: 'Foo')
+githubCreatePullRequest(title: 'Foo', reviewer: 'foo/observablt-robots', assign: 'v1v', labels: 'automation')
+
+// Get the PR URL
+def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'something')
+
+```
+
+* title: The issue title. Mandatory
+* description: The issue description. Optional.
+* assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+* reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+* milestone: The milestone name to add to this pull request. Optional
+* labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
+* draft: Create the pull request as a draft. Optional. Default: false
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+
+_NOTE_: Windows is not supported yet.
 
 ## githubEnv
 Creates some environment variables to identified the repo and the change type (change, commit, PR, ...)
@@ -393,31 +910,61 @@ githubEnv()
 * `GIT_BUILD_CAUSE`: build cause can be a pull request(pr), a commit, or a merge
 * `GIT_BASE_COMMIT`: On PRs points to the commit before make the merge, on branches is the same as GIT_COMMIT and GIT_SHA
 
+## githubIssues
+Look for the GitHub issues in the current project given the labels to be filtered with. It returns
+a dictionary with the issue id as primary key and then the status, title, labels and date values.
+
+```
+  // Look for all the open GitHub issues with labels foo and bar
+  githubIssues(labels: [ 'foo', 'bar' ])
+```
+
+* *labels*: list of labels to be filtered. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
 ## githubPrCheckApproved
 If the current build is a PR, it would check if it is approved or created
-by a user with write/admin permission on the repo.
+by a user with write/admin permission on the repo or a trusted user.
+
 If it is not approved, the method will throw an error.
 
 ```
 githubPrCheckApproved()
 ```
 
+NOTE: `REPO_NAME` env variable is required, so gitHubEnv step is the one in charge
+
+```
+githubPrCheckApproved(org: 'elastic', repo: 'apm-pipeline-library', changeId: 1000, token: "env.GITHUB_TOKEN")
+```
+
+* *org:* GitHub organization/owner of the repository (by default ORG_NAME).
+* *repo:* GitHub repository name (by default REPO_NAME).
+* *changeId:* Pull request ID number (by default CHANGE_ID).
+* *token:* GitHub token to access to the API (by default [getGithubToken()](#getGithubToken)).
+
 ## githubPrComment
 Add a comment or edit an existing comment in the GitHub.
 
 ```
+// Use default message
 githubPrComment()
 
+// Use default message and append the details to the message.
 githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
+
+// Overrides the default message with 'foo bar'
+githubPrComment(message: 'foo bar')
 ```
 
-_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
+_NOTE_: To edit the existing comment is required these environment variables: `CHANGE_ID`
 
 
 Arguments:
 
 * details: URL of the details report to be reported as a comment. Default ''
-
+* commentFile: the file that will store the comment id. Default 'comment.id'
+* message: message to be used rather than the default message. Optional
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
 
@@ -433,6 +980,33 @@ def pr = githubPrInfo(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 * pr: Pull Request number.
 
 [Github API call](https://developer.github.com/v3/pulls/#get-a-single-pull-request)
+
+## githubPrLabels
+If the current build is a PR, it would return the list of labels that
+are assigned to the PR.
+
+  ```
+  def labels = githubPrLabels()
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
+
+## githubPrLatestComment
+Search in the current Pull Request context the latest comment from the given list of
+users and pattern to match with.
+
+```
+// Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is
+//  elasticmachine
+githubPrLatestComment(pattern: '<!--foo-->', users: [ 'elasticmachine' ])
+```
+
+Arguments:
+
+* pattern: what's the pattern to be matched in the comments with. Mandatory.
+* users: the list of users that create the comment to be filtered with. Mandatory.
+
+_NOTE_: To edit the existing comment is required these environment variables: `ORG_NAME`, `REPO_NAME` and `CHANGE_ID`
 
 ## githubPrReviews
 Get the Pull Request reviews from the Github REST API.
@@ -460,8 +1034,10 @@ githubReleaseCreate(tagName, releaseName, body, draft, preRelease)
 
 [GitHub Release Creation API](https://developer.github.com/v3/repos/releases/#create-a-release)
 
+
 Returns a data structure representing the release, similar to the following:
 
+```
 {
   "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
   "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
@@ -503,6 +1079,98 @@ Returns a data structure representing the release, similar to the following:
 
   ]
 }
+```
+
+## githubReleasePublish
+Takes a GitHub release that is written as a draft and makes it public.
+```
+    githubReleasePublish(
+      id: '1',                // Release ID
+      name: 'Release v1.0.0'  // Release name 
+    )
+```
+* id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
+
+[GitHub Release Edit API](https://developer.github.com/v3/repos/releases/#edit-a-release)
+
+Sample return:
+
+```
+{
+  "url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
+  "html_url": "https://github.com/octocat/Hello-World/releases/v1.0.0",
+  "assets_url": "https://api.github.com/repos/octocat/Hello-World/releases/1/assets",
+  "upload_url": "https://uploads.github.com/repos/octocat/Hello-World/releases/1/assets{?name,label}",
+  "tarball_url": "https://api.github.com/repos/octocat/Hello-World/tarball/v1.0.0",
+  "zipball_url": "https://api.github.com/repos/octocat/Hello-World/zipball/v1.0.0",
+  "id": 1,
+  "node_id": "MDc6UmVsZWFzZTE=",
+  "tag_name": "v1.0.0",
+  "target_commitish": "master",
+  "name": "v1.0.0",
+  "body": "Description of the release",
+  "draft": false,
+  "prerelease": false,
+  "created_at": "2013-02-27T19:35:32Z",
+  "published_at": "2013-02-27T19:35:32Z",
+  "author": {
+    "login": "octocat",
+    "id": 1,
+    "node_id": "MDQ6VXNlcjE=",
+    "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/octocat",
+    "html_url": "https://github.com/octocat",
+    "followers_url": "https://api.github.com/users/octocat/followers",
+    "following_url": "https://api.github.com/users/octocat/following{/other_user}",
+    "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
+    "organizations_url": "https://api.github.com/users/octocat/orgs",
+    "repos_url": "https://api.github.com/users/octocat/repos",
+    "events_url": "https://api.github.com/users/octocat/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/octocat/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "assets": [
+    {
+      "url": "https://api.github.com/repos/octocat/Hello-World/releases/assets/1",
+      "browser_download_url": "https://github.com/octocat/Hello-World/releases/download/v1.0.0/example.zip",
+      "id": 1,
+      "node_id": "MDEyOlJlbGVhc2VBc3NldDE=",
+      "name": "example.zip",
+      "label": "short description",
+      "state": "uploaded",
+      "content_type": "application/zip",
+      "size": 1024,
+      "download_count": 42,
+      "created_at": "2013-02-27T19:35:32Z",
+      "updated_at": "2013-02-27T19:35:32Z",
+      "uploader": {
+        "login": "octocat",
+        "id": 1,
+        "node_id": "MDQ6VXNlcjE=",
+        "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/octocat",
+        "html_url": "https://github.com/octocat",
+        "followers_url": "https://api.github.com/users/octocat/followers",
+        "following_url": "https://api.github.com/users/octocat/following{/other_user}",
+        "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
+        "organizations_url": "https://api.github.com/users/octocat/orgs",
+        "repos_url": "https://api.github.com/users/octocat/repos",
+        "events_url": "https://api.github.com/users/octocat/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/octocat/received_events",
+        "type": "User",
+        "site_admin": false
+      }
+    }
+  ]
+}
+```
 
 ## githubRepoGetUserPermission
 Get a user's permission level on a Github repo.
@@ -515,6 +1183,76 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 * user: Github username.
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
+
+## githubTraditionalPrComment
+Add a comment or edit an existing comment in the GitHub Pull Request
+using the GitHub API.
+
+```
+  // create a new comment
+  githubTraditionalPrComment(message: 'foo bar')
+
+  // edit an existing comment
+  githubTraditionalPrComment(message: 'foo bar', id: 12323)
+```
+
+Arguments:
+
+* message: . Mandatory
+* id: the comment id to be edited. Optional
+
+_NOTE_: To edit the existing comment is required these environment variables:
+        - `CHANGE_ID`
+        - `ORG_NAME`
+        - `REPO_NAME`
+
+## goDefaultVersion
+
+  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
+
+  ```
+  goDefaultVersion()
+  ```
+
+## goTestJUnit
+ Run Go unit tests and generate a JUnit report.
+
+```
+ goTestJUnit(options: '-v ./...', output: 'build/junit-report.xml')
+```
+
+* *options:* Arguments used for `go test` see [gotestsum](https://pkg.go.dev/gotest.tools/gotestsum)
+* *output:* file path and name for the JUnit report output.
+* *version:* Go version to install, see [withgoenv](#withgoenv)
+
+```
+pipeline {
+  agent { label 'ubuntu' }
+
+  stages {
+    stage('GoTestJUnit') {
+      steps {
+        dir('src'){
+          git 'https://github.com/elastic/ecs-logging-go-zap.git'
+          goTestJUnit(options: '-v ./...', output: 'junit-report.xml', version: '1.14.2')
+        }
+      }
+      post{
+        cleanup{
+          junit(testResults: 'src/junit-report.xml', allowEmptyResults: true)
+        }
+      }
+    }
+  }
+}
+```
+
+## googleStorageUpload
+As long as we got some concurrency issues
+
+```
+googleStorageUpload(args)
+```
 
 ## httpRequest
 Step to make HTTP request and get the result.
@@ -532,14 +1270,137 @@ def body = httpRequest(url: "https://www.google.com", method: "GET", headers: ["
 def body = httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=value&other=value")
 ```
 
+To return the response code instead of the body:
+```
+def response_code = httpRequest(url: "https://www.google.com", response_code_only: true)
+```
+
+## installTools
+This step will install the list of tools
+
+```
+  # Install the latest 3.5 version of python3.
+  installTools([ [ tool: 'python3', version: '3.5'] ])
+  # Install the latest 3.5 version of python3 but exclude rc versions.
+  installTools([ [ tool: 'python3', version: '3.5', exclude: 'rc'] ])
+  # Install the latest 3.5 version of python3 and nodejs 12.0
+  installTools([ [ tool: 'python3', version: '3.5'], [tool: 'nodejs', version: '12.0' ] ])
+
+  installTools([
+    [ tool: 'visualstudio2019enterprise', version: '16.4.0.0', provider: 'choco', extraArgs: '--package-parameters "--includeRecommended"' ]
+  ])
+```
+
+* tool: The name of the tool to be installed for the default package manager. Mandatory.
+* version: The version of the tool to be installated. Mandatory.
+* exclude: What pattern in the version to be excluded when no provider is used. Optional.
+* provider: The provider to be used for installing the tools. Default behaviour
+            will detect then one available for the OS. Optional.
+* extraArgs: Allow to use some extra args to extend the provider. Optional.
+
+## is32
+Whether the architecture is a 32 bits using the `nodeArch` step
+
+```
+    whenTrue(is32()) {
+        ...
+    }
+```
+
+## is32arm
+Whether the architecture is an arm 32 bits based using the `nodeArch` step
+
+```
+    whenTrue(is32arm()) {
+        ...
+    }
+```
+
+## is32x86
+Whether the architecture is a x86 32 bits using the `nodeArch` step
+
+```
+    whenTrue(is32x86()) {
+        ...
+    }
+```
+
+## is64
+Whether the architecture is a 64 bits using the `nodeArch` step
+
+```
+    whenTrue(is64()) {
+        ...
+    }
+```
+
+## is64arm
+Whether the architecture is an arm 64 bits based using the `nodeArch` step
+
+```
+    whenTrue(is64arm()) {
+        ...
+    }
+```
+
+## is64x86
+Whether the architecture is a x86 64 bits using the `nodeArch` step
+
+```
+    whenTrue(is64x86()) {
+        ...
+    }
+```
+
+## isArm
+Whether the architecture is an arm based using the `nodeArch` step
+
+```
+    whenTrue(isArm()) {
+        ...
+    }
+```
+
+## isBranch
+Whether the build is based on a Branch or no
+
+```
+  // Assign to a variable
+  def branch = isBranch())
+
+  // Use whenTrue condition
+  whenTrue(isBranch()) {
+    echo "I'm a Branch"
+  }
+```
+
+## isBranchIndexTrigger
+Check it the build was triggered by a Branch index.
+
+```
+def branchIndexTrigger = isBranchIndexTrigger()
+```
+
+## isBuildFailure
+
+  Return true if the build status is FAILURE or UNSTABLE
+
+  ```
+  if(isBuildFailure()){
+    echo("The build failed")
+  }
+  ```
+
 ## isCommentTrigger
 Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
-it stores the comment owner username in the BUILD_CAUSE_USER environment variable and the
+it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
 ```
 def commentTrigger = isCommentTrigger()
 ```
+
+It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
 
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
@@ -562,10 +1423,96 @@ evaluates the change list with the pattern list:
 
   // All the entries in the changeset should match with ^_beats.* and .*/folder/.*py
   def match = isGitRegionMatch(patterns: ['^_beats.*', '.*/folder/.*py', ], shouldMatchAll: true)
+
+  // All the entries in the changeset should match with ^_beats for the given from and to commits
+  def match = isGitRegionMatch(patterns: ["^_beats"], from: '1', to: 'zzzzz' )
+
+  // Support Simple pipeline with the from and to arguments
+  isGitRegionMatch(from: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}", to: "${env.GIT_COMMIT}", patterns: "^_beats"])
 ```
 
 * patterns: list of patterns to be matched. Mandatory
 * shouldMatchAll: whether all the elements in the patterns should match with all the elements in the changeset. Default: false. Optional
+* from: to override the diff from sha. Optional. If MPB, and PR then origin/${env.CHANGE_TARGET otherwise env.GIT_PREVIOUS_COMMIT or GIT_BASE_COMMMIT if the very first build
+* to: to override the commit to. Optional. Default: env.GIT_BASE_COMMIT
+
+NOTE: This particular implementation requires to checkout with the step gitCheckout
+
+## isInstalled
+Whether the given tools is installed and available.
+
+```
+  // if docker is installed, the validation uses docker --version
+  whenTrue(isInstalled(tool: 'docker', flag: '--version')) {
+    // ...
+  }
+
+  // if 7zip is installed, the validations uses 7z
+  whenTrue(isInstalled(tool: '7z')) {
+    // ...
+  }
+```
+
+* tool: The name of the tool to check whether it is installed and available. Mandatory.
+* flag: The flag to be added to the validation. For instance `--version`. Optional.
+
+## isInternalCI
+Whether the CI instance is the internal-ci one.
+
+```
+  whenTrue(isInternalCI()) {
+    //
+  }
+```
+
+## isMemberOf
+Check if the given GitHub user is member of the given GitHub team.
+
+```
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team')) {
+    //...
+}
+
+whenTrue(isMemberOf(user: 'my-user', team: ['my-team', 'another-team'])) {
+    //...
+}
+
+// using another organisation
+whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
+    //...
+}
+
+```
+
+* user: the GitHub user. Mandatory
+* team: the GitHub team or list of GitHub teams. Mandatory
+* org: the GitHub organisation. Optional. Default: 'elastic'
+
+## isPR
+Whether the build is based on a Pull Request or no
+
+```
+  // Assign to a variable
+  def pr = isPR())
+
+  // Use whenTrue condition
+  whenTrue(isPR()) {
+    echo "I'm a Pull Request"
+  }
+```
+
+## isTag
+Whether the build is based on a Tag Request or no
+
+```
+  // Assign to a variable
+  def tag = isTag())
+
+  // Use whenTrue condition
+  whenTrue(isTag()) {
+    echo "I'm a Tag"
+  }
+```
 
 ## isTimerTrigger
 Check it the build was triggered by a timer (scheduled job).
@@ -589,6 +1536,56 @@ it stores the username in the BUILD_CAUSE_USER environment variable.
 def userTrigger = isUserTrigger()
 ```
 
+## isX86
+Whether the architecture is a x86 based using the `nodeArch` step
+
+```
+    whenTrue(isX86()) {
+        ...
+    }
+```
+
+## junitAndStore
+Wrap the junit built-in step to archive the test reports that are going to be
+populated later on with the runbld post build step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports, id: 'test-stage-foo', ...)
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory
+* *id*: the unique id, normally the stage name. Optional
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
+
+## licenseScan
+Scan the repository for third-party dependencies and report the results.
+
+```
+licenseScan()
+```
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
@@ -604,18 +1601,261 @@ the log level by default is INFO.
 * `level`: sets the verbosity of the messages (DEBUG, INFO, WARN, ERROR)
 * `text`: Message to print. The color of the messages depends on the level.
 
+## lookForGitHubIssues
+Look for all the open issues that were reported as flaky tests. It returns
+a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
+
+```
+  // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
+  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+```
+
+* *flakyList*: list of test-failures. Mandatory
+* *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+
+_NOTE_: Windows is not supported yet.
+
+## matchesPrLabel
+If the current build is a PR, it would return true if the given label
+matches with the list of assigned labels in the PR.
+
+  ```
+  whenTrue(matchesPrLabel(label: 'foo')) {
+    ...
+  }
+  ```
+
+NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubEnv` step is the one in charge
+
+## matrix
+Matrix parallel task execution in parallel implemented on a step.
+It compose a matrix of parallel tasks, each task has a set of enviroment variables
+created from the axes values.
+
+* **agent:** Jenkins agent labels to provision a new agent for parallel task.
+* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+each pair has a variable name and a vector of values (see #axis)
+* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+when we create the parallel tasks (axes-excludes=parallel tasks).
+
+```
+pipeline {
+  agent any
+
+  stages {
+    stage('Matrix sample') {
+      steps {
+
+        matrix(
+          agent: 'linux',
+          axes:[
+            axis('VAR_NAME_00', [ 1, 2 ]),
+            axis('VAR_NAME_01', [ 'a', 'b', 'c', 'd', 'e' ])
+          ],
+          excludes: [
+            axis('VAR_NAME_00', [ 1 ]),
+            axis('VAR_NAME_01', [ 'd', 'e' ]),
+          ]
+          ) {
+            echo "${VAR_NAME_00} - ${VAR_NAME_01}"
+          }
+
+        }
+      }
+    }
+  }
+
+```
+
+## mvnVersion
+Get a project version from Maven
+
+```
+mvnVersion(
+    showQualifiers: true
+)
+```
+ * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
+                       such as additional labels for pre-release or build metadata. Speficially,
+                       this means the IncrementalVersion, BuildNumber, and Qualifier sections from
+                       the Maven version as specified in the Maven versioning guide.
+
+This script should be run from the root of a Maven-based project.
+
+[Maven versioning guide](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm)
+[Semantic Versioning Specification](https://semver.org/)
+
+## nexusCloseStagingRepository
+Close a Nexus staging repository
+
+```
+nexusCreateStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "staging_id"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* secret: Vault secret to retrieve Nexus credentials
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier for staging
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusCreateStagingRepository
+Create a Nexus staging repository
+
+```
+nexusCreateStagingRepository(
+  stagingProfileId: my_profile,
+  description: "My new staging repo",
+  secret: "secret/release/nexus",
+  url: https://oss.sonatype.org,
+  retries: 20
+```
+
+* stagingProfileId: The staging identifier to use when creating the repository
+* description: A description of the new staging repository
+* secret: Vault secret to retrieve Nexus credentials
+* url: Nexus URL (default: https://oss.sonatype.org)
+* retries: Number of times to retry the remote API before giving up
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusDropStagingRepository
+Drop a Nexus staging repository
+```
+nexusDropStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus",
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "staging_id",
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* secret: Vault secret to retrieve Nexus credentials
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier for staging
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusFindStagingId
+Find a Nexus staging repository
+
+```
+nexusFindStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus",
+  stagingProfileId: "comexampleapplication-1010",
+  groupId: "co.elastic.apm"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
+* stagingProfileId: Identifier for the staging profile
+* groupid: Our group id
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusReleaseStagingRepository
+Release a Nexus staging repository
+
+```
+nexusReleaseStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "co.elastic.foo"
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* secret: Vault secret to retrieve Nexus credentials
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier of staging repository
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)
+
+## nexusUploadStagingArtifact
+Upload an artifact to the Nexus staging repository
+
+```
+nexusUploadStagingArtifact(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus",
+  stagingId: "comexampleapplication-1010",
+  groupId: "com.example.applications",
+  artifactId: "my_tasty_artifact",
+  version: "v1.0.0"
+  file_path: "/tmp/my_local_artifact"
+```
+
+  For additional information, please read the OSSRH guide from Sonatype:
+  https://central.sonatype.org/pages/releasing-the-deployment.html
+
+  * url: The base URL of the staging repo. (Usually oss.sonatype.org)
+  * secret: Vault secret to retrieve Nexus credentials
+  * stagingId: The ID for the staging repository.
+  * groupId: The group ID for the artifacts.
+  * artifactId: The ID for the artifact to be uploaded
+  * version: The release version
+  * file_path: The location on local disk where the artifact to be uploaded can be found.
+
+## nodeArch
+Return the architecture in the current worker using the labels as the source of truth
+
+```
+ def arch = nodeArch()
+```
+
+## nodeOS
+ Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
+
+ NOTE: arm architecture is linux.
+
+```
+ def os = nodeOS()
+```
+
 ## notifyBuildResult
-Send an email message with a summary of the build result,
-and send some data to Elastic search.
-
-Besides, if there are checkout environmental issues then it will rebuild the pipeline.
-
-```
-notifyBuildResult()
-```
+Notify build status in vary ways, such as an email, comment in GitHub, slack message.
+In addition, it interacts with Elasticsearch to upload all the build data and execute
+the flakey test analyser.
 
 ```
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Default
+  notifyBuildResult()
+
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
+  // Notify build status for a PR as a GitHub comment, and send slack message if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
+
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
+
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
+
 ```
 * es: Elasticserach URL to send the report.
 * secret: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
@@ -623,8 +1863,18 @@ notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/te
 * statsURL: Kibana URL where you can check the stats sent to Elastic search.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
-* rebuild: Whether to rebuild the pipeline in case of any environmental issues. Default true
-* downstreamJobs: The map of downstream jobs that were launched within the upstream pipeline. Default empty.
+* prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
+* slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
+* slackHeader: What header to be added before the default comment. Default value uses ``.
+* slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.
+* slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
+* slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
+* analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
+* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
+* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
+* flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
+* newPRComment: The map of the data to be populated as a comment. Default empty.
+* aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -667,7 +1917,7 @@ preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/doc
 * commit: what git commit to compare with. Default: env.GIT_BASE_COMMIT. Optional
 * credentialsId: what credentialsId to be loaded to enable git clones from private repos. Default: 'f6c7695a-671e-4f4f-a331-acdce44ff9ba'. Optional
 * registry: what docker registry to be logged to consume internal docker images. Default: 'docker.elastic.co'. Optional
-* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/apm-team/ci/docker-registry/prod'. Optional
+* secretRegistry: what secret credentials to be used for login the docker registry. Default: 'secret/observability-team/ci/docker-registry/prod'. Optional
 
 ## preCommitToJunit
 Parse the pre-commit log file and generates a junit report
@@ -675,6 +1925,33 @@ Parse the pre-commit log file and generates a junit report
 ```
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
+
+* input: the pre-commit output. Mandatory
+* output: the junit output. Mandatory
+* enableSkipped: whether to report skipped linting stages. Optional. Default false
+
+## publishToCDN
+Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
+with the given headers.
+
+```
+  // This command would upload all js files files in the packages/rum/dist/bundles directory
+  // and make them readable and cacheable, with cache expiration of one hour and a custom
+  // metadata.
+  publishToCDN(headers: ["Cache-Control:public,max-age=3600", "x-goog-meta-reviewer:v1v"],
+               source: 'packages/rum/dist/bundles/*.js',
+               target: "gs://beats-ci-temp/rum/5.1.0",
+               secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
+```
+
+* headers: a list of the metadata of the objects to be uploaded to the bucket. Optional
+* install: whether to install the google cloud tools. Default true. Optional
+* forceInstall: whether to force the installation in the default path. Default true. Optional
+* secret: what's the secret with the service account details. Mandatory
+* source: local files. Mandatory. See the supported formats [here](https://cloud.google.com/storage/docs/gsutil/commands/cp)
+* target: where to copy those files to. Mandatory
+
+__NOTE__: It requires *Nix where to run it from.
 
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
@@ -687,15 +1964,24 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
-## rebuildPipeline
-Rebuild the pipeline if supported, for such, it does use the built-in env variable
-`JOB_NAME`.
-
-It does require the parameters for the pipeline to be exposed as environment variables.
+## retryWithSleep
+Retry a command for a specified number of times until the command exits successfully.
 
 ```
-rebuildPipeline()
+retryWithSleep(retries: 2) {
+  //
+}
+
+// Retry up to 3 times with a 5 seconds wait period
+retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+  //
+}
 ```
+
+* retries: the number of retries. Mandatory
+* seconds: the seconds to wait for. Optional. Default 10.
+* backoff: whether the wait period backs off after each retry. Optional. Default false
+* sleepFirst: whether to sleep before running the command. Optional. Default false
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
@@ -713,6 +1999,57 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runWatcher
+Run the given watcher and send an email if configured for such an action.
+
+This particular step uses the watchers with the log action, if it's required to use
+another action then it will be required to be implemented here. See // NOTE
+
+```
+    def output = runWatcher(watcher: 'my-watcher-id')
+
+    runWatcher(watcher: 'my-watcher-id', sendEmail: true, to: 'foo@acme.com, subject: 'Watcher output')
+```
+
+* *watcher*: the watcher id. Mandatory
+* *sendEmail*: whether to send an email. Optional. Default false
+* *to*: who should receive the email. Optional.
+* *subject*: what's the email subject. Optional. Default: `[Autogenerated]`
+* *secret*: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
+* *es*: Elasticserach URL to send the report. It can use the secret data if `url` field.
+
+## runbld
+Populate the test output using the runbld approach. It depends on the *junitAndStore* step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports)
+                    }
+                }
+            }
+        }
+        post {
+            always {
+                // Process stashed test reports
+                runbld(stashedTestReports: stashedTestReports, project: env.REPO)
+            }
+        }
+    }
+```
+
+* *project*: the project id, normally the repo name. Mandatory
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory
 
 ## sendBenchmarks
 Send the benchmarks to the cloud service or run the script and prepare the environment
@@ -774,10 +2111,14 @@ def body = sendDataToElasticsearch(es: "https://ecs.example.com:9200",
 
 ## setEnvVar
 
-It sets an environment var with a value passed as a parameter, it simplifies Declarative syntax
+It sets an environment variable with either a string or boolean value as a parameter, it simplifies the declarative syntax.
 
 ```
+  // Support string value
   setEnvVar('MY_ENV_VAR', 'value')
+
+  // Support boolean value
+  setEnvVar('MY_ENV_VAR', true)
 ```
 
   it replaces the following code
@@ -787,6 +2128,10 @@ It sets an environment var with a value passed as a parameter, it simplifies Dec
     env.MY_ENV_VAR = 'value')
   }
 ```
+
+NOTE: It creates a new environment variable, but it is not possible to overwrite
+the value of an environment variable defined in a `environment block`
+see https://stackoverflow.com/questions/53541489/updating-environment-global-variable-in-jenkins-pipeline-from-the-stage-level
 
 ## setGithubCommitStatus
 Set the commit status on GitHub with an status passed as parameter or SUCCESS by default.
@@ -818,20 +2163,109 @@ setGithubCommitStatus(message: 'Build result.', state: "UNSTABLE")
 
 It requires [Github plugin](https://plugins.jenkins.io/github")
 
+## setupAPMGitEmail
+Configure the git email for the current workspace or globally.
+
+```
+setupAPMGitEmail()
+
+// globally
+setupAPMGitEmail(global: true)
+```
+
+* *global*: to configure the user and email account globally. Optional.
+
+## stackVersions
+
+  Return the version currently used for testing.
+
+  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
+  stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
+
+  stackVersions.edge() // '8.0.0'
+  stackVersions.dev() // '7.11.0'
+  stackVersions.release() // '7.10.2'
+  stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
+  stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+
+## stashV2
+Stash the current location, for such it compresses the current path and
+upload it to Google Storage.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    stashV2(name: 'source')
+}
+
+// Given the parameters
+stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    stashV2(name: 'source', bucket: 'foo')
+}
+
+// Store the bucketUri of the just stashed folder.
+def bucketUri = stashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+```
+
+* *name*: Name of the tar file to be created. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
+## superLinter
+Run the github/super-linter step
+
+```
+superLinter(envs: [ 'VALIDATE_GO=false' ])
+```
+
+* *envs*: the list of new env variables to use, format variable=value. Optional
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *dockerImage*: What's the docker image to use. Optional. Default: 'github/super-linter:latest'
+* junit: whether to generate the JUnit report. Default: true. Optional
+
+## tap2Junit
+Transform the TAP to JUnit, for such it uses some parameters
+to customise the generated output.
+
+```
+  // Use default setup
+  tap2Junit()
+
+  // Convert TAP files to JUnit using the suffix junit.xml
+  tap2Junit(pattern: '*.TAP', suffix: 'junit.xml')
+```
+
+* *package*: Name of the package in the JUnit report. Default 'co.elastic'.
+* *pattern*: What files that are TAP based should be searched. Default '*.tap'.
+* *suffix*: The suffix in the JUnit output files. Default 'junit-report.xml'
+* *nodeVersion*: What docker image used for transforming the tap to junit. Default 'node:12-alpine'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+
 ## tar
 Compress a folder into a tar file.
 
 ```
-tar(file: 'archive.tgz',
-archive: true,
-dir: '.'
-pathPrefix: '')
+tar(file: 'archive.tgz', archive: true, dir: '.')
 ```
 
 * *file*: Name of the tar file to create.
 * *archive*: If true the file will be archive in Jenkins (default true).
 * *dir*: The folder to compress (default .), it should not contain the compress file.
-* *pathPrefix*: Path that contains the folder to compress, the step will make a "cd pathPrefix" before to compress the folder.
+* *allowMissing*: whether to report UNSTABLE if tar command failed. Optional. Default 'true'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
 
 ## toJSON
 This step converts a JSON string to net.sf.json.JSON or and POJO to net.sf.json.JSON.
@@ -848,6 +2282,51 @@ p.setName("John");
 p.setAge(50);
 net.sf.json.JSON obj = toJSON(p)
 ```
+
+## unstashV2
+Unstash the given stashed id, for such it downloads the given stashed id, and 
+uncompresses in the current location.
+
+The configuration can be delegated through env variables or explicitly. The 
+explicit parameters do have precedence over the environment variables.
+
+```
+// Given the environment variable with withEnv
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    unstashV2(name: 'source')
+}
+
+// Given the parameters
+unstashV2(name: 'source', bucket: 'my-bucket', credentialsId: 'my-credentials')
+
+withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
+    // Even thought the env variable is set the bucket will 'foo' instead 'my-bucket'
+    unstashV2(name: 'source', bucket: 'foo')
+}
+
+```
+
+* *name*: Name of the stash id to be unstashed. Mandatory
+* *bucket*: name of the bucket. JOB_GCS_BUCKET env variable can be uses instead. Optional
+* *credentialsId*: the credentials Id to access to the GCS Bucket. JOB_GCS_CREDENTIALS env variable can be uses instead. Optional
+
+**NOTE**:
+* `tar` binary is required in the CI Workers.
+* retention policy for the bucket is delegated on the Google side.
+
+It requires [Google Cloud Storage plugin](https://plugins.jenkins.io/google-storage-plugin/)
+
+## untar
+Extract the given tar file in the given folder if any, othrewise in the
+current directory.
+
+```
+untar(file: 'src.tgz', dir: 'src')
+```
+
+* *file*: Name of the tar file to extract. Optional (default 'archive.tgz').
+* *dir*: The folder where the extract will be done to. Optional (default '.').
+* *failNever*: Never fail the build, regardless of the step result. Optional (default 'true')
 
 ## updateGithubCommitStatus
 Update the commit status on GitHub with the current status of the build.
@@ -910,6 +2389,17 @@ script{
   if(variable == 100){
     echo('Hello world')
   }
+}
+```
+
+## withAPM
+It encloses a set of commands in a APM reporting context.
+This will generate APM data related with the block of code executed.
+The parameters accepted by withAPM are the same of [apmCli](#apmcli) step
+
+```
+withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
+  echo "OK"
 }
 ```
 
@@ -976,8 +2466,57 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
 }
 ```
 
+## withGitRelease
+Configure the git release context to run the body closure.
+
+```
+withGitRelease() {
+    // block
+}
+
+
+withGitRelease(credentialsId: 'some-credentials') {
+    // block
+}
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
+
+_NOTE:_
+* This particular implementation requires to checkout with the step gitCheckout
+* Windows agents are not supported.
+
+## withGithubCheck
+Wrap the GitHub status check step by using the [githubCheck](#githubCheck) step.
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubCheck(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubCheck(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubCheck(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
 ## withGithubNotify
-Wrap the GitHub notify check step
+Wrap the GitHub notify step either for GitHub status check or GitHub check, for such,
+it uses the `GITHUB_CHECK` environment variable to enable the GitHub Check.
 
 ```
 withGithubNotify(context: 'Build', description: 'Execute something') {
@@ -993,11 +2532,148 @@ withGithubNotify(context: 'Release', tab: 'artifacts') {
 }
 ```
 
-* context: Name of the GH check context. (Mandatory).
-* description: Description of the GH check. If unset then it will use the description.
-* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an <URL>). Default pipeline.
+* context: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the context.
+* Further parameters are defined in [withGithubCheck](#withGithubCheck) and [withGithubStatus](#withGithubStatus).
+
+## withGithubStatus
+Wrap the GitHub status check step
+If [apmTraces](#pipelinemanager) feature is enabled, it would report APM traces too.
+
+```
+withGithubStatus(context: 'Build', description: 'Execute something') {
+  // block
+}
+
+withGithubStatus(context: 'Test', description: 'UTs', tab: 'tests') {
+  // block
+}
+
+withGithubStatus(context: 'Release', tab: 'artifacts') {
+  // block
+}
+```
+
+* context: Name of the GitHub status check context. (Mandatory).
+* description: Description of the GitHub status check. If unset then it will use the description.
+* tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
+* isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
+
+## withGoEnv
+ Install Go and run some command in a pre-configured environment multiplatform. For such
+ it's recommended to use the `cmd` step.
+
+```
+  withGoEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnv(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+## withGoEnvUnix
+ Install Go and run some command in a pre-configured environment for Unix.
+
+```
+  withGoEnvUnix(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvUnix(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `linux`). This is an option argument and if not set, the worker label will be used.
+
+
+NOTE: If the `GOARCH` environment variable is defined then it will be used to install the given packages for that architecture,
+      otherwise it will be evaluated on the fly.
+
+## withGoEnvWindows
+ Install Go and run some command in a pre-configured environment for Windows.
+
+```
+  withGoEnvWindows(version: '1.14.2'){
+    bat(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withGoEnvWindows(version: '1.14.2', pkgs: [
+       "github.com/magefile/mage",
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       bat(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
+* pkgs: Go packages to install with Go get before to execute any command.
+* os: OS to use. (Example: `windows`). This is an option argument and if not set, the worker label will be used.
+
+## withHubCredentials
+Configure the hub app to run the body closure.
+  
+```
+  withHubCredentials(credentialsId: 'some-credentials') {
+    // block
+  }
+```
+
+* credentialsId: the credentials ID for the git user and token. Default '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
+
+_NOTE:_
+* Windows agents are not supported.
+
+## withMageEnv
+
+ Install Go and mage and run some command in a pre-configured environment.
+
+```
+  withMageEnv(version: '1.14.2'){
+    sh(label: 'Go version', script: 'go version')
+  }
+```
+
+```
+   withMageEnv(version: '1.14.2', pkgs: [
+       "github.com/elastic/go-licenser",
+       "golang.org/x/tools/cmd/goimports",
+   ]){
+       sh(label: 'Run mage',script: 'mage -version')
+   }
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
+* pkgs: Go packages to install with Go get before to execute any command.
 
 ## withNpmrc
 Wrap the npmrc token
@@ -1021,8 +2697,12 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
 
-the secret must have this format
+The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
+
+If the secret does not have this format, the `user_key` and `pass_key` flags
+can be set to specify alternative lookup keys for the `user` and `password`
+fields.
 
 The passed data variables will be exported and masked on logs
 
@@ -1073,4 +2753,14 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 
 * path: root folder where the vault token will be stored. (Optional). Default: ${WORKSPACE} env variable
 * tokenFile: name of the file with the token. (Optional). Default: .vault-token
+
+## writeVaultSecret
+Write the given data in vault for the given secret.
+
+```
+writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+```
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be written. Mandatory
 

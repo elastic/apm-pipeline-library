@@ -1,0 +1,25 @@
+{
+  "id" : "651dd676-7497-4cef-a114-f75ce1295fa5",
+  "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_multitestfailures_runs_1_bluetestsummary",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/blueTestSummary/",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"_class\":\"io.jenkins.blueocean.rest.model.BlueTestSummary\",\"_links\":{\"self\":{\"_class\":\"io.jenkins.blueocean.rest.hal.Link\",\"href\":\"/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/multiTestFailures/runs/1/blueTestSummary/\"}},\"existingFailed\":2,\"failed\":2,\"fixed\":0,\"passed\":1,\"regressions\":0,\"skipped\":1,\"total\":4}",
+    "headers" : {
+      "Date" : "Mon, 23 Nov 2020 15:49:56 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "b5a2187c",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "X-Jenkins" : "2.252",
+      "X-Jenkins-Session" : "b5a2187c",
+      "Content-Type" : "application/json;charset=utf-8",
+      "Server" : "Jetty(9.4.30.v20200611)"
+    }
+  },
+  "uuid" : "651dd676-7497-4cef-a114-f75ce1295fa5",
+  "persistent" : true,
+  "insertionIndex" : 10
+}

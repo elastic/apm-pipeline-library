@@ -17,75 +17,203 @@
 
 /**
 
-Send an email message with a summary of the build result,
-and send some data to Elastic search.
+Notify build status in vary ways, such as an email, comment in GitHub, slack message.
+In addition, it interacts with Elasticsearch to upload all the build data and execute
+the flakey test analyser.
 
-notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+  // Default
+  notifyBuildResult()
+
+  // Notify to a different elasticsearch instance.
+  notifyBuildResult(es: 'http://elastisearch.example.com:9200', secret: 'secret/team/ci/elasticsearch')
+
+  // Notify a new comment with the content of the bundle-details.md file
+  notifyBuildResult(newPRComment: [ bundle-details: 'bundle-details.md' ])
+
+  // Notify build status for a PR as a GitHub comment, and send slack message if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel')
+
+  // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
+ 
+  // Notify build status for a PR as a GitHub comment, and send slack message with custom header
+  notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
 
 **/
 
+import co.elastic.BuildException
 import co.elastic.NotificationManager
-import co.elastic.TimeoutIssuesCause
 import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
-  def rebuild = args.containsKey('rebuild') ? args.rebuild : true
-  def downstreamJobs = args.containsKey('downstreamJobs') ? args.downstreamJobs : [:]
-  node('master || metal || immutable'){
+  def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
+  def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
+  def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
+  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
+  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
+
+  node('master || metal || linux'){
     stage('Reporting build status'){
-      def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/jenkins-stats-cloud'
+      def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/jenkins-stats-cloud'
       def es = args.containsKey('es') ? args.es : getVaultSecret(secret: secret)?.data.url
-      def to = args.containsKey('to') ? args.to : [ customisedEmail(env.NOTIFY_TO)]
-      def statsURL = args.containsKey('statsURL') ? args.statsURL : "ela.st/observabtl-ci-stats"
-      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !env.CHANGE_ID && currentBuild.currentResult != "SUCCESS"
+      def to = args.containsKey('to') ? args.to : customisedEmail(env.NOTIFY_TO)
+      def statsURL = args.containsKey('statsURL') ? args.statsURL : "https://ela.st/observabtl-ci-stats"
+      def shouldNotify = args.containsKey('shouldNotify') ? args.shouldNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
+      def slackHeader = args.containsKey('slackHeader') ? args.slackHeader : ''
+      def slackChannel = args.containsKey('slackChannel') ? args.slackChannel : env.SLACK_CHANNEL
+      def slackNotify = args.containsKey('slackNotify') ? args.slackNotify : !isPR() && currentBuild.currentResult != "SUCCESS"
+      def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
+      def aggregateComments = args.get('aggregateComments', true)
+      def flakyDisableGHIssueCreation = args.get('flakyDisableGHIssueCreation', false)
+      catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
+        data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
+        data['emailRecipients'] = to
+        data['statsUrl'] = statsURL
+        data['es'] = es
+        data['es_secret'] = secret
+        data['flakyReportIdx'] = flakyReportIdx
+        data['flakyThreshold'] = flakyThreshold
+        data['header'] = slackHeader
+        data['channel'] = slackChannel
+        data['credentialId'] = slackCredentials
+        data['enabled'] = slackNotify
 
-      catchError(message: "Let's unstable the stage and stable the build.", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        getBuildInfoJsonFiles(env.JOB_URL, env.BUILD_NUMBER)
-        archiveArtifacts(allowEmptyArchive: true, artifacts: '*.json')
+        data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
+        // Allow to aggregate the comments, for such it disables the default notifications.
+        data['disableGHComment'] = aggregateComments
+        // Generate digested data to be consumed later on by the createGitHubComment.
+        data['comment'] = generateBuildReport(data: data)
+        def notifications = []
 
-        if(shouldNotify){
-          log(level: 'DEBUG', text: "notifyBuildResult: Notifying results by email.")
-          def notificationManager = new NotificationManager()
-          notificationManager.notifyEmail(
-            build: readJSON(file: "build-info.json"),
-            buildStatus: currentBuild.currentResult,
-            emailRecipients: to,
-            testsSummary: readJSON(file: "tests-summary.json"),
-            changeSet: readJSON(file: "changeSet-info.json"),
-            statsUrl: "${statsURL}",
-            log: readFile(file: "pipeline-log-summary.txt"),
-            testsErrors: readJSON(file: "tests-info.json"),
-            stepsErrors: readJSON(file: "steps-info.json")
-          )
+        notifyEmail(data: data, when: (shouldNotify && !to?.empty))
+
+        addGitHubCustomComment(newPRComment: newPRComment)
+
+        createGitHubComment(data: data, notifications: notifications, when: notifyPRComment)
+
+        // Should analyze flakey but exclude it when aborted
+        analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
+
+        notifySlack(data: data, when: notifySlackComment)
+
+        // Notify only if there are notifications and they should be aggregated
+        aggregateGitHubComments(when: (aggregateComments && notifications?.size() > 0), notifications: notifications)
+
+        // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
+        aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
+      }
+
+      catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        timeout(5) {
+          // Deprecated index
+          def datafile = readFile(file: 'build-report.json')
+          sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+
+          // New indexes
+          def bulkFile = 'ci-test-report-bulk.json'
+          if (fileExists(bulkFile)) {
+            datafile = readFile(file: bulkFile)
+            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-tests/_bulk/')
+          }
+          datafile = 'ci-build-report.json'
+          if (fileExists(datafile)) {
+            sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
+          }
         }
+      }
 
-        def datafile = readFile(file: "build-report.json")
-        sendDataToElasticsearch(es: es, secret: secret, data: datafile)
+      catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
+        deleteDir()
       }
     }
   }
+}
 
-  if (rebuild) {
-    log(level: 'DEBUG', text: 'notifyBuildResult: rebuild is enabled.')
+def notifyIfNewBuildNotRunning(Closure body) {
+  try {
+    // As long as there is no a new build running.
+    if (nextBuild && !nextBuild?.isBuilding()) {
+      log(level: 'INFO', text: 'notifyIfPossible: notification was already done in a younger build.')
+      return
+    }
+  } catch(err) {
+    log(level: 'WARN', text: 'notifyIfPossible: could not fetch the nextBuild.')
+  }
+  body()
+}
 
-    // Supported scenarios to rebuild in case of a timeout issue:
-    // 1) If there is an issue in the upstream with the default checkout then the env variable
-    // won't be created.
-    // 2) If there is an issue with any of the dowstreamjobs related to the timeout.
-    if (isGitCheckoutIssue()) {
-      currentBuild.description = "Issue: timeout checkout ${currentBuild.description?.trim() ? currentBuild.description : ''}"
-      rebuildPipeline()
-    } else if (isAnyDownstreamJobFailedWithTimeout(downstreamJobs)) {  // description is handled with the analyseDownstreamJobsFailures method
-      rebuildPipeline()
-    } else {
-      log(level: 'DEBUG', text: "notifyBuildResult: either it was not a failure or GIT_BUILD_CAUSE='${env.GIT_BUILD_CAUSE?.trim()}'.")
+def aggregateGitHubCheck(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubCheck: aggregate all the messages in one single GitHub check.')
+      def status = 'neutral'
+      switch (currentBuild.currentResult) {
+        case 'SUCCESS':
+          status = 'success'
+          break
+        case 'FAILURE':
+          status = 'failure'
+          break
+        case 'ABORTED':
+          status = 'cancelled'
+          break
+        case 'UNSTABLE':
+          status = 'failure'
+          break
+      }
+      githubCheck(name: '.Status',
+                  description: args.notifications?.join(''),
+                  status: status,
+                  detailsUrl: env.BUILD_URL)
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubCheck: is disabled.')
+  }
+}
+
+def aggregateGitHubComments(def args=[:]) {
+  if (args.when) {
+    notifyIfNewBuildNotRunning() {
+      log(level: 'DEBUG', text: 'aggregateGitHubComments: aggregate all the messages in one single GH Comment.')
+      // Reuse the same commentFile from the notifyPR method to keep backward compatibility with the existing PRs.
+      githubPrComment(commentFile: 'comment.id', message: args.notifications?.join(''))
+    }
+  } else {
+    log(level: 'DEBUG', text: 'aggregateGitHubComments: is disabled.')
+  }
+}
+
+def addGitHubCustomComment(def args=[:]) {
+  args.newPRComment.findAll { k, v ->
+    catchError(message: "There were some failures when generating the customise comment for $k", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      unstash v
+      (new NotificationManager()).customPRComment(commentFile: k, file: v)
     }
   }
+}
 
-  // This is the one in charge to notify the parenstream with the likelihood downstream issues, if any
-  analyseDownstreamJobsFailures(downstreamJobs)
+def analyzeFlaky(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Generating flakey test analysis.")
+    catchError(message: "There were some failures when generating flakey test results", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def flakyComment = (new NotificationManager()).analyzeFlakey(args.data)
+      args.notifications << flakyComment
+    }
+  }
+}
+
+def createGitHubComment(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "createGitHubComment: Create GitHub comment.")
+    catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      def prComment = (new NotificationManager()).notifyPR(args.data)
+      args.notifications << prComment
+    }
+  }
 }
 
 def customisedEmail(String email) {
@@ -101,48 +229,33 @@ def customisedEmail(String email) {
       }
     }
     if (suffix?.trim()) {
-      return email.replace('@', "+${suffix}@")
+      return [email.replace('@', "+${suffix}@")]
     } else {
-      return email
+      return [email]
     }
   }
-  return ''
+  return []
 }
 
-def isGitCheckoutIssue() {
-  return currentBuild.currentResult == 'FAILURE' && !env.GIT_BUILD_CAUSE?.trim()
-}
-
-def analyseDownstreamJobsFailures(downstreamJobs) {
-  if (downstreamJobs.isEmpty()) {
-    log(level: 'DEBUG', text: 'notifyBuildResult: there are no downstream jobs to be analysed')
-  } else {
-    def description = []
-
-    // Get all the downstreamJobs that got a TimeoutIssueCause
-    downstreamJobs.findAll { k, v -> v instanceof FlowInterruptedException &&
-                                     v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
-                  .collectEntries { name, v ->
-                    [(name): v.getCauses().find { it -> it instanceof TimeoutIssuesCause }.getShortDescription()]
-                  }
-                  .each { jobName, issue ->
-                    description << issue
-                  }
-
-    // Explicitly identify the test cause issues that got failed test cases.
-    downstreamJobs.findAll { k, v -> v instanceof RunWrapper && v.resultIsWorseOrEqualTo('UNSTABLE') }
-                  .each { k, v ->
-                    def testResultAction = v.getRawBuild().getAction(AbstractTestResultAction.class)
-                    if (testResultAction != null && testResultAction.getFailCount() > 0 ) {
-                      description << "${k}#${v.getNumber()} got ${testResultAction.failCount} test failure(s)"
-                    }
-                  }
-    currentBuild.description = "${currentBuild.description?.trim() ? currentBuild.description : ''} ${description.join('\n')}"
-    log(level: 'DEBUG', text: "notifyBuildResult: analyseDownstreamJobsFailures just updated the description with '${currentBuild.description?.trim()}'.")
+def generateBuildReport(def args=[:]) {
+  log(level: 'DEBUG', text: 'notifyBuildResult: Generate build report.')
+  catchError(message: "There were some failures when generating the build report", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    return (new NotificationManager()).generateBuildReport(args.data)
   }
 }
 
-def isAnyDownstreamJobFailedWithTimeout(downstreamJobs) {
-  return downstreamJobs?.any { k, v -> v instanceof FlowInterruptedException &&
-                                       v.getCauses().find { it -> it instanceof TimeoutIssuesCause } }
+def notifyEmail(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: 'notifyBuildResult: Notifying results by email.')
+    (new NotificationManager()).notifyEmail(args.data)
+  }
+}
+
+def notifySlack(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
+    catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      (new NotificationManager()).notifySlack(args.data)
+    }
+  }
 }

@@ -20,17 +20,16 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class GithubPrReviewsStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubPrReviews.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubPrReviews.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def pr = script.call(token: 'token', repo: 'org/repo', pr: 1)
     printCallStack()
     assertTrue(pr instanceof java.util.ArrayList)
@@ -39,7 +38,6 @@ class GithubPrReviewsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorNoRepo() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(token: 'token', user: 1)
     } catch(e){
@@ -51,7 +49,6 @@ class GithubPrReviewsStepTests extends ApmBasePipelineTest {
 
   @Test
   void testErrorNoPR() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(token: 'token', repo: 'org/repo')
     } catch(e){

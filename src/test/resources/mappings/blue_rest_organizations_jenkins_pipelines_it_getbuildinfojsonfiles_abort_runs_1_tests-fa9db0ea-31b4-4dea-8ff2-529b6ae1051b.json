@@ -1,0 +1,23 @@
+{
+  "id" : "fa9db0ea-31b4-4dea-8ff2-529b6ae1051b",
+  "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_abort_runs_1_tests",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/tests/?status=FAILED",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "body" : "{\n  \"message\" : \"no tests\",\n  \"code\" : 404,\n  \"errors\" : [ ]\n}",
+    "headers" : {
+      "Date" : "Thu, 30 Apr 2020 11:46:20 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "7f9ea7cf",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "application/json",
+      "Server" : "Jetty(9.4.27.v20200227)"
+    }
+  },
+  "uuid" : "fa9db0ea-31b4-4dea-8ff2-529b6ae1051b",
+  "persistent" : true,
+  "insertionIndex" : 23
+}

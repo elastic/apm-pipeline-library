@@ -39,8 +39,10 @@ pipeline {
   stages {
     stage('Run Tasks'){
       steps {
-        build(job: 'apm-shared/apm-test-pipeline',
-          parameters: [string(name: 'branch_specifier', value: 'master')],
+        build(job: 'apm-shared/apm-test-pipeline-mbp/master',
+          parameters: [
+            booleanParam(name: 'Run_As_Master_Branch', value: true),
+          ],
           propagate: false,
           wait: false
         )
@@ -50,14 +52,16 @@ pipeline {
             string(name: 'registry', value: 'docker.elastic.co'),
             string(name: 'tag_prefix', value: 'observability-ci'),
             string(name: 'secret', value: 'secret/apm-team/ci/docker-registry/prod'),
+            booleanParam(name: 'apm_integration_testing', value: true),
+            booleanParam(name: 'apm_server', value: true),
+            booleanParam(name: 'helm_kubectl', value: true),
             booleanParam(name: 'nodejs', value: true),
+            booleanParam(name: 'opbot', value: true),
+            booleanParam(name: 'oracle_instant_client', value: true),
             booleanParam(name: 'python', value: true),
             booleanParam(name: 'ruby', value: true),
+            booleanParam(name: 'rum', value: true),
             booleanParam(name: 'weblogic', value: true),
-            booleanParam(name: 'oracle_instant_client', value: true),
-            booleanParam(name: 'apm_integration_testing', value: true),
-            booleanParam(name: 'helm_kubectl', value: true),
-            booleanParam(name: 'jruby', value: true),
             string(name: 'branch_specifier', value: 'master')
           ],
           propagate: false,
@@ -76,6 +80,81 @@ pipeline {
           propagate: false,
           wait: false
         )
+
+        build(job: 'apm-ui/apm-ui-e2e-tests-mbp/master',
+          parameters: [
+            booleanParam(name: 'FORCE', value: true),
+          ],
+          propagate: false,
+          wait: false
+        )
+      }
+    }
+    stage('Third-party license scan'){
+      matrix {
+        axes {
+          axis {
+            name 'REPO'
+            values (
+              'apm-agent-dotnet',
+              'apm-agent-go',
+              'apm-agent-java',
+              'apm-agent-js-core',
+              'apm-agent-nodejs-opentracing',
+              'apm-agent-nodejs',
+              'apm-agent-php',
+              'apm-agent-python-benchmarks',
+              'apm-agent-python',
+              'apm-agent-ruby',
+              'apm-agent-rum-js',
+              'apm-integration-testing',
+              'apm-pipeline-library',
+              'apm-server',
+              'beats',
+              //'code',
+              //'ctags-langserver',
+              //'ctags',
+              'ecs-dotnet',
+              'ecs-logging-go-zap',
+              'ecs-logging-java',
+              'ecs-logging-php',
+              'ecs-logging-python',
+              //'go-langserver-plugin',
+              //'go-langserver',
+              'go-lookslike',
+              //'gradle-code-manifest-plugin',
+              'hey-apm',
+              'integrations',
+              //'java-langserver',
+              //'javascript-typescript-langserver',
+              //'node-ctags',
+              'observability-test-environments',
+              'opbeans-dotnet',
+              'opbeans-flask',
+              'opbeans-frontend',
+              'opbeans-go',
+              'opbeans-ruby',
+              'package-registry',
+              'package-storage',
+              //'typescript-language-server'
+            )
+          }
+        }
+        stages {
+          stage('License Scan'){
+            steps {
+              build(
+                job: 'apm-shared/license-scan-general',
+                parameters: [
+                  string(name: 'branch_specifier', value: 'master'),
+                  string(name: 'repo', value:"${env.REPO}")
+                ],
+                wait: false,
+                quietPeriod: 10
+              )
+            }
+          }
+        }
       }
     }
   }

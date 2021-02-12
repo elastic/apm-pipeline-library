@@ -16,8 +16,7 @@
 // under the License.
 
 import co.elastic.mock.StepsMock
-import co.elastic.TimeoutIssuesCause
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import co.elastic.BuildException
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
@@ -26,17 +25,16 @@ import static org.junit.Assert.assertTrue
 import static org.hamcrest.CoreMatchers.is
 
 public class BuildStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/build.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/build.groovy')
   }
 
   @Test
   void testSuccess() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(job: 'foo')
     printCallStack()
     assertTrue(result != null)
@@ -46,7 +44,6 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNestedJob() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(job: 'nested/foo')
     printCallStack()
     assertTrue(result != null)
@@ -56,70 +53,36 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void testException() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('nested » foo #1', 'nested/foo')
     assertTrue(result.contains("${env.JENKINS_URL}job/nested/job/foo/1/display/redirect"))
   }
 
   @Test
   void testExceptionWithoutTheFormat() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('nested » foo', 'nested/foo')
     assertTrue(result.contains("Can not determine redirect link"))
   }
 
   @Test
   void testAnotherObject() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.getRedirectLink('AnotherObject', 'foo')
     assertTrue(result.contains("Can not determine redirect link"))
   }
 
   @Test
-  void test_throwFlowInterruptedException() throws Exception {
-    def script = loadScript(scriptName)
+  void test_throwBuildException() throws Exception {
     try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
+      script.throwBuildException(StepsMock.mockRunWrapperWithFailure('foo/bar'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
       assertThat(e.getResult().toString(), is('FAILURE'))
-      assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue ''"))
-  }
-
-  @Test
-  void test_throwFlowInterruptedException_with_null_description() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', null))
-    } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
-      assertThat(e.getResult().toString(), is('FAILURE'))
-      assertFalse(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue ''"))
-  }
-
-  @Test
-  void test_throwFlowInterruptedException_caused_by_timeout() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.throwFlowInterruptedException(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
-    } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
-      assertThat(e.getResult().toString(), is('FAILURE'))
-      assertTrue(e.getCauses().any { it -> it instanceof TimeoutIssuesCause })
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "bar#1 with issue 'Issue: checkout timeout'"))
   }
 
   @Test
   void test_propagage_failure_with_null_object() throws Exception {
-    def script = loadScript(scriptName)
     script.propagateFailure(null)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))
@@ -127,11 +90,10 @@ public class BuildStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_propagage_failure_with_an_object() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.propagateFailure(StepsMock.mockRunWrapperWithFailure('foo/bar', 'Issue: checkout timeout'))
     } catch (e) {
-      assertTrue(e instanceof FlowInterruptedException)
+      assertTrue(e instanceof BuildException)
     }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'buildInfo is not an object'))

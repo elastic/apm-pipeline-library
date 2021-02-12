@@ -1,0 +1,10 @@
+Look for the GitHub issues in the current project given the labels to be filtered with. It returns
+a dictionary with the issue id as primary key and then the status, title, labels and date values.
+
+```
+  // Look for all the open GitHub issues with labels foo and bar
+  githubIssues(labels: [ 'foo', 'bar' ])
+```
+
+* *labels*: list of labels to be filtered. Optional
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken

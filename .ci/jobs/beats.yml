@@ -1,4 +1,5 @@
 ---
 - job:
     name: beats
+    description: beats
     project-type: folder

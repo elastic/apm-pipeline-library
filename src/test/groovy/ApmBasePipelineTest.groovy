@@ -15,28 +15,34 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.lesfurets.jenkins.unit.BasePipelineTest
+import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
+import co.elastic.mock.GithubEnvMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static org.junit.Assert.assertTrue
 
-class ApmBasePipelineTest extends BasePipelineTest {
+class ApmBasePipelineTest extends DeclarativePipelineTest {
+  def script
   Map env = [:]
+  Map params = [:]
 
   String SHA = '29480a51'
   String REPO_URL = 'http://github.com/org/repo.git'
   String EXAMPLE_URL = 'https://ec.example.com:9200'
 
   enum VaultSecret{
+    ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
-    SECRET('secret'), SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
-    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'),
+    SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
+    SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
+    SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
 
     VaultSecret(String value) {
       this.value = value
@@ -59,22 +65,27 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
     env.BRANCH_NAME = 'master'
     env.BUILD_ID = '1'
+    env.BUILD_NUMBER = '1'
     env.JENKINS_URL = 'http://jenkins.example.com:8080/'
     env.BUILD_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}/${env.BUILD_ID}/"
     env.JOB_BASE_NAME = 'master'
     env.JOB_NAME = "folder/mbp/${env.JOB_BASE_NAME}"
+    env.JOB_URL = "${env.JENKINS_URL}job/folder/job/mpb/job/${env.BRANCH_NAME}"
     env.RUN_DISPLAY_URL = "${env.JENKINS_URL}job/folder/job/mbp/job/${env.JOB_BASE_NAME}/${env.BUILD_ID}/display/redirect"
     env.WORKSPACE = 'WS'
+    env.VAULT_ADDR = 'http://secrets.example.com'
 
     registerDeclarativeMethods()
     registerScriptedMethods()
     registerSharedLibraryMethods()
 
     binding.setVariable('env', env)
-    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setVariable('params', params)
     binding.setProperty('docker', new DockerMock())
-    binding.setProperty('steps', new StepsMock())
+    binding.setProperty('getVaultSecret', new GetVaultSecretMock())
+    binding.setProperty('githubEnv', new GithubEnvMock())
     binding.setProperty('pullRequest', new PullRequestMock())
+    binding.setProperty('steps', new StepsMock())
   }
 
   void registerDeclarativeMethods() {
@@ -83,6 +94,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('ansiColor', [String.class], null)
     helper.registerAllowedMethod('agent', [Closure.class], null)
     helper.registerAllowedMethod('beforeAgent', [Boolean.class], { true })
+    helper.registerAllowedMethod('cleanup', [Closure.class], null)
     helper.registerAllowedMethod('disableResume', [], null)
     helper.registerAllowedMethod('durabilityHint', [String.class], null)
     helper.registerAllowedMethod('failure', [Closure.class], { body -> body() })
@@ -90,11 +102,35 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('issueCommentTrigger', [String.class], null)
     helper.registerAllowedMethod('label', [String.class], null)
     helper.registerAllowedMethod('options', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('parameters', [Closure.class], { Closure parametersBody ->
+      def paramsBefore = [params: binding.getVariable('params')]
+      println "Parameters section - original params vars: ${paramsBefore.toString()}"
+      parametersBody.resolveStrategy = Closure.DELEGATE_FIRST
+      parametersBody.delegate = paramsBefore
+      helper.registerAllowedMethod('string', [Map.class], paramInterceptor)
+      helper.registerAllowedMethod('booleanParam', [Map.class], paramInterceptor)
+      parametersBody()
+
+      def paramsNew = paramsBefore.params
+      paramsBefore.each { k, v ->
+        if (k != 'params') {
+          paramsNew["$k"] = v
+        }
+      }
+      println "Parameters section - params vars set to: ${paramsNew.toString()}"
+      binding.setVariable('params', paramsNew)
+
+      // As long as JENKINS-41929 is open the params need to be transformed to
+      // env variables, so this is the way we enforce that.
+      binding.setVariable('env', env << paramsNew)
+      println "Env section - params vars set to: ${env.toString()}"
+    })
     helper.registerAllowedMethod('pipeline', [Closure.class], null)
     helper.registerAllowedMethod('post', [Closure.class], null)
     helper.registerAllowedMethod('quietPeriod', [Integer.class], null)
     helper.registerAllowedMethod('rateLimitBuilds', [Map.class], null)
     helper.registerAllowedMethod('script', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('setEnvVar', [String.class, String.class],{ var, value -> env[var] = value })
     helper.registerAllowedMethod('skipDefaultCheckout', [], null)
     helper.registerAllowedMethod('stage', [Closure.class], null)
     helper.registerAllowedMethod('stage', [String.class, Closure.class], { stageName, body ->
@@ -188,27 +224,29 @@ class ApmBasePipelineTest extends BasePipelineTest {
 
   void registerScriptedMethods() {
     helper.registerAllowedMethod('archive', [String.class], null)
+    helper.registerAllowedMethod('archiveArtifacts', [String.class], null)
     helper.registerAllowedMethod('bat', [Map.class], { 'OK' })
     helper.registerAllowedMethod('bat', [String.class], null)
     helper.registerAllowedMethod('booleanParam', [Map.class], null)
-    helper.registerAllowedMethod('brokenTestsSuspects', { "OK" })
-    helper.registerAllowedMethod('brokenBuildSuspects', { "OK" })
+    helper.registerAllowedMethod('brokenTestsSuspects', { "OK (mocked)" })
+    helper.registerAllowedMethod('brokenBuildSuspects', { "OK (mocked)" })
     helper.registerAllowedMethod('build', [Map.class], null)
-    helper.registerAllowedMethod('catchError', [Closure.class], { c ->
+    helper.registerAllowedMethod('catchError', [Closure.class], { body ->
       try{
-        c()
+        body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
-    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, c ->
+    helper.registerAllowedMethod('catchError', [Map.class, Closure.class], { m, body ->
       try{
-        c()
+        body()
       } catch(e){
-        //NOOP
+        println 'INFO: details from the catchError mocked step. Only stdout. Error message: ' + e
       }
     })
     helper.registerAllowedMethod('checkout', [String.class], null)
+    helper.registerAllowedMethod('copyArtifacts', [Map.class], {true})
     helper.registerAllowedMethod('credentials', [String.class], { s -> s })
     helper.registerAllowedMethod('deleteDir', [], null)
     helper.registerAllowedMethod('dir', [String.class, Closure.class], { i, c ->
@@ -237,20 +275,36 @@ class ApmBasePipelineTest extends BasePipelineTest {
       throw new Exception(s)
     })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { true })
+    helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
         throw new Exception('Failed')
       }
     })
+    helper.registerAllowedMethod('googleStorageDownload', [Map.class], {true})
+    helper.registerAllowedMethod('googleStorageUpload', [Map.class], {true})
     helper.registerAllowedMethod('isUnix', [ ], { true })
     helper.registerAllowedMethod('junit', [Map.class], null)
+    helper.registerAllowedMethod('lastWithArtifacts', [ ], null)
+    helper.registerAllowedMethod('libraryResource', [String.class], { path ->
+      File resource = new File("resources/${path}")
+      if (resource.exists()) {
+        return resource.getText()
+      }
+      return ''
+    })
     helper.registerAllowedMethod('mail', [Map.class], { m ->
       println('Writting mail-out.html file with the email result')
       def f = new File("target/mail-out-${env.TEST}.html")
       f.write(m.body)
       println f.toString()
     })
+    helper.registerAllowedMethod('powershell', [Map.class], null)
+    helper.registerAllowedMethod('powershell', [String.class], null)
+    helper.registerAllowedMethod('pwd', [Map.class], { 'folder' })
+    helper.registerAllowedMethod('readFile', [String.class], { '' })
     helper.registerAllowedMethod('readFile', [Map.class], { '' })
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
@@ -271,6 +325,7 @@ class ApmBasePipelineTest extends BasePipelineTest {
         throw lastError
       }
     })
+    helper.registerAllowedMethod('slackSend', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sleep', [Integer.class], null)
     helper.registerAllowedMethod('sh', [Map.class], { 'OK' })
     helper.registerAllowedMethod('sh', [String.class], { 'OK' })
@@ -295,9 +350,30 @@ class ApmBasePipelineTest extends BasePipelineTest {
   }
 
   void registerSharedLibraryMethods() {
+    helper.registerAllowedMethod('abortBuild', [Map.class],  { m ->
+      def script = loadScript('vars/abortBuild.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('base64encode', [Map.class], { return "YWRtaW46YWRtaW4xMjMK" })
+    helper.registerAllowedMethod('beatsWhen', [Map.class], null)
     helper.registerAllowedMethod('cancelPreviousRunningBuilds', [Map.class], null)
+    helper.registerAllowedMethod('cmd', [Map.class], { m ->
+      def script = loadScript('vars/cmd.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('cobertura', [Map.class], null)
+    helper.registerAllowedMethod('convertGoTestResults', [Map.class], { m ->
+      def script = loadScript('vars/convertGoTestResults.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('createFileFromTemplate', [Map.class],  { m ->
+      def script = loadScript('vars/createFileFromTemplate.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('detailsURL', [Map.class],  { m ->
+      def script = loadScript('vars/detailsURL.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
@@ -305,10 +381,26 @@ class ApmBasePipelineTest extends BasePipelineTest {
     })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
+    helper.registerAllowedMethod('getBuildInfoJsonFiles', [Map.class], { m ->
+      if (m.containsKey('returnData') && m.returnData) {
+        return [
+          build: {},
+          buildStatus: currentBuild.currentResult,
+          changeSet: [],
+          log: '',
+          stepsErrors: [],
+          testsErrors: [],
+          testsSummary: []
+        ]
+      }
+      true
+    })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
+    helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], null)
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
+    helper.registerAllowedMethod('getStageId', [], null)
     helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
@@ -316,29 +408,124 @@ class ApmBasePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('getVaultSecret', [String.class], { s ->
       getVaultSecret(s)
     })
+    helper.registerAllowedMethod('gh', [Map.class], { m ->
+      def script = loadScript('vars/gh.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('gitCheckout', [Map.class], null)
     helper.registerAllowedMethod('gitCmd', [Map.class], null)
     helper.registerAllowedMethod('githubApiCall', [Map.class], {
       return [[login: 'foo'], [login: 'bar'], [login: 'elastic']]
     })
     helper.registerAllowedMethod('githubBranchRef', [], {return 'master'})
-    helper.registerAllowedMethod('githubEnv', [], null)
+    helper.registerAllowedMethod('githubEnv', {
+      def script = loadScript('vars/githubEnv.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('githubIssues', [Map.class], {
+      def script = loadScript('vars/githubIssues.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('githubPrCheckApproved', [], { return true })
+    helper.registerAllowedMethod('githubPrComment', [Map.class], { m ->
+      def script = loadScript('vars/githubPrComment.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
     })
+    helper.registerAllowedMethod('githubPrLabels', [], {
+      def script = loadScript('vars/githubPrLabels.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
+    helper.registerAllowedMethod('githubTraditionalPrComment', [Map.class], { m ->
+      def script = loadScript('vars/githubTraditionalPrComment.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
+    helper.registerAllowedMethod('goDefaultVersion', [],  {
+      def ret = '1.15.6'
+      if(env.GO_VERSION != null){
+        ret = env.GO_VERSION
+      }
+      return ret
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
+    helper.registerAllowedMethod('installTools', [List.class], { l ->
+      def script = loadScript('vars/installTools.groovy')
+      return script.call(l)
+    })
+    helper.registerAllowedMethod('isArm', { return false })
+    helper.registerAllowedMethod('isBranch', {
+      def script = loadScript('vars/isBranch.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
+      def script = loadScript('vars/isInstalled.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('isPR', {
+      def script = loadScript('vars/isPR.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('isTag', {
+      def script = loadScript('vars/isTag.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
+    helper.registerAllowedMethod('is32', {
+      def script = loadScript('vars/is32.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('is32arm', {
+      def script = loadScript('vars/is32arm.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('is64arm', {
+      def script = loadScript('vars/is64arm.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('is32x86', {
+      def script = loadScript('vars/is32x86.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('is64x86', {
+      def script = loadScript('vars/is64x86.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
+    helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
+    helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
+    helper.registerAllowedMethod('nodeArch', [], {
+      def script = loadScript('vars/nodeArch.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('githubCheck', [Map.class], { m ->
+      if(m.name.equalsIgnoreCase('failed')){
+        updateBuildStatus('FAILURE')
+        throw new Exception('Failed')
+      }
+    })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
-    helper.registerAllowedMethod('rebuildPipeline', [], { true })
+    helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/retryWithSleep.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('tap2Junit', [Map.class], { m ->
+      def script = loadScript('vars/tap2Junit.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('tar', [Map.class], { m ->
+      def script = loadScript('vars/tar.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('toJSON', [Map.class], { m ->
       def script = loadScript('vars/toJSON.groovy')
       return script.call(m)
@@ -347,30 +534,62 @@ class ApmBasePipelineTest extends BasePipelineTest {
       def script = loadScript('vars/toJSON.groovy')
       return script.call(s)
     })
+    helper.registerAllowedMethod('untar', [Map.class], { m ->
+      def script = loadScript('vars/untar.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
+    helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGoEnv.groovy')
+      return script.call(m, c)
+    })
+    helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
+    })
+    helper.registerAllowedMethod('withGoEnvWindows', [Map.class, Closure.class], { m, c ->
+      return true
+    })
+    helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
+      def script = loadScript('vars/withMageEnv.groovy')
+      return script.call(c)
+    })
   }
 
   def getVaultSecret(String s) {
     if(VaultSecret.SECRET.equals(s) || VaultSecret.SECRET_NAME.equals(s) ||  VaultSecret.BENCHMARK.equals(s)){
       return [data: [ user: 'username', password: 'user_password', url: "${EXAMPLE_URL}", apiKey: 'my-api-key']]
     }
-    if(VaultSecret.SECRET_ERROR.equals(s)){
-      return [errors: 'Error message']
+    if(VaultSecret.SECRET_ALT_PASSKEY.equals(s)){
+      return [data: [user: 'username', alt_pass_key: 'user_password']]
     }
-    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
-      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
+    if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
+      return [data: [alt_user_key: 'username', password: 'user_password']]
     }
     if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
-    if(VaultSecret.SECRET_TOTP.equals(s)){
-      return [data: [ code: '123456' ], renewable: false]
+    if(VaultSecret.SECRET_ERROR.equals(s)){
+      return [errors: 'Error message']
+    }
+    if(VaultSecret.SECRET_GCP.equals(s)){
+      return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
+      return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]
+    }
+    if(VaultSecret.SECRET_NOT_VALID.equals(s)){
+      return [data: [ user: null, password: null, url: null, apiKey: null, token: null ]]
     }
     if(VaultSecret.SECRET_NPMRC.equals(s) || VaultSecret.SECRET_NPMJS.equals(s)){
       return [data: [ token: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_TOTP.equals(s)){
+      return [data: [ code: '123456' ], renewable: false]
     }
     return null
   }
@@ -404,5 +623,44 @@ class ApmBasePipelineTest extends BasePipelineTest {
     return helper.callStack.findAll { call ->
       call.methodName == methodName
     }.size() == compare
+  }
+
+  def assertMethodCallPatternOccurrences(String methodName, String pattern, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.any { call ->
+      (callArgsToString(call) =~ pattern).count  == compare
+    }
+  }
+
+  def testMissingArgument(String parameter='', String message='parameter is required', Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${parameter} ${message}"))
+    assertJobStatusFailure()
+  }
+
+  def testWindows(Closure body) {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet.'))
+    assertJobStatusFailure()
+  }
+
+  def printCallStack(Closure body){
+    try {
+      body()
+    } finally {
+      printCallStack()
+    }
   }
 }

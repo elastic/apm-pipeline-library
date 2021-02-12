@@ -21,17 +21,16 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class GitStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/git.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/git.groovy')
   }
 
   @Test
   void testRetry() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){
@@ -39,11 +38,5 @@ class GitStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default git'))
-
-    // The fixed number of retries is 3. This particular test scenario only covers when the
-    // checkout failed three times. Therefore the number of log calls is 4:
-    //   - the three regarding the retry
-    //   - the very first one regarding the `Override default git` log trace.
-    assertTrue(assertMethodCallOccurrences('log', 4))
   }
 }

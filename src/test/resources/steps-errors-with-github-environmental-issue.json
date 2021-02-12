@@ -1,0 +1,14 @@
+[
+  {
+    "displayDescription": "Server returned HTTP response code: 500, message: '500 Internal Server Error' for URL: https://api.g",
+    "displayName": "Notifies GitHub of the status of a Pull Request",
+    "durationInMillis": 447,
+    "id": "6672",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-01-19T10:47:45.782+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-23560/runs/1/steps/6672/log"
+  }
+]

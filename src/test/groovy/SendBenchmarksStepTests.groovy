@@ -21,23 +21,28 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class SendBenchmarksStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/sendBenchmarks.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/sendBenchmarks.groovy')
 
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
+
+    helper.registerAllowedMethod('withGoEnv', [Map.class, Closure.class], { m, b -> b()  })
+    helper.registerAllowedMethod('withGoEnv', [Closure.class], { b -> b()  })
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return "{'errors': false}"
+    })
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call()
     printCallStack()
     assertJobStatusSuccess()
@@ -45,7 +50,6 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true)
     printCallStack()
     assertJobStatusSuccess()
@@ -53,7 +57,6 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     try{
       def ret = script.call(secret: VaultSecret.SECRET_NOT_VALID.toString())
     } catch(e){
@@ -67,7 +70,6 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSecretError() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET_ERROR.toString())
     } catch(e){
@@ -81,7 +83,6 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWrongProtocol() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call(secret: VaultSecret.SECRET.toString(), url: 'ht://wrong.example.com')
     } catch(e){
@@ -95,81 +96,41 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
+    testWindows() {
       script.call()
-    } catch(e){
-      //NOOP
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'sendBenchmarks: windows is not supported yet.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingSecretArgument() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun() {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('secret') {
+      script.prepareAndRun() { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: secret argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingUrlArgument() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString()) {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('url_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString()) { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: url_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingUserArgument() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_') {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('user_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_') { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: user_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testMissingPassArgument() throws Exception {
-    def script = loadScript(scriptName)
-    try {
-      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_') {
-
-      }
-    } catch(e){
-      //NOOP
+    testMissingArgument('pass_var') {
+      script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_') { }
     }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: pass_var argument is required.'))
-    assertJobStatusFailure()
   }
 
   @Test
   void testPrepareAndRunWithSecretError() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     try {
       script.prepareAndRun(secret: VaultSecret.SECRET_ERROR.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
@@ -187,7 +148,6 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testPrepareAndRunWithSecretNotFound() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     try{
       script.prepareAndRun(secret: VaultSecret.SECRET_NOT_VALID.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
@@ -204,30 +164,37 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
 
   @Test
   void testPrepareAndRun() throws Exception {
-    def script = loadScript(scriptName)
     def isOK = false
     script.prepareAndRun(secret: VaultSecret.SECRET.toString(), url_var: 'URL_', user_var: 'USER_', pass_var: 'PASS_') {
       isOK = true
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('withEnv', "URL_=${EXAMPLE_URL}, USER_=username, PASS_=user_password"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=URL_, password=${EXAMPLE_URL}"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=USER_, password=username"))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', "var=PASS_, password=user_password"))
     assertJobStatusSuccess()
   }
 
   @Test
   void testPrepareAndRunInWindows() throws Exception {
-    def script = loadScript(scriptName)
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.prepareAndRun() {
+    testWindows() {
+      script.prepareAndRun() { }
+    }
+  }
 
-      }
-    } catch(e){
-      //NOOP
+  @Test
+  void test_response_with_errors() throws Exception {
+    helper.registerAllowedMethod('httpRequest', [Map.class], {
+      return "{'errors': 'true'}"
+    })
+    try {
+      script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true)
+    } catch(e) {
+      // NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'prepareAndRun: windows is not supported yet.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: there was a response with an error. Review response'))
     assertJobStatusFailure()
   }
 }

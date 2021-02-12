@@ -3,13 +3,13 @@
   "_links": {
     "self": {
       "_class": "io.jenkins.blueocean.rest.hal.Link",
-      "href": "/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/runs/49/blueTestSummary/"
+      "href": "/blue/rest/organizations/jenkins/pipelines/folder/pipelines/mbp/pipelines/branch/runs/49/blueTestSummary/"
     }
   },
-  "existingFailed": 1,
-  "failed": 1,
+  "existingFailed": 0,
+  "failed": 0,
   "fixed": 0,
-  "passed": 120,
+  "passed": 121,
   "regressions": 0,
   "skipped": 0,
   "total": 121

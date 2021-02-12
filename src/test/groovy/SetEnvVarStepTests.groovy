@@ -20,19 +20,26 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class SetEnvVarStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/setEnvVar.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/setEnvVar.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     script.call('MY_VAR', 'value')
     assertTrue(env['MY_VAR'] == 'value')
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_boolean() throws Exception {
+    script.call('MY_VAR', true)
+    assertTrue(env['MY_VAR'] == 'true')
     printCallStack()
     assertJobStatusSuccess()
   }

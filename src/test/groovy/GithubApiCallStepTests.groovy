@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class GithubApiCallStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/githubApiCall.groovy'
 
   def shInterceptor = {
     return """[{
@@ -45,12 +44,12 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/githubApiCall.groovy')
   }
 
   @Test
   void test() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     def ret = script.call(url: "dummy", token: "dummy")
     printCallStack()
     assertTrue(ret[0].user.login == "githubusername")
@@ -60,7 +59,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   @Test
   void testData() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     try {
       script.call(url: "dummy", token: "dummy", data: ["foo": "bar"])
     } catch(e) {
@@ -68,12 +66,25 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to POST"))
+    assertTrue(assertMethodCallContainsPattern('httpRequest', 'POST'))
+  }
+
+  @Test
+  void testData_with_patch() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    try {
+      script.call(url: "dummy", token: "dummy", data: ["foo": "bar"], method: 'PATCH')
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern("log", "gitHubApiCall: found data param. Switching to PATCH"))
+    assertTrue(assertMethodCallContainsPattern('httpRequest', 'PATCH'))
   }
 
   @Test
   void testNoData() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     try {
       script.call(url: "dummy", token: "dummy")
     } catch(e) {
@@ -86,7 +97,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   @Test
   void testErrorNoToken() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     try {
       script.call(url: "dummy")
     } catch(e){
@@ -99,7 +109,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   @Test
   void testErrorNoUrl() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     try {
       script.call(token: 'dummy')
     } catch(e){
@@ -118,7 +127,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
         "documentation_url": "https://developer.github.com/v3"
       }"""
     })
-    def script = loadScript(scriptName)
     try {
       script.call(token: "dummy", url: "http://error")
     } catch(e) {
@@ -133,7 +141,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       throw new Exception('Failure')
     })
-    def script = loadScript(scriptName)
     try{
       script.call(token: "dummy", url: "http://error")
     } catch(e) {
@@ -146,7 +153,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   @Test
   void testCache() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
-    def script = loadScript(scriptName)
     def ret0 = script.call(url: "dummy", token: "dummy")
     def ret1 = script.call(url: "dummy", token: "dummy")
     printCallStack()
@@ -156,11 +162,21 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_noCache() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], shInterceptor)
+    def ret0 = script.call(url: "dummy", token: "dummy")
+    def ret1 = script.call(url: "dummy", token: "dummy", noCache: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from GitHub.'))
+    assertFalse(assertMethodCallContainsPattern('log', 'githubApiCall: get the JSON from cache.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testResponseNull() throws Exception {
     helper.registerAllowedMethod("httpRequest", [Map.class], {
       return null
     })
-    def script = loadScript(scriptName)
     try {
       script.call(token: "dummy", url: "http://error")
     } catch(e) {
@@ -175,7 +191,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('httpRequest', [Map.class], {
       return ''
     })
-    def script = loadScript(scriptName)
     script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
@@ -186,7 +201,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('httpRequest', [Map.class], {
       return null
     })
-    def script = loadScript(scriptName)
     script.call(allowEmptyResponse: true, token: 'dummy', url: 'dummy')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'allowEmptyResponse is enabled and there is an empty/null response.'))
@@ -200,7 +214,6 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('toJSON', [String.class], { s ->
       return null
     })
-    def script = loadScript(scriptName)
     try {
       script.call(token: "dummy", url: "http://error")
     } catch(e) {

@@ -1,0 +1,7 @@
+Whether the architecture is a x86 64 bits using the `nodeArch` step
+
+```
+    whenTrue(is64x86()) {
+        ...
+    }
+```

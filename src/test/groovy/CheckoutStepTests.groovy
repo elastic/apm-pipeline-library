@@ -21,17 +21,16 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class CheckoutStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/checkout.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/checkout.groovy')
   }
 
   @Test
   void testRetry() throws Exception {
-    def script = loadScript(scriptName)
     try {
       script.call()
     } catch(e){
@@ -39,7 +38,5 @@ class CheckoutStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default checkout'))
-    assertTrue(assertMethodCallOccurrences('log', 4))
   }
-
 }

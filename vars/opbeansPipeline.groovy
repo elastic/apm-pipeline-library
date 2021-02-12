@@ -52,7 +52,7 @@ def call(Map pipelineParams) {
       quietPeriod(10)
     }
     triggers {
-      issueCommentTrigger('(?i).*jenkins\\W+run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+      issueCommentTrigger('(?i)(.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
     }
     stages {
       /**
@@ -75,6 +75,20 @@ def call(Map pipelineParams) {
             unstash 'source'
             dir(BASE_DIR){
               sh 'make build'
+            }
+          }
+        }
+        post {
+          always {
+            dir(BASE_DIR){
+              // Let's store the docker log files for debugging purposes
+              script {
+                if (fileExists('docker-compose.yml')) {
+                  sh(label: 'docker-compose start', script: 'docker-compose up --build -d', returnStatus: true)
+                  dockerLogs()
+                  sh(label: 'docker-compose stop', script: 'docker-compose down -v', returnStatus: true)
+                }
+              }
             }
           }
         }
@@ -138,7 +152,7 @@ def call(Map pipelineParams) {
         when {
           anyOf {
             branch 'master'
-            tag pattern: 'v\\d+\\.\\d+.*', comparator: 'REGEXP'
+            tag pattern: '(v\\d+\\.\\d+|@).*', comparator: 'REGEXP'
           }
         }
         environment {
@@ -151,8 +165,16 @@ def call(Map pipelineParams) {
                 deleteDir()
                 unstash 'source'
                 dir(BASE_DIR){
+                  // opbeans-frontend uses a different tag versioning
+                  script {
+                    if (env.VERSION.contains('@')) {
+                      env.TAG = env.VERSION.replaceAll('.*@', 'agent-')
+                    } else {
+                      env.TAG = env.VERSION
+                    }
+                  }
                   dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                  sh "VERSION=${env.VERSION} make publish"
+                  sh "VERSION=${env.TAG} make publish"
                 }
               }
             }
@@ -177,9 +199,8 @@ def call(Map pipelineParams) {
 }
 
 def runBuildITs(String repo, String stagingDockerImage) {
-  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(),
-        wait: env.CHANGE_ID?.trim() ? false : true,
-        parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
+  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(), wait: waitIfNotPR(),
+        parameters: [string(name: 'INTEGRATION_TEST', value: 'Opbeans'),
                      string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
                      string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
                      string(name: 'GITHUB_CHECK_REPO', value: repo),
@@ -203,7 +224,7 @@ def generateBuildOpts(String repo, String stagingDockerImage) {
 }
 
 def waitIfNotPR() {
-  return env.CHANGE_ID?.trim() ? false : true
+  return !isPR()
 }
 
 def getForkedRepoOrElasticRepo(String repo) {

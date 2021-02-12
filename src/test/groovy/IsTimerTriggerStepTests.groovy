@@ -21,12 +21,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsTimerTriggerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isTimerTrigger.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isTimerTrigger.groovy')
   }
 
   @Test
@@ -40,7 +40,6 @@ class IsTimerTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -60,7 +59,6 @@ class IsTimerTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)

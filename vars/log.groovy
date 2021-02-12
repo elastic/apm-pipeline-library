@@ -26,9 +26,9 @@ the log level by default is INFO.
  log(level: 'INFO', text: 'message')
 
 */
-def call(Map params = [:]) {
-  def level = params.containsKey('level') ? getLogLevelNum(params.level) : getLogLevelNum('DEBUG')
-  def text = params.containsKey('text') ? params.text : ''
+def call(Map args = [:]) {
+  def level = args.containsKey('level') ? getLogLevelNum(args.level) : getLogLevelNum('DEBUG')
+  def text = args.containsKey('text') ? args.text : ''
   def currentLevel = getLogLevelNum(env?.PIPELINE_LOG_LEVEL)
   if( level >= currentLevel){
     logMessage(level, text)

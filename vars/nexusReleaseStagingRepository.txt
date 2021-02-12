@@ -1,0 +1,18 @@
+Release a Nexus staging repository
+
+```
+nexusReleaseStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "co.elastic.foo"
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* secret: Vault secret to retrieve Nexus credentials
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier of staging repository
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)

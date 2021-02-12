@@ -129,7 +129,7 @@ For more information:
   https://www.shellcheck.net/wiki/SC1072 --  Fix any mentioned problems and t...
 
 Yaml: lint......................................................................................Passed
-Check Shell scripts syntax corectness...........................................................Passed
+Check Shell scripts syntax correctness..........................................................Passed
 Ensure neither abstract classes nor traits are used.............................................Passed
 Ensure JsonSlurperClassic is used instead of non-serializable JsonSlurper.......................Passed
 Check syntax of the Jenkinsfiles................................................................Passed

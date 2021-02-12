@@ -1,0 +1,5 @@
+Get the stage ID in the current context.
+
+```
+def stage = getStageId()
+```

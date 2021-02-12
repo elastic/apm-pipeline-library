@@ -15,9 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.mock.IssueCommentCause
-import co.elastic.mock.RawBuildMock
-import hudson.model.Cause
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -25,14 +22,13 @@ import static org.junit.Assert.assertFalse
 
 class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
-  def script
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
-    binding.getVariable('currentBuild').rawBuild = new RawBuildMock(cause)
+    env.GITHUB_COMMENT_AUTHOR = 'admin'
+    env.GITHUB_COMMENT = 'Started by a comment'
     script = loadScript('vars/isCommentTrigger.groovy')
   }
 
@@ -42,7 +38,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
-    assertTrue('admin'.equals(env.BUILD_CAUSE_USER))
+    assertTrue('admin'.equals(env.GITHUB_COMMENT_AUTHOR))
     assertTrue('Started by a comment'.equals(env.GITHUB_COMMENT))
     assertJobStatusSuccess()
   }
@@ -75,19 +71,11 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoCommentTriggered() throws Exception {
-    binding.getVariable('currentBuild').rawBuild = new RawBuildMock(null)
     def ret = script.call()
+    env.remove('GITHUB_COMMENT_AUTHOR')
+    env.remove('GITHUB_COMMENT')
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
-  }
-
-  def buildIssueCommentCause(String key) {
-    List<Cause> result = new ArrayList()
-    Cause cause = new IssueCommentCause('admin', 'Started by a comment')
-    if(key.contains('IssueCommentCause')){
-      result.add(cause)
-    }
-    return result
   }
 }

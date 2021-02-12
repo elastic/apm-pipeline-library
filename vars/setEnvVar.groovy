@@ -30,3 +30,7 @@ It sets an environment var with a value passed as a parameter, it simplifies Dec
 def call(String name, String value){
   env[name] = value
 }
+
+def call(String name, Boolean value){
+  env[name] = Boolean.toString(value)
+}

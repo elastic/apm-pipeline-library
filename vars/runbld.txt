@@ -1,0 +1,30 @@
+Populate the test output using the runbld approach. It depends on the *junitAndStore* step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports)
+                    }
+                }
+            }
+        }
+        post {
+            always {
+                // Process stashed test reports
+                runbld(stashedTestReports: stashedTestReports, project: env.REPO)
+            }
+        }
+    }
+```
+
+* *project*: the project id, normally the repo name. Mandatory
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory

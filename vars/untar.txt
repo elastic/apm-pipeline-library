@@ -1,0 +1,10 @@
+Extract the given tar file in the given folder if any, othrewise in the
+current directory.
+
+```
+untar(file: 'src.tgz', dir: 'src')
+```
+
+* *file*: Name of the tar file to extract. Optional (default 'archive.tgz').
+* *dir*: The folder where the extract will be done to. Optional (default '.').
+* *failNever*: Never fail the build, regardless of the step result. Optional (default 'true')

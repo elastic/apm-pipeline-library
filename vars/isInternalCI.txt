@@ -1,0 +1,7 @@
+Whether the CI instance is the internal-ci one.
+
+```
+  whenTrue(isInternalCI()) {
+    //
+  }
+```

@@ -27,9 +27,11 @@
   -  The order is important in the map
 */
 
-def call(Map params = [:]) {
-  def cancel = params.get('cancelPreviousRunningBuilds', null)
-  def firstTime = params.get('firstTimeContributor', null)
+def call(Map args = [:]) {
+  def cancel = args.get('cancelPreviousRunningBuilds', null)
+  def firstTime = args.get('firstTimeContributor', null)
+  def apmTraces = args.get('apmTraces', null)
+
   if (cancel) {
     def when = cancel.get('when', 'always')
     if (isEnabled(when)) {
@@ -41,6 +43,11 @@ def call(Map params = [:]) {
   if (firstTime) {
     log(level: 'INFO', text: 'firstTimeContributor step is not available yet.')
   }
+  if(apmTraces && isEnabled(apmTraces.get('when', 'always'))) {
+    log(level: 'INFO', text: 'apmTraces is enabled.')
+    setEnvVar('APM_CLI_SERVICE_NAME',"${env.JOB_NAME}")
+    apmCli(transactionName: "Pipeline", saveTsID: true)
+  }
 }
 
 def isEnabled(String when) {
@@ -51,13 +58,13 @@ def isEnabled(String when) {
       isEnabled = true
       break
     case 'BRANCH':
-      isEnabled = env.CHANGE_ID?.trim() ? false : true
+      isEnabled = !isPR()
       break
     case 'TAG':
       isEnabled = env.TAG_NAME?.trim() ? true : false
       break
     case 'PR':
-      isEnabled = env.CHANGE_ID?.trim() ? true : false
+      isEnabled = isPR()
       break
     default:
       isEnabled = false

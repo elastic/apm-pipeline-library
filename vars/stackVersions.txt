@@ -1,0 +1,11 @@
+
+  Return the version currently used for testing.
+
+  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
+  stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
+
+  stackVersions.edge() // '8.0.0'
+  stackVersions.dev() // '7.11.0'
+  stackVersions.release() // '7.10.2'
+  stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
+  stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'

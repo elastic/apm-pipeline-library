@@ -1,0 +1,15 @@
+
+Create a file given a Jinja template and the data in a JSON format
+
+```
+  // if the template to be used is the one in the shared library
+  createFileFromTemplate(data: 'my-data.json', template: 'my-template.md.j2', output: 'file.md')
+
+  // if the template to be used is another one in the local workspace
+  createFileFromTemplate(data: 'my-data.json', template: 'src/foo/templates/my-template.md.j2', output: 'file.md', localTemplate: true)
+```
+
+* data: JSON file with the data to be consumed in the template. Mandatory.
+* template: jinja template to be used. Mandatory.
+* output: the name of the file to be transformed. Mandatory.
+* localTemplate: whether to use the template in the local workspace. Optional. Default `false`.

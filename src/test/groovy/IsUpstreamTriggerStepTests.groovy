@@ -22,12 +22,12 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
 class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/isUpstreamTrigger.groovy'
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/isUpstreamTrigger.groovy')
   }
 
   @Test
@@ -44,7 +44,6 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -63,7 +62,6 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -82,7 +80,6 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
       ]
     }
 
-    def script = loadScript(scriptName)
     def ret = script.call()
     printCallStack()
     assertFalse(ret)

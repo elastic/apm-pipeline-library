@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -23,9 +23,12 @@ pipeline {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
-    JOB_GCS_BUCKET = credentials('gcs-bucket')
     PIPELINE_LOG_LEVEL = 'DEBUG'
-    PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
+    MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
+    LANG = "C.UTF-8"
+    LC_ALL = "C.UTF-8"
+    SLACK_CHANNEL = '#observablt-bots'
+    GITHUB_CHECK = 'true'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -36,9 +39,10 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i)(.*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
   }
   parameters {
+    string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
     booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
   }
   stages {
@@ -53,10 +57,13 @@ pipeline {
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+          dir("${BASE_DIR}"){
+            setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
+            setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
+          }
         }
       }
     }
-
     stage('Check Licenses') {
       steps {
         withGithubNotify(context: 'Check Licenses') {
@@ -107,7 +114,6 @@ pipeline {
         }
       }
     }
-
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
@@ -123,7 +129,67 @@ pipeline {
         }
       }
     }
+    stage('Test JobDSL') {
+      when {
+        beforeAgent true
+        expression { return env.TEST_JOBDSL == "true" }
+      }
+      steps {
+        withGithubNotify(context: 'Check JobDSL') {
+          dir("${BASE_DIR}/.ci/jobDSL"){
+            sh(label: 'Run tests', script: './gradlew clean test')
+          }
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            testDataPublishers: [
+              [$class: 'AttachmentPublisher']
+            ],
+            testResults:"${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml"
+          )
+        }
+      }
+    }
+    stage('Test infra') {
+      when {
+        beforeAgent true
+        anyOf {
+          expression { return env.TEST_INFRA == "true" }
+          branch 'master'
+        }
+      }
+      steps {
+        withGithubNotify(context: 'Test infra') {
+          dir("${BASE_DIR}"){
+            sh script: './resources/scripts/jenkins/apm-ci/test.sh'
+            sh script: './resources/scripts/jenkins/build.sh'
+          }
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
+        }
+      }
+    }
+    stage('Super-linter') {
+      steps {
+        withGithubNotify(context: 'Check super-linter', tab: 'tests') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            superLinter(failNever: true, junit: false)
+          }
+        }
+      }
+    }
     stage('Release') {
+      environment {
+        // gren and other tools are in the .ci/scripts folder.
+        PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
+      }
       when {
         expression {
           return params.make_release
@@ -134,6 +200,7 @@ pipeline {
           registry: "docker.elastic.co"
         )
         dir("${BASE_DIR}"){
+          setupAPMGitEmail(global: false)
           sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
           sleep 30 //wait for changes available
           withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
@@ -150,11 +217,9 @@ pipeline {
     }
   }
   post {
-    always {
-      githubPrComment()
-    }
     cleanup {
-      notifyBuildResult()
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true,
+                        flakyReportIdx: 'reporter-apm-shared-apm-pipeline-library-master')
     }
   }
 }

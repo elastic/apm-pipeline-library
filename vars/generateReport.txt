@@ -1,0 +1,19 @@
+Generate a report using the `id` script and compare the output with the `TARGET_BRANCH`
+variable if exists. Then it creates a report using the template `id`.
+
+This particular step is quite opinionated, and it relies on the id as the name of the
+script, template and outputs that are generated.
+
+```
+  // This will create a report with the name `bundlesize.md` and `bundlesize.json` in the build folder.
+  generateReport(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
+```
+
+* id: The id that matches the script name to run and the jinja template if triggered. Mandatory
+* input: The input required to be used when generating the reports. Mandatory
+* output: The input required to be used when generating the reports. Optional. Default 'build'
+* template: Whether to generate a report with the template with id name. Optional. Default 'true'
+* templateFormat: What's the report extension generated with the template. Optional. Default 'md'
+* compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
+
+_NOTE_: It only supports *nix.

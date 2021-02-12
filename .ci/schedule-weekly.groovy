@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@current') _
+@Library('apm@master') _
 
 pipeline {
   agent { label 'master' }
@@ -37,9 +37,12 @@ pipeline {
     cron('H H(1-4) * * 1')
   }
   stages {
-    stage('Job') {
+    stage('Top failing Beats tests - last 7 days') {
       steps {
-        echo 'TBD'
+        setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
+        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-master', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.x', subject: "[7.x] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7-release', subject: "[7-release] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
       }
     }
   }

@@ -34,6 +34,7 @@ import groovy.transform.Field
   'go': 'APM_AGENT_GO_VERSION',
   'java': 'APM_AGENT_JAVA_VERSION',
   'nodejs': 'APM_AGENT_NODEJS_VERSION',
+  'php': 'APM_AGENT_PHP_VERSION',
   'python': 'APM_AGENT_PYTHON_VERSION',
   'ruby': 'APM_AGENT_RUBY_VERSION',
   'rum': 'APM_AGENT_RUM_VERSION',
@@ -49,6 +50,7 @@ import groovy.transform.Field
   'go': 'GO_AGENT',
   'java': 'JAVA_AGENT',
   'nodejs': 'NODEJS_AGENT',
+  'php': 'PHP_AGENT',
   'python': 'PYTHON_AGENT',
   'ruby': 'RUBY_AGENT',
   'rum': 'RUM_AGENT',
@@ -63,6 +65,7 @@ import groovy.transform.Field
   'Go': 'go-net-http',
   'Java': 'java-spring',
   'Node.js': 'nodejs-express',
+  'PHP': 'php-apache',
   'Python': 'python-django',
   'Ruby': 'ruby-rails',
   'RUM': 'rumjs',
@@ -78,12 +81,27 @@ import groovy.transform.Field
   'Go': 'go',
   'Java': 'java',
   'Node.js': 'nodejs',
+  'PHP': 'php',
   'Python': 'python',
   'Ruby': 'ruby',
   'RUM': 'rum',
   'All': 'all',
   'Opbeans': '',  // This is required for getting the docker logs
   'UI': 'ui'
+]
+
+/**
+  translate from human agent name to their opbeans app.
+*/
+@Field Map mapOpbeansApps = [
+  '.NET': 'dotnet',
+  'Go': 'go',
+  'Java': 'java',
+  'Node.js': 'node',
+  'PHP': 'php',
+  'Python': 'python',
+  'Ruby': 'ruby',
+  'RUM': 'rum'
 ]
 
 /**
@@ -94,6 +112,7 @@ import groovy.transform.Field
   'go': 'tests/versions/go.yml',
   'java': 'tests/versions/java.yml',
   'nodejs': 'tests/versions/nodejs.yml',
+  'php': 'tests/versions/php.yml',
   'python': 'tests/versions/python.yml',
   'ruby': 'tests/versions/ruby.yml',
   'rum': 'tests/versions/rum.yml',
@@ -126,6 +145,13 @@ def app(String key) {
     error 'app: Missing key'
   }
   return mapAgentsApps[key]
+}
+
+def opbeansApp(String key) {
+  if (!key) {
+    error 'opbeansApp: Missing key'
+  }
+  return mapOpbeansApps[key]
 }
 
 def yamlVersionFile(String key) {

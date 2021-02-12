@@ -1,0 +1,19 @@
+Close a Nexus staging repository
+
+```
+nexusCreateStagingRepository(
+  url: "https://oss.sonatype.org",
+  secret: "secret/release/nexus"
+  stagingProfileId: "comexampleapplication-1010",
+  stagingId: "staging_id"
+  )
+```
+
+* url: The URL to the repository. Usually https://oss.sonatype.org
+* secret: Vault secret to retrieve Nexus credentials
+* stagingProfileId: Identifier for the staging profile
+* stagingId: Identifier for staging
+
+
+[Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
+[Nexus OSSRH](https://oss.sonatype.org)

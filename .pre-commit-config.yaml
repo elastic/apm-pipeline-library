@@ -5,9 +5,9 @@ repos:
     -   id: check-case-conflict
         exclude: ^target/
     -   id: check-executables-have-shebangs
-        exclude: ^target/
+        exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: ^target/
+        exclude: (resources/flaky-watcher.json$|^target/)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml
@@ -25,10 +25,10 @@ repos:
         name: "Shellscript: lint"
         stages: [commit]
         types: [shell]
-        exclude: (^mvnw$|^target/)
+        exclude: (^mvnw$|^target/|^.*/gradlew$)
 
 -   repo: https://github.com/adrienverge/yamllint.git
-    rev: master
+    rev: v1.25.0
     hooks:
     -   id: yamllint
         name: "Yaml: lint"
@@ -44,8 +44,12 @@ repos:
     -   id: check-abstract-classes-and-trait
     -   id: check-jsonslurper-class
     -   id: check-jenkins-pipelines
+        files: ^(.ci/(.*\.groovy|Jenkinsfile)|Jenkinsfile|resources/JenkinsfileTemplate.groovy)$
+        exclude: ^.ci/jobDSL
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
+        exclude: ^src/test/resources/mappings/
     -   id: remove-en-dashes
+        exclude: ^src/test/resources/mappings/
     -   id: check-jjbb

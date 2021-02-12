@@ -1,0 +1,131 @@
+{
+    "trigger": {
+      "schedule": {
+        "cron": "0 30 16 ? * MON"
+      }
+    },
+    "input": {
+      "search": {
+        "request": {
+          "search_type": "query_then_fetch",
+          "indices": [
+            "ci-tests"
+          ],
+          "rest_total_hits_as_int": true,
+          "body": {
+            "size": 0,
+            "query": {
+              "bool": {
+                "filter": [
+                  {
+                    "bool": {
+                      "filter": [
+                        {
+                          "bool": {
+                            "should": [
+                              {
+                                "match_phrase": {
+                                  "env.REPO_NAME": "beats"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "filter": [
+                              {
+                                "bool": {
+                                  "should": [
+                                    {
+                                      "match_phrase": {
+                                        "env.BRANCH_NAME": "master"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "bool": {
+                                  "should": [
+                                    {
+                                      "range": {
+                                        "test_summary.failed": {
+                                          "gt": 0
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "range": {
+                      "build.startTime": {
+                        "gte": "now-7d"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "aggs": {
+              "top_failures": {
+                "terms": {
+                  "field": "test.name",
+                  "size": 10
+                },
+                "aggs": {
+                  "build_urls": {
+                    "terms": {
+                      "field": "env.REPO_NAME",
+                      "size": 10
+                    },
+                    "aggs": {
+                      "sample": {
+                        "top_hits": {
+                          "size": 1,
+                          "_source": {
+                            "includes": [
+                              "env.BUILD_URL",
+                              "test.errorDetails"
+                            ]
+                          },
+                          "sort": [
+                            {
+                              "build.startTime": {
+                                "order": "desc"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "condition": {
+      "script": {
+        "source": """ctx.vars.subject_date = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(ZonedDateTime.ofInstant(ctx.execution_time.toInstant(), ctx.execution_time.getZone())); return true""",
+        "lang": "painless"
+      }
+    },
+    "actions": {
+      "log": {
+        "logging": {
+          "level": "info",
+          "text": """<p>Over the past 7 days, these are the top 10 failing tests:</p><table>{{#ctx.payload.aggregations.top_failures.buckets}}<tr><td colspan="2">{{key}}</td><td>failed {{doc_count}} times:</td></tr>{{#build_urls.buckets}}<tr><td>&nbsp;</td><td><a href="{{sample.hits.hits.0._source.env.BUILD_URL}}">{{key}}</a></td><td>failed {{doc_count}} times</td></tr>{{/build_urls.buckets}}</tr>{{/ctx.payload.aggregations.top_failures.buckets}}</table><p>Click on <a href="https://ela.st/beats-build-dashboard">dashboard</a> to see the overall build overview over the past 7 days</p>"""
+        }
+      }
+    }
+}

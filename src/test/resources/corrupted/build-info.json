@@ -1,0 +1,7 @@
+{
+  "result": "FAILURE",
+  "durationInMillis": 1334790,
+  "state": "FINISHED",
+  "causes": null,
+  "artifactsZipFile": "https://beats-ci.elastic.co/null"
+}

@@ -22,9 +22,9 @@
   dockerLogin(secret: 'secret/team/ci/secret-name')
   dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 */
-def call(Map params = [:]){
-  def secret = params.containsKey('secret') ? params.secret : error("dockerLogin: No valid secret to looking for.")
-  def registry = params.containsKey('registry') ? params.registry : "docker.io"
+def call(Map args = [:]){
+  def secret = args.containsKey('secret') ? args.secret : error("dockerLogin: No valid secret to looking for.")
+  def registry = args.containsKey('registry') ? args.registry : "docker.io"
 
   def jsonValue = getVaultSecret(secret: secret)
   def data = jsonValue.containsKey('data') ? jsonValue.data : error("dockerLogin: No valid data in secret.")
@@ -40,17 +40,16 @@ def call(Map params = [:]){
       "DOCKER_USER=${dockerUser}",
       "DOCKER_PASSWORD=${dockerPassword}"
     ]) {
-      retry(3) {
-        // When running in the CI with multiple parallel stages
-        // the access could be considered as a DDOS attack.
-        sleep randomNumber(min: 5, max: 10)
+      // When running in the CI with multiple parallel stages
+      // the access could be considered as a DDOS attack.
+      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
         if (isUnix()) {
           sh(label: "Docker login", script: """
             set +x
-            if command -v host; then
+            if command -v host 2>&1 > /dev/null; then
               host ${registry} 2>&1 > /dev/null 
             fi
-            if command -v dig; then
+            if command -v dig 2>&1 > /dev/null; then
               dig ${registry} 2>&1 > /dev/null 
             fi
             docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null

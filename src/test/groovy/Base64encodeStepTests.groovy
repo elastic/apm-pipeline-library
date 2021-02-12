@@ -21,7 +21,6 @@ import java.util.Base64
 import static org.junit.Assert.assertTrue
 
 class Base64encodeStepTests extends ApmBasePipelineTest {
-  String scriptName = 'vars/base64encode.groovy'
   def text = "dummy"
   def encoding = "UTF-8"
   def resultToCheck = Base64.getEncoder().encodeToString(text.toString().getBytes(encoding));
@@ -30,11 +29,11 @@ class Base64encodeStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    script = loadScript('vars/base64encode.groovy')
   }
 
   @Test
   void test() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(text: "dummy")
     printCallStack()
     assertTrue(resultToCheck == result)
@@ -43,7 +42,6 @@ class Base64encodeStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def script = loadScript(scriptName)
     def result = script.call(text: "dummy", encoding: "UTF-8")
     printCallStack()
     assertTrue(resultToCheck == result)

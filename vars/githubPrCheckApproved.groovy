@@ -17,29 +17,52 @@
 
 /**
   If the current build is a PR, it would check if it is approved or created
-  by a user with write/admin permission on the repo.
+  by a user with write/admin permission on the repo or a trusted user.
+
   If it is not approved, the method will throw an error.
 
   githubPrCheckApproved()
 */
-def call(Map params = [:]){
-  if(env?.CHANGE_ID == null){
+def call(Map args = [:]){
+  def changeId =  args.get('changeId', env.CHANGE_ID)
+  def org = args.get('org', env.ORG_NAME)
+  def repo = args.get('repo', env.REPO_NAME)
+  def token = args.get('token', getGithubToken())
+
+  if(!changeId){
     return true
   }
   def approved = false
-  def token = getGithubToken()
-  def repoName = "${env.ORG_NAME}/${env.REPO_NAME}"
-  def pr = githubPrInfo(token: token, repo: repoName, pr: env.CHANGE_ID)
-  def reviews = githubPrReviews(token: token, repo: repoName, pr: env.CHANGE_ID)
+  def repoName = "${org}/${repo}"
+  def pr = githubPrInfo(token: token, repo: repoName, pr: changeId)
+  def reviews = githubPrReviews(token: token, repo: repoName, pr: changeId)
   def user = pr?.user?.login
   def userType = pr?.user?.type
 
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${user} - Author Association: ${pr?.author_association}")
 
-  approved = user != null && (isPrApproved(reviews) || hasWritePermission(token, repoName, user) || isAuthorizedBot(user, userType))
+  // The PR is approved to be executed in the CI for the below reasons:
+  // - An user with write permissions raised the PR.
+  // - An authorized bot created the PR.
+  // - If it has already been approved by a member or collaborator.
+  // - A trusted user for that particular repo.
+  //
+  approved = user != null && (isPrApproved(reviews) ||
+                              hasWritePermission(token, repoName, user) ||
+                              isAuthorizedBot(user, userType) ||
+                              isAuthorizedUser(repoName, user))
 
   if(!approved){
-    error("githubPrCheckApproved: The PR is not approved yet")
+    def message = 'The PR is not allowed to run in the CI yet'
+    catchError(buildResult: 'SUCCESS', message: "githubPrCheckApproved: ${message}") {
+      error("githubPrCheckApproved: ${message}. (Only users with write permissions can do so.)")
+    }
+    abortBuild(build: currentBuild, message: message)
+    // Abort build is required to run twice with certain sleep to ensure the build gets aborted,
+    // otherwise it won't be stopped. Unfortunately this logic cannot be moved to the abortBuild
+    // step without facing the NotSerializableException.
+    sleep 5
+    abortBuild(build: currentBuild, message: message)
   }
   return approved
 }
@@ -77,11 +100,32 @@ def hasWritePermission(token, repo, user){
   Check if the PR come from a bot and if the bot is authorized.
 */
 def isAuthorizedBot(login, type){
-  def authorizedBots = ['greenkeeper[bot]']
+  def authorizedBots = ['greenkeeper[bot]', 'dependabot[bot]', 'mergify[bot]']
   log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${login}, Type: ${type}")
   def ret = false;
   if('bot'.equalsIgnoreCase(type)){
     ret = authorizedBots.any{ it.equals(login) }
   }
   return ret;
+}
+
+/**
+  Check if the PR come from a trusted user. For such it requires the access to
+  the env variable REPO_NAME.
+*/
+def isAuthorizedUser(repo, login){
+  log(level: 'DEBUG', text: "githubPrCheckApproved: isAuthorizedUser(${login})")
+  def ret = false
+  if(repo) {
+    try {
+      def fileContent = libraryResource("approval-list/${repo}.yml")
+      def authorizedUsers = readYaml(text: fileContent)['USERS']
+      ret = authorizedUsers.any{ it.equals(login) }
+    } catch(e) {
+      ret = false
+    }
+  } else {
+    ret = false
+  }
+  return ret
 }

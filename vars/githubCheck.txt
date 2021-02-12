@@ -1,0 +1,17 @@
+Notify the GitHub check step either by using the existing one or creating a new one.
+
+```
+githubCheck(name: 'checkName', description: 'Execute something')
+```
+
+* name: Name of the GitHub check context. (Mandatory).
+* description: Description of the GitHub check. If unset then it will use the `name`.
+* body: The details of the check run. This parameter supports Markdown. Optional.
+* secret: vault secret used to interact with the GitHub App, it should have the `key`, `installation_id` and `app_id` fields. Default: 'secret/observability-team/ci/github-app'
+* org: The GitHub organisation. Default: `env.ORG_NAME)`
+* repository: The GitHub repository. Default: `env.REPO_NAME`
+* commitId: The SHA commit. Default: `env.GIT_BASE_COMMIT`
+* status: It matches the `conclusion` field. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. Default `neutral`
+* detailsUrl: The URL of the integrator's site that has the full details of the check. Optional, If the integrator does not provide this, then the homepage of the GitHub app is used.
+
+[GitHub Check docs](https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#runs)

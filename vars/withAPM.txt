@@ -1,0 +1,9 @@
+It encloses a set of commands in a APM reporting context.
+This will generate APM data related with the block of code executed.
+The parameters accepted by withAPM are the same of [apmCli](#apmcli) step
+
+```
+withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
+  echo "OK"
+}
+```

@@ -1,0 +1,11 @@
+Whether the build is based on a Branch or no
+
+```
+  // Assign to a variable
+  def branch = isBranch())
+
+  // Use whenTrue condition
+  whenTrue(isBranch()) {
+    echo "I'm a Branch"
+  }
+```

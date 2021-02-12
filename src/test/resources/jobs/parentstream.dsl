@@ -8,7 +8,7 @@ DSL = '''pipeline {
           try {
             build job: 'downstream'
           } catch(e) {
-            println e.getCauses()[0].getShortDescription()
+            println e.getCauses()[0]?.getShortDescription()
           }
         }
       }

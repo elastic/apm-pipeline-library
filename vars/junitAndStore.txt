@@ -1,0 +1,32 @@
+Wrap the junit built-in step to archive the test reports that are going to be
+populated later on with the runbld post build step.
+
+```
+    // This is required to store the stashed id with the test results to be digested with runbld
+    import groovy.transform.Field
+    @Field def stashedTestReports = [:]
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with stashed reports
+                        junitAndStore(stashedTestReports: stashedTestReports, id: 'test-stage-foo', ...)
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *stashedTestReports*: list of stashed reports that was used by junitAndStore. Mandatory
+* *id*: the unique id, normally the stage name. Optional
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
