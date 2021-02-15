@@ -26,7 +26,7 @@ folder('folder-parent/my-new-folder') {
 
 # Create a new Pipeline
 
-The template `.ci/jobDSL/template/pipeline.groovy.j2` define a basic Pipeline.
+The template `.ci/jobDSL/templates/pipeline.groovy.j2` define a basic Pipeline.
 The input parameters are:
 * JOB_NAME: Job id on Jenkins, it should not contains spaces.
 If the job will be in a folder we have to put the whole path (folder/folder/job-name)
@@ -37,7 +37,7 @@ If the job will be in a folder we have to put the whole path (folder/folder/job-
 JOB_NAME=apm-pipeline-library-mbp \
 REPO=apm-pipeline-library \
 JENKINSFILE=.ci/Jenkinsfile \
-j2 --format=env .ci/jobDSL/template/pipeline.groovy.j2 > .ci/jobDSL/jobs/my-new-pipeline.groovy
+j2 --format=env .ci/jobDSL/templates/pipeline.groovy.j2 > .ci/jobDSL/jobs/my-new-pipeline.groovy
 ```
 
 Now you can edit the `.ci/jobDSL/jobs/my-new-pipeline.groovy` to edit the details of the jobs,
@@ -45,7 +45,7 @@ like display name, description and so on.
 
 # Create a new Multibranch Pipeline
 
-The template `.ci/jobDSL/template/mbp.groovy.j2` define a basic Multibranch Pipeline.
+The template `.ci/jobDSL/templates/mbp.groovy.j2` define a basic Multibranch Pipeline.
 The input parameters are:
 * JOB_NAME: Job id on Jenkins, it should not contains spaces.
 If the job will be in a folder we have to put the whole path (folder/folder/job-name)
@@ -56,7 +56,7 @@ If the job will be in a folder we have to put the whole path (folder/folder/job-
 JOB_NAME=apm-pipeline-library-mbp \
 REPO=apm-pipeline-library \
 JENKINSFILE=.ci/Jenkinsfile \
-j2 --format=env .ci/jobDSL/template/mbp.groovy.j2 > .ci/jobDSL/jobs/my-new-mbp.groovy
+j2 --format=env .ci/jobDSL/templates/mbp.groovy.j2 > .ci/jobDSL/jobs/my-new-mbp.groovy
 ```
 
 Now you can edit the `.ci/jobDSL/jobs/my-new-mbp.groovy` to edit the details of the jobs,
