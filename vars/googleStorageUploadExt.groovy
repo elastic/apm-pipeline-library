@@ -27,5 +27,5 @@ def call(Map args = [:]) {
     flags = '-a public-read'
   }
 
-  return gsutil(command: "cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
+  return gsutil(command: "-m -q cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
 }
