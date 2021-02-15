@@ -29,7 +29,7 @@ pipeline {
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
     JOB_GCS_BUCKET = credentials('gcs-bucket')
-    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
+    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
     GITHUB_CHECK = 'true'
   }
   options {
