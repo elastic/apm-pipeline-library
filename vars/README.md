@@ -934,6 +934,15 @@ githubPrCheckApproved()
 
 NOTE: `REPO_NAME` env variable is required, so gitHubEnv step is the one in charge
 
+```
+githubPrCheckApproved(org: 'elastic', repo: 'apm-pipeline-library', changeId: 1000, token: "env.GITHUB_TOKEN")
+```
+
+* *org:* GitHub organization/owner of the repository (by default ORG_NAME).
+* *repo:* GitHub repository name (by default REPO_NAME).
+* *changeId:* Pull request ID number (by default CHANGE_ID).
+* *token:* GitHub token to access to the API (by default [getGithubToken()](#getGithubToken)).
+
 ## githubPrComment
 Add a comment or edit an existing comment in the GitHub.
 
@@ -1916,6 +1925,10 @@ Parse the pre-commit log file and generates a junit report
 ```
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
+
+* input: the pre-commit output. Mandatory
+* output: the junit output. Mandatory
+* enableSkipped: whether to report skipped linting stages. Optional. Default false
 
 ## publishToCDN
 Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
