@@ -104,9 +104,6 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-            // try something else
-            sh 'ls -la target || true'
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/test", pattern: 'target/*.xml', sharedPublicly: true)
           }
         }
       }
@@ -116,6 +113,15 @@ pipeline {
           junit(allowEmptyResults: true,
             keepLongStdio: true,
             testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+        }
+      }
+    }
+    stage('Google Storage') {
+      steps {
+        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'target/**/*.xml', sharedPublicly: false)
+          }
         }
       }
     }
