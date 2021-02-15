@@ -26,8 +26,8 @@
   }
   ```
 */
-def call(Map params = [:]) {
-  def toCompareWith = params.containsKey('label') ? params.label : error('matchesPRLabel: label parameter is required.')
+def call(Map args = [:]) {
+  def toCompareWith = args.containsKey('label') ? args.label : error('matchesPRLabel: label parameter is required.')
   def match = false
   if(isPR()) {
     def labels = githubPrLabels()

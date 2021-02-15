@@ -15,21 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
+// jenkins-test-harness does not handle detached plugins properly
+// see https://issues.jenkins.io/browse/JENKINS-60295?focusedCommentId=400912&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-400912
+package hudson
+import java.util.logging.Logger
+import org.jvnet.hudson.test.TestPluginManager
 /**
+ * Modify plugin load behavior for jenkins for test
+ */
+class CustomPluginManager extends TestPluginManager {
+    private static final Logger LOGGER = Logger.getLogger( CustomPluginManager.name )
 
-  As long as we got timeout issues
-
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
-
-  checkout scm
-*/
-def call(args) {
-  log(level: 'INFO', text: 'Override default checkout')
-  def ret
-  // Sleep first is the best of the worst scenarios regarding the sleep times.
-  // Further details: https://github.com/elastic/apm-pipeline-library/pull/378
-  retryWithSleep(retries: 3, seconds: 10, backoff: true, sleepFirst: true) {
-    ret = steps.checkout(args)
-  }
-  return ret
+    // Skip loading all detached plugins as they conflict with our explicit build.gradle jenkinsPlugins dependencies
+    @Override
+    void considerDetachedPlugin( String shortName ) {
+        LOGGER.info( 'Skipping load of detached plugin: ' + shortName )
+    }
 }

@@ -26,9 +26,9 @@
     //block
   }
 */
-def call(Map params = [:], Closure body) {
-  def url = params.containsKey('url') ? params.url : 'https://5492443829134f71a94c96689e9db66e.europe-west3.gcp.cloud.es.io:9243'
-  def secret = params?.secret
+def call(Map args = [:], Closure body) {
+  def url = args.containsKey('url') ? args.url : 'https://5492443829134f71a94c96689e9db66e.europe-west3.gcp.cloud.es.io:9243'
+  def secret = args?.secret
 
   def props = getVaultSecret(secret)
   if(props?.errors){

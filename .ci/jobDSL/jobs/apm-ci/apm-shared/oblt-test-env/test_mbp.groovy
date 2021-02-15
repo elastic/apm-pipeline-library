@@ -15,10 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-multibranchPipelineJob('{{ JOB_NAME }}') {
+multibranchPipelineJob('apm-shared/test-mbp') {
   primaryView('All')
-  displayName('Job {{ JOB_NAME }}')
-  description('Job {{ JOB_NAME }} description')
+  displayName('Job apm-shared/test-mbp')
+  description('Job apm-shared/test-mbp')
   orphanedItemStrategy {
     discardOldItems {
       numToKeep(20)
@@ -29,11 +29,11 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
     branchSource {
       source {
         github {
-          id('{{ JOB_NAME }}') // IMPORTANT: use a constant and unique identifier
+          id('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') // IMPORTANT: use a constant and unique identifier
           credentialsId('2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
           repoOwner('elastic')
-          repository('{{ REPO }}')
-          repositoryUrl('https://github.com/elastic/{{ REPO }}.git')
+          repository('apm-pipeline-library')
+          repositoryUrl('https://github.com/elastic/apm-pipeline-library.git')
           configuredByUrl(true)
           // The behaviours control what is discovered from the GitHub repository.
           traits {
@@ -56,7 +56,7 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
                 // Deselect this to perform a clone without tags, saving time and disk space when you just want to access what is specified by the refspec.
                 noTags(false)
                 // Specify a folder containing a repository that will be used by Git as a reference during clone operations.
-                reference("/var/lib/jenkins//{{ REPO }}.git")
+                reference("/var/lib/jenkins//apm-pipeline-library.git")
                 // Specify a timeout (in minutes) for clone and fetch operations.
                 timeout(15)
                 // Set shallow clone depth, so that git will only download recent history of the project, saving time and disk space when you just want to access the latest commits of a repository.
@@ -65,30 +65,12 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
                 honorRefspec(false)
               }
             }
-            // Disables notifications (commit status updates) to GitHub for builds.
-            //disableStatusUpdateTrait()
-            // Discovers other specified refs on the repository.
-            //discoverOtherRefsTrait {
-              // The pattern under /refs on the remote repository to discover, can contain a wildcard.
-              //ref('')
-              // Mapping for how the ref can be named in for example the @Library.
-              //nameMapping('')
-            //}
             // Discovers branches on the repository.
             // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/BranchDiscoveryTrait.java#L55-L70
             gitHubBranchDiscovery{
               // Determines which branches are discovered.
               strategyId(1)
             }
-            // Discovers pull requests where the origin repository is the same as the target repository.
-            // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-            //gitHubPullRequestDiscovery {
-              // Determines how pull requests are discovered: Merging the pull request with the current target branch revision Discover each pull request once with the discovered revision corresponding to the result of merging with the current revision of the target branch.
-              //strategyId(1)
-            //}
-            //originPullRequestDiscoveryTrait {
-              //strategyId(3) //build both the head and merge refs
-            //}
             // Discovers tags on the repository.
             gitHubTagDiscovery()
             // filers heads
@@ -101,7 +83,7 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
             // Defines a custom context label to be sent as part of Github Status notifications for this project.
             notificationContextTrait {
               // The text of the context label for Github status notifications.
-              contextLabel('{{ JOB_NAME }}')
+              contextLabel('apm-shared/oblt-test-env/oblt-test-env-custom-kibana')
               // Appends the relevant suffix to the context label based on the build type.
               typeSuffix(true)
             }
@@ -117,26 +99,6 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
           }
           // Builds regular branches whenever a change is detected.
           buildRegularBranches()
-          // Builds branches only if none of the sub strategies match.
-          //buildNamedBranches {
-            // The rules to use when matching a branch name.
-            //filters {
-              // Matches the name verbatim.
-              //exact {
-                // The name to match.
-                //name('master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
-              // Matches the name against a regular expression.
-              //regex {
-                // A Java regular expression to restrict the names.
-                //regex('.*/master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
-            //}
-          //}
           // Builds tags (subject to a configurable tag age time window)
           buildTags {
             atLeastDays('-1')
@@ -166,7 +128,7 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
   // }
   factory {
     workflowBranchProjectFactory {
-      scriptPath('{{ JENKINSFILE }}')
+      scriptPath('.ci/Jenkinsfile')
     }
   }
 }

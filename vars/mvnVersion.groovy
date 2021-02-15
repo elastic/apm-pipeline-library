@@ -22,8 +22,8 @@ mvnVersion(
     showQualifiers: true)
 **/
 
-def call(Map params = [:]) {
-    def showQualifiers = params.get('showQualifiers', true)
+def call(Map args = [:]) {
+    def showQualifiers = args.get('showQualifiers', true)
     def ver
     try {
         ver = sh(script: "./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true)

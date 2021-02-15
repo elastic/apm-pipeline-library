@@ -22,9 +22,9 @@
   dockerLogin(secret: 'secret/team/ci/secret-name')
   dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 */
-def call(Map params = [:]){
-  def secret = params.containsKey('secret') ? params.secret : error("dockerLogin: No valid secret to looking for.")
-  def registry = params.containsKey('registry') ? params.registry : "docker.io"
+def call(Map args = [:]){
+  def secret = args.containsKey('secret') ? args.secret : error("dockerLogin: No valid secret to looking for.")
+  def registry = args.containsKey('registry') ? args.registry : "docker.io"
 
   def jsonValue = getVaultSecret(secret: secret)
   def data = jsonValue.containsKey('data') ? jsonValue.data : error("dockerLogin: No valid data in secret.")

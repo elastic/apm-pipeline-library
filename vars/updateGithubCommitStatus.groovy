@@ -29,10 +29,10 @@
 
   updateGithubCommitStatus(message: 'Build result.')
 */
-def call(Map params = [:]) {
-  def repoUrl = params.containsKey('repoUrl') ? params.repoUrl : getGitRepoURL()
-  def commitSha = params.containsKey('commitSha') ? params.commitSha : getGitCommitSha()
-  def message = params.containsKey('message') ? params.message : 'Build result.'
+def call(Map args = [:]) {
+  def repoUrl = args.containsKey('repoUrl') ? args.repoUrl : getGitRepoURL()
+  def commitSha = args.containsKey('commitSha') ? args.commitSha : getGitCommitSha()
+  def message = args.containsKey('message') ? args.message : 'Build result.'
 
   step([
     $class: 'GitHubCommitStatusSetter',

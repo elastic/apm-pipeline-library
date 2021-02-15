@@ -934,6 +934,15 @@ githubPrCheckApproved()
 
 NOTE: `REPO_NAME` env variable is required, so gitHubEnv step is the one in charge
 
+```
+githubPrCheckApproved(org: 'elastic', repo: 'apm-pipeline-library', changeId: 1000, token: "env.GITHUB_TOKEN")
+```
+
+* *org:* GitHub organization/owner of the repository (by default ORG_NAME).
+* *repo:* GitHub repository name (by default REPO_NAME).
+* *changeId:* Pull request ID number (by default CHANGE_ID).
+* *token:* GitHub token to access to the API (by default [getGithubToken()](#getGithubToken)).
+
 ## githubPrComment
 Add a comment or edit an existing comment in the GitHub.
 
@@ -1917,6 +1926,10 @@ Parse the pre-commit log file and generates a junit report
 preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 ```
 
+* input: the pre-commit output. Mandatory
+* output: the junit output. Mandatory
+* enableSkipped: whether to report skipped linting stages. Optional. Default false
+
 ## publishToCDN
 Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
 with the given headers.
@@ -1950,6 +1963,24 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
+## releaseNotification
+Send notifications with the release status by email and slack.
+
+If body is slack format based then it will be transformed to the email format
+  
+```
+releaseNotification(slackColor: 'good',
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
+```
+
+* body: this is the body email that will be also added to the subject when using slack notifications. Optional
+* slackChannel: the slack channel, multiple channels may be provided as a comma, semicolon, or space delimited string. Default `env.SLACK_CHANNEL`
+* slackColor: an optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0)
+* slackCredentialsId: the slack credentialsId. Default 'jenkins-slack-integration-token'
+* subject: this is subject email that will be also aggregated to the body when using slack notifications. Optional
+* to: who should receive an email. Default `env.NOTIFY_TO`
 
 ## retryWithSleep
 Retry a command for a specified number of times until the command exits successfully.

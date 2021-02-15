@@ -21,7 +21,7 @@
  def changelog = gitChangelog()
 
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()){
     error('gitChangelog: windows is not supported yet.')
   }

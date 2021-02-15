@@ -11,6 +11,7 @@ pull_request_rules:
       merge:
         method: squash
         strict: smart+fasttrack
+        priority: high
   - name: backport patches to 7.x branch
     conditions:
       - base=master
@@ -19,3 +20,14 @@ pull_request_rules:
       backport:
         branches:
           - 7.x
+  - name: Automatic squash and merge on approval with success checks and ready-to-merge label for 7.x
+    conditions:
+      - check-success=apm-ci/pr-merge
+      - check-success=CLA
+      - check-success=Test
+      - base=7.x
+    actions:
+      merge:
+        method: squash
+        strict: smart+fasttrack
+        priority: low
