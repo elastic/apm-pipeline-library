@@ -15,13 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-def repos(){
-  return [
-    "apm-pipeline-library",
-    "apm-integration-testing"
-  ]
-}
-
 pipeline {
   agent {label 'master'}
   environment {
@@ -51,31 +44,17 @@ pipeline {
       steps {
         deleteDir()
         gitCheckout(basedir: "${BASE_DIR}")
-        script {
-          repos().each{ repo ->
-            dir("${repo}"){
-              checkout([$class: 'GitSCM',
-              branches: [[name: '*/master']],
-              doGenerateSubmoduleConfigurations: false,
-              extensions: [],
-              submoduleCfg: [],
-              userRemoteConfigs: [[
-              credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
-              url: "http://github.com/elastic/${repo}.git"
-              ]]])
-              sh(label: 'Copy jobDSL files',
-                script: "cp -R .ci/jobDSL/jobs ${WORKSPACE}/${BASE_DIR}/.ci/jobDSL/jobs",
-                returnStatus: true
-              )
-            }
-          }
-        }
       }
     }
     stage('Unit test'){
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         dir("${BASE_DIR}/.ci/jobDSL"){
-          sh(label: 'Run tests', script: './gradlew clean test')
+          sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
         }
       }
       post {
@@ -91,6 +70,16 @@ pipeline {
     }
     stage('Generate Jobs') {
       steps {
+        jobDsl(
+          failOnMissingPlugin: true,
+          failOnSeedCollision: true,
+          removedConfigFilesAction: 'DELETE',
+          removedJobAction: 'DELETE',
+          removedViewAction: 'DELETE',
+          sandbox: true,
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/**/folder.groovy",
+          unstableOnDeprecation: true
+        )
         jobDsl(
           failOnMissingPlugin: true,
           failOnSeedCollision: true,

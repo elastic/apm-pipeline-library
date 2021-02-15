@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
+pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
   displayName('Custom Kibana - Deploy')
   description('Job to deploy Custom Kibana deployments')
   parameters {
@@ -37,13 +37,13 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
             github("elastic/observability-test-environments", "ssh")
             credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           }
-          branch('*${branch_specifier}')
+          branch('${branch_specifier}')
           extensions {
             wipeOutWorkspace()
           }
         }
       }
-      lightweight(true)
+      lightweight(false)
       scriptPath(".ci/customKibana.groovy")
     }
   }
