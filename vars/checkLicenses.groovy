@@ -29,19 +29,19 @@
   checkLicenses(ext: '.groovy', exclude: './target', license: 'Elastic', licensor: 'Elastic A.B.')
 
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()){
     error('checkLicenses: windows is not supported yet.')
   }
-  def excludeFlag = params.containsKey('exclude') ? "-exclude ${params.exclude}" : ''
-  def fileExtFlag = params.containsKey('ext') ? "-ext ${params.ext}" : ''
-  def licenseFlag = params.containsKey('license') ? "-license ${params.license}" : ''
-  def licensorFlag = params.containsKey('licensor') ? "-licensor \"${params.licensor}\"" : ''
-  def skipFlag = params.get('skip', false) ? '-d' : ''
-  def junitFlag = params.get('junit', false)
+  def excludeFlag = args.containsKey('exclude') ? "-exclude ${args.exclude}" : ''
+  def fileExtFlag = args.containsKey('ext') ? "-ext ${args.ext}" : ''
+  def licenseFlag = args.containsKey('license') ? "-license ${args.license}" : ''
+  def licensorFlag = args.containsKey('licensor') ? "-licensor \"${args.licensor}\"" : ''
+  def skipFlag = args.get('skip', false) ? '-d' : ''
+  def junitFlag = args.get('junit', false)
   def testOutput = 'test.out'
 
-  if (junitFlag && !params.get('skip')) {
+  if (junitFlag && !args.get('skip')) {
     error('checkLicenses: skip should be enabled when using the junit flag.')
   }
 

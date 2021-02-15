@@ -23,9 +23,9 @@ import com.cloudbees.groovy.cps.NonCPS
   abortBuild(build: currentBuild)
 */
 
-def call(Map params = [:]){
-  def build = params.containsKey('build') ? params.build : error('abortBuild: build params is required')
-  def message = params.get('message', 'Force to abort the build')
+def call(Map args = [:]){
+  def build = args.containsKey('build') ? args.build : error('abortBuild: build params is required')
+  def message = args.get('message', 'Force to abort the build')
   def rawBuild = getRawBuild(build)
   if (build && rawBuild) {
     if (rawBuild.isBuilding()) {

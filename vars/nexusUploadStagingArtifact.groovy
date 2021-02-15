@@ -30,14 +30,14 @@
 **/
 import co.elastic.Nexus
 
-def call(Map params = [:]){
-  String url = params.get('url', 'https://oss.sonatype.org')
-  String secret = params.containsKey('secret') ? params.secret : 'secret/release/nexus'
-  String stagingId = params.containsKey('stagingId') ? params.stagingId : error('Must supply stagingId')
-  String groupId = params.containsKey('groupId') ? params.groupId : error('Must supply groupId')
-  String artifactId = params.containsKey('artifactId') ? params.groupId : error('Must supply artifactId')
-  String version = params.containsKey('version') ? params.version : error('Must supply version')
-  String file_path = params.containsKey('file_path') ? params.file_path : error('Must supply file_path')
+def call(Map args = [:]){
+  String url = args.get('url', 'https://oss.sonatype.org')
+  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
+  String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
+  String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply groupId')
+  String artifactId = args.containsKey('artifactId') ? args.groupId : error('Must supply artifactId')
+  String version = args.containsKey('version') ? args.version : error('Must supply version')
+  String file_path = args.containsKey('file_path') ? args.file_path : error('Must supply file_path')
 
   def props = getVaultSecret(secret: secret)
   

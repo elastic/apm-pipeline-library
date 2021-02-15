@@ -21,7 +21,7 @@ Scan the repository for third-party dependencies and report the results.
 licenseScan()
 
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   withEnvMask(vars: [
       [var: "FOSSA_API_KEY", password: getVaultSecret(secret: 'secret/jenkins-ci/fossa/api-token')?.data?.token ],
     ]){

@@ -37,9 +37,9 @@ https://github.com/github-changelog-generator/github-changelog-generator
 
 **/
 
-def call(Map params = [:]) {
-    def user = params.get('user', 'elastic')
-    def repo = params.get('repo', env."REPO_NAME")
+def call(Map args = [:]) {
+    def user = args.get('user', 'elastic')
+    def repo = args.get('repo', env."REPO_NAME")
     def token = getGithubToken()
     if (!repo) {
         error "Must provide `repo` argument to this step or set \$REPO_NAME in the environment"

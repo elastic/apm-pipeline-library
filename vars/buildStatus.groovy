@@ -66,11 +66,11 @@ private static URL constructURL(String host, ArrayList job, boolean ssl) throws 
     return url
 }
 
-def call(Map params = [:]) {
-    def host = params.get('host', 'localhost')
-    def job = params.get('job', [])
-    def return_boolean = params.get('return_boolean', false)
-    def ssl = params.get('ssl', true)
+def call(Map args = [:]) {
+    def host = args.get('host', 'localhost')
+    def job = args.get('job', [])
+    def return_boolean = args.get('return_boolean', false)
+    def ssl = args.get('ssl', true)
     def result = makeRequest(constructURL(host, job, ssl))
     if (return_boolean){
         if (result == "Success") {

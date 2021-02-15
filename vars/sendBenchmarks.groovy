@@ -24,14 +24,14 @@
 
   sendBenchmarks.prepareAndRun(secret: 'foo', url_var: 'ES_URL', user_var: "ES_USER", pass_var: 'ES_PASS')
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()){
     error('sendBenchmarks: windows is not supported yet.')
   }
-  def benchFile = params.containsKey('file') ? params.file : 'bench.out'
-  def index = params.containsKey('index') ? params.index : 'benchmark-go'
-  def secret = params.containsKey('secret') ? params.secret : 'secret/apm-team/ci/benchmark-cloud'
-  def archive = params.containsKey('archive') ? params.archive : true
+  def benchFile = args.containsKey('file') ? args.file : 'bench.out'
+  def index = args.containsKey('index') ? args.index : 'benchmark-go'
+  def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/benchmark-cloud'
+  def archive = args.containsKey('archive') ? args.archive : true
 
   if(archive){
     archiveArtifacts(allowEmptyArchive: true,
@@ -52,7 +52,7 @@ def call(Map params = [:]) {
     error "Benchmarks: was not possible to get authentication info to send benchmarks"
   }
 
-  def url = params.containsKey('url') ? params.url : data.url
+  def url = args.containsKey('url') ? args.url : data.url
 
   log(level: 'INFO', text: "Benchmarks: sending data...")
   if(index.equals('benchmark-go') || index.equals('benchmark-server')){
@@ -104,14 +104,14 @@ def gobench(url, benchFile, index) {
  This will allow to encapsulate the credentials and use them within the script which
  runs in the body
 */
-def prepareAndRun(Map params = [:], Closure body) {
+def prepareAndRun(Map args = [:], Closure body) {
   if(!isUnix()){
     error('prepareAndRun: windows is not supported yet.')
   }
-  def secret = params.containsKey('secret') ? params.secret : error('prepareAndRun: secret parameter is required.')
-  def urlVar = params.containsKey('url_var') ? params.url_var : error('prepareAndRun: url_var parameter is required.')
-  def userVar = params.containsKey('user_var') ? params.user_var : error('prepareAndRun: user_var parameter is required.')
-  def passVar = params.containsKey('pass_var') ? params.pass_var : error('prepareAndRun: pass_var parameter is required.')
+  def secret = args.containsKey('secret') ? args.secret : error('prepareAndRun: secret parameter is required.')
+  def urlVar = args.containsKey('url_var') ? args.url_var : error('prepareAndRun: url_var parameter is required.')
+  def userVar = args.containsKey('user_var') ? args.user_var : error('prepareAndRun: user_var parameter is required.')
+  def passVar = args.containsKey('pass_var') ? args.pass_var : error('prepareAndRun: pass_var parameter is required.')
 
   def props = getVaultSecret(secret: secret)
   if(props?.errors){
