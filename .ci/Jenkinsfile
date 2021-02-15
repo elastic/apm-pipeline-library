@@ -117,6 +117,9 @@ pipeline {
       }
     }
     stage('Google Storage') {
+      options {
+        warnError('Google Storage failed. This check should be removed after merging to master')
+      }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
           dir("${BASE_DIR}"){
