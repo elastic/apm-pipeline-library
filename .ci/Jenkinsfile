@@ -105,7 +105,7 @@ pipeline {
           dir("${BASE_DIR}"){
             sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
             // try something else
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/test", pattern: '**/target/surefire-reports/TEST-*.xml', sharedPublicly: true)
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/test", pattern: '**/target/*.xml', sharedPublicly: true)
           }
         }
       }
