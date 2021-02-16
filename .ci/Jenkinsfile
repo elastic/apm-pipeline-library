@@ -28,6 +28,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
+    JOB_GCS_BUCKET = 'apm-ci-temp'
+    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
     GITHUB_CHECK = 'true'
   }
   options {
@@ -111,6 +113,18 @@ pipeline {
           junit(allowEmptyResults: true,
             keepLongStdio: true,
             testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+        }
+      }
+    }
+    stage('Google Storage') {
+      when {
+        branch 'master'  // TODO: to be removed as soon as the step is available in the master branch
+      }
+      steps {
+        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'target/**/*.xml', sharedPublicly: false)
+          }
         }
       }
     }
