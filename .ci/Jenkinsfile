@@ -128,7 +128,7 @@ pipeline {
     stage('Google Storage Windows') {
       agent { label 'windows-2019-immutable' }
       when {
-        branch 'master'  // TODO: to be removed as soon as the step is available in the master branch
+        branch 'master'
       }
       steps {
         withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
@@ -147,9 +147,15 @@ pipeline {
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
             validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/chatops.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
             validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
+            validateDeclarativePipeline '.ci/licenseScan.groovy'
+            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
         }
