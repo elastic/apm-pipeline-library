@@ -125,6 +125,18 @@ pipeline {
         }
       }
     }
+    stage('Google Storage Windows') {
+      agent { label 'linux && windows-2019' }
+      steps {
+        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+          }
+        }
+      }
+    }
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
