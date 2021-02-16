@@ -36,7 +36,7 @@ def call(Map args = [:]) {
     }
 
     withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) { 
-      cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}')
+      cmd(label: 'authenticate', script: "gcloud auth activate-service-account --key-file ${env.FILE_CREDENTIAL}")
     }
     return cmd(label: "gsutil ${command}", script: "gsutil ${command}", returnStdout: true)
   }
