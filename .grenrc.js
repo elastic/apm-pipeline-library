@@ -8,7 +8,7 @@ module.exports = {
     "ignoreLabels": ["closed", "automation", "enhancement", "bug", "fix",
       "internal", "feature", "feat", "docs", "chore", "refactor", "ci",
       "perf", "test", "tests", "style", "groovy", "linux", "master", "mac", "windows",
-      "team:automation"],
+      "team:automation", "ready-to-merge", "backport-to-7.x"],
     "groupBy": {
         "Enhancements": ["enhancement", "internal", "feature", "feat"],
         "Bug Fixes": ["bug", "fix"],
