@@ -117,9 +117,6 @@ pipeline {
       }
     }
     stage('Google Storage') {
-      when {
-        branch 'master'  // TODO: to be removed as soon as the step is available in the master branch
-      }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
           dir("${BASE_DIR}"){
