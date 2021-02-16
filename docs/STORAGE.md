@@ -1,8 +1,8 @@
 # Storage
 
-We are using the Google Storage Jenkins plugins but it's disable for the time being since it got some issues with some parallelisation.
+We are using the Google Storage Jenkins plugins but it is disabled for the time being because it has some issues with some parallelisation.
 
-In order to test this `locally`, we have configured some vault credentials, see below if you need to change them.
+In order to test this `locally`, we have configured some vault credentials. See below if you need to change them:
 
 ## How to
 
