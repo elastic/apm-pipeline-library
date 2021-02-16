@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.1.186 (15/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Add releaseNotification step to simplify agent release pipelines [#976](https://github.com/elastic/apm-pipeline-library/pull/976)
+- [**backport-to-7.x**][**ready-to-merge**] Disable/Enable pre-commit skipped tests in the report [#977](https://github.com/elastic/apm-pipeline-library/pull/977)
+-  feat: support parameters for githubPrCheckApproved [#910](https://github.com/elastic/apm-pipeline-library/pull/910)
+- [**ready-to-merge**] test: taest jobDSL job when them changed [#966](https://github.com/elastic/apm-pipeline-library/pull/966)
+
+#### 🐛 Bug Fixes
+
+-  fix: enable sandbox for pipelines [#967](https://github.com/elastic/apm-pipeline-library/pull/967)
+
+#### 🙈 No user affected
+
+-  chore: refactor jobs in folders [#974](https://github.com/elastic/apm-pipeline-library/pull/974)
+- [**ready-to-merge**] chore: refactor params variables to args [#960](https://github.com/elastic/apm-pipeline-library/pull/960)
+
+#### ⚙️ CI
+
+-  Image build pipeline for flaky v2 (bp #968) [#969](https://github.com/elastic/apm-pipeline-library/pull/969)
+- [**backport-to-7.x**][**ready-to-merge**] Image build pipeline for flaky v2 [#968](https://github.com/elastic/apm-pipeline-library/pull/968)
+
 ## v1.1.185 (08/02/2021)
 
 #### 🚀 Enhancements
