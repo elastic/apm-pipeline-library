@@ -35,8 +35,9 @@ def call(Map args = [:]) {
       downloadInstaller(gsUtilLocation)
     }
 
-    withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) { 
-      cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}')
+    withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) {
+      def credentialsVariable = isUnix() ? '${FILE_CREDENTIAL}' : '%FILE_CREDENTIAL%'
+      cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ' + credentialsVariable)
     }
     return cmd(label: "gsutil ${command}", script: "gsutil ${command}", returnStdout: true)
   }
