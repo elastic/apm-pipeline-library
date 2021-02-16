@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.187 (16/02/2021)
+
+#### 🙈 No user affected
+
+-  [chore]: delegate delete to the core [#904](https://github.com/elastic/apm-pipeline-library/pull/904)
+
+#### ⚙️ CI
+
+-  Add googleStorageUploadExt step (bp #867) [#982](https://github.com/elastic/apm-pipeline-library/pull/982)
+- [**backport-to-7.x**][**ready-to-merge**] Add googleStorageUploadExt step [#867](https://github.com/elastic/apm-pipeline-library/pull/867)
+
 ## v1.1.186 (15/02/2021)
 
 #### 🚀 Enhancements
