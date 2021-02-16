@@ -20,9 +20,6 @@ import groovy.transform.Field
 @Field def gsUtilLocation = ''
 
 def call(Map args = [:]) {
-  if(!isUnix()) {
-    error 'gsutil: windows is not supported yet.'
-  }
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
 
@@ -39,24 +36,38 @@ def call(Map args = [:]) {
     }
 
     withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) { 
-      sh(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}')
+      cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}')
     }
-    return sh(label: "gsutil ${command}", script: "gsutil ${command}", returnStdout: true)
+    return cmd(label: "gsutil ${command}", script: "gsutil ${command}", returnStdout: true)
   }
 }
 
 def downloadInstaller(where) {
-  def url = 'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0'
-  url = "${url}-linux-${is64() ? 'x86_64' : 'x86'}.tar.gz"
-  def tarball = 'gsutil.tar.gz'
+  def url = googleCloudSdkURL()
+  def tarball = "gsutil.${isUnix() ? 'tar.gz' : 'zip'}"
   if(isInstalled(tool: 'wget', flag: '--version')) {
     dir(where) {
       retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        sh(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
-        sh(label: 'untar gsutil', script: "tar -xpf ${tarball} --strip-components=1")
+        cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
+        uncompress(tarball)
       }
     }
   } else {
     log(level: 'WARN', text: 'gsutil: wget is not available. gsutil will not be installed then.')
   }
-} 
+}
+
+def googleCloudSdkURL() {
+  def url = 'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0'
+  def os = isUnix() ? 'linux' : 'windows'
+  def ext = isUnix() ? 'tar.gz' : 'zip'
+  return "${url}-${os}-${is64() ? 'x86_64' : 'x86'}.${ext}"
+}
+
+def uncompress(tarball) {
+  if (isUnix()) {
+    sh(label: 'untar gsutil', script: "tar -xpf ${tarball} --strip-components=1")
+  } else {
+    unzip(quiet: true, zipFile: tarball)
+  }
+}
