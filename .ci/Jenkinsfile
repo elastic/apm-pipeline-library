@@ -117,8 +117,8 @@ pipeline {
       }
     }
     stage('Google Storage') {
-      options {
-        warnError('Google Storage failed. This check should be removed after merging to master')
+      when {
+        branch 'master'  // TODO: to be removed as soon as the step is available in the master branch
       }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
