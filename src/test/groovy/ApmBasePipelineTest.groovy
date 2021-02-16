@@ -274,6 +274,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('file', [Map.class], { [ variable: 'foo', secret: 'bar' ] })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
@@ -451,6 +452,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('gsutil', [Map.class], { m ->
+      def script = loadScript('vars/gsutil.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('installTools', [List.class], { l ->
       def script = loadScript('vars/installTools.groovy')
@@ -492,6 +497,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is32x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('is64', { return true })
     helper.registerAllowedMethod('is64x86', {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
