@@ -2,7 +2,7 @@ module.exports = {
     "dataSource": "prs",
     "prefix": "",
     "onlyMilestones": false,
-    "ignoreCommitsWith": ["chore", "refactor", "style"],
+    "ignoreCommitsWith": ["chore", "refactor", "style", "(bp #"],
     "ignoreIssuesWith": ["no-release"],
     "ignoreTagsWith": ["-rc", "-alpha", "-beta", "test", "current"],
     "ignoreLabels": ["closed", "automation", "enhancement", "bug", "fix",
