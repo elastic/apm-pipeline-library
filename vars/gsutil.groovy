@@ -15,20 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import groovy.transform.Field
-
-@Field def gsUtilLocation = ''
-
 def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
-
-  if (gsUtilLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gsutil: get the gsutilLocation from cache.')
-  } else {
-    log(level: 'DEBUG', text: 'gsutil: set the gsutilLocation.')
-    gsUtilLocation = pwd(tmp: true)
-  }
+  def gsUtilLocation = pwd(tmp: true)
 
   withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin"]) {
     if(!isInstalled(tool: 'gsutil', flag: '--version')) {
