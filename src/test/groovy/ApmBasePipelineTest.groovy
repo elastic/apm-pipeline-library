@@ -334,6 +334,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('unzip', [Map.class], null)
     helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
     helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->

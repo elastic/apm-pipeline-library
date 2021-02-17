@@ -33,19 +33,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_windows() throws Exception {
-    helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.call()
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gsutil: windows is not supported yet.'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_without_command() throws Exception {
     try {
       script.call()
@@ -74,6 +61,7 @@ class GsutilStepTests extends ApmBasePipelineTest {
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', ''))
+    assertTrue(assertMethodCallContainsPattern('sh', 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}'))
     assertTrue(assertMethodCallContainsPattern('sh', "gsutil cp"))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
     assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
@@ -102,7 +90,7 @@ class GsutilStepTests extends ApmBasePipelineTest {
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O gsutil.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-linux-x86_64.tar.gz'))
     assertJobStatusSuccess()
   }
 
@@ -140,6 +128,30 @@ class GsutilStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
     assertTrue(assertMethodCallContainsPattern('log', 'gsutil: get the gsutilLocation from cache.'))
     assertTrue(assertMethodCallContainsPattern('log', 'gsutil: set the gsutilLocation.'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_windows() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.call(command: 'cp', credentialsId: 'foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', ''))
+    assertTrue(assertMethodCallContainsPattern('bat', 'gcloud auth activate-service-account --key-file %FILE_CREDENTIAL%'))
+    assertTrue(assertMethodCallContainsPattern('bat', "gsutil cp"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
+    assertFalse(assertMethodCallContainsPattern('bat', "wget -q -O"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_gh_installed_by_default_with_wget_in_windows() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.call(command: 'cp', credentialsId: 'foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'wget -q -O gsutil.zip https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-windows-x86_64.zip'))
     assertJobStatusSuccess()
   }
 }

@@ -117,13 +117,25 @@ pipeline {
       }
     }
     stage('Google Storage') {
-      when {
-        branch 'master'  // TODO: to be removed as soon as the step is available in the master branch
-      }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
           dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'target/**/*.xml', sharedPublicly: false)
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+          }
+        }
+      }
+    }
+    stage('Google Storage Windows') {
+      agent { label 'windows-2019-immutable' }
+      when {
+        branch 'master'
+      }
+      steps {
+        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
           }
         }
       }
@@ -135,9 +147,15 @@ pipeline {
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
             validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/chatops.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
             validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
+            validateDeclarativePipeline '.ci/licenseScan.groovy'
+            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
         }
