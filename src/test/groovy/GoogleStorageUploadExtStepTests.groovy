@@ -34,14 +34,12 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
   @Test
   void test_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
-    try {
-      script.call(bucket: 'gs://foo', pattern: 'file.txt')
-    } catch(e){
-      //NOOP
-    }
+    helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
+    def ret = script.call(bucket: 'gs://foo', pattern: 'file.txt')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'gsutil: windows is not supported yet.'))
-    assertJobStatusFailure()
+    assertFalse(assertMethodCallContainsPattern('gsutil', '-a public-read'))
+    assertTrue(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
+    assertFalse(ret.isEmpty())
   }
 
   @Test

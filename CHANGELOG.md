@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.188 (16/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support windows for gsutil [#985](https://github.com/elastic/apm-pipeline-library/pull/985)
+
+#### ⚙️ CI
+
+-  Support windows for gsutil (bp #985) [#987](https://github.com/elastic/apm-pipeline-library/pull/987)
+
 ## v1.1.187 (16/02/2021)
 
 #### 🙈 No user affected
