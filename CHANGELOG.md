@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.189 (17/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support curl in addition to wget for gsutil [#988](https://github.com/elastic/apm-pipeline-library/pull/988)
+
+#### 🙈 No user affected
+
+-  chore: bump Go version [#983](https://github.com/elastic/apm-pipeline-library/pull/983)
+
 ## v1.1.188 (16/02/2021)
 
 #### 🚀 Enhancements
