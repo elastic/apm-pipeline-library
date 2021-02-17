@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.190 (17/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Avoid cache gsutils temporary location [#994](https://github.com/elastic/apm-pipeline-library/pull/994)
+
+#### 🙈 No user affected
+
+-  [release] changelog exclude some labels [#986](https://github.com/elastic/apm-pipeline-library/pull/986)
+-  [JCasC] google cloud engine local setup [#979](https://github.com/elastic/apm-pipeline-library/pull/979)
+
 ## v1.1.189 (17/02/2021)
 
 #### 🚀 Enhancements
