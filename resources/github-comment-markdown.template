@@ -88,12 +88,14 @@ ${errorStackTrace}
 <% if (stepsErrors?.size() <= 0 && !buildStatus?.equals('SUCCESS') && errorGitHub) {%>
   <% stepsErrors = stepsErrors << errorGitHub %>
 <%}%>
-<% if (stepsErrors?.size() != 0) {%>
+<% if (stepsErrors?.size() != 0 && !statusSuccess) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
 
-  ${(stepsErrors?.size() > 10) ? '> Show only the first 10 steps failures' : ''}
+<% if (stepsErrors?.size() > 10) {%>
+> Show only the first 10 steps failures
+<% }%>
   <% stepsErrors?.takeRight(10)?.each{ c -> %>
   <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "<li>Description: <code>${c?.displayDescription}</code></l1>" : ''%>
   <% duration = (c?.durationInMillis >= 0 ) ? "Took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec" : ''%>
