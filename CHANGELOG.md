@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.1.189 (17/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support curl in addition to wget for gsutil [#988](https://github.com/elastic/apm-pipeline-library/pull/988)
+
+#### 🙈 No user affected
+
+-  chore: bump Go version [#983](https://github.com/elastic/apm-pipeline-library/pull/983)
+
+## v1.1.188 (16/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support windows for gsutil [#985](https://github.com/elastic/apm-pipeline-library/pull/985)
+
+#### ⚙️ CI
+
+-  Support windows for gsutil (bp #985) [#987](https://github.com/elastic/apm-pipeline-library/pull/987)
+
+## v1.1.187 (16/02/2021)
+
+#### 🙈 No user affected
+
+-  [chore]: delegate delete to the core [#904](https://github.com/elastic/apm-pipeline-library/pull/904)
+
+#### ⚙️ CI
+
+-  Add googleStorageUploadExt step (bp #867) [#982](https://github.com/elastic/apm-pipeline-library/pull/982)
+- [**backport-to-7.x**][**ready-to-merge**] Add googleStorageUploadExt step [#867](https://github.com/elastic/apm-pipeline-library/pull/867)
+
 ## v1.1.186 (15/02/2021)
 
 #### 🚀 Enhancements
