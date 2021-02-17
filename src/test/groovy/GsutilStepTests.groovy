@@ -95,11 +95,22 @@ class GsutilStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_gh_installed_by_default_no_wget() throws Exception {
+  void test_without_gh_installed_by_default_no_wget_no_curl() throws Exception {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertFalse(assertMethodCallContainsPattern('sh', 'curl'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_gh_installed_by_default_no_wget() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return !(m.tool.equals('wget') || m.tool.equals('gsutil'))})
+    script.call(command: 'cp', credentialsId: 'foo')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O gsutil.tar.gz'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo gsutil.tar.gz --retry 3 --retry-delay 2 --max-time 10'))
     assertJobStatusSuccess()
   }
 

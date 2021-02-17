@@ -46,15 +46,32 @@ def call(Map args = [:]) {
 def downloadInstaller(where) {
   def url = googleCloudSdkURL()
   def tarball = "gsutil.${isUnix() ? 'tar.gz' : 'zip'}"
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    dir(where) {
-      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
-        uncompress(tarball)
-      }
+
+  dir(where) {
+    if (!downloadWithWget(tarball, url)) {
+      downloadWithCurl(tarball, url)
     }
+    uncompress(tarball)
+  }
+}
+
+def downloadWithWget(tarball, url) {
+  if(isInstalled(tool: 'wget', flag: '--version')) {
+    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+      cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
+    }
+    return true
   } else {
     log(level: 'WARN', text: 'gsutil: wget is not available. gsutil will not be installed then.')
+  }
+  return false
+}
+
+def downloadWithCurl(tarball, url) {
+  if(isInstalled(tool: 'curl', flag: '--version')) {
+    cmd(label: 'download gsutil', script: "curl -sSLo ${tarball} --retry 3 --retry-delay 2 --max-time 10 ${url}")
+  } else {
+    log(level: 'WARN', text: 'gsutil: curl is not available. gsutil will not be installed then.')
   }
 }
 
