@@ -124,6 +124,8 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogin.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogs.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gce-test.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gce-test-orchestrator.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/connectionRefused.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/error.dsl"
