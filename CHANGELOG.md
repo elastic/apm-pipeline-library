@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.1.190 (17/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Avoid cache gsutils temporary location [#994](https://github.com/elastic/apm-pipeline-library/pull/994)
+
+#### 🙈 No user affected
+
+-  [release] changelog exclude some labels [#986](https://github.com/elastic/apm-pipeline-library/pull/986)
+-  [JCasC] google cloud engine local setup [#979](https://github.com/elastic/apm-pipeline-library/pull/979)
+
+## v1.1.189 (17/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support curl in addition to wget for gsutil [#988](https://github.com/elastic/apm-pipeline-library/pull/988)
+
+#### 🙈 No user affected
+
+-  chore: bump Go version [#983](https://github.com/elastic/apm-pipeline-library/pull/983)
+
 ## v1.1.188 (16/02/2021)
 
 #### 🚀 Enhancements
@@ -18,17 +39,16 @@
 
 #### ⚙️ CI
 
--  Add googleStorageUploadExt step (bp #867) [#982](https://github.com/elastic/apm-pipeline-library/pull/982)
-- [**backport-to-7.x**][**ready-to-merge**] Add googleStorageUploadExt step [#867](https://github.com/elastic/apm-pipeline-library/pull/867)
+-  Add googleStorageUploadExt step [#867](https://github.com/elastic/apm-pipeline-library/pull/867)
 
 ## v1.1.186 (15/02/2021)
 
 #### 🚀 Enhancements
 
-- [**backport-to-7.x**][**ready-to-merge**] Add releaseNotification step to simplify agent release pipelines [#976](https://github.com/elastic/apm-pipeline-library/pull/976)
-- [**backport-to-7.x**][**ready-to-merge**] Disable/Enable pre-commit skipped tests in the report [#977](https://github.com/elastic/apm-pipeline-library/pull/977)
+-  Add releaseNotification step to simplify agent release pipelines [#976](https://github.com/elastic/apm-pipeline-library/pull/976)
+-  Disable/Enable pre-commit skipped tests in the report [#977](https://github.com/elastic/apm-pipeline-library/pull/977)
 -  feat: support parameters for githubPrCheckApproved [#910](https://github.com/elastic/apm-pipeline-library/pull/910)
-- [**ready-to-merge**] test: taest jobDSL job when them changed [#966](https://github.com/elastic/apm-pipeline-library/pull/966)
+-  test: taest jobDSL job when them changed [#966](https://github.com/elastic/apm-pipeline-library/pull/966)
 
 #### 🐛 Bug Fixes
 
@@ -37,30 +57,29 @@
 #### 🙈 No user affected
 
 -  chore: refactor jobs in folders [#974](https://github.com/elastic/apm-pipeline-library/pull/974)
-- [**ready-to-merge**] chore: refactor params variables to args [#960](https://github.com/elastic/apm-pipeline-library/pull/960)
+-  chore: refactor params variables to args [#960](https://github.com/elastic/apm-pipeline-library/pull/960)
 
 #### ⚙️ CI
 
--  Image build pipeline for flaky v2 (bp #968) [#969](https://github.com/elastic/apm-pipeline-library/pull/969)
-- [**backport-to-7.x**][**ready-to-merge**] Image build pipeline for flaky v2 [#968](https://github.com/elastic/apm-pipeline-library/pull/968)
+-  Image build pipeline for flaky v2 [#968](https://github.com/elastic/apm-pipeline-library/pull/968)
 
 ## v1.1.185 (08/02/2021)
 
 #### 🚀 Enhancements
 
-- [**backport-to-7.x**][**ready-to-merge**] feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
+-  feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
 
 #### 🐛 Bug Fixes
 
-- [**backport-to-7.x**][**ready-to-merge**] Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
+-  Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
 
 #### 📚 Documentation
 
-- [**backport-to-7.x**][**ready-to-merge**] docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
+-  docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
 
 #### 🙈 No user affected
 
-- [**backport-to-7.x**][**ready-to-merge**] Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
+-  Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
 
 ## v1.1.184 (05/02/2021)
 

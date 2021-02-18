@@ -15,20 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import groovy.transform.Field
-
-@Field def gsUtilLocation = ''
-
 def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
-
-  if (gsUtilLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gsutil: get the gsutilLocation from cache.')
-  } else {
-    log(level: 'DEBUG', text: 'gsutil: set the gsutilLocation.')
-    gsUtilLocation = pwd(tmp: true)
-  }
+  def gsUtilLocation = pwd(tmp: true)
 
   withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin"]) {
     if(!isInstalled(tool: 'gsutil', flag: '--version')) {
@@ -46,15 +36,32 @@ def call(Map args = [:]) {
 def downloadInstaller(where) {
   def url = googleCloudSdkURL()
   def tarball = "gsutil.${isUnix() ? 'tar.gz' : 'zip'}"
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    dir(where) {
-      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
-        uncompress(tarball)
-      }
+
+  dir(where) {
+    if (!downloadWithWget(tarball, url)) {
+      downloadWithCurl(tarball, url)
     }
+    uncompress(tarball)
+  }
+}
+
+def downloadWithWget(tarball, url) {
+  if(isInstalled(tool: 'wget', flag: '--version')) {
+    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+      cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
+    }
+    return true
   } else {
     log(level: 'WARN', text: 'gsutil: wget is not available. gsutil will not be installed then.')
+  }
+  return false
+}
+
+def downloadWithCurl(tarball, url) {
+  if(isInstalled(tool: 'curl', flag: '--version')) {
+    cmd(label: 'download gsutil', script: "curl -sSLo ${tarball} --retry 3 --retry-delay 2 --max-time 10 ${url}")
+  } else {
+    log(level: 'WARN', text: 'gsutil: curl is not available. gsutil will not be installed then.')
   }
 }
 
