@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.191 (22/02/2021)
+
+#### 🚀 Enhancements
+
+-  Omit failed steps if build was success [#996](https://github.com/elastic/apm-pipeline-library/pull/996)
+
+#### 🐛 Bug Fixes
+
+-  [cosmetic] Replace multiline chars in the GitHub PR comment [#998](https://github.com/elastic/apm-pipeline-library/pull/998)
+-  [cosmetic] add the author in the slack message [#999](https://github.com/elastic/apm-pipeline-library/pull/999)
+
+#### 🙈 No user affected
+
+-  chore: use opentelemetry release [#1000](https://github.com/elastic/apm-pipeline-library/pull/1000)
+-  chore: bum Elastic Stack versions [#984](https://github.com/elastic/apm-pipeline-library/pull/984)
+
 ## v1.1.190 (17/02/2021)
 
 #### 🐛 Bug Fixes
