@@ -19,8 +19,10 @@ def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
   def gsUtilLocation = pwd(tmp: true)
+  def gsUtilLocationWin = "${gsUtilLocation}/google-cloud-sdk"
 
-  withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin"]) {
+  withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin",
+           "PATH+GSUTILWIN=${gsUtilLocationWin}", "PATH+GSUTILWIN_BIN=${gsUtilLocationWin}/bin"]) {
     if(!isInstalled(tool: 'gsutil', flag: '--version')) {
       downloadInstaller(gsUtilLocation)
     }
