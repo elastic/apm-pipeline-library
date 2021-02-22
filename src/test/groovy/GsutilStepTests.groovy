@@ -115,34 +115,6 @@ class GsutilStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_cache() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    try {
-      script.call(command: 'cp', credentialsId: 'foo')
-      script.call(command: 'cp', credentialsId: 'foo')
-    } catch(e) {
-      // NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_cache_without_gsutil_installed_by_default_with_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'cp', credentialsId: 'foo')
-    script.call(command: 'cp', credentialsId: 'foo')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gsutil: get the gsutilLocation from cache.'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gsutil: set the gsutilLocation.'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     script.call(command: 'cp', credentialsId: 'foo')
