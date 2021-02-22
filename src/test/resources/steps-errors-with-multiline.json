@@ -1,0 +1,26 @@
+[
+  {
+    "displayDescription": "make -C auditbeat check;make -C auditbeat update;make -C x-pack/auditbeat check;make -C x-pack/auditbeat update;make check-no-changes;",
+    "displayName": "auditbeat-Lint - make -C auditbeat check;\nmake -C auditbeat update;\nmake -C x-pack/auditbeat check;\n",
+    "durationInMillis": 78948,
+    "id": "1662",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-16T14:15:06.350+0000",
+    "state": "FINISHED",
+    "type": "STAGE",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-23966/runs/5/steps/1662/log"
+  },
+  {
+    "displayDescription": "Error 'hudson.AbortException: script returned exit code 2'",
+    "displayName": "Error signal",
+    "durationInMillis": 13,
+    "id": "1808",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-16T14:16:25.317+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-23966/runs/5/steps/1808/log"
+  }
+]
