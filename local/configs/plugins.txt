@@ -4,6 +4,6 @@ google-compute-engine
 job-dsl
 metrics
 monitoring
-opentelemetry::https://storage.googleapis.com/apm-ci-temp/plugins/opentelemetry.hpi
+opentelemetry
 plot
 ssh-agent
