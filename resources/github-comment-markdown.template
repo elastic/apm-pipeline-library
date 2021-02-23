@@ -81,10 +81,12 @@ ${errorStackTrace}
 
 <!-- STEPS ERRORS IF ANY -->
 <% errorGitHub = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Notifies GitHub')}%>
-<% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
+<% errorDeleteDir = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Recursively delete the current directory from the workspace')}%>
+<% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit') && !it?.displayName?.contains('Recursively delete the current directory from the workspace')}%>
 <% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
 <% stepsErrors = stepsErrors?.findAll{ !it?.displayName?.contains('Error signal') } %>
 <% if (errorSignal) { stepsErrors = stepsErrors << errorSignal }%>
+<% if (errorDeleteDir) { stepsErrors = stepsErrors << errorDeleteDir }%>
 <% if (stepsErrors?.size() <= 0 && !buildStatus?.equals('SUCCESS') && errorGitHub) {%>
   <% stepsErrors = stepsErrors << errorGitHub %>
 <%}%>
