@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.192 (23/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Unzip does not strip components [#1004](https://github.com/elastic/apm-pipeline-library/pull/1004)
+
 ## v1.1.191 (22/02/2021)
 
 #### 🚀 Enhancements
