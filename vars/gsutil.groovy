@@ -73,6 +73,7 @@ def googleCloudSdkURL() {
   if (isUnix()) {
     return "${url}-linux-${arch}.tar.gz"
   } else {
+    // use the bundled python artifact to avoid issues with the existing python2 installation when running gsutil in some Windows versions
     return "${url}-windows-${arch}-bundled-python.zip"
   }
 }
