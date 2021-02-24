@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.193 (24/02/2021)
+
+#### 🚀 Enhancements
+
+-  Report only one DeleteDir step failure [#1006](https://github.com/elastic/apm-pipeline-library/pull/1006)
+
 ## v1.1.192 (23/02/2021)
 
 #### 🐛 Bug Fixes
