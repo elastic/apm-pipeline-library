@@ -1,0 +1,50 @@
+[
+  {
+    "displayDescription": "Unable to delete 'C:\\Users\\jenkins\\workspace\\Beats_beats_PR-22662'. Tried 3 times (of a maximum of 3",
+    "displayName": "Recursively delete the current directory from the workspace",
+    "durationInMillis": 270827,
+    "id": "12168",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-18T16:23:33.466+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22662/runs/3/steps/12168/log"
+  },
+  {
+    "displayDescription": "Unable to delete 'C:\\Users\\jenkins\\workspace\\Beats_beats_PR-22662'. Tried 3 times (of a maximum of 3",
+    "displayName": "Recursively delete the current directory from the workspace",
+    "durationInMillis": 282224,
+    "id": "11714",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-18T16:22:37.478+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22662/runs/3/steps/11714/log"
+  },
+  {
+    "displayDescription": "Unable to delete 'C:\\Users\\jenkins\\workspace\\Beats_beats_PR-22662'. Tried 3 times (of a maximum of 3",
+    "displayName": "Recursively delete the current directory from the workspace",
+    "durationInMillis": 193494,
+    "id": "12939",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-18T16:24:40.836+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22662/runs/3/steps/12939/log"
+  },
+  {
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-18T16:24:40.836+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22662/runs/3/steps/58/log"
+  }
+]
