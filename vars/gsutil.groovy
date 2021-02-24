@@ -69,9 +69,12 @@ def downloadWithCurl(tarball, url) {
 
 def googleCloudSdkURL() {
   def url = 'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0'
-  def os = isUnix() ? 'linux' : 'windows'
-  def ext = isUnix() ? 'tar.gz' : 'zip'
-  return "${url}-${os}-${is64() ? 'x86_64' : 'x86'}.${ext}"
+  def arch = is64() ? 'x86_64' : 'x86'
+  if (isUnix()) {
+    return "${url}-linux-${arch}.tar.gz"
+  } else {
+    return "${url}-windows-${arch}-bundled-python.zip"
+  }
 }
 
 def uncompress(tarball) {
