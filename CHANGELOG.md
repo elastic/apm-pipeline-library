@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.194 (24/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  gsutil for windows with python [#1008](https://github.com/elastic/apm-pipeline-library/pull/1008)
+
 ## v1.1.193 (24/02/2021)
 
 #### 🚀 Enhancements
