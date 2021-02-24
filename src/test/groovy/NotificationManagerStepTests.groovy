@@ -425,6 +425,25 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_failure_and_deleteDir_issues() throws Exception {
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-deleteDir-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Shell Script'))
+    assertTrue(assertMethodCallContainsPatternOccurrences('githubPrComment', 'Recursively delete the current directory from the workspace', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_a_generated_comment() throws Exception {
     script.notifyPR(comment: 'My Comment')
     printCallStack()
