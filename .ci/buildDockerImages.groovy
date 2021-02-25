@@ -48,6 +48,7 @@ pipeline {
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
     booleanParam(name: 'apm_server', defaultValue: "false", description: "")
+    booleanParam(name: 'build_analyzer', defaultValue: "false", description: "Build analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/build-analyzer]")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
     booleanParam(name: 'flakeyv2', defaultValue: "false", description: "Flake V2 detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
@@ -339,6 +340,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/flaky-test-analyzer")
+      }
+    }
+    stage('Build analyzer'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.build_analyzer}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'build-analyzer',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/build-analyzer")
       }
     }
     stage('Build integrations test reporter'){
