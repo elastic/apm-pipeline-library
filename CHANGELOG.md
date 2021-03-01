@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.195 (01/03/2021)
+
+#### 🐛 Bug Fixes
+
+-  Use python3 for installing the pre-commit [#1013](https://github.com/elastic/apm-pipeline-library/pull/1013)
+
+#### ⚙️ CI
+
+-  Docker build pipeline for build analzyer [#1011](https://github.com/elastic/apm-pipeline-library/pull/1011)
+
 ## v1.1.194 (24/02/2021)
 
 #### 🐛 Bug Fixes
