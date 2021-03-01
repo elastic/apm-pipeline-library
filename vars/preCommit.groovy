@@ -48,7 +48,13 @@ def call(Map args = [:]) {
         dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-        sh(label: 'Install precommit', script: "curl -s https://pre-commit.com/install-local.py | python -")
+        sh(label: 'Install precommit', script: '''
+          PYTHON_COMMAND=python
+          if command -v python3 ; then
+            PYTHON_COMMAND=python3
+          fi
+          curl -s https://pre-commit.com/install-local.py | ${PYTHON_COMMAND} -
+        ''')
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
         sh(label: 'Install precommit hooks', script: """
