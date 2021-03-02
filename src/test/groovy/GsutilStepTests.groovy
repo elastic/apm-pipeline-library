@@ -134,7 +134,7 @@ class GsutilStepTests extends ApmBasePipelineTest {
     script.call(command: 'cp', credentialsId: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('bat', 'wget -q -O gsutil.zip https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-windows-x86_64.zip'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'wget -q -O gsutil.zip https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-windows-x86_64-bundled-python.zip'))
     assertJobStatusSuccess()
   }
 }

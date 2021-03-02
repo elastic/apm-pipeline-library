@@ -1,5 +1,49 @@
 # Changelog
 
+## v1.1.195 (01/03/2021)
+
+#### 🐛 Bug Fixes
+
+-  Use python3 for installing the pre-commit [#1013](https://github.com/elastic/apm-pipeline-library/pull/1013)
+
+#### ⚙️ CI
+
+-  Docker build pipeline for build analzyer [#1011](https://github.com/elastic/apm-pipeline-library/pull/1011)
+
+## v1.1.194 (24/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  gsutil for windows with python [#1008](https://github.com/elastic/apm-pipeline-library/pull/1008)
+
+## v1.1.193 (24/02/2021)
+
+#### 🚀 Enhancements
+
+-  Report only one DeleteDir step failure [#1006](https://github.com/elastic/apm-pipeline-library/pull/1006)
+
+## v1.1.192 (23/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Unzip does not strip components [#1004](https://github.com/elastic/apm-pipeline-library/pull/1004)
+
+## v1.1.191 (22/02/2021)
+
+#### 🚀 Enhancements
+
+-  Omit failed steps if build was success [#996](https://github.com/elastic/apm-pipeline-library/pull/996)
+
+#### 🐛 Bug Fixes
+
+-  [cosmetic] Replace multiline chars in the GitHub PR comment [#998](https://github.com/elastic/apm-pipeline-library/pull/998)
+-  [cosmetic] add the author in the slack message [#999](https://github.com/elastic/apm-pipeline-library/pull/999)
+
+#### 🙈 No user affected
+
+-  chore: use opentelemetry release [#1000](https://github.com/elastic/apm-pipeline-library/pull/1000)
+-  chore: bum Elastic Stack versions [#984](https://github.com/elastic/apm-pipeline-library/pull/984)
+
 ## v1.1.190 (17/02/2021)
 
 #### 🐛 Bug Fixes

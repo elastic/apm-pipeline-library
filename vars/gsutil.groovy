@@ -19,8 +19,10 @@ def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gsutil: command argument is required.')
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId argument is required.')
   def gsUtilLocation = pwd(tmp: true)
+  def gsUtilLocationWin = "${gsUtilLocation}/google-cloud-sdk"
 
-  withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin"]) {
+  withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin",
+           "PATH+GSUTILWIN=${gsUtilLocationWin}", "PATH+GSUTILWIN_BIN=${gsUtilLocationWin}/bin"]) {
     if(!isInstalled(tool: 'gsutil', flag: '--version')) {
       downloadInstaller(gsUtilLocation)
     }
@@ -67,9 +69,13 @@ def downloadWithCurl(tarball, url) {
 
 def googleCloudSdkURL() {
   def url = 'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0'
-  def os = isUnix() ? 'linux' : 'windows'
-  def ext = isUnix() ? 'tar.gz' : 'zip'
-  return "${url}-${os}-${is64() ? 'x86_64' : 'x86'}.${ext}"
+  def arch = is64() ? 'x86_64' : 'x86'
+  if (isUnix()) {
+    return "${url}-linux-${arch}.tar.gz"
+  } else {
+    // use the bundled python artifact to avoid issues with the existing python2 installation when running gsutil in some Windows versions
+    return "${url}-windows-${arch}-bundled-python.zip"
+  }
 }
 
 def uncompress(tarball) {
