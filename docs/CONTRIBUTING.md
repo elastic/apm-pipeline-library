@@ -8,14 +8,14 @@
 
 There are two primary ways to help:
 
-* Using the issue tracker, and
-* Changing the code-base.
+* Using the issue tracker
+* Changing the codebase
 
 ## Using the issue tracker
 
 Use the issue tracker to suggest feature requests, report bugs, and ask questions. This is also a great way to connect with the developers of the project as well as others who are interested in this solution.
 
-Use the issue tracker to find ways to contribute. Find a bug or a feature, mention in the issue that you will take on that effort, then follow the "Changing the code-base" guidance below.
+Use the issue tracker to find ways to contribute. Find a bug or a feature, mention in the issue that you will take on that effort, then follow the "Changing the codebase" guidance below.
 
 ## Changing the code-base
 
@@ -23,7 +23,7 @@ Generally speaking, you should fork this repository, make changes in your own fo
 
 ### Working with forks
 
-* [Configure this repository as a remote for your own fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/), and
+* [Configure this repository as a remote for your own fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
 * [Sync your fork with this repository](https://help.github.com/articles/syncing-a-fork/) before beginning to work on a new pull-request.
 
 ### Submitting your changes

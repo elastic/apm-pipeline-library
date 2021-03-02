@@ -18,13 +18,13 @@ The intention of this section is to describe the code style for this project. As
 
 This project is intended to run in Jenkins [[2]](https://jenkins.io/doc/book/getting-started/) as part of a Jenkins Pipeline [[3]](https://jenkins.io/doc/book/pipeline/). It is composed by Jenkins Pipeline's syntax, Groovy's syntax and Java's syntax.
 
-Some Groovy's syntax is not yet supported by Jenkins. It is also the intention of this section to remark which Groovy's syntax is not yet supported by Jenkins.
+Some Groovy syntax is not yet supported by Jenkins. It is also the intention of this section to remark which Groovy syntax is not yet supported by Jenkins.
 
 As Groovy supports 99% of Java’s syntax [[1]](http://groovy-lang.org/style-guide.html), many Java developers tend to write Groovy code using Java's syntax. Such a developer should also consider the following code style for this project.
 
 ### General remarks
 
-Variables, methods, types and so on shall have meaningful self describing names. Doing so makes understanding code easier and requires less commenting. It helps people who did not write the code to understand it better.
+Variables, methods, types and so on shall have meaningful, self-describing names. Doing so makes understanding code easier and requires less commenting. It helps people who did not write the code to understand it better.
 
 Code shall contain comments to explain the intention of the code when it is unclear what the intention of the author was. In such cases, comments should describe the "why" and not the "what" (that is in the code already).
 
@@ -44,7 +44,7 @@ By default, classes and methods are public, the use of the public modifier is no
 
 ### Do not omit parentheses for Groovy methods
 
-In Groovy is possible to omit parentheses for top-level expressions, but [Jenkins Pipeline's syntax](https://jenkins.io/doc/book/pipeline/syntax/) use a block, specifically `pipeline { }` as top-level expression [[4]](https://jenkins.io/doc/book/pipeline/syntax/). Do not omit parenthesis for Groovy methods because Jenkins will interpret the method as a Pipeline Step. Conversely, do omit parenthesis for Jenkins Pipeline's Steps.
+In Groovy is possible to omit parentheses for top-level expressions, but [Jenkins Pipeline's syntax](https://jenkins.io/doc/book/pipeline/syntax/) use a block, specifically `pipeline { }` as top-level expression [[4]](https://jenkins.io/doc/book/pipeline/syntax/). Do not omit parenthesis for Groovy methods because Jenkins will interpret the method as a Pipeline Step. Conversely, do omit parenthesis for Jenkins Pipeline Steps.
 
 ### Omit getters and setters
 
