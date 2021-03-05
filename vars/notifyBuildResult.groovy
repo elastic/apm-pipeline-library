@@ -52,8 +52,6 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
-  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
 
   node('master || metal || linux'){
     stage('Reporting build status'){
@@ -75,8 +73,6 @@ def call(Map args = [:]) {
         data['statsUrl'] = statsURL
         data['es'] = es
         data['es_secret'] = secret
-        data['flakyReportIdx'] = flakyReportIdx
-        data['flakyThreshold'] = flakyThreshold
         data['header'] = slackHeader
         data['channel'] = slackChannel
         data['credentialId'] = slackCredentials
