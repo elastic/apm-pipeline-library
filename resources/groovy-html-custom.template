@@ -135,7 +135,7 @@
       </tr>
       <tr>
         <td colspan="7" style="padding-left: 24px;text-align: left; vertical-align: middle; font-family: Helvetica; font-size: 12px; color: #343B49; letter-spacing: 1px;">
-          <strong style="font-family: Helvetica; color: #343B49;">Build Cause:</strong> ${build?.causes?.shortDescription}<br>
+          <strong style="font-family: Helvetica; color: #343B49;">Build Cause:</strong> ${build?.causes?.isArray() ? build?.causes?.shortDescription : ''}<br>
           <strong style="font-family: Helvetica; color: #343B49;">Start Time:</strong> ${build?.startTime}<br>
           <% if(build?.durationInMillis >= 0) {%>
             <strong style="font-family: Helvetica; color: #343B49;">Duration:</strong> ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec - (${build.durationInMillis})<br>

@@ -23,7 +23,7 @@
 
 #### Build stats
 
-<% if(build?.causes?.shortDescription != null && !build?.causes?.shortDescription.equals('null')) {%>
+<% if(build?.causes?.isArray() && build?.causes?.shortDescription != null && !build?.causes?.shortDescription.equals('null')) {%>
 * Build Cause: `${build.causes.shortDescription}`
 <%}%>
 <% if(build?.description != null && !build?.description.equals('null')) {%>
