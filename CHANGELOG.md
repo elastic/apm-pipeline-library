@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.197 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1023](https://github.com/elastic/apm-pipeline-library/pull/1023)
+
+#### 🙈 No user affected
+
+-  Fix pipeline syntax and make goal [#1022](https://github.com/elastic/apm-pipeline-library/pull/1022)
+
 ## v1.1.196 (08/03/2021)
 
 #### 🚀 Enhancements
