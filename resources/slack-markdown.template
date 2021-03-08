@@ -6,8 +6,11 @@
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
 <% changesMessage = (changes?.msg) ? "${commitUrl} (by `${changes?.author?.id}`)" : "No push event to branch ${build?.pipeline}" %>
 <% stepsMessage = (steps?.size()!= 0) ? "*Steps failures*: `${steps?.size()}` (click ${artifactsUrl} and open `build.md` for further details)" : ""%>
+<% observabilityUrl = String.format("<%sobservability|here>", env?.OTEL_ELASTIC_URL)%>
+<% observabilityMessage = (env?.OTEL_ELASTIC_URL != null && !env?.OTEL_ELASTIC_URL?.equals('null')) ? "" : ":APM: Click ${observabilityUrl} for further details.%>
 <% if (header?.trim()) {%>${header}<%}%>
 *Build*: `${jenkinsText}` ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`
 *Changes*: ${changesMessage}
 *Tests*: `${(testsSummary?.failed) ?: 0}` test/s failed out of ${(testsSummary?.total) ?: 0} (click ${testsUrl} for further details)
 ${stepsMessage}
+${observabilityMessage}
