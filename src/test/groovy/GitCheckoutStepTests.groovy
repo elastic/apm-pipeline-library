@@ -482,4 +482,19 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 0))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_NoTags() throws Exception {
+    script.scm = 'SCM'
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      reference: 'repo',
+      noTags: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Checkout master'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Reference repo enabled'))
+    assertTrue(assertMethodCallContainsPattern('checkout', 'CloneOption, depth=0, noTags=true, reference=repo, shallow=false'))
+    assertJobStatusSuccess()
+  }
 }
