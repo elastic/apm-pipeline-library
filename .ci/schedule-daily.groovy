@@ -157,6 +157,14 @@ pipeline {
         }
       }
     }
+    stage('Populate GitHub data') {
+      steps {
+        build(job: 'apm-shared/populate-github',
+          propagate: false,
+          wait: false
+        )
+      }
+    }
   }
   post {
     cleanup {
