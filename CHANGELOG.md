@@ -5,6 +5,7 @@
 #### 🚀 Enhancements
 
 -  Support arm64 MacOS M1 workers [#1023](https://github.com/elastic/apm-pipeline-library/pull/1023)
+-  Add the noTags option to gitCheckout 
 
 #### 🙈 No user affected
 
