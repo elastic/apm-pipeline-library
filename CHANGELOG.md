@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.196 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1021](https://github.com/elastic/apm-pipeline-library/pull/1021)
+
+#### 📚 Documentation
+
+-  [DOCS] restructure the docs [#993](https://github.com/elastic/apm-pipeline-library/pull/993)
+
+#### 🙈 No user affected
+
+-  [jjbb] Fix pipeline name with CamelCase syntax [#1019](https://github.com/elastic/apm-pipeline-library/pull/1019)
+-  Populate GitHub issues/prs into ES [#1017](https://github.com/elastic/apm-pipeline-library/pull/1017)
+-  Remove dependency with https://plugins.jenkins.io/junit-attachments/ [#1015](https://github.com/elastic/apm-pipeline-library/pull/1015)
+
 ## v1.1.195 (01/03/2021)
 
 #### 🐛 Bug Fixes
