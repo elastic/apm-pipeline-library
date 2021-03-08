@@ -494,7 +494,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Checkout master'))
     assertTrue(assertMethodCallContainsPattern('log', 'Reference repo enabled'))
-    assertTrue(assertMethodCallContainsPattern('checkout', 'CloneOption, depth=5, noTags=true, reference=repo'))
+    assertTrue(assertMethodCallContainsPattern('checkout', 'CloneOption, depth=0, noTags=true, reference=repo, shallow=false'))
     assertJobStatusSuccess()
   }
 }
