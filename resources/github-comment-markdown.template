@@ -23,7 +23,7 @@
 
 #### Build stats
 
-<% if(build?.causes?.shortDescription != null && !build?.causes?.shortDescription.equals('null')) {%>
+<% if(!build?.causes instanceof net.sf.json.JSONNull && build?.causes?.shortDescription != null && ! build?.causes?.shortDescription?.isEmpty() && !build?.causes?.shortDescription.equals('null')) {%>
 * Build Cause: `${build.causes.shortDescription}`
 <%}%>
 <% if(build?.description != null && !build?.description.equals('null')) {%>

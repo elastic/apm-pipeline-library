@@ -1003,6 +1003,20 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_generateBuildReport_with_empty_values() throws Exception {
+    script.generateBuildReport(
+      build: readJSON(file: 'empty/build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'empty/changeSet-info.json'),
+      stepsErrors: [],
+      testsErrors: [],
+      testsSummary: readJSON(file: 'empty/tests-summary.json'),
+    )
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_customPRComment_without_file_argument() throws Exception {
     testMissingArgument('file') {
       script.customPRComment()
