@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.198 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  add noTags - fixes #1024 [#1025](https://github.com/elastic/apm-pipeline-library/pull/1025)
+
 ## v1.1.197 (08/03/2021)
 
 #### 🚀 Enhancements
