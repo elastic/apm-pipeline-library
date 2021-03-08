@@ -39,7 +39,7 @@ pipeline {
     }
     stage('Build'){
       steps {
-        sh 'make docker-builds'
+        sh 'make docker-build'
       }
     }
     stage('Run'){
