@@ -11,7 +11,7 @@
           default: master
           description: the Git branch specifier to build
     pipeline-scm:
-      script-path: .ci/populate-github.groovy
+      script-path: .ci/populateGithub.groovy
       scm:
         - git:
             url: git@github.com:elastic/apm-pipeline-library.git
