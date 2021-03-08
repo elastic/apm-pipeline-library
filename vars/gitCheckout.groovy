@@ -42,6 +42,7 @@ def call(Map args = [:]){
   def depthValue = args.containsKey('depth') ? args.get('depth') : 5
   def retryValue = args.containsKey('retry') ? args.get('retry') : 3
   def refspec = '+refs/pull/*/head:refs/remotes/origin/pr/*'
+  def noTags = args.containsKey('noTags') ? args.get('noTags') : false
 
   if(!env?.GIT_URL && args.repo) {
     log(level: 'DEBUG', text: 'Override GIT_URL with the args.repo to support simple pipeline rather than multibranch pipelines only.')
@@ -71,7 +72,7 @@ def call(Map args = [:]){
     shallowValue = false
   }
 
-  extensions.add([$class: 'CloneOption', depth: shallowValue ? depthValue : 0, noTags: false, reference: "${reference != null ? reference : '' }", shallow: shallowValue])
+  extensions.add([$class: 'CloneOption', depth: shallowValue ? depthValue : 0, noTags: noTags, reference: "${reference != null ? reference : '' }", shallow: shallowValue])
   log(level: 'DEBUG', text: "gitCheckout: Reference repo ${reference != null ? 'enabled' : 'disabled' } ${extensions.toString()}")
 
   if(mergeTarget != null){
