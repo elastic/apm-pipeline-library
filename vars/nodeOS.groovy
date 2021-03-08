@@ -25,7 +25,7 @@ def call() {
   def labels = env.NODE_LABELS?.toLowerCase()
   def matches = []
 
-  if (isLinux(labels) || isArm()) {
+  if (isLinux(labels) || (isArm() && !isDarwin(labels))) {
     matches.add('linux')
   }
 
@@ -42,7 +42,7 @@ def call() {
   }
 
   if(matches.size() > 1){
-    error("Labels conflit OS name in NODE_LABELS: " + labels)
+    error("Labels conflict OS name in NODE_LABELS: " + labels)
   }
 
   return matches[0]
