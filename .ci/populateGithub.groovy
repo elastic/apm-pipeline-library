@@ -70,7 +70,7 @@ def prepareCredentials(body) {
   def user = value?.user
   def password = value?.password
   def url = value?.url
-  if(data == null || url == null || user == null || password == null){
+  if(url == null || user == null || password == null){
     error "prepareES: was not possible to get authentication info to send data."
   }
 
