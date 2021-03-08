@@ -75,7 +75,7 @@ def prepareCredentials(body) {
   }
 
   withEnvMask(vars: [
-    [var: "ES_HOST", password: url ]
+    [var: "ES_HOST", password: url ],
     [var: "ES_AUTH", password: "${user}:${password}" ],
   ]){
     withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7',
