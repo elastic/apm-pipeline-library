@@ -40,6 +40,7 @@ This method generates flakey test data from Jenkins test results
  * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
  * @param disableGHComment whether to disable the GH comment notification.
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
+ * @param jobName
 */ 
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
@@ -51,7 +52,6 @@ def analyzeFlakey(Map args = [:]) {
     def querySize = args.get('querySize', 500)
     def disableGHComment = args.get('disableGHComment', false)
     def disableGHIssueCreation = args.get('disableGHIssueCreation', false)
-
     def labels = 'flaky-test,ci-reported'
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
