@@ -256,6 +256,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSanitizeOutputFileName() throws Exception {
+    assertEquals(null, null)
     assertEquals("", script.sanitizeOutputFileName(" "))
     assertEquals("foo_bar.log", script.sanitizeOutputFileName("foo && bar.log"))
     assertEquals("foo_bar.log", script.sanitizeOutputFileName("foo         && bar.log"))
