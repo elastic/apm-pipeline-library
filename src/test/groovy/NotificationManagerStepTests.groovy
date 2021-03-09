@@ -922,7 +922,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPatterns('error', 'Must pass either flakyReportIdx or jobName'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Must pass either flakyReportIdx or jobName'))
   }
 
   @Test
