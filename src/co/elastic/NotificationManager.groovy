@@ -89,9 +89,6 @@ def analyzeFlakey(Map args = [:]) {
       log(level: 'INFO', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
       log(level: 'INFO', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
 
-      // FIXME this exits early to avoid creating actual issues during development
-      return
-
       def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
       // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
       def numberOfSupportedIssues = 3
