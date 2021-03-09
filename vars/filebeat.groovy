@@ -84,7 +84,6 @@ def start(Map args = [:]) {
     output: output,
     config: config,
     image: image,
-    workdir: workdir,
     timeout: timeout,
     archiveOnlyOnFail: archiveOnlyOnFail
   ]
