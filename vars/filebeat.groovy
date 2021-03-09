@@ -122,7 +122,8 @@ def stop(Map args = [:]){
     docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  if(archiveOnlyOnFail == false || (archiveOnlyOnFail && isBuildFailure())){
+
+  if(!archiveOnlyOnFail || isBuildFailure()){
     archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
   }
 }
