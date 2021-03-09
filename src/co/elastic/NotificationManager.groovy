@@ -49,7 +49,6 @@ def analyzeFlakey(Map args = [:]) {
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def querySize = args.get('querySize', 500)
-    def queryTimeout = args.get('queryTimeout', '20s')
     def disableGHComment = args.get('disableGHComment', false)
     def disableGHIssueCreation = args.get('disableGHIssueCreation', false)
 
@@ -68,7 +67,7 @@ def analyzeFlakey(Map args = [:]) {
       def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
       def flakeyTestsRaw = sendDataToElasticsearch(es: es,
                                                   secret: secret,
-                                                  data: queryFilter(queryTimeout),
+                                                  data: queryFilter(),
                                                   restCall: query)
       def flakeyTestsParsed = toJSON(flakeyTestsRaw)
       print(flakeyTestsParsed)
@@ -373,7 +372,7 @@ def generateBuildReport(Map args = [:]) {
     return output
 }
 
-def queryFilter(timeout) {
+def queryFilter() {
   return """
 {
   "aggs": {
