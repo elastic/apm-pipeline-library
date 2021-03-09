@@ -42,8 +42,6 @@ This method generates flakey test data from Jenkins test results
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
 */ 
 def analyzeFlakey(Map args = [:]) {
-    print("Entering flake analyzero")
-    print(args)
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
     def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : null
     def jobName = args.containsKey('jobName') ? args.jobName : null
