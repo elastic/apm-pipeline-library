@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
@@ -25,6 +26,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   String nodeName = 'worker-0676d01d9601f8191'
   String jsonConfig = "filebeat_container_" + nodeName + ".json"
   String resources = "target/test-classes"
+  String fallbackOutput = "docker_logs.log"
 
   @Override
   @Before
@@ -70,7 +72,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     }
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: docker_logs.log'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: ' + fallbackOutput))
     assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
     assertJobStatusSuccess()
   }
@@ -107,6 +109,77 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertJobStatusSuccess()
+  }
+
+@Test
+  void testClosureWitEmptyOuput_UsesFallbackOutput() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
+
+    def id = "fooID"
+    def output = ""
+    def workdir = "filebeatTest_1"
+    def config = "bar.xml"
+    def image = "foo:latest"
+
+    printCallStack(){
+      script.call(
+        output: output,
+        config: config,
+        image: image,
+        workdir: workdir,
+        timeout: "30",
+        ){
+        print("OK")
+      }
+    }
+
+    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${fallbackOutput}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
+
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${fallbackOutput}*"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testClosureWithSanitisedOuput() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
+
+    def id = "fooID"
+    def output = "foo && bar.log"
+    def expectedOutput = "foo_bar.log"
+    def workdir = "filebeatTest_1"
+    def config = "bar.xml"
+    def image = "foo:latest"
+
+    printCallStack(){
+      script.call(
+        output: output,
+        config: config,
+        image: image,
+        workdir: workdir,
+        timeout: "30",
+        ){
+        print("OK")
+      }
+    }
+
+    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
+    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${expectedOutput}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
+
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${expectedOutput}*"))
     assertJobStatusSuccess()
   }
 
@@ -179,6 +252,17 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${workdir}:/output"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testSanitizeOutputFileName() throws Exception {
+    assertEquals("", script.sanitizeOutputFileName(" "))
+    assertEquals("foo_bar.log", script.sanitizeOutputFileName("foo && bar.log"))
+    assertEquals("foo_bar.log", script.sanitizeOutputFileName("foo         && bar.log"))
+    assertEquals("foo123_bar456.log", script.sanitizeOutputFileName("foo123 && bar456.log"))
+    assertEquals("foo_123_bar_456.log", script.sanitizeOutputFileName("foo 123 && bar 456.log"))
+    assertEquals("foo_bar.log", script.sanitizeOutputFileName("foo || bar.log"))
+    assertEquals("_bar.log", script.sanitizeOutputFileName("~bar.log"))
   }
 
   @Test

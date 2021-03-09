@@ -36,7 +36,13 @@ def call(Map args = [:], Closure body) {
 }
 
 def start(Map args = [:]) {
-  def output = args.containsKey('output') ? args.output : 'docker_logs.log'
+  def sanitizedOuput = ''
+  if (args.containsKey('output')) {
+    sanitizedOuput = sanitizeOutputFileName(args.output)
+  }
+  sanitizedOuput = sanitizedOuput?.trim() ? sanitizedOuput : 'docker_logs.log'
+
+  def output = sanitizedOuput
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
@@ -84,6 +90,22 @@ def start(Map args = [:]) {
   ]
 
   writeJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json", json: json)
+}
+
+/**
+* This method:
+*  1. removes leading and trailing whitespaces, using trim()
+*  2. replaces inner whitespaces with '_', using a regex
+*  3. replaces any occurrences of non-characters or numbers or dots, with a '_', using a regex
+*
+* For simplicity, it could lead to collitions for different inputs: as an example,
+* both "a&b" and "a|b" will result in "a_b".
+* 
+* @param input the string to be sanitised
+* @return the sanitised ouput
+*/
+def String sanitizeOutputFileName(String input){
+  return input?.trim().replaceAll("\\s","_").replaceAll("[^a-zA-Z0-9.]+", "_")
 }
 
 def stop(Map args = [:]){
