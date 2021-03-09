@@ -36,13 +36,13 @@ def call(Map args = [:], Closure body) {
 }
 
 def start(Map args = [:]) {
-  def sanitizedOuput = ''
+  def sanitizedOutput = ''
   if (args.containsKey('output')) {
-    sanitizedOuput = sanitizeOutputFileName(args.output)
+    sanitizedOutput = sanitizeOutputFileName(args.output)
   }
-  sanitizedOuput = sanitizedOuput?.trim() ? sanitizedOuput : 'docker_logs.log'
+  sanitizedOutput = sanitizedOutput?.trim() ? sanitizedOutput : 'docker_logs.log'
 
-  def output = sanitizedOuput
+  def output = sanitizedOutput
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
