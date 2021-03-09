@@ -45,6 +45,8 @@ def analyzeFlakey(Map args = [:]) {
     print("Entering flake analyzero")
     print(args)
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
+    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : null
+    def jobName = args.containsKey('jobName') ? args.jobName : null
     def secret = args.containsKey('es_secret') ? args.es_secret : null
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
@@ -57,20 +59,27 @@ def analyzeFlakey(Map args = [:]) {
     def flakyTestsWithIssues = [:]
     def genuineTestFailures = []
 
-    // Only if there are test failures to analyse
-    if(testsErrors.size() > 0) {
+    if (args.containsKey('flakyReportIdx') && args.containsKey('jobName')) {
+      error('Please pass either `jobName` or `flakyReportIdx` but not both')
+    } else if (flakyReportIdx == null && jobName == null) {
+      error('Must pass either flakyReportIdx or jobName')
+    } else if (flakyReportIdx != null) {
+      warnError message: "Please migrate from `flakyReportIdx` to `jobName`. Not collecting any results.",  body: {}
+      return
+    }
 
-      // Query only the test_name field since it's the only used and don't want to overkill the
-      // jenkins instance when using the toJSON step since it reads in memory the json response.
-      // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
-      //def query = "/flaky-tests/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
+
+    // 1. Only if there are test failures to analyse
+    // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve
+    // backward compatability.
+    if(testsErrors.size() > 0 && jobName != null) {
+
       def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
       def flakeyTestsRaw = sendDataToElasticsearch(es: es,
                                                   secret: secret,
-                                                  data: queryFilter(),
+                                                  data: queryFilter(jobName),
                                                   restCall: query)
       def flakeyTestsParsed = toJSON(flakeyTestsRaw)
-      print(flakeyTestsParsed)
 
       // Normalise both data structures with their names
       // Intesection what tests are failing and also scored as flaky.
@@ -369,7 +378,7 @@ def generateBuildReport(Map args = [:]) {
     return output
 }
 
-def queryFilter() {
+def queryFilter(jobName) {
   return """
 {
   "aggs": {
@@ -400,7 +409,7 @@ def queryFilter() {
             "should": [
               {
                 "match_phrase": {
-                  "job.fullName": "Beats/beats/master"
+                  "job.fullName": "${jobName}"
                 }
               }
             ],
