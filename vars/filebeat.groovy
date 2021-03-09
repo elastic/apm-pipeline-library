@@ -123,7 +123,7 @@ def stop(Map args = [:]){
   """)
 
   if(!archiveOnlyOnFail || isBuildFailure()){
-    archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
+    archiveArtifacts(artifacts: "${workdir}/${stepConfig.output}*", allowEmptyArchive: true)
   }
 }
 
