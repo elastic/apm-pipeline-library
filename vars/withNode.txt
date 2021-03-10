@@ -6,7 +6,7 @@ Wrap the node call for three reasons:
 
 ```
   // Use the ARM workers without any sleep or workspace allocation.
-  withNode(labels: 'arm''){
+  withNode(labels: 'arm'){
     // block
   }
 
