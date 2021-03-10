@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.199 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add isStaticWorker step [#1028](https://github.com/elastic/apm-pipeline-library/pull/1028)
+
 ## v1.1.198 (08/03/2021)
 
 #### 🚀 Enhancements
