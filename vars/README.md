@@ -1527,6 +1527,21 @@ Whether the build is based on a Pull Request or no
   }
 ```
 
+## isStaticWorker
+Whether the existing worker is a static one
+
+```
+  // Assign to a variable
+  def isStatic = isStaticWorker(labels: 'linux&&immutable')
+
+  // Use whenTrue condition
+  whenTrue(isStaticWorker(labels: 'linux&&immutable')) {
+    echo "I'm a static worker"
+  }
+```
+
+TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+
 ## isTag
 Whether the build is based on a Tag Request or no
 
