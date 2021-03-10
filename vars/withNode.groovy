@@ -22,7 +22,7 @@ Wrap the node call for three reasons:
   3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
 
   // Use the ARM workers without any sleep or workspace allocation.
-  withNode(labels: 'arm',){
+  withNode(labels: 'arm'){
     ...
   }
 

@@ -2743,7 +2743,7 @@ Wrap the node call for three reasons:
 
 ```
   // Use the ARM workers without any sleep or workspace allocation.
-  withNode(labels: 'arm',){
+  withNode(labels: 'arm'){
     // block
   }
 
@@ -2846,4 +2846,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
