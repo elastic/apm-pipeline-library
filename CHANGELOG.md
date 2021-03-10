@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.200 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNode step [#1030](https://github.com/elastic/apm-pipeline-library/pull/1030)
+
 ## v1.1.199 (10/03/2021)
 
 #### 🚀 Enhancements
