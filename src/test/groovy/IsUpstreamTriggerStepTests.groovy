@@ -73,6 +73,27 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_upstream_cause_and_lowercase_filter() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-695" build number 5',
+          upstreamBuild: 5,
+          upstreamProject: 'apm-integration-tests/PR-695',
+          upstreamUrl: 'job/apm-integration-tests/job/PR-695/'
+        ]
+      ]
+    }
+
+    def ret = script.call(filter: 'pr-')
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'pr-'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_trigger_cause() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = {
       return [
