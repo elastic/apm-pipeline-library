@@ -1401,7 +1401,7 @@ Whether the build is based on a Branch or no
 ```
 
 ## isBranchIndexTrigger
-Check it the build was triggered by a Branch index.
+Check if the build was triggered by a Branch index.
 
 ```
 def branchIndexTrigger = isBranchIndexTrigger()
@@ -1418,7 +1418,7 @@ def branchIndexTrigger = isBranchIndexTrigger()
   ```
 
 ## isCommentTrigger
-Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
+Check if the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
@@ -1541,7 +1541,7 @@ Whether the build is based on a Tag Request or no
 ```
 
 ## isTimerTrigger
-Check it the build was triggered by a timer (scheduled job).
+Check if the build was triggered by a timer (scheduled job).
 
 ```
 def timmerTrigger = isTimerTrigger()
@@ -1556,7 +1556,7 @@ def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
 
 ## isUserTrigger
-Check it the build was triggered by a user.
+Check if the build was triggered by a user.
 it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```

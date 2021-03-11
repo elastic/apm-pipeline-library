@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Check it the build was triggered by an upstream job, being possible to add some filters.
+  Check if the build was triggered by an upstream job, being possible to add some filters.
 
   def upstreamTrigger = isUpstreamTrigger()
   def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
