@@ -4,3 +4,5 @@ Check if the build was triggered by an upstream job, being it possible to add so
 def upstreamTrigger = isUpstreamTrigger()
 def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
+
+* filter: The string filter to be used when selecting the ustream build cause. If no filter is set, then 'all' will be used.
