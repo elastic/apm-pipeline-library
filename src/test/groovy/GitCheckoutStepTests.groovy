@@ -267,6 +267,21 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testUpstreamPRTriggered() throws Exception {
+    helper.registerAllowedMethod('isUpstreamPRTrigger', {return true})
+    script.scm = 'SCM'
+    try {
+      script.call(basedir: 'sub-folder', branch: 'master',
+                  credentialsId: 'credentials-id')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'branch=master, repo=null or credentialsId=credentials-id'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testUpstreamTriggered() throws Exception {
     helper.registerAllowedMethod('isUpstreamTrigger', {return true})
     script.scm = 'SCM'
