@@ -4,6 +4,7 @@
 
 #### 🚀 Enhancements
 
+-  chore: support filtering the upstream cause in the isUpstreamTrigger step [#1031](https://github.com/elastic/apm-pipeline-library/pull/1031)
 -  Slack notification with the total build time [#1033](https://github.com/elastic/apm-pipeline-library/pull/1033)
 
 ## v1.1.200 (10/03/2021)
