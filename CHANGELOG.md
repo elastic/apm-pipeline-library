@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.201 (11/03/2021)
+
+#### 🚀 Enhancements
+
+-  Slack notification with the total build time [#1033](https://github.com/elastic/apm-pipeline-library/pull/1033)
+
 ## v1.1.200 (10/03/2021)
 
 #### 🚀 Enhancements
