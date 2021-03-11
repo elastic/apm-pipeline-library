@@ -480,7 +480,6 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/isTag.groovy')
       return script.call()
     })
-    helper.registerAllowedMethod('isUpstreamPRTrigger', { return false })
     helper.registerAllowedMethod('isUpstreamTrigger', { return false })
     helper.registerAllowedMethod('isUserTrigger', { return false })
     helper.registerAllowedMethod('is32', {

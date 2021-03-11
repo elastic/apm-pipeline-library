@@ -1547,13 +1547,6 @@ Check it the build was triggered by a timer (scheduled job).
 def timmerTrigger = isTimerTrigger()
 ```
 
-## isUpstreamPRTrigger
-Check if the build was triggered by an upstream job from a pull-request.
-
-```
-def upstreamPRTrigger = isUpstreamPRTrigger()
-```
-
 ## isUpstreamTrigger
 Check if the build was triggered by an upstream job.
 
