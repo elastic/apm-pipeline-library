@@ -1548,10 +1548,11 @@ def timmerTrigger = isTimerTrigger()
 ```
 
 ## isUpstreamTrigger
-Check if the build was triggered by an upstream job.
+Check it the build was triggered by an upstream job, being it possible to add some filters.
 
 ```
 def upstreamTrigger = isUpstreamTrigger()
+def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
 
 ## isUserTrigger
