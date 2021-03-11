@@ -284,6 +284,7 @@ def notifySlack(Map args = [:]) {
 
     if (enabled) {
       catchError(buildResult: 'SUCCESS', message: 'notifySlack: Error with the slack comment') {
+        def duration = (build.durationInMillis?.toString()?.trim()) ? hudson.Util.getTimeSpanString(build.durationInMillis) : ''
         def statusSuccess = (buildStatus == "SUCCESS")
         def boURL = getBlueoceanDisplayURL()
         def body = buildTemplate([
@@ -293,11 +294,12 @@ def notifySlack(Map args = [:]) {
           "buildStatus": buildStatus,
           "changeSet": changeSet,
           "docsUrl": docsUrl,
-          "observabilityUrl": env.OTEL_ELASTIC_URL,
+          "duration": duration,
           "jenkinsText": env.JOB_NAME,
           "jenkinsUrl": env.JENKINS_URL,
           "jobUrl": boURL,
           "log": log,
+          "observabilityUrl": env.OTEL_ELASTIC_URL,
           "statsUrl": statsUrl,
           "statusSuccess": statusSuccess,
           "stepsErrors": stepsErrors,

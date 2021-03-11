@@ -96,4 +96,13 @@ class NodeArchStepTests extends ApmBasePipelineTest {
     assertTrue(value == "x86_64")
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_arm64_darwin() throws Exception {
+    env.NODE_LABELS = "apple arm64 darwin macosx macosx-11.2 swarm worker-h2wdt2qxq6ny"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "aarch64")
+    assertJobStatusSuccess()
+  }
 }

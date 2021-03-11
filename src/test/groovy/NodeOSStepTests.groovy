@@ -79,16 +79,24 @@ class NodeOSStepTests extends ApmBasePipelineTest {
     assertJobStatusFailure()
   }
 
-
   @Test
   void testLabelConflict() throws Exception {
     env.NODE_LABELS = "linux windows"
     try {
       def value = script.call()
     } catch(e){
-      assertTrue(e.getMessage() == "Labels conflit OS name in NODE_LABELS: linux windows")
+      assertTrue(e.getMessage() == "Labels conflict OS name in NODE_LABELS: linux windows")
     }
     printCallStack()
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_darwin_arm64() throws Exception {
+    env.NODE_LABELS = "apple arm64 darwin macosx macosx-11.2 swarm worker-h2wdt2qxq6ny"
+    def value = script.call()
+    printCallStack()
+    assertTrue(value == "darwin")
+    assertJobStatusSuccess()
   }
 }

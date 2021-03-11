@@ -39,7 +39,7 @@ pipeline {
     }
     stage('Build'){
       steps {
-        sh 'make docker-builds'
+        sh 'make docker-build'
       }
     }
     stage('Run'){
@@ -70,12 +70,12 @@ def prepareCredentials(body) {
   def user = value?.user
   def password = value?.password
   def url = value?.url
-  if(data == null || url == null || user == null || password == null){
+  if(url == null || user == null || password == null){
     error "prepareES: was not possible to get authentication info to send data."
   }
 
   withEnvMask(vars: [
-    [var: "ES_HOST", password: url ]
+    [var: "ES_HOST", password: url ],
     [var: "ES_AUTH", password: "${user}:${password}" ],
   ]){
     withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7',
