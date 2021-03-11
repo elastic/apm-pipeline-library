@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Check it the build was triggered by a timer (scheduled job).
+  Check if the build was triggered by a timer (scheduled job).
 
   def timmerTrigger = isTimerTrigger()
 */

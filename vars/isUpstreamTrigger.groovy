@@ -16,14 +16,22 @@
 // under the License.
 
 /**
-  Check it the build was triggered by an upstream job.
+  Check if the build was triggered by an upstream job, being possible to add a filter for the upstream cause.
 
   def upstreamTrigger = isUpstreamTrigger()
+  def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 */
-def call(){
+def call(Map args=[:]){
+  def filter = args.get('filter', 'all')
+
   def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause'}
   if (buildCause?.upstreamProject?.trim()) {
-    log(level: 'DEBUG', text: "isUpstreamTrigger: ${buildCause?.upstreamProject?.toString()}")
+    log(level: 'DEBUG', text: "isUpstreamTrigger: ${buildCause?.upstreamProject?.toString()}, filter: '${filter}'")
+    // evaluate filter
+    if (filter != 'all' ) {
+      return buildCause?.upstreamProject?.toUpperCase()?.contains(filter.toUpperCase())
+    }
+
     return true
   }
   return false
