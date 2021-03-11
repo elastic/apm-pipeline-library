@@ -1527,6 +1527,21 @@ Whether the build is based on a Pull Request or no
   }
 ```
 
+## isStaticWorker
+Whether the existing worker is a static one
+
+```
+  // Assign to a variable
+  def isStatic = isStaticWorker(labels: 'linux&&immutable')
+
+  // Use whenTrue condition
+  whenTrue(isStaticWorker(labels: 'linux&&immutable')) {
+    echo "I'm a static worker"
+  }
+```
+
+TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+
 ## isTag
 Whether the build is based on a Tag Request or no
 
@@ -2720,6 +2735,30 @@ _NOTE:_
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
 * pkgs: Go packages to install with Go get before to execute any command.
 
+## withNode
+Wrap the node call for three reasons:
+  1. with some latency to avoid the known issue with the scalability in gobld.
+  2. enforce one shoot ephemeral workers with the extra/uuid label that gobld provides.
+  3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
+
+
+```
+  // Use the ARM workers without any sleep or workspace allocation.
+  withNode(labels: 'arm'){
+    // block
+  }
+
+  // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+    // block
+  }
+```
+
+* labels: what's the labels to be used. Mandatory
+* sleepMin: whether to sleep and for how long at least. Optional.
+* sleepMax: whether to sleep and for how long maximum. Optional.
+* forceWorkspace: whether to allocate a new unique workspace. Optional.
+
 ## withNpmrc
 Wrap the npmrc token
 
@@ -2808,4 +2847,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
