@@ -29,7 +29,7 @@ def call(Map args=[:]){
     log(level: 'DEBUG', text: "isUpstreamTrigger: ${buildCause?.upstreamProject?.toString()}, filter: '${filter}'")
     // evaluate filter
     if (filter != 'all' ) {
-      return buildCause?.upstreamProject?.toUpperCase()?.contains(filter)
+      return buildCause?.upstreamProject?.toUpperCase()?.contains(filter.toUpperCase())
     }
 
     return true
