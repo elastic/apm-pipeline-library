@@ -15,16 +15,34 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Check if the build was triggered by a Branch index.
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
-  def branchIndexTrigger = isBranchIndexTrigger()
-*/
-def call(){
-  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'jenkins.branch.BranchIndexingCause'}
-  if (buildCause) {
-    log(level: 'DEBUG', text: "isBranchIndexTrigger: ${buildCause?.shortDescription}")
-    return true
+class IsStaticWorkerStepTests extends ApmBasePipelineTest {
+
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/isStaticWorker.groovy')
   }
-  return false
+
+  @Test
+  void testMissingLabelsArgument() throws Exception {
+    testMissingArgument('labels') {
+      script.call()
+    }
+  }
+
+  @Test
+  void test_with_static_worker() throws Exception {
+    assertTrue(script.call(labels: 'arm'))
+  }
+
+  @Test
+  void test_with_immutable_worker() throws Exception {
+    assertFalse(script.call(labels: 'immutable&&linux'))
+  }
 }

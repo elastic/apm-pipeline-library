@@ -47,7 +47,49 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
-    assertTrue(assertMethodCallContainsPattern('log', 'isUpstreamTrigger: apm-integration-tests/PR-695'))
+    assertTrue(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'all'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_upstream_cause_and_filter() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-695" build number 5',
+          upstreamBuild: 5,
+          upstreamProject: 'apm-integration-tests/PR-695',
+          upstreamUrl: 'job/apm-integration-tests/job/PR-695/'
+        ]
+      ]
+    }
+
+    def ret = script.call(filter: 'PR-')
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'PR-'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_upstream_cause_and_lowercase_filter() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-695" build number 5',
+          upstreamBuild: 5,
+          upstreamProject: 'apm-integration-tests/PR-695',
+          upstreamUrl: 'job/apm-integration-tests/job/PR-695/'
+        ]
+      ]
+    }
+
+    def ret = script.call(filter: 'pr-')
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'pr-'"))
     assertJobStatusSuccess()
   }
 
@@ -69,6 +111,24 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_trigger_cause_and_filter() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.triggers.TimerTrigger$TimerTriggerCause',
+          shortDescription: 'Started by a timmer',
+        ]
+      ]
+    }
+
+    def ret = script.call(filter: 'PR-')
+    printCallStack()
+    assertFalse(ret)
+    assertFalse(assertMethodCallContainsPattern('log', "filter: 'PR-'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_upstream_cause_without_upstreamProject() throws Exception {
     binding.getVariable('currentBuild').getBuildCauses = {
       return [
@@ -83,6 +143,25 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_upstream_cause_and_filter_without_upstreamProject() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'hudson.model.Cause$UpstreamCause',
+          shortDescription: 'Started by upstream project "apm-integration-tests/PR-695" build number 5',
+          upstreamBuild: 5
+        ]
+      ]
+    }
+
+    def ret = script.call(filter: 'PR-')
+    printCallStack()
+    assertFalse(ret)
+    assertFalse(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'PR-'"))
     assertJobStatusSuccess()
   }
 }

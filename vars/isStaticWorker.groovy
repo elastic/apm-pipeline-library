@@ -16,15 +16,14 @@
 // under the License.
 
 /**
-  Check if the build was triggered by a Branch index.
-
-  def branchIndexTrigger = isBranchIndexTrigger()
-*/
-def call(){
-  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'jenkins.branch.BranchIndexingCause'}
-  if (buildCause) {
-    log(level: 'DEBUG', text: "isBranchIndexTrigger: ${buildCause?.shortDescription}")
-    return true
+  Whether the existing worker is a static one
+  whenTrue(isStaticWorker(labels: 'linux&&immutable')) {
+    echo "I'm a static worker"
   }
-  return false
+
+  TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+*/
+def call(Map args=[:]){
+  def labels = args.containsKey('labels') ? args.labels : error("isStaticWorker: labels parameter is required.")
+  return (labels?.contains('arm') || labels?.contains('macosx') || labels?.contains('metal'))
 }

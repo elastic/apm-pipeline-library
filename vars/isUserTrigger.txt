@@ -1,4 +1,4 @@
-Check it the build was triggered by a user.
+Check if the build was triggered by a user.
 it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
