@@ -379,14 +379,6 @@ def queryFilter(jobName) {
     }
   },
   "size": 0,
-  "script_fields": {},
-  "stored_fields": [
-    "*"
-  ],
-  "runtime_mappings": {},
-  "_source": {
-    "excludes": []
-  },
   "query": {
     "bool": {
       "must": [],
