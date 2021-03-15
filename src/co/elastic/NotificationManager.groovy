@@ -82,8 +82,8 @@ def analyzeFlakey(Map args = [:]) {
 
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
-      log(level: 'INFO', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
-      log(level: 'INFO', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
 
       def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
       // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
