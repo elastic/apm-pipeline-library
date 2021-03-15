@@ -44,8 +44,7 @@ This method generates flakey test data from Jenkins test results
 */ 
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
-    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : null
-    def jobName = args.containsKey('jobName') ? args.jobName : null
+    def jobName = args.containsKey('jobName') ? args.jobName : error('analyzeFlakey: jobName parameter is required')
     def secret = args.containsKey('es_secret') ? args.es_secret : null
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
@@ -56,16 +55,6 @@ def analyzeFlakey(Map args = [:]) {
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
     def genuineTestFailures = []
-
-    if (args.containsKey('flakyReportIdx') && args.containsKey('jobName')) {
-      error('Please pass either `jobName` or `flakyReportIdx` but not both')
-    } else if (flakyReportIdx == null && jobName == null) {
-      error('Must pass either flakyReportIdx or jobName')
-    } else if (flakyReportIdx != null) {
-      warnError message: "Please migrate from `flakyReportIdx` to `jobName`. Not collecting any results.",  body: {}
-      return
-    }
-
 
     // 1. Only if there are test failures to analyse
     // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve

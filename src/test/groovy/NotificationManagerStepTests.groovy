@@ -880,52 +880,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_analyzeFlakeyNoJobInfo() throws Exception {
-    try {
-      script.analyzeFlakey(
-        flakyReportIdx: 'test',
-        es: "https://fake_url",
-        testsErrors: readJSON(file: 'flake-tests-errors.json')
-      )
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_analyzeFlakeyOldAndNewStyleArgs() throws Exception {
-    try {
-      script.analyzeFlakey(
-        flakyReportIdx: 'test',
-        jobName: 'testJobName',
-        es: "https://fake_url",
-        testsErrors: readJSON(file: 'flake-tests-errors.json')
-      )
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Please pass either `jobName` or `flakyReportIdx` but not both'))
-    assertJobStatusFailure()
-  }
-
-  @Test
-  void test_analyzeFlakeyNoIdxOrJobNameArgs() throws Exception {
-    try {
-      script.analyzeFlakey(
-        es: "https://fake_url",
-        testsErrors: readJSON(file: 'flake-tests-errors.json')
-      )
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Must pass either flakyReportIdx or jobName'))
-  }
-
-  @Test
   void test_analyzeFlakey_without_comment_notifications() throws Exception {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
