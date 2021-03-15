@@ -59,7 +59,7 @@ def analyzeFlakey(Map args = [:]) {
     // 1. Only if there are test failures to analyse
     // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve
     // backward compatability.
-    if(testsErrors.size() > 0 && jobName != null) {
+    if(testsErrors.size() > 0 && jobName?.trim()) {
 
       def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
       def flakeyTestsRaw = sendDataToElasticsearch(es: es,
@@ -82,8 +82,8 @@ def analyzeFlakey(Map args = [:]) {
 
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
-      log(level: 'INFO', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
-      log(level: 'INFO', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
+      log(level: 'DEBUG', text: "analyzeFlakey: Flaky matched tests: ${foundFlakyList.join('\n')}")
 
       def tests = lookForGitHubIssues(flakyList: foundFlakyList, labelsFilter: labels)
       // To avoid creating a few dozens of issues, let's say we won't create more than 3 issues per build
