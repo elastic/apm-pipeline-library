@@ -537,6 +537,15 @@ Then put all togeder in a simple JSON file.
 * buildNumber: the build id. Mandatory
 * returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
+## getFlakyJobName
+Get the flaky job name in a given multibranch pipeline.
+
+```
+getFlakyJobName(withBranch: 'master')
+```
+
+* withBranch: the job base name to compare with. Mandatory
+
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
 If the checkout was made by Jenkins, you would use the environment variable GIT_COMMIT.
@@ -1563,12 +1572,14 @@ def timmerTrigger = isTimerTrigger()
 ```
 
 ## isUpstreamTrigger
-Check if the build was triggered by an upstream job, being it possible to add a filter for the upstream cause.
+Check if the build was triggered by an upstream job, being it possible to add some filters.
 
 ```
 def upstreamTrigger = isUpstreamTrigger()
 def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
+
+* filter: The string filter to be used when selecting the ustream build cause. If no filter is set, then 'all' will be used.
 
 ## isUserTrigger
 Check if the build was triggered by a user.
@@ -1912,11 +1923,10 @@ emails on Failed builds that are not pull request.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
 * slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
-* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
-* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
+* jobName: The name of the job, e.g. `Beats/beats/master`.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -2847,3 +2857,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
