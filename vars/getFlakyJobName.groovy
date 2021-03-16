@@ -19,12 +19,16 @@ import org.jenkinsci.plugins.workflow.graph.StepNode
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
 /**
-  Get the flaky job name
+  Get the flaky job name in a given multibranch pipeline.
+
+  def flakyJobName = getFlakyJobName(withBranch: 'master')
 */
 
 def call(Map args=[:]) {
-  if (env.JOB_NAME.trim() && env.JOB_BASE_NAME.trim()) {
-    def flakyJobName = (env.JOB_NAME - env.JOB_BASE_NAME) + args.withBranch
+  def withBranch = args.containsKey('withBranch') ? args.withBranch : error('getFlakyJobName: withBranch parameter is required.')
+  if (env.JOB_NAME?.trim() && env.JOB_BASE_NAME?.trim()) {
+    def flakyJobName = (env.JOB_NAME - env.JOB_BASE_NAME) + withBranch
     return flakyJobName
   }
+  error('getFlakyJobName: only works for multibranch pipelines.')
 }
