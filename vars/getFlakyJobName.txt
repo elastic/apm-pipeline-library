@@ -1,0 +1,5 @@
+Get the flaky job name in a given multibranch pipeline
+  
+```
+getFlakyJobName(withBranch: 'master')
+```
