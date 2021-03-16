@@ -67,5 +67,5 @@ def isArm(labels){
 }
 
 def isArm64(labels){
-  return labels.contains('aarch64')
+  return labels.contains('aarch64') || labels.contains('arm64')
 }

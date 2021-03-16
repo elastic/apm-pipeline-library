@@ -175,12 +175,7 @@ pipeline {
       }
       post {
         always {
-          junit(allowEmptyResults: true,
-            testDataPublishers: [
-              [$class: 'AttachmentPublisher']
-            ],
-            testResults:"${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml"
-          )
+          junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
         }
       }
     }

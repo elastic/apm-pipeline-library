@@ -1,5 +1,56 @@
 # Changelog
 
+## v1.1.201 (11/03/2021)
+
+#### 🚀 Enhancements
+
+-  chore: support filtering the upstream cause in the isUpstreamTrigger step [#1031](https://github.com/elastic/apm-pipeline-library/pull/1031)
+-  Slack notification with the total build time [#1033](https://github.com/elastic/apm-pipeline-library/pull/1033)
+
+## v1.1.200 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNode step [#1030](https://github.com/elastic/apm-pipeline-library/pull/1030)
+
+## v1.1.199 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add isStaticWorker step [#1028](https://github.com/elastic/apm-pipeline-library/pull/1028)
+
+## v1.1.198 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  add noTags - fixes #1024 [#1025](https://github.com/elastic/apm-pipeline-library/pull/1025)
+
+## v1.1.197 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1023](https://github.com/elastic/apm-pipeline-library/pull/1023)
+
+#### 🙈 No user affected
+
+-  Fix pipeline syntax and make goal [#1022](https://github.com/elastic/apm-pipeline-library/pull/1022)
+
+## v1.1.196 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1021](https://github.com/elastic/apm-pipeline-library/pull/1021)
+
+#### 📚 Documentation
+
+-  [DOCS] restructure the docs [#993](https://github.com/elastic/apm-pipeline-library/pull/993)
+
+#### 🙈 No user affected
+
+-  [jjbb] Fix pipeline name with CamelCase syntax [#1019](https://github.com/elastic/apm-pipeline-library/pull/1019)
+-  Populate GitHub issues/prs into ES [#1017](https://github.com/elastic/apm-pipeline-library/pull/1017)
+-  Remove dependency with https://plugins.jenkins.io/junit-attachments/ [#1015](https://github.com/elastic/apm-pipeline-library/pull/1015)
+
 ## v1.1.195 (01/03/2021)
 
 #### 🐛 Bug Fixes

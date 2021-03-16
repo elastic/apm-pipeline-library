@@ -15,47 +15,34 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
- Return the name of the Operating system based on the labels of the Node.
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
 
- def os = nodeOS()
+class IsStaticWorkerStepTests extends ApmBasePipelineTest {
 
-*/
-def call() {
-  def labels = env.NODE_LABELS?.toLowerCase()
-  def matches = []
-
-  if (isLinux(labels) || (isArm() && !isDarwin(labels))) {
-    matches.add('linux')
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/isStaticWorker.groovy')
   }
 
-  if (isWindows(labels)) {
-    matches.add('windows')
+  @Test
+  void testMissingLabelsArgument() throws Exception {
+    testMissingArgument('labels') {
+      script.call()
+    }
   }
 
-  if (isDarwin(labels)) {
-    matches.add('darwin')
+  @Test
+  void test_with_static_worker() throws Exception {
+    assertTrue(script.call(labels: 'arm'))
   }
 
-  if(matches.size() == 0){
-    error("Unhandled OS name in NODE_LABELS: " + labels)
+  @Test
+  void test_with_immutable_worker() throws Exception {
+    assertFalse(script.call(labels: 'immutable&&linux'))
   }
-
-  if(matches.size() > 1){
-    error("Labels conflict OS name in NODE_LABELS: " + labels)
-  }
-
-  return matches[0]
-}
-
-def isLinux(labels){
-  return labels.contains('linux')
-}
-
-def isDarwin(labels){
-  return labels.contains('darwin') || labels.contains('macos')
-}
-
-def isWindows(labels){
-  return labels.contains('windows')
 }

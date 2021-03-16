@@ -506,6 +506,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('slackSend', 'Steps failures'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'https://github.com/org/acme/issues/1234|indicator type url is in upper case (#1234)'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'by `Lola.Flores`'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Took'))
     assertJobStatusSuccess()
   }
 

@@ -1,0 +1,22 @@
+Wrap the node call for three reasons:
+  1. with some latency to avoid the known issue with the scalability in gobld.
+  2. enforce one shoot ephemeral workers with the extra/uuid label that gobld provides.
+  3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
+
+
+```
+  // Use the ARM workers without any sleep or workspace allocation.
+  withNode(labels: 'arm'){
+    // block
+  }
+
+  // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+    // block
+  }
+```
+
+* labels: what's the labels to be used. Mandatory
+* sleepMin: whether to sleep and for how long at least. Optional.
+* sleepMax: whether to sleep and for how long maximum. Optional.
+* forceWorkspace: whether to allocate a new unique workspace. Optional.
