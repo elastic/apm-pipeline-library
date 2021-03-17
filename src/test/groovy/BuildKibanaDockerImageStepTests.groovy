@@ -29,37 +29,37 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     }
 
     @Test
-    void test_without_target() throws Exception {
+    void test_without_refspec() throws Exception {
         def result = script.call()
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: master'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: master'))
         assertJobStatusSuccess()
     }
 
     @Test
-    void test_with_branch_target() throws Exception {
-        def result = script.call(branch: 'foo')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: foo'))
+    void test_with_branch_refspec() throws Exception {
+        def result = script.call(refspec: 'foo')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: foo'))
         assertJobStatusSuccess()
     }
 
     @Test
-    void test_with_PR_target_uppercase() throws Exception {
-        def result = script.call(branch: 'PR/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
+    void test_with_PR_refspec_uppercase() throws Exception {
+        def result = script.call(refspec: 'PR/123456')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
-    void test_with_PR_target_lowercase() throws Exception {
-        def result = script.call(branch: 'pr/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
+    void test_with_PR_refspec_lowercase() throws Exception {
+        def result = script.call(refspec: 'pr/123456')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
-    void test_with_PR_target_no_case() throws Exception {
-        def result = script.call(branch: 'pR/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
+    void test_with_PR_refspec_no_case() throws Exception {
+        def result = script.call(refspec: 'pR/123456')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/123456'))
         assertJobStatusSuccess()
     }
 }

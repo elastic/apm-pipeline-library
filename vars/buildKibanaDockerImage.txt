@@ -1,8 +1,8 @@
 Builds the Docker image for Kibana, from a branch or a pull Request.
 
 ```
-buildKibanaDockerImage(branch: 'master')
-buildKibanaDockerImage(branch: 'PR/12345')
+buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'PR/12345')
 ```
 
-* branch: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.

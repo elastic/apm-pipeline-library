@@ -24,35 +24,35 @@ import co.elastic.BuildException
 
   Builds the Docker image for Kibana, from a branch or a pull Request.
 
-  buildKibanaDockerImage(branch: 'master')
-  buildKibanaDockerImage(branch: 'PR/12345')
+  buildKibanaDockerImage(refspec: 'master')
+  buildKibanaDockerImage(refspec: 'PR/12345')
 */
 def call(Map args = [:]){
-  def branch = args?.branch?.trim() ? args.branch : 'master'
-  def uppercaseBranch = branch.toUpperCase()
+  def refspec = args?.refspec?.trim() ? args.refspec : 'master'
+  def uppercaseRefspec = refspec.toUpperCase()
 
-  def kibanaBranch = branch
-  if (uppercaseBranch.startsWith('PR/')) {
-    kibanaBranch = uppercaseBranch
+  def kibanaRefspec = refspec
+  if (uppercaseRefspec.startsWith('PR/')) {
+    kibanaRefspec = uppercaseRefspec
   }
-  log(level: 'INFO', text: "Kibana branch is: ${kibanaBranch}")
+  log(level: 'INFO', text: "Kibana refspec is: ${kibanaRefspec}")
 
-  //buildKibana(branch: "${kibanaBranch}")
+  //buildKibana(refspec: "${kibanaRefspec}")
 }
 
 def buildKibana(Map args = [:]) {
-  def branch = args.branch
-  def deployName = normalize(branch)
+  def refspec = args.refspec
+  def deployName = normalize(refspec)
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
   def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
   def dockerRegistrySecret = !isEmptyString(args.dockerRegistrySecret) ? args.dockerRegistrySecret : 'secret/observability-team/ci/docker-registry/prod'
   def dockerImageSource = !isEmptyString(args.dockerImageSource) ? args.dockerImageSource : "${dockerRegistry}/kibana/kibana"
   def dockerImageTarget = !isEmptyString(args.dockerImageTarget) ? args.dockerImageTarget : "${dockerRegistry}/observability-ci/kibana"
 
-  log(level: 'INFO', text: "Cloning Kibana repository, branch ${branch}")
+  log(level: 'INFO', text: "Cloning Kibana repository, refspec ${refspec}")
 
   checkout([$class: 'GitSCM',
-    branches: [[name: "*/${branch}"]],
+    branches: [[name: "*/${refspec}"]],
     doGenerateSubmoduleConfigurations: false,
     extensions: [
       [$class: 'RelativeTargetDirectory', relativeTargetDir: "${env.BASE_DIR}"],
