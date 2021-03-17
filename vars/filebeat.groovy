@@ -40,9 +40,7 @@ def start(Map args = [:]) {
   if (args.containsKey('output')) {
     sanitizedOutput = sanitizeOutputFileName(args.output)
   }
-  sanitizedOutput = sanitizedOutput?.trim() ? sanitizedOutput : 'docker_logs.log'
-
-  def output = sanitizedOutput
+  def output = sanitizedOutput?.trim() ? sanitizedOutput : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
