@@ -43,6 +43,7 @@ def call(Map args = [:]){
 def buildKibana(Map args = [:]) {
   def refspec = args.refspec
   def deployName = normalize(refspec)
+  def credentialsId = !isEmptyString(args.credentialsId) ? args.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
   def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
   def dockerRegistrySecret = !isEmptyString(args.dockerRegistrySecret) ? args.dockerRegistrySecret : 'secret/observability-team/ci/docker-registry/prod'
@@ -68,7 +69,7 @@ def buildKibana(Map args = [:]) {
       ]],
       submoduleCfg: [],
       userRemoteConfigs: [[
-        credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+        credentialsId: "${credentialsId}",
         url: "http://github.com/elastic/kibana.git",
         refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/PR/*',
         ]]
