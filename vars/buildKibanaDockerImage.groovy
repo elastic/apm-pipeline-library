@@ -44,12 +44,10 @@ def buildKibana(Map args = [:]) {
   def branch = args.branch
   def deployName = normalize(branch)
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
-
-  // constant values
-  def dockerRegistry = 'docker.elastic.co'
-  def dockerRegistrySecret = 'secret/observability-team/ci/docker-registry/prod'
-  def dockerImageSource = "${dockerRegistry}/kibana/kibana"
-  def dockerImageTarget = "${dockerRegistry}/observability-ci/kibana"
+  def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
+  def dockerRegistrySecret = !isEmptyString(args.dockerRegistrySecret) ? args.dockerRegistrySecret : 'secret/observability-team/ci/docker-registry/prod'
+  def dockerImageSource = !isEmptyString(args.dockerImageSource) ? args.dockerImageSource : "${dockerRegistry}/kibana/kibana"
+  def dockerImageTarget = !isEmptyString(args.dockerImageTarget) ? args.dockerImageTarget : "${dockerRegistry}/observability-ci/kibana"
 
   log(level: 'INFO', text: "Cloning Kibana repository, branch ${branch}")
 
