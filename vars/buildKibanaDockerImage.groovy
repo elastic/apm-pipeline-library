@@ -80,7 +80,7 @@ def buildKibana(Map args = [:]) {
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
     setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: 'package.json').version + '-SNAPSHOT')
 
-    retry(3){
+    retryWithSleep(retries: 3) {
       sh(label: 'Build Docker image', script: '''#!/bin/bash
         set -x
         unset NVM_DIR
@@ -106,7 +106,7 @@ def buildKibana(Map args = [:]) {
   }
 
   dockerLogin(secret: "${dockerRegistrySecret}", registry: "${dockerRegistry}")
-  retry(3){
+  retryWithSleep(retries: 3) {
     sh(label: 'Push Docker image', script: """
       docker tag ${dockerImageSource}:${KIBANA_DOCKER_TAG} ${dockerImageTarget}:${kibanaDockerTargetTag}
       docker tag ${dockerImageSource}:${KIBANA_DOCKER_TAG} ${dockerImageTarget}:${deployName}
