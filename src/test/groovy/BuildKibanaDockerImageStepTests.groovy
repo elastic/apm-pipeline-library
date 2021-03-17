@@ -31,35 +31,35 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     @Test
     void test_without_target() throws Exception {
         def result = script.call()
-        assertTrue(assertMethodCallContainsPattern('log', 'Target is a branch: master'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: master'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_branch_target() throws Exception {
         def result = script.call(target: 'foo')
-        assertTrue(assertMethodCallContainsPattern('log', 'Target is a branch: foo'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: foo'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_uppercase() throws Exception {
         def result = script.call(target: 'PR/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Target is a PR: PR/123456'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_lowercase() throws Exception {
         def result = script.call(target: 'pr/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Target is a PR: PR/123456'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_no_case() throws Exception {
         def result = script.call(target: 'pR/123456')
-        assertTrue(assertMethodCallContainsPattern('log', 'Target is a PR: PR/123456'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
 }

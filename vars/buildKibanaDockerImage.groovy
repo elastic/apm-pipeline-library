@@ -31,9 +31,9 @@ def call(Map args = [:]){
   def target = args?.target?.trim() ? args.target : 'master'
   def uppercaseTarget = target.toUpperCase()
 
+  def kibanaBranch = target
   if (uppercaseTarget.startsWith('PR/')) {
-    log(level: 'INFO', text: "Target is a PR: ${uppercaseTarget}")
-  } else {
-    log(level: 'INFO', text: "Target is a branch: ${target}")
+    kibanaBranch = uppercaseTarget
   }
+  log(level: 'INFO', text: "Kibana branch is: ${kibanaBranch}")
 }
