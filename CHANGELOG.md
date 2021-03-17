@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.202 (17/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add getFlakyJobName [#1038](https://github.com/elastic/apm-pipeline-library/pull/1038)
+-  Update to new schema for flaky tests [#1016](https://github.com/elastic/apm-pipeline-library/pull/1016)
+
+#### 📚 Documentation
+
+-  document Gren and GH labels for the automated release process [#1035](https://github.com/elastic/apm-pipeline-library/pull/1035)
+
 ## v1.1.201 (11/03/2021)
 
 #### 🚀 Enhancements
