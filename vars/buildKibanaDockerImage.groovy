@@ -81,27 +81,7 @@ def buildKibana(Map args = [:]) {
     setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: 'package.json').version + '-SNAPSHOT')
 
     retryWithSleep(retries: 3) {
-      sh(label: 'Build Docker image', script: '''#!/bin/bash
-        set -x
-        unset NVM_DIR
-        if [ -z "$(command -v nvm)" ]; then
-          curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-        fi
-        if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
-          . "${NVM_DIR}/nvm.sh"
-          nvm install "${NODE_VERSION}"
-          nvm use "${NODE_VERSION}"
-        fi
-        export NODE_OPTIONS=" --max-old-space-size=4096"
-        export FORCE_COLOR=1
-        export BABEL_DISABLE_CACHE=true
-        npm install -g yarn
-        yarn kbn clean
-        yarn kbn bootstrap
-        node scripts/build --no-debug --no-oss --skip-docker-ubi --docker-images
-      ''')
+      sh(label: 'Build Docker image', script: libraryResource('scripts/build-kibana-docker-image.sh'))
     }
   }
 
