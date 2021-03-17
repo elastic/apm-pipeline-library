@@ -37,28 +37,28 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
 
     @Test
     void test_with_branch_target() throws Exception {
-        def result = script.call(target: 'foo')
+        def result = script.call(branch: 'foo')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: foo'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_uppercase() throws Exception {
-        def result = script.call(target: 'PR/123456')
+        def result = script.call(branch: 'PR/123456')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_lowercase() throws Exception {
-        def result = script.call(target: 'pr/123456')
+        def result = script.call(branch: 'pr/123456')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
 
     @Test
     void test_with_PR_target_no_case() throws Exception {
-        def result = script.call(target: 'pR/123456')
+        def result = script.call(branch: 'pR/123456')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana branch is: PR/123456'))
         assertJobStatusSuccess()
     }
