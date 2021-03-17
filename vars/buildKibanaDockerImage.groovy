@@ -25,14 +25,14 @@ import co.elastic.BuildException
   Builds the Docker image for Kibana, from a branch or a pull Request.
 
   buildKibanaDockerImage(target: 'master')
-  buildKibanaDockerImage(target: 'pr-12345')
+  buildKibanaDockerImage(target: 'PR/12345')
 */
 def call(Map args = [:]){
   def target = args?.target?.trim() ? args.target : 'master'
+  def uppercaseTarget = target.toUpperCase()
 
-  if (target.startsWith('pr-')) {
-    def prID = target.substring(target.indexOf("-") + 1)
-    log(level: 'INFO', text: "Target is a PR: ${prID}")
+  if (uppercaseTarget.startsWith('PR/')) {
+    log(level: 'INFO', text: "Target is a PR: ${uppercaseTarget}")
   } else {
     log(level: 'INFO', text: "Target is a branch: ${target}")
   }
