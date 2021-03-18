@@ -34,14 +34,14 @@ def call(Map args = [:]){
   log(level: 'DEBUG', text: "Kibana refspec is: ${refspec}")
 
   def deployName = normalize(refspec)
-  def packageJSON = !isEmptyString(args.packageJSON) ? args.packageJSON : 'package.json'
-  def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}/build"
-  def credentialsId = !isEmptyString(args.credentialsId) ? args.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
-  def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : ''
-  def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
-  def dockerRegistrySecret = !isEmptyString(args.dockerRegistrySecret) ? args.dockerRegistrySecret : 'secret/observability-team/ci/docker-registry/prod'
-  def dockerImageSource = !isEmptyString(args.dockerImageSource) ? args.dockerImageSource : "${dockerRegistry}/kibana/kibana"
-  def dockerImageTarget = !isEmptyString(args.dockerImageTarget) ? args.dockerImageTarget : "${dockerRegistry}/observability-ci/kibana"
+  def packageJSON = isEmptyString(args.packageJSON) ? 'package.json' : args.packageJSON
+  def baseDir = isEmptyString(args.baseDir) ? "${env.BASE_DIR}/build" : args.baseDir
+  def credentialsId = isEmptyString(args.credentialsId) ? '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken' : args.credentialsId
+  def kibanaDockerTargetTag = isEmptyString(args.targetTag) ? '' : args.targetTag
+  def dockerRegistry = isEmptyString(args.dockerRegistry) ? 'docker.elastic.co' : args.dockerRegistry
+  def dockerRegistrySecret = isEmptyString(args.dockerRegistrySecret) ? 'secret/observability-team/ci/docker-registry/prod' : args.dockerRegistrySecret
+  def dockerImageSource = isEmptyString(args.dockerImageSource) ?  "${dockerRegistry}/kibana/kibana" : args.dockerImageSource
+  def dockerImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana" : args.dockerImageTarget
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
