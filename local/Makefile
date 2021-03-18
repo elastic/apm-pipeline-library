@@ -89,7 +89,7 @@ recreate-all: # Recreate all the services
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
-			up --detach --recreate
+			up --detach --force-recreate
 
 .PHONY: start-linux-worker
 start-linux-worker:  ## Start the local linux worker
