@@ -84,8 +84,8 @@ def buildKibana(Map args = [:]) {
   dockerLogin(secret: "${dockerRegistrySecret}", registry: "${dockerRegistry}")
   retryWithSleep(retries: 3) {
     sh(label: 'Push Docker image', script: """
-      docker tag ${dockerImageSource}:${KIBANA_DOCKER_TAG} ${dockerImageTarget}:${kibanaDockerTargetTag}
-      docker tag ${dockerImageSource}:${KIBANA_DOCKER_TAG} ${dockerImageTarget}:${deployName}
+      docker tag ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} ${dockerImageTarget}:${kibanaDockerTargetTag}
+      docker tag ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} ${dockerImageTarget}:${deployName}
       docker push ${dockerImageTarget}:${kibanaDockerTargetTag}
       docker push ${dockerImageTarget}:${deployName}
     """)
