@@ -7,7 +7,7 @@ buildKibanaDockerImage(refspec: 'PR/12345')
 
 * refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
 * packageJSON: Full name of the package.json file. Defaults to 'package.json'
-* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.
 * targetTag: Docker tag to be used in the image. Defaults to the commit SHA.
 * dockerRegistry: Name of the Docker registry. Defaults to 'docker.elastic.co'

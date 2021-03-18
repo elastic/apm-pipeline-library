@@ -166,24 +166,31 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
 
+## buildKibanaDockerImage
+Builds the Docker image for Kibana, from a branch or a pull Request.
+
+```
+buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'PR/12345')
+```
+
+See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
 ## buildStatus
 Fetch the current build status for a given job
 ```
 def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']), return_bool: false)
 ```
 
-* host: The Jenkins server to connect to. Defaults to `localhost`.
-* job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
-        CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
-
-            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
-
-        In this case, the corresponding list would be formed as:
-
-            ['apm-agent-java', 'apm-agent-java-mbp', 'master']
-
-* as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
-* ssl: Set to `false` to disable SSL. Default is `true`.
+* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* packageJSON: Full name of the package.json file. Defaults to `package.json`
+* baseDir: Directory where to clone the Kibana repository. Defaults to`${env.BASE_DIR}/build`
+* credentialsId: Credentials used access Github repositories.
+* targetTag: Docker tag to be used in the image. Defaults to `the commit SHA`.
+* dockerRegistry: Name of the Docker registry. Defaults to `docker.elastic.co`
+* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to `secret/observability-team/ci/docker-registry/prod`
+* dockerImageSource: Name of the source Docker image when tagging. Defaults to `${dockerRegistry}/kibana/kibana`
+* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to `${dockerRegistry}/observability-ci/kibana`
 
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
