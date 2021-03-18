@@ -74,4 +74,27 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr333333 were pushed"))
         assertJobStatusSuccess()
     }
+
+    @Test
+    void test_with_custom_registry() throws Exception {
+        def registry = 'hub.docker.com'
+        def result = script.call(refspec: 'pr/444444', dockerRegistry: registry)
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/444444'))
+        assertTrue(assertMethodCallContainsPattern('log', "Tagging ${registry}/kibana/kibana:8.0.0-SNAPSHOT to ${registry}/observability-ci/kibana:${SHA} and ${registry}/observability-ci/kibana:pr444444"))
+        assertTrue(assertMethodCallContainsPattern('log', "${registry}/observability-ci/kibana:${SHA} and ${registry}/observability-ci/kibana:pr444444 were pushed"))
+        assertJobStatusSuccess()
+    }
+
+    @Test
+    void test_with_custom_values() throws Exception {
+        def registry = 'hub.docker.com'
+        def targetTag = 'ABCDEFG'
+        def src = 'the_source'
+        def target = 'the_target'
+        def result = script.call(refspec: 'pr/555555', targetTag: targetTag, dockerRegistry: registry, dockerImageSource: src, dockerImageTarget: target)
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/555555'))
+        assertTrue(assertMethodCallContainsPattern('log', "Tagging ${src}:8.0.0-SNAPSHOT to ${target}:${targetTag} and ${target}:pr55555"))
+        assertTrue(assertMethodCallContainsPattern('log', "${target}:${targetTag} and ${target}:pr555555 were pushed"))
+        assertJobStatusSuccess()
+    }
 }
