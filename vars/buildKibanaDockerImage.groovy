@@ -21,6 +21,7 @@
 
   buildKibanaDockerImage(refspec: 'master')
   buildKibanaDockerImage(refspec: 'PR/12345')
+  buildKibanaDockerImage(refspec: 'PR/12345', dockerRegistry: hub.docker.com)
 */
 def call(Map args = [:]){
   def kibanaRefspec = args?.refspec?.trim() ? args.refspec : 'master'
