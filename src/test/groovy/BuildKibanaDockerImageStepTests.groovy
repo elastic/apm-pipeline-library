@@ -26,6 +26,8 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     void setUp() throws Exception {
         super.setUp()
         script = loadScript('vars/buildKibanaDockerImage.groovy')
+
+        env.BASE_DIR = "buildKibana"
     }
 
     @Test

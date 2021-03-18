@@ -74,7 +74,14 @@ def buildKibana(Map args = [:]) {
 
   dir("${baseDir}"){
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
-    setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: packageJSON).version + '-SNAPSHOT')
+
+    def pathSeparator = '/'
+    if (nodeOS() == 'windows') {
+      pathSeparator = '\\'
+    }
+
+    def kibanaVersion = readJSON(file: baseDir + pathSeparator + packageJSON).version
+    setEnvVar('KIBANA_DOCKER_TAG',  kibanaVersion + '-SNAPSHOT')
 
     retryWithSleep(retries: 3) {
       sh(label: 'Build Docker image', script: libraryResource('scripts/build-kibana-docker-image.sh'))
