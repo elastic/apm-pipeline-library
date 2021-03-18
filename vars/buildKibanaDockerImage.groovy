@@ -38,6 +38,7 @@ def call(Map args = [:]){
 def buildKibana(Map args = [:]) {
   def refspec = args.refspec
   def deployName = normalize(refspec)
+  def packageJSON = !isEmptyString(args.packageJSON) ? args.packageJSON : 'package.json'
   def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}"
   def credentialsId = !isEmptyString(args.credentialsId) ? args.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
@@ -73,7 +74,7 @@ def buildKibana(Map args = [:]) {
 
   dir("${baseDir}"){
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
-    setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: 'package.json').version + '-SNAPSHOT')
+    setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: packageJSON).version + '-SNAPSHOT')
 
     retryWithSleep(retries: 3) {
       sh(label: 'Build Docker image', script: libraryResource('scripts/build-kibana-docker-image.sh'))
