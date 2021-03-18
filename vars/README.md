@@ -1244,6 +1244,32 @@ As long as we got some concurrency issues
 googleStorageUpload(args)
 ```
 
+## googleStorageUploadExt
+Upload the given pattern files to the given bucket.
+
+```
+  // Copy file.txt into the bucket
+  googleStorageUploadExt(pattern: 'file.txt', bucket: 'gs://bucket/folder/', credentialsId: 'foo', sharedPublicly: false)
+
+```
+
+* bucket: The Google Storage bucket format gs://bucket/folder/subfolder/. Mandatory
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
+* pattern: The file to pattern to search and copy. Mandatory.
+* sharedPublicly: Whether to shared those objects publically. Optional. Default false.
+
+## gsutil
+Wrapper to interact with the gsutil command line. It returns the stdout output.
+
+```
+  // Copy file.txt into the bucket
+  gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
+
+```
+
+* command: The gsutil command to be executed. Mandatory
+* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+
 ## httpRequest
 Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
@@ -1943,6 +1969,24 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
+## releaseNotification
+Send notifications with the release status by email and slack.
+
+If body is slack format based then it will be transformed to the email format
+  
+```
+releaseNotification(slackColor: 'good',
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
+```
+
+* body: this is the body email that will be also added to the subject when using slack notifications. Optional
+* slackChannel: the slack channel, multiple channels may be provided as a comma, semicolon, or space delimited string. Default `env.SLACK_CHANNEL`
+* slackColor: an optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0)
+* slackCredentialsId: the slack credentialsId. Default 'jenkins-slack-integration-token'
+* subject: this is subject email that will be also aggregated to the body when using slack notifications. Optional
+* to: who should receive an email. Default `env.NOTIFY_TO`
 
 ## retryWithSleep
 Retry a command for a specified number of times until the command exits successfully.

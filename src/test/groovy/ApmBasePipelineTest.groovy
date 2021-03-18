@@ -274,6 +274,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('file', [Map.class], { [ variable: 'foo', secret: 'bar' ] })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
@@ -333,6 +334,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('unzip', [Map.class], null)
     helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
     helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->
@@ -451,6 +453,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('gsutil', [Map.class], { m ->
+      def script = loadScript('vars/gsutil.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('installTools', [List.class], { l ->
       def script = loadScript('vars/installTools.groovy')
@@ -492,6 +498,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is32x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('is64', { return true })
     helper.registerAllowedMethod('is64x86', {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
@@ -610,6 +617,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       call.methodName == methodName
     }.any { call ->
       callArgsToString(call).contains(pattern)
+    }
+  }
+
+  def assertMethodCallContainsPatternOccurrences(String methodName, String pattern, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.any { call ->
+      ((callArgsToString(call) =~ /${pattern}/).count) == compare
     }
   }
 

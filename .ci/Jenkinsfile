@@ -28,6 +28,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
+    JOB_GCS_BUCKET = 'apm-ci-temp'
+    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
     GITHUB_CHECK = 'true'
   }
   options {
@@ -115,6 +117,30 @@ pipeline {
         }
       }
     }
+    stage('Google Storage') {
+      steps {
+        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+          }
+        }
+      }
+    }
+    stage('Google Storage Windows') {
+      agent { label 'windows-2019-immutable' }
+      when {
+        branch 'master'
+      }
+      steps {
+        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+          }
+        }
+      }
+    }
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
@@ -122,9 +148,15 @@ pipeline {
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
             validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/chatops.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
             validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
+            validateDeclarativePipeline '.ci/licenseScan.groovy'
+            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
         }
