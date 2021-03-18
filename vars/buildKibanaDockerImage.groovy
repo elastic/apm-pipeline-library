@@ -34,7 +34,7 @@ def call(Map args = [:]){
 
   def deployName = normalize(refspec)
   def packageJSON = !isEmptyString(args.packageJSON) ? args.packageJSON : 'package.json'
-  def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}"
+  def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}/build"
   def credentialsId = !isEmptyString(args.credentialsId) ? args.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
   def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
@@ -42,7 +42,7 @@ def call(Map args = [:]){
   def dockerImageSource = !isEmptyString(args.dockerImageSource) ? args.dockerImageSource : "${dockerRegistry}/kibana/kibana"
   def dockerImageTarget = !isEmptyString(args.dockerImageTarget) ? args.dockerImageTarget : "${dockerRegistry}/observability-ci/kibana"
 
-  log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}")
+  log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
   checkout([$class: 'GitSCM',
     branches: [[name: "*/${refspec}"]],
