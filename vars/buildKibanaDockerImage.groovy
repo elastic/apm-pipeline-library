@@ -23,20 +23,15 @@
   buildKibanaDockerImage(refspec: 'PR/12345')
 */
 def call(Map args = [:]){
-  def refspec = args?.refspec?.trim() ? args.refspec : 'master'
-  def uppercaseRefspec = refspec.toUpperCase()
+  def kibanaRefspec = args?.refspec?.trim() ? args.refspec : 'master'
+  def uppercaseKibanaRefspec = kibanaRefspec.toUpperCase()
 
-  def kibanaRefspec = refspec
-  if (uppercaseRefspec.startsWith('PR/')) {
-    kibanaRefspec = uppercaseRefspec
+  def refspec = kibanaRefspec
+  if (uppercaseKibanaRefspec.startsWith('PR/')) {
+    refspec = uppercaseKibanaRefspec
   }
-  log(level: 'INFO', text: "Kibana refspec is: ${kibanaRefspec}")
+  log(level: 'DEBUG', text: "Kibana refspec is: ${refspec}")
 
-  //buildKibana(refspec: "${kibanaRefspec}")
-}
-
-def buildKibana(Map args = [:]) {
-  def refspec = args.refspec
   def deployName = normalize(refspec)
   def packageJSON = !isEmptyString(args.packageJSON) ? args.packageJSON : 'package.json'
   def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}"
@@ -47,7 +42,7 @@ def buildKibana(Map args = [:]) {
   def dockerImageSource = !isEmptyString(args.dockerImageSource) ? args.dockerImageSource : "${dockerRegistry}/kibana/kibana"
   def dockerImageTarget = !isEmptyString(args.dockerImageTarget) ? args.dockerImageTarget : "${dockerRegistry}/observability-ci/kibana"
 
-  log(level: 'INFO', text: "Cloning Kibana repository, refspec ${refspec}")
+  log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}")
 
   checkout([$class: 'GitSCM',
     branches: [[name: "*/${refspec}"]],
@@ -89,6 +84,8 @@ def buildKibana(Map args = [:]) {
   }
 
   dockerLogin(secret: "${dockerRegistrySecret}", registry: "${dockerRegistry}")
+  log(level: 'DEBUG', text: "Tagging ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} to ${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName}")
+
   retryWithSleep(retries: 3) {
     sh(label: 'Push Docker image', script: """
       docker tag ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} ${dockerImageTarget}:${kibanaDockerTargetTag}
@@ -97,6 +94,8 @@ def buildKibana(Map args = [:]) {
       docker push ${dockerImageTarget}:${deployName}
     """)
   }
+
+  log(level: 'DEBUG', text: "${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName} were pushed")
 }
 
 def isEmptyString(value){
