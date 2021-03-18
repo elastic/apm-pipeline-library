@@ -70,12 +70,7 @@ def call(Map args = [:]){
   dir("${baseDir}"){
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
 
-    def pathSeparator = '/'
-    if (nodeOS() == 'windows') {
-      pathSeparator = '\\'
-    }
-
-    def kibanaVersion = readJSON(file: baseDir + pathSeparator + packageJSON).version
+    def kibanaVersion = readJSON(file: packageJSON).version
     setEnvVar('KIBANA_DOCKER_TAG',  kibanaVersion + '-SNAPSHOT')
 
     retryWithSleep(retries: 3) {

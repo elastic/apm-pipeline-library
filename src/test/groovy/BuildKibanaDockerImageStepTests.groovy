@@ -26,13 +26,11 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     void setUp() throws Exception {
         super.setUp()
         script = loadScript('vars/buildKibanaDockerImage.groovy')
-
-        env.BASE_DIR = "buildKibana"
     }
 
     @Test
     void test_without_refspec() throws Exception {
-        def result = script.call()
+        def result = script.call(packageJSON: 'buildKibana/package.json')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: master'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master"))
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master were pushed"))
@@ -41,7 +39,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
 
     @Test
     void test_with_branch_refspec() throws Exception {
-        def result = script.call(refspec: 'foo')
+        def result = script.call(refspec: 'foo', packageJSON: 'buildKibana/package.json')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: foo'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:foo"))
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:foo were pushed"))
@@ -50,7 +48,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
 
     @Test
     void test_with_PR_refspec_uppercase() throws Exception {
-        def result = script.call(refspec: 'PR/111111')
+        def result = script.call(refspec: 'PR/111111', packageJSON: 'buildKibana/package.json')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/111111'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr111111"))
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr111111 were pushed"))
@@ -59,7 +57,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
 
     @Test
     void test_with_PR_refspec_lowercase() throws Exception {
-        def result = script.call(refspec: 'pr/222222')
+        def result = script.call(refspec: 'pr/222222', packageJSON: 'buildKibana/package.json')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/222222'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr222222"))
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr222222 were pushed"))
@@ -68,7 +66,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
 
     @Test
     void test_with_PR_refspec_no_case() throws Exception {
-        def result = script.call(refspec: 'pR/333333')
+        def result = script.call(refspec: 'pR/333333', packageJSON: 'buildKibana/package.json')
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/333333'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr333333"))
         assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:pr333333 were pushed"))
@@ -78,7 +76,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     @Test
     void test_with_custom_registry() throws Exception {
         def registry = 'hub.docker.com'
-        def result = script.call(refspec: 'pr/444444', dockerRegistry: registry)
+        def result = script.call(refspec: 'pr/444444', packageJSON: 'buildKibana/package.json', dockerRegistry: registry)
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/444444'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging ${registry}/kibana/kibana:8.0.0-SNAPSHOT to ${registry}/observability-ci/kibana:${SHA} and ${registry}/observability-ci/kibana:pr444444"))
         assertTrue(assertMethodCallContainsPattern('log', "${registry}/observability-ci/kibana:${SHA} and ${registry}/observability-ci/kibana:pr444444 were pushed"))
@@ -91,7 +89,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
         def targetTag = 'ABCDEFG'
         def src = 'the_source'
         def target = 'the_target'
-        def result = script.call(refspec: 'pr/555555', targetTag: targetTag, dockerRegistry: registry, dockerImageSource: src, dockerImageTarget: target)
+        def result = script.call(refspec: 'pr/555555', packageJSON: 'buildKibana/package.json', targetTag: targetTag, dockerRegistry: registry, dockerImageSource: src, dockerImageTarget: target)
         assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: PR/555555'))
         assertTrue(assertMethodCallContainsPattern('log', "Tagging ${src}:8.0.0-SNAPSHOT to ${target}:${targetTag} and ${target}:pr55555"))
         assertTrue(assertMethodCallContainsPattern('log', "${target}:${targetTag} and ${target}:pr555555 were pushed"))
