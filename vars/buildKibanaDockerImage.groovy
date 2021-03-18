@@ -69,7 +69,7 @@ def call(Map args = [:]){
   ])
 
   dir("${baseDir}"){
-    kibanaDockerTargetTag = !isEmptyString(kibanaDockerTargetTag) ? kibanaDockerTargetTag : getGitCommitSha()
+    kibanaDockerTargetTag = isEmptyString(kibanaDockerTargetTag) ? getGitCommitSha() : kibanaDockerTargetTag
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
 
     def kibanaVersion = readJSON(file: packageJSON).version
