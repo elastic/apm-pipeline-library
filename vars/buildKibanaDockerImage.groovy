@@ -38,6 +38,7 @@ def call(Map args = [:]){
 def buildKibana(Map args = [:]) {
   def refspec = args.refspec
   def deployName = normalize(refspec)
+  def baseDir = !isEmptyString(args.baseDir) ? args.baseDir : "${env.BASE_DIR}"
   def credentialsId = !isEmptyString(args.credentialsId) ? args.credentialsId : '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'
   def kibanaDockerTargetTag = !isEmptyString(args.targetTag) ? args.targetTag : getGitCommitSha()
   def dockerRegistry = !isEmptyString(args.dockerRegistry) ? args.dockerRegistry : 'docker.elastic.co'
@@ -51,7 +52,7 @@ def buildKibana(Map args = [:]) {
     branches: [[name: "*/${refspec}"]],
     doGenerateSubmoduleConfigurations: false,
     extensions: [
-      [$class: 'RelativeTargetDirectory', relativeTargetDir: "${env.BASE_DIR}"],
+      [$class: 'RelativeTargetDirectory', relativeTargetDir: "${baseDir}"],
       [$class: 'CheckoutOption', timeout: 15],
       [$class: 'AuthorInChangelog'],
       [$class: 'IgnoreNotifyCommit'],
@@ -70,7 +71,7 @@ def buildKibana(Map args = [:]) {
         ]]
   ])
 
-  dir("${env.BASE_DIR}"){
+  dir("${baseDir}"){
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
     setEnvVar('KIBANA_DOCKER_TAG', readJSON(file: 'package.json').version + '-SNAPSHOT')
 
