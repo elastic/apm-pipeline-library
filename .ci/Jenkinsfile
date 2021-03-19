@@ -245,8 +245,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true,
-                        flakyReportIdx: 'reporter-apm-shared-apm-pipeline-library-master')
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'))
     }
   }
 }
