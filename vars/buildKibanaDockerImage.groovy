@@ -68,12 +68,13 @@ def call(Map args = [:]){
         ]]
   ])
 
+  def kibanaVersion = ''
+
   dir("${baseDir}"){
     kibanaDockerTargetTag = isEmptyString(kibanaDockerTargetTag) ? getGitCommitSha() : kibanaDockerTargetTag
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
 
-    def kibanaVersion = readJSON(file: packageJSON).version
-    setEnvVar('KIBANA_DOCKER_TAG',  kibanaVersion + '-SNAPSHOT')
+    kibanaVersion = readJSON(file: packageJSON).version + '-SNAPSHOT'
 
     retryWithSleep(retries: 3) {
       sh(label: 'Build Docker image', script: libraryResource('scripts/build-kibana-docker-image.sh'))
@@ -81,17 +82,19 @@ def call(Map args = [:]){
   }
 
   dockerLogin(secret: "${dockerRegistrySecret}", registry: "${dockerRegistry}")
-  log(level: 'DEBUG', text: "Tagging ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} to ${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName}")
+  log(level: 'DEBUG', text: "Tagging ${dockerImageSource}:${kibanaVersion} to ${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName}")
 
   retryWithSleep(retries: 3) {
     sh(label: 'Push Docker image', script: """
-      docker tag ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} ${dockerImageTarget}:${kibanaDockerTargetTag}
-      docker tag ${dockerImageSource}:${env.KIBANA_DOCKER_TAG} ${dockerImageTarget}:${deployName}
+      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaDockerTargetTag}
+      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${deployName}
       docker push ${dockerImageTarget}:${kibanaDockerTargetTag}
       docker push ${dockerImageTarget}:${deployName}
     """)
   }
 
+  setEnvVar('DEPLOY_NAME', deployName)
+  setEnvVar('KIBANA_DOCKER_TAG', deployName)
   log(level: 'DEBUG', text: "${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName} were pushed")
 }
 
