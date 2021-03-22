@@ -59,6 +59,7 @@ pipeline {
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'python', defaultValue: "false", description: "")
+    booleanParam(name: 'rebuild_analyzer', defaultValue: "false", description: "Rebuild analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/rebuild-analyzer]")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'rum', defaultValue: 'false', description: '')
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
@@ -359,6 +360,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/build-analyzer")
+      }
+    }
+    stage('Rebuild analyzer'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.rebuild_analyzer}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'rebuild-analyzer',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/rebuild-analyzer")
       }
     }
     stage('Build integrations test reporter'){
