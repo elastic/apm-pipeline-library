@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.203 (22/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: add a new step to build and push a Docker image for Kibana [#1040](https://github.com/elastic/apm-pipeline-library/pull/1040)
+
+#### 🐛 Bug Fixes
+
+-  fix: use proper flag for recreate the local Jenkins services [#1043](https://github.com/elastic/apm-pipeline-library/pull/1043)
+-  Fix the getCause and getCauses for the AbortException [#1041](https://github.com/elastic/apm-pipeline-library/pull/1041)
+
 ## v1.1.202 (17/03/2021)
 
 #### 🚀 Enhancements
