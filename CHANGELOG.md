@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.205 (23/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withAzureCredentials step [#1048](https://github.com/elastic/apm-pipeline-library/pull/1048)
+
 ## v1.1.204 (22/03/2021)
 
 #### 🙈 No user affected
