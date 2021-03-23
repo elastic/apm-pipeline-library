@@ -2506,7 +2506,7 @@ withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
 
 * path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
 * credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
-* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azures'
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
 
 ## withEnvMask
 This step will define some environment variables and mask their content in the
@@ -2892,4 +2892,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
