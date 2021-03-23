@@ -175,14 +175,14 @@ buildKibanaDockerImage(refspec: 'PR/12345')
 ```
 
 * refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
-* packageJSON: Full name of the package.json file. Defaults to `package.json`
-* baseDir: Directory where to clone the Kibana repository. Defaults to`${env.BASE_DIR}/build`
+* packageJSON: Full name of the package.json file. Defaults to 'package.json'
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.
-* targetTag: Docker tag to be used in the image. Defaults to `the commit SHA`.
-* dockerRegistry: Name of the Docker registry. Defaults to `docker.elastic.co`
-* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to `secret/observability-team/ci/docker-registry/prod`
-* dockerImageSource: Name of the source Docker image when tagging. Defaults to `${dockerRegistry}/kibana/kibana`
-* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to `${dockerRegistry}/observability-ci/kibana`
+* targetTag: Docker tag to be used in the image. Defaults to the commit SHA.
+* dockerRegistry: Name of the Docker registry. Defaults to 'docker.elastic.co'
+* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
+* dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
+* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
 
 ## buildStatus
 Fetch the current build status for a given job
@@ -2491,6 +2491,23 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
 }
 ```
 
+## withAzureCredentials
+Wrap the azure credentials
+
+```
+withAzureCredentials() {
+  // block
+}
+
+withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
+  // block
+}
+```
+
+* path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
+* credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
@@ -2875,4 +2892,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
