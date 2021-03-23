@@ -70,21 +70,26 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     }
     assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: docker_logs.log'))
     assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
     assertJobStatusSuccess()
   }
 
   @Test
   void testClosure() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
+
+    helper.registerAllowedMethod('fileExists', [String.class], { f ->
+      if(f == "${workdir}/${config}"){
+        return false
+      } else {
+        return true
+      }
+    })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
 
     printCallStack(){
       script.call(
@@ -100,7 +105,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
@@ -135,7 +139,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       printCallStack()
       assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
       assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-      assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
       assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
@@ -175,7 +178,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
     assertTrue(assertMethodCallContainsPattern('sh', "${workdir}:/output"))
     assertJobStatusSuccess()
