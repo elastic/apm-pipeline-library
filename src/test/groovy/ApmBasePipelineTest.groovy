@@ -667,6 +667,17 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     assertJobStatusFailure()
   }
 
+  def testError(String message='parameter is required', Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${message}"))
+    assertJobStatusFailure()
+  }
+
   def testWindows(Closure body) {
     helper.registerAllowedMethod('isUnix', [], { false })
     try {
