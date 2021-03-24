@@ -47,7 +47,7 @@ private installTool(Map args) {
   }
   switch (provider) {
     case 'choco':
-      powershell label: "Install ${tool}:${version}", script: """choco install ${tool} --no-progress -y --version '${version}' "${extraArgs}" """
+      powershell label: "Install ${tool}:${version}", script: """choco install ${tool} --no-progress -y --version='${version}' "${extraArgs}" """
       break
     case '':
       def scriptFile = 'install-with-choco.ps1'
