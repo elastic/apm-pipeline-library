@@ -47,20 +47,7 @@ def start(Map args = [:]) {
   log(level: 'INFO', text: 'Running Filebeat Docker container')
 
   configureFilebeat(configPath)
-  def dockerID = sh(label: 'Run filebeat to grab container logs', script: """
-    docker run \
-      --detach \
-      -v "${workdir}:/output" \
-      -v "${configPath}:/usr/share/filebeat/filebeat.yml" \
-      -u 0:0 \
-      -v /var/lib/docker/containers:/var/lib/docker/containers \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      -e OUTPUT_FILE="${output}"
-      ${image} \
-        --strict.perms=false \
-        -environment container \
-        -E http.enabled=true
-  """, returnStdout: true)?.trim()
+  def dockerID = runBeat(workdir, configPath, output, image)
   waitForBeat(dockerID)
 
   def json = [
@@ -100,46 +87,30 @@ def stop(Map args = [:]){
   }
 }
 
+def runBeat(workdir, configPath, output, image){
+  writeFile(file: "run_filebeat.sh", text: libraryResource("scripts/beats/run_filebeat.sh"))
+  withEnv([
+    "CONFIG_PATH=${configPath}",
+    "DOCKER_IMAGE=${image}",
+    "OUTPUT_DIR=${workdir}",
+    "OUTPUT_FILE=${output}"
+  ]){
+    sh(label: 'Run metricbeat to grab host metrics', script: """
+      chmod ugo+rx ./run_filebeat.sh
+      ./run_filebeat.sh
+    """)
+    return readFile(file: 'docker_id')?.trim()
+  }
+}
+
 def waitForBeat(dockerID){
-  sh(label: 'Wait for metricbeat', script: """
-    N=0
-    until docker exec ${dockerID} \
-      curl -sSfI --retry 10 --retry-delay 5 --max-time 5 'http://localhost:5066/stats?pretty'
-    do
-      sleep 5
-      if [ \${N} -gt 6 ]; then
-        break;
-      fi
-      N=\$((\${N} + 1))
-    done
-  """)
+  writeFile(file: "wait_for_beat.sh", text: libraryResource("scripts/beats/wait_for_beat.sh"))
+  sh(label: 'Wait for filebeat', script: "chmod ugo+rx ./wait_for_beat.sh && ./wait_for_beat.sh ${dockerID}")
 }
 
 def configureFilebeat(config){
   if(fileExists(config)){
     return
   }
-  def configuration = """
----
-filebeat.autodiscover:
-  providers:
-    - type: docker
-      templates:
-        - config:
-          - type: container
-            paths:
-              - /var/lib/docker/containers/\${data.docker.container.id}/*.log
-processors:
-  - add_host_metadata: ~
-  - add_cloud_metadata: ~
-  - add_docker_metadata: ~
-  - add_kubernetes_metadata: ~
-output.file:
-  path: "/output"
-  filename: \${OUTPUT_FILE}
-  permissions: 0644
-  codec.format:
-    string: '[%{[container.name]}][%{[container.image.name]}][%{[container.id]}][%{[@timestamp]}] %{[message]}'
-"""
-  writeFile(file: config, text: configuration)
+  writeFile(file: config, text: libraryResource("scripts/beats/filebeat.yml"))
 }
