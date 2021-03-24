@@ -76,89 +76,31 @@ def stop(Map args = [:]){
 }
 
 def runBeat(es_secret, configPath, image){
+  writeFile(file: "run_metricbeat.sh", text: libraryResource("scripts/beats/run_metricbeat.sh"))
   def secret = getVaultSecret(secret: es_secret)?.data
   withEnvMask(vars: [
       [var: "ES_URL", password: secret?.url],
       [var: "ES_USERNAME", password: secret?.user],
       [var: "ES_PASSWORD", password: secret?.password],
+      [var: "CONFIG_PATH", password: configPath],
+      [var: "DOCKER_IMAGE", password: image]
   ]){
-    return sh(label: 'Run metricbeat to grab host metrics', script: """
-      docker run \
-        --detach \
-        -v ${configPath}:/usr/share/metricbeat/metricbeat.yml \
-        -u 0:0 \
-        --mount type=bind,source=/proc,target=/hostfs/proc,readonly \
-        --mount type=bind,source=/sys/fs/cgroup,target=/hostfs/sys/fs/cgroup,readonly \
-        --mount type=bind,source=/,target=/hostfs,readonly \
-        --net=host \
-        -e ES_URL="\${ES_URL}" \
-        -e ES_USERNAME="\${ES_USERNAME}" \
-        -e ES_PASSWORD="\${ES_PASSWORD}" \
-        ${image} \
-          --strict.perms=false \
-          -environment container \
-          -E http.enabled=true \
-          -e -system.hostfs=/hostfs
-    """, returnStdout: true)?.trim()
+    sh(label: 'Run metricbeat to grab host metrics', script: """
+      chmod ugo+rx ./run_metricbeat.sh
+      ./run_metricbeat.sh
+    """)
+    return readFile(file: 'docker_id')?.trim()
   }
 }
 
 def waitForBeat(dockerID){
-  sh(label: 'Wait for metricbeat', script: """
-    N=0
-    until docker exec ${dockerID} \
-      curl -sSfI --retry 10 --retry-delay 5 --max-time 5 'http://localhost:5066/stats?pretty'
-    do
-      sleep 5
-      if [ \${N} -gt 6 ]; then
-        break;
-      fi
-      N=\$((\${N} + 1))
-    done
-  """)
+  writeFile(file: "wait_for_beat.sh", text: libraryResource("scripts/beats/wait_for_beat.sh"))
+  sh(label: 'Wait for metricbeat', script: "chmod ugo+rx ./wait_for_beat.sh && ./wait_for_beat.sh ${dockerID}")
 }
 
 def configuremetricbeat(config){
   if(fileExists(config)){
     return
   }
-  def configuration = '''
----
-metricbeat.modules:
-  - module: system
-    metricsets:
-      - cpu             # CPU usage
-      - load            # CPU load averages
-      - memory          # Memory usage
-      - network         # Network IO
-      - process         # Per process metrics
-      - process_summary # Process summary
-      - uptime          # System Uptime
-      - socket_summary  # Socket summary
-      #- core           # Per CPU core usage
-      #- diskio         # Disk IO
-      #- filesystem     # File system usage for each mountpoint
-      #- fsstat         # File system summary metrics
-      #- raid           # Raid
-      #- socket         # Sockets and connection info (linux only)
-      #- service        # systemd service information
-    enabled: true
-    period: 10s
-    processes: ['.*']
-
-    # Configure the metric types that are included by these metricsets.
-    cpu.metrics:  ["percentages","normalized_percentages"]  # The other available option is ticks.
-    core.metrics: ["percentages"]  # The other available option is ticks.
-
-processors:
-  - add_host_metadata: ~
-  - add_cloud_metadata: ~
-  - add_docker_metadata: ~
-  - add_kubernetes_metadata: ~
-output.elasticsearch:
-  hosts: ["${ES_URL}"]
-  username: "${ES_USERNAME}"
-  password: "${ES_PASSWORD}"
-'''
-  writeFile(file: config, text: configuration)
+  writeFile(file: config, text: libraryResource("scripts/beats/metricbeat.yml"))
 }

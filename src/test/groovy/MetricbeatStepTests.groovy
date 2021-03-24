@@ -60,6 +60,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     })
     helper.registerAllowedMethod('pwd', [], { 'metricbeatTest' })
     helper.registerAllowedMethod('isBuildFailure', [], { false })
+    helper.registerAllowedMethod('readFile', [Map.class], { 'fooID' })
   }
 
   @Test
@@ -68,9 +69,8 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call(es_secret: 'foo')
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'metricbeat_conf.yml:/usr/share/metricbeat/metricbeat.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=metricbeatTest/metricbeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/metricbeat'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
     assertJobStatusSuccess()
   }
 
@@ -109,25 +109,9 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
       }
     }
 
-    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/metricbeat/metricbeat.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
-
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testConfigFileNotExists() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-
-    def workdir = "metricbeatTest_1"
-
-    printCallStack(){
-      script.stop(workdir: workdir)
-    }
-    assertTrue(assertMethodCallContainsPattern('log', "There is no configuration file to stop metricbeat."))
     assertJobStatusSuccess()
   }
 
@@ -159,11 +143,9 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
       }
     } finally {
       printCallStack()
-      assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/metricbeat/metricbeat.yml"))
       assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-      assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
-
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
+      assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
       assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     }
   }
@@ -173,31 +155,8 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call(es_secret: 'foo')
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'metricbeat_conf.yml:/usr/share/metricbeat/metricbeat.yml'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/metricbeat'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
     assertFalse(assertMethodCallContainsPattern('writeFile', 'file=metricbeat_conf.yml'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testArguments() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-    def config = "bar.xml"
-    def image = "foo:latest"
-    def workdir = "metricbeatTest_1"
-
-    printCallStack(){
-      script.call(
-        es_secret: 'foo',
-        config: config,
-        image: image,
-        workdir: workdir,
-      )
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/metricbeat/metricbeat.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
     assertJobStatusSuccess()
   }
 
@@ -214,6 +173,19 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     }
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testConfigFileNotExists() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+
+    def workdir = "metricbeatTest_1"
+
+    printCallStack(){
+      script.stop(workdir: workdir)
+    }
+    assertTrue(assertMethodCallContainsPattern('log', "There is no configuration file to stop metricbeat."))
     assertJobStatusSuccess()
   }
 }
