@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.205 (23/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withAzureCredentials step [#1048](https://github.com/elastic/apm-pipeline-library/pull/1048)
+
+## v1.1.204 (22/03/2021)
+
+#### 🙈 No user affected
+
+-  Add rebuild analyzer docker generation [#1047](https://github.com/elastic/apm-pipeline-library/pull/1047)
+-  fix: set KIBANA_DOCKER_TAG env var properly [#1046](https://github.com/elastic/apm-pipeline-library/pull/1046)
+
 ## v1.1.203 (22/03/2021)
 
 #### 🚀 Enhancements
