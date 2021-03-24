@@ -262,7 +262,7 @@ pipeline {
               warnError('installTools failed')
             }
             steps {
-              installTools([ [tool: 'yq', version: '3.3' ] ])
+              installTools([ [tool: 'yq', version: '3.3.4' ] ])
             }
           }
         }
