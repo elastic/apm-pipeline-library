@@ -133,13 +133,19 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
 
   @Test(expected = Exception.class)
   void testClosureError() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-
     def id = "fooID"
     def output = "foo.log"
     def workdir = "metricbeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
+
+    helper.registerAllowedMethod('fileExists', [String.class], { f ->
+      if(f == "${workdir}/${config}"){
+        return false
+      } else {
+        return true
+      }
+    })
 
     try {
       script.call(
@@ -165,7 +171,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
   @Test
   void testConfigurationExists() throws Exception {
     printCallStack(){
-      script.call()
+      script.call(es_secret: 'foo')
     }
     assertTrue(assertMethodCallContainsPattern('sh', 'metricbeat_conf.yml:/usr/share/metricbeat/metricbeat.yml'))
     assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/metricbeat'))
