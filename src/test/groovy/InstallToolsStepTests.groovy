@@ -93,7 +93,7 @@ class InstallToolsStepTests extends ApmBasePipelineTest {
     script.installTool([ tool: 'foo', version: 'x.y.z', provider: 'choco', extraArgs: "--foo 'bar' 'foo'" ])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('powershell', 'Install foo:x.y.z'))
-    assertTrue(assertMethodCallContainsPattern('powershell', """script=choco install foo --no-progress -y --version 'x.y.z' "--foo 'bar' 'foo'" """))
+    assertTrue(assertMethodCallContainsPattern('powershell', """script=choco install foo --no-progress -y --version='x.y.z' "--foo 'bar' 'foo'" """))
     assertFalse(assertMethodCallContainsPattern('powershell', 'script=.\\install-with-choco.ps1'))
     assertJobStatusSuccess()
   }
