@@ -54,35 +54,3 @@ jenkins:
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
         template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/elastic-apm-ci-ubuntu-1804-lts-20210302222932"
         zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a"
-      - bootDiskAutoDelete: true
-        bootDiskSizeGb: 150
-        bootDiskSizeGbStr: "150"
-        bootDiskSourceImageProject: "elastic-observability"
-        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a/diskTypes/pd-balanced"
-        description: "obs11 windows workers"
-        javaExecPath: "java"
-        labelSet:
-        - name: "windows"
-        - name: "obs11"
-        - name: "x86_64"
-        labelString: "windows obs11 x86_64"
-        labels: "windows obs11 x86_64"
-        launchTimeoutSeconds: 300
-        launchTimeoutSecondsStr: "300"
-        machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a/machineTypes/n2-standard-2"
-        mode: NORMAL
-        namePrefix: "obs11-windows"
-        networkConfiguration:
-          autofilled:
-            network: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/networks/default"
-            subnetwork: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1/subnetworks/default"
-        numExecutors: 1
-        numExecutorsStr: "1"
-        oneShot: true
-        preemptible: true
-        region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1"
-        retentionTimeMinutes: 6
-        retentionTimeMinutesStr: "6"
-        runAsUser: "jenkins"
-        serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
-        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/apm-ci-windows-2019-docker-7d47c4cc"
