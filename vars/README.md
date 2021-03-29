@@ -1741,7 +1741,7 @@ pipeline {
 
 ## metricbeat
 
- This step run a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
  `metricbeat.stop()` will stop the metricbeat Docker container.
 
 ```
