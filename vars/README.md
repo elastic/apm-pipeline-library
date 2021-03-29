@@ -107,6 +107,9 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+* *text:* Test to calculate its base64.
+* *padding:* if true it'd apply padding (default true)
+
 ## beatsStages
 <p>
     Given the YAML definition then it creates all the stages
@@ -2338,6 +2341,7 @@ setupAPMGitEmail(global: true)
 
   Return the version currently used for testing.
 
+```
   stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
   stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
 
@@ -2346,6 +2350,7 @@ setupAPMGitEmail(global: true)
   stackVersions.release() // '7.10.2'
   stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
   stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+```
 
 ## stashV2
 Stash the current location, for such it compresses the current path and
@@ -2963,3 +2968,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
