@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.206 (29/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: metricbeat step [#1050](https://github.com/elastic/apm-pipeline-library/pull/1050)
+-  chore: refactor filebeat step [#1049](https://github.com/elastic/apm-pipeline-library/pull/1049)
+
+#### 🙈 No user affected
+
+-  Add GCE JCasC [#1053](https://github.com/elastic/apm-pipeline-library/pull/1053)
+-  chore: bump Elastic Stack versions [#1052](https://github.com/elastic/apm-pipeline-library/pull/1052)
+
 ## v1.1.205 (23/03/2021)
 
 #### 🚀 Enhancements
