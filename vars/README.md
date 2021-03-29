@@ -1756,7 +1756,7 @@ pipeline {
   }
 ```
 
-* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *es_secret:* Vault secret with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
 * *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
 * *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
 * *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
@@ -2963,4 +2963,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
