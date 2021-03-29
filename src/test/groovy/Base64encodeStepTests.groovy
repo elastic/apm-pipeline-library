@@ -21,9 +21,10 @@ import java.util.Base64
 import static org.junit.Assert.assertTrue
 
 class Base64encodeStepTests extends ApmBasePipelineTest {
-  def text = "dummy"
+  def text = "foo"
   def encoding = "UTF-8"
   def resultToCheck = Base64.getEncoder().encodeToString(text.toString().getBytes(encoding));
+  def resultToCheckNoPadding = Base64.getEncoder().withoutPadding().encodeToString(text.toString().getBytes(encoding));
 
   @Override
   @Before
@@ -34,7 +35,7 @@ class Base64encodeStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
-    def result = script.call(text: "dummy")
+    def result = script.call(text: text)
     printCallStack()
     assertTrue(resultToCheck == result)
     assertJobStatusSuccess()
@@ -42,9 +43,17 @@ class Base64encodeStepTests extends ApmBasePipelineTest {
 
   @Test
   void testParams() throws Exception {
-    def result = script.call(text: "dummy", encoding: "UTF-8")
+    def result = script.call(text: text, encoding: encoding)
     printCallStack()
     assertTrue(resultToCheck == result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testPadding() throws Exception {
+    def result = script.call(text: text, encoding: encoding, padding: false)
+    printCallStack()
+    assertTrue(resultToCheckNoPadding == result)
     assertJobStatusSuccess()
   }
 }

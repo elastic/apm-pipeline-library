@@ -3,3 +3,6 @@ Encode a text to base64
 ```
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
+
+* *text:* Test to calculate its base64.
+* *padding:* if true it'd apply padding (default true)
