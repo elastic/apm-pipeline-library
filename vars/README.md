@@ -1310,6 +1310,19 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 * command: The gsutil command to be executed. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Mandatory.
 
+## hasCommentAuthorWritePermissions
+
+Check if the author of a GitHub comment has admin or write permissions in the repository.
+
+```
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can deploy Docker images")
+}
+```
+
+* *repoName:* organization and name of the repository (Organization/Repository)
+* *commentId:* ID of the comment we want to check.
+
 ## httpRequest
 Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
