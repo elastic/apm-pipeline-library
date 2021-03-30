@@ -28,6 +28,7 @@ pipeline {
 }
 ```
 
-* *bucket:* bucket name.
-* *credentialsId:* credentials file, with the GCP credentials JSON file.
-* *sha:* Commit SHA used for the stage ID.
+* *id:* Unique stage name. Mandatory
+* *bucket:* bucket name. Default 'beats-ci-temp'
+* *credentialsId:* credentials file, with the GCP credentials JSON file. Default  'beats-ci-gcs-plugin-file-credentials'
+* *sha:* Commit SHA used for the stage ID. Default: env.GIT_BASE_COMMIT

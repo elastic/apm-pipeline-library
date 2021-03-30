@@ -20,7 +20,7 @@
   User triggered builds will execute all stages always.
   If the stage success the status is save in a file.
 */
-def stageStatusCache(Map args, Closure body){
+def call(Map args, Closure body){
   if(!args.containsKey('bucket')){
     args['bucket'] = 'beats-ci-temp'
   }
@@ -30,7 +30,7 @@ def stageStatusCache(Map args, Closure body){
   if(!args.containsKey('sha')){
     args['sha'] = "${GIT_BASE_COMMIT}"
   }
-  if(readStageStatus(args) == false || isUserTrigger() || env.BUILD_ID == "1" || env.RUN_ALL == "1"){
+  if(readStageStatus(args) == false || isUserTrigger() || env.BUILD_ID == "1" || args.get('runAlways', false)){
     body()
     saveStageStatus(args)
   } else {
