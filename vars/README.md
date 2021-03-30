@@ -1316,7 +1316,7 @@ Check if the author of a GitHub comment has admin or write permissions in the re
 
 ```
 if(!hasCommentAuthorWritePermissions(repoName: "elastic/beats", commentId: env.GT_COMMENT_ID)){
-  error("Only Elasticians can deploy Docker images")
+  error("Only Elasticians can do this action.")
 }
 ```
 
