@@ -107,6 +107,9 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+* *text:* Test to calculate its base64.
+* *padding:* if true it'd apply padding (default true)
+
 ## beatsStages
 <p>
     Given the YAML definition then it creates all the stages
@@ -1567,7 +1570,7 @@ Whether the existing worker is a static one
   }
 ```
 
-TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+TODO: as soon as macOS workers are ephemerals then we need to change this method
 
 ## isTag
 Whether the build is based on a Tag Request or no
@@ -1741,37 +1744,35 @@ pipeline {
 
 ## metricbeat
 
- This step run a filebeat Docker container to grab the Docker containers logs in a single file.
- `filebeat.stop()` will stop the Filebeat Docker container and grab the output files,
- the only argument need is the `workdir` if you set it on the `filebeat step` call.
- The output log files should be in a relative path to the current path (see [archiveArtifacts](https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts))
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ `metricbeat.stop()` will stop the metricbeat Docker container.
 
 ```
-  filebeat()
+  metricbeat()
   ...
-  filebeat.stop()
+  metricbeat.stop()
 ```
 
 ```
-  filebeat(){
+  metricbeat(){
     ....
   }
 ```
 
-* *config:* Filebeat configuration file, a default configuration is created if the file does not exists (filebeat_conf.yml).
-* *image:* Filebeat Docker image to use (docker.elastic.co/beats/filebeat:7.10.1).
-* *output:* log file to save all Docker containers logs (docker_logs.log).
-* *timeout:* Time to wait before kill the Filebeat Docker container on the stop operation.
+* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
+* *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
+* *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
-* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
-  filebeat(config: 'filebeat.yml',
-    image: 'docker.elastic.co/beats/filebeat:7.10.1',
-    output: 'docker_logs.log',
+  metricbeat(
+    es_secret: 'secret/team/details',
+    config: 'metricbeat.yml',
+    image: 'docker.elastic.co/beats/metricbeat:7.10.1',
     workdir: "${env.WORKSPACE}")
   ...
-  filebeat.stop(workdir: "${env.WORKSPACE}")
+  metricbeat.stop(workdir: "${env.WORKSPACE}")
 ```
 
 ```
@@ -1780,13 +1781,13 @@ pipeline {
   stages {
     stage('My Docker tests') {
       steps {
-        filebeat(workdir: "${env.WORKSPACE}")
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}")
         sh('docker run busybox  ls')
       }
       post {
         cleanup{
           script {
-            filebeat.stop(workdir: "${env.WORKSPACE}")
+            metricbeat.stop(workdir: "${env.WORKSPACE}")
           }
         }
       }
@@ -1801,8 +1802,8 @@ pipeline {
   stages {
     stage('My Docker tests') {
       steps {
-        filebeat(workdir: "${env.WORKSPACE}"){
-          sh('docker run busybox  ls')
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}"){
+          sh('docker run -it busybox  sleep 30')
         }
       }
     }
@@ -2338,6 +2339,7 @@ setupAPMGitEmail(global: true)
 
   Return the version currently used for testing.
 
+```
   stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
   stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
 
@@ -2346,6 +2348,7 @@ setupAPMGitEmail(global: true)
   stackVersions.release() // '7.10.2'
   stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
   stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+```
 
 ## stashV2
 Stash the current location, for such it compresses the current path and
@@ -2963,3 +2966,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+

@@ -23,6 +23,12 @@ import java.util.Base64
 def call(Map args = [:]){
   def text = args.text
   def encoding = args.containsKey('encoding') ? args.encoding : "UTF-8"
-
-  return Base64.getEncoder().encodeToString(text.toString().getBytes(encoding));
+  def padding = args.get('padding', true)
+  def ret = ""
+  if(padding){
+    ret = Base64.getEncoder().encodeToString(text.toString().getBytes(encoding));
+  } else {
+    ret = Base64.getEncoder().withoutPadding().encodeToString(text.toString().getBytes(encoding))
+  }
+  return ret;
 }
