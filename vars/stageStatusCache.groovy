@@ -28,9 +28,9 @@ def call(Map args, Closure body){
     args['credentialsId'] = 'beats-ci-gcs-plugin-file-credentials'
   }
   if(!args.containsKey('sha')){
-    args['sha'] = "${GIT_BASE_COMMIT}"
+    args['sha'] = "${env.GIT_BASE_COMMIT}"
   }
-  if(readStageStatus(args) == false || isUserTrigger() || env.BUILD_ID == "1" || args.get('runAlways', false)){
+  if(env.BUILD_ID == "1" || isUserTrigger() || args.get('runAlways', false) || readStageStatus(args) == false){
     body()
     saveStageStatus(args)
   } else {
@@ -59,8 +59,6 @@ def readStageStatus(Map args){
     cmd(label: 'Download Stage Status',
       script: "curl -sSf -O https://storage.googleapis.com/${args.bucket}/ci/cache/${statusFileName}",
       returnStatus: true)
-  } catch(e) {
-    log(level: 'WARN', text: "There is no cache file for the current stage.")
   } finally {
     return fileExists("${statusFileName}")
   }
@@ -70,5 +68,5 @@ def readStageStatus(Map args){
   generate an unique ID for the stage and commit.
 */
 def stageStatusId(Map args){
-  return base64encode(text: "${args.id}${args.sha}", encoding: "UTF-8")
+  return base64encode(text: "${args.id}${args.sha}", encoding: "UTF-8", padding: false)
 }
