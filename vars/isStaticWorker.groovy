@@ -25,5 +25,5 @@
 */
 def call(Map args=[:]){
   def labels = args.containsKey('labels') ? args.labels : error("isStaticWorker: labels parameter is required.")
-  return (labels?.contains('arm') || labels?.contains('macosx') || labels?.contains('metal'))
+  return (labels?.contains('macosx') || labels?.contains('metal'))
 }
