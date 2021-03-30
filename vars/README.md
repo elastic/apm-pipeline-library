@@ -1315,7 +1315,7 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 Check if the author of a GitHub comment has admin or write permissions in the repository.
 
 ```
-if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/beats", commentId: env.GT_COMMENT_ID)){
   error("Only Elasticians can deploy Docker images")
 }
 ```
@@ -2979,4 +2979,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
