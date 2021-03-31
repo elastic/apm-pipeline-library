@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.207 (31/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: stage status cache [#1061](https://github.com/elastic/apm-pipeline-library/pull/1061)
+-  feat: step hasCommentAuthorWritePermissions [#1064](https://github.com/elastic/apm-pipeline-library/pull/1064)
+-  feat: allow to remove padding [#1059](https://github.com/elastic/apm-pipeline-library/pull/1059)
+
+#### 📚 Documentation
+
+-  docs: update metricbeat step docs [#1057](https://github.com/elastic/apm-pipeline-library/pull/1057)
+
+#### 🙈 No user affected
+
+-  ARM workers are now ephemeral [#1062](https://github.com/elastic/apm-pipeline-library/pull/1062)
+-  Update beats-ci workers for the test-infra validation [#1058](https://github.com/elastic/apm-pipeline-library/pull/1058)
+
 ## v1.1.206 (29/03/2021)
 
 #### 🚀 Enhancements
