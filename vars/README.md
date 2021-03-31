@@ -2363,6 +2363,42 @@ setupAPMGitEmail(global: true)
   stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
 ```
 
+## stageStatusCache
+Stage status cache allow to save and restore the status of a stage for a particular commit.
+This allow to skip stages when we know that we executed that stage for that commit.
+To do that the step save a file based on `stageSHA|base64` on a GCP bucket,
+this status is checked and execute the body if there is not stage status file
+for the stage and the commit we are building.
+User triggered builds will execute all stages always.
+If the stage success the status is save in a file.
+It uses `GIT_BASE_COMMIT` as a commit SHA, because is a known real commit SHA,
+because of that merges with target branch will skip stages on changes only on target branch.
+
+```
+pipeline {
+  agent any
+  stages {
+    stage('myStage') {
+      steps {
+        deleteDir()
+        stageStatusCache(id: 'myStage',
+          bucket: 'myBucket',
+          credentialsId: 'my-credentials',
+          sha: getGitCommitSha()
+        ){
+          echo "My code"
+        }
+      }
+    }
+  }
+}
+```
+
+* *id:* Unique stage name. Mandatory
+* *bucket:* bucket name. Default 'beats-ci-temp'
+* *credentialsId:* credentials file, with the GCP credentials JSON file. Default  'beats-ci-gcs-plugin-file-credentials'
+* *sha:* Commit SHA used for the stage ID. Default: env.GIT_BASE_COMMIT
+
 ## stashV2
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
