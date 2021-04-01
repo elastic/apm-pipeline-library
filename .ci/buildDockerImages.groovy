@@ -62,6 +62,7 @@ pipeline {
     booleanParam(name: 'rebuild_analyzer', defaultValue: "false", description: "Rebuild analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/rebuild-analyzer]")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'rum', defaultValue: 'false', description: '')
+    booleanParam(name: 'slack_apm_report', defaultValue: 'false', description: "Slack APM Bridge [https://github.com/elastic/observability-dev/tree/master/tools/report-bridge]")
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
@@ -398,6 +399,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/integrations/reporter")
+      }
+    }
+    stage('Build hey-apm reports Slack integration'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.slack_apm_report}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'slack-bridge-hey-apm',
+          version: 'latest',
+          push: true,
+          folder: "tools/report-bridge")
       }
     }
     stage('Build Heartbeat'){
