@@ -59,7 +59,6 @@ private static URL constructURL(String host, ArrayList job, boolean ssl) throws 
     String uri
     if (ssl){
       uri = "https://${host}/buildStatus/text?job=${job_path}"
-      log(level: 'INFO', text: "Querying job status at: ${uri}")
     } else {
       uri = "http://${host}/buildStatus/text?job=${job_path}"
     }
