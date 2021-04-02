@@ -19,18 +19,8 @@ import org.junit.Before
 import org.junit.After
 import org.junit.Test
 import static org.junit.Assert.assertTrue
-import com.sun.net.httpserver.HttpServer
-import com.sun.net.httpserver.HttpContext
-import com.sun.net.httpserver.HttpExchange
-import com.sun.net.httpserver.HttpHandler
 
 class BuildStatusTests extends ApmBasePipelineTest {
-
-
-    // Build a small test server
-    def i = new InetSocketAddress('localhost', 9999)
-    def HttpServer ws =  HttpServer.create(i, 100)
-    HttpContext job_status_context = ws.createContext("/buildStatus/text")
 
 
     @Override
@@ -38,25 +28,11 @@ class BuildStatusTests extends ApmBasePipelineTest {
     void setUp() throws Exception {
         super.setUp()
         script = loadScript('vars/buildStatus.groovy')
-        job_status_context.setHandler({ exchange ->
-        String response = "Success"
-        exchange.responseHeaders.set("Content-Type", "text/plain;charset=utf-8")
-        exchange.sendResponseHeaders(200, response.getBytes().length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
-        exchange.Send
-        });
-        ws.start()
-    }
-
-    @After
-    void tearDown() throws Exception {
-        ws.stop(0)
     }
 
     @Test
     void test() throws Exception {
+        helper.registerAllowedMethod("httpRequest", [Map.class], { "Success" })
         def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], ssl: false)
         assertTrue("Success" == result)
         assertJobStatusSuccess()
@@ -64,6 +40,7 @@ class BuildStatusTests extends ApmBasePipelineTest {
 
     @Test
     void testBoolSuccess() throws Exception {
+        helper.registerAllowedMethod("httpRequest", [Map.class], { "Success" })
         def result = script.call(host: 'localhost:9999', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master'], return_boolean: true, ssl: false)
         assertTrue(result)
     }

@@ -45,8 +45,8 @@ def call(Map args = [:]) {
     def job = args.get('job', [])
     def return_boolean = args.get('return_boolean', false)
     def ssl = args.get('ssl', true)
-    def result = httpRequest(url: constructURL(host, job, ssl))
-    log(level: 'INFO', text: "Request result: ${result}")
+    def to_url = constructURL(host, job, ssl).toString()
+    def result = httpRequest(url: to_url)
     if (return_boolean){
         if (result == "Success") {
             return true
