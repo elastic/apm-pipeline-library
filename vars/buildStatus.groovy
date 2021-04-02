@@ -41,11 +41,9 @@ private static String makeRequest(URL url) throws IOException {
     InputStreamReader isr = new InputStreamReader(con.getInputStream())
     BufferedReader brd = new BufferedReader(isr)
     if (responseCode == HttpURLConnection.HTTP_OK) {
-        log(level: 'INFO', text: "Received HTTP OK")
         String inputLine
         StringBuffer response = new StringBuffer()
         while ((inputLine = brd.readLine()) != null) {
-            log(level: 'INFO', text: "Adding text")
             response.append(inputLine)
         }
         brd.close()
