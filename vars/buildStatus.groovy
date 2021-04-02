@@ -59,6 +59,7 @@ private static URL constructURL(String host, ArrayList job, boolean ssl) throws 
     String uri
     if (ssl){
       uri = "https://${host}/buildStatus/text?job=${job_path}"
+      log(level: 'INFO', text: "Querying job status at: ${uri}")
     } else {
       uri = "http://${host}/buildStatus/text?job=${job_path}"
     }
@@ -72,6 +73,7 @@ def call(Map args = [:]) {
     def return_boolean = args.get('return_boolean', false)
     def ssl = args.get('ssl', true)
     def result = makeRequest(constructURL(host, job, ssl))
+    log(level: 'INFO', text: "Request result: ${result}")
     if (return_boolean){
         if (result == "Success") {
             return true
