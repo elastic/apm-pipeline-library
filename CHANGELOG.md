@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.208 (06/04/2021)
+
+#### 🚀 Enhancements
+
+-  Disable unique ephemeral worker by default [#1067](https://github.com/elastic/apm-pipeline-library/pull/1067)
+
+#### ⚙️ CI
+
+-  Add benchmark reporter image to build pipeline [#1065](https://github.com/elastic/apm-pipeline-library/pull/1065)
+
 ## v1.1.207 (31/03/2021)
 
 #### 🚀 Enhancements
