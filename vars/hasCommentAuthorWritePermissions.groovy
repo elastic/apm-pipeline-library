@@ -16,45 +16,14 @@
 // under the License.
 
 /**
-  Return the version currently used for testing.
-
-  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
-
-  stackVersions.edge()
-  stackVersions.dev()
-  stackVersions.release()
-  stackVersions.snapshot(stackVersions.edge())
-  stackVersions.edge(snapshot: true)
-
-**/
-def call(Map args = [:]) {
-  return [
-    edge(args),
-    dev(args),
-    release(args)
-  ]
-}
-
-def snapshot(version){
-  return "${version}-SNAPSHOT"
-}
-
-def version(value, args = [:]){
-  return "${value}${isSnapshot(args)}"
-}
-
-def edge(Map args = [:]){
-  return version("8.0.0", args)
-}
-
-def dev(Map args = [:]){
-  return version("7.12.1", args)
-}
-
-def release(Map args = [:]){
-  return version("7.12.0", args)
-}
-
-def isSnapshot(args){
-  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
+  Check if the author of a GitHub comment has admin or write permissions in the repository.
+*/
+def call(Map args = [:]){
+  def repoName = args.containsKey('repoName') ? args.repoName : error('hasCommentAuthorWritePermissions: repoName params is required')
+  def commentId = args.containsKey('commentId') ? args.commentId : error('hasCommentAuthorWritePermissions: commentId params is required')
+  def token = getGithubToken()
+  def url = "https://api.github.com/repos/${repoName}/issues/comments/${commentId}"
+  def comment = githubApiCall(token: token, url: url, noCache: true)
+  def json = githubRepoGetUserPermission(token: token, repo: repoName, user: comment?.user?.login)
+  return json?.permission == 'admin' || json?.permission == 'write'
 }

@@ -25,33 +25,7 @@ buildStatus(
 **/
 
 import java.net.URL
-import java.net.HttpURLConnection
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
-
-
-private static String makeRequest(URL url) throws IOException {
-    // URL url = new URL("${baseUrl}/${path}")
-    HttpURLConnection con = (HttpURLConnection)url.openConnection()
-    con.setRequestMethod("GET")
-    con.setRequestProperty("User-Agent", "Jenkins Build Status/1.0")
-    int responseCode = con.getResponseCode()
-
-    InputStreamReader isr = new InputStreamReader(con.getInputStream())
-    BufferedReader brd = new BufferedReader(isr)
-    if (responseCode == HttpURLConnection.HTTP_OK) {
-        String inputLine
-        StringBuffer response = new StringBuffer()
-        while ((inputLine = brd.readLine()) != null) {
-            response.append(inputLine)
-        }
-        brd.close()
-        return response.toString()
-    } else {
-        raise IOException("Failure to connect to Jenkins instance")
-    }
-}
 
 private static URL constructURL(String host, ArrayList job, boolean ssl) throws Exception {
     String delim = "%2F"
@@ -71,7 +45,8 @@ def call(Map args = [:]) {
     def job = args.get('job', [])
     def return_boolean = args.get('return_boolean', false)
     def ssl = args.get('ssl', true)
-    def result = makeRequest(constructURL(host, job, ssl))
+    def to_url = constructURL(host, job, ssl).toString()
+    def result = httpRequest(url: to_url)
     if (return_boolean){
         if (result == "Success") {
             return true

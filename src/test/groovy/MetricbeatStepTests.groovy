@@ -20,19 +20,19 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class FilebeatStepTests extends ApmBasePipelineTest {
+class MetricbeatStepTests extends ApmBasePipelineTest {
   // test resources file uses this value as filename
   String nodeName = 'worker-0676d01d9601f8191'
-  String jsonConfig = "filebeat_container_" + nodeName + ".json"
+  String jsonConfig = "metricbeat_container_" + nodeName + ".json"
   String resources = "target/test-classes"
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/filebeat.groovy')
+    script = loadScript('vars/metricbeat.groovy')
     env.NODE_NAME = nodeName
-    env.WORKSPACE = "filebeatTest"
+    env.WORKSPACE = "metricbeatTest"
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
       (new File("${resources}/${m.file}")).withWriter('UTF-8') { writer ->
         writer.write(m.text)
@@ -51,8 +51,14 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       jsonText = f.getText()
       return jsonSlurper.parseText(jsonText)
     })
-    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
-    helper.registerAllowedMethod('pwd', [], { 'filebeatTest' })
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      def ret = "OK"
+      if(m.script.contains('docker run')){
+        ret = 'fooID'
+      }
+      return ret
+    })
+    helper.registerAllowedMethod('pwd', [], { 'metricbeatTest' })
     helper.registerAllowedMethod('isBuildFailure', [], { false })
     helper.registerAllowedMethod('readFile', [Map.class], { 'fooID' })
   }
@@ -61,18 +67,25 @@ class FilebeatStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { false })
     printCallStack(){
+      script.call(es_secret: 'foo')
+    }
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=metricbeatTest/metricbeat_conf.yml"))
+    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testNoSecret() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    testError('metricbeat: The parameter es_secret is mandatory.'){
       script.call()
     }
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_filebeat.sh'))
-    assertJobStatusSuccess()
   }
 
   @Test
   void testClosure() throws Exception {
     def id = "fooID"
-    def output = "foo.log"
-    def workdir = "filebeatTest_1"
+    def workdir = "metricbeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
 
@@ -83,11 +96,10 @@ class FilebeatStepTests extends ApmBasePipelineTest {
         return true
       }
     })
-    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
 
     printCallStack(){
       script.call(
-        output: output,
+        es_secret: 'foo',
         config: config,
         image: image,
         workdir: workdir,
@@ -98,21 +110,16 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     }
 
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
-    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     assertJobStatusSuccess()
   }
 
   @Test(expected = Exception.class)
   void testClosureError() throws Exception {
-    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-
     def id = "fooID"
     def output = "foo.log"
-    def workdir = "filebeatTest_1"
+    def workdir = "metricbeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
 
@@ -126,7 +133,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
     try {
       script.call(
-        output: output,
+        es_secret: 'foo',
         config: config,
         image: image,
         workdir: workdir,
@@ -137,31 +144,27 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     } finally {
       printCallStack()
       assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
-      assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
+      assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
       assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
-      assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     }
   }
 
   @Test
   void testConfigurationExists() throws Exception {
     printCallStack(){
-      script.call()
+      script.call(es_secret: 'foo')
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_filebeat.sh'))
-    assertFalse(assertMethodCallContainsPattern('writeFile', 'file=filebeat_conf.yml'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
+    assertFalse(assertMethodCallContainsPattern('writeFile', 'file=metricbeat_conf.yml'))
     assertJobStatusSuccess()
   }
 
   @Test
   void testStop() throws Exception {
-    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-
     def id = "fooID"
     def output = "foo.log"
-    def workdir = "filebeatTest"
+    def workdir = "metricbeatTest"
 
     printCallStack(){
       script.stop(
@@ -169,41 +172,20 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       )
     }
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
-    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testStopArchiveOnlyOnFailTrueSuccessBuild() throws Exception {
-    def id = "fooID"
-    def output = "foo.log"
-    def workdir = "filebeatTest_2"
-    helper.registerAllowedMethod('isBuildFailure', [], { false })
+  void testConfigFileNotExists() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+
+    def workdir = "metricbeatTest_1"
 
     printCallStack(){
-      script.stop(
-        workdir: workdir,
-      )
+      script.stop(workdir: workdir)
     }
-    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testStopArchiveOnlyOnFailTrueFaulureBuild() throws Exception {
-    def id = "fooID"
-    def output = "foo.log"
-    def workdir = "filebeatTest_2"
-    helper.registerAllowedMethod('isBuildFailure', [], { true })
-
-    printCallStack(){
-      script.stop(
-        workdir: workdir,
-      )
-    }
-    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertTrue(assertMethodCallContainsPattern('log', "There is no configuration file to stop metricbeat."))
     assertJobStatusSuccess()
   }
 }

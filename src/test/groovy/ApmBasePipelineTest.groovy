@@ -39,6 +39,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
+    SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
@@ -581,6 +582,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
       return [data: [alt_user_key: 'username', password: 'user_password']]
     }
+    if(VaultSecret.SECRET_AZURE.equals(s)){
+      return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
+    }
     if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
@@ -660,6 +664,17 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', "${parameter} ${message}"))
+    assertJobStatusFailure()
+  }
+
+  def testError(String message='parameter is required', Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${message}"))
     assertJobStatusFailure()
   }
 

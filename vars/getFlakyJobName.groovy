@@ -15,46 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import org.jenkinsci.plugins.workflow.graph.StepNode
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor
+
 /**
-  Return the version currently used for testing.
+  Get the flaky job name in a given multibranch pipeline.
 
-  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
+  def flakyJobName = getFlakyJobName(withBranch: 'master')
+*/
 
-  stackVersions.edge()
-  stackVersions.dev()
-  stackVersions.release()
-  stackVersions.snapshot(stackVersions.edge())
-  stackVersions.edge(snapshot: true)
-
-**/
-def call(Map args = [:]) {
-  return [
-    edge(args),
-    dev(args),
-    release(args)
-  ]
-}
-
-def snapshot(version){
-  return "${version}-SNAPSHOT"
-}
-
-def version(value, args = [:]){
-  return "${value}${isSnapshot(args)}"
-}
-
-def edge(Map args = [:]){
-  return version("8.0.0", args)
-}
-
-def dev(Map args = [:]){
-  return version("7.12.1", args)
-}
-
-def release(Map args = [:]){
-  return version("7.12.0", args)
-}
-
-def isSnapshot(args){
-  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
+def call(Map args=[:]) {
+  def withBranch = args.containsKey('withBranch') ? args.withBranch : error('getFlakyJobName: withBranch parameter is required.')
+  if (env.JOB_NAME?.trim() && env.JOB_BASE_NAME?.trim()) {
+    def flakyJobName = (env.JOB_NAME - env.JOB_BASE_NAME) + withBranch
+    return flakyJobName
+  }
+  error('getFlakyJobName: only works for multibranch pipelines.')
 }

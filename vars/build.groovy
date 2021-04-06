@@ -44,7 +44,11 @@ def call(Map args = [:]){
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     url = getRedirectLink(buildLogOutput, job)
-    throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE, e.getCauses())
+    if (e instanceof FlowInterruptedException) {
+      throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE, e.getCauses())
+    } else {
+      throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE)
+    }
   } finally {
     log(level: 'INFO', text: "${url}")
   }

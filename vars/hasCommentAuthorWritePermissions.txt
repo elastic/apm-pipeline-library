@@ -1,0 +1,11 @@
+
+Check if the author of a GitHub comment has admin or write permissions in the repository.
+
+```
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can deploy Docker images")
+}
+```
+
+* *repoName:* organization and name of the repository (Organization/Repository)
+* *commentId:* ID of the comment we want to check.

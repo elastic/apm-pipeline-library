@@ -107,6 +107,9 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+* *text:* Test to calculate its base64.
+* *padding:* if true it'd apply padding (default true)
+
 ## beatsStages
 <p>
     Given the YAML definition then it creates all the stages
@@ -165,6 +168,24 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 ```
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
+## buildKibanaDockerImage
+Builds the Docker image for Kibana, from a branch or a pull Request.
+
+```
+buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'PR/12345')
+```
+
+* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* packageJSON: Full name of the package.json file. Defaults to 'package.json'
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* targetTag: Docker tag to be used in the image. Defaults to the commit SHA.
+* dockerRegistry: Name of the Docker registry. Defaults to 'docker.elastic.co'
+* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
+* dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
+* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
 
 ## buildStatus
 Fetch the current build status for a given job
@@ -536,6 +557,15 @@ Then put all togeder in a simple JSON file.
 * jobURL: the job URL. Mandatory
 * buildNumber: the build id. Mandatory
 * returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
+
+## getFlakyJobName
+Get the flaky job name in a given multibranch pipeline.
+
+```
+getFlakyJobName(withBranch: 'master')
+```
+
+* withBranch: the job base name to compare with. Mandatory
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -1280,6 +1310,19 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 * command: The gsutil command to be executed. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Mandatory.
 
+## hasCommentAuthorWritePermissions
+
+Check if the author of a GitHub comment has admin or write permissions in the repository.
+
+```
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/beats", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can do this action.")
+}
+```
+
+* *repoName:* organization and name of the repository (Organization/Repository)
+* *commentId:* ID of the comment we want to check.
+
 ## httpRequest
 Step to make HTTP request and get the result.
 If the return code is >= 400, it would throw an error.
@@ -1540,7 +1583,7 @@ Whether the existing worker is a static one
   }
 ```
 
-TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+TODO: as soon as macOS workers are ephemerals then we need to change this method
 
 ## isTag
 Whether the build is based on a Tag Request or no
@@ -1563,12 +1606,14 @@ def timmerTrigger = isTimerTrigger()
 ```
 
 ## isUpstreamTrigger
-Check if the build was triggered by an upstream job, being it possible to add a filter for the upstream cause.
+Check if the build was triggered by an upstream job, being it possible to add some filters.
 
 ```
 def upstreamTrigger = isUpstreamTrigger()
 def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
+
+* filter: The string filter to be used when selecting the ustream build cause. If no filter is set, then 'all' will be used.
 
 ## isUserTrigger
 Check if the build was triggered by a user.
@@ -1708,6 +1753,75 @@ pipeline {
     }
   }
 
+```
+
+## metricbeat
+
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ `metricbeat.stop()` will stop the metricbeat Docker container.
+
+```
+  metricbeat()
+  ...
+  metricbeat.stop()
+```
+
+```
+  metricbeat(){
+    ....
+  }
+```
+
+* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
+* *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
+* *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
+* *workdir:* Directory to use as root folder to read and write files (current folder).
+
+```
+  metricbeat(
+    es_secret: 'secret/team/details',
+    config: 'metricbeat.yml',
+    image: 'docker.elastic.co/beats/metricbeat:7.10.1',
+    workdir: "${env.WORKSPACE}")
+  ...
+  metricbeat.stop(workdir: "${env.WORKSPACE}")
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}")
+        sh('docker run busybox  ls')
+      }
+      post {
+        cleanup{
+          script {
+            metricbeat.stop(workdir: "${env.WORKSPACE}")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}"){
+          sh('docker run -it busybox  sleep 30')
+        }
+      }
+    }
+  }
+}
 ```
 
 ## mvnVersion
@@ -1912,11 +2026,10 @@ emails on Failed builds that are not pull request.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
 * slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
-* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
-* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
+* jobName: The name of the job, e.g. `Beats/beats/master`.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -2239,6 +2352,7 @@ setupAPMGitEmail(global: true)
 
   Return the version currently used for testing.
 
+```
   stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
   stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
 
@@ -2247,6 +2361,43 @@ setupAPMGitEmail(global: true)
   stackVersions.release() // '7.10.2'
   stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
   stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+```
+
+## stageStatusCache
+Stage status cache allow to save and restore the status of a stage for a particular commit.
+This allow to skip stages when we know that we executed that stage for that commit.
+To do that the step save a file based on `stageSHA|base64` on a GCP bucket,
+this status is checked and execute the body if there is not stage status file
+for the stage and the commit we are building.
+User triggered builds will execute all stages always.
+If the stage success the status is save in a file.
+It uses `GIT_BASE_COMMIT` as a commit SHA, because is a known real commit SHA,
+because of that merges with target branch will skip stages on changes only on target branch.
+
+```
+pipeline {
+  agent any
+  stages {
+    stage('myStage') {
+      steps {
+        deleteDir()
+        stageStatusCache(id: 'myStage',
+          bucket: 'myBucket',
+          credentialsId: 'my-credentials',
+          sha: getGitCommitSha()
+        ){
+          echo "My code"
+        }
+      }
+    }
+  }
+}
+```
+
+* *id:* Unique stage name. Mandatory
+* *bucket:* bucket name. Default 'beats-ci-temp'
+* *credentialsId:* credentials file, with the GCP credentials JSON file. Default  'beats-ci-gcs-plugin-file-credentials'
+* *sha:* Commit SHA used for the stage ID. Default: env.GIT_BASE_COMMIT
 
 ## stashV2
 Stash the current location, for such it compresses the current path and
@@ -2462,6 +2613,23 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
   echo "OK"
 }
 ```
+
+## withAzureCredentials
+Wrap the azure credentials
+
+```
+withAzureCredentials() {
+  // block
+}
+
+withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
+  // block
+}
+```
+
+* path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
+* credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
 
 ## withEnvMask
 This step will define some environment variables and mask their content in the

@@ -17,32 +17,44 @@
 
 import org.junit.Before
 import org.junit.Test
-import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
 
-class IsStaticWorkerStepTests extends ApmBasePipelineTest {
+class GetFlakyJobNameStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/isStaticWorker.groovy')
+    script = loadScript('vars/getFlakyJobName.groovy')
   }
 
   @Test
-  void testMissingLabelsArgument() throws Exception {
-    testMissingArgument('labels') {
+  void test_missing_withBranch_param() throws Exception {
+    testMissingArgument('withBranch') {
       script.call()
     }
   }
 
   @Test
-  void test_with_static_worker() throws Exception {
-    assertTrue(script.call(labels: 'macosx'))
+  void test_multibranch_pipeline() throws Exception {
+    addEnvVar('JOB_NAME', 'folder/acme')
+    addEnvVar('JOB_BASE_NAME', 'acme')
+    def value = script.call(withBranch: 'foo')
+    printCallStack()
+    assertTrue(value == 'folder/foo')
+    assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_immutable_worker() throws Exception {
-    assertFalse(script.call(labels: 'immutable&&linux'))
+  void test_single_pipeline() throws Exception {
+    env.remove('JOB_NAME')
+    try {
+      script.call(withBranch: 'foo')
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'getFlakyJobName: only works for multibranch pipelines.'))
   }
 }

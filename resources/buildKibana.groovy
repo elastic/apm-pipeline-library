@@ -15,46 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Return the version currently used for testing.
-
-  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
-
-  stackVersions.edge()
-  stackVersions.dev()
-  stackVersions.release()
-  stackVersions.snapshot(stackVersions.edge())
-  stackVersions.edge(snapshot: true)
-
-**/
-def call(Map args = [:]) {
-  return [
-    edge(args),
-    dev(args),
-    release(args)
-  ]
-}
-
-def snapshot(version){
-  return "${version}-SNAPSHOT"
-}
-
-def version(value, args = [:]){
-  return "${value}${isSnapshot(args)}"
-}
-
-def edge(Map args = [:]){
-  return version("8.0.0", args)
-}
-
-def dev(Map args = [:]){
-  return version("7.12.1", args)
-}
-
-def release(Map args = [:]){
-  return version("7.12.0", args)
-}
-
-def isSnapshot(args){
-  return args.containsKey('snapshot') && args.snapshot ? "-SNAPSHOT" : ''
+pipeline {
+  agent { label 'linux && immutable' }
+  stages {
+    stage('Docker build for Kibana') {
+      steps {
+        buildKibanaDockerImage(refspec: 'PR/94867', baseDir: 'kibana')
+      }
+    }
+  }
 }
