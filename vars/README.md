@@ -1315,8 +1315,8 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 Check if the author of a GitHub comment has admin or write permissions in the repository.
 
 ```
-if(!hasCommentAuthorWritePermissions(repoName: "elastic/beats", commentId: env.GT_COMMENT_ID)){
-  error("Only Elasticians can do this action.")
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can deploy Docker images")
 }
 ```
 
@@ -2917,7 +2917,7 @@ Wrap the node call for three reasons:
   }
 
   // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
-  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true, forceWorker: true){
     // block
   }
 ```
@@ -2925,7 +2925,8 @@ Wrap the node call for three reasons:
 * labels: what's the labels to be used. Mandatory
 * sleepMin: whether to sleep and for how long at least. Optional.
 * sleepMax: whether to sleep and for how long maximum. Optional.
-* forceWorkspace: whether to allocate a new unique workspace. Optional.
+* forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
+* forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 
 ## withNpmrc
 Wrap the npmrc token
@@ -3015,3 +3016,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
