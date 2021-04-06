@@ -11,7 +11,7 @@ Wrap the node call for three reasons:
   }
 
   // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
-  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true, forceWorker: true){
     // block
   }
 ```
@@ -19,4 +19,5 @@ Wrap the node call for three reasons:
 * labels: what's the labels to be used. Mandatory
 * sleepMin: whether to sleep and for how long at least. Optional.
 * sleepMax: whether to sleep and for how long maximum. Optional.
-* forceWorkspace: whether to allocate a new unique workspace. Optional.
+* forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
+* forceWorkspace: whether to allocate a new unique workspace. Optional. Default false

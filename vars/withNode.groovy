@@ -27,7 +27,7 @@ Wrap the node call for three reasons:
   }
 
   // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
-  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true, forceWorker: true){
     ...
   }
 */
@@ -36,13 +36,17 @@ def call(Map args = [:], Closure body) {
   def sleepMax = args.get('sleepMax', 0)
   def labels = args.containsKey('labels') ? args.labels : error('withNode: labels parameter is required.')
   def forceWorkspace = args.get('forceWorkspace', false)
+  def forceWorker = args.get('forceWorker', false)
   def uuid = UUID.randomUUID().toString()
 
   // Sleep to smooth the ram up with the provisioner
   sleep(randomNumber(min: sleepMin, max: sleepMax))
 
   // In case of ephemeral workers then use the uuid
-  def newLabels = isStaticWorker(labels: labels) ? labels : (labels?.trim() ? "${labels} && extra/${uuid}" : "extra/${uuid}")
+  def newLabels = labels
+  if (forceWorker) {
+    newLabels = isStaticWorker(labels: labels) ? labels : (labels?.trim() ? "${labels} && extra/${uuid}" : "extra/${uuid}")
+  }
   log(level: 'INFO', text: "Allocating a worker with the labels '${newLabels}'.")
 
   node("${newLabels}") {
