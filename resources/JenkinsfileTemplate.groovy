@@ -172,7 +172,8 @@ pipeline {
             values (
               'debian-9',
               'ubuntu-16',
-              'ubuntu-18'
+              'ubuntu-18',
+              'ubuntu-20'
               )
           }
         }
@@ -361,7 +362,7 @@ pipeline {
         }
       }
     }
-    // Use matrix step within a steps closure if you need dynamic axis generation 
+    // Use matrix step within a steps closure if you need dynamic axis generation
     // or the exclusion list is massive.
     stage('Matrix step') {
       steps {
