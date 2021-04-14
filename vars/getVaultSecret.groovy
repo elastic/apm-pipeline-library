@@ -47,7 +47,7 @@ def call(secret) {
 def readSecret(secret, role_id, secret_id) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
-  readSecretWrapper('vault-role-id', 'vault-secret-id') {
+  readSecretWrapper(role_id, secret_id) {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
