@@ -47,7 +47,7 @@ def call(secret) {
 def readSecret(secret, role_id, secret_id) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
-  readSecretWrapper(role_id, secret_id) {
+  readSecretWrapperWithParams(role_id, secret_id) {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
@@ -60,11 +60,25 @@ def readSecret(secret, role_id, secret_id) {
   return props
 }
 
-def readSecretWrapper(role_id, secret_id, body) {
+def readSecretWrapperWithParams(role_id, secret_id, body) {
   withCredentials([
     string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
     string(credentialsId: role_id, variable: 'VAULT_ROLE_ID'),
     string(credentialsId: secret_id, variable: 'VAULT_SECRET_ID')]) {
+      withEnv([
+        "VAULT_AUTH_METHOD=approle", //Used by Ansible Vault modules
+        "VAULT_AUTHTYPE=approle" //Used by Ansible Vault modules
+      ]){
+        body()
+      }
+  }
+}
+
+def readSecretWrapper(body) {
+  withCredentials([
+    string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
+    string(credentialsId: 'vault-role-id', variable: 'VAULT_ROLE_ID'),
+    string(credentialsId: 'vault-secret-id', variable: 'VAULT_SECRET_ID')]) {
       withEnv([
         "VAULT_AUTH_METHOD=approle", //Used by Ansible Vault modules
         "VAULT_AUTHTYPE=approle" //Used by Ansible Vault modules
