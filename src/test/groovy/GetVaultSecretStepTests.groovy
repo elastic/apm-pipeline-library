@@ -103,11 +103,11 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testReadSecretWrapper() throws Exception {
-    script.readSecretWrapper {
+    script.readSecretWrapper('dummy-role-id', 'dummy-secret-id') {
       // TODO
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withCredentials', '[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=vault-role-id, variable=VAULT_ROLE_ID}, {credentialsId=vault-secret-id, variable=VAULT_SECRET_ID}]'))
+    assertTrue(assertMethodCallContainsPattern('withCredentials', '[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=dummy-role-id, variable=VAULT_ROLE_ID}, {credentialsId=dummy-secret-id, variable=VAULT_SECRET_ID}]'))
     assertJobStatusSuccess()
   }
 }
