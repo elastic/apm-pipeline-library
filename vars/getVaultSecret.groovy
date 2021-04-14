@@ -24,7 +24,9 @@ import net.sf.json.JSONObject
 */
 def call(Map args = [:]){
   def secret = args.containsKey('secret') ? args.secret : error("getVaultSecret: No valid secret to looking for.")
-  return readSecret(secret)
+  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
+  return readSecret(secret, role_id, secret_id)
 }
 
 /**
@@ -39,31 +41,13 @@ def call(secret) {
     error("getVaultSecret: No valid secret to looking for.")
   }
   secret = 'secret/apm-team/ci/' + secret
-  return readSecret(secret)
+  return readSecret(secret, 'vault-role-id', 'vault-secret-id')
 }
 
-def readSecret(secret) {
+def readSecret(secret, role_id, secret_id) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
   readSecretWrapper('vault-role-id', 'vault-secret-id') {
-    // When running in the CI with multiple parallel stages
-    // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
-    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-      def token = getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
-      props = getVaultSecretObject(env.VAULT_ADDR, secret, token)
-    }
-    //we do not have permissions to revoke a token.
-    //revokeToken(env.VAULT_ADDR, token)
-  }
-  return props
-}
-
-def readSecretWithParams(Map args = [:]) {
-  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
-  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
-  def props = null
-  log(level: 'INFO', text: 'getVaultSecretWithParams: Getting secrets')
-  readSecretWrapper(role_id, secret_id) {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
