@@ -37,7 +37,7 @@ def call(Map args = [:], Closure body) {
     error "withSecretVault: Missing variables"
   }
 
-  def props = getVaultSecretWithParams(secret: secret, role_id: role_id, secret_id: secret_id)
+  def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
   if(props?.errors){
     error "withSecretVault: Unable to get credentials from the vault: " + props.errors.toString()
   }
