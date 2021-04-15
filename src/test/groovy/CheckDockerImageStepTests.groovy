@@ -31,8 +31,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
 
   @Test
   void testLinux_ImageDoesNotExists() throws Exception {
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>/dev/null'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist: pulling'))
@@ -42,8 +43,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   @Test
   void testLinux_ImageExists() throws Exception {
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>/dev/null'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest exists in the Docker host'))
@@ -53,8 +55,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   @Test
   void testLinux_PullError() throws Exception {
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 1 })
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>/dev/null'))
     assertTrue(assertMethodCallContainsPattern('log', 'Docker pull for hello-world:latest failed'))
@@ -64,8 +67,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   @Test
   void testWindows_ImageDoesNotExists() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>NUL'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist: pulling'))
@@ -76,8 +80,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   void testWindows_ImageExists() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 0 })
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>NUL'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest exists in the Docker host'))
@@ -88,8 +93,9 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   void testWindows_PullError() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 1 })
-    script.call(image: 'hello-world:latest')
+    def ret = script.call(image: 'hello-world:latest')
     printCallStack()
+    assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>NUL'))
     assertTrue(assertMethodCallContainsPattern('log', 'Docker pull for hello-world:latest failed'))

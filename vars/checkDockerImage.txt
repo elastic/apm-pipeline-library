@@ -4,4 +4,4 @@ Checks if the given Docker image exists.
 checkDockerImage(image: 'hello-world:latest')
 ```
 
-* image: Full qualified name of the image
+* image: Fully qualified name of the image
