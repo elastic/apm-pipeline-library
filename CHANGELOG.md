@@ -1,9 +1,102 @@
 # Changelog
 
+## v1.1.209 (15/04/2021)
+
+#### 🚀 Enhancements
+
+-  test: add Ubuntu 20.04 to the tests [#1068](https://github.com/elastic/apm-pipeline-library/pull/1068)
+
+#### 🐛 Bug Fixes
+
+-  fix: use toJSON instead readJSON [#1071](https://github.com/elastic/apm-pipeline-library/pull/1071)
+
+#### 🙈 No user affected
+
+-  test-infra: add curl validation on windows [#1069](https://github.com/elastic/apm-pipeline-library/pull/1069)
+
+#### ⚙️ CI
+
+-  CI: skip using ubuntu label in the beats test-infra [#1070](https://github.com/elastic/apm-pipeline-library/pull/1070)
+
+## v1.1.208 (06/04/2021)
+
+#### 🚀 Enhancements
+
+-  Disable unique ephemeral worker by default [#1067](https://github.com/elastic/apm-pipeline-library/pull/1067)
+
+#### ⚙️ CI
+
+-  Add benchmark reporter image to build pipeline [#1065](https://github.com/elastic/apm-pipeline-library/pull/1065)
+
+## v1.1.207 (31/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: stage status cache [#1061](https://github.com/elastic/apm-pipeline-library/pull/1061)
+-  feat: step hasCommentAuthorWritePermissions [#1064](https://github.com/elastic/apm-pipeline-library/pull/1064)
+-  feat: allow to remove padding [#1059](https://github.com/elastic/apm-pipeline-library/pull/1059)
+
+#### 📚 Documentation
+
+-  docs: update metricbeat step docs [#1057](https://github.com/elastic/apm-pipeline-library/pull/1057)
+
+#### 🙈 No user affected
+
+-  ARM workers are now ephemeral [#1062](https://github.com/elastic/apm-pipeline-library/pull/1062)
+-  Update beats-ci workers for the test-infra validation [#1058](https://github.com/elastic/apm-pipeline-library/pull/1058)
+
+## v1.1.206 (29/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: metricbeat step [#1050](https://github.com/elastic/apm-pipeline-library/pull/1050)
+-  chore: refactor filebeat step [#1049](https://github.com/elastic/apm-pipeline-library/pull/1049)
+
+#### 🙈 No user affected
+
+-  Add GCE JCasC [#1053](https://github.com/elastic/apm-pipeline-library/pull/1053)
+-  chore: bump Elastic Stack versions [#1052](https://github.com/elastic/apm-pipeline-library/pull/1052)
+
+## v1.1.205 (23/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withAzureCredentials step [#1048](https://github.com/elastic/apm-pipeline-library/pull/1048)
+
+## v1.1.204 (22/03/2021)
+
+#### 🙈 No user affected
+
+-  Add rebuild analyzer docker generation [#1047](https://github.com/elastic/apm-pipeline-library/pull/1047)
+-  fix: set KIBANA_DOCKER_TAG env var properly [#1046](https://github.com/elastic/apm-pipeline-library/pull/1046)
+
+## v1.1.203 (22/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: add a new step to build and push a Docker image for Kibana [#1040](https://github.com/elastic/apm-pipeline-library/pull/1040)
+
+#### 🐛 Bug Fixes
+
+-  fix: use proper flag for recreate the local Jenkins services [#1043](https://github.com/elastic/apm-pipeline-library/pull/1043)
+-  Fix the getCause and getCauses for the AbortException [#1041](https://github.com/elastic/apm-pipeline-library/pull/1041)
+
+## v1.1.202 (17/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add getFlakyJobName [#1038](https://github.com/elastic/apm-pipeline-library/pull/1038)
+-  Update to new schema for flaky tests [#1016](https://github.com/elastic/apm-pipeline-library/pull/1016)
+
+#### 📚 Documentation
+
+-  document Gren and GH labels for the automated release process [#1035](https://github.com/elastic/apm-pipeline-library/pull/1035)
+
 ## v1.1.201 (11/03/2021)
 
 #### 🚀 Enhancements
 
+-  chore: support filtering the upstream cause in the isUpstreamTrigger step [#1031](https://github.com/elastic/apm-pipeline-library/pull/1031)
 -  Slack notification with the total build time [#1033](https://github.com/elastic/apm-pipeline-library/pull/1033)
 
 ## v1.1.200 (10/03/2021)

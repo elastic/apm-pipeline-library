@@ -35,45 +35,36 @@ This method generates flakey test data from Jenkins test results
  * @param secret Vault path to secrets which hold authentication information for Elasticsearch
  * @param jobInfo JobInfo data collected from job-info.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
- * @param flakyReportIdx, what's the id.
- * @param flakyThreshold, to tweak the score.
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  * @param querySize The maximum value of results to be reported. Default 500
  * @param queryTimeout Specifies the period of time to wait for a response. Default 20s
  * @param disableGHComment whether to disable the GH comment notification.
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
+ * @param jobName
 */ 
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
+    def jobName = args.containsKey('jobName') ? args.jobName : error('analyzeFlakey: jobName parameter is required')
     def secret = args.containsKey('es_secret') ? args.es_secret : null
-    def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is required')
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
-    def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def querySize = args.get('querySize', 500)
-    def queryTimeout = args.get('queryTimeout', '20s')
     def disableGHComment = args.get('disableGHComment', false)
     def disableGHIssueCreation = args.get('disableGHIssueCreation', false)
-
     def labels = 'flaky-test,ci-reported'
     def boURL = getBlueoceanDisplayURL()
     def flakyTestsWithIssues = [:]
     def genuineTestFailures = []
 
-    if (!flakyReportIdx?.trim()) {
-      error 'analyzeFlakey: did not receive flakyReportIdx data'
-    }
+    // 1. Only if there are test failures to analyse
+    // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve
+    // backward compatability.
+    if(testsErrors.size() > 0 && jobName?.trim()) {
 
-    // Only if there are test failures to analyse
-    if(testsErrors.size() > 0) {
-
-      // Query only the test_name field since it's the only used and don't want to overkill the
-      // jenkins instance when using the toJSON step since it reads in memory the json response.
-      // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
-      def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
+      def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
       def flakeyTestsRaw = sendDataToElasticsearch(es: es,
                                                   secret: secret,
-                                                  data: queryFilter(queryTimeout, flakyThreshold),
+                                                  data: queryFilter(jobName),
                                                   restCall: query)
       def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
@@ -81,7 +72,14 @@ def analyzeFlakey(Map args = [:]) {
       // Intesection what tests are failing and also scored as flaky.
       // Subset of genuine test failures, aka, those failures that were not scored as flaky previously.
       def testFailures = testsErrors.collect { it.name }
-      def testFlaky = flakeyTestsParsed?.hits?.hits?.collect { it['_source']['test_name'] }
+      def testFlaky = flakeyTestsParsed?.aggregations?.test_name?.buckets?.collect { it['key'] }
+
+      // The following is code which is included here as a possible future enhancement if at some point
+      // we wish to include the number of flakes found in the time period. (Currently hard-coded to 90d)
+      //
+      //def testFlakyFreq = [:]
+      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] } 
+
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
       log(level: 'DEBUG', text: "analyzeFlakey: Flaky tests raw: ${flakeyTestsRaw}")
@@ -370,19 +368,49 @@ def generateBuildReport(Map args = [:]) {
     return output
 }
 
-def queryFilter(timeout, flakyThreshold) {
-  return """{
-                "timeout": "${timeout}",
-                "sort" : [
-                  { "timestamp" : "desc" },
-                  { "test_score" : "desc" }
-                ],
-                "query" : {
-                  "range" : {
-                    "test_score" : {
-                      "gt" : ${flakyThreshold}
-                    }
-                  }
+def queryFilter(jobName) {
+  return """
+{
+  "aggs": {
+    "test_name": {
+      "terms": {
+        "field": "test.name.keyword",
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  },
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "job.fullName": "${jobName}"
                 }
-              }"""
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "range": {
+            "build.startTime": {
+              "gte": "now-90d",
+              "format": "strict_date_optional_time"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
+  """
 }

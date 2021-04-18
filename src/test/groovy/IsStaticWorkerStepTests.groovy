@@ -38,7 +38,7 @@ class IsStaticWorkerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_static_worker() throws Exception {
-    assertTrue(script.call(labels: 'arm'))
+    assertTrue(script.call(labels: 'macosx'))
   }
 
   @Test

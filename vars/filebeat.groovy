@@ -16,7 +16,7 @@
 // under the License.
 
 /**
- This step run a filebeat Docker container to grab the Docker containers logs ina single file.
+ This step run a filebeat Docker container to grab the Docker containers logs in a single file.
 
  filebeat(output: 'docker_logs.log')
  ...
@@ -38,7 +38,7 @@ def call(Map args = [:], Closure body) {
 def start(Map args = [:]) {
   def output = args.containsKey('output') ? args.output : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
-  def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.10.1"
+  def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.11.2"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
   def archiveOnlyOnFail = args.get('archiveOnlyOnFail', false)
@@ -46,32 +46,9 @@ def start(Map args = [:]) {
 
   log(level: 'INFO', text: 'Running Filebeat Docker container')
 
-  configureFilebeat(configPath, output)
-  def dockerID = sh(label: 'Run filebeat to grab container logs', script: """
-    docker run \
-      --detach \
-      -v ${workdir}:/output \
-      -v ${configPath}:/usr/share/filebeat/filebeat.yml \
-      -u 0:0 \
-      -v /var/lib/docker/containers:/var/lib/docker/containers \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      ${image} \
-        --strict.perms=false \
-        -environment container \
-        -E http.enabled=true
-  """, returnStdout: true)?.trim()
-  sh(label: 'Wait for Filebeat', script: """
-    N=0
-    until docker exec ${dockerID} \
-      curl -sSfI --retry 10 --retry-delay 5 --max-time 5 'http://localhost:5066/stats?pretty'
-    do
-      sleep 5
-      if [ \${N} -gt 6 ]; then
-        break;
-      fi
-      N=\$((\${N} + 1))
-    done
-  """)
+  configureFilebeat(configPath)
+  def dockerID = runBeat(workdir, configPath, output, image)
+  waitForBeat(dockerID)
 
   def json = [
     id: dockerID,
@@ -88,7 +65,12 @@ def start(Map args = [:]) {
 
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
-  def stepConfig = readJSON(file: "${workdir}/filebeat_container_${env.NODE_NAME}.json")
+  def configFile = "${workdir}/filebeat_container_${env.NODE_NAME}.json"
+  if(!fileExists(configFile)){
+    log(level: 'WARNING', text: 'There is no configuration file to stop filebeat.')
+    return
+  }
+  def stepConfig = readJSON(file: configFile)
   def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
   def archiveOnlyOnFail = stepConfig.get('archiveOnlyOnFail', false)
 
@@ -105,31 +87,30 @@ def stop(Map args = [:]){
   }
 }
 
-def configureFilebeat(config, output){
+def runBeat(workdir, configPath, output, image){
+  writeFile(file: "run_filebeat.sh", text: libraryResource("scripts/beats/run_filebeat.sh"))
+  withEnv([
+    "CONFIG_PATH=${configPath}",
+    "DOCKER_IMAGE=${image}",
+    "OUTPUT_DIR=${workdir}",
+    "OUTPUT_FILE=${output}"
+  ]){
+    sh(label: 'Run metricbeat to grab host metrics', script: """
+      chmod ugo+rx ./run_filebeat.sh
+      ./run_filebeat.sh
+    """)
+    return readFile(file: 'docker_id')?.trim()
+  }
+}
+
+def waitForBeat(dockerID){
+  writeFile(file: "wait_for_beat.sh", text: libraryResource("scripts/beats/wait_for_beat.sh"))
+  sh(label: 'Wait for filebeat', script: "chmod ugo+rx ./wait_for_beat.sh && ./wait_for_beat.sh ${dockerID}")
+}
+
+def configureFilebeat(config){
   if(fileExists(config)){
     return
   }
-  def configuration = """
----
-filebeat.autodiscover:
-  providers:
-    - type: docker
-      templates:
-        - config:
-          - type: container
-            paths:
-              - /var/lib/docker/containers/\${data.docker.container.id}/*.log
-processors:
-  - add_host_metadata: ~
-  - add_cloud_metadata: ~
-  - add_docker_metadata: ~
-  - add_kubernetes_metadata: ~
-output.file:
-  path: "/output"
-  filename: ${output}
-  permissions: 0644
-  codec.format:
-    string: '[%{[container.name]}][%{[container.image.name]}][%{[container.id]}][%{[@timestamp]}] %{[message]}'
-"""
-  writeFile(file: config, text: configuration)
+  writeFile(file: config, text: libraryResource("scripts/beats/filebeat.yml"))
 }

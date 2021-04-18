@@ -47,7 +47,7 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('node', 'foo && extra/'))
+    assertFalse(assertMethodCallContainsPattern('node', 'foo && extra/'))
     assertTrue(assertMethodCallOccurrences('ws', 0))
     assertJobStatusSuccess()
   }
@@ -64,6 +64,33 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('node', 'arm'))
     assertFalse(assertMethodCallContainsPattern('node', 'extra/'))
     assertTrue(assertMethodCallOccurrences('ws', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_forced_worker() throws Exception {
+    helper.registerAllowedMethod('isStaticWorker', [Map.class], { return false })
+    def isOK = false
+    script.call(labels: 'foo', forceWorker: true) {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('node', 'foo && extra/'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_forced_static_worker() throws Exception {
+    helper.registerAllowedMethod('isStaticWorker', [Map.class], { return true })
+    def isOK = false
+    script.call(labels: 'arm', forceWorker: true) {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('node', 'arm'))
+    assertFalse(assertMethodCallContainsPattern('node', 'extra/'))
     assertJobStatusSuccess()
   }
 

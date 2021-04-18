@@ -10,4 +10,4 @@ Whether the existing worker is a static one
   }
 ```
 
-TODO: as soon as ARM and MacOS are ephemerals then we need to change this method
+TODO: as soon as macOS workers are ephemerals then we need to change this method
