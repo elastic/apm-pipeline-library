@@ -2065,6 +2065,7 @@ the flakey test analyser.
 * shouldNotify: boolean value to decide to send or not the email notifications, by default it send
 emails on Failed builds that are not pull request.
 * prComment: Whether to add a comment in the PR with the build summary as a comment. Default: `true`.
+* buildCommentTemplate: what build comment template to be used. Default: `github-comment-markdown.template`.
 * slackComment: Whether to send a message in slack with the build summary as a comment. Default: `false`.
 * slackHeader: What header to be added before the default comment. Default value uses ``.
 * slackChannel: What slack channel. Default value uses `env.SLACK_CHANNEL`.

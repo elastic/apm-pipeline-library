@@ -22,11 +22,16 @@ import groovy.text.StreamingTemplateEngine
 /**
  * This method returns a string with the template filled with groovy variables
  */
-def buildTemplate(params) {
-    def template = params.containsKey('template') ? params.template : 'groovy-html-custom.template'
-    def fileContents = libraryResource(template)
+def buildTemplate(Map args = [:]) {
+    def template = args.get('template', 'groovy-html-custom.template')
+    def fileContents
+    if (fileExists(template)) {
+      fileContents = readFile(file: template)
+    } else {
+      fileContents = libraryResource(template)
+    }
     def engine = new StreamingTemplateEngine()
-    return engine.createTemplate(fileContents).make(params).toString()
+    return engine.createTemplate(fileContents).make(args).toString()
 }
 
 /**
@@ -317,6 +322,7 @@ def notifySlack(Map args = [:]) {
 /**
  * This method generates the build report, archive it and returns the build report
  * @param archiveFile whether to create and archive the file.
+ * @param template what build file template to be used.
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
@@ -338,12 +344,13 @@ def generateBuildReport(Map args = [:]) {
     def testsErrors = args.get('testsErrors', [])
     def testsSummary = args.get('testsSummary', null)
     def archiveFile = args.get('archiveFile', true)
+    def buildCommentTemplate = args.get('buildCommentTemplate', 'github-comment-markdown.template')
     def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
       output = buildTemplate([
-        "template": 'github-comment-markdown.template',
+        "template": buildCommentTemplate,
         "build": build,
         "buildStatus": buildStatus,
         "changeSet": changeSet,
