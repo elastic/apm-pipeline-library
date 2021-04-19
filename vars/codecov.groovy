@@ -74,12 +74,12 @@ def call(Map args = [:]){
         retryWithSleep(retries: 3, seconds: 5, backoff: true) {
           sh(label: 'Download Codecov', script: """#!/bin/bash
           set -x
-          curl -sSLo codecov.sh https://codecov.io/bash
+          echo curl -sSLo codecov.sh https://codecov.io/bash
           """)
         }
         sh label: 'Send report to Codecov', script: """#!/bin/bash
         set -x
-        bash codecov.sh ${flags} || echo "codecov exited with \$?"
+        echo bash codecov.sh ${flags} || echo "codecov exited with \$?"
         """
       }
     }
