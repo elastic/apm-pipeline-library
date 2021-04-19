@@ -32,7 +32,7 @@ def call(Map args = [:]) {
   def pullIfNotFound = args.containsKey('pullIfNotFound') ? args.pullIfNotFound : false
 
   def redirectStdout = isUnix() ? '2>/dev/null' : '2>NUL'
-  if (cmd(returnStatus: true, script: "docker images -q ${image}  ${redirectStdout}") == 0) {
+  if (cmd(returnStatus: true, script: "docker images -q ${image} ${redirectStdout}") == 0) {
     log(level: 'DEBUG', text: "${image} exists in the Docker host")
     return true
   }
@@ -42,11 +42,13 @@ def call(Map args = [:]) {
     return false
   }
 
-  log(level: 'DEBUG', text: "${image} does not exist: pulling")
-  if (cmd(returnStatus: true, script: "docker pull ${image}") == 0) {
+  redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
+  log(level: 'DEBUG', text: "${image} does not exist in the Docker host: checking registry")
+  if (cmd(returnStatus: true, script: "docker manifest ${image} ${redirectStdout}") == 0) {
+    log(level: 'DEBUG', text: "${image} exists in the Docker registry")
     return true
   }
 
-  log(level: 'ERROR', text: "Docker pull for ${image} failed")
+  log(level: 'ERROR', text: "${image} does not exist")
   return false
 }
