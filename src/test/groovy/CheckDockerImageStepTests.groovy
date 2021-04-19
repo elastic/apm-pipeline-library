@@ -31,7 +31,7 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testDockerIsNotInstalled() throws Exception {
+  void testLinux_DockerIsNotInstalled() throws Exception {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     try {
       script.call(image: 'hello-world:latest')
@@ -104,6 +104,20 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest hello-world:latest >/dev/null'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist at all'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows_DockerIsNotInstalled() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
+    try {
+      script.call(image: 'hello-world:latest')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Docker is not installed'))
+    assertJobStatusFailure()
   }
 
   @Test
