@@ -49,6 +49,6 @@ def call(Map args = [:]) {
     return true
   }
 
-  log(level: 'ERROR', text: "${image} does not exist")
+  log(level: 'DEBUG', text: "${image} does not exist at all")
   return false
 }
