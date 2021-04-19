@@ -30,6 +30,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script = loadScript('src/co/elastic/NotificationManager.groovy')
     f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "test"
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
   }
 
   @Test
