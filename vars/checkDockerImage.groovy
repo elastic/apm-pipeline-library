@@ -38,7 +38,7 @@ def call(Map args = [:]) {
   }
 
   if (!pullIfNotFound) {
-    log(level: 'DEBUG', text: "Not pulling ${image} although it was not found")
+    log(level: 'DEBUG', text: "Not pulling ${image} although it was not found in the Docker host")
     return false
   }
 

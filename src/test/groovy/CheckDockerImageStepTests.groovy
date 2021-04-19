@@ -50,7 +50,7 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>/dev/null'))
-    assertTrue(assertMethodCallContainsPattern('log', 'Not pulling hello-world:latest although it was not found'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Not pulling hello-world:latest although it was not found in the Docker host'))
     assertJobStatusSuccess()
   }
 
@@ -109,7 +109,7 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker images -q hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('cmd', '2>NUL'))
-    assertTrue(assertMethodCallContainsPattern('log', 'Not pulling hello-world:latest although it was not found'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Not pulling hello-world:latest although it was not found in the Docker host'))
     assertJobStatusSuccess()
   }
 
