@@ -26,7 +26,21 @@ class CheckDockerImageStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     script = loadScript('vars/checkDockerImage.groovy')
+  }
+
+  @Test
+  void testDockerIsNotInstalled() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
+    try {
+      script.call(image: 'hello-world:latest')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Docker is not installed'))
+    assertJobStatusFailure()
   }
 
   @Test

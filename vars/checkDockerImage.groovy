@@ -24,6 +24,10 @@
   }
 */
 def call(Map args = [:]) {
+  if (!isInstalled(tool: 'docker', flag: '--version')) {
+    error 'Docker is not installed'
+  }
+
   def image = args.containsKey('image') ? args.image : error('checkDockerImage: image parameter is required')
   def pullIfNotFound = args.containsKey('pullIfNotFound') ? args.pullIfNotFound : false
 
