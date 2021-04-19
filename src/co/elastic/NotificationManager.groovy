@@ -24,12 +24,7 @@ import groovy.text.StreamingTemplateEngine
  */
 def buildTemplate(Map args = [:]) {
     def template = args.get('template', 'groovy-html-custom.template')
-    def fileContents
-    if (fileExists(template)) {
-      fileContents = readFile(file: template)
-    } else {
-      fileContents = libraryResource(template)
-    }
+    def fileContents = fileExists(template) ? readFile(file: template) : libraryResource(template)
     def engine = new StreamingTemplateEngine()
     return engine.createTemplate(fileContents).make(args).toString()
 }
