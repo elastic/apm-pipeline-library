@@ -18,17 +18,24 @@
 /**
   Checks if the given Docker image exists.
 
-  whenTrue(checkDockerImage(image: 'hello-world:latest')) {
+  whenTrue(checkDockerImage(image: 'hello-world:latest')) { ... }
+  whenTrue(checkDockerImage(image: 'hello-world:latest', pullIfNotFound: true)) {
     ...
   }
 */
 def call(Map args = [:]) {
   def image = args.containsKey('image') ? args.image : error('checkDockerImage: image parameter is required')
+  def pullIfNotFound = args.containsKey('pullIfNotFound') ? args.pullIfNotFound : false
 
   def redirectStdout = isUnix() ? '2>/dev/null' : '2>NUL'
   if (cmd(returnStatus: true, script: "docker images -q ${image}  ${redirectStdout}") == 0) {
     log(level: 'DEBUG', text: "${image} exists in the Docker host")
     return true
+  }
+
+  if (!pullIfNotFound) {
+    log(level: 'DEBUG', text: "Not pulling ${image} although it was not found")
+    return false
   }
 
   log(level: 'DEBUG', text: "${image} does not exist: pulling")

@@ -221,10 +221,11 @@ See https://issues.jenkins-ci.org/browse/JENKINS-43353
 Checks if the given Docker image exists.
 
 ```
-checkDockerImage(image: 'hello-world:latest')
+checkDockerImage(image: 'hello-world:latest', pullIfNotFound: true)
 ```
 
 * image: Fully qualified name of the image
+* pullIfNotFound: Whether to pull the image if it's not found or not
 
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.

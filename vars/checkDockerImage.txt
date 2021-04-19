@@ -5,3 +5,4 @@ checkDockerImage(image: 'hello-world:latest')
 ```
 
 * image: Fully qualified name of the image
+* pullIfNotFound: Whether to pull the image if it's not found or not
