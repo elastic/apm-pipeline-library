@@ -209,6 +209,19 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_buildCommentTemplate() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { true })
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildCommentTemplate: 'my-template-file.template',
+      buildStatus: "SUCCESS"
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('readFile', 'my-template-file.template'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNoBuildStatus_notify_pr() throws Exception {
     env.TEST = "testNoBuildStatus"
     testMissingArgument('buildStatus') {

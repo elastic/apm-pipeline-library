@@ -79,7 +79,7 @@ def call(Map args = [:]) {
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
         data['jobName'] = jobName
-        data['template'] = args.get('buildCommentTemplate', 'github-comment-markdown.template')
+        data['buildCommentTemplate'] = args.get('buildCommentTemplate', 'github-comment-markdown.template')
 
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
