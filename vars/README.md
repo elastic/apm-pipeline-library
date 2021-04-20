@@ -119,6 +119,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
         <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+        <li>filterStage: the name of the stage to be filtered. Optional</li>
     </ul>
 </p>
 
