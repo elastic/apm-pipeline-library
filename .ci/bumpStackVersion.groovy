@@ -96,6 +96,13 @@ def generateStep(Map args = [:]){
   def repo = args.containsKey('repo') ? args.get('repo') : error('generateStep: repo argument is required')
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('generateStep: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('generateStep: branch argument is required')
+
+  // special macro to look for the latest minor version
+  if (branch.contains('<minor>')) {
+    def parts = branch.split('.')
+    def major = parts[0]
+    branch = versions.sort()*.key.find { it.startsWith("${major}.") }
+  }
   def versionEntry = versions.get(branch)
 
   def message = """
