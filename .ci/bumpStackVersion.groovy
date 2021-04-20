@@ -113,11 +113,11 @@ def generateStep(Map args = [:]){
         dir("${BASE_DIR}"){
           setupAPMGitEmail(global: true)
           git(url: "https://github.com/elastic/${repo}.git", branch: branch, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-          sh(script: "${scriptFile} '${versionEntry.version}'", label: "Prepare changes for ${repo}")
+          sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
           if (params.DRY_RUN_MODE) {
             echo "DRY-RUN: ${repo} with description: '${message}'"
           } else {
-            githubCreatePullRequest(title: "bump: stack version '${versionEntry.version}'", labels: 'automation', description: "${message}")
+            githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
           }
         }
       }
