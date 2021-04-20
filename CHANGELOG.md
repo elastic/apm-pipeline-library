@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.209 (15/04/2021)
+
+#### 🚀 Enhancements
+
+-  test: add Ubuntu 20.04 to the tests [#1068](https://github.com/elastic/apm-pipeline-library/pull/1068)
+
+#### 🐛 Bug Fixes
+
+-  fix: use toJSON instead readJSON [#1071](https://github.com/elastic/apm-pipeline-library/pull/1071)
+
+#### 🙈 No user affected
+
+-  test-infra: add curl validation on windows [#1069](https://github.com/elastic/apm-pipeline-library/pull/1069)
+
+#### ⚙️ CI
+
+-  CI: skip using ubuntu label in the beats test-infra [#1070](https://github.com/elastic/apm-pipeline-library/pull/1070)
+
 ## v1.1.208 (06/04/2021)
 
 #### 🚀 Enhancements
