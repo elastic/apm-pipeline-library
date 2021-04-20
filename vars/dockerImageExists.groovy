@@ -18,7 +18,7 @@
 /**
   Checks if the given Docker image exists.
 
-  whenTrue(checkDockerImage(image: 'hello-world:latest')) {
+  whenTrue(dockerImageExists(image: 'hello-world:latest')) {
     ...
   }
 */
@@ -27,7 +27,7 @@ def call(Map args = [:]) {
     error 'Docker is not installed'
   }
 
-  def image = args.containsKey('image') ? args.image : error('checkDockerImage: image parameter is required')
+  def image = args.containsKey('image') ? args.image : error('dockerImageExists: image parameter is required')
 
   def redirectStdout = isUnix() ? '2>/dev/null' : '2>NUL'
   if (cmd(returnStatus: true, script: "docker images -q ${image} ${redirectStdout}") == 0) {

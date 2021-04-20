@@ -217,15 +217,6 @@ See https://issues.jenkins-ci.org/browse/JENKINS-43353
 
 * maxBuildsToSearch: number of previous builds to be searched and aborted if so. Default to 10.
 
-## checkDockerImage
-Checks if the given Docker image exists.
-
-```
-checkDockerImage(image: 'hello-world:latest')
-```
-
-* image: Fully qualified name of the image
-
 ## checkGitChanges
 use git diff to check the changes on a path, then return true or false.
 
@@ -351,6 +342,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.

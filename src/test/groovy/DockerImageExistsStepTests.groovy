@@ -20,14 +20,14 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class CheckDockerImageStepTests extends ApmBasePipelineTest {
+class DockerImageExistsStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
-    script = loadScript('vars/checkDockerImage.groovy')
+    script = loadScript('vars/dockerImageExists.groovy')
   }
 
   @Test
