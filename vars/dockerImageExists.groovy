@@ -29,13 +29,12 @@ def call(Map args = [:]) {
 
   def image = args.containsKey('image') ? args.image : error('dockerImageExists: image parameter is required')
 
-  def redirectStdout = isUnix() ? '2>/dev/null' : '2>NUL'
-  if (cmd(returnStatus: true, script: "docker images -q ${image} ${redirectStdout}") == 0) {
+  if (cmd(returnStatus: true, script: "docker inspect -f \"{{.Id}}\" ${image}") == 0) {
     log(level: 'DEBUG', text: "${image} exists in the Docker host")
     return true
   }
 
-  redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
+  def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
   log(level: 'DEBUG', text: "${image} does not exist in the Docker host: checking registry")
   if (cmd(returnStatus: true, script: "docker manifest inspect ${image} ${redirectStdout}") == 0) {
     log(level: 'DEBUG', text: "${image} exists in the Docker registry")
