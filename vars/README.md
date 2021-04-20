@@ -84,6 +84,24 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## artifactsApi
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.
+
 ## axis
 Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
 from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
