@@ -19,13 +19,13 @@ import groovy.transform.Field
 
 @Library('apm@current') _
 
-@Field def versions
+// To store all the latest snapshot versions
+@Field def latestVersions
 
 pipeline {
   agent { label 'linux && immutable' }
   environment {
     REPO = 'observability-dev'
-    BASE_DIR = "src/github.com/elastic/${env.REPO}"
     HOME = "${env.WORKSPACE}"
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
@@ -46,15 +46,13 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        dir("${BASE_DIR}"){
-          git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/elastic/${REPO}.git")
-        }
+        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/elastic/${REPO}.git")
       }
     }
     stage('Fetch latest versions') {
       steps {
         script {
-          versions = artifactsApi(action: 'latest-versions')
+          latestVersions = artifactsApi(action: 'latest-versions')
         }
       }
     }
@@ -63,11 +61,7 @@ pipeline {
         warnError('Pull Requests failed')
       }
       steps {
-        deleteDir()
-        unstash 'source'
-        dir("${BASE_DIR}"){
-          generateSteps()
-        }
+        generateSteps()
       }
     }
   }
@@ -81,7 +75,6 @@ pipeline {
 def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.bump-stack-version.yml')
   def parallelTasks = [:]
-  env.PR_DESCRIPTION = createPRDescription()
   projects['projects'].each { p ->
     p.branches?.each { b ->
       parallelTasks["${p.repo}-${b}"] = generateStep(repo: "${p.repo}",
@@ -99,33 +92,33 @@ def generateStep(Map args = [:]){
 
   // special macro to look for the latest minor version
   if (branch.contains('<minor>')) {
-    def parts = branch.split('.')
+    def parts = branch.split('\\.')
     def major = parts[0]
-    branch = versions.sort()*.key.find { it.startsWith("${major}.") }
+    branch = latestVersions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/}.sort().last()
   }
-  def versionEntry = versions.get(branch)
+
+  def versionEntry = latestVersions.get(branch)
 
   def message = """
   ### What
   Bump stack version with the latest one.
   ### Further details
   ```
-  ${versionEntry.version}
+  ${versionEntry}
   ```
   """
   return {
     node('linux && immutable') {
       catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
-        dir("${BASE_DIR}"){
-          setupAPMGitEmail(global: true)
-          git(url: "https://github.com/elastic/${repo}.git", branch: branch, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-          sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
-          if (params.DRY_RUN_MODE) {
-            echo "DRY-RUN: ${repo} with description: '${message}'"
-          } else {
-            githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
-          }
+        log(level: 'INFO', text: "repo: ${repo} - branch: ${branch} - scriptFile: ${scriptFile} - build_id: ${versionEntry.build_id}")
+        setupAPMGitEmail(global: true)
+        git(url: "https://github.com/elastic/${repo}.git", branch: branch, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+        sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
+        if (params.DRY_RUN_MODE) {
+          echo "DRY-RUN: ${repo} with description: '${message}'"
+        } else {
+          githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
         }
       }
     }
