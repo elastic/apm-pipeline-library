@@ -46,7 +46,7 @@ This method generates flakey test data from Jenkins test results
  * @param disableGHComment whether to disable the GH comment notification.
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
  * @param jobName
-*/ 
+*/
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
     def jobName = args.containsKey('jobName') ? args.jobName : error('analyzeFlakey: jobName parameter is required')
@@ -83,7 +83,7 @@ def analyzeFlakey(Map args = [:]) {
       // we wish to include the number of flakes found in the time period. (Currently hard-coded to 90d)
       //
       //def testFlakyFreq = [:]
-      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] } 
+      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] }
 
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
@@ -322,7 +322,8 @@ def notifySlack(Map args = [:]) {
 /**
  * This method generates the build report, archive it and returns the build report
  * @param archiveFile whether to create and archive the file.
- * @param template what build file template to be used.
+ * @param buildCommentTemplate what build file template to be used.
+ * @param useContentTemplate if the buildCommentTemplate is a content or a file
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
