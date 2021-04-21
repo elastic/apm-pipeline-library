@@ -60,7 +60,9 @@ def readSecret(secret, role_id, secret_id) {
   return props
 }
 
-def readSecretWrapperWithParams(role_id, secret_id, body) {
+def readSecretWrapperWithParams(args, body) {
+  def role_id = args?.role_id
+  def secret_id = args?.secret_id
   withCredentials([
     string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
     string(credentialsId: role_id, variable: 'VAULT_ROLE_ID'),
