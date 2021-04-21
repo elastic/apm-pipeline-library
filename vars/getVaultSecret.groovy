@@ -44,10 +44,7 @@ def call(secret) {
   return readSecret(secret, 'vault-role-id', 'vault-secret-id')
 }
 
-def readSecret(Map args = [:]) {
-  def secret = args?.secret
-  def role_id = args?.role_id
-  def secret_id = args?.secret_id
+def readSecret(secret, role_id, secret_id) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
   readSecretWrapperWithParams(role_id, secret_id) {
