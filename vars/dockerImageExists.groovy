@@ -26,7 +26,7 @@ def call(Map args = [:]) {
   def image = args.containsKey('image') ? args.image : error('dockerImageExists: image parameter is required')
 
   if (!isInstalled(tool: 'docker', flag: '--version')) {
-    error 'Docker is not installed'
+    error 'dockerImageExists: Docker is not installed'
   }
 
   if (cmd(returnStatus: true, script: "docker inspect -f \"{{.Id}}\" ${image}") == 0) {
