@@ -1079,6 +1079,23 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
+## githubPullRequests
+Look for the GitHub Pull Requests in the current project given the labels to be 
+filtered with. It returns a dictionary with the Pull Request id as primary key and
+then the title and branch values.
+
+```
+  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // the foo and bar labels
+  githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
+```
+
+* *labels*: Filter by labels. Optional
+* *titleContains*: Filter by title (contains format). Optional
+* *state*: Filter by state: {open|closed|merged|all}. Optional. Default "open"
+* *limit*: Maximum number of items to fetch . Optional. Default 200
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
 ## githubReleaseCreate
 Create a GitHub release for a project
 ```
