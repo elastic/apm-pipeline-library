@@ -79,7 +79,15 @@ def call(Map args = [:]) {
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
         data['jobName'] = jobName
+
+        // Allow to use either a file or a content of the file
+        // rationale: this stage does not checkout the source code, fileContentTemplate allows
+        // to use the content instead the file path.
         data['buildCommentTemplate'] = args.get('buildCommentTemplate', 'github-comment-markdown.template')
+        if (args.get('useContentTemplate', false) && args.containsKey('buildCommentTemplate')) {
+          data['buildCommentTemplate'] = buildCommentTemplate
+          data['useContentTemplate'] = true
+        }
 
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.

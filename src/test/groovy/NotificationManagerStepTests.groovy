@@ -136,20 +136,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_buildTemplate_default() throws Exception {
-    script.buildTemplate(
-      build: readJSON(file: "build-info.json"),
-      buildStatus: "SUCCESS",
-      statusSuccess: true,
-      changeSet: readJSON(file: "changeSet-info.json"),
-      docsUrl: 'foo',
-      jenkinsText: 'bar',
-      jobUrl: 'http://foo.acme.co',
-      log: f.getText(),
-      statsUrl: "https://ecs.example.com/app/kibana",
-      stepsErrors: readJSON(file: "steps-errors.json"),
-      testsErrors: readJSON(file: "tests-errors.json"),
-      testsSummary: readJSON(file: "tests-summary.json")
-    )
+    buildTemplate()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'groovy-html-custom.template'))
     assertJobStatusSuccess()
@@ -157,21 +144,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_buildTemplate_with_template() throws Exception {
-    script.buildTemplate(
-      template: 'github-comment-markdown.template',
-      build: readJSON(file: "build-info.json"),
-      buildStatus: "SUCCESS",
-      statusSuccess: true,
-      changeSet: readJSON(file: "changeSet-info.json"),
-      docsUrl: 'foo',
-      env: [:],
-      jobUrl: 'http://foo.acme.co',
-      log: f.getText(),
-      statsUrl: "https://ecs.example.com/app/kibana",
-      stepsErrors: readJSON(file: "steps-errors.json"),
-      testsErrors: readJSON(file: "tests-errors.json"),
-      testsSummary: readJSON(file: "tests-summary.json")
-    )
+    buildTemplate(template: 'github-comment-markdown.template')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertJobStatusSuccess()
@@ -180,12 +153,39 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void test_buildTemplate_with_file() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { true })
-    script.buildTemplate(
-      template: 'my-template-file.template'
-    )
+    buildTemplate(template: 'my-template-file.template')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('readFile', 'my-template-file.template'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_buildTemplate_with_useContentTemplate() throws Exception {
+    buildTemplate(template: 'my-template-file.template', useContentTemplate: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('readFile', 0))
+    assertTrue(assertMethodCallOccurrences('libraryResource', 0))
+    assertJobStatusSuccess()
+  }
+
+  private void buildTemplate(Map args = [:]) {
+    def arguments = [
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESS",
+      statusSuccess: true,
+      changeSet: readJSON(file: "changeSet-info.json"),
+      docsUrl: 'foo',
+      env: [:],
+      jenkinsText: 'bar',
+      jobUrl: 'http://foo.acme.co',
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    ]
+    arguments << args
+    script.buildTemplate(arguments)
   }
 
   @Test
