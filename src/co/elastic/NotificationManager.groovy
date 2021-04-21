@@ -24,14 +24,15 @@ import groovy.text.StreamingTemplateEngine
  */
 def buildTemplate(Map args = [:]) {
     def template = args.get('template', 'groovy-html-custom.template')
-    def fileContents
-    if (fileExists(template)) {
-      fileContents = readFile(file: template)
+    def useContentTemplate = args.get('useContentTemplate', false)
+    def fileContent
+    if (useContentTemplate) {
+      fileContent = template
     } else {
-      fileContents = libraryResource(template)
+      fileContent = fileExists(template) ? readFile(file: template) : libraryResource(template)
     }
     def engine = new StreamingTemplateEngine()
-    return engine.createTemplate(fileContents).make(args).toString()
+    return engine.createTemplate(fileContent).make(args).toString()
 }
 
 /**
@@ -328,8 +329,8 @@ def notifySlack(Map args = [:]) {
 /**
  * This method generates the build report, archive it and returns the build report
  * @param archiveFile whether to create and archive the file.
- * @param buildCommentTemplate what build file template to be used.
- * @param useContentTemplate if the buildCommentTemplate is a content or a file
+ * @param template what build file template to be used.
+ * @param useContentTemplate if the template is a content or a file
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
@@ -354,12 +355,14 @@ def generateBuildReport(Map args = [:]) {
     def testsSummary = args.get('testsSummary', null)
     def archiveFile = args.get('archiveFile', true)
     def buildCommentTemplate = args.get('buildCommentTemplate', 'github-comment-markdown.template')
+    def useContentTemplate = args.get('useContentTemplate', false)
     def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
       def statusSuccess = (buildStatus == "SUCCESS")
       def boURL = getBlueoceanDisplayURL()
       output = buildTemplate([
         "template": buildCommentTemplate,
+        "useContentTemplate": useContentTemplate,
         "build": build,
         "buildStatus": buildStatus,
         "changeSet": changeSet,
