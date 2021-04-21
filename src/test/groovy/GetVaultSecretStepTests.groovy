@@ -103,8 +103,8 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testReadSecretWrapperWithParams() throws Exception {
-    script.readSecretWrapperWithParams('dummy-role-id', 'dummy-secret-id') {
-      // TODO
+    script.readSecretWrapperWithParams(['role_id': 'dummy-role-id', 'secret_id': 'dummy-secret-id']) {
+     'dummy arg'
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', '[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=dummy-role-id, variable=VAULT_ROLE_ID}, {credentialsId=dummy-secret-id, variable=VAULT_SECRET_ID}]'))
