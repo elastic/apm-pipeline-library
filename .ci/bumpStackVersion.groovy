@@ -124,8 +124,9 @@ def pullRequest(Map args = [:]){
   def message = args.message
   def labels = args.labels.replaceAll('\\s','')
   def reusePullRequest = args.get('reusePullRequest', false)
+  def title = "bump: stack version"
   if (labels.trim()) {
-    labels = "automation,${labels}"
+    labels = "automation,dependency,${labels}"
   }
 
   if (params.DRY_RUN_MODE) {
@@ -133,16 +134,22 @@ def pullRequest(Map args = [:]){
     return
   }
 
-  if (reusePullRequest && ammendPullRequestIfPossible()) {
-    log(level: 'INFO', text: 'Reuse existing Pull Request')
+  if (reusePullRequest && ammendPullRequestIfPossible(title: title, labels: labels)) {
+    log(level: 'INFO', text: 'Reused existing Pull Request')
     return
   }
-  githubCreatePullRequest(title: "bump: stack version '${stackVersion}'",
+  githubCreatePullRequest(title: "${title} '${stackVersion}'",
                           labels: "${labels}", description: "${message}")
 }
 
-def ammendPullRequestIfPossible() {
-  log(level: 'INFO', text: 'TBD')
+def ammendPullRequestIfPossible(Map args = [:]){
+  def title = args.title
+  def issues = lookForGitHubPullRequests(titleContains: title, labelsFilter: labels.split(','))
+  if (issues && issues.size() == 1) {
+    def issue = issues?.collect { k, v -> k }.first()
+  } else {
+    log(level: 'INFO', text: 'Could not find a GitHub Pull Request. So fallback to create a new one instead.')
+  }
   return false
 }
 
