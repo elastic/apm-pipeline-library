@@ -39,7 +39,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Docker is not installed'))
+    assertTrue(assertMethodCallContainsPattern('error', 'dockerImageExists: Docker is not installed'))
     assertJobStatusFailure()
   }
 
@@ -73,6 +73,18 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testLinux_ImageIsNotSet() throws Exception {
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'dockerImageExists: image parameter is required'))
+    assertJobStatusFailure()
+  }
+
+  @Test
   void testLinux_NotExists() throws Exception {
     helper.registerAllowedMethod('cmd', [Map.class], { m -> 1 })
     def ret = script.call(image: 'hello-world:latest')
@@ -95,7 +107,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Docker is not installed'))
+    assertTrue(assertMethodCallContainsPattern('error', 'dockerImageExists: Docker is not installed'))
     assertJobStatusFailure()
   }
 
@@ -128,6 +140,19 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker inspect -f "{{.Id}}" hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest exists in the Docker host'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void testWindows_ImageIsNotSet() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'dockerImageExists: image parameter is required'))
+    assertJobStatusFailure()
   }
 
   @Test
