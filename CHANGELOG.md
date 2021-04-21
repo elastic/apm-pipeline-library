@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.1.210 (20/04/2021)
+
+#### 🚀 Enhancements
+
+-  Enable stage filter argument for the beatsStages [#1076](https://github.com/elastic/apm-pipeline-library/pull/1076)
+
+## v1.1.209 (15/04/2021)
+
+#### 🚀 Enhancements
+
+-  test: add Ubuntu 20.04 to the tests [#1068](https://github.com/elastic/apm-pipeline-library/pull/1068)
+
+#### 🐛 Bug Fixes
+
+-  fix: use toJSON instead readJSON [#1071](https://github.com/elastic/apm-pipeline-library/pull/1071)
+
+#### 🙈 No user affected
+
+-  test-infra: add curl validation on windows [#1069](https://github.com/elastic/apm-pipeline-library/pull/1069)
+
+#### ⚙️ CI
+
+-  CI: skip using ubuntu label in the beats test-infra [#1070](https://github.com/elastic/apm-pipeline-library/pull/1070)
+
+## v1.1.208 (06/04/2021)
+
+#### 🚀 Enhancements
+
+-  Disable unique ephemeral worker by default [#1067](https://github.com/elastic/apm-pipeline-library/pull/1067)
+
+#### ⚙️ CI
+
+-  Add benchmark reporter image to build pipeline [#1065](https://github.com/elastic/apm-pipeline-library/pull/1065)
+
 ## v1.1.207 (31/03/2021)
 
 #### 🚀 Enhancements

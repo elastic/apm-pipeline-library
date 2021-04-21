@@ -1,0 +1,16 @@
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.

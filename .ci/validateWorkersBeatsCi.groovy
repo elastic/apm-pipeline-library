@@ -71,7 +71,6 @@ pipeline {
               'immutable && windows-2008-r2',
               'immutable && windows-7-32-bit',
               'immutable && windows-7',
-              'ubuntu && immutable',
               'ubuntu-18',
               'ubuntu-20',
               'worker-c07c6107jyw0',  // macOS workers https://beats-ci.elastic.co/label/macosx/

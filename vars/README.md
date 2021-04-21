@@ -84,6 +84,24 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## artifactsApi
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.
+
 ## axis
 Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
 from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
@@ -119,6 +137,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
         <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+        <li>filterStage: the name of the stage to be filtered. Optional</li>
     </ul>
 </p>
 
@@ -342,6 +361,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
@@ -1315,8 +1343,8 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 Check if the author of a GitHub comment has admin or write permissions in the repository.
 
 ```
-if(!hasCommentAuthorWritePermissions(repoName: "elastic/beats", commentId: env.GT_COMMENT_ID)){
-  error("Only Elasticians can do this action.")
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can deploy Docker images")
 }
 ```
 
@@ -2917,7 +2945,7 @@ Wrap the node call for three reasons:
   }
 
   // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
-  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true){
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true, forceWorker: true){
     // block
   }
 ```
@@ -2925,7 +2953,8 @@ Wrap the node call for three reasons:
 * labels: what's the labels to be used. Mandatory
 * sleepMin: whether to sleep and for how long at least. Optional.
 * sleepMax: whether to sleep and for how long maximum. Optional.
-* forceWorkspace: whether to allocate a new unique workspace. Optional.
+* forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
+* forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 
 ## withNpmrc
 Wrap the npmrc token
@@ -3015,3 +3044,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
