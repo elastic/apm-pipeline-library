@@ -77,8 +77,19 @@ def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.bump-stack-version.yml')
   def parallelTasks = [:]
   projects['projects'].each { project ->
-    matrix(agent: 'linux && immutable', axes:[ axis('REPO', [project.repo]), axis('BRANCH', project.branches) ] ) {
-      bumpStackVersion(repo: env.REPO, scriptFile: "${project.script}", branch: env.BRANCH)
+    matrix( agent: 'linux && immutable',
+            axes:[
+              axis('REPO', [project.repo]),
+              axis('BRANCH', project.branches),
+              axis('ENABLED', [project.get('enabled', true)])
+            ],
+            excludes: [ axis('ENABLED', [ false ]) ]
+    ) {
+      bumpStackVersion(repo: env.REPO,
+                       scriptFile: "${project.script}",
+                       branch: env.BRANCH,
+                       reusePullRequest: project.get('reusePullRequest', false),
+                       labels: project.get('labels', ''))
     }
   }
 }
@@ -87,7 +98,9 @@ def bumpStackVersion(Map args = [:]){
   def repo = args.containsKey('repo') ? args.get('repo') : error('bumpStackVersion: repo argument is required')
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('bumpStackVersion: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('bumpStackVersion: branch argument is required')
-  log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile})")
+  def reusePullRequest = args.get('reusePullRequest', false)
+  def labels = args.get('labels', '')
+  log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
   def branchName = findBranch(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
@@ -98,12 +111,39 @@ def bumpStackVersion(Map args = [:]){
     setupAPMGitEmail(global: true)
     git(url: "https://github.com/elastic/${repo}.git", branch: branchName, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
     sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
-    if (params.DRY_RUN_MODE) {
-      echo "DRY-RUN: ${repo} with description: '${message}'"
-    } else {
-      githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
-    }
+
+    pullRequest(reusePullRequest: reusePullRequest,
+                stackVersion: versionEntry.build_id,
+                message: message,
+                labels: labels)
   }
+}
+
+def pullRequest(Map args = [:]){
+  def stackVersion = args.stackVersion
+  def message = args.message
+  def labels = args.labels.replaceAll('\\s','')
+  def reusePullRequest = args.get('reusePullRequest', false)
+  if (labels.trim()) {
+    labels = "automation,${labels}"
+  }
+
+  if (params.DRY_RUN_MODE) {
+    log(level: 'INFO', text: "DRY-RUN: pullRequest(stackVersion: ${stackVersion}, reusePullRequest: ${reusePullRequest}, labels: ${labels}, message: '${message}')")
+    return
+  }
+
+  if (reusePullRequest && ammendPullRequestIfPossible()) {
+    log(level: 'INFO', text: 'Reuse existing Pull Request')
+    return
+  }
+  githubCreatePullRequest(title: "bump: stack version '${stackVersion}'",
+                          labels: "${labels}", description: "${message}")
+}
+
+def ammendPullRequestIfPossible() {
+  log(level: 'INFO', text: 'TBD')
+  return false
 }
 
 def findBranch(Map args = [:]){
