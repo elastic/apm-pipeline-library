@@ -54,6 +54,7 @@ pipeline {
         script {
           latestVersions = artifactsApi(action: 'latest-versions')
         }
+        archiveArtifacts 'latest-versions.json'
       }
     }
     stage('Send Pull Request'){
@@ -76,8 +77,8 @@ def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.bump-stack-version.yml')
   def parallelTasks = [:]
   projects['projects'].each { project ->
-    matrix(agent: 'linux && immutable', axes:[ axis('BRANCH', project.branches) ] ) {
-      bumpStackVersion(repo: "${project}", scriptFile: "${project.script}", branch: env.BRANCH, versions: latestVersions)
+    matrix(agent: 'linux && immutable', axes:[ axis('REPO', [project.repo]), axis('BRANCH', project.branches) ] ) {
+      bumpStackVersion(repo: env.REPO, scriptFile: "${project.script}", branch: env.BRANCH)
     }
   }
 }
@@ -86,11 +87,10 @@ def bumpStackVersion(Map args = [:]){
   def repo = args.containsKey('repo') ? args.get('repo') : error('bumpStackVersion: repo argument is required')
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('bumpStackVersion: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('bumpStackVersion: branch argument is required')
-  def versions = args.containsKey('versions') ? args.get('versions') : error('bumpStackVersion: versions argument is required')
   log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile})")
 
-  def branchName = findBranch(branch: branch, versions: versions)
-  def versionEntry = versions.get(branchName)
+  def branchName = findBranch(branch: branch, versions: latestVersions)
+  def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
  
   catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
