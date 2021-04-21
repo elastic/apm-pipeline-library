@@ -144,9 +144,11 @@ def pullRequest(Map args = [:]){
 
 def ammendPullRequestIfPossible(Map args = [:]){
   def title = args.title
-  def issues = lookForGitHubPullRequests(titleContains: title, labelsFilter: labels.split(','))
-  if (issues && issues.size() == 1) {
-    def issue = issues?.collect { k, v -> k }.first()
+  def pullRequests = githubPullRequests(labels: labels.split(','), titleContains: title)
+  if (pullRequests && pullRequests.size() == 1) {
+    def pr = pullRequests?.collect { k, v -> k }.first()
+    log(level: 'INFO', text: 'Checkout branch and update accordingly')
+
   } else {
     log(level: 'INFO', text: 'Could not find a GitHub Pull Request. So fallback to create a new one instead.')
   }
