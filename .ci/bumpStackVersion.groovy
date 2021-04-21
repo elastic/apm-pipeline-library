@@ -99,59 +99,50 @@ def bumpStackVersion(Map args = [:]){
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('bumpStackVersion: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('bumpStackVersion: branch argument is required')
   def reusePullRequest = args.get('reusePullRequest', false)
-  def labels = args.get('labels', '')
+  def labels = args.get('labels', '').replaceAll('\\s','')
   log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
   def branchName = findBranch(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
- 
-  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    deleteDir()
-    setupAPMGitEmail(global: true)
-    git(url: "https://github.com/elastic/${repo}.git", branch: branchName, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-    sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
-
-    pullRequest(reusePullRequest: reusePullRequest,
-                stackVersion: versionEntry.build_id,
-                message: message,
-                labels: labels)
-  }
-}
-
-def pullRequest(Map args = [:]){
-  def stackVersion = args.stackVersion
-  def message = args.message
-  def labels = args.labels.replaceAll('\\s','')
-  def reusePullRequest = args.get('reusePullRequest', false)
+  def stackVersion = versionEntry.build_id
   def title = "bump: stack version"
   if (labels.trim()) {
     labels = "automation,dependency,${labels}"
   }
 
-  if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: pullRequest(stackVersion: ${stackVersion}, reusePullRequest: ${reusePullRequest}, labels: ${labels}, message: '${message}')")
-    return
+  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    prepareContext(repo: repo, branchName: branchName)
+    if (reusePullRequest && reusePullRequestIfPossible(title: title, labels: labels)) {
+      try {
+        sh(script: "${scriptFile} '${versionEntry.build_id}' 'noBranchCreation'", label: "Prepare changes for ${repo}")
+        gitPush()
+        return
+      } catch(err) {
+        log(level: 'INFO', text: "Could not reuse an existing GitHub Pull Request. So fallback to create a new one instead. ${err.toString()}")
+        prepareContext(repo: repo, branchName: branchName)
+      }
+    }
+    githubCreatePullRequest(title: "${title} '${stackVersion}'", labels: "${labels}", description: "${message}")
   }
-
-  if (reusePullRequest && ammendPullRequestIfPossible(title: title, labels: labels)) {
-    log(level: 'INFO', text: 'Reused existing Pull Request')
-    return
-  }
-  githubCreatePullRequest(title: "${title} '${stackVersion}'",
-                          labels: "${labels}", description: "${message}")
 }
 
-def ammendPullRequestIfPossible(Map args = [:]){
+def prepareContext(Map args = [:]) {
+  deleteDir()
+  setupAPMGitEmail(global: true)
+  git(url: "https://github.com/elastic/${args.repo}.git",
+      branch: args.branchName,
+      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+}
+
+def reusePullRequestIfPossible(Map args = [:]){
   def title = args.title
   def pullRequests = githubPullRequests(labels: labels.split(','), titleContains: title)
   if (pullRequests && pullRequests.size() == 1) {
-    def pr = pullRequests?.collect { k, v -> k }.first()
-    log(level: 'INFO', text: 'Checkout branch and update accordingly')
-
-  } else {
-    log(level: 'INFO', text: 'Could not find a GitHub Pull Request. So fallback to create a new one instead.')
+    pullRequests?.each { k, v -> gh(command: "pr checkout ${k}") }
+    return true
   }
+  log(level: 'INFO', text: 'Could not find a GitHub Pull Request. So fallback to create a new one instead.')
   return false
 }
 
