@@ -21,9 +21,11 @@
   For backward compatibilities the default behaviour uses the flaky tests. It returns
   a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 
-  // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
+  // Look for all the open GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
   lookForGitHubIssues(flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
 
+  // Look for all the open GitHub issues with label 'automation' and the title contains 'bump: stack'
+  lookForGitHubIssues(flakySearch: false, labelsFilter: ['automation'], titleContains: 'bump: stack')
 */
 def call(Map args = [:]) {
   def flakySearch = args.get('flakySearch', true)
@@ -34,11 +36,28 @@ def call(Map args = [:]) {
   try {
     // Filter all the issues given those labels.
     issues = githubIssues(labels: labels, credentialsId: credentialsId)
+  } catch(err) {
+    issues = [:]
   } finally {
     if (flakySearch) {
       return searchFlakyIssues(flakyList: flakyList, issues: issues)
+    } else {
+      return searchIssuesWithFilters(issues: issues, titleContains: args.get('titleContains', ''))
     }
   }
+}
+
+def searchIssuesWithFilters(Map args = [:]) {
+  def titleContains = args.titleContains
+  def issues = args.issues
+  def output = [:]
+  try {
+    output = issues?.findAll { issue, data -> data.title?.contains(titleContains) }
+  } catch (err) {
+    log(level: 'DEBUG', text: "search: failed with error '${err.toString()}'")
+  }
+  log(level: 'DEBUG', text: "search: output ${output}.")
+  return output
 }
 
 def searchFlakyIssues(Map args = [:]) {

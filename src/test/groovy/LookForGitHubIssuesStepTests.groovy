@@ -67,4 +67,20 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret.containsKey('test-foo'))
   }
+
+  @Test
+  void test_searchIssuesWithFilters_with_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]]
+    def ret = script.searchIssuesWithFilters(flakySearch: false, titleContains: 'title', issues: issues)
+    printCallStack()
+    assertTrue(ret.size() == 1)
+  }
+
+  @Test
+  void test_searchIssuesWithFilters_without_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]]
+    def ret = script.searchIssuesWithFilters(flakySearch: false, titleContains: 'acme', issues: issues)
+    printCallStack()
+    assertTrue(ret.size() == 0)
+  }
 }
