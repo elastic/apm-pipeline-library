@@ -323,8 +323,8 @@ def notifySlack(Map args = [:]) {
 /**
  * This method generates the build report, archive it and returns the build report
  * @param archiveFile whether to create and archive the file.
- * @param template what build file template to be used.
- * @param useContentTemplate if the template is a content or a file
+ * @param buildCommentTemplate what build file template to be used.
+ * @param useContentTemplate if the buildCommentTemplate is a content or a file
  * @param build
  * @param buildStatus String with job result
  * @param changeSet list of change set, see src/test/resources/changeSet-info.json
