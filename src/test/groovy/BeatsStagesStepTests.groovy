@@ -157,4 +157,38 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-multi-when'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_simple_stage_without_match() throws Exception {
+    def ret = script.call(project: 'foo', content: [
+      "platform" : [ "linux && ubuntu-16" ],
+      "stages": [
+        "simple" : [
+          "mage" : [ "foo" ],
+          "stage" : "mandatory"
+        ]
+      ]
+    ], function: new RunCommand(steps: this), filterStage: "optional")
+    printCallStack()
+    assertTrue(ret.size() == 0)
+    assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_simple_stage_with_match() throws Exception {
+    def ret = script.call(project: 'foo', content: [
+      "platform" : [ "linux && ubuntu-16" ],
+      "stages": [
+        "simple" : [
+          "mage" : [ "foo" ],
+          "stage" : "mandatory"
+        ]
+      ]
+    ], function: new RunCommand(steps: this), filterStage: "mandatory")
+    printCallStack()
+    assertTrue(ret.size() == 1)
+    assertTrue(assertMethodCallContainsPattern('log', 'stage: foo-simple'))
+    assertJobStatusSuccess()
+  }
 }

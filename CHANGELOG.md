@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.210 (20/04/2021)
+
+#### 🚀 Enhancements
+
+-  Enable stage filter argument for the beatsStages [#1076](https://github.com/elastic/apm-pipeline-library/pull/1076)
+
 ## v1.1.209 (15/04/2021)
 
 #### 🚀 Enhancements
