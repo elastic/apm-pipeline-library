@@ -22,6 +22,7 @@ Map call(Map args = [:]){
   def project = args.containsKey('project') ? args.project : error('beatsStages: project parameter is required')
   def content = args.containsKey('content') ? args.content : error('beatsStages: content parameter is required')
   def function = args.containsKey('function') ? args.function : error('beatsStages: function parameter is required')
+  def filterStage = args.get('filterStage', '')
   def defaultNode = content.containsKey('platform') ? content.platform : error('beatsStages: platform entry in the content is required.')
 
   def mapOfStages = [:]
@@ -35,7 +36,15 @@ Map call(Map args = [:]){
     } else {
       tempMapOfStages = generateStages(content: value, project: project, stageName: stageName, defaultNode: defaultNode, function: function)
     }
-    tempMapOfStages.each { k,v -> mapOfStages["${k}"] = v }
+
+    // This should help to filter stages by their stage name and ignore if they don't match
+    if (value.containsKey('stage') && filterStage?.trim()) {
+      if (value.get('stage').equals(filterStage)) {
+        tempMapOfStages.each { k,v -> mapOfStages["${k}"] = v }
+      }
+    } else {
+      tempMapOfStages.each { k,v -> mapOfStages["${k}"] = v }
+    }
   }
 
   return mapOfStages
