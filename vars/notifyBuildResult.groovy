@@ -35,7 +35,7 @@ the flakey test analyser.
 
   // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
- 
+
   // Notify build status for a PR as a GitHub comment, and send slack message with custom header
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
 
@@ -80,6 +80,9 @@ def call(Map args = [:]) {
         data['enabled'] = slackNotify
         data['jobName'] = jobName
         data['buildCommentTemplate'] = args.get('buildCommentTemplate', 'github-comment-markdown.template')
+        if (args.get('useContentTemplate', false) && args.containsKey('buildCommentTemplate')) {
+          data['useContentTemplate'] = true
+        }
 
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
