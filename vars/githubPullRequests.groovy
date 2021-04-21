@@ -25,20 +25,23 @@
 def call(Map args = [:]) {
   def labels = args.get('labels', [])
   def titleContains = args.get('titleContains', '')
+  def state = args.get('state', 'open')
   def limit = args.get('limit', 200)
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def output = [:]
   def issues
   try {
-    // filter all the PRs given those labels.
-    prs = gh(command: 'pr list', flags: [label: labels, limit: limit])
+    def flags = [ label: labels, limit: limit, state: state ]
+    if(titleContains.trim()) {
+      flags['search'] = "'${titleContains}' in:title"
+    }
+
+    // filter all the PRs given those flags
+    prs = gh(command: 'pr list', flags: flags)
     if (prs?.trim()) {
       prs.split('\n').each { line ->
         def data = line.split('\t')
-        def title = data[1]
-        if (title.contains(titleContains)) {
-          output.put("${data[0]}", [ title: data[1], branch: data[2] ])
-        }
+        output.put("${data[0].replace('#','')}", [ title: data[1], branch: data[2] ])
       }
     }
   } catch (err) {
