@@ -344,6 +344,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
+
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
 The vault secret contains `user` and `password` fields with the authentication details.
