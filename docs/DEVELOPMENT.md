@@ -77,6 +77,10 @@ execute the following from the directory at the root of this project:
 
 `./mvnw test -Dtest=DummyStepTests`
 
+To run one single test, execute the following from the directory at the root of
+this project, separating test name from test file with an `#`:
+
+`./mvnw test -Dtest=DummyStepTests#testName`
 
 To run tests and print additional debug output to the console, use the `-Pdebug`
 flag:

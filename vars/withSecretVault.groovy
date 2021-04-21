@@ -30,11 +30,14 @@ def call(Map args = [:], Closure body) {
   def pass_variable = args?.pass_var_name
   def pass_key = args.containsKey('pass_key') ? args.pass_key : 'password'
 
+  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
+
   if (!secret || !user_variable || !pass_variable) {
     error "withSecretVault: Missing variables"
   }
 
-  def props = getVaultSecret(secret: secret)
+  def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
   if(props?.errors){
     error "withSecretVault: Unable to get credentials from the vault: " + props.errors.toString()
   }

@@ -84,6 +84,24 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## artifactsApi
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.
+
 ## axis
 Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
 from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
@@ -119,6 +137,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
         <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+        <li>filterStage: the name of the stage to be filtered. Optional</li>
     </ul>
 </p>
 
@@ -342,6 +361,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
