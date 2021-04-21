@@ -34,9 +34,8 @@ def call(Map args = [:]) {
     return true
   }
 
-  def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
   log(level: 'DEBUG', text: "${image} does not exist in the Docker host: checking registry")
-  if (cmd(returnStatus: true, script: "docker manifest inspect ${image} ${redirectStdout}") == 0) {
+  if (cmd(returnStdout: true, returnStatus: true, script: "docker manifest inspect ${image}") == 0) {
     log(level: 'DEBUG', text: "${image} exists in the Docker registry")
     return true
   }

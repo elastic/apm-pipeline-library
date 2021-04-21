@@ -56,7 +56,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
     assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker inspect -f "{{.Id}}" hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist in the Docker host: checking registry'))
-    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest >/dev/null'))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest exists in the Docker registry'))
     assertJobStatusSuccess()
   }
@@ -92,7 +92,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker inspect -f "{{.Id}}" hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist in the Docker host: checking registry'))
-    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest >/dev/null'))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist at all'))
     assertJobStatusSuccess()
   }
@@ -125,7 +125,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
     assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker inspect -f "{{.Id}}" hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist in the Docker host: checking registry'))
-    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest >NUL'))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest exists in the Docker registry'))
     assertJobStatusSuccess()
   }
@@ -164,7 +164,7 @@ class DockerImageExistsStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'docker inspect -f "{{.Id}}" hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist in the Docker host: checking registry'))
-    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest >NUL'))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker manifest inspect hello-world:latest'))
     assertTrue(assertMethodCallContainsPattern('log', 'hello-world:latest does not exist at all'))
     assertJobStatusSuccess()
   }
