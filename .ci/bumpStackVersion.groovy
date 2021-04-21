@@ -75,50 +75,31 @@ pipeline {
 def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.bump-stack-version.yml')
   def parallelTasks = [:]
-  projects['projects'].each { project ->
-    matrix(agent: 'linux && immutable', axes:[ axis('BRANCH', project.branches) ] ) {
-      bumpStackVersion(repo: "${project}", scriptFile: "${project.script}", branch: env.BRANCH, versions: latestVersions)
+  projects['projects'].each { p ->
+    p.branches?.each { b ->
+      parallelTasks["${p.repo}-${b}"] = generateStep(repo: "${p.repo}",
+                                                     scriptFile: "${p.script}",
+                                                     branch: b)
     }
   }
+  parallel(parallelTasks)
 }
 
-def bumpStackVersion(Map args = [:]){
-  def repo = args.containsKey('repo') ? args.get('repo') : error('bumpStackVersion: repo argument is required')
-  def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('bumpStackVersion: scriptFile argument is required')
-  def branch = args.containsKey('branch') ? args.get('branch') : error('bumpStackVersion: branch argument is required')
-  def versions = args.containsKey('versions') ? args.get('versions') : error('bumpStackVersion: versions argument is required')
-  log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile})")
+def generateStep(Map args = [:]){
+  def repo = args.containsKey('repo') ? args.get('repo') : error('generateStep: repo argument is required')
+  def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('generateStep: scriptFile argument is required')
+  def branch = args.containsKey('branch') ? args.get('branch') : error('generateStep: branch argument is required')
 
-  def branchName = findBranch(branch: branch, versions: versions)
-  def versionEntry = versions.get(branchName)
-  def message = createPRDescription(versionEntry)
- 
-  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    deleteDir()
-    setupAPMGitEmail(global: true)
-    git(url: "https://github.com/elastic/${repo}.git", branch: branchName, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-    sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
-    if (params.DRY_RUN_MODE) {
-      echo "DRY-RUN: ${repo} with description: '${message}'"
-    } else {
-      githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
-    }
-  }
-}
-
-def findBranch(Map args = [:]){
-  def branch = args.branch
   // special macro to look for the latest minor version
   if (branch.contains('<minor>')) {
     def parts = branch.split('\\.')
     def major = parts[0]
-    branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/}.sort().last()
+    branch = latestVersions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/}.sort().last()
   }
-  return branch
-}
 
-def createPRDescription(versionEntry) {
-  return """
+  def versionEntry = latestVersions.get(branch)
+
+  def message = """
   ### What
   Bump stack version with the latest one.
   ### Further details
@@ -126,4 +107,20 @@ def createPRDescription(versionEntry) {
   ${versionEntry}
   ```
   """
+  return {
+    node('linux && immutable') {
+      catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        deleteDir()
+        log(level: 'INFO', text: "repo: ${repo} - branch: ${branch} - scriptFile: ${scriptFile} - build_id: ${versionEntry.build_id}")
+        setupAPMGitEmail(global: true)
+        git(url: "https://github.com/elastic/${repo}.git", branch: branch, credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+        sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
+        if (params.DRY_RUN_MODE) {
+          echo "DRY-RUN: ${repo} with description: '${message}'"
+        } else {
+          githubCreatePullRequest(title: "bump: stack version '${versionEntry.build_id}'", labels: 'automation', description: "${message}")
+        }
+      }
+    }
+  }
 }
