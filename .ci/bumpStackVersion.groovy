@@ -115,7 +115,7 @@ def bumpStackVersion(Map args = [:]){
     prepareContext(repo: repo, branchName: branchName)
     if (reusePullRequest && reusePullRequestIfPossible(title: title, labels: labels)) {
       try {
-        sh(script: "${scriptFile} '${versionEntry.build_id}' 'noBranchCreation'", label: "Prepare changes for ${repo}")
+        sh(script: "${scriptFile} '${versionEntry.build_id}' 'false'", label: "Prepare changes for ${repo}")
         gitPush()
         return
       } catch(err) {
@@ -123,6 +123,7 @@ def bumpStackVersion(Map args = [:]){
         prepareContext(repo: repo, branchName: branchName)
       }
     }
+    sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
     githubCreatePullRequest(title: "${title} '${stackVersion}'", labels: "${labels}", description: "${message}")
   }
 }
