@@ -75,7 +75,6 @@ pipeline {
 
 def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.bump-stack-version.yml')
-  def parallelTasks = [:]
   projects['projects'].each { project ->
     matrix( agent: 'linux && immutable',
             axes:[
@@ -117,7 +116,7 @@ def prepareArguments(Map args = [:]){
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
   def stackVersion = versionEntry.build_id
-  def title = "bump: stack version"
+  def title = "bump-stack-version"
   if (labels.trim()) {
     labels = "automation,dependency,${labels}"
   }
@@ -129,6 +128,10 @@ def reusePullRequest(Map args = [:]) {
   if (args.reusePullRequest && reusePullRequestIfPossible(title: args.title, labels: args.labels)) {
     try {
       sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
+      if (params.DRY_RUN_MODE) {
+        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}')")
+        return true
+      }
       gitPush()
       return true
     } catch(err) {
@@ -140,8 +143,12 @@ def reusePullRequest(Map args = [:]) {
 
 def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
-  sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
-  githubCreatePullRequest(title: "${args.title} '${args.stackVersion}'", labels: "${args.labels}", description: "${args.message}")
+  sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
+  if (params.DRY_RUN_MODE) {
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}')")
+    return
+  }
+  githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}")
 }
 
 def prepareContext(Map args = [:]) {
@@ -181,7 +188,7 @@ def createPRDescription(versionEntry) {
   Bump stack version with the latest one.
   ### Further details
   ```
-  ${versionEntry}
+  ${versionEntry.toMapString()}
   ```
   """
 }
