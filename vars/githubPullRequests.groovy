@@ -31,7 +31,7 @@ def call(Map args = [:]) {
   def output = [:]
   def issues
   try {
-    def flags = [ label: labels, limit: limit, state: state ]
+    def flags = [ label: labels.join(','), limit: limit, state: state ]
     if(titleContains.trim()) {
       flags['search'] = "'${titleContains}' in:title"
     }

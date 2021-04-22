@@ -77,4 +77,12 @@ class GithubPullRequestsStepTests extends ApmBasePipelineTest {
       assertTrue(k == '684' || k == '1078')
     }
   }
+  @Test
+  void test_with_labels() throws Exception {
+    helper.registerAllowedMethod('gh', [Map.class], {
+      return '''#1078	Enable to customise GitHub PR comments	feature/override-notify-message-template'''})
+    def ret = script.call(labels: ['foo', 'bar'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('gh', 'label=foo,bar'))
+  }
 }
