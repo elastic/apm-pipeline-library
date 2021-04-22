@@ -24,7 +24,9 @@ import net.sf.json.JSONObject
 */
 def call(Map args = [:]){
   def secret = args.containsKey('secret') ? args.secret : error("getVaultSecret: No valid secret to looking for.")
-  return readSecret(secret)
+  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
+  return readSecret(secret, role_id, secret_id)
 }
 
 /**
@@ -39,13 +41,13 @@ def call(secret) {
     error("getVaultSecret: No valid secret to looking for.")
   }
   secret = 'secret/apm-team/ci/' + secret
-  return readSecret(secret)
+  return readSecret(secret, 'vault-role-id', 'vault-secret-id')
 }
 
-def readSecret(secret) {
+def readSecret(secret, role_id, secret_id) {
   def props = null
   log(level: 'INFO', text: 'getVaultSecret: Getting secrets')
-  readSecretWrapper() {
+  readSecretWrapperWithParams(['role_id': role_id, 'secret_id': secret_id]) {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
@@ -56,6 +58,22 @@ def readSecret(secret) {
     //revokeToken(env.VAULT_ADDR, token)
   }
   return props
+}
+
+def readSecretWrapperWithParams(args, body) {
+  def role_id = args?.role_id
+  def secret_id = args?.secret_id
+  withCredentials([
+    string(credentialsId: 'vault-addr', variable: 'VAULT_ADDR'),
+    string(credentialsId: role_id, variable: 'VAULT_ROLE_ID'),
+    string(credentialsId: secret_id, variable: 'VAULT_SECRET_ID')]) {
+      withEnv([
+        "VAULT_AUTH_METHOD=approle", //Used by Ansible Vault modules
+        "VAULT_AUTHTYPE=approle" //Used by Ansible Vault modules
+      ]){
+        body()
+      }
+  }
 }
 
 def readSecretWrapper(body) {

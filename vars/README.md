@@ -1734,17 +1734,24 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 ## lookForGitHubIssues
-Look for all the open issues that were reported as flaky tests. It returns
+Look for all the open issues given some filters.
+
+For backward compatibilities the default behaviour uses the flaky tests. It returns
 a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 
 ```
   // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
-  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+  lookForGitHubIssues(flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+
+  // Look for all the GitHub issues with label 'automation' and the title contains 'bump: stack'
+  lookForGitHubIssues(flakySearch: false, labelsFilter: ['automation'], titleContains: 'bump: stack')
 ```
 
-* *flakyList*: list of test-failures. Mandatory
+* *flakySearch*: whether to run the default behaviour to look for flaky reported github issues. Optional. Default `true`
+* *flakyList*: list of test-failures. Optional. Default `[]`
 * *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
-* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* *titleContains*: title to be filtered when listing the GitHub issues. Optional
+* *credentialsId*: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 
 _NOTE_: Windows is not supported yet.
 
