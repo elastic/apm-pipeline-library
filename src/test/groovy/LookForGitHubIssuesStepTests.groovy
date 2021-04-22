@@ -40,25 +40,22 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
   void test_with_githubIssues_error() throws Exception {
     helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('unknown command "foo" for "gh issue"') })
     def ret = script.call(flakyList: [ 'test-foo' ])
+    assertTrue(ret['test-foo'].equals(''))
+    printCallStack()
+  }
+
+  @Test
+  void test_flakySearch_without_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title' ]]
+    def ret = script.searchFlakyIssues(flakyList: [ 'test-foo' ], issues: issues)
     printCallStack()
     assertTrue(ret['test-foo'].equals(''))
   }
 
   @Test
-  void test_without_match() throws Exception {
-    helper.registerAllowedMethod('githubIssues', [Map.class], {
-      return [ 1 : [ state: 'OPEN', title: 'title' ]] })
-    def ret = script.call(flakyList: [ 'test-foo' ])
-    printCallStack()
-    assertTrue(ret['test-foo'].equals(''))
-  }
-
-  @Test
-  void test_with_match() throws Exception {
-    helper.registerAllowedMethod('githubIssues', [Map.class], {
-      return [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]] })
-    def ret = script.call(flakyList: [ 'test-foo' ])
-    println ret
+  void test_flakySearch_with_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]]
+    def ret = script.searchFlakyIssues(flakyList: [ 'test-foo' ], issues: issues)
     printCallStack()
     assertTrue(ret['test-foo'] == 1)
   }
@@ -67,8 +64,23 @@ class LookForGitHubIssuesStepTests extends ApmBasePipelineTest {
   void test_with_error() throws Exception {
     helper.registerAllowedMethod('githubIssues', [Map.class], { throw new Exception('force a failure') })
     def ret = script.call(flakyList: [ 'test-foo' ])
-    println ret
     printCallStack()
     assertTrue(ret.containsKey('test-foo'))
+  }
+
+  @Test
+  void test_searchIssuesWithFilters_with_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]]
+    def ret = script.searchIssuesWithFilters(flakySearch: false, titleContains: 'title', issues: issues)
+    printCallStack()
+    assertTrue(ret.size() == 1)
+  }
+
+  @Test
+  void test_searchIssuesWithFilters_without_match() throws Exception {
+    def issues = [ 1 : [ state: 'OPEN', title: 'title [test-foo]' ]]
+    def ret = script.searchIssuesWithFilters(flakySearch: false, titleContains: 'acme', issues: issues)
+    printCallStack()
+    assertTrue(ret.size() == 0)
   }
 }
