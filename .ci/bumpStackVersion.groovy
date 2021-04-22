@@ -102,7 +102,7 @@ def bumpStackVersion(Map args = [:]){
   def labels = args.get('labels', '').replaceAll('\\s','')
   log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
-  def branchName = findBranch(branch: branch, versions: latestVersions)
+  def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
   def stackVersion = versionEntry.build_id
@@ -112,20 +112,32 @@ def bumpStackVersion(Map args = [:]){
   }
 
   catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    prepareContext(repo: repo, branchName: branchName)
-    if (reusePullRequest && reusePullRequestIfPossible(title: title, labels: labels)) {
-      try {
-        sh(script: "${scriptFile} '${versionEntry.build_id}' 'false'", label: "Prepare changes for ${repo}")
-        gitPush()
-        return
-      } catch(err) {
-        log(level: 'INFO', text: "Could not reuse an existing GitHub Pull Request. So fallback to create a new one instead. ${err.toString()}")
-        prepareContext(repo: repo, branchName: branchName)
-      }
+    def arguments = [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: title, labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
+    if(reusePullRequest(arguments)) {
+      return
     }
-    sh(script: "${scriptFile} '${versionEntry.build_id}'", label: "Prepare changes for ${repo}")
-    githubCreatePullRequest(title: "${title} '${stackVersion}'", labels: "${labels}", description: "${message}")
+    createPullRequest(arguments)
   }
+}
+
+def reusePullRequest(Map args = [:]) {
+  prepareContext(repo: args.repo, branchName: args.branchName)
+  if (args.reusePullRequest && reusePullRequestIfPossible(title: args.title, labels: args.labels)) {
+    try {
+      sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
+      gitPush()
+      return true
+    } catch(err) {
+      log(level: 'INFO', text: "Could not reuse an existing GitHub Pull Request. So fallback to create a new one instead. ${err.toString()}")
+    }
+  }
+  return false
+}
+
+def createPullRequest(Map args = [:]) {
+  prepareContext(repo: args.repo, branchName: args.branchName)
+  sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
+  githubCreatePullRequest(title: "${args.title} '${args.stackVersion}'", labels: "${args.labels}", description: "${args.message}")
 }
 
 def prepareContext(Map args = [:]) {
@@ -138,8 +150,9 @@ def prepareContext(Map args = [:]) {
 
 def reusePullRequestIfPossible(Map args = [:]){
   def title = args.title
-  def pullRequests = githubPullRequests(labels: labels.split(','), titleContains: title)
+  def pullRequests = githubPullRequests(labels: args.labels.split(','), titleContains: args.title)
   if (pullRequests && pullRequests.size() == 1) {
+    log(level: 'INFO', text: "Reuse #${k} GitHub Pull Request.")
     pullRequests?.each { k, v -> gh(command: "pr checkout ${k}") }
     return true
   }
@@ -147,7 +160,7 @@ def reusePullRequestIfPossible(Map args = [:]){
   return false
 }
 
-def findBranch(Map args = [:]){
+def findBranchName(Map args = [:]){
   def branch = args.branch
   // special macro to look for the latest minor version
   if (branch.contains('<minor>')) {
