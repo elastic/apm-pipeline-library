@@ -95,12 +95,23 @@ def generateSteps(Map args = [:]) {
 }
 
 def bumpStackVersion(Map args = [:]){
-  def repo = args.containsKey('repo') ? args.get('repo') : error('bumpStackVersion: repo argument is required')
-  def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('bumpStackVersion: scriptFile argument is required')
-  def branch = args.containsKey('branch') ? args.get('branch') : error('bumpStackVersion: branch argument is required')
+  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    def arguments = prepareArguments(args)
+    // Let's reuse the existing PullRequest if any.
+    if(reusePullRequest(arguments)) {
+      return
+    }
+    createPullRequest(arguments)
+  }
+}
+
+def prepareArguments(Map args = [:]){
+  def repo = args.containsKey('repo') ? args.get('repo') : error('prepareArguments: repo argument is required')
+  def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('prepareArguments: scriptFile argument is required')
+  def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def reusePullRequest = args.get('reusePullRequest', false)
   def labels = args.get('labels', '').replaceAll('\\s','')
-  log(level: 'INFO', text: "bumpStackVersion(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
   def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
@@ -110,14 +121,7 @@ def bumpStackVersion(Map args = [:]){
   if (labels.trim()) {
     labels = "automation,dependency,${labels}"
   }
-
-  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    def arguments = [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: title, labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
-    if(reusePullRequest(arguments)) {
-      return
-    }
-    createPullRequest(arguments)
-  }
+  return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: title, labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
 }
 
 def reusePullRequest(Map args = [:]) {
