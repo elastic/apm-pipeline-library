@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.211 (22/04/2021)
+
+#### ⚙️ CI
+
+-  Remove super-linter since it takes 20 minutes [#1083](https://github.com/elastic/apm-pipeline-library/pull/1083)
+-  Bump elastic stack version automation [#1081](https://github.com/elastic/apm-pipeline-library/pull/1081)
+
 ## v1.1.210 (20/04/2021)
 
 #### 🚀 Enhancements
