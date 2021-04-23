@@ -45,6 +45,17 @@ pipeline {
         runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7-release', subject: "[7-release] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
       }
     }
+    stage('Update Labels') {
+      agent { label 'linux && immutable' }
+      steps {
+        git("https://github.com/elastic/observability-dev.git")
+        dir('.github/labels') {
+          withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
+            sh 'github-labels-sync.sh "${GITHUB_TOKEN}"'
+          }
+        }
+      }
+    }
   }
   post {
     cleanup {
