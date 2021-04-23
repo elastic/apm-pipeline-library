@@ -52,8 +52,6 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : ""
-  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
 
   node('master || metal || linux'){
     stage('Reporting build status'){
@@ -68,6 +66,7 @@ def call(Map args = [:]) {
       def slackCredentials = args.containsKey('slackCredentials') ? args.slackCredentials : 'jenkins-slack-integration-token'
       def aggregateComments = args.get('aggregateComments', true)
       def flakyDisableGHIssueCreation = args.get('flakyDisableGHIssueCreation', false)
+      def jobName = args.get('jobName') ? args.jobName : ''
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
@@ -75,12 +74,11 @@ def call(Map args = [:]) {
         data['statsUrl'] = statsURL
         data['es'] = es
         data['es_secret'] = secret
-        data['flakyReportIdx'] = flakyReportIdx
-        data['flakyThreshold'] = flakyThreshold
         data['header'] = slackHeader
         data['channel'] = slackChannel
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
+        data['jobName'] = jobName
 
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
@@ -124,10 +122,6 @@ def call(Map args = [:]) {
             sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
           }
         }
-      }
-
-      catchError(message: 'There were some failures when cleaning up the workspace ', buildResult: 'SUCCESS') {
-        deleteDir()
       }
     }
   }

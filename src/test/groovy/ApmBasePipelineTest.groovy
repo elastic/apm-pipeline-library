@@ -39,6 +39,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
+    SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
@@ -274,6 +275,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       updateBuildStatus('FAILURE')
       throw new Exception(s)
     })
+    helper.registerAllowedMethod('file', [Map.class], { [ variable: 'foo', secret: 'bar' ] })
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
@@ -333,6 +335,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('string', [Map.class], { m -> return m })
     helper.registerAllowedMethod('timeout', [Integer.class, Closure.class], null)
     helper.registerAllowedMethod('unstash', [String.class], null)
+    helper.registerAllowedMethod('unzip', [Map.class], null)
     helper.registerAllowedMethod('upstreamDevelopers', { "OK" })
     helper.registerAllowedMethod('usernamePassword', [Map.class], { m ->
       m.each{ k, v ->
@@ -451,6 +454,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('gsutil', [Map.class], { m ->
+      def script = loadScript('vars/gsutil.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('httpRequest', [Map.class], { true })
     helper.registerAllowedMethod('installTools', [List.class], { l ->
       def script = loadScript('vars/installTools.groovy')
@@ -464,6 +471,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('isCommentTrigger', { return false })
     helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
       def script = loadScript('vars/isInstalled.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('isStaticWorker', [Map.class], { m ->
+      def script = loadScript('vars/isStaticWorker.groovy')
       return script.call(m)
     })
     helper.registerAllowedMethod('isPR', {
@@ -492,6 +503,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is32x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('is64', { return true })
     helper.registerAllowedMethod('is64x86', {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
@@ -570,6 +582,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
       return [data: [alt_user_key: 'username', password: 'user_password']]
     }
+    if(VaultSecret.SECRET_AZURE.equals(s)){
+      return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
+    }
     if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]
     }
@@ -613,6 +628,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
   }
 
+  def assertMethodCallContainsPatternOccurrences(String methodName, String pattern, int compare) {
+    return helper.callStack.findAll { call ->
+      call.methodName == methodName
+    }.any { call ->
+      ((callArgsToString(call) =~ /${pattern}/).count) == compare
+    }
+  }
+
   def assertMethodCall(String methodName) {
     return helper.callStack.find { call ->
       call.methodName == methodName
@@ -641,6 +664,17 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', "${parameter} ${message}"))
+    assertJobStatusFailure()
+  }
+
+  def testError(String message='parameter is required', Closure body) {
+    try {
+      body()
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "${message}"))
     assertJobStatusFailure()
   }
 

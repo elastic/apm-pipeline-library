@@ -24,8 +24,8 @@
 
   NOTE: This particular implementation requires to checkout with the step gitCheckout
 */
-def call(Map params = [:], Closure body) {
-  def credentialsId = params.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+def call(Map args = [:], Closure body) {
+  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
   if(!isUnix()){
     error('withGitRelease: windows is not supported yet.')
   }

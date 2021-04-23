@@ -23,25 +23,49 @@ import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+import hudson.CustomJenkinsRule
 
 class JobScriptsSpec extends Specification {
     @Shared
     @ClassRule
-    JenkinsRule jenkinsRule = new JenkinsRule()
+    CustomJenkinsRule jenkinsRule = new CustomJenkinsRule()
 
     @Unroll
-    def 'test script #file.name'(File file) {
+    def 'test folder script #file.name'(File file) {
         given:
         def jobManagement = new JenkinsJobManagement(System.out, [:], new File('.'))
-        new DslScriptLoader(jobManagement).runScript(new File('jobs/folders.groovy').text)
+        def dslLoader = new DslScriptLoader(jobManagement)
 
         when:
-        new DslScriptLoader(jobManagement).runScript(file.text)
+        dslLoader.runScript(file.text)
 
         then:
         noExceptionThrown()
 
         where:
-        file << new FileNameFinder().getFileNames('jobs', '**/*.groovy').collect { new File(it) }
+        file << new FileNameFinder().getFileNames('jobs', '**/folder.groovy')
+                          .collect { new File(it) }
+    }
+
+    @Unroll
+    def 'test script #file.name'(File file) {
+        given:
+        def jobManagement = new JenkinsJobManagement(System.out, [:], new File('.'))
+        def dslLoader = new DslScriptLoader(jobManagement)
+        def fileFinder = new FileNameFinder()
+        fileFinder.getFileNames('jobs', '**/folder.groovy').each {
+          dslLoader.runScript(new File(it).text)
+        }
+
+        when:
+        dslLoader.runScript(file.text)
+
+        then:
+        noExceptionThrown()
+
+        where:
+        file << new FileNameFinder().getFileNames('jobs', '**/*.groovy')
+                          .findAll {!it.contains('folder.groovy')}
+                          .collect { new File(it) }
     }
 }

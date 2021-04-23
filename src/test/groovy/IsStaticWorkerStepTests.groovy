@@ -15,36 +15,34 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana") {
-  displayName('Custom Kibana - Deploy')
-  description('Job to deploy Custom Kibana deployments')
-  parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
+
+class IsStaticWorkerStepTests extends ApmBasePipelineTest {
+
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/isStaticWorker.groovy')
   }
-  disabled(false)
-  quietPeriod(10)
-  logRotator {
-    numToKeep(10)
-    daysToKeep(7)
-    artifactNumToKeep(10)
-    artifactDaysToKeep(-1)
-  }
-  definition {
-    cpsScm {
-      scm {
-        git {
-          remote {
-            github("elastic/observability-test-environments", "ssh")
-            credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
-          }
-          branch('*${branch_specifier}')
-          extensions {
-            wipeOutWorkspace()
-          }
-        }
-      }
-      lightweight(true)
-      scriptPath(".ci/customKibana.groovy")
+
+  @Test
+  void testMissingLabelsArgument() throws Exception {
+    testMissingArgument('labels') {
+      script.call()
     }
+  }
+
+  @Test
+  void test_with_static_worker() throws Exception {
+    assertTrue(script.call(labels: 'macosx'))
+  }
+
+  @Test
+  void test_with_immutable_worker() throws Exception {
+    assertFalse(script.call(labels: 'immutable&&linux'))
   }
 }

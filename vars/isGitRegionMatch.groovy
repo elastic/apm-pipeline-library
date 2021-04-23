@@ -30,14 +30,14 @@ import com.cloudbees.groovy.cps.NonCPS
   NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 */
-def call(Map params = [:]) {
+def call(Map args = [:]) {
   if(!isUnix()){
     error('isGitRegionMatch: windows is not supported yet.')
   }
-  def patterns = params.containsKey('patterns') ? params.patterns.toList() : error('isGitRegionMatch: patterns parameter is required.')
-  def shouldMatchAll = params.get('shouldMatchAll', false)
-  def from = params.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}")
-  def to = params.get('to', env.GIT_BASE_COMMIT)
+  def patterns = args.containsKey('patterns') ? args.patterns.toList() : error('isGitRegionMatch: patterns parameter is required.')
+  def shouldMatchAll = args.get('shouldMatchAll', false)
+  def from = args.get('from', env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}")
+  def to = args.get('to', env.GIT_BASE_COMMIT)
 
   if (patterns.isEmpty()) {
     error('isGitRegionMatch: Missing patterns with values.')

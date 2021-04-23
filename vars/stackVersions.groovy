@@ -48,11 +48,11 @@ def edge(Map args = [:]){
 }
 
 def dev(Map args = [:]){
-  return version("7.11.0", args)
+  return version("7.12.1", args)
 }
 
 def release(Map args = [:]){
-  return version("7.10.2", args)
+  return version("7.12.0", args)
 }
 
 def isSnapshot(args){

@@ -137,7 +137,7 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     script.scm = 'SCM'
     script.call(repo: repoUrl, branch: 'master', credentialsId: 'credentials-id')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the params.rep'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Override GIT_URL with the args.rep'))
     assertTrue(repoUrl.equals(binding.getVariable('env').GIT_URL))
     assertJobStatusSuccess()
   }
@@ -480,6 +480,21 @@ class GitCheckoutStepTests extends ApmBasePipelineTest {
     assertFalse(ret)
     assertTrue(assertMethodCallOccurrences('isUpstreamTrigger', 1))
     assertTrue(assertMethodCallOccurrences('githubPrCheckApproved', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_NoTags() throws Exception {
+    script.scm = 'SCM'
+    script.call(basedir: 'sub-folder', branch: 'master',
+      repo: 'git@github.com:elastic/apm-pipeline-library.git',
+      credentialsId: 'credentials-id',
+      reference: 'repo',
+      noTags: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Checkout master'))
+    assertTrue(assertMethodCallContainsPattern('log', 'Reference repo enabled'))
+    assertTrue(assertMethodCallContainsPattern('checkout', 'CloneOption, depth=0, noTags=true, reference=repo, shallow=false'))
     assertJobStatusSuccess()
   }
 }

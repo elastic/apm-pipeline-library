@@ -86,11 +86,8 @@ class ApmCliStepTests extends ApmBasePipelineTest {
   @Test
   void testVaultConfig() throws Exception {
     helper.registerAllowedMethod('getVaultSecret', [Map.class],
-      { return [
-          "data": [
-            "value": '{"url": "https://vaultapm.example.com:8200", "token": "vaultApmPassword"}'
-            ]
-          ]
+      {
+        return [data: [value: '{"url": "https://vaultapm.example.com:8200", "token": "vaultApmPassword"}' ]]
     })
 
     script.call(apmCliConfig: "secret/oblt/apm", serviceName: "serviceFoo")

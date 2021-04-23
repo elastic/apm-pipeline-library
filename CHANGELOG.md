@@ -1,22 +1,285 @@
 # Changelog
 
+## v1.1.211 (22/04/2021)
+
+#### ⚙️ CI
+
+-  Remove super-linter since it takes 20 minutes [#1083](https://github.com/elastic/apm-pipeline-library/pull/1083)
+-  Bump elastic stack version automation [#1081](https://github.com/elastic/apm-pipeline-library/pull/1081)
+
+## v1.1.210 (20/04/2021)
+
+#### 🚀 Enhancements
+
+-  Enable stage filter argument for the beatsStages [#1076](https://github.com/elastic/apm-pipeline-library/pull/1076)
+
+## v1.1.209 (15/04/2021)
+
+#### 🚀 Enhancements
+
+-  test: add Ubuntu 20.04 to the tests [#1068](https://github.com/elastic/apm-pipeline-library/pull/1068)
+
+#### 🐛 Bug Fixes
+
+-  fix: use toJSON instead readJSON [#1071](https://github.com/elastic/apm-pipeline-library/pull/1071)
+
+#### 🙈 No user affected
+
+-  test-infra: add curl validation on windows [#1069](https://github.com/elastic/apm-pipeline-library/pull/1069)
+
+#### ⚙️ CI
+
+-  CI: skip using ubuntu label in the beats test-infra [#1070](https://github.com/elastic/apm-pipeline-library/pull/1070)
+
+## v1.1.208 (06/04/2021)
+
+#### 🚀 Enhancements
+
+-  Disable unique ephemeral worker by default [#1067](https://github.com/elastic/apm-pipeline-library/pull/1067)
+
+#### ⚙️ CI
+
+-  Add benchmark reporter image to build pipeline [#1065](https://github.com/elastic/apm-pipeline-library/pull/1065)
+
+## v1.1.207 (31/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: stage status cache [#1061](https://github.com/elastic/apm-pipeline-library/pull/1061)
+-  feat: step hasCommentAuthorWritePermissions [#1064](https://github.com/elastic/apm-pipeline-library/pull/1064)
+-  feat: allow to remove padding [#1059](https://github.com/elastic/apm-pipeline-library/pull/1059)
+
+#### 📚 Documentation
+
+-  docs: update metricbeat step docs [#1057](https://github.com/elastic/apm-pipeline-library/pull/1057)
+
+#### 🙈 No user affected
+
+-  ARM workers are now ephemeral [#1062](https://github.com/elastic/apm-pipeline-library/pull/1062)
+-  Update beats-ci workers for the test-infra validation [#1058](https://github.com/elastic/apm-pipeline-library/pull/1058)
+
+## v1.1.206 (29/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: metricbeat step [#1050](https://github.com/elastic/apm-pipeline-library/pull/1050)
+-  chore: refactor filebeat step [#1049](https://github.com/elastic/apm-pipeline-library/pull/1049)
+
+#### 🙈 No user affected
+
+-  Add GCE JCasC [#1053](https://github.com/elastic/apm-pipeline-library/pull/1053)
+-  chore: bump Elastic Stack versions [#1052](https://github.com/elastic/apm-pipeline-library/pull/1052)
+
+## v1.1.205 (23/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withAzureCredentials step [#1048](https://github.com/elastic/apm-pipeline-library/pull/1048)
+
+## v1.1.204 (22/03/2021)
+
+#### 🙈 No user affected
+
+-  Add rebuild analyzer docker generation [#1047](https://github.com/elastic/apm-pipeline-library/pull/1047)
+-  fix: set KIBANA_DOCKER_TAG env var properly [#1046](https://github.com/elastic/apm-pipeline-library/pull/1046)
+
+## v1.1.203 (22/03/2021)
+
+#### 🚀 Enhancements
+
+-  feat: add a new step to build and push a Docker image for Kibana [#1040](https://github.com/elastic/apm-pipeline-library/pull/1040)
+
+#### 🐛 Bug Fixes
+
+-  fix: use proper flag for recreate the local Jenkins services [#1043](https://github.com/elastic/apm-pipeline-library/pull/1043)
+-  Fix the getCause and getCauses for the AbortException [#1041](https://github.com/elastic/apm-pipeline-library/pull/1041)
+
+## v1.1.202 (17/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add getFlakyJobName [#1038](https://github.com/elastic/apm-pipeline-library/pull/1038)
+-  Update to new schema for flaky tests [#1016](https://github.com/elastic/apm-pipeline-library/pull/1016)
+
+#### 📚 Documentation
+
+-  document Gren and GH labels for the automated release process [#1035](https://github.com/elastic/apm-pipeline-library/pull/1035)
+
+## v1.1.201 (11/03/2021)
+
+#### 🚀 Enhancements
+
+-  chore: support filtering the upstream cause in the isUpstreamTrigger step [#1031](https://github.com/elastic/apm-pipeline-library/pull/1031)
+-  Slack notification with the total build time [#1033](https://github.com/elastic/apm-pipeline-library/pull/1033)
+
+## v1.1.200 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNode step [#1030](https://github.com/elastic/apm-pipeline-library/pull/1030)
+
+## v1.1.199 (10/03/2021)
+
+#### 🚀 Enhancements
+
+-  Add isStaticWorker step [#1028](https://github.com/elastic/apm-pipeline-library/pull/1028)
+
+## v1.1.198 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  add noTags - fixes #1024 [#1025](https://github.com/elastic/apm-pipeline-library/pull/1025)
+
+## v1.1.197 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1023](https://github.com/elastic/apm-pipeline-library/pull/1023)
+
+#### 🙈 No user affected
+
+-  Fix pipeline syntax and make goal [#1022](https://github.com/elastic/apm-pipeline-library/pull/1022)
+
+## v1.1.196 (08/03/2021)
+
+#### 🚀 Enhancements
+
+-  Support arm64 MacOS M1 workers [#1021](https://github.com/elastic/apm-pipeline-library/pull/1021)
+
+#### 📚 Documentation
+
+-  [DOCS] restructure the docs [#993](https://github.com/elastic/apm-pipeline-library/pull/993)
+
+#### 🙈 No user affected
+
+-  [jjbb] Fix pipeline name with CamelCase syntax [#1019](https://github.com/elastic/apm-pipeline-library/pull/1019)
+-  Populate GitHub issues/prs into ES [#1017](https://github.com/elastic/apm-pipeline-library/pull/1017)
+-  Remove dependency with https://plugins.jenkins.io/junit-attachments/ [#1015](https://github.com/elastic/apm-pipeline-library/pull/1015)
+
+## v1.1.195 (01/03/2021)
+
+#### 🐛 Bug Fixes
+
+-  Use python3 for installing the pre-commit [#1013](https://github.com/elastic/apm-pipeline-library/pull/1013)
+
+#### ⚙️ CI
+
+-  Docker build pipeline for build analzyer [#1011](https://github.com/elastic/apm-pipeline-library/pull/1011)
+
+## v1.1.194 (24/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  gsutil for windows with python [#1008](https://github.com/elastic/apm-pipeline-library/pull/1008)
+
+## v1.1.193 (24/02/2021)
+
+#### 🚀 Enhancements
+
+-  Report only one DeleteDir step failure [#1006](https://github.com/elastic/apm-pipeline-library/pull/1006)
+
+## v1.1.192 (23/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Unzip does not strip components [#1004](https://github.com/elastic/apm-pipeline-library/pull/1004)
+
+## v1.1.191 (22/02/2021)
+
+#### 🚀 Enhancements
+
+-  Omit failed steps if build was success [#996](https://github.com/elastic/apm-pipeline-library/pull/996)
+
+#### 🐛 Bug Fixes
+
+-  [cosmetic] Replace multiline chars in the GitHub PR comment [#998](https://github.com/elastic/apm-pipeline-library/pull/998)
+-  [cosmetic] add the author in the slack message [#999](https://github.com/elastic/apm-pipeline-library/pull/999)
+
+#### 🙈 No user affected
+
+-  chore: use opentelemetry release [#1000](https://github.com/elastic/apm-pipeline-library/pull/1000)
+-  chore: bum Elastic Stack versions [#984](https://github.com/elastic/apm-pipeline-library/pull/984)
+
+## v1.1.190 (17/02/2021)
+
+#### 🐛 Bug Fixes
+
+-  Avoid cache gsutils temporary location [#994](https://github.com/elastic/apm-pipeline-library/pull/994)
+
+#### 🙈 No user affected
+
+-  [release] changelog exclude some labels [#986](https://github.com/elastic/apm-pipeline-library/pull/986)
+-  [JCasC] google cloud engine local setup [#979](https://github.com/elastic/apm-pipeline-library/pull/979)
+
+## v1.1.189 (17/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support curl in addition to wget for gsutil [#988](https://github.com/elastic/apm-pipeline-library/pull/988)
+
+#### 🙈 No user affected
+
+-  chore: bump Go version [#983](https://github.com/elastic/apm-pipeline-library/pull/983)
+
+## v1.1.188 (16/02/2021)
+
+#### 🚀 Enhancements
+
+- [**backport-to-7.x**][**ready-to-merge**] Support windows for gsutil [#985](https://github.com/elastic/apm-pipeline-library/pull/985)
+
+#### ⚙️ CI
+
+-  Support windows for gsutil (bp #985) [#987](https://github.com/elastic/apm-pipeline-library/pull/987)
+
+## v1.1.187 (16/02/2021)
+
+#### 🙈 No user affected
+
+-  [chore]: delegate delete to the core [#904](https://github.com/elastic/apm-pipeline-library/pull/904)
+
+#### ⚙️ CI
+
+-  Add googleStorageUploadExt step [#867](https://github.com/elastic/apm-pipeline-library/pull/867)
+
+## v1.1.186 (15/02/2021)
+
+#### 🚀 Enhancements
+
+-  Add releaseNotification step to simplify agent release pipelines [#976](https://github.com/elastic/apm-pipeline-library/pull/976)
+-  Disable/Enable pre-commit skipped tests in the report [#977](https://github.com/elastic/apm-pipeline-library/pull/977)
+-  feat: support parameters for githubPrCheckApproved [#910](https://github.com/elastic/apm-pipeline-library/pull/910)
+-  test: taest jobDSL job when them changed [#966](https://github.com/elastic/apm-pipeline-library/pull/966)
+
+#### 🐛 Bug Fixes
+
+-  fix: enable sandbox for pipelines [#967](https://github.com/elastic/apm-pipeline-library/pull/967)
+
+#### 🙈 No user affected
+
+-  chore: refactor jobs in folders [#974](https://github.com/elastic/apm-pipeline-library/pull/974)
+-  chore: refactor params variables to args [#960](https://github.com/elastic/apm-pipeline-library/pull/960)
+
+#### ⚙️ CI
+
+-  Image build pipeline for flaky v2 [#968](https://github.com/elastic/apm-pipeline-library/pull/968)
+
 ## v1.1.185 (08/02/2021)
 
 #### 🚀 Enhancements
 
-- [**backport-to-7.x**][**ready-to-merge**] feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
+-  feat: Archive only on fail [#952](https://github.com/elastic/apm-pipeline-library/pull/952)
 
 #### 🐛 Bug Fixes
 
-- [**backport-to-7.x**][**ready-to-merge**] Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
+-  Disable getStageId call [#962](https://github.com/elastic/apm-pipeline-library/pull/962)
 
 #### 📚 Documentation
 
-- [**backport-to-7.x**][**ready-to-merge**] docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
+-  docs: side note to setEnvVar step [#957](https://github.com/elastic/apm-pipeline-library/pull/957)
 
 #### 🙈 No user affected
 
-- [**backport-to-7.x**][**ready-to-merge**] Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
+-  Add mergify bot [#958](https://github.com/elastic/apm-pipeline-library/pull/958)
 
 ## v1.1.184 (05/02/2021)
 

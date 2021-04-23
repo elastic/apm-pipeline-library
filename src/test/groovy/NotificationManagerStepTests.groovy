@@ -150,6 +150,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Succeeded'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'Steps errors'))
     assertJobStatusSuccess()
   }
 
@@ -235,6 +236,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Steps errors'))
     assertJobStatusSuccess()
   }
 
@@ -273,6 +275,23 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_pr_with_unstable_and_multiline_steps_failures() throws Exception {
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "UNSTABLE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-multiline.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '`auditbeat-Lint - make -C auditbeat check;make -C auditbeat update;make -C x-pack/auditbeat check;`'))
     assertJobStatusSuccess()
   }
 
@@ -408,6 +427,25 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_failure_and_deleteDir_issues() throws Exception {
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      log: f.getText(),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-with-deleteDir-issue.json"),
+      testsErrors: [],
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Failed'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Shell Script'))
+    assertTrue(assertMethodCallContainsPatternOccurrences('githubPrComment', 'Recursively delete the current directory from the workspace', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_a_generated_comment() throws Exception {
     script.notifyPR(comment: 'My Comment')
     printCallStack()
@@ -466,6 +504,9 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('slackSend', 'ABORTED'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'Steps failures'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'https://github.com/org/acme/issues/1234|indicator type url is in upper case (#1234)'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'by `Lola.Flores`'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Took'))
     assertJobStatusSuccess()
   }
 
@@ -661,7 +702,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: 'flake-empty-results.json')})
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -681,7 +722,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -701,7 +742,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -724,7 +765,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -748,7 +789,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -772,7 +813,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -792,7 +833,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [ bar: '' ] })
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json'),
@@ -812,7 +853,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [ "failed": 0, "passed": 120, "skipped": 0, "total": 120 ]
@@ -829,7 +870,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [:]
@@ -840,47 +881,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_analyzeFlakeyThreshold() throws Exception {
-    helper.registerAllowedMethod(
-      "sendDataToElasticsearch",
-      [Map.class],
-      {m -> readJSON(file: "flake-results.json")}
-    )
-    script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
-      es: "https://fake_url",
-      testsErrors: readJSON(file: 'flake-tests-errors.json'),
-      flakyThreshold: 0.5
-    )
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', '"gt" : 0.5'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_analyzeFlakeyNoJobInfo() throws Exception {
-    try {
-      script.analyzeFlakey(
-        flakyReportIdx: '',
-        es: "https://fake_url",
-        testsErrors: readJSON(file: 'flake-tests-errors.json')
-      )
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'analyzeFlakey: did not receive flakyReportIdx data'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_analyzeFlakey_without_comment_notifications() throws Exception {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
       disableGHComment: true,
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [:]

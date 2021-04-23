@@ -81,6 +81,14 @@ pipeline {
           wait: false
         )
 
+        build(job: 'apm-shared/bump-stack-version-pipeline',
+          parameters: [
+            booleanParam(name: 'DRY_RUN_MODE', value: false)
+          ],
+          propagate: false,
+          wait: false
+        )
+
         build(job: 'apm-ui/apm-ui-e2e-tests-mbp/master',
           parameters: [
             booleanParam(name: 'FORCE', value: true),
@@ -155,6 +163,14 @@ pipeline {
             }
           }
         }
+      }
+    }
+    stage('Populate GitHub data') {
+      steps {
+        build(job: 'apm-shared/populate-github',
+          propagate: false,
+          wait: false
+        )
       }
     }
   }

@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Check it the build was triggered by a Branch index.
+  Check if the build was triggered by a Branch index.
 
   def branchIndexTrigger = isBranchIndexTrigger()
 */

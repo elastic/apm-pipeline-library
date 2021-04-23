@@ -15,12 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-folder('apm-shared') {
-  displayName('APM shared folder')
-  description('Folder for shared CI jobs')
-}
+import org.jenkinsci.plugins.workflow.graph.StepNode
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
-folder('apm-shared/oblt-test-env') {
-  displayName('Oblt test Clusters')
-  description('Folder for Oblt test Clusters CI jobs')
+/**
+  Get the flaky job name in a given multibranch pipeline.
+
+  def flakyJobName = getFlakyJobName(withBranch: 'master')
+*/
+
+def call(Map args=[:]) {
+  def withBranch = args.containsKey('withBranch') ? args.withBranch : error('getFlakyJobName: withBranch parameter is required.')
+  if (env.JOB_NAME?.trim() && env.JOB_BASE_NAME?.trim()) {
+    def flakyJobName = (env.JOB_NAME - env.JOB_BASE_NAME) + withBranch
+    return flakyJobName
+  }
+  error('getFlakyJobName: only works for multibranch pipelines.')
 }

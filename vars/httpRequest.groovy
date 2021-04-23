@@ -30,12 +30,12 @@ import sun.net.www.protocol.https.HttpsURLConnectionImpl
   httpRequest(url: "https://duckduckgo.com", method: "POST", headers: ["User-Agent": "dummy"], data: "q=java")
 */
 @NonCPS
-def call(Map params = [:]){
-  def url = params?.url
-  def method = params.containsKey('method') ? params.method : "GET"
-  def headers = params.containsKey('headers') ? params.headers : ["User-Agent": "Mozilla/5.0"]
-  def response_code_only = params.containsKey('response_code_only') ? params.response_code_only : false
-  def data = params?.data
+def call(Map args = [:]){
+  def url = args?.url
+  def method = args.containsKey('method') ? args.method : "GET"
+  def headers = args.containsKey('headers') ? args.headers : ["User-Agent": "Mozilla/5.0"]
+  def response_code_only = args.containsKey('response_code_only') ? args.response_code_only : false
+  def data = args?.data
 
   URL obj
   try {

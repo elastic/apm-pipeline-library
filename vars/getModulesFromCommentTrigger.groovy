@@ -27,9 +27,9 @@
   - `jenkins run the tests for the module _ALL_`
 
 */
-def call(Map params = [:]) {
-  def regex = params.containsKey('regex') ? params.regex : '(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'
-  def delimiter = params.containsKey('delimiter') ? params.delimiter : ','
+def call(Map args = [:]) {
+  def regex = args.containsKey('regex') ? args.regex : '(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'
+  def delimiter = args.containsKey('delimiter') ? args.delimiter : ','
   result = []
   if(env.GITHUB_COMMENT && env.GITHUB_COMMENT.trim()){
     matcher = (env.GITHUB_COMMENT =~ /${regex}/)

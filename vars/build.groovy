@@ -29,12 +29,12 @@ import co.elastic.BuildException
 
   build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 */
-def call(Map params = [:]){
-  def job = params.job
-  def parameters = params.parameters
-  def wait = params.get('wait', true)
-  def propagate = params.get('propagate', true)
-  def quietPeriod = params.get('quietPeriod', 1)
+def call(Map args = [:]){
+  def job = args.job
+  def parameters = args.parameters
+  def wait = args.get('wait', true)
+  def propagate = args.get('propagate', true)
+  def quietPeriod = args.get('quietPeriod', 1)
 
   def buildInfo
   def url
@@ -44,7 +44,11 @@ def call(Map params = [:]){
   } catch (Exception e) {
     def buildLogOutput = currentBuild.rawBuild.getLog(2).find { it.contains('Starting building') }
     url = getRedirectLink(buildLogOutput, job)
-    throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE, e.getCauses())
+    if (e instanceof FlowInterruptedException) {
+      throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE, e.getCauses())
+    } else {
+      throw new BuildException(getBuildId(buildLogOutput), Result.FAILURE)
+    }
   } finally {
     log(level: 'INFO', text: "${url}")
   }

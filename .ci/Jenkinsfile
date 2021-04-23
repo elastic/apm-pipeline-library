@@ -28,6 +28,8 @@ pipeline {
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
+    JOB_GCS_BUCKET = 'apm-ci-temp'
+    JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
     GITHUB_CHECK = 'true'
   }
   options {
@@ -114,6 +116,30 @@ pipeline {
         }
       }
     }
+    stage('Google Storage') {
+      steps {
+        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+          }
+        }
+      }
+    }
+    stage('Google Storage Windows') {
+      agent { label 'windows-2019-immutable' }
+      when {
+        branch 'master'
+      }
+      steps {
+        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+          }
+        }
+      }
+    }
     stage('Check Pipelines') {
       steps {
         withGithubNotify(context: 'Check Pipelines') {
@@ -121,9 +147,15 @@ pipeline {
             validateDeclarativePipeline '.ci/Jenkinsfile'
             validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
             validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+            validateDeclarativePipeline '.ci/chatops.groovy'
+            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
             validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+            validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
+            validateDeclarativePipeline '.ci/licenseScan.groovy'
+            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+            validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
         }
@@ -137,18 +169,13 @@ pipeline {
       steps {
         withGithubNotify(context: 'Check JobDSL') {
           dir("${BASE_DIR}/.ci/jobDSL"){
-            sh(label: 'Run tests', script: './gradlew clean test')
+            sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
           }
         }
       }
       post {
         always {
-          junit(allowEmptyResults: true,
-            testDataPublishers: [
-              [$class: 'AttachmentPublisher']
-            ],
-            testResults:"${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml"
-          )
+          junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
         }
       }
     }
@@ -171,17 +198,6 @@ pipeline {
       post {
         always {
           junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
-        }
-      }
-    }
-    stage('Super-linter') {
-      steps {
-        withGithubNotify(context: 'Check super-linter', tab: 'tests') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            superLinter(failNever: true, junit: false)
-          }
         }
       }
     }
@@ -218,8 +234,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true,
-                        flakyReportIdx: 'reporter-apm-shared-apm-pipeline-library-master')
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'))
     }
   }
 }

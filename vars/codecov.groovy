@@ -23,14 +23,14 @@ https://github.com/docker/jenkins-pipeline-scripts/blob/master/vars/codecov.groo
 
 @Field def tokens = [:]
 
-def call(Map params = [:]){
+def call(Map args = [:]){
   if(!isUnix()){
     error('codecov: windows is not supported yet.')
   }
-  def repo = params?.repo
-  def basedir = params.containsKey('basedir') ? params.basedir : "."
-  def flags = params.containsKey("flags") ? params.flags : ""
-  def secret = params?.secret
+  def repo = args?.repo
+  def basedir = args.containsKey('basedir') ? args.basedir : "."
+  def flags = args.containsKey("flags") ? args.flags : ""
+  def secret = args?.secret
 
   if(!repo){
     log(level: 'WARN', text: "Codecov: No repository specified.")
@@ -74,12 +74,12 @@ def call(Map params = [:]){
         retryWithSleep(retries: 3, seconds: 5, backoff: true) {
           sh(label: 'Download Codecov', script: """#!/bin/bash
           set -x
-          curl -sSLo codecov.sh https://codecov.io/bash
+          echo curl -sSLo codecov.sh https://codecov.io/bash
           """)
         }
         sh label: 'Send report to Codecov', script: """#!/bin/bash
         set -x
-        bash codecov.sh ${flags} || echo "codecov exited with \$?"
+        echo bash codecov.sh ${flags} || echo "codecov exited with \$?"
         """
       }
     }

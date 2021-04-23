@@ -22,8 +22,8 @@ It requires to initialise the pipeline with githubEnv() first.
   gitPush()
 */
 
-def call(Map params = [:]) {
-  def args =  params.containsKey('args') ? params.args : ''
-  def credentialsId =  params.get('credentialsId', '')
-  gitCmd(credentialsId: credentialsId, cmd: 'push', args: "${args}")
+def call(Map args = [:]) {
+  def gitArgs =  args.containsKey('args') ? args.args : ''
+  def credentialsId =  args.get('credentialsId', '')
+  gitCmd(credentialsId: credentialsId, cmd: 'push', args: "${gitArgs}")
 }

@@ -73,6 +73,12 @@ credentials:
               id: gcs-bucket
               scope: GLOBAL
               secret: ${gcs_bucket}
+          - file: ## IMPORTANT This credential is only for testing the googleStorageUploadExt step since it uses some specific service account
+              description: "Secret File Description for apm-ci-gcs-plugin"
+              fileName: "elastic-observability.json"
+              id: "apm-ci-gcs-plugin-file-credentials"
+              scope: GLOBAL
+              secretBytes: "${google_cloud_bucket_secret}" # secretBytes requires base64 encoded content
 
 unclassified:
   location:
@@ -102,10 +108,6 @@ unclassified:
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
-
-  openTelemetry:
-    endpoint: "otel-collector-contrib:4317"
-    useTls: false
 jobs:
   - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
   - file: "/var/pipeline-library/src/test/resources/folders/beats.dsl"
@@ -117,6 +119,8 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogin.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/dockerLogs.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/downstream.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gce-test.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/gce-test-orchestrator.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/connectionRefused.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/error.dsl"
@@ -133,6 +137,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/githubCreatePullRequest.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnv.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/githubEnvSCM.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/googleStorageUploadExt.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/installTools.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isTimerTrigger.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/isUserTrigger.dsl"

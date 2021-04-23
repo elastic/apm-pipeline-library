@@ -27,16 +27,16 @@
                target: "gs://beats-ci-temp/rum/5.1.0",
                secret: 'secret/observability-team/ci/service-account/test-google-storage-plugin')
 */
-def call(Map params = [:]){
+def call(Map args = [:]){
   if(!isUnix()){
     error('publishToCDN: windows is not supported yet.')
   }
-  def install = params.get('install', true)
-  def forceInstall = params.get('forceInstall', true)
-  def headers = params.containsKey('headers') ? params.headers.toList() : []
-  def source = params.containsKey('source') ? params.source : error('publishToCDN: source parameter is required.')
-  def target = params.containsKey('target') ? params.target : error('publishToCDN: target parameter is required.')
-  def secret = params.containsKey('secret') ? params.secret : error('publishToCDN: secret parameter is required.')
+  def install = args.get('install', true)
+  def forceInstall = args.get('forceInstall', true)
+  def headers = args.containsKey('headers') ? args.headers.toList() : []
+  def source = args.containsKey('source') ? args.source : error('publishToCDN: source parameter is required.')
+  def target = args.containsKey('target') ? args.target : error('publishToCDN: target parameter is required.')
+  def secret = args.containsKey('secret') ? args.secret : error('publishToCDN: secret parameter is required.')
   def keyFile = 'service-account.json'
 
   def installPath = "${env.HOME}/google-cloud-sdk"
@@ -58,24 +58,24 @@ def call(Map params = [:]){
   }
 }
 
-def prepareCredentials(Map params = [:]) {
-  def props = getVaultSecret(secret: params.secret)
+def prepareCredentials(Map args = [:]) {
+  def props = getVaultSecret(secret: args.secret)
   if (props?.errors) {
     error "publishToCDN: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
-  writeJSON file: params.keyFile, json: props.data.value
+  writeJSON file: args.keyFile, json: props.data.value
 }
 
-def upload(Map params = [:]) {
-  def pathPrepend = (params.containsKey('path') ? "PATH=${params.path}:\${PATH}" : '')
+def upload(Map args = [:]) {
+  def pathPrepend = (args.containsKey('path') ? "PATH=${args.path}:\${PATH}" : '')
   try {
-    sh(label: 'Activate service account', script: "${pathPrepend} gcloud auth activate-service-account --key-file=${params.keyFile}")
-    def headersFlag = (params.headers.isEmpty() ? '' : params.headers.collect{ "-h ${it}" }.join(' '))
-    sh(label: 'Upload', script: "${pathPrepend} gsutil ${headersFlag} cp ${params.source} ${params.target}")
+    sh(label: 'Activate service account', script: "${pathPrepend} gcloud auth activate-service-account --key-file=${args.keyFile}")
+    def headersFlag = (args.headers.isEmpty() ? '' : args.headers.collect{ "-h ${it}" }.join(' '))
+    sh(label: 'Upload', script: "${pathPrepend} gsutil ${headersFlag} cp ${args.source} ${args.target}")
   } catch (err) {
     error "publishToCDN: error ${err}"
     throw err
   } finally {
-    sh(label: 'Rollback context', script: "rm ${params.keyFile}")
+    sh(label: 'Rollback context', script: "rm ${args.keyFile}")
   }
 }

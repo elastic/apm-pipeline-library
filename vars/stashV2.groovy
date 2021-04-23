@@ -33,10 +33,10 @@
     stashV2(name: 'source', bucket: 'foo')
   }
 */
-def call(Map params = [:]) {
-  def name = params.containsKey('name') ? params.name : error('stashV2: name parameter is required.')
-  def bucket = params.containsKey('bucket') ? params.bucket : ''
-  def credentialsId = params.containsKey('credentialsId') ? params.credentialsId : ''
+def call(Map args = [:]) {
+  def name = args.containsKey('name') ? args.name : error('stashV2: name parameter is required.')
+  def bucket = args.containsKey('bucket') ? args.bucket : ''
+  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : ''
   def filename = "${name}.tgz"
 
   if (bucket.trim()) {

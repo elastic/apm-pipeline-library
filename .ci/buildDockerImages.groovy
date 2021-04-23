@@ -48,7 +48,9 @@ pipeline {
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
     booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
     booleanParam(name: 'apm_server', defaultValue: "false", description: "")
+    booleanParam(name: 'build_analyzer', defaultValue: "false", description: "Build analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/build-analyzer]")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
+    booleanParam(name: 'flakeyv2', defaultValue: "false", description: "Flake V2 detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
     booleanParam(name: 'integrations_reporter', defaultValue: "false", description: "Integrations reporter [https://github.com/elastic/observability-dev/tree/master/apps/automation/integrations/reporter]")
@@ -57,8 +59,10 @@ pipeline {
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'python', defaultValue: "false", description: "")
+    booleanParam(name: 'rebuild_analyzer', defaultValue: "false", description: "Rebuild analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/rebuild-analyzer]")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'rum', defaultValue: 'false', description: '')
+    booleanParam(name: 'slack_apm_report', defaultValue: 'false', description: "Slack APM Bridge [https://github.com/elastic/observability-dev/tree/master/tools/report-bridge]")
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
@@ -321,6 +325,63 @@ pipeline {
           folder: "apps/automation/jenkins-toolbox")
       }
     }
+    stage('Build flake v2'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.flakeyv2}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'flakeyv2',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/flaky-test-analyzer")
+      }
+    }
+    stage('Build analyzer'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.build_analyzer}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'build-analyzer',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/build-analyzer")
+      }
+    }
+    stage('Rebuild analyzer'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.rebuild_analyzer}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'rebuild-analyzer',
+          version: 'latest',
+          push: true,
+          folder: "apps/automation/rebuild-analyzer")
+      }
+    }
     stage('Build integrations test reporter'){
       options {
         skipDefaultCheckout()
@@ -338,6 +399,25 @@ pipeline {
           version: 'latest',
           push: true,
           folder: "apps/automation/integrations/reporter")
+      }
+    }
+    stage('Build hey-apm reports Slack integration'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.slack_apm_report}
+      }
+      steps {
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/observability-dev',
+          tag: 'slack-bridge-hey-apm',
+          version: 'latest',
+          push: true,
+          folder: "tools/report-bridge")
       }
     }
     stage('Build Heartbeat'){

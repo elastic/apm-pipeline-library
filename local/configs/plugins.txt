@@ -1,5 +1,8 @@
 disable-github-multibranch-status
 filesystem_scm
+google-compute-engine
 job-dsl
-opentelemetry::https://storage.googleapis.com/apm-ci-temp/plugins/opentelemetry.hpi
+metrics
+monitoring
+plot
 ssh-agent
