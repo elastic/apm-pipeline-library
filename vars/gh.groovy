@@ -88,7 +88,7 @@ def runCommand(command, flagsCommand) {
 }
 
 def downloadInstaller(where) {
-  def url = 'https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.tar.gz'
+  def url = 'https://github.com/cli/cli/releases/download/v1.9.2/gh_1.9.2_linux_amd64.tar.gz'
   def tarball = 'gh.tar.gz'
   if(isInstalled(tool: 'wget', flag: '--version')) {
     dir(where) {
