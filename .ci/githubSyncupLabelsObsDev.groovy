@@ -34,7 +34,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   parameters {
-    booleanParam(name: 'DRY_RUN_MODE', defaultValue: false, description: 'If true, allows to execute this pipeline in dry run mode.')
+    booleanParam(name: 'DRY_RUN_MODE', defaultValue: true, description: 'If true, allows to execute this pipeline in dry run mode.')
   }
   stages {
     stage('Sync GitHub labels') {
