@@ -85,4 +85,11 @@ class GithubPullRequestsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('gh', 'label=foo,bar'))
   }
+
+  @Test
+  void test_titleContains_with_spaces() throws Exception {
+    script.call(titleContains: '[automation] foo bar')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('gh', 'search="[automation] foo bar" in:title'))
+  }
 }
