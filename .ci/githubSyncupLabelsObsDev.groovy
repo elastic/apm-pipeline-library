@@ -18,12 +18,12 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'master' }
+  agent { label 'linux && immutable' }
   environment {
+    REPO = 'observability-dev'
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL='INFO'
-    DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
-    DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    PIPELINE_LOG_LEVEL = 'INFO'
+    DRY_RUN_MODE = "${params.DRY_RUN_MODE}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -33,27 +33,20 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
-  triggers {
-    cron('H H(1-4) * * 1')
+  parameters {
+    booleanParam(name: 'DRY_RUN_MODE', defaultValue: true, description: 'If true, allows to execute this pipeline in dry run mode.')
   }
   stages {
-    stage('Top failing Beats tests - last 7 days') {
-      steps {
-        setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-master', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.x', subject: "[7.x] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7-release', subject: "[7-release] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-      }
-    }
     stage('Sync GitHub labels') {
       steps {
-        build(job: 'apm-shared/github-syncup-labels-obs-dev-pipeline',
-          parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false),
-          ],
-          propagate: false,
-          wait: false
-        )
+        deleteDir()
+        git(url: "https://github.com/elastic/${REPO}.git", credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+        withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
+          sh '''#!/bin/bash -e
+            cd .github/labels
+            ./github-labels-sync.sh "${GITHUB_TOKEN}" "${DRY_RUN_MODE}"
+          '''
+        }
       }
     }
   }
