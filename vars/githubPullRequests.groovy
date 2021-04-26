@@ -33,7 +33,7 @@ def call(Map args = [:]) {
   try {
     def flags = [ label: labels.join(','), limit: limit, state: state ]
     if(titleContains.trim()) {
-      flags['search'] = "'${titleContains}' in:title"
+      flags['search'] = """"${titleContains}" in:title"""
     }
 
     // filter all the PRs given those flags

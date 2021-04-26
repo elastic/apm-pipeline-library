@@ -175,4 +175,11 @@ class GhStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "gh issue list --label='foo-\"'"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_spaces() throws Exception {
+    script.call(command: 'pr list', flags: [ search: '"[automation] foo bar" in:title'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', """--search='"[automation] foo bar" in:title'"""))
+  }
 }
