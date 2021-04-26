@@ -113,11 +113,11 @@ def prepareArguments(Map args = [:]){
   def labels = args.get('labels', '').replaceAll('\\s','')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
+  def title = '[automation] update elastic stack version for testing'
   def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
   def stackVersion = versionEntry.build_id
-  def title = "bump-stack-version"
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
@@ -180,14 +180,14 @@ def reusePullRequestIfPossible(Map args = [:]){
 def findBranchName(Map args = [:]){
   def branch = args.branch
   // special macro to look for the latest minor version
-  if (branch.contains('<minor>')) {
+  if (branch.contains('<minor>') || branch.contains('.x')) {
     def parts = branch.split('\\.')
     def major = parts[0]
-    branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/}.sort().last()
+    branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/ }.sort().last()
   }
   return branch
 }
 
 def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry.toMapString()}"""
+  return """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry}"""
 }
