@@ -44,7 +44,7 @@ pipeline {
         withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
           sh '''#!/bin/bash -e
             cd .github/labels
-            github-labels-sync.sh "${GITHUB_TOKEN}" "${DRY_RUN_MODE}"
+            ./github-labels-sync.sh "${GITHUB_TOKEN}" "${DRY_RUN_MODE}"
           '''
         }
       }
