@@ -47,4 +47,4 @@ if [ -x "$(command -v docker)" ]; then
 fi
 
 ## Let's cache the maven dependencies
- ./mvnw clean test --fail-never
+ ./mvnw clean install --batch-mode -DskipTests --fail-never
