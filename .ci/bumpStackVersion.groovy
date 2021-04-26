@@ -89,8 +89,7 @@ def generateSteps(Map args = [:]) {
                        scriptFile: "${project.script}",
                        branch: env.BRANCH,
                        reusePullRequest: project.get('reusePullRequest', false),
-                       labels: project.get('labels', ''),
-                       title: project.get('title', 'bump-stack-version'))
+                       labels: project.get('labels', ''))
     }
   }
 }
@@ -111,10 +110,10 @@ def prepareArguments(Map args = [:]){
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('prepareArguments: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def reusePullRequest = args.get('reusePullRequest', false)
-  def title = args.get('title', 'bump-stack-version')
   def labels = args.get('labels', '').replaceAll('\\s','')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
+  def title = '[automation] update elastic stack version for testing'
   def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
