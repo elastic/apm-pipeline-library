@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.212 (27/04/2021)
+
+#### 🚀 Enhancements
+
+-  Specific pipeline for the Sync GitHub Labels automation [#1087](https://github.com/elastic/apm-pipeline-library/pull/1087)
+-  [GH][LABELS] Automation [#886](https://github.com/elastic/apm-pipeline-library/pull/886)
+-  Support reusing an existing PR [#1084](https://github.com/elastic/apm-pipeline-library/pull/1084)
+-  Add searchIssuesWithFilters action for the lookForGitHubIssues [#1082](https://github.com/elastic/apm-pipeline-library/pull/1082)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] tools: fix the chocolatey version [#1090](https://github.com/elastic/apm-pipeline-library/pull/1090)
+
+#### ⚙️ CI
+
+-  Support 7.x == 7.<minor> [#1089](https://github.com/elastic/apm-pipeline-library/pull/1089)
+-  download maven dependencies earlier and fix GCE configuration [#1088](https://github.com/elastic/apm-pipeline-library/pull/1088)
+-  fix git checkout with credentials and add dry run [#1085](https://github.com/elastic/apm-pipeline-library/pull/1085)
+
 ## v1.1.211 (22/04/2021)
 
 #### ⚙️ CI
