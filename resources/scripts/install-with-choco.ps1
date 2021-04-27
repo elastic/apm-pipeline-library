@@ -10,7 +10,7 @@ if ($ChocoVersion -eq '0.10.13') {
   Write-Host("Chocolatey version matches the expected one. ({0})" -f $ChocoVersion)
 } else {
   Write-Host("Downgrade chocolatey to the latest known version with --all support. See https://github.com/chocolatey/choco/issues/1843")
-  & choco install chocolatey -y --version 0.10.13 --allow-downgrade
+  & choco install chocolatey --no-progress -y --version 0.10.13 --allow-downgrade
 }
 
 if ($exclude) {
