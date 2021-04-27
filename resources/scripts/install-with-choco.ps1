@@ -58,4 +58,4 @@ try {
 }
 
 Write-Host("Installing {0} version: {1} ..." -f $tool,$Version)
-& choco install $tool --no-progress -y --version "$Version"
+& choco install $tool --no-progress -y --version "$Version" --allow-downgrade
