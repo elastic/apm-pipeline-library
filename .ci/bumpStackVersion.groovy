@@ -17,7 +17,7 @@
 
 import groovy.transform.Field
 
-@Library('apm@current') _
+@Library('apm@master') _
 
 // To store all the latest snapshot versions
 @Field def latestVersions
