@@ -53,4 +53,4 @@ for version in ${QUERY_OUTPUT}; do
 done
 echo "}" >> "${TEMP_FILE}"
 
-jq < "${TEMP_FILE}" | tee ${OUTPUT}
+jq . "${TEMP_FILE}" | tee ${OUTPUT}
