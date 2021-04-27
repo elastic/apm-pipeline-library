@@ -34,3 +34,4 @@ local.log
 .venv
 
 test-infra/apm-ci/__pycache__/
+latest-versions.json

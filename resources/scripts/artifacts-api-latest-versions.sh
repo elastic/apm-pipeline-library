@@ -28,28 +28,29 @@
 set -eo pipefail
 
 URL="https://artifacts-api.elastic.co/v1"
+TEMP_FILE=$(mktemp)
 OUTPUT=latest-versions.json
 
 QUERY_OUTPUT=$(curl -s ${URL}/versions | jq -r '.aliases[] | select(contains("SNAPSHOT"))')
-LENGTH=$(echo $QUERY_OUTPUT | wc -l)
+LENGTH=$(echo "$QUERY_OUTPUT" | wc -l)
 i=0
-echo "{" > "${OUTPUT}"
+echo "{" > "${TEMP_FILE}"
 for version in ${QUERY_OUTPUT}; do
     ## Array separator
-    i=$(($i + 1))
+    i=$((i + 1))
     comma=""
     if [ ${i} -gt 1 ] ; then
         comma=","
-    elif  [ ${i} -ge ${LENGTH} ] ; then
+    elif  [ "${i}" -ge "${LENGTH}" ] ; then
         comma=""
     fi
-    LATEST_OUTPUT=$(curl -s ${URL}/versions/${version}/builds/latest | jq 'del(.build.projects,.manifests) | . |= .build')
-    BRANCH=$(echo $LATEST_OUTPUT | jq -r .branch)
+    LATEST_OUTPUT=$(curl -s ${URL}/versions/"${version}"/builds/latest | jq 'del(.build.projects,.manifests) | . |= .build')
+    BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
     {
         echo "${comma}\"$BRANCH\":"
         echo "${LATEST_OUTPUT}"
-    } >> "${OUTPUT}"
+    } >> "${TEMP_FILE}"
 done
-echo "}" >> "${OUTPUT}"
+echo "}" >> "${TEMP_FILE}"
 
-cat "${OUTPUT}"
+jq < "${TEMP_FILE}" | tee ${OUTPUT}
