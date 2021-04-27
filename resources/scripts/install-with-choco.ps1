@@ -5,6 +5,9 @@ $tool=$args[0]
 $pattern=$args[1]
 $exclude=$args[2]
 
+Write-Host("Downgrade chocolatey to the latest known version with --all support. See https://github.com/chocolatey/choco/issues/1843")
+& choco install chocolatey -y --version 0.10.13 --allow-downgrade
+
 if ($exclude) {
   Write-Host("Getting latest {0} version for {1} (and exclude {2})..." -f $tool,$pattern,$exclude)
   & choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch
