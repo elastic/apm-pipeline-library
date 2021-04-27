@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.213 (27/04/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] [choco] allow-downgrade [#1092](https://github.com/elastic/apm-pipeline-library/pull/1092)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] Use the base branch to create the PR to [#1091](https://github.com/elastic/apm-pipeline-library/pull/1091)
+
 ## v1.1.212 (27/04/2021)
 
 #### 🚀 Enhancements
