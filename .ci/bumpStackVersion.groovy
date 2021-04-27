@@ -148,7 +148,7 @@ def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
   githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
