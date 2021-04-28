@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.214 (28/04/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix jq format for linux [#1094](https://github.com/elastic/apm-pipeline-library/pull/1094)
+- [**Team:Automation**] Remove duplicated entries in artifacts-api-latest-versions.sh [#1093](https://github.com/elastic/apm-pipeline-library/pull/1093)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: bump stack version [#1096](https://github.com/elastic/apm-pipeline-library/pull/1096)
+
+#### ⚙️ CI
+
+-  artifacts-api is now returning values for the 7.x branch [#1095](https://github.com/elastic/apm-pipeline-library/pull/1095)
+
 ## v1.1.213 (27/04/2021)
 
 #### 🚀 Enhancements
