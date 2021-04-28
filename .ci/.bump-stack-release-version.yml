@@ -20,6 +20,7 @@ projects:
   - repo: apm-integration-testing
     script: .ci/bump-stack-release-version.sh
     branches:
+      - master
       - 7.x
     enabled: true
     labels: dependency
