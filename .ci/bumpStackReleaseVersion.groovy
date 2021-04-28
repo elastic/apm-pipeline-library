@@ -25,7 +25,7 @@ import groovy.transform.Field
 pipeline {
   agent { label 'linux && immutable' }
   environment {
-    REPO = 'observability-dev'
+    REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
     HOME = "${env.WORKSPACE}"
     NOTIFY_TO = credentials('notify-to')
@@ -63,7 +63,7 @@ pipeline {
         warnError('Pull Requests failed')
       }
       steps {
-        generateSteps(projects: [ 'apm-pipeline-library' ])
+        generateSteps()
       }
     }
   }
@@ -75,15 +75,20 @@ pipeline {
 }
 
 def generateSteps(Map args = [:]) {
-  args.projects.each { project ->
+  def projects = readYaml(file: '.ci/.bump-stack-release-version.yml')
+  projects['projects'].each { project ->
     matrix( agent: 'linux && immutable',
             axes:[
-              axis('REPO', [project.repo])
-            ]
+              axis('REPO', [project.repo]),
+              axis('BRANCH', project.branches),
+              axis('ENABLED', [project.get('enabled', true)])
+            ],
+            excludes: [ axis('ENABLED', [ false ]) ]
     ) {
       bumpStackVersion(repo: env.REPO,
-                       scriptFile: '.ci/bump-release-version.sh',
-                       branch: 'master')
+                       scriptFile: "${project.script}",
+                       branch: env.BRANCH,
+                       labels: project.get('labels', ''))
     }
   }
 }
