@@ -117,7 +117,7 @@ def prepareArguments(Map args = [:]){
 
 def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
-  if (!args?.stackVersions?.trim()) {
+  if (args?.stackVersions?.size() == 0) {
     error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
   sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creations")
@@ -138,5 +138,5 @@ def prepareContext(Map args = [:]) {
 }
 
 def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry}"""
+  return """### What \n Bump stack version with the latest release. \n ### Further details \n ${versionEntry}"""
 }
