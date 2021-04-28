@@ -78,4 +78,16 @@ class ArtifactsApiStepTests extends ApmBasePipelineTest {
     assertTrue(obj.get('6.8').branch.equals('6.8'))
     printCallStack()
   }
+
+  @Test
+  void test_latest_release_versions() throws Exception {
+    helper.registerAllowedMethod('sh', [Map.class],{'''
+    [
+      "7.12.1",
+      "7.13.0"
+    ]'''})
+    def obj = script.call(action: 'latest-release-versions')
+    assertTrue(obj.size() == 2)
+    printCallStack()
+  }
 }
