@@ -117,7 +117,7 @@ def prepareArguments(Map args = [:]){
   def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
   def message = createPRDescription(versionEntry)
-  def stackVersion = versionEntry.build_id
+  def stackVersion = versionEntry?.build_id
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
@@ -146,6 +146,9 @@ def reusePullRequest(Map args = [:]) {
 
 def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
+  if (!args?.stackVersion?.trim()) {
+    error('createPullRequest: stackVersion is empty. Review the artifacts-api fro the branch ' + args.branchName)
+  }
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
@@ -180,7 +183,7 @@ def reusePullRequestIfPossible(Map args = [:]){
 def findBranchName(Map args = [:]){
   def branch = args.branch
   // special macro to look for the latest minor version
-  if (branch.contains('<minor>') || branch.contains('.x')) {
+  if (branch.contains('<minor>')) {
     def parts = branch.split('\\.')
     def major = parts[0]
     branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/ }.sort().last()
