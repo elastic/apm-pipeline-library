@@ -147,7 +147,7 @@ def reusePullRequest(Map args = [:]) {
 def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
   if (!args?.stackVersion?.trim()) {
-    error('createPullRequest: stackVersion is empty. Review the artifacts-api fro the branch ' + args.branchName)
+    error('createPullRequest: stackVersion is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
