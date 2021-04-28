@@ -23,3 +23,12 @@ projects:
       - 7.x
     enabled: true
     labels: dependency
+  - repo: observability-test-environments
+    script: .ci/bump-stack-release-version.sh
+    branches:
+      - dev
+      - edge
+      - master
+      - release
+    enabled: false
+    labels: dependency
