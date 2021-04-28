@@ -24,10 +24,18 @@ def call(Map args = [:]) {
     error('artifactsApi: windows is not supported yet.')
   }
   def action = args.containsKey('action') ? args.action : error('artifactsApi: action parameter is required.')
-  if (action.equals('latest-versions')) {
-    def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-versions.sh'), returnStdout: true)
-    return readJSON(text: output)
-  } else {
-    error('artifactsApi: unsupported action.')
+
+  switch(action) {
+    case 'latest-versions':
+      def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-versions.sh'), returnStdout: true)
+      return readJSON(text: output)
+      break
+    case 'latest-release-versions':
+      def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-release-versions.sh'), returnStdout: true)
+      return readJSON(text: output)
+      break
+    default:
+      error('artifactsApi: unsupported action.')
+      break
   }
 }
