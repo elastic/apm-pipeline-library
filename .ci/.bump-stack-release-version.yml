@@ -15,7 +15,6 @@ projects:
     branches:
       - master
     enabled: true
-    reusePullRequest: false
     labels: dependency
   - repo: apm-integration-testing
     script: .ci/bump-stack-release-version.sh
