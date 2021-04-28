@@ -35,3 +35,6 @@ local.log
 
 test-infra/apm-ci/__pycache__/
 latest-versions.json
+
+## For the bump automation
+*.bck

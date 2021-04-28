@@ -48,11 +48,15 @@ def edge(Map args = [:]){
 }
 
 def dev(Map args = [:]){
-  return version("7.12.1", args)
+  // IMPORTANT: this variable is needed to automate the elastic stack bump
+  def devVersion = "7.12.1"
+  return version(devVersion, args)
 }
 
 def release(Map args = [:]){
-  return version("7.12.0", args)
+  // IMPORTANT: this variable is needed to automate the elastic stack bump
+  def releaseVersion = "7.12.0"
+  return version(releaseVersion, args)
 }
 
 def isSnapshot(args){

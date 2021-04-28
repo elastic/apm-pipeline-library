@@ -27,6 +27,9 @@ def call(Map args = [:]) {
   if (action.equals('latest-versions')) {
     def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-versions.sh'), returnStdout: true)
     return readJSON(text: output)
+  } if (action.equals('latest-release-versions')) {
+    def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-release-versions.sh'), returnStdout: true)
+    return readJSON(text: output)
   } else {
     error('artifactsApi: unsupported action.')
   }
