@@ -38,6 +38,7 @@ def call(Map args = [:], Closure body) {
   def forceWorkspace = args.get('forceWorkspace', false)
   def forceWorker = args.get('forceWorker', false)
   def uuid = UUID.randomUUID().toString()
+  def disableSomeWorkers = args.get('disableWorkers', false)
 
   // Sleep to smooth the ram up with the provisioner
   sleep(randomNumber(min: sleepMin, max: sleepMax))
@@ -47,8 +48,14 @@ def call(Map args = [:], Closure body) {
   if (forceWorker) {
     newLabels = isStaticWorker(labels: labels) ? labels : (labels?.trim() ? "${labels} && extra/${uuid}" : "extra/${uuid}")
   }
-  log(level: 'INFO', text: "Allocating a worker with the labels '${newLabels}'.")
 
+  // This is the workaround to disable any workers that are not provisioned correctly.
+  if (disableSomeWorkers && (newLabels.contains('windows-7-32-bit') || newLabels.contains('windows-2008-r2'))) {
+    log(level: 'INFO', text: "Worker '${newLabels}' has been disabled for the time being.")
+    return false
+  }
+
+  log(level: 'INFO', text: "Allocating a worker with the labels '${newLabels}'.")
   node("${newLabels}") {
     if(forceWorkspace) {
       // Allocate a new workspace
