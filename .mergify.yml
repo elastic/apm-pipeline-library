@@ -19,6 +19,9 @@ pull_request_rules:
       backport:
         branches:
           - 7.x
+        title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
+        labels:
+          - "automation"
   - name: Automatic squash and merge on approval with success checks and ready-to-merge label for 7.x
     conditions:
       - check-success=apm-ci/pr-merge
