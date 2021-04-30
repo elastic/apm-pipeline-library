@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.215 (30/04/2021)
+
+#### 🚀 Enhancements
+
+-  enable to disable a node allocation for flaky workers (disabled for time being) [#1099](https://github.com/elastic/apm-pipeline-library/pull/1099)
+
+#### 🙈 No user affected
+
+-  googleStorageUpload wrapper is not required with the latest upgrade [#1101](https://github.com/elastic/apm-pipeline-library/pull/1101)
+-  [mergify] change title to highlight the target branch [#1098](https://github.com/elastic/apm-pipeline-library/pull/1098)
+
+#### ⚙️ CI
+
+-  Automate release bump [#1097](https://github.com/elastic/apm-pipeline-library/pull/1097)
+
 ## v1.1.214 (28/04/2021)
 
 #### 🐛 Bug Fixes
