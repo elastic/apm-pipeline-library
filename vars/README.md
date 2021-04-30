@@ -1322,13 +1322,6 @@ pipeline {
 }
 ```
 
-## googleStorageUpload
-As long as we got some concurrency issues
-
-```
-googleStorageUpload(args)
-```
-
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
 
@@ -2979,6 +2972,7 @@ Wrap the node call for three reasons:
 * sleepMax: whether to sleep and for how long maximum. Optional.
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
+* disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
 
 ## withNpmrc
 Wrap the npmrc token
