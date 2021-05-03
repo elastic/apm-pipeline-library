@@ -19,6 +19,7 @@ services:
         -Dhudson.slaves.NodeProvisioner.MARGIN0=1.0
         -Dhudson.model.LoadStatistics.decay=0.5
         -Dhudson.model.LoadStatistics.clock=5000
+        -cp /usr/share/jenkins/jenkins.war:/usr/share/jenkins/extraLib/*
     volumes:
       - type: volume
         source: jenkins_home
