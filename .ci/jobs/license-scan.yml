@@ -2,7 +2,7 @@
 - job:
     name: apm-shared/license-scan
     display-name: APM Pipeline Library License Scan
-    description: Scans thrid-party licenses and report the results.
+    description: Scans third-party licenses and report the results.
     view: APM-CI
     project-type: multibranch
     script-path: .ci/licenseScan.groovy
