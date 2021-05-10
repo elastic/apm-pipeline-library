@@ -19,5 +19,6 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * description: Description of the GitHub status check. If unset then it will use the description.
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+* ignoreGitHubFailures: Whether to ignore when the github integration failed. Default `true`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
