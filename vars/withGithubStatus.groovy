@@ -49,7 +49,8 @@ def call(Map args = [:], Closure body) {
 
 // This is consumed by elastic/kibana.git@master:.ci/end2end.groovy
 def notify(String context, String description, String status, String redirect) {
-  notifyMap(context: context, description: description, status: status, redirect: redirect)
+  // Fail in case the GitHub API calls fail for any reason
+  notifyMap(context: context, description: description, status: status, redirect: redirect, ignoreGitHubFailures: false)
 }
 
 def notifyMap(Map args = [:]) {
