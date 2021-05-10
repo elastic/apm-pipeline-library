@@ -63,7 +63,7 @@ def notifyMap(Map args = [:]) {
     } catch (err) {
       // Let's retry at least as many times as possible otherwise, ignore the failure and avoid the notification in GitHub
       if (args.get('ignoreGitHubFailures', false) && i == numberOfRetries) {
-        log(level: 'WARN', text: "withGithubStatus: failed with error '${err.toString()}'. But 'ignoreGitHubFailures' has been enabled.")
+        log(level: 'WARN', text: "withGithubStatus: failed with error '${err.toString()}' but 'ignoreGitHubFailures' has been enabled.")
       } else {
         throw err
       }
