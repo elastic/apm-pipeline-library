@@ -164,8 +164,7 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', '1 of 2 tries'))
-    assertFalse(assertMethodCallContainsPattern('log', '2 of 2 tries'))
+    assertTrue(assertMethodCallContainsPattern('log', '2 of 2 tries'))
     assertJobStatusSuccess()
   }
 }

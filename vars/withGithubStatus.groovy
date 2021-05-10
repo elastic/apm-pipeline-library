@@ -53,11 +53,15 @@ def notify(String context, String description, String status, String redirect) {
 }
 
 def notifyMap(Map args = [:]) {
-  retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+  def i = 0
+  def numberOfRetries = 2
+  retryWithSleep(retries: numberOfRetries, seconds: 5, backoff: true) {
     try {
+      i++
       githubNotify(context: "${args.context}", description: "${args.description}", status: "${args.status}", targetUrl: "${args.redirect}")
     } catch (err) {
-      if (args.get('ignoreGitHubFailures', false)) {
+      // Let's retry at least as many times as possible otherwise, ignore the failure and avoid the notification in GitHub
+      if (args.get('ignoreGitHubFailures', false) && i == numberOfRetries) {
         log(level: 'WARN', text: "withGithubStatus: failed with error '${err.toString()}'. But 'ignoreGitHubFailures' has been enabled.")
       } else {
         throw err
