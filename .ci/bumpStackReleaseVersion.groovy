@@ -120,13 +120,21 @@ def createPullRequest(Map args = [:]) {
   if (args?.stackVersions?.size() == 0) {
     error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
-  sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creations")
+  sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
   sh(script: "${args.scriptFile} '${args.stackVersions[0]}' '${args.stackVersions[1]}'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
-  githubCreatePullRequest(title: "${args.title} ${args.stackVersions}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+  if (anyChangesToBeSubmitted("${args.branchName}")) {
+    githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+  } else {
+    log(level: 'INFO', text: "There are no changes to be submitted.")
+  }
+}
+
+def anyChangesToBeSubmitted(String branch) {
+  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
 }
 
 def prepareContext(Map args = [:]) {
