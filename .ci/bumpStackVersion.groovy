@@ -154,7 +154,15 @@ def createPullRequest(Map args = [:]) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
-  githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+  if (anyChangesToBeSubmitted("${args.branchName}")) {
+    githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+  } else {
+    log(level: 'INFO', text: "There are no changes to be submitted.")
+  }
+}
+
+def anyChangesToBeSubmitted(String branch) {
+  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
 }
 
 def prepareContext(Map args = [:]) {
