@@ -32,3 +32,10 @@ pull_request_rules:
       merge:
         method: squash
         strict: smart+fasttrack
+  - name: delete upstream branch after merging changes
+    conditions:
+      - merged
+      - label=automation
+      - base~=^update-stack-version
+    actions:
+      delete_head_branch:
