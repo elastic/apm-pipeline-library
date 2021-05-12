@@ -25,7 +25,7 @@ setup(
     entry_points={"pytest11": ["apm = pytest_apm"]},
     install_requires=["setuptools>=40.0", "pytest >= 5.0", "elastic-apm >= 5.7"],
     python_requires=">=3.5",
-    url='https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/apm-cli',
+    url='https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_apm',
     license='Apache License Version 2.0',
     description='APM pytest plugin for report APM traces about test executed.',
     classifiers=["Framework :: Pytest"],

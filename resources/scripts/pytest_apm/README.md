@@ -18,7 +18,7 @@ You can install "pytest-apm" via `pip` or using the `setup.py` script.
 
 ```
 git checkout https://github.com/elastic/apm-pipeline-library
-cd apm-pipeline-library/resources/scripts/apm-cli
+cd apm-pipeline-library/resources/scripts
 pip install ./pytest_apm
 ```
 
