@@ -127,7 +127,7 @@ def createPullRequest(Map args = [:]) {
     return
   }
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title} ${args.stackVersions}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
