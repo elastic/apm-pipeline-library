@@ -49,12 +49,15 @@ def pytest_addoption(parser):
 
     group.addoption('--apm-server-url',
                     dest='apm_server_url',
+                    env_var='ELASTIC_APM_SERVER_URL',
                     help='URL for the APM server.')
     group.addoption('--apm-token',
                     dest='apm_token',
+                    env_var='ELASTIC_APM_SECRET_TOKEN',
                     help='Token to access to APM server.')
     group.addoption('--apm-api-key',
                     dest='apm_api_key',
+                    env_var='ELASTIC_APM_API_KEY',
                     help='API key to access to APM server.')
     group.addoption('--apm-service-name',
                     dest='apm_service_name',
