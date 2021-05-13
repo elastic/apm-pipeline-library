@@ -23,6 +23,7 @@ import logging
 import json
 import elasticapm
 import sys
+import os
 
 LOGGER = logging.getLogger("pytest_apm")
 
@@ -49,15 +50,12 @@ def pytest_addoption(parser):
 
     group.addoption('--apm-server-url',
                     dest='apm_server_url',
-                    env_var='ELASTIC_APM_SERVER_URL',
                     help='URL for the APM server.')
     group.addoption('--apm-token',
                     dest='apm_token',
-                    env_var='ELASTIC_APM_SECRET_TOKEN',
                     help='Token to access to APM server.')
     group.addoption('--apm-api-key',
                     dest='apm_api_key',
-                    env_var='ELASTIC_APM_API_KEY',
                     help='API key to access to APM server.')
     group.addoption('--apm-service-name',
                     dest='apm_service_name',
@@ -139,6 +137,12 @@ def pytest_sessionstart(session):
     apm_session_name = config.getoption("apm_session_name")
     apm_labels = json.loads(config.getoption("apm_labels"))
     apm_parent_id = config.getoption("apm_parent_id", default=None)
+    if apm_server_url is None:
+        apm_server_url = os.getenv('ELASTIC_APM_SERVER_URL', None)
+    if apm_token is None:
+        apm_token = os.getenv('ELASTIC_APM_SECRET_TOKEN', None)
+    if apm_api_key is None:
+        apm_api_key = os.getenv('ELASTIC_APM_API_KEY', None)
     apm_cli = init_apm_client()
     if apm_cli:
         LOGGER.debug("Session transaction starts.")
