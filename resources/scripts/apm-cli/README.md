@@ -96,9 +96,20 @@ Parent Transaction:
 
 APM connection details, Service name, and transaction name are mandatary so the basic command line is
 
-```
+```bash
 apm-cli.py --apm-server-url https://apm.example.com:8200 \
     --apm-token "${TOKEN}" \
     --service-name "DummyService" \
     --transaction-name "MyTS"
+```
+
+**IMPORTANT**: If you use `--apm-token` or `--apm-api-key` the transaction metadata might expose those arguments
+with their values. In order to avoid any credentials to be exposed, it's recommended to use the environment variables.
+For instance, given the above example, the similar one with environment variables can be seen below:
+
+```bash
+APM_CLI_SERVER_URL=https://apm.example.com:8200 \
+APM_CLI_TOKEN=ASWDCcCRFfr \
+apm-cli.py --apm-service-name 'DummyService' \
+       --transaction-name "MyTS"
 ```
