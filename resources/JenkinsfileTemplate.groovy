@@ -241,14 +241,10 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
-              'windows-2016-immutable',
-              'windows-2016-latest-immutable',
               'windows-2012-r2-immutable',
-              'windows-2012-r2-latest-immutable',
+              'windows-2016-immutable',
               'windows-2019-immutable',
-              'windows-2019-docker-immutable',
-              'windows-2019-test-immutable',
-              'windows-2019-latest-immutable'
+              'windows-2019-docker-immutable'
               )
           }
         }
