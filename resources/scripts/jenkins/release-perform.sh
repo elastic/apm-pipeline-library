@@ -4,4 +4,4 @@ set -uxeo pipefail
 BRANCH_NAME=${BRANCH_NAME:?"missing BRANCH_NAME"}
 
 git checkout -f "${BRANCH_NAME}"
-./mvnw release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
+./mvnw release:prepare release:perform -V --batch-mode -Darguments="-DskipTests=true --batch-mode"
