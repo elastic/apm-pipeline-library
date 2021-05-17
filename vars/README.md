@@ -2659,6 +2659,21 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
 }
 ```
 
+## withAPMEnv
+Prepare the context with the ELASTIC_APM_SERVER_URL, ELASTIC_APM_SECRET_TOKEN,
+OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_HEADERS environment
+variables that are consumed by the body in order to send the data to the APM Server.
+
+```
+withAPMEnv(secret: 'secrets/my-secret-apm') {
+  // the command that consumes those env variables.
+}
+```
+
+* secret: vault secret used to interact with the APM server. Default: 'secret/observability-team/ci/jenkins-stats'
+* tokenFieldName: the field in the vault secret that contains the APM Server token. Default 'apmServerToken'
+* urlFieldName: the field in the vault secret that contains the APM Server URL. Default 'apmServerUrl'
+
 ## withAzureCredentials
 Wrap the azure credentials
 
@@ -2831,7 +2846,7 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * description: Description of the GitHub status check. If unset then it will use the description.
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
-* ignoreGitHubFailures: Whether to ignore when the github integration failed. Default `true`.
+* ignoreGitHubFailures: Whether to ignore when the GitHub integration failed. Default `true`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
