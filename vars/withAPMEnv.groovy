@@ -32,11 +32,14 @@ def call(Map args = [:], Closure body) {
   def props = getVaultSecret(secret: secret)
   if(props?.errors){
     log(level: 'WARN', text: 'withAPMEnv: is disabled. Unable to get credentials from the vault: ' + props.errors.toString())
+    body()
   } else if(props?.data?.get(urlFieldName, false) && props?.data?.get(tokenFieldName, false)) {
     log(level: 'INFO', text: 'withAPMEnv: is enabled.')
     withEnvMask(vars: [
       [var: 'ELASTIC_APM_SERVER_URL', password: props.data.get(urlFieldName)],
-      [var: 'ELASTIC_APM_SECRET_TOKEN', password: props.data.get(tokenFieldName)]
+      [var: 'ELASTIC_APM_SECRET_TOKEN', password: props.data.get(tokenFieldName)],
+      [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: props.data.get(urlFieldName)],
+      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "authorization=Bearer ${props.data.get(tokenFieldName)}"]
     ]){
       body()
     }

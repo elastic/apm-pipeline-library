@@ -2660,7 +2660,8 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
 ```
 
 ## withAPMEnv
-Prepare the context with the ELASTIC_APM_SERVER_URL and ELASTIC_APM_SECRET_TOKEN
+Prepare the context with the ELASTIC_APM_SERVER_URL, ELASTIC_APM_SECRET_TOKEN,
+OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_HEADERS environment
 variables that are consumed by the body in order to send the data to the APM Server.
 
 ```
