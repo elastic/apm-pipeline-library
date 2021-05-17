@@ -171,7 +171,6 @@ pipeline {
             name 'PLATFORM'
             values (
               'debian-9',
-              'ubuntu-16',
               'ubuntu-18',
               'ubuntu-20'
               )
