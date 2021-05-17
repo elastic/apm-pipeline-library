@@ -104,9 +104,9 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-              sh './mvnw clean install --batch-mode -DskipTests'
+              sh './mvnw clean install -V --batch-mode -DskipTests'
             }
-            sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
           }
         }
       }
