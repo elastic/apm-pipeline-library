@@ -39,6 +39,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     ALLOWED('secret/observability-team/ci/temp/allowed'),
     BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
+    SECRET_APM('secret/observability-team/ci/jenkins-stats'),
+    SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),
     SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
@@ -581,6 +583,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_ALT_USERNAME.equals(s)){
       return [data: [alt_user_key: 'username', password: 'user_password']]
+    }
+    if(VaultSecret.SECRET_APM.equals(s)){
+      return [data: [apmServerToken: 'my-token', apmServerUrl: 'my-url']]
+    }
+    if(VaultSecret.SECRET_APM_CUSTOMISED.equals(s)){
+      return [data: [token: 'my-token-1', url: 'my-url-1']]
     }
     if(VaultSecret.SECRET_AZURE.equals(s)){
       return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
