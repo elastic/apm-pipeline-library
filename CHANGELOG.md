@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.217 (17/05/2021)
+*No changelog for this release.*
+
+## v1.1.216 (17/05/2021)
+
+#### 🚀 Enhancements
+
+-  Step withAPMEnv [#1114](https://github.com/elastic/apm-pipeline-library/pull/1114)
+
+#### 🐛 Bug Fixes
+
+-  fix: add a JAVA_OPTS env var to fix the container start [#1102](https://github.com/elastic/apm-pipeline-library/pull/1102)
+-  Fix null value in the PRs created with the bumpStackReleaseVersion pipeline [#1109](https://github.com/elastic/apm-pipeline-library/pull/1109)
+
 ## v1.1.215 (30/04/2021)
 
 #### 🚀 Enhancements
