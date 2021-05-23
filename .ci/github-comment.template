@@ -1,4 +1,4 @@
-<!-- See for further examaples https://github.com/elastic/apm-pipeline-library/blob/master/resources/github-comment-markdown.template -->
+<!-- See for further examples https://github.com/elastic/apm-pipeline-library/blob/master/resources/github-comment-markdown.template -->
 
 <%if (statusSuccess) {%>
 ## :green_heart: Build Succeeded
