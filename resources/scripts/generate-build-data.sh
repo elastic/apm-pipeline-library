@@ -350,7 +350,7 @@ function fetchAndDefaultStepsInfo() {
 function stepsInfoFiltered() {
   input="${STEPS_ERRORS}"
   output="${STEPS_ERRORS_FILTERED}"
-  jq -e 'map(select(.displayName!="Archive JUnit" and .displayName!="Notifies GitHub of the status of a Pull Request" and .displayName!="Recursively delete the current directory from the workspace"))' "${input}" > "${output}"
+  jq -e 'map(select(.displayName!="Archive JUnit-formatted test results" and .displayName!="Notifies GitHub of the status of a Pull Request" and .displayName!="Recursively delete the current directory from the workspace"))' "${input}" > "${output}"
 }
 
 function fetchAndDefaultTestsErrors() {
