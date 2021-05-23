@@ -85,7 +85,6 @@ def call(Map args = [:]) {
         // to use the content instead the file path.
         data['buildCommentTemplate'] = args.get('buildCommentTemplate', 'github-comment-markdown.template')
         if (args.get('useContentTemplate', false) && args.containsKey('buildCommentTemplate')) {
-          data['buildCommentTemplate'] = buildCommentTemplate
           data['useContentTemplate'] = true
         }
 
