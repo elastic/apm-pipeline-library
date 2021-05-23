@@ -1,0 +1,14 @@
+[
+  {
+    "displayDescription": null,
+    "displayName": "Shell Script",
+    "durationInMillis": 101825,
+    "id": "58",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-02-18T16:24:40.836+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://beats-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/Beats/pipelines/beats/pipelines/PR-22662/runs/3/steps/58/log"
+  }
+]

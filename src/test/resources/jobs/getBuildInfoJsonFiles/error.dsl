@@ -25,6 +25,7 @@ DSL = '''pipeline {
       [ -e 'tests-info.json' ] && echo yeah || exit 1
       [ -e 'steps-info.json' ] && echo yeah || exit 1
       [ -e 'steps-error.json' ] && echo yeah || exit 1
+      [ -e 'steps-error-filtered.json' ] && echo yeah || exit 1
       """
     }
   }

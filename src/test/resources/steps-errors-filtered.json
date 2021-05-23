@@ -45,39 +45,6 @@
     "type": "STEP"
   },
   {
-    "displayDescription": "Server returned HTTP response code: 500, message: '500 Internal Server Error' for URL: https://api.g",
-    "displayName": "Notifies GitHub of the status of a Pull Request",
-    "durationInMillis": 447,
-    "id": "6672",
-    "input": null,
-    "result": "FAILURE",
-    "startTime": "2019-05-29T12:08:57.040+0000",
-    "state": "FINISHED",
-    "type": "STEP"
-  },
-  {
-    "displayDescription": "Unable to delete 'C:\\Users\\jenkins\\workspace\\Beats_beats_PR-22662'. Tried 3 times (of a maximum of 3",
-    "displayName": "Recursively delete the current directory from the workspace",
-    "durationInMillis": 282224,
-    "id": "11714",
-    "input": null,
-    "result": "FAILURE",
-    "startTime": "2019-05-29T12:08:57.040+0000",
-    "state": "FINISHED",
-    "type": "STEP"
-  },
-  {
-    "displayDescription": "Archive JUnit'",
-    "displayName": "Archive JUnit",
-    "durationInMillis": 14,
-    "id": "4474",
-    "input": null,
-    "result": "FAILURE",
-    "startTime": "2019-05-29T12:08:57.040+0000",
-    "state": "FINISHED",
-    "type": "STEP"
-  },
-  {
     "displayDescription": "Error 'hudson.AbortException: script returned exit code 2'",
     "displayName": "Error signal",
     "durationInMillis": 14,

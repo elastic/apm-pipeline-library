@@ -47,7 +47,7 @@ This method generates flakey test data from Jenkins test results
  * @param disableGHComment whether to disable the GH comment notification.
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
  * @param jobName
-*/ 
+*/
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
     def jobName = args.containsKey('jobName') ? args.jobName : error('analyzeFlakey: jobName parameter is required')
@@ -84,7 +84,7 @@ def analyzeFlakey(Map args = [:]) {
       // we wish to include the number of flakes found in the time period. (Currently hard-coded to 90d)
       //
       //def testFlakyFreq = [:]
-      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] } 
+      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] }
 
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
@@ -188,6 +188,7 @@ def customPRComment(Map args = [:]) {
  * @param statsUrl URL to access to the stats
  * @param log String that contains the log
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param stepsErrorsFiltered list of steps failed filtered, see src/test/resources/steps-errors-filtered.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  */
 def notifyEmail(Map params = [:]) {
@@ -199,6 +200,7 @@ def notifyEmail(Map params = [:]) {
     def statsUrl = params.containsKey('statsUrl') ? params.statsUrl : ''
     def log = params.containsKey('log') ? params.log : null
     def stepsErrors = params.containsKey('stepsErrors') ? params.stepsErrors : []
+    def stepsErrorsFiltered = params.get('stepsErrorsFiltered', [])
     def testsErrors = params.containsKey('testsErrors') ? params.testsErrors : []
 
     catchError(buildResult: 'SUCCESS', message: 'notifyEmail: Error sending the email') {
@@ -223,6 +225,7 @@ def notifyEmail(Map params = [:]) {
           "statsUrl": statsUrl,
           "log": log,
           "stepsErrors": stepsErrors,
+          "stepsErrorsFiltered": stepsErrorsFiltered,
           "testsErrors": testsErrors
       ]);
 
@@ -269,6 +272,7 @@ def notifyPR(Map args = [:]) {
  * @param statsUrl URL to access to the stats
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
+ * @param stepsErrorsFiltered list of steps failed filtered, see src/test/resources/steps-errors-filtered.json
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  */
 def notifySlack(Map args = [:]) {
@@ -279,6 +283,7 @@ def notifySlack(Map args = [:]) {
     def log = args.containsKey('log') ? args.log : null
     def statsUrl = args.containsKey('statsUrl') ? args.statsUrl : ''
     def stepsErrors = args.containsKey('stepsErrors') ? args.stepsErrors : []
+    def stepsErrorsFiltered = args.get('stepsErrorsFiltered', [])
     def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
     def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
     def enabled = args.get('enabled', false)
@@ -306,6 +311,7 @@ def notifySlack(Map args = [:]) {
           "statsUrl": statsUrl,
           "statusSuccess": statusSuccess,
           "stepsErrors": stepsErrors,
+          "stepsErrorsFiltered": stepsErrorsFiltered,
           "testsErrors": testsErrors,
           "testsSummary": testsSummary
         ])
@@ -332,6 +338,7 @@ def notifySlack(Map args = [:]) {
  * @param log String that contains the log
  * @param statsUrl URL to access to the stats
  * @param stepsErrors list of steps failed, see src/test/resources/steps-errors.json
+ * @param stepsErrorsFiltered list of steps failed filtered, see src/test/resources/steps-errors-filtered.json
  * @param testsErrors list of test failed, see src/test/resources/tests-errors.json
  * @param testsSummary object with the test results summary, see src/test/resources/tests-summary.json
  */
@@ -343,6 +350,7 @@ def generateBuildReport(Map args = [:]) {
     def log = args.get('log', null)
     def statsUrl = args.get('statsUrl', '')
     def stepsErrors = args.get('stepsErrors', [])
+    def stepsErrorsFiltered = args.get('stepsErrorsFiltered', [])
     def testsErrors = args.get('testsErrors', [])
     def testsSummary = args.get('testsSummary', null)
     def archiveFile = args.get('archiveFile', true)
@@ -367,6 +375,7 @@ def generateBuildReport(Map args = [:]) {
         "statsUrl": statsUrl,
         "statusSuccess": statusSuccess,
         "stepsErrors": stepsErrors,
+        "stepsErrorsFiltered": stepsErrorsFiltered,
         "testsErrors": testsErrors,
         "testsSummary": testsSummary
       ])

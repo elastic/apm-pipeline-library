@@ -392,6 +392,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
           changeSet: [],
           log: '',
           stepsErrors: [],
+          stepsErrorsFiltered: [],
           testsErrors: [],
           testsSummary: []
         ]
