@@ -15,6 +15,10 @@
 ## :broken_heart: ${(testsSummary?.failed != 0) ? 'Tests Failed' : 'Build Failed'}
 <%}%>
 
+<!-- BUILD BADGES-->
+> _the below badges are clickable and redirect to their specific view in the CI or DOCS_
+[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) <% if(docsUrl?.trim() && !buildStatus?.equals('ABORTED')) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>
+
 <!-- TEST RESULTS IF ANY-->
 <% if(testsErrors?.any{item -> item?.status == "FAILED"}) {%>
   ### Test errors [![${testsSummary?.failed}](https://img.shields.io/badge/${testsSummary?.failed}%20-red)](${jobUrl}/tests)
