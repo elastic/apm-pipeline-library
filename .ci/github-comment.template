@@ -33,7 +33,7 @@ ${errorStackTrace}
 <%}%>
 
 <!-- STEPS ERRORS IF ANY -->
-<% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit') && !it?.displayName?.contains('Recursively delete')}%>
+<% stepsErrors = stepsErrorsFiltered?.findAll{it?.result == "FAILURE"}%>
 <% if (stepsErrors?.size() != 0 && !statusSuccess) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
 <% if (stepsErrors?.size() > 10) {%>

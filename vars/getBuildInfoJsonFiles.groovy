@@ -49,6 +49,7 @@ def call(Map args = [:]) {
     def changeSet = []
     def logData = ''
     def stepsErrors = []
+    def stepsErrorsFiltered = []
     def testsErrors = []
     def testsSummary = []
     try {
@@ -57,6 +58,7 @@ def call(Map args = [:]) {
         changeSet = readJSON(file: 'changeSet-info.json')
         logData = readFile(file: 'pipeline-log-summary.txt')
         stepsErrors = readJSON(file: 'steps-errors.json')
+        stepsErrorsFiltered = readJSON(file: 'steps-errors-filtered.json')
         testsErrors = readJSON(file: 'tests-errors.json')
         testsSummary = readJSON(file: 'tests-summary.json')
       }
@@ -70,6 +72,7 @@ def call(Map args = [:]) {
       changeSet: changeSet,
       log: logData,
       stepsErrors: stepsErrors,
+      stepsErrorsFiltered: stepsErrorsFiltered,
       testsErrors: testsErrors,
       testsSummary: testsSummary
     ]

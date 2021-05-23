@@ -168,6 +168,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-filtered.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
       testsSummary: readJSON(file: "tests-summary.json")
     )
@@ -332,13 +333,14 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-filtered.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
       testsSummary: readJSON(file: "tests-summary_failed.json")
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Tests Failed'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Test errors [![1]'))
-    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Steps errors [![3]'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Steps errors [![6]'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'badge/docs-preview'))
     assertJobStatusSuccess()
   }
@@ -352,6 +354,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-filtered.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
       testsSummary: readJSON(file: "tests-summary.json")
     )
@@ -369,6 +372,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-multiline.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-with-multiline.json"),  // filtered produces the same
       testsErrors: readJSON(file: "tests-errors.json"),
       testsSummary: readJSON(file: "tests-summary.json")
     )
@@ -386,6 +390,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-multiple.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-with-multiple.json"),  // filtered produces the same
       testsErrors: readJSON(file: "tests-errors.json"),
       testsSummary: readJSON(file: "tests-summary.json")
     )
@@ -517,6 +522,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-deleteDir-issue.json"),
+      stepsErrorsFiltered: readJSON(file: "steps-errors-filtered-with-deleteDir-issue.json"),
       testsErrors: [],
       testsSummary: readJSON(file: "tests-summary.json")
     )

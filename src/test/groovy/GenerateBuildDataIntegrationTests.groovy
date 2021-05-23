@@ -161,6 +161,12 @@ class GenerateBuildDataIntegrationTests {
     obj = errors.get(0)
     assertEquals("Log transformation happens successfully", "foo", obj.get("displayDescription"))
     assertEquals("It was an error signal", "Error signal", obj.get("displayName"))
+
+    JSONArray errorsFiltered = JSONSerializer.toJSON(new File("target/${targetFolder}/steps-errors-filtered.json").text)
+    assertFalse("There are steps errors", errorsFiltered.isEmpty())
+    obj = errorsFiltered.get(0)
+    assertEquals("Log transformation happens successfully", "foo", obj.get("displayDescription"))
+    assertEquals("It was an error signal", "Error signal", obj.get("displayName"))
   }
 
   @Test

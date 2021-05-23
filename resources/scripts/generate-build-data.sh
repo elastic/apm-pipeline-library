@@ -37,6 +37,7 @@ ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
 PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
+STEPS_ERRORS_FILTERED="steps-errors-filtered.json"
 STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
 TESTS_INFO="tests-info.json"
@@ -346,6 +347,12 @@ function fetchAndDefaultStepsInfo() {
     normaliseSteps "${output}"
 }
 
+function stepsInfoFiltered() {
+  input="${STEPS_ERRORS}"
+  output="${STEPS_ERRORS_FILTERED}"
+  jq -e 'map(select(.displayName!="Archive JUnit" and .displayName!="Notifies GitHub of the status of a Pull Request" and .displayName!="Recursively delete the current directory from the workspace"))' "${input}" > "${output}"
+}
+
 function fetchAndDefaultTestsErrors() {
     file=$1
     url=$2
@@ -449,6 +456,9 @@ while read -r json ; do
   echo "{ \"index\":{} }" >> "${CI_TEST_BULK_REPORT}"
   echo "${json}" >> "${CI_TEST_BULK_REPORT}"
 done
+
+### Create the filtered step errors
+stepsInfoFiltered
 
 ### Create a document with the overall build data. (aka no tests)
 jq 'del(.test)' "${BUILD_REPORT}" > "${CI_BUILD_REPORT}"
