@@ -104,9 +104,9 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-              sh './mvnw clean install -V --batch-mode -DskipTests'
+              sh(label: 'mvnw clean install', script: './mvnw clean install -V --batch-mode -DskipTests')
             }
-            sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            sh(label: 'mvnw clean test', script: './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn')
           }
         }
       }
@@ -193,8 +193,8 @@ pipeline {
       steps {
         withGithubNotify(context: 'Test infra') {
           dir("${BASE_DIR}"){
-            sh script: './resources/scripts/jenkins/apm-ci/test.sh'
-            sh script: './resources/scripts/jenkins/build.sh'
+            sh(label: 'test-infra test goal', script: './resources/scripts/jenkins/apm-ci/test.sh')
+            sh(label: 'test-infra build goal', script: './resources/scripts/jenkins/build.sh')
           }
         }
       }
