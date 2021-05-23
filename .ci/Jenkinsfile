@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@feature/override-notify-message-template') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -234,7 +234,9 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'))
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'),
+                        buildCommentTemplate: readFile('.ci/github-comment.template'),
+                        useContentTemplate: true)
     }
   }
 }
