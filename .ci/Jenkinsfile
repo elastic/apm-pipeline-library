@@ -238,7 +238,7 @@ pipeline {
   post {
     cleanup {
       notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'),
-                        buildCommentTemplate: readFile('.ci/github-comment.template'),
+                        buildCommentTemplate: readFile("${BASE_DIR}/.ci/github-comment.template"),
                         useContentTemplate: true)
     }
   }
