@@ -45,6 +45,6 @@ ${errorStackTrace}
 <% }%>
   <% stepsErrors?.takeRight(10)?.each{ c -> %>
   <% url = (c?.url && c?.url != 'null') ? ". See logs <a href=\"${c?.url}/?start=0\">here</a>" : ''%>
-##### `${c?.displayName && c?.displayName != 'null' ? c?.displayName.replaceAll('\\n', '') : ''}` ${url}
+##### `${c?.displayDescription && c?.displayDescription != 'null' ? c?.displayDescription.replaceAll('\\n', '') : c?.displayName}` ${url}
   <%}%>
 <%}%>
