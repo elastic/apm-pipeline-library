@@ -28,7 +28,8 @@
 set -eo pipefail
 
 URL="https://artifacts-api.elastic.co/v1"
+NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 
 OUTPUT=latest-release-versions.json
 
-curl -s ${URL}/versions | jq -r '.versions[] | select(contains("SNAPSHOT")|not)' | jq -R . | jq -s '. | sort' | tee ${OUTPUT}
+curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r '.versions[] | select(contains("SNAPSHOT")|not)' | jq -R . | jq -s '. | sort' | tee ${OUTPUT}
