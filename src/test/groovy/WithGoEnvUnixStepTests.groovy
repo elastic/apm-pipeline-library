@@ -43,6 +43,7 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOPATH=WS, GOARCH=amd64'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
     assertJobStatusSuccess()
   }
@@ -60,6 +61,23 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOPATH=WS, GOARCH=arm64'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_arm64_with_different_GOARCH() throws Exception {
+    addEnvVar('GOARCH', 'amd64')
+    helper.registerAllowedMethod('isArm', { return true })
+    def isOK = false
+    script.call(version: "1.12.2"){
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('log', "GOARCH env variable matches 'amd64' but it will be overridden to 'arm64'"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOPATH=WS, GOARCH=arm64'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
     assertJobStatusSuccess()
   }
