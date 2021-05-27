@@ -1,0 +1,23 @@
+Install Terraform from a GCS bucket and export environment variables to use it.
+
+```
+withTerraform(root: "${env.WORKSPACE}/bin", version: "0.15.3"){
+ ...
+}
+```
+
+```
+withTerraform(root: "${env.WORKSPACE}/bin"){
+ ...
+}
+```
+
+```
+withTerraform(){
+ ...
+}
+```
+
+
+* root: folder to install Terraform.
+* version: version to install should be uploaded to https://storage.googleapis.com/obs-ci-cache/tools.
