@@ -1,0 +1,15 @@
+Install .NET SDK and export environment variables to use it.
+
+```
+withDotnet(root: "${env.WORKSPACE}/.dotnet"){
+ ...
+}
+```
+
+```
+withDotnet(){
+ ...
+}
+```
+
+* root: folder to install .NET SDK.
