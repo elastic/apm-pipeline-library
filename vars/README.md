@@ -2691,6 +2691,23 @@ withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
 * credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
 
+## withDotnet
+Install .NET SDK and export environment variables to use it.
+
+```
+withDotnet(root: "${env.WORKSPACE}/.dotnet"){
+ ...
+}
+```
+
+```
+withDotnet(){
+ ...
+}
+```
+
+* root: folder to install .NET SDK.
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
@@ -3026,6 +3043,31 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
   //block
 }
 ```
+
+## withTerraform
+Install Terraform from a GCS bucket and export environment variables to use it.
+
+```
+withTerraform(root: "${env.WORKSPACE}/bin", version: "0.15.3"){
+ ...
+}
+```
+
+```
+withTerraform(root: "${env.WORKSPACE}/bin"){
+ ...
+}
+```
+
+```
+withTerraform(){
+ ...
+}
+```
+
+
+* root: folder to install Terraform.
+* version: version to install should be uploaded to https://storage.googleapis.com/obs-ci-cache/tools.
 
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
