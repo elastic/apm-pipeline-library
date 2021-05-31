@@ -16,9 +16,9 @@
 // under the License.
 
 /**
- Install .NET SDK and export environment variables to use it.
+Install Terraform from a GCS bucket and export environment variables to use it.
 
-withDotnet(root: "${env.WORKSPACE}/bin"){
+withTerraform(root: "${env.WORKSPACE}/bin", version: "0.15.3"){
  ...
 }
 
