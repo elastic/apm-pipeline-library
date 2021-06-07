@@ -35,7 +35,7 @@ the flakey test analyser.
 
   // Notify build status for a PR as a GitHub comment, and send slack message to multiple channels if build failed
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel, #other-channel')
- 
+
   // Notify build status for a PR as a GitHub comment, and send slack message with custom header
   notifyBuildResult(prComment: true, slackComment: true, slackChannel: '#my-channel', slackHeader: '*Header*: this is a header')
 
@@ -222,7 +222,7 @@ def customisedEmail(String email) {
         suffix = folders[0]
       }
     }
-    if (suffix?.trim()) {
+    if (suffix?.trim() && !suffix.contains('+')) {
       return [email.replace('@', "+${suffix}@")]
     } else {
       return [email]
