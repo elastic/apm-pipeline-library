@@ -222,7 +222,7 @@ def customisedEmail(String email) {
         suffix = folders[0]
       }
     }
-    if (suffix?.trim() && !suffix.contains('+')) {
+    if (suffix?.trim() && !email.contains('+')) {
       return [email.replace('@', "+${suffix}@")]
     } else {
       return [email]
