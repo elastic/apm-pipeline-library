@@ -177,6 +177,14 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testCustomisedEmailWithFilter() throws Exception {
+    env.REPO = 'foo'
+    env.JOB_NAME = 'folder1/folder2/foo'
+    assertTrue(script.customisedEmail('build-apm+foo@example.com').equals(['build-apm+foo@example.com']))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_email_without_NOTIFY_TO() throws Exception {
     env.remove('NOTIFY_TO')
     script.call(shouldNotify: true)
@@ -273,7 +281,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  @Ignore("Class does not have access to the built-in steps. Error: No signature of method: co.elastic.NotificationManager.catchError()")	
+  @Ignore("Class does not have access to the built-in steps. Error: No signature of method: co.elastic.NotificationManager.catchError()")
   void test_flakey_and_prcomment_with_aggregation() throws Exception {
     // When PR
     helper.registerAllowedMethod('isPR', { return true })
