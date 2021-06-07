@@ -9,6 +9,10 @@ def test_docker_compose_installed(host):
   cmd = host.run("docker-compose --version")
   assert cmd.rc == 0, "it is required for all the APM projects"
 
+def test_docker_is_running(host):
+  cmd = host.run("docker run hello-world")
+  assert cmd.rc == 0, "it is required for all the APM projects"
+
 def test_python3_installed(host):
   cmd = host.run("python3 --version")
   assert cmd.rc == 0, "it is required for the apm-agent-python and apm-integration-testing"
