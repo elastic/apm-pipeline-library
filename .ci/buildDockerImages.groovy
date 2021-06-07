@@ -66,6 +66,7 @@ pipeline {
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
     booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
+    booleanParam(name: 'azure_vm_extension', defaultValue: "false", description: "Tools for the Azure VM extension [https://github.com/elastic/azure-vm-extension]")
   }
   stages {
     stage('Build agent Python images'){
@@ -520,6 +521,26 @@ pipeline {
           tag: "bandstand",
           version: "latest",
           folder: "apps/automation/bandstand",
+          push: true
+        )
+      }
+    }
+    stage('Build azure_vm_extension'){
+      options {
+        skipDefaultCheckout()
+      }
+      when{
+        beforeAgent true
+        expression { return params.azure_vm_extension}
+      }
+      steps{
+        deleteDir()
+        dockerLoginElasticRegistry()
+        buildDockerImage(
+          repo: 'https://github.com/elastic/azure-vm-extension',
+          tag: "azure-vm-tools",
+          version: "latest",
+          folder: ".ci/docker/azure-vm-tools",
           push: true
         )
       }
