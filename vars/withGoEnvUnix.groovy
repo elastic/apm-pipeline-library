@@ -41,11 +41,15 @@ def call(Map args = [:], Closure body) {
   def lastCoordinate = version[-2..-1]
   // gvm remove the last coordinate if it is 0
   def goDir = ".gvm/versions/go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.${arch}"
+  if (env.GOARCH?.trim() && env.GOARCH != arch) {
+    log(level: 'WARN', text: "withGoEnvUnix: GOARCH env variable matches '${env.GOARCH}' but it will be overridden to '${arch}'.")
+  }
   withEnv([
     "HOME=${env.WORKSPACE}",
     "PATH=${env.WORKSPACE}/bin:${env.WORKSPACE}/${goDir}/bin:${env.PATH}",
     "GOROOT=${env.WORKSPACE}/${goDir}",
-    "GOPATH=${env.WORKSPACE}"
+    "GOPATH=${env.WORKSPACE}",
+    "GOARCH=${arch}"
   ]){
     installGo(version: version)
     installPackages(pkgs: pkgs)

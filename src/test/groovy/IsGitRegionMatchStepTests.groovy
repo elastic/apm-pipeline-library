@@ -171,6 +171,35 @@ class IsGitRegionMatchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testBeatsOnlyDocsWithMatch() throws Exception {
+    def changeset = ''' README.md
+                      | deploy/kubernetes/auditbeat-kubernetes.yaml
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '(.*\\.(asciidoc|md)|deploy/kubernetes/.*-kubernetes\\.yaml)'  ], shouldMatchAll: true)
+    printCallStack()
+    assertTrue(result)
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: found with regex [(.*\\.(asciidoc|md)|deploy/kubernetes/.*-kubernetes\\.yaml)]"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testBeatsOnlyDocsWithoutMatch() throws Exception {
+    def changeset = ''' README.md
+                      | deploy/kubernetes/auditbeat-kubernetes.yaml
+                      | Makefile
+                    '''.stripMargin().stripIndent()
+    helper.registerAllowedMethod('readFile', [String.class], { return changeset })
+    def result = false
+    result = script.call(patterns: [ '(.*\\.(asciidoc|md)|deploy/kubernetes/.*-kubernetes\\.yaml)'  ], shouldMatchAll: true)
+    printCallStack()
+    assertFalse(result)
+    assertTrue(assertMethodCallContainsPattern('log', "isGitRegionMatch: not found with regex [(.*\\.(asciidoc|md)|deploy/kubernetes/.*-kubernetes\\.yaml)]"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testWindows() throws Exception {
     testWindows() {
       script.call()

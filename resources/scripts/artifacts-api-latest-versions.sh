@@ -28,10 +28,11 @@
 set -eo pipefail
 
 URL="https://artifacts-api.elastic.co/v1"
+NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 TEMP_FILE=$(mktemp)
 OUTPUT=latest-versions.json
 
-QUERY_OUTPUT=$(curl -s ${URL}/versions | jq -r '.aliases[] | select(contains("SNAPSHOT"))')
+QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT"))')
 LENGTH=$(echo "$QUERY_OUTPUT" | wc -l)
 i=0
 echo "{" > "${TEMP_FILE}"
@@ -44,7 +45,7 @@ for version in ${QUERY_OUTPUT}; do
     elif  [ "${i}" -ge "${LENGTH}" ] ; then
         comma=""
     fi
-    LATEST_OUTPUT=$(curl -s ${URL}/versions/"${version}"/builds/latest | jq 'del(.build.projects,.manifests) | . |= .build')
+    LATEST_OUTPUT=$(curl -s "${URL}/versions/${version}/builds/latest?${NO_KPI_URL_PARAM}" | jq 'del(.build.projects,.manifests) | . |= .build')
     BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
     {
         echo "${comma}\"$BRANCH\":"
