@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Wrap the cluster credentials and entrypoints as environment variables that are masked
+  Wrap the ESS cluster credentials and entrypoints as environment variables that are masked
 
   withCloudEnv(cluster: 'test-cluster-azure') {
     // block
