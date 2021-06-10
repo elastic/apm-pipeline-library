@@ -2169,7 +2169,7 @@ Generate a random string (alphanumeric and dash are allowed but not ending with 
 
 ```
 // Create a random string of 15 chars (alphanumeric)
-def randomUuid = uuid(size: 15)
+def value = randomString(size: 15)
 ```
 
 * size: what's size for the random string.
@@ -3088,4 +3088,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-

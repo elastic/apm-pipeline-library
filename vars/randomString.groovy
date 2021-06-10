@@ -19,7 +19,7 @@
 Generate a random string
 
   // Create a random string of 15 chars (alphanumeric)
-  def randomUuid = uuid(size: 15)
+  def value = randomString(size: 15)
 */
 
 import java.security.SecureRandom
