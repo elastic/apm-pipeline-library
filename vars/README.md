@@ -2164,6 +2164,16 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
+## randomString
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def randomUuid = uuid(size: 15)
+```
+
+* size: what's size for the random string.
+
 ## releaseNotification
 Send notifications with the release status by email and slack.
 
