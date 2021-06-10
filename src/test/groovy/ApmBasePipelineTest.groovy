@@ -42,6 +42,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_APM('secret/observability-team/ci/jenkins-stats'),
     SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),
     SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
+    SECRET_AZURE_VM_EXTENSION('secret/observability-team/ci/service-account/azure-vm-extension'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
@@ -592,6 +593,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_AZURE.equals(s)){
       return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
+    }
+    if(VaultSecret.SECRET_AZURE_VM_EXTENSION.equals(s)){
+      return [data: [ password: 'password_1', username: 'username_1', subscription: 'subscription_id_1', tenant: 'tenant_id_1' ]]
     }
     if(VaultSecret.SECRET_CODECOV.equals(s)){
       return [data: [ value: 'codecov-token']]

@@ -2691,6 +2691,17 @@ withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
 * credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
 
+## withAzureEnv
+Wrap the azure credentials in environment variables to be consumed within the body
+
+```
+withAzureEnv(secret: 'secret/acme') {
+  // block
+}
+```
+
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/observability-team/ci/service-account/azure-vm-extension'
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
