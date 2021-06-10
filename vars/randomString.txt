@@ -1,4 +1,4 @@
-Generate a random string (alphanumeric and dash are allowed but not ending with dash_
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
 
 ```
 // Create a random string of 15 chars (alphanumeric)
