@@ -33,14 +33,32 @@ class RandomStringStepTests extends ApmBasePipelineTest {
   void test_default() throws Exception {
     def ret = script.call()
     printCallStack()
-    assertTrue(ret.length() > 31)
+    println ret
+    assertTrue(ret.length() == 128)
   }
 
   @Test
   void test_with_size() throws Exception {
     def ret = script.call(size: 8)
     printCallStack()
+    println ret
     assertTrue(ret.length() == 8)
+  }
+
+  @Test
+  void test_manipulateString() throws Exception {
+    def ret = script.manipulateString('f-o', 2)
+    printCallStack()
+    println ret
+    assertTrue(ret == 'fa')
+  }
+
+  @Test
+  void test_manipulateString_with_dash() throws Exception {
+    def ret = script.manipulateString('a-b-c-d-e-', 6)
+    printCallStack()
+    println ret
+    assertTrue(ret == 'a-b-ca')
   }
 
 }

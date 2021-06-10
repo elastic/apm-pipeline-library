@@ -27,10 +27,19 @@ import java.util.Base64
 
 def call(Map args = [:]) {
   def size = args.get('size', 128)
+  // Generate a random byte size bigger than the random string size.
+  def byteSize = size * 5
   SecureRandom rand = new SecureRandom()
-  byte[] randomBytes = new byte[256]
+  byte[] randomBytes = new byte[byteSize]
   rand.nextBytes(randomBytes)
-  // alphanumeric and dash are allowed but not ending with dash
-  def value = new String(Base64.encoder.encode(randomBytes)).replaceAll("[\\W]|-", "-").take(size).replaceAll('-$', 'a')
+
+  def value = manipulateString(new String(Base64.encoder.encode(randomBytes)), size)
   return value
+}
+
+/**
+  Alphanumeric and dash are allowed but not ending with dash
+*/
+def manipulateString(String value, int size) {
+  return value.replaceAll("[\\W]|-", "-").take(size).replaceAll('-$', 'a')
 }
