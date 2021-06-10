@@ -49,7 +49,7 @@ def call(Map args = [:], Closure body) {
 }
 
 def validateField(String value, String errorMessage) {
-  if(value == null){
+  if(value == null || value?.trim() == ""){
     error errorMessage
   }
 }
