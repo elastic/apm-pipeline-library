@@ -49,13 +49,13 @@ def edge(Map args = [:]){
 
 def dev(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def devVersion = "7.13.1"
+  def devVersion = "7.13.2"
   return version(devVersion, args)
 }
 
 def release(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def releaseVersion = "7.13.0"
+  def releaseVersion = "7.13.1"
   return version(releaseVersion, args)
 }
 
