@@ -2702,6 +2702,20 @@ withAzureEnv(secret: 'secret/acme') {
 
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/observability-team/ci/service-account/azure-vm-extension'
 
+## withClusterEnv
+Wrap the cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax

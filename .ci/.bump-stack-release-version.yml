@@ -32,3 +32,9 @@ projects:
       - release
     enabled: false
     labels: dependency
+  - repo: azure-vm-extension
+    script: .ci/bump-stack-release-version.sh
+    branches:
+      - master
+    enabled: true
+    labels: dependency

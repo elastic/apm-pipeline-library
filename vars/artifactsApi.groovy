@@ -34,6 +34,10 @@ def call(Map args = [:]) {
       def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-latest-release-versions.sh'), returnStdout: true)
       return readJSON(text: output)
       break
+    case '7.x-version':
+      def output = sh(label: "${action}", script: libraryResource('scripts/artifacts-api-7.x-version.sh'), returnStdout: true).trim()
+      return output
+      break
     default:
       error('artifactsApi: unsupported action.')
       break
