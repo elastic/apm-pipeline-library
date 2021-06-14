@@ -42,6 +42,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_APM('secret/observability-team/ci/jenkins-stats'),
     SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),
     SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
+    SECRET_AZURE_VM_EXTENSION('secret/observability-team/ci/service-account/azure-vm-extension'),
     SECRET_CLOUD_ERROR('secret/observability-team/ci/test-clusters/error/ec-deployment'),
     SECRET_CLOUD_FOO('secret/observability-team/ci/test-clusters/foo/ec-deployment'),
     SECRET_CLOUD_MISSING('secret/observability-team/ci/test-clusters/missing/ec-deployment'),
@@ -598,6 +599,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_AZURE.equals(s)){
       return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
+    }
+    if(VaultSecret.SECRET_AZURE_VM_EXTENSION.equals(s)){
+      return [data: [ password: 'password_1', username: 'username_1', subscription: 'subscription_id_1', tenant: 'tenant_id_1' ]]
     }
     if(VaultSecret.SECRET_CLOUD_ERROR.equals(s)){
       return [errors: 'Error message']
