@@ -44,3 +44,4 @@ projects:
       - master
     enabled: true
     labels: dependency
+    title: "chore: update elastic stack release version"
