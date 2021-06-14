@@ -607,6 +607,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_CLOUD_MISSING.equals(s)){
       return [data: [ username: 'username-1', password: 'password-1' ]]
+    }
     if(VaultSecret.SECRET_CLUSTER_ERROR.equals(s)){
       return [errors: 'Error message']
     }
