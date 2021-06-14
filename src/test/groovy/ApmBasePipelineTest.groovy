@@ -599,6 +599,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_AZURE_VM_EXTENSION.equals(s)){
       return [data: [ password: 'password_1', username: 'username_1', subscription: 'subscription_id_1', tenant: 'tenant_id_1' ]]
+    }
     if(VaultSecret.SECRET_CLUSTER_ERROR.equals(s)){
       return [errors: 'Error message']
     }
