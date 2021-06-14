@@ -73,7 +73,7 @@ pipeline {
               'immutable && windows-7',
               'ubuntu-18',
               'ubuntu-20',
-              'worker-c07c6107jyw0',  // macOS workers https://beats-ci.elastic.co/label/macosx/
+              //'worker-c07c6107jyw0',  // macOS workers https://beats-ci.elastic.co/label/macosx/ // Caused by https://github.com/elastic/infra/issues/29456
               'worker-c07jc1nzdwym',
               'worker-c07l34n6dwym',
               'worker-c07y20b6jyvy',
@@ -82,7 +82,7 @@ pipeline {
               'worker-c07y20bcjyvy',
               'worker-c07mq25jdy3h',
               'worker-c07mq1u7dy3h',
-              'worker-h2wdt2qxq6ny',
+              //'worker-h2wdt2qxq6ny',   // Caused by https://github.com/elastic/infra/issues/29456
               'worker-395930',  // metal workers https://beats-ci.elastic.co/label/metal/
               'worker-1244230'
             )
