@@ -2164,6 +2164,16 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
+## randomString
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def value = randomString(size: 15)
+```
+
+* size: the random string size.
+
 ## releaseNotification
 Send notifications with the release status by email and slack.
 
@@ -3092,4 +3102,3 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
-
