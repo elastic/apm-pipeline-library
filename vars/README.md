@@ -2172,7 +2172,7 @@ Generate a random string (alphanumeric and dash are allowed but not ending with 
 def value = randomString(size: 15)
 ```
 
-* size: what's size for the random string.
+* size: the random string size.
 
 ## releaseNotification
 Send notifications with the release status by email and slack.
