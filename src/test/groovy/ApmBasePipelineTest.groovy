@@ -43,6 +43,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),
     SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
     SECRET_AZURE_VM_EXTENSION('secret/observability-team/ci/service-account/azure-vm-extension'),
+    SECRET_CLOUD_ERROR('secret/observability-team/ci/test-clusters/error/ec-deployment'),
+    SECRET_CLOUD_FOO('secret/observability-team/ci/test-clusters/foo/ec-deployment'),
+    SECRET_CLOUD_MISSING('secret/observability-team/ci/test-clusters/missing/ec-deployment'),
     SECRET_CLUSTER_ERROR('secret/observability-team/ci/test-clusters/error/k8s-elasticsearch'),
     SECRET_CLUSTER_FOO('secret/observability-team/ci/test-clusters/foo/k8s-elasticsearch'),
     SECRET_CLUSTER_MISSING('secret/observability-team/ci/test-clusters/missing/k8s-elasticsearch'),
@@ -599,6 +602,15 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_AZURE_VM_EXTENSION.equals(s)){
       return [data: [ password: 'password_1', username: 'username_1', subscription: 'subscription_id_1', tenant: 'tenant_id_1' ]]
+    }
+    if(VaultSecret.SECRET_CLOUD_ERROR.equals(s)){
+      return [errors: 'Error message']
+    }
+    if(VaultSecret.SECRET_CLOUD_FOO.equals(s)){
+      return [data: [ username: 'username-1', password: 'password-1', cloud_id: 'my-cloud_id-1' ]]
+    }
+    if(VaultSecret.SECRET_CLOUD_MISSING.equals(s)){
+      return [data: [ username: 'username-1', password: 'password-1' ]]
     }
     if(VaultSecret.SECRET_CLUSTER_ERROR.equals(s)){
       return [errors: 'Error message']
