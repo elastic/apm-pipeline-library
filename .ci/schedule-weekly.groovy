@@ -56,6 +56,17 @@ pipeline {
         )
       }
     }
+    stage('Bump Go release') {
+      steps {
+        build(job: 'apm-shared/bump-go-release-version-pipeline',
+          parameters: [
+            booleanParam(name: 'DRY_RUN_MODE', value: false)
+          ],
+          propagate: false,
+          wait: false
+        )
+      }
+    }
   }
   post {
     cleanup {
