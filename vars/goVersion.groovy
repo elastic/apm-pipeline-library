@@ -23,31 +23,26 @@ def call(Map args = [:]) {
     error('goVersion: windows is not supported yet.')
   }
   def action = args.containsKey('action') ? args.action : error('goVersion: action parameter is required.')
-  def glob = args.get('glob', null)
+  def glob = args.get('glob', '')
+  def unstable = args.get('unstable', false)
 
   switch(action) {
-    case 'latest-version':
-      cloneAndRun() {
-        def output = sh(label: "${action}", script: firstOne(getAllGoVersions()), returnStdout: true)
-        return output.trim()
-      }
+    case 'latest':
+      def output = sh(label: "${action}", script: firstOne(getVersionsCommand(glob: glob, unstable: unstable)), returnStdout: true)
+      return output.trim()
       break
-    case 'latest-versions':
-      cloneAndRun() {
-        def output = sh(label: "${action}", script: getAllGoVersions(), returnStdout: true)
-        return output.trim()
-      }
-      break
-    case 'latest-release-version':
-      cloneAndRun() {
-        def output = sh(label: "${action}", script: firstOne(getLatestVersionCommand(glob)), returnStdout: true)
-        return output.trim()
-      }
+    case 'versions':
+      def output = sh(label: "${action}", script: getVersionsCommand(glob: glob, unstable: unstable), returnStdout: true)
+      return output.trim()
       break
     default:
       error('goVersion: unsupported action.')
       break
   }
+}
+
+def removeGoPrefix(String command) {
+  return command + ' | sed "s#^go##g"'
 }
 
 def firstOne(String command) {
@@ -56,29 +51,18 @@ def firstOne(String command) {
 
 /**
 * Query the tags with the form `go*`.
-* Golang/go releases follow the format goMajor.Minor.Patch<rc|beta
+* Golang/go releases follow the format go<Major>.<Minor>(.<Patch>|rc[0-9]|beta[0-9])?
 */
 def getAllGoVersions() {
-  return 'git tag --list --sort=-version:refname "go*"'
+  return 'git ls-remote --sort=-version:refname --tags --refs git://github.com/golang/go | sed "s#.*refs/tags/##g" | grep "go*"'
 }
 
-def getLatestVersionCommand(String glob = null) {
-  def command = getAllGoVersions + ' | grep -v "[beta|rc]"'
-  if (glob) {
+def getVersionsCommand(Map args = [:]) {
+  def glob = args.get('glob', '')
+  def unstable = args.get('unstable', false)
+  def command = getAllGoVersions() + (unstable ? '' : ' | grep -v "[beta|rc]"')
+  if (glob?.trim()) {
     command = command + ' | grep "' + glob + '"'
   }
-  command = command + ' | head -n'
-  return command
-}
-
-def cloneAndRun(Closure body) {
-  def workspaceLocation = pwd(tmp: true)
-  dir(workspaceLocation) {
-    sh(label: 'git clone golang/go',
-       script: '''
-        git clone git@github.com:golang/go
-        git fetch --tags
-       ''')
-    body()
-  }
+  return removeGoPrefix(command)
 }

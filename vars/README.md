@@ -1322,6 +1322,26 @@ pipeline {
 }
 ```
 
+## goVersion
+This step helps to query what golang versions have been released.
+
+```
+
+// Get the latest stable release
+def latestGoRelease = goVersion(action: 'latest', unstable: false)
+
+// Get the latest release
+def latestGoVersion = goVersion(action: 'latest', unstable: true)
+
+// Get all the latest releases for the go1.15
+def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '1.15')
+```
+
+* action: What's the action to be triggered. Mandatory
+* glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
+* unstable: Whether to list the rc/beta releases. Optional. Default false.
+
+
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
 
@@ -3127,3 +3147,4 @@ writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secre
 
 * secret: Name of the secret on the the vault root path. Mandatory
 * data: What's the data to be written. Mandatory
+
