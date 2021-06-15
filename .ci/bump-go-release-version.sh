@@ -21,7 +21,7 @@ else
 fi
 
 echo "Update go version ${GO_RELEASE_VERSION}"
-${SED} -E -e "s#(return) = '[0-9]+\.[0-9]+\.[0-9]'#\1 = '${GO_RELEASE_VERSION}'#g" vars/goDefaultVersion.groovy
+${SED} -E -e "s#(return) '[0-9]+\.[0-9]+\.[0-9]'#\1 '${GO_RELEASE_VERSION}'#g" vars/goDefaultVersion.groovy
 
 git add vars/goDefaultVersion.groovy
 git diff --staged --quiet || git commit -m "[Automation] Update go release version to ${GO_RELEASE_VERSION}"
