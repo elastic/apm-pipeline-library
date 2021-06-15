@@ -1,5 +1,5 @@
 ---
-## This is the file that contains what projects should bump their elastic stack
+## This is the file that contains what projects should bump their Golang
 ## release versions.
 ##
 ## The data structure:
