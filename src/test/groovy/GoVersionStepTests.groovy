@@ -60,6 +60,7 @@ class GoVersionStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('sh', [Map.class],{'1.17beta1'})
     def obj = script.call(action: 'latest', unstable: 'true')
     assertTrue(obj.equals('1.17beta1'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--refs git://github.com/golang/go'))
     assertTrue(assertMethodCallContainsPattern('sh', 'grep "go*" | sed "s#^go##g" | head -n1'))
     printCallStack()
   }
@@ -70,6 +71,15 @@ class GoVersionStepTests extends ApmBasePipelineTest {
     def obj = script.call(action: 'latest')
     assertTrue(obj.equals('1.16.5'))
     assertTrue(assertMethodCallContainsPattern('sh', 'grep "go*" | grep -v "[beta|rc]" | sed "s#^go##g" | head -n1'))
+    printCallStack()
+  }
+
+  @Test
+  void test_latest_with_glob() throws Exception {
+    helper.registerAllowedMethod('sh', [Map.class],{'1.15.13'})
+    def obj = script.call(action: 'latest', glob: '1.15')
+    assertTrue(obj.equals('1.15.13'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'grep "go*" | grep -v "[beta|rc]" | grep "1.15" | sed "s#^go##g" | head -n1'))
     printCallStack()
   }
 
