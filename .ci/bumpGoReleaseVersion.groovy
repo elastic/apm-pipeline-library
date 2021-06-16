@@ -113,20 +113,14 @@ def createPullRequest(Map args = [:]) {
     error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
   }
   sh(script: """git checkout -b "update-go-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
-  if(args.stackVersions.size() >= 2){
-    sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
-  } else if (args.stackVersions.size() == 1){
-    sh(script: "${args.scriptFile} '${args.stackVersions[0]}' ''", label: "Prepare changes for ${args.repo}")
-  } else {
-    error("There is no release versions")
-  }
+  sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.stackVersions}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title} ${args.goReleaseVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
