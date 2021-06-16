@@ -21,5 +21,6 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - master
+      - 7.x
     enabled: true
     labels: dependency
