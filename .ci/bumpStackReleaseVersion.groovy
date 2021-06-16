@@ -106,7 +106,7 @@ def prepareArguments(Map args = [:]){
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('prepareArguments: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def labels = args.get('labels', '').replaceAll('\\s','')
-  def title = args.get('title', '').trim() ? args.title : '[automation] update elastic stack release version'
+  def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
   def message = createPRDescription(latestVersions)
   if (labels.trim() && !labels.contains('automation')) {
