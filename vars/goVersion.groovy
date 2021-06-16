@@ -54,7 +54,8 @@ def firstOne(String command) {
 * Golang/go releases follow the format go<Major>.<Minor>(.<Patch>|rc[0-9]|beta[0-9])?
 */
 def getAllGoVersions() {
-  return 'git ls-remote --sort=-version:refname --tags --refs git://github.com/golang/go | sed "s#.*refs/tags/##g" | grep "go*"'
+  // --sort=-version:refname is not supported in git version 2.17 yet
+  return 'git ls-remote --tags --refs git://github.com/golang/go | sed "s#.*refs/tags/##g" | grep "go*"'
 }
 
 def getVersionsCommand(Map args = [:]) {
@@ -64,5 +65,9 @@ def getVersionsCommand(Map args = [:]) {
   if (glob?.trim()) {
     command = command + ' | grep "' + glob + '"'
   }
-  return removeGoPrefix(command)
+  return sortSemVer(removeGoPrefix(command))
+}
+
+def sortSemVer(String command) {
+  return command + ' | sort --version-sort -r'
 }
