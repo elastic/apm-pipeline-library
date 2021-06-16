@@ -23,3 +23,9 @@ projects:
       - master
     enabled: true
     labels: dependency
+  - repo: fleet-server
+    script: .ci/bump-go-release-version.sh
+    branches:
+      - master
+    enabled: true
+    labels: dependency
