@@ -38,3 +38,10 @@ projects:
       - master
     enabled: true
     labels: dependency
+  - repo: apm-agent-rum-js
+    script: .ci/bump-stack-release-version.sh
+    branches:
+      - master
+    enabled: true
+    labels: dependency
+    title: "chore: update elastic stack release version"
