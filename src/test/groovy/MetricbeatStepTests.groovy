@@ -70,7 +70,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
       script.call(es_secret: 'foo')
     }
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=metricbeatTest/metricbeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run metricbeat to grab host metrics,'))
     assertJobStatusSuccess()
   }
 
@@ -145,7 +145,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
       printCallStack()
       assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
-      assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
+      assertTrue(assertMethodCallContainsPattern('sh', 'Run metricbeat to grab host metrics,'))
       assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
     }
   }
@@ -155,7 +155,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call(es_secret: 'foo')
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_metricbeat.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run metricbeat to grab host metrics,'))
     assertFalse(assertMethodCallContainsPattern('writeFile', 'file=metricbeat_conf.yml'))
     assertJobStatusSuccess()
   }

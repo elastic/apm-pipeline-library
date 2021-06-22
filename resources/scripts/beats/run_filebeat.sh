@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -eu
+echo "OUTPUT_DIR=${OUTPUT_DIR}"
+echo "OUTPUT_FILE=${OUTPUT_FILE}"
+echo "CONFIG_PATH=${CONFIG_PATH}"
+echo "DOCKER_IMAGE=${DOCKER_IMAGE}"
 
 docker run \
   --detach \

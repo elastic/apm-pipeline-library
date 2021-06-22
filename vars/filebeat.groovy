@@ -88,17 +88,13 @@ def stop(Map args = [:]){
 }
 
 def runBeat(workdir, configPath, output, image){
-  writeFile(file: "run_filebeat.sh", text: libraryResource("scripts/beats/run_filebeat.sh"))
   withEnv([
     "CONFIG_PATH=${configPath}",
     "DOCKER_IMAGE=${image}",
     "OUTPUT_DIR=${workdir}",
     "OUTPUT_FILE=${output}"
   ]){
-    sh(label: 'Run metricbeat to grab host metrics', script: """
-      chmod ugo+rx ./run_filebeat.sh
-      ./run_filebeat.sh
-    """)
+    sh(label: 'Run filebeat to grab host metrics', script: libraryResource("scripts/beats/run_filebeat.sh"))
     return readFile(file: 'docker_id')?.trim()
   }
 }

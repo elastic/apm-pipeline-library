@@ -64,7 +64,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       script.call()
     }
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_filebeat.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run filebeat to grab host metrics'))
     assertJobStatusSuccess()
   }
 
@@ -150,7 +150,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call()
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'run_filebeat.sh'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run filebeat to grab host metrics'))
     assertFalse(assertMethodCallContainsPattern('writeFile', 'file=filebeat_conf.yml'))
     assertJobStatusSuccess()
   }
