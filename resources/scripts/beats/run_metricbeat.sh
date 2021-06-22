@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -eu
+
+echo "CONFIG_PATH=${CONFIG_PATH}"
+echo "DOCKER_IMAGE=${DOCKER_IMAGE}"
+
 docker run \
   --detach \
   -v "${CONFIG_PATH}:/usr/share/metricbeat/metricbeat.yml" \
