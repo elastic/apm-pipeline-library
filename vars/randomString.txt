@@ -1,0 +1,8 @@
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def value = randomString(size: 15)
+```
+
+* size: the random string size.

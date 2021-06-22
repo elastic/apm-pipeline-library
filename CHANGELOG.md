@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.220 (14/06/2021)
+
+#### 🚀 Enhancements
+
+-  withAzureEnv step [#1150](https://github.com/elastic/apm-pipeline-library/pull/1150)
+-  withCloudEnv step [#1152](https://github.com/elastic/apm-pipeline-library/pull/1152)
+-  Random String step [#1147](https://github.com/elastic/apm-pipeline-library/pull/1147)
+-  withClusterEnv step [#1151](https://github.com/elastic/apm-pipeline-library/pull/1151)
+-  Add 7.x-version action [#1149](https://github.com/elastic/apm-pipeline-library/pull/1149)
+
+## v1.1.219 (07/06/2021)
+*No changelog for this release.*
+
 ## v1.1.217 (17/05/2021)
 *No changelog for this release.*
 

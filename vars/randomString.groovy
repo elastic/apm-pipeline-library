@@ -16,27 +16,30 @@
 // under the License.
 
 /**
-  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value.
+Generate a random string
 
-  goDefaultVersion()
-**/
+  // Create a random string of 15 chars (alphanumeric)
+  def value = randomString(size: 15)
+*/
+
+import java.security.SecureRandom
+import java.util.Base64
+
 def call(Map args = [:]) {
-  def goDefaultVersion = defaultVersion()
-  if(isGoVersionEnvVarSet()) {
-    goDefaultVersion = "${env.GO_VERSION}"
-  } else {
-    def goFileVersion = '.go-version'
-    if (fileExists(goFileVersion)){
-      goDefaultVersion = readFile(file: goFileVersion)?.trim()
-    }
-  }
-  return goDefaultVersion
+  def size = args.get('size', 128)
+  // Generate a random byte size bigger than the random string size.
+  def byteSize = size * 5
+  SecureRandom rand = new SecureRandom()
+  byte[] randomBytes = new byte[byteSize]
+  rand.nextBytes(randomBytes)
+
+  def value = manipulateString(new String(Base64.encoder.encode(randomBytes)), size)
+  return value
 }
 
-def isGoVersionEnvVarSet(){
-  return env.GO_VERSION != null && "" != "${env.GO_VERSION}"
-}
-
-def defaultVersion(){
-  return '1.16.5'
+/**
+  Alphanumeric and dash are allowed but not ending with dash
+*/
+def manipulateString(String value, int size) {
+  return value.replaceAll("[\\W]|-", "-").take(size).replaceAll('-$', 'a')
 }

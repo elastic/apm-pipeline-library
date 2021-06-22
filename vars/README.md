@@ -1322,6 +1322,26 @@ pipeline {
 }
 ```
 
+## goVersion
+This step helps to query what golang versions have been released.
+
+```
+
+// Get the latest stable release
+def latestGoRelease = goVersion(action: 'latest', unstable: false)
+
+// Get the latest release
+def latestGoVersion = goVersion(action: 'latest', unstable: true)
+
+// Get all the latest releases for the go1.15
+def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '1.15')
+```
+
+* action: What's the action to be triggered. Mandatory
+* glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
+* unstable: Whether to list the rc/beta releases. Optional. Default false.
+
+
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
 
@@ -2164,6 +2184,16 @@ def i = randomNumber()
 def i = randomNumber(min: 1, max: 99)
 ```
 
+## randomString
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def value = randomString(size: 15)
+```
+
+* size: the random string size.
+
 ## releaseNotification
 Send notifications with the release status by email and slack.
 
@@ -2690,6 +2720,45 @@ withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
 * path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
 * credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
+
+## withAzureEnv
+Wrap the azure credentials in environment variables to be consumed within the body
+
+```
+withAzureEnv(secret: 'secret/acme') {
+  // block
+}
+```
+
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/observability-team/ci/service-account/azure-vm-extension'
+
+## withCloudEnv
+Wrap the cloud credentials and entrypoints as environment variables that are masked
+
+```
+  withCloudEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
+
+## withClusterEnv
+Wrap the cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
 
 ## withEnvMask
 This step will define some environment variables and mask their content in the

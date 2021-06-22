@@ -15,12 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import groovy.transform.Field
-
 @Library('apm@master') _
-
-// To store all the latest release versions
-@Field def latestVersions
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -50,12 +45,9 @@ pipeline {
         git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/${ORG_NAME}/${REPO}.git")
       }
     }
-    stage('Fetch latest versions') {
+    stage('Fetch latest go release version') {
       steps {
-        script {
-          latestVersions = artifactsApi(action: 'latest-release-versions')
-        }
-        archiveArtifacts 'latest-release-versions.json'
+        setEnvVar('GO_RELEASE_VERSION', goVersion(action: 'latest', unstable: false))
       }
     }
     stage('Send Pull Request'){
@@ -75,7 +67,7 @@ pipeline {
 }
 
 def generateSteps(Map args = [:]) {
-  def projects = readYaml(file: '.ci/.bump-stack-release-version.yml')
+  def projects = readYaml(file: '.ci/.bump-go-release-version.yml')
   projects['projects'].each { project ->
     matrix( agent: 'linux && immutable',
             axes:[
@@ -106,35 +98,29 @@ def prepareArguments(Map args = [:]){
   def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('prepareArguments: scriptFile argument is required')
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def labels = args.get('labels', '').replaceAll('\\s','')
-  def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
+  def title = args.get('title', '').trim() ? args.title : '[automation] Update go release version'
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
-  def message = createPRDescription(latestVersions)
+  def message = createPRDescription(env.GO_RELEASE_VERSION)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: title, labels: labels, scriptFile: scriptFile, stackVersions: latestVersions, message: message]
+  return [repo: repo, branchName: branch, title: title, labels: labels, scriptFile: scriptFile, goReleaseVersion: env.GO_RELEASE_VERSION, message: message]
 }
 
 def createPullRequest(Map args = [:]) {
   prepareContext(repo: args.repo, branchName: args.branchName)
-  if (args?.stackVersions?.size() == 0) {
-    error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
+  if (!args?.goReleaseVersion?.trim()) {
+    error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
   }
-  sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
-  if(args.stackVersions.size() >= 2){
-    sh(script: "${args.scriptFile} '${args.stackVersions[args.stackVersions.size() - 2]}' '${args.stackVersions[args.stackVersions.size() - 1]}'", label: "Prepare changes for ${args.repo}")
-  } else if (args.stackVersions.size() == 1){
-    sh(script: "${args.scriptFile} '${args.stackVersions[0]}' ''", label: "Prepare changes for ${args.repo}")
-  } else {
-    error("There is no release versions")
-  }
+  sh(script: """git checkout -b "update-go-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
+  sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.stackVersions}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title} ${args.goReleaseVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
@@ -153,5 +139,5 @@ def prepareContext(Map args = [:]) {
 }
 
 def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest release. \n ### Further details \n ${versionEntry}"""
+  return """### What \n Bump go release version with the latest release. \n ### Further details \n ${versionEntry}"""
 }

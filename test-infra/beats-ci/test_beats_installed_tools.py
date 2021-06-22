@@ -23,6 +23,14 @@ def test_docker_experimental_configured(host):
     cmd = "docker version -f '{{.Client.Experimental}}'"
     assert host.check_output(cmd) == "true", "it is required for building the ARM docker images in the Beats project"
 
+
+def test_docker_is_running(host):
+  if host.check_output("uname -m") == "x86_64" :
+    cmd = host.run("docker run hello-world")
+    assert cmd.rc == 0, "it is required for all the Beats projects"
+  else:
+    pytest.skip("unsupported configuration")
+
 def test_gvm_installed(host):
   cmd = host.run("gvm --version")
   assert cmd.rc == 0, "it is required for the beats"
