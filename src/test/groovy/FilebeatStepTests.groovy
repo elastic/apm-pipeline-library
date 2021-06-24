@@ -51,15 +51,10 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       jsonText = f.getText()
       return jsonSlurper.parseText(jsonText)
     })
-    helper.registerAllowedMethod('sh', [Map.class], { m ->
-      def ret = "OK"
-      if(m.script.contains('docker run')){
-        ret = 'fooID'
-      }
-      return ret
-    })
+    helper.registerAllowedMethod('sh', [Map.class], { "OK" })
     helper.registerAllowedMethod('pwd', [], { 'filebeatTest' })
     helper.registerAllowedMethod('isBuildFailure', [], { false })
+    helper.registerAllowedMethod('readFile', [Map.class], { 'fooID' })
   }
 
   @Test
@@ -68,23 +63,27 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call()
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=filebeatTest/filebeat_conf.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'filename: docker_logs.log'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run filebeat to grab host metrics'))
     assertJobStatusSuccess()
   }
 
   @Test
   void testClosure() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
-
     def id = "fooID"
     def output = "foo.log"
     def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
+
+    helper.registerAllowedMethod('fileExists', [String.class], { f ->
+      if(f == "${workdir}/${config}"){
+        return false
+      } else {
+        return true
+      }
+    })
+    helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
 
     printCallStack(){
       script.call(
@@ -98,10 +97,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       }
     }
 
-    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
@@ -112,7 +108,6 @@ class FilebeatStepTests extends ApmBasePipelineTest {
 
   @Test(expected = Exception.class)
   void testClosureError() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
     helper.registerAllowedMethod('archiveArtifacts', [Map.class], { m -> return m.artifacts})
 
     def id = "fooID"
@@ -120,6 +115,14 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     def workdir = "filebeatTest_1"
     def config = "bar.xml"
     def image = "foo:latest"
+
+    helper.registerAllowedMethod('fileExists', [String.class], { f ->
+      if(f == "${workdir}/${config}"){
+        return false
+      } else {
+        return true
+      }
+    })
 
     try {
       script.call(
@@ -133,10 +136,7 @@ class FilebeatStepTests extends ApmBasePipelineTest {
       }
     } finally {
       printCallStack()
-      assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
       assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-      assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
-      assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
 
       assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
       assertTrue(assertMethodCallContainsPattern('sh', "docker exec -t ${id}"))
@@ -150,34 +150,8 @@ class FilebeatStepTests extends ApmBasePipelineTest {
     printCallStack(){
       script.call()
     }
-    assertTrue(assertMethodCallContainsPattern('sh', 'filebeat_conf.yml:/usr/share/filebeat/filebeat.yml'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'docker.elastic.co/beats/filebeat'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'Run filebeat to grab host metrics'))
     assertFalse(assertMethodCallContainsPattern('writeFile', 'file=filebeat_conf.yml'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testArguments() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-    def output = "foo.log"
-    def config = "bar.xml"
-    def image = "foo:latest"
-    def workdir = "filebeatTest_1"
-
-    printCallStack(){
-      script.call(
-        output: output,
-        config: config,
-        image: image,
-        workdir: workdir,
-      )
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "${config}:/usr/share/filebeat/filebeat.yml"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
-    assertTrue(assertMethodCallContainsPattern('writeFile', "filename: ${output}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "${image}"))
-    assertTrue(assertMethodCallContainsPattern('sh', "${workdir}:/output"))
     assertJobStatusSuccess()
   }
 

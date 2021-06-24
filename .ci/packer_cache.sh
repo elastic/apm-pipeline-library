@@ -13,7 +13,6 @@ source /usr/local/bin/bash_standard_lib.sh
 # docker.elastic.co/observability-ci/it_dotnet
 # docker.elastic.co/observability-ci/it_opbeans-rum
 # docker.elastic.co/observability-ci/it_opbeans-ruby
-# docker.elastic.co/observability-ci/it_opbeans-php
 # docker.elastic.co/observability-ci/it_opbeans-python
 # docker.elastic.co/observability-ci/it_opbeans-node
 # docker.elastic.co/observability-ci/it_opbeans-java
@@ -47,4 +46,4 @@ if [ -x "$(command -v docker)" ]; then
 fi
 
 ## Let's cache the maven dependencies
- ./mvnw clean test --fail-never
+ ./mvnw clean install --batch-mode -DskipTests --fail-never

@@ -23,6 +23,7 @@ import logging
 import json
 import elasticapm
 import sys
+import os
 
 LOGGER = logging.getLogger("pytest_apm")
 
@@ -77,6 +78,10 @@ def pytest_addoption(parser):
                     help='Change the way to capture transactiona and spans. '
                          'By default the session is a transaction and the tests are spans.'
                          'If is set, every test is a transaction.')
+    group.addoption('--apm-trace-parent',
+                    dest='apm_parent_id',
+                    default='Session',
+                    help='APM trace parent id.')
 
 def begin_transaction(transaction_name):
     global apm_cli, apm_parent_id
@@ -131,6 +136,13 @@ def pytest_sessionstart(session):
     apm_custom_context = config.getoption("apm_custom_context", default=None)
     apm_session_name = config.getoption("apm_session_name")
     apm_labels = json.loads(config.getoption("apm_labels"))
+    apm_parent_id = config.getoption("apm_parent_id", default=None)
+    if apm_server_url is None:
+        apm_server_url = os.getenv('ELASTIC_APM_SERVER_URL', None)
+    if apm_token is None:
+        apm_token = os.getenv('ELASTIC_APM_SECRET_TOKEN', None)
+    if apm_api_key is None:
+        apm_api_key = os.getenv('ELASTIC_APM_API_KEY', None)
     apm_cli = init_apm_client()
     if apm_cli:
         LOGGER.debug("Session transaction starts.")

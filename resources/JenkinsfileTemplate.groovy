@@ -171,8 +171,8 @@ pipeline {
             name 'PLATFORM'
             values (
               'debian-9',
-              'ubuntu-16',
-              'ubuntu-18'
+              'ubuntu-18',
+              'ubuntu-20'
               )
           }
         }
@@ -182,7 +182,7 @@ pipeline {
           */
           stage('Build') {
             steps {
-              buildUnix()
+              runBuild()
             }
           }
           /**
@@ -240,18 +240,19 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
-              'windows-2016-immutable',
-              'windows-2016-latest-immutable',
               'windows-2012-r2-immutable',
-              'windows-2012-r2-latest-immutable',
+              'windows-2016-immutable',
               'windows-2019-immutable',
-              'windows-2019-docker-immutable',
-              'windows-2019-test-immutable',
-              'windows-2019-latest-immutable'
+              'windows-2019-docker-immutable'
               )
           }
         }
         stages {
+          stage('Build') {
+            steps {
+              runBuild()
+            }
+          }
           stage('Test') {
             steps {
               testWindows()
@@ -290,7 +291,7 @@ pipeline {
         stage('Mac OS X check - 01'){
           agent { label 'worker-c07yx0vrjyvy' }
           steps {
-            buildUnix()
+            runBuild()
             testMac()
           }
           post {
@@ -302,7 +303,7 @@ pipeline {
         stage('Mac OS X check - 02'){
           agent { label 'worker-c07yx0vdjyvy' }
           steps {
-            buildUnix()
+            runBuild()
             testMac()
           }
           post {
@@ -314,7 +315,7 @@ pipeline {
         stage('BareMetal worker-854309 check'){
           agent { label 'worker-854309' }
           steps {
-            buildUnix()
+            runBuild()
             testBaremetal()
           }
           post {
@@ -326,7 +327,7 @@ pipeline {
         stage('BareMetal worker-1095690 check'){
           agent { label 'worker-1095690' }
           steps {
-            buildUnix()
+            runBuild()
             testBaremetal()
           }
           post {
@@ -338,7 +339,7 @@ pipeline {
         stage('BareMetal worker-1213919 check'){
           agent { label 'worker-1213919' }
           steps {
-            buildUnix()
+            runBuild()
             testBaremetal()
           }
           post {
@@ -350,7 +351,7 @@ pipeline {
         stage('BareMetal worker-1225339 check'){
           agent { label 'worker-1225339' }
           steps {
-            buildUnix()
+            runBuild()
             testBaremetal()
           }
           post {
@@ -361,7 +362,7 @@ pipeline {
         }
       }
     }
-    // Use matrix step within a steps closure if you need dynamic axis generation 
+    // Use matrix step within a steps closure if you need dynamic axis generation
     // or the exclusion list is massive.
     stage('Matrix step') {
       steps {
@@ -399,11 +400,15 @@ def testDockerInside(){
   }
 }
 
-def buildUnix(){
+def runBuild(){
   deleteDir()
   unstash 'source'
   dir("${BASE_DIR}"){
-    sh returnStatus: true, script: './resources/scripts/jenkins/build.sh'
+    if (isUnix()) {
+      sh(returnStatus: true, script: './resources/scripts/jenkins/build.sh')
+    } else {
+      bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
+    }
   }
 }
 
@@ -439,16 +444,6 @@ def testWindows(params = [:]){
     dir("${BASE_DIR}"){
       powershell(script: ".\\resources\\scripts\\jenkins\\apm-ci\\test.ps1 ${withExtra}")
     }
-  } else {
-    checkOldWindows()
-  }
-}
-
-def checkOldWindows(){
-  deleteDir()
-  unstash 'source'
-  dir("${BASE_DIR}"){
-    bat(returnStatus: true, script: '.\\resources\\scripts\\jenkins\\build.bat')
   }
 }
 

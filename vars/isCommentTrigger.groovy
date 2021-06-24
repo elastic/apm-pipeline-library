@@ -17,7 +17,7 @@
 
 import com.cloudbees.groovy.cps.NonCPS
 /**
-  Check it the build was triggered by a comment in GitHub.
+  Check if the build was triggered by a comment in GitHub.
 
   def commentTrigger = isCommentTrigger()
 */

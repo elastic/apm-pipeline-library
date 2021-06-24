@@ -1,0 +1,16 @@
+Builds the Docker image for Kibana, from a branch or a pull Request.
+
+```
+buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'PR/12345')
+```
+
+* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* packageJSON: Full name of the package.json file. Defaults to 'package.json'
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* targetTag: Docker tag to be used in the image. Defaults to the commit SHA.
+* dockerRegistry: Name of the Docker registry. Defaults to 'docker.elastic.co'
+* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
+* dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
+* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'

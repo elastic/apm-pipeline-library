@@ -84,6 +84,24 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## artifactsApi
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.
+
 ## axis
 Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
 from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
@@ -107,6 +125,9 @@ Encode a text to base64
 base64encode(text: "text to encode", encoding: "UTF-8")
 ```
 
+* *text:* Test to calculate its base64.
+* *padding:* if true it'd apply padding (default true)
+
 ## beatsStages
 <p>
     Given the YAML definition then it creates all the stages
@@ -116,6 +137,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
         <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+        <li>filterStage: the name of the stage to be filtered. Optional</li>
     </ul>
 </p>
 
@@ -165,6 +187,24 @@ build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
 ```
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
+
+## buildKibanaDockerImage
+Builds the Docker image for Kibana, from a branch or a pull Request.
+
+```
+buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'PR/12345')
+```
+
+* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* packageJSON: Full name of the package.json file. Defaults to 'package.json'
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* targetTag: Docker tag to be used in the image. Defaults to the commit SHA.
+* dockerRegistry: Name of the Docker registry. Defaults to 'docker.elastic.co'
+* dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
+* dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
+* dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
 
 ## buildStatus
 Fetch the current build status for a given job
@@ -321,6 +361,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
@@ -536,6 +585,15 @@ Then put all togeder in a simple JSON file.
 * jobURL: the job URL. Mandatory
 * buildNumber: the build id. Mandatory
 * returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
+
+## getFlakyJobName
+Get the flaky job name in a given multibranch pipeline.
+
+```
+getFlakyJobName(withBranch: 'master')
+```
+
+* withBranch: the job base name to compare with. Mandatory
 
 ## getGitCommitSha
 Get the current commit SHA from the .git folder.
@@ -1021,6 +1079,23 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
+## githubPullRequests
+Look for the GitHub Pull Requests in the current project given the labels to be 
+filtered with. It returns a dictionary with the Pull Request id as primary key and
+then the title and branch values.
+
+```
+  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // the foo and bar labels
+  githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
+```
+
+* *labels*: Filter by labels. Optional
+* *titleContains*: Filter by title (contains format). Optional
+* *state*: Filter by state: {open|closed|merged|all}. Optional. Default "open"
+* *limit*: Maximum number of items to fetch . Optional. Default 200
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
 ## githubReleaseCreate
 Create a GitHub release for a project
 ```
@@ -1247,12 +1322,25 @@ pipeline {
 }
 ```
 
-## googleStorageUpload
-As long as we got some concurrency issues
+## goVersion
+This step helps to query what golang versions have been released.
 
 ```
-googleStorageUpload(args)
+
+// Get the latest stable release
+def latestGoRelease = goVersion(action: 'latest', unstable: false)
+
+// Get the latest release
+def latestGoVersion = goVersion(action: 'latest', unstable: true)
+
+// Get all the latest releases for the go1.15
+def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '1.15')
 ```
+
+* action: What's the action to be triggered. Mandatory
+* glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
+* unstable: Whether to list the rc/beta releases. Optional. Default false.
+
 
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
@@ -1279,6 +1367,19 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 * command: The gsutil command to be executed. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+
+## hasCommentAuthorWritePermissions
+
+Check if the author of a GitHub comment has admin or write permissions in the repository.
+
+```
+if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.GT_COMMENT_ID)){
+  error("Only Elasticians can deploy Docker images")
+}
+```
+
+* *repoName:* organization and name of the repository (Organization/Repository)
+* *commentId:* ID of the comment we want to check.
 
 ## httpRequest
 Step to make HTTP request and get the result.
@@ -1401,7 +1502,7 @@ Whether the build is based on a Branch or no
 ```
 
 ## isBranchIndexTrigger
-Check it the build was triggered by a Branch index.
+Check if the build was triggered by a Branch index.
 
 ```
 def branchIndexTrigger = isBranchIndexTrigger()
@@ -1418,7 +1519,7 @@ def branchIndexTrigger = isBranchIndexTrigger()
   ```
 
 ## isCommentTrigger
-Check it the build was triggered by a comment in GitHub and the user is an Elastic user.
+Check if the build was triggered by a comment in GitHub and the user is an Elastic user.
 it stores the comment owner username in the GITHUB_COMMENT_AUTHOR environment variable and the
 comment itself in the GITHUB_COMMENT environment variable.
 
@@ -1527,6 +1628,21 @@ Whether the build is based on a Pull Request or no
   }
 ```
 
+## isStaticWorker
+Whether the existing worker is a static one
+
+```
+  // Assign to a variable
+  def isStatic = isStaticWorker(labels: 'linux&&immutable')
+
+  // Use whenTrue condition
+  whenTrue(isStaticWorker(labels: 'linux&&immutable')) {
+    echo "I'm a static worker"
+  }
+```
+
+TODO: as soon as macOS workers are ephemerals then we need to change this method
+
 ## isTag
 Whether the build is based on a Tag Request or no
 
@@ -1541,21 +1657,24 @@ Whether the build is based on a Tag Request or no
 ```
 
 ## isTimerTrigger
-Check it the build was triggered by a timer (scheduled job).
+Check if the build was triggered by a timer (scheduled job).
 
 ```
 def timmerTrigger = isTimerTrigger()
 ```
 
 ## isUpstreamTrigger
-Check if the build was triggered by an upstream job.
+Check if the build was triggered by an upstream job, being it possible to add some filters.
 
 ```
 def upstreamTrigger = isUpstreamTrigger()
+def upstreamTrigger = isUpstreamTrigger(filter: 'PR-')
 ```
 
+* filter: The string filter to be used when selecting the ustream build cause. If no filter is set, then 'all' will be used.
+
 ## isUserTrigger
-Check it the build was triggered by a user.
+Check if the build was triggered by a user.
 it stores the username in the BUILD_CAUSE_USER environment variable.
 
 ```
@@ -1628,17 +1747,24 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 ## lookForGitHubIssues
-Look for all the open issues that were reported as flaky tests. It returns
+Look for all the open issues given some filters.
+
+For backward compatibilities the default behaviour uses the flaky tests. It returns
 a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 
 ```
   // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
-  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+  lookForGitHubIssues(flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+
+  // Look for all the GitHub issues with label 'automation' and the title contains 'bump: stack'
+  lookForGitHubIssues(flakySearch: false, labelsFilter: ['automation'], titleContains: 'bump: stack')
 ```
 
-* *flakyList*: list of test-failures. Mandatory
+* *flakySearch*: whether to run the default behaviour to look for flaky reported github issues. Optional. Default `true`
+* *flakyList*: list of test-failures. Optional. Default `[]`
 * *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
-* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* *titleContains*: title to be filtered when listing the GitHub issues. Optional
+* *credentialsId*: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 
 _NOTE_: Windows is not supported yet.
 
@@ -1692,6 +1818,75 @@ pipeline {
     }
   }
 
+```
+
+## metricbeat
+
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ `metricbeat.stop()` will stop the metricbeat Docker container.
+
+```
+  metricbeat()
+  ...
+  metricbeat.stop()
+```
+
+```
+  metricbeat(){
+    ....
+  }
+```
+
+* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
+* *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
+* *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
+* *workdir:* Directory to use as root folder to read and write files (current folder).
+
+```
+  metricbeat(
+    es_secret: 'secret/team/details',
+    config: 'metricbeat.yml',
+    image: 'docker.elastic.co/beats/metricbeat:7.10.1',
+    workdir: "${env.WORKSPACE}")
+  ...
+  metricbeat.stop(workdir: "${env.WORKSPACE}")
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}")
+        sh('docker run busybox  ls')
+      }
+      post {
+        cleanup{
+          script {
+            metricbeat.stop(workdir: "${env.WORKSPACE}")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```
+pipeline {
+  agent { label "ubuntu" }
+  stages {
+    stage('My Docker tests') {
+      steps {
+        metricbeat(es_secret: 'secret/team/details', workdir: "${env.WORKSPACE}"){
+          sh('docker run -it busybox  sleep 30')
+        }
+      }
+    }
+  }
+}
 ```
 
 ## mvnVersion
@@ -1896,11 +2091,10 @@ emails on Failed builds that are not pull request.
 * slackCredentials: What slack credentials to be used. Default value uses `jenkins-slack-integration-token`.
 * slackNotify: Whether to send or not the slack notifications, by default it sends notifications on Failed builds that are not pull request.
 * analyzeFlakey: Whether or not to add a comment in the PR with tests which have been detected as flakey. Default: `false`.
-* flakyReportIdx: The flaky index to compare this jobs results to. e.g. reporter-apm-agent-java-apm-agent-java-master
-* flakyThreshold: The threshold below which flaky tests will be ignored. Default: 0.0
 * flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
+* jobName: The name of the job, e.g. `Beats/beats/master`.
 
 ## opbeansPipeline
 Opbeans Pipeline
@@ -1989,6 +2183,16 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
+## randomString
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def value = randomString(size: 15)
+```
+
+* size: the random string size.
 
 ## releaseNotification
 Send notifications with the release status by email and slack.
@@ -2223,6 +2427,7 @@ setupAPMGitEmail(global: true)
 
   Return the version currently used for testing.
 
+```
   stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
   stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
 
@@ -2231,6 +2436,43 @@ setupAPMGitEmail(global: true)
   stackVersions.release() // '7.10.2'
   stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
   stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+```
+
+## stageStatusCache
+Stage status cache allow to save and restore the status of a stage for a particular commit.
+This allow to skip stages when we know that we executed that stage for that commit.
+To do that the step save a file based on `stageSHA|base64` on a GCP bucket,
+this status is checked and execute the body if there is not stage status file
+for the stage and the commit we are building.
+User triggered builds will execute all stages always.
+If the stage success the status is save in a file.
+It uses `GIT_BASE_COMMIT` as a commit SHA, because is a known real commit SHA,
+because of that merges with target branch will skip stages on changes only on target branch.
+
+```
+pipeline {
+  agent any
+  stages {
+    stage('myStage') {
+      steps {
+        deleteDir()
+        stageStatusCache(id: 'myStage',
+          bucket: 'myBucket',
+          credentialsId: 'my-credentials',
+          sha: getGitCommitSha()
+        ){
+          echo "My code"
+        }
+      }
+    }
+  }
+}
+```
+
+* *id:* Unique stage name. Mandatory
+* *bucket:* bucket name. Default 'beats-ci-temp'
+* *credentialsId:* credentials file, with the GCP credentials JSON file. Default  'beats-ci-gcs-plugin-file-credentials'
+* *sha:* Commit SHA used for the stage ID. Default: env.GIT_BASE_COMMIT
 
 ## stashV2
 Stash the current location, for such it compresses the current path and
@@ -2447,6 +2689,77 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
 }
 ```
 
+## withAPMEnv
+Prepare the context with the ELASTIC_APM_SERVER_URL, ELASTIC_APM_SECRET_TOKEN,
+OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_HEADERS environment
+variables that are consumed by the body in order to send the data to the APM Server.
+
+```
+withAPMEnv(secret: 'secrets/my-secret-apm') {
+  // the command that consumes those env variables.
+}
+```
+
+* secret: vault secret used to interact with the APM server. Default: 'secret/observability-team/ci/jenkins-stats'
+* tokenFieldName: the field in the vault secret that contains the APM Server token. Default 'apmServerToken'
+* urlFieldName: the field in the vault secret that contains the APM Server URL. Default 'apmServerUrl'
+
+## withAzureCredentials
+Wrap the azure credentials
+
+```
+withAzureCredentials() {
+  // block
+}
+
+withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
+  // block
+}
+```
+
+* path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
+* credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
+
+## withAzureEnv
+Wrap the azure credentials in environment variables to be consumed within the body
+
+```
+withAzureEnv(secret: 'secret/acme') {
+  // block
+}
+```
+
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/observability-team/ci/service-account/azure-vm-extension'
+
+## withCloudEnv
+Wrap the cloud credentials and entrypoints as environment variables that are masked
+
+```
+  withCloudEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
+
+## withClusterEnv
+Wrap the cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
@@ -2602,6 +2915,7 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * description: Description of the GitHub status check. If unset then it will use the description.
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+* ignoreGitHubFailures: Whether to ignore when the GitHub integration failed. Default `true`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
@@ -2718,6 +3032,32 @@ _NOTE:_
 
 * version: Go version to install, if it is not set, it'll use GO_VERSION env var or the default one set in the withGoEnv step
 * pkgs: Go packages to install with Go get before to execute any command.
+
+## withNode
+Wrap the node call for three reasons:
+  1. with some latency to avoid the known issue with the scalability in gobld.
+  2. enforce one shoot ephemeral workers with the extra/uuid label that gobld provides.
+  3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
+
+
+```
+  // Use the ARM workers without any sleep or workspace allocation.
+  withNode(labels: 'arm'){
+    // block
+  }
+
+  // Use ephemeral worker with a sleep of up to 100 seconds and with a specific workspace.
+  withNode(labels: 'immutable && ubuntu-18', sleepMax: 100, forceWorspace: true, forceWorker: true){
+    // block
+  }
+```
+
+* labels: what's the labels to be used. Mandatory
+* sleepMin: whether to sleep and for how long at least. Optional.
+* sleepMax: whether to sleep and for how long maximum. Optional.
+* forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
+* forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
+* disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
 
 ## withNpmrc
 Wrap the npmrc token

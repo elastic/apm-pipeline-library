@@ -13,33 +13,44 @@ jenkins:
   clouds:
   - computeEngine:
       cloudName: "elastic-observability"
+      credentialsId: "elastic-observability"
+      instanceCapStr: "300"
+      instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
+      projectId: "elastic-observability"
       configurations:
       - bootDiskAutoDelete: true
-        bootDiskSizeGb: 50
+        bootDiskSizeGb: 150
+        bootDiskSizeGbStr: "150"
         bootDiskSourceImageProject: "elastic-observability"
-        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f/diskTypes/pd-ssd"
-        description: "obs11 workers"
-        externalAddress: true
+        bootDiskType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a/diskTypes/pd-balanced"
+        description: "obs11 linux workers"
         javaExecPath: "java"
-        labels: "linux immutable obs11"
-        launchTimeoutSeconds: 600
-        machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f/machineTypes/g1-small"
+        labelSet:
+        - name: "immutable"
+        - name: "linux"
+        - name: "obs11"
+        - name: "ubuntu"
+        - name: "ubuntu-18"
+        - name: "x86_64"
+        labelString: "ubuntu ubuntu-18 immutable obs11 linux x86_64"
+        labels: "ubuntu ubuntu-18 immutable obs11 linux x86_64"
+        launchTimeoutSeconds: 300
+        launchTimeoutSecondsStr: "300"
+        machineType: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a/machineTypes/n2-standard-2"
         mode: NORMAL
-        namePrefix: "obs11-linux"
+        namePrefix: "obs11-ubuntu-18-linux"
         networkConfiguration:
           autofilled:
             network: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/networks/default"
             subnetwork: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1/subnetworks/default"
         numExecutors: 1
-        oneShot: true
+        numExecutorsStr: "1"
+        oneShot: false
         preemptible: true
         region: "https://www.googleapis.com/compute/v1/projects/elastic-observability/regions/us-central1"
-        retentionTimeMinutes: 10
-        runAsUser: "jenkins-gce"
+        retentionTimeMinutes: 20
+        retentionTimeMinutesStr: "20"
+        runAsUser: "jenkins"
         serviceAccountEmail: "jenkins-gce@elastic-observability.iam.gserviceaccount.com"
-        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/elastic-apm-ci-ubuntu-1804-lts-20210201222928"
-        zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-f"
-      credentialsId: "elastic-observability"
-      instanceCapStr: "300"
-      instanceId: "20d4387f-26d5-470f-8455-d8e4c15de6df"
-      projectId: "elastic-observability"
+        template: "https://www.googleapis.com/compute/v1/projects/elastic-observability/global/instanceTemplates/elastic-apm-ci-ubuntu-1804-lts"
+        zone: "https://www.googleapis.com/compute/v1/projects/elastic-observability/zones/us-central1-a"

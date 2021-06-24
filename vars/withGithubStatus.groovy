@@ -31,23 +31,42 @@ def call(Map args = [:], Closure body) {
   def description = args.get('description', context)
   def tab = args.get('tab', 'pipeline')
   def isBlueOcean = args.get('isBlueOcean', false)
+  def ignoreGitHubFailures = args.get('ignoreGitHubFailures', true)
 
   def redirect = detailsURL(tab: tab, isBlueOcean: isBlueOcean)
 
   try {
-    notify(context, "${description} ...", 'PENDING', redirect)
+    notifyMap(context: context, description: "${description} ...", status: 'PENDING', redirect: redirect, ignoreGitHubFailures: ignoreGitHubFailures)
     withAPM(){
       body()
     }
-    notify(context, "${description} passed", 'SUCCESS', redirect)
+    notifyMap(context: context, description: "${description} passed", status: 'SUCCESS', redirect: redirect, ignoreGitHubFailures: ignoreGitHubFailures)
   } catch (err) {
-    notify(context, "${description} failed", 'FAILURE', redirect)
+    notifyMap(context: context, description: "${description} failed", status: 'FAILURE', redirect: redirect, ignoreGitHubFailures: ignoreGitHubFailures)
     throw err
   }
 }
 
+// This is consumed by elastic/kibana.git@master:.ci/end2end.groovy
 def notify(String context, String description, String status, String redirect) {
-  retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-    githubNotify(context: "${context}", description: "${description}", status: "${status}", targetUrl: "${redirect}")
+  // Fail in case the GitHub API calls fail for any reason
+  notifyMap(context: context, description: description, status: status, redirect: redirect, ignoreGitHubFailures: false)
+}
+
+def notifyMap(Map args = [:]) {
+  def i = 0
+  def numberOfRetries = 2
+  retryWithSleep(retries: numberOfRetries, seconds: 5, backoff: true) {
+    try {
+      i++
+      githubNotify(context: "${args.context}", description: "${args.description}", status: "${args.status}", targetUrl: "${args.redirect}")
+    } catch (err) {
+      // Let's retry at least as many times as possible otherwise, ignore the failure and avoid the notification in GitHub
+      if (args.get('ignoreGitHubFailures', false) && i == numberOfRetries) {
+        log(level: 'WARN', text: "withGithubStatus: failed with error '${err.toString()}' but 'ignoreGitHubFailures' has been enabled.")
+      } else {
+        throw err
+      }
+    }
   }
 }

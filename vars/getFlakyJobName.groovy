@@ -15,15 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  As long as we got some concurrency issues let's add some sleeps
-  
-  See https://github.com/jenkinsci/google-storage-plugin/issues/61
+import org.jenkinsci.plugins.workflow.graph.StepNode
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
-  googleStorageUpload(args)
+/**
+  Get the flaky job name in a given multibranch pipeline.
+
+  def flakyJobName = getFlakyJobName(withBranch: 'master')
 */
-def call(args) {
-  log(level: 'INFO', text: 'Override default googleStorageUpload with some sleep')
-  sleep randomNumber(min: 10, max: 100)
-  return steps.googleStorageUpload(args)
+
+def call(Map args=[:]) {
+  def withBranch = args.containsKey('withBranch') ? args.withBranch : error('getFlakyJobName: withBranch parameter is required.')
+  if (env.JOB_NAME?.trim() && env.JOB_BASE_NAME?.trim()) {
+    def flakyJobName = (env.JOB_NAME - env.JOB_BASE_NAME) + withBranch
+    return flakyJobName
+  }
+  error('getFlakyJobName: only works for multibranch pipelines.')
 }

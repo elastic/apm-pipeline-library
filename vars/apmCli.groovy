@@ -53,7 +53,7 @@ def call(Map args = [:]) {
 
     if(!url && !token){
       def apmJson = getVaultSecret(secret: "${apmCliConfig}")?.data.value
-      def apm = readJSON(text: apmJson)
+      def apm = toJSON(apmJson)
       url = apm.url
       token = apm.token
     }

@@ -75,7 +75,7 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
   void testFailure() throws Exception {
     def isOK = false
     try{
-      script.call(context: 'failed') {
+      script.call(context: 'failed', ignoreGitHubFailures: false) {
         isOK = true
       }
     } catch(e){
@@ -138,7 +138,7 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
       }
     })
     try {
-      script.call(context: 'foo', description: 'bar') {
+      script.call(context: 'foo', description: 'bar', ignoreGitHubFailures: false){
         throw new Exception('Force failure')
       }
     } catch(e) {
@@ -147,5 +147,24 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', '2 of 2 tries'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_when_github_is_not_accessible_then_retry_with_some_sleep_with_ignore_github_failures() throws Exception {
+    helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
+      if (m.status == 'FAILURE') {
+        throw new Exception("Server returned HTTP response code: 500, message: '500 Internal Server Error'")
+      }
+    })
+    try {
+      script.call(context: 'foo', description: 'bar', ignoreGitHubFailures: true) {
+        throw new Exception('Force failure')
+      }
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', '2 of 2 tries'))
+    assertJobStatusSuccess()
   }
 }

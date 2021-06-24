@@ -11,3 +11,7 @@ def test_python_installed(host):
 def test_tar_installed(host):
   cmd = host.run("tar --version")
   assert cmd.rc == 0, "it is required for the stashV2 and unstashV2 steps"
+
+def test_curl_installed(host):
+  cmd = host.run("curl --version")
+  assert cmd.rc == 0, "it is required for the Beats projects"

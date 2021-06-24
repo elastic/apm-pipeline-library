@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Check it the build was triggered by a user.
+  Check if the build was triggered by a user.
 
   def userTrigger = isUserTrigger()
 */

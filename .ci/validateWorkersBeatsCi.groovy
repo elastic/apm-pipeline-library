@@ -62,22 +62,7 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
-              'ubuntu && immutable',
-              'ubuntu-1404-i386',
-              'ubuntu-16',
-              'ubuntu-18',
-              'ubuntu-20',
-              'worker-c07jc1nzdwym',
-              'worker-c07l34n6dwym',
-              'worker-c07y20b6jyvy',
-              'worker-c07ll940dwyl',
-              'worker-c07y20b9jyvy',
-              'worker-c07y20b4jyvy',
-              'worker-c07y20bcjyvy',
-              'worker-c07mq25jdy3h',
-              'worker-c07mq1u7dy3h',
-              'worker-395930',
-              'worker-0a434dec4bdcd060f',
+              'arm',  // ephemeral workers
               'immutable && windows-2019',
               'immutable && windows-2016',
               'immutable && windows-2012-r2',
@@ -85,7 +70,21 @@ pipeline {
               'immutable && windows-8',
               'immutable && windows-2008-r2',
               'immutable && windows-7-32-bit',
-              'immutable && windows-7'
+              'immutable && windows-7',
+              'ubuntu-18',
+              'ubuntu-20',
+              'worker-c07c6107jyw0',
+              'worker-c07jc1nzdwym',
+              'worker-c07l34n6dwym',
+              'worker-c07y20b6jyvy',
+              'worker-c07y20b9jyvy',
+              'worker-c07y20b4jyvy',
+              'worker-c07y20bcjyvy',
+              'worker-c07mq25jdy3h',
+              'worker-c07mq1u7dy3h',
+              //'worker-h2wdt2qxq6ny', // Caused by https://github.com/elastic/infra/issues/29456
+              'worker-395930',  // metal workers https://beats-ci.elastic.co/label/metal/
+              'worker-1244230'
             )
           }
         }

@@ -506,6 +506,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('slackSend', 'Steps failures'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'https://github.com/org/acme/issues/1234|indicator type url is in upper case (#1234)'))
     assertTrue(assertMethodCallContainsPattern('slackSend', 'by `Lola.Flores`'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'Took'))
     assertJobStatusSuccess()
   }
 
@@ -701,7 +702,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: 'flake-empty-results.json')})
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -721,7 +722,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors-without-match.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -741,7 +742,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -764,7 +765,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -788,7 +789,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -812,7 +813,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('githubCreateIssue', [Map.class], { return '100' } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json')
@@ -832,7 +833,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [ bar: '' ] })
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: readJSON(file: 'flake-tests-errors.json'),
       testsSummary: readJSON(file: 'flake-tests-summary.json'),
@@ -852,7 +853,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [ "failed": 0, "passed": 120, "skipped": 0, "total": 120 ]
@@ -869,7 +870,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [:]
@@ -880,47 +881,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_analyzeFlakeyThreshold() throws Exception {
-    helper.registerAllowedMethod(
-      "sendDataToElasticsearch",
-      [Map.class],
-      {m -> readJSON(file: "flake-results.json")}
-    )
-    script.analyzeFlakey(
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
-      es: "https://fake_url",
-      testsErrors: readJSON(file: 'flake-tests-errors.json'),
-      flakyThreshold: 0.5
-    )
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', '"gt" : 0.5'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_analyzeFlakeyNoJobInfo() throws Exception {
-    try {
-      script.analyzeFlakey(
-        flakyReportIdx: '',
-        es: "https://fake_url",
-        testsErrors: readJSON(file: 'flake-tests-errors.json')
-      )
-    } catch(e) {
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'analyzeFlakey: did not receive flakyReportIdx data'))
-    assertJobStatusFailure()
-  }
-
-  @Test
   void test_analyzeFlakey_without_comment_notifications() throws Exception {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: "flake-results.json")})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], { return [:] } )
     helper.registerAllowedMethod('isPR', { return true })
     script.analyzeFlakey(
       disableGHComment: true,
-      flakyReportIdx: 'reporter-apm-agent-python-apm-agent-python-master',
+      jobName: 'Beats/beats/master',
       es: "https://fake_url",
       testsErrors: [:],
       testsSummary: [:]

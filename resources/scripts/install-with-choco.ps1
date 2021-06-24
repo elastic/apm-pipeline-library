@@ -5,6 +5,14 @@ $tool=$args[0]
 $pattern=$args[1]
 $exclude=$args[2]
 
+$ChocoVersion = $(choco --version)
+if ($ChocoVersion -eq '0.10.13') {
+  Write-Host("Chocolatey version matches the expected one. ({0})" -f $ChocoVersion)
+} else {
+  Write-Host("Downgrade chocolatey to the latest known version with --all support. See https://github.com/chocolatey/choco/issues/1843")
+  & choco install chocolatey --no-progress -y --version 0.10.13 --allow-downgrade
+}
+
 if ($exclude) {
   Write-Host("Getting latest {0} version for {1} (and exclude {2})..." -f $tool,$pattern,$exclude)
   & choco list $tool --exact --by-id-only --all | Select-String -Pattern "$tool $pattern" | Select-String -Pattern "$exclude" -NotMatch
@@ -50,4 +58,4 @@ try {
 }
 
 Write-Host("Installing {0} version: {1} ..." -f $tool,$Version)
-& choco install $tool --no-progress -y --version "$Version"
+& choco install $tool --no-progress -y --version "$Version" --allow-downgrade
