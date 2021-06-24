@@ -14,10 +14,15 @@ a simple command-line tool to process jinja2 templates. We can install it by usi
 
 # Create a new Folder
 
-In the `.ci/jobDSL/jobs/folders.groovy` file we have defined all the folders we need in the CI.
-Each folder has a definition like the following.
+In the `.ci/jobDSL/jobs/folder.groovy` file we have defined all the folders we need in the CI.
+Each folder has a definition like the following. They should be in order of creation.
 
 ```
+folder('folder-parent') {
+  displayName('My parent folder')
+  description('Test parent folder.')
+}
+
 folder('folder-parent/my-new-folder') {
   displayName('My new folder')
   description('Test new folder.')

@@ -288,25 +288,6 @@ pipeline {
         }
       }
     }
-    stage('Build Curator image'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build Curator image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.python }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/curator.git',
-          tag: "curator",
-          version: "daily",
-          push: true)
-      }
-    }
     stage('Build flakey'){
       options {
         skipDefaultCheckout()
@@ -450,25 +431,6 @@ pipeline {
         }
       }
     }
-    stage('Build helm-kubernetes Docker hub image'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build helm-kubernetes Docker hub image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.helm_kubectl }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/dtzar/helm-kubectl.git',
-          tag: "helm-kubectl",
-          version: "latest",
-          push: true)
-      }
-    }
     stage('Build Integration test Docker images'){
       options {
         skipDefaultCheckout()
@@ -543,36 +505,6 @@ pipeline {
           folder: ".ci/docker/azure-vm-tools",
           push: true
         )
-      }
-    }
-    stage('Build opbot'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.opbot }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        dir("opbot-latest"){
-          script {
-            def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
-            def writeClosure = {writeFile(file: 'credentials.json', text: creds.data.value)}
-            buildDockerImage(
-              repo: 'https://github.com/elastic/opbot.git',
-              tag: "opbot",
-              version: "latest",
-              prepareWith: writeClosure,
-              push: true)
-          }
-        }
-      }
-      post {
-        cleanup {
-          deleteDir()
-        }
       }
     }
     stage('Cache Oracle Instant Client Docker Image'){
