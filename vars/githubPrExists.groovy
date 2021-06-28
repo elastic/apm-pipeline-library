@@ -26,5 +26,5 @@ def call(Map args = [:]){
   def title = args.containsKey('title') ? args.title : error('githubPrExists: title parameter is required.')
   def labels = args.containsKey('labels') ? args.labels.split(',') : ''
   def pullRequests = githubPullRequests(labels: labels, titleContains: title)
-  return (pullRequests && pullRequests.size() > 1)
+  return (pullRequests && pullRequests.size() > 0)
 }
