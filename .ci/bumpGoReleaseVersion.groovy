@@ -104,7 +104,7 @@ def prepareArguments(Map args = [:]){
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: title, labels: labels, scriptFile: scriptFile, goReleaseVersion: env.GO_RELEASE_VERSION, message: message]
+  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile, goReleaseVersion: env.GO_RELEASE_VERSION, message: message]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -116,7 +116,7 @@ def createPullRequest(Map args = [:]) {
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}')")
     return
   }
 
@@ -128,7 +128,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.goReleaseVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
