@@ -1,0 +1,13 @@
+Search if there are any Pull Request that matches the given
+Pull Request details.
+
+```
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
+```
+
+* *labels*: Filter by labels. Optional
+* *title*: Filter by title (contains format). Mandatory
+
+NOTE: It uses `githubPullRequests`

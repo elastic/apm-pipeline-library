@@ -154,6 +154,15 @@ def createPullRequest(Map args = [:]) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
     return
   }
+
+  // If a similar PR was already created then do nothing.
+  // This should avoid duplicated PRs when they have not been merged yet.
+  // Though reusePullRequest argument allows to reuse existing open PRs.
+  if (githubPrExists(args)) {
+    log(level: 'INFO', text: 'A similar Pull Request already exists.')
+    return
+  }
+
   if (anyChangesToBeSubmitted("${args.branchName}")) {
     githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {

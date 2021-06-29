@@ -1026,6 +1026,21 @@ Arguments:
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
 
+## githubPrExists
+Search if there are any Pull Request that matches the given
+Pull Request details.
+
+```
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
+```
+
+* *labels*: Filter by labels. Optional
+* *title*: Filter by title (contains format). Mandatory
+
+NOTE: It uses `githubPullRequests`
+
 ## githubPrInfo
 Get the Pull Request details from the Github REST API.
 
@@ -1340,7 +1355,6 @@ def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '
 * action: What's the action to be triggered. Mandatory
 * glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
 * unstable: Whether to list the rc/beta releases. Optional. Default false.
-
 
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
