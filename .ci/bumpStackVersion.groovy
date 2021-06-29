@@ -121,7 +121,7 @@ def prepareArguments(Map args = [:]){
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: title, labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
+  return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: "${title} ${stackVersion}", labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
 }
 
 def reusePullRequest(Map args = [:]) {
@@ -130,7 +130,7 @@ def reusePullRequest(Map args = [:]) {
     try {
       sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
       if (params.DRY_RUN_MODE) {
-        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}')")
+        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', title: '${args.title}')")
         return true
       }
       withEnv(["REPO_NAME=${args.repo}"]){
@@ -151,7 +151,7 @@ def createPullRequest(Map args = [:]) {
   }
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}')")
     return
   }
 
@@ -164,7 +164,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.stackVersion}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
@@ -189,7 +189,7 @@ def reusePullRequestIfPossible(Map args = [:]){
     pullRequests?.each { k, v ->
       log(level: 'INFO', text: "Reuse #${k} GitHub Pull Request.")
       gh(command: "pr checkout ${k}")
-      gh(command: "pr edit ${k}", flags: [title: "${args.title} ${args.stackVersion}", body: "${args.message}"])
+      gh(command: "pr edit ${k}", flags: [title: "${args.title}", body: "${args.message}"])
     }
     return true
   }
