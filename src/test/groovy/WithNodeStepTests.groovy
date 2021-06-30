@@ -47,6 +47,7 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPatternOccurrences('sleep', 0))
     assertFalse(assertMethodCallContainsPattern('node', 'foo && extra/'))
     assertTrue(assertMethodCallOccurrences('ws', 0))
     assertJobStatusSuccess()
@@ -129,18 +130,6 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertTrue(assertMethodCallContainsPattern('randomNumber', '100'))
-    assertJobStatusSuccess()
-  }
-
- @Test
-  void test_with_sleep_default() throws Exception {
-    def isOK = false
-    script.call(labels: 'foo') {
-      isOK = true
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPatternOccurrences('sleep', 0))
     assertJobStatusSuccess()
   }
 
