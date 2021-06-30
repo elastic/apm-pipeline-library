@@ -47,7 +47,7 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPatternOccurrences('sleep', 0))
+    assertTrue(assertMethodCallOccurrences('sleep', 0))
     assertFalse(assertMethodCallContainsPattern('node', 'foo && extra/'))
     assertTrue(assertMethodCallOccurrences('ws', 0))
     assertJobStatusSuccess()
