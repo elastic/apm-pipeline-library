@@ -698,6 +698,21 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_with_empty_change_issues() throws Exception {
+    script.notifySlack(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "changeSet-info-empty-issues.json"),
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', '*Changes*:  (by'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_analyzeFlakey_in_prs_with_empty_flaky_tests() throws Exception {
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], {readJSON(file: 'flake-empty-results.json')})
     helper.registerAllowedMethod('isPR', { return true })

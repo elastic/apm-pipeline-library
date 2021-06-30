@@ -1,0 +1,19 @@
+[
+  {
+    "affectedPaths": [
+      "pipeline.yml"
+    ],
+    "author": {
+      "avatar": null,
+      "email": null,
+      "fullName": "Lola Flores",
+      "id": "Lola.Flores",
+      "permission": null
+    },
+    "checkoutCount": 0,
+    "commitId": "abcdefg",
+    "issues": [ ],
+    "msg": "indicator type url is in upper case (#1234)",
+    "timestamp": "2021-02-22T10:23:51.000+0000"
+  }
+]
