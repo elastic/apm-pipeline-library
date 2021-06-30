@@ -27,10 +27,13 @@ def call(Map args = [:]) {
 }
 
 def call(Map args = [:], Closure body) {
+  def ret = false
   try{
     start(args)
     body()
+    ret = true
   } finally {
+    args.buildResult = ret
     stop(args)
   }
 }
@@ -65,6 +68,7 @@ def start(Map args = [:]) {
 
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
+  def isBuildFailure = args.containsKey('buildResult') ? args.buildResult == false : isBuildFailure()
   def configFile = "${workdir}/filebeat_container_${env.NODE_NAME}.json"
   if(!fileExists(configFile)){
     log(level: 'WARNING', text: 'There is no configuration file to stop filebeat.')
@@ -82,7 +86,9 @@ def stop(Map args = [:]){
     docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  if(archiveOnlyOnFail == false || (archiveOnlyOnFail && isBuildFailure())){
+  log(level: 'DEBUG', text: "archiveOnlyOnFail: ${archiveOnlyOnFail} - isBuildFailure: ${isBuildFailure}")
+  if(archiveOnlyOnFail == false || (archiveOnlyOnFail && isBuildFailure)){
+    log(level: 'DEBUG', text: 'filebeat: Archiving Artifacts')
     archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
   }
 }
