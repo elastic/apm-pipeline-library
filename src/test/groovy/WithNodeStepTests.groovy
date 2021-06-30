@@ -132,6 +132,18 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+ @Test
+  void test_with_sleep_default() throws Exception {
+    def isOK = false
+    script.call(labels: 'foo') {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPatternOccurrences('sleep', 0))
+    assertJobStatusSuccess()
+  }
+
   @Test
   void test_getWorkspace_with_variables() throws Exception {
     addEnvVar('JOB_BASE_NAME', 'foo')
