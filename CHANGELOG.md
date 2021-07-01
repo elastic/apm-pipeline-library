@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.223 (01/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: Fix filebeat step [#1188](https://github.com/elastic/apm-pipeline-library/pull/1188)
+
 ## v1.1.222 (30/06/2021)
 
 #### 🚀 Enhancements
