@@ -17,6 +17,8 @@ projects:
       - master
     enabled: true
     labels: dependency
+    assignee: elastic/observablt-robots-on-call
+    reviewer: elastic/observablt-robots
   - repo: apm-integration-testing
     script: .ci/bump-go-release-version.sh
     branches:
@@ -24,6 +26,8 @@ projects:
       - 7.x
     enabled: true
     labels: dependency
+    assignee: elastic/observablt-robots-on-call
+    reviewer: elastic/observablt-robots
   - repo: beats
     script: .ci/bump-go-release-version.sh
     branches:

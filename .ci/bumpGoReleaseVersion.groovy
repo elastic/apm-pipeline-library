@@ -81,7 +81,9 @@ def generateSteps(Map args = [:]) {
                        scriptFile: "${project.script}",
                        branch: env.BRANCH,
                        labels: project.get('labels', ''),
-                       title: project.get('title', ''))
+                       title: project.get('title', ''),
+                       assignee: project.get('assignee', ''),
+                       reviewer: project.get('reviewer', ''))
     }
   }
 }
@@ -99,12 +101,16 @@ def prepareArguments(Map args = [:]){
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def labels = args.get('labels', '').replaceAll('\\s','')
   def title = args.get('title', '').trim() ? args.title : '[automation] Update go release version'
+  def assignee = args.get('assignee', '')
+  def reviewer = args.get('reviewer', '')
+
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
   def message = createPRDescription(env.GO_RELEASE_VERSION)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile, goReleaseVersion: env.GO_RELEASE_VERSION, message: message]
+  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile,
+          goReleaseVersion: env.GO_RELEASE_VERSION, message: message, assignee: assignee, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -116,7 +122,7 @@ def createPullRequest(Map args = [:]) {
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assignee: '${args.reviewer}', assignee: '${args.reviewer}')")
     return
   }
 
@@ -128,7 +134,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}", assignee: "${args.assignee}", reviewer: "${args.reviewer}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
