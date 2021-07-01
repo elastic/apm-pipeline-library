@@ -30,11 +30,12 @@ def call(Map args, Closure body){
   if(!args.containsKey('sha')){
     args['sha'] = "${env.GIT_BASE_COMMIT}"
   }
-  if(env.BUILD_ID == "1" || isUserTrigger() || args.get('runAlways', false) || readStageStatus(args) == false){
+  if(isUserTrigger() || args.get('runAlways', false) || readStageStatus(args) == false){
+    log(level: 'INFO', text: "The stage '${args.id}' cannot be cached.")
     body()
     saveStageStatus(args)
   } else {
-    log(level: 'INFO', text: "The stage skiped because it is in the execution cache.")
+    log(level: 'INFO', text: "The stage '${args.id}' is skipped because it is in the execution cache.")
   }
 }
 
