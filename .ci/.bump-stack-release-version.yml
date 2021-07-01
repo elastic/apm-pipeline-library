@@ -19,8 +19,7 @@ projects:
       - master
     enabled: true
     labels: dependency
-    assign: elastic/observablt-robots-on-call
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-robots-on-call
   - repo: apm-integration-testing
     script: .ci/bump-stack-release-version.sh
     branches:
@@ -28,8 +27,7 @@ projects:
       - 7.x
     enabled: true
     labels: dependency
-    assign: elastic/observablt-robots-on-call
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-robots-on-call
   - repo: observability-test-environments
     script: .ci/bump-stack-release-version.sh
     branches:
@@ -39,8 +37,7 @@ projects:
       - release
     enabled: false
     labels: dependency
-    assign: elastic/observablt-robots-on-call
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-robots-on-call
   - repo: azure-vm-extension
     script: .ci/bump-stack-release-version.sh
     branches:
