@@ -33,7 +33,7 @@ def call(Map args = [:], Closure body) {
     body()
     ret = true
   } finally {
-    args.buildResult = ret
+    args.isBuildSuccess = ret
     stop(args)
   }
 }
@@ -68,7 +68,7 @@ def start(Map args = [:]) {
 
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
-  def isBuildFailure = args.containsKey('buildResult') ? args.buildResult == false : isBuildFailure()
+  def isBuildFailure = args.containsKey('isBuildSuccess') ? args.isBuildSuccess == false : isBuildFailure()
   def configFile = "${workdir}/filebeat_container_${env.NODE_NAME}.json"
   if(!fileExists(configFile)){
     log(level: 'WARNING', text: 'There is no configuration file to stop filebeat.')
