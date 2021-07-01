@@ -19,5 +19,5 @@
   Return true if the build status is FAILURE or UNSTABLE
 */
 def call() {
-  return currentBuild.result == 'FAILURE' || currentBuild.result == 'UNSTABLE'
+  return currentBuild.currentResult == 'FAILURE' || currentBuild.currentResult == 'UNSTABLE'
 }

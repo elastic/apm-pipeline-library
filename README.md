@@ -7,7 +7,8 @@
 
 ## User Documentation
 
-TBC
+* [Steps Documentation](vars/README.md)
+
 ## Known Issues
 
 A list of known issues is available on the [GitHub issues page of this project][apm-pipeline-library-issues].
