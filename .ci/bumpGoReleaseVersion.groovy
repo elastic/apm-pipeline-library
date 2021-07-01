@@ -104,7 +104,7 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
 
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = createPRDescription(env.GO_RELEASE_VERSION)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"

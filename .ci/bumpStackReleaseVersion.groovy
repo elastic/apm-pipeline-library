@@ -111,7 +111,7 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = createPRDescription(latestVersions)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"

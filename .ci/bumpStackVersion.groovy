@@ -135,7 +135,7 @@ def reusePullRequest(Map args = [:]) {
     try {
       sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
       if (params.DRY_RUN_MODE) {
-        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', title: '${args.title}')")
+        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', title: '${args.title}', assign: '${assign}', reviewer: '${reviewer}')")
         return true
       }
       withEnv(["REPO_NAME=${args.repo}"]){
