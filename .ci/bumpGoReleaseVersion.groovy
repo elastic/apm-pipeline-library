@@ -73,7 +73,7 @@ def generateSteps(Map args = [:]) {
             axes:[
               axis('REPO', [project.repo]),
               axis('BRANCH', project.branches),
-              axis('ENABLED', [project.get('enabled', true)])
+              axis('ENABLED', [project.get('enabled', 'true').equals('true')])
             ],
             excludes: [ axis('ENABLED', [ false ]) ]
     ) {
