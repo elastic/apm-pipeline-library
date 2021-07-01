@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.222 (30/06/2021)
+
+#### 🚀 Enhancements
+
+-  Skip sleep by default in the withNode step [#1187](https://github.com/elastic/apm-pipeline-library/pull/1187)
+
+#### ⚙️ CI
+
+-  [mergify] clean up branches for the bump automation [#1186](https://github.com/elastic/apm-pipeline-library/pull/1186)
+
 ## v1.1.221 (30/06/2021)
 
 #### 🚀 Enhancements
