@@ -134,7 +134,16 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}", assign: "${args.assign}", reviewer: "${args.reviewer}")
+    def arguments = [
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+    ]
+    if (args.assign?.trim()) {
+      arguments['assign'] = args.assign
+    }
+    if (args.reviewer?.trim()) {
+      arguments['reviewer'] = args.reviewer
+    }
+    githubCreatePullRequest(arguments)
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
