@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.224 (01/07/2021)
+
+#### 🚀 Enhancements
+
+-  Verify if stageStatusCache even for the first build [#1190](https://github.com/elastic/apm-pipeline-library/pull/1190)
+
 ## v1.1.223 (01/07/2021)
 
 #### 🐛 Bug Fixes
