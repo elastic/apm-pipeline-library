@@ -28,6 +28,8 @@ projects:
       - 7.x
     enabled: true
     labels: dependency
+    assign: elastic/observablt-robots-on-call
+    reviewer: elastic/observablt-robots
   - repo: observability-test-environments
     script: .ci/bump-stack-release-version.sh
     branches:
