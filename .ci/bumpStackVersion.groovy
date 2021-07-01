@@ -90,7 +90,7 @@ def generateSteps(Map args = [:]) {
                        branch: env.BRANCH,
                        reusePullRequest: project.get('reusePullRequest', false),
                        labels: project.get('labels', ''),
-                       assignee: project.get('assignee', ''),
+                       assign: project.get('assign', ''),
                        reviewer: project.get('reviewer', ''))
     }
   }
@@ -113,7 +113,7 @@ def prepareArguments(Map args = [:]){
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def reusePullRequest = args.get('reusePullRequest', false)
   def labels = args.get('labels', '').replaceAll('\\s','')
-  def assignee = args.get('assignee', '')
+  def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
@@ -126,7 +126,7 @@ def prepareArguments(Map args = [:]){
     labels = "automation,${labels}"
   }
   return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: "${title} ${stackVersion}", labels: labels,
-          scriptFile: scriptFile, stackVersion: stackVersion, message: message, assignee: assignee, reviewer: reviewer]
+          scriptFile: scriptFile, stackVersion: stackVersion, message: message, assign: assign, reviewer: reviewer]
 }
 
 def reusePullRequest(Map args = [:]) {
@@ -156,7 +156,7 @@ def createPullRequest(Map args = [:]) {
   }
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assignee: '${args.reviewer}', assignee: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -169,7 +169,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}", assignee: "${args.assignee}", reviewer: "${args.reviewer}")
+    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}", assign: "${args.assign}", reviewer: "${args.reviewer}")
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
