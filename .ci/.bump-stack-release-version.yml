@@ -9,6 +9,8 @@
 ##  enabled: whether the automation has been enabled for this project.
 ##  labels: list of GitHub labels to be added to the Pull Request (comma separated).
 ##  title: the PR title, empty if you'd like to use the default one.
+##  assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+##  reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
 ##
 projects:
   - repo: apm-pipeline-library
