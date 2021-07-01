@@ -35,7 +35,7 @@ projects:
       - edge
       - master
       - release
-    enabled: false
+    enabled: true
     labels: dependency
     reviewer: elastic/observablt-robots-on-call
   - repo: azure-vm-extension

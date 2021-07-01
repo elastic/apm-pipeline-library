@@ -26,12 +26,14 @@ public class RunWrapperMock implements Serializable {
   def previousBuild
   def number
   def result
+  def currentResult
 
   public RunWrapperMock(Map params = [:]) {
     this.rawBuild = params.rawBuild
     this.previousBuild = params.previousBuild
     this.number = params.number
     this.result = (params.result ?: 'UNKNOWN')
+    this.currentResult = (params.result ?: 'UNKNOWN')
   }
 
   public RunWrapperMock getPreviousBuild() {

@@ -65,25 +65,42 @@ class StageStatusCacheTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('base64encode', "${env.STAGE_ID}${env.GIT_BASE_COMMIT}"))
     assertTrue(assertMethodCallContainsPattern('cmd', 'Download Stage Status'))
     assertTrue(assertMethodCallContainsPattern('fileExists', "${env.FILE_NAME_BASE64}"))
-    assertTrue(assertMethodCallContainsPattern('log', "The stage skiped because it is in the execution cache."))
+    assertTrue(assertMethodCallContainsPattern('log', "The stage 'fooo' is skipped because it is in the execution cache."))
     assertJobStatusSuccess()
   }
 
   @Test
-  void testNoCheckCacheOnFirstBuild() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { true })
+  void testCheckNoCacheOnFirstBuild() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
     env.BUILD_ID = "1"
     def isOK = false
     script.call(id: env.STAGE_ID){
       isOK = true
     }
     printCallStack()
-    assertTrue(isOK)
+    //assertTrue(isOK)
     assertTrue(assertMethodCallContainsPattern('base64encode', "${env.STAGE_ID}${env.GIT_BASE_COMMIT}"))
-    assertFalse(assertMethodCallContainsPattern('cmd', 'Download Stage Status'))
-    assertFalse(assertMethodCallContainsPattern('fileExists', "${env.FILE_NAME_BASE64}"))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'Download Stage Status'))
+    assertTrue(assertMethodCallContainsPattern('fileExists', "${env.FILE_NAME_BASE64}"))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${env.FILE_NAME_BASE64}"))
     assertTrue(assertMethodCallContainsPattern('googleStorageUploadExt', "pattern=${env.FILE_NAME_BASE64}"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testCheckCacheOnFirstBuildIfRetryOption() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { true })
+    env.BUILD_ID = "1"
+    def isOK = true
+    script.call(id: env.STAGE_ID){
+      isOK = false
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('base64encode', "${env.STAGE_ID}${env.GIT_BASE_COMMIT}"))
+    assertTrue(assertMethodCallContainsPattern('cmd', 'Download Stage Status'))
+    assertTrue(assertMethodCallContainsPattern('fileExists', "${env.FILE_NAME_BASE64}"))
+    assertTrue(assertMethodCallContainsPattern('log', "The stage 'fooo' is skipped because it is in the execution cache."))
     assertJobStatusSuccess()
   }
 
