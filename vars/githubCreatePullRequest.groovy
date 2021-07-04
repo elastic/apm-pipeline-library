@@ -30,8 +30,10 @@ def call(Map args = [:]) {
   }
   def titleValue = args.containsKey('title') ? args.title : error('githubCreatePullRequest: title parameter is required.')
   def descriptionValue = args.get('description', '')
-  def assign = args.containsKey('assign') ? "--assign ${args.assign}" : ''
-  def reviewer = args.containsKey('reviewer') ? "--reviewer ${args.reviewer}" : ''
+  def assign = args.get('assign', '')
+  assign = (assign.trim()) ? "--assign ${args.assign}" : ''
+  def reviewer = args.get('reviewer', '')
+  reviewer = (reviewer.trim()) ? "--reviewer ${args.reviewer}" : ''
   def milestone = args.containsKey('milestone') ? "--milestone ${args.milestone}" : ''
   def labels = args.containsKey('labels') ? "--labels ${args.labels}" : ''
   def draft = args.containsKey('draft') ? args.draft : false

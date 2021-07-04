@@ -81,7 +81,7 @@ def generateSteps(Map args = [:]) {
             axes:[
               axis('REPO', [project.repo]),
               axis('BRANCH', project.branches),
-              axis('ENABLED', [project.get('enabled', true)])
+              axis('ENABLED', [project.get('enabled', 'true').equals('true')])
             ],
             excludes: [ axis('ENABLED', [ false ]) ]
     ) {
@@ -89,7 +89,9 @@ def generateSteps(Map args = [:]) {
                        scriptFile: "${project.script}",
                        branch: env.BRANCH,
                        reusePullRequest: project.get('reusePullRequest', false),
-                       labels: project.get('labels', ''))
+                       labels: project.get('labels', ''),
+                       assign: project.get('assign', ''),
+                       reviewer: project.get('reviewer', ''))
     }
   }
 }
@@ -111,6 +113,8 @@ def prepareArguments(Map args = [:]){
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def reusePullRequest = args.get('reusePullRequest', false)
   def labels = args.get('labels', '').replaceAll('\\s','')
+  def assign = args.get('assign', '')
+  def reviewer = args.get('reviewer', '')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
 
   def title = '[automation] update elastic stack version for testing'
@@ -121,7 +125,8 @@ def prepareArguments(Map args = [:]){
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: "${title} ${stackVersion}", labels: labels, scriptFile: scriptFile, stackVersion: stackVersion, message: message]
+  return [reusePullRequest: reusePullRequest, repo: repo, branchName: branchName, title: "${title} ${stackVersion}", labels: labels,
+          scriptFile: scriptFile, stackVersion: stackVersion, message: message, assign: assign, reviewer: reviewer]
 }
 
 def reusePullRequest(Map args = [:]) {
@@ -130,7 +135,7 @@ def reusePullRequest(Map args = [:]) {
     try {
       sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
       if (params.DRY_RUN_MODE) {
-        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', title: '${args.title}')")
+        log(level: 'INFO', text: "DRY-RUN: reusePullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', title: '${args.title}', assign: '${assign}', reviewer: '${reviewer}')")
         return true
       }
       withEnv(["REPO_NAME=${args.repo}"]){
@@ -151,7 +156,7 @@ def createPullRequest(Map args = [:]) {
   }
   sh(script: "${args.scriptFile} '${args.stackVersion}' 'true'", label: "Prepare changes for ${args.repo}")
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -164,7 +169,16 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    def arguments = [
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+    ]
+    if (args.assign?.trim()) {
+      arguments['assign'] = args.assign
+    }
+    if (args.reviewer?.trim()) {
+      arguments['reviewer'] = args.reviewer
+    }
+    githubCreatePullRequest(arguments)
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
