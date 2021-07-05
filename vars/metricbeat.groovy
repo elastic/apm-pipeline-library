@@ -76,7 +76,6 @@ def stop(Map args = [:]){
 }
 
 def runBeat(es_secret, configPath, image){
-  writeFile(file: "run_metricbeat.sh", text: libraryResource("scripts/beats/run_metricbeat.sh"))
   def secret = getVaultSecret(secret: es_secret)?.data
   withEnvMask(vars: [
       [var: "ES_URL", password: secret?.url],
@@ -85,10 +84,7 @@ def runBeat(es_secret, configPath, image){
       [var: "CONFIG_PATH", password: configPath],
       [var: "DOCKER_IMAGE", password: image]
   ]){
-    sh(label: 'Run metricbeat to grab host metrics', script: """
-      chmod ugo+rx ./run_metricbeat.sh
-      ./run_metricbeat.sh
-    """)
+    sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
     return readFile(file: 'docker_id')?.trim()
   }
 }

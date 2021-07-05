@@ -47,6 +47,7 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallOccurrences('sleep', 0))
     assertFalse(assertMethodCallContainsPattern('node', 'foo && extra/'))
     assertTrue(assertMethodCallOccurrences('ws', 0))
     assertJobStatusSuccess()
@@ -150,6 +151,32 @@ class WithNodeStepTests extends ApmBasePipelineTest {
     printCallStack()
     println workspace
     assertTrue(workspace == 'workspace/unknown-unknown-abcde')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_disable_workers() throws Exception {
+    helper.registerAllowedMethod('isStaticWorker', [Map.class], { return false })
+    def isOK = true
+    script.call(labels: 'windows-7-32-bits', disableWorkers: true) {
+      isOK = false
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('node', 'windows-7-32-bits'))
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_disable_workers_and_another_worker() throws Exception {
+    helper.registerAllowedMethod('isStaticWorker', [Map.class], { return false })
+    def isOK = true
+    script.call(labels: 'windows-2019', disableWorkers: true) {
+      isOK = false
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('node', 'windows-2019'))
+    assertFalse(isOK)
     assertJobStatusSuccess()
   }
 }

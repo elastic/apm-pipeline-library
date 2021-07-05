@@ -73,7 +73,7 @@ pipeline {
               'immutable && windows-7',
               'ubuntu-18',
               'ubuntu-20',
-              'worker-c07c6107jyw0',  // macOS workers https://beats-ci.elastic.co/label/macosx/
+              'worker-c07c6107jyw0',
               'worker-c07jc1nzdwym',
               'worker-c07l34n6dwym',
               'worker-c07y20b6jyvy',

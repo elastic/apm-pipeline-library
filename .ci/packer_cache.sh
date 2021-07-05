@@ -13,7 +13,6 @@ source /usr/local/bin/bash_standard_lib.sh
 # docker.elastic.co/observability-ci/it_dotnet
 # docker.elastic.co/observability-ci/it_opbeans-rum
 # docker.elastic.co/observability-ci/it_opbeans-ruby
-# docker.elastic.co/observability-ci/it_opbeans-php
 # docker.elastic.co/observability-ci/it_opbeans-python
 # docker.elastic.co/observability-ci/it_opbeans-node
 # docker.elastic.co/observability-ci/it_opbeans-java
@@ -28,7 +27,8 @@ alpine:3.10.1
 node:12-slim
 node:12.7.0-stretch-slim
 python:3.7.4-alpine3.10
-docker.elastic.co/beats/filebeat:7.10.1
+docker.elastic.co/beats/filebeat:7.13.2
+docker.elastic.co/beats/metricbeat:7.13.2
 docker.elastic.co/infra/jjbb
 docker.elastic.co/observability-ci/codecov
 docker.elastic.co/observability-ci/golang-mage
@@ -47,4 +47,4 @@ if [ -x "$(command -v docker)" ]; then
 fi
 
 ## Let's cache the maven dependencies
- ./mvnw clean test --fail-never
+ ./mvnw clean install --batch-mode -DskipTests --fail-never

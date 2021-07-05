@@ -1,7 +1,7 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% artifactsUrl = String.format("<%sartifacts|here>", jobUrl)%>
-<% commitUrl = String.format("<%s|%s>", changes?.issues?.first()?.url, changes?.msg)%>
+<% commitUrl = (changes?.issues?.isEmpty()) ? '' : String.format("<%s|%s>", changes?.issues?.first()?.url, changes?.msg)%>
 <% pipelineUrl = String.format("<%spipeline|#%s>", jobUrl, build?.id ?: 'build')%>
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
 <% changesMessage = (changes?.msg) ? "${commitUrl} (by `${changes?.author?.id}`)" : "No push event to branch ${build?.pipeline}" %>

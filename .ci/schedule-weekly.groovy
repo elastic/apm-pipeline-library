@@ -45,6 +45,28 @@ pipeline {
         runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7-release', subject: "[7-release] ${env.YYYY_MM_DD}: Top failing Beats tests - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
       }
     }
+    stage('Sync GitHub labels') {
+      steps {
+        build(job: 'apm-shared/github-syncup-labels-obs-dev-pipeline',
+          parameters: [
+            booleanParam(name: 'DRY_RUN_MODE', value: false),
+          ],
+          propagate: false,
+          wait: false
+        )
+      }
+    }
+    stage('Bump Go release') {
+      steps {
+        build(job: 'apm-shared/bump-go-release-version-pipeline',
+          parameters: [
+            booleanParam(name: 'DRY_RUN_MODE', value: false)
+          ],
+          propagate: false,
+          wait: false
+        )
+      }
+    }
   }
   post {
     cleanup {

@@ -103,7 +103,10 @@ pipeline {
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
-            sh './mvnw clean test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+              sh './mvnw clean install -V --batch-mode -DskipTests'
+            }
+            sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
           }
         }
       }
@@ -198,17 +201,6 @@ pipeline {
       post {
         always {
           junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
-        }
-      }
-    }
-    stage('Super-linter') {
-      steps {
-        withGithubNotify(context: 'Check super-linter', tab: 'tests') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            superLinter(failNever: true, junit: false)
-          }
         }
       }
     }

@@ -1,21 +1,17 @@
 ---
 - job:
-    name: apm-shared/license-scan-general
-    display-name: APM Pipeline Library License Scan on any repo.
-    description: Scans thrid-party licenses and report the results.
+    name: apm-shared/bump-go-release-version-pipeline
+    display-name: Bump Go Release Version
+    description: Send PRs to the subscribed observability repositories if a new go release version has been released.
     view: APM-CI
     project-type: pipeline
     parameters:
       - string:
           name: branch_specifier
           default: master
-          description: the Git branch specifier to scan
-      - string:
-          name: repo
-          default:
-          description: the Git repository to scan
+          description: the Git branch specifier to build
     pipeline-scm:
-      script-path: .ci/licenseScanGeneral.groovy
+      script-path: .ci/bumpGoReleaseVersion.groovy
       scm:
         - git:
             url: git@github.com:elastic/apm-pipeline-library.git
@@ -24,7 +20,6 @@
             name: origin
             shallow-clone: true
             credentials-id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
-            reference-repo: /var/lib/jenkins/.git-references/apm-test-pipeline.git
+            reference-repo: /var/lib/jenkins/.git-references/apm-pipeline-library.git
             branches:
-              - master
-    triggers: []
+              - $branch_specifier

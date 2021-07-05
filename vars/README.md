@@ -84,6 +84,24 @@ by default it set the `APM_CLI_SERVICE_NAME` to the value of `JOB_NAME`
   pipelineManager([ apmTraces: [ when: 'ALWAYS' ] ])
 ```
 
+## artifactsApi
+This step helps to query the artifacts-api Rest API and returns
+ a JSON object.
+
+```
+import groovy.transform.Field
+
+@Field def latestVersions
+
+script {
+  versions = artifactsApi(action: 'latest-versions')
+}
+```
+
+* action: What's the action to be triggered. Mandatory
+
+_NOTE_: It only supports *nix.
+
 ## axis
 Build a vector of pairs [ name: "VAR_NAME", value: "VALUE" ]
 from a variable name (VAR_NAME) and a vector of values ([1,2,3,4,5]).
@@ -119,6 +137,7 @@ base64encode(text: "text to encode", encoding: "UTF-8")
         <li>project: the name of the project. Mandatory</li>
         <li>content: the content with all the stages and commands to be transformed. Mandatory</li>
         <li>function: the function to be called. Should implement the class BeatsFunction. Mandatory</li>
+        <li>filterStage: the name of the stage to be filtered. Optional</li>
     </ul>
 </p>
 
@@ -342,6 +361,15 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+
+## dockerImageExists
+Checks if the given Docker image exists.
+
+```
+dockerImageExists(image: 'hello-world:latest')
+```
+
+* image: Fully qualified name of the image
 
 ## dockerLogin
 Login to hub.docker.com with an authentication credentials from a Vault secret.
@@ -998,6 +1026,21 @@ Arguments:
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
 
+## githubPrExists
+Search if there are any Pull Request that matches the given
+Pull Request details.
+
+```
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
+```
+
+* *labels*: Filter by labels. Optional
+* *title*: Filter by title (contains format). Mandatory
+
+NOTE: It uses `githubPullRequests`
+
 ## githubPrInfo
 Get the Pull Request details from the Github REST API.
 
@@ -1050,6 +1093,23 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 * pr: Pull Request number.
 
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
+
+## githubPullRequests
+Look for the GitHub Pull Requests in the current project given the labels to be 
+filtered with. It returns a dictionary with the Pull Request id as primary key and
+then the title and branch values.
+
+```
+  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // the foo and bar labels
+  githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
+```
+
+* *labels*: Filter by labels. Optional
+* *titleContains*: Filter by title (contains format). Optional
+* *state*: Filter by state: {open|closed|merged|all}. Optional. Default "open"
+* *limit*: Maximum number of items to fetch . Optional. Default 200
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
 ## githubReleaseCreate
 Create a GitHub release for a project
@@ -1277,12 +1337,24 @@ pipeline {
 }
 ```
 
-## googleStorageUpload
-As long as we got some concurrency issues
+## goVersion
+This step helps to query what golang versions have been released.
 
 ```
-googleStorageUpload(args)
+
+// Get the latest stable release
+def latestGoRelease = goVersion(action: 'latest', unstable: false)
+
+// Get the latest release
+def latestGoVersion = goVersion(action: 'latest', unstable: true)
+
+// Get all the latest releases for the go1.15
+def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '1.15')
 ```
+
+* action: What's the action to be triggered. Mandatory
+* glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
+* unstable: Whether to list the rc/beta releases. Optional. Default false.
 
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
@@ -1453,6 +1525,11 @@ def branchIndexTrigger = isBranchIndexTrigger()
 ## isBuildFailure
 
   Return true if the build status is FAILURE or UNSTABLE
+  The status of the build changes when a stage ends,
+  This means that the `isBuildFailure` step will not return the status of the build after the current stage,
+  It returns the status of the build after previous stage.
+  If you use this step on `post` stages the result is accurate,
+  but in this cases it is better to use the [post stages](https://www.jenkins.io/doc/book/pipeline/syntax/#post)
 
   ```
   if(isBuildFailure()){
@@ -1689,17 +1766,24 @@ the log level by default is INFO.
 * `text`: Message to print. The color of the messages depends on the level.
 
 ## lookForGitHubIssues
-Look for all the open issues that were reported as flaky tests. It returns
+Look for all the open issues given some filters.
+
+For backward compatibilities the default behaviour uses the flaky tests. It returns
 a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 
 ```
   // Look for all the GitHub issues with label 'flaky-test' and test failures either test-foo or test-bar
-  lookForGitHubIssues( flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+  lookForGitHubIssues(flakyList: [ 'test-foo', 'test-bar'], labelsFilter: [ 'flaky-test'])
+
+  // Look for all the GitHub issues with label 'automation' and the title contains 'bump: stack'
+  lookForGitHubIssues(flakySearch: false, labelsFilter: ['automation'], titleContains: 'bump: stack')
 ```
 
-* *flakyList*: list of test-failures. Mandatory
+* *flakySearch*: whether to run the default behaviour to look for flaky reported github issues. Optional. Default `true`
+* *flakyList*: list of test-failures. Optional. Default `[]`
 * *labelsFilter*: list of labels to be filtered when listing the GitHub issues. Optional
-* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* *titleContains*: title to be filtered when listing the GitHub issues. Optional
+* *credentialsId*: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 
 _NOTE_: Windows is not supported yet.
 
@@ -2118,6 +2202,16 @@ def i = randomNumber()
 ```
 def i = randomNumber(min: 1, max: 99)
 ```
+
+## randomString
+Generate a random string (alphanumeric and dash are allowed but not ending with dash_ )
+
+```
+// Create a random string of 15 chars (alphanumeric)
+def value = randomString(size: 15)
+```
+
+* size: the random string size.
 
 ## releaseNotification
 Send notifications with the release status by email and slack.
@@ -2614,6 +2708,21 @@ withAPM(serviceName: 'apm-traces', transactionNAme: 'test') {
 }
 ```
 
+## withAPMEnv
+Prepare the context with the ELASTIC_APM_SERVER_URL, ELASTIC_APM_SECRET_TOKEN,
+OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_HEADERS environment
+variables that are consumed by the body in order to send the data to the APM Server.
+
+```
+withAPMEnv(secret: 'secrets/my-secret-apm') {
+  // the command that consumes those env variables.
+}
+```
+
+* secret: vault secret used to interact with the APM server. Default: 'secret/observability-team/ci/jenkins-stats'
+* tokenFieldName: the field in the vault secret that contains the APM Server token. Default 'apmServerToken'
+* urlFieldName: the field in the vault secret that contains the APM Server URL. Default 'apmServerUrl'
+
 ## withAzureCredentials
 Wrap the azure credentials
 
@@ -2630,6 +2739,45 @@ withAzureCredentials(path: '/foo', credentialsFile: '.credentials.json') {
 * path: root folder where the credentials file will be stored. (Optional). Default: ${HOME} env variable
 * credentialsFile: name of the file with the credentials. (Optional). Default: .credentials.json
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/apm-agent-dotnet-azure'
+
+## withAzureEnv
+Wrap the azure credentials in environment variables to be consumed within the body
+
+```
+withAzureEnv(secret: 'secret/acme') {
+  // block
+}
+```
+
+* secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/observability-team/ci/service-account/azure-vm-extension'
+
+## withCloudEnv
+Wrap the cloud credentials and entrypoints as environment variables that are masked
+
+```
+  withCloudEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
+
+## withClusterEnv
+Wrap the cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
+      vault location
 
 ## withEnvMask
 This step will define some environment variables and mask their content in the
@@ -2786,6 +2934,7 @@ withGithubStatus(context: 'Release', tab: 'artifacts') {
 * description: Description of the GitHub status check. If unset then it will use the description.
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default pipeline.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
+* ignoreGitHubFailures: Whether to ignore when the GitHub integration failed. Default `true`.
 
 [Pipeline GitHub Notify Step plugin](https://plugins.jenkins.io/pipeline-githubnotify-step)
 
@@ -2927,6 +3076,7 @@ Wrap the node call for three reasons:
 * sleepMax: whether to sleep and for how long maximum. Optional.
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
+* disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
 
 ## withNpmrc
 Wrap the npmrc token

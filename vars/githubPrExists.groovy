@@ -16,14 +16,15 @@
 // under the License.
 
 /**
-  As long as we got some concurrency issues let's add some sleeps
-  
-  See https://github.com/jenkinsci/google-storage-plugin/issues/61
+  Whether the build is based on a Pull Request or no
 
-  googleStorageUpload(args)
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
 */
-def call(args) {
-  log(level: 'INFO', text: 'Override default googleStorageUpload with some sleep')
-  sleep randomNumber(min: 10, max: 100)
-  return steps.googleStorageUpload(args)
+def call(Map args = [:]){
+  def title = args.containsKey('title') ? args.title : error('githubPrExists: title parameter is required.')
+  def labels = args.containsKey('labels') ? args.labels.split(',') : ''
+  def pullRequests = githubPullRequests(labels: labels, titleContains: title)
+  return (pullRequests && pullRequests.size() > 0)
 }
