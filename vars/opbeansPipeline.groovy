@@ -53,6 +53,8 @@ def call(Map pipelineParams) {
     }
     triggers {
       issueCommentTrigger('(?i).*jenkins\\W+run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+      // Only master branch will run on a timer basis
+      cron(env.BRANCH_NAME == 'master' ? '@weekly' : '')
     }
     stages {
       /**
