@@ -146,6 +146,12 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
+  // In case docker images are not available yet, let's skip the PR automation.
+  if (!areVersionsAvailable(args.stackVersions)) {
+    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+    return
+  }
+
   if (anyChangesToBeSubmitted("${args.branchName}")) {
     def arguments = [
       title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
@@ -159,6 +165,15 @@ def createPullRequest(Map args = [:]) {
     githubCreatePullRequest(arguments)
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
+  }
+}
+
+def areVersionsAvailable(stackVersions) {
+  if(stackVersions.size() >= 2){
+    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 2]}") &&
+           dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 1]}")
+  } else if (stackVersions.size() == 1) {
+    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[0]}")
   }
 }
 
