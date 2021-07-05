@@ -68,8 +68,6 @@ def call(Map args = [:]) {
       def flakyDisableGHIssueCreation = args.get('flakyDisableGHIssueCreation', false)
       def jobName = args.get('jobName') ? args.jobName : ''
       catchError(message: 'There were some failures with the notifications', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        // FIXME: EnvironmentContributions are not populated in the env global map
-        setEnvVar('OTEL_ELASTIC_URL', sh(label: 'OTEL_ELASTIC_URL', script: 'echo -n "${OTEL_ELASTIC_URL}"', returnStdout: true))
         def data = getBuildInfoJsonFiles(jobURL: env.JOB_URL, buildNumber: env.BUILD_NUMBER, returnData: true)
         data['docsUrl'] = "http://${env?.REPO_NAME}_${env?.CHANGE_ID}.docs-preview.app.elstc.co/diff"
         data['emailRecipients'] = to
