@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.225 (06/07/2021)
+
+#### 🚀 Enhancements
+
+-  [notification] open-telemetry links [#1020](https://github.com/elastic/apm-pipeline-library/pull/1020)
+-  Bump automation to set the assignee and reviewer if defined [#1189](https://github.com/elastic/apm-pipeline-library/pull/1189)
+
+#### 🐛 Bug Fixes
+
+-  Validate elastic stack versions are available [#1196](https://github.com/elastic/apm-pipeline-library/pull/1196)
+
+#### ⚙️ CI
+
+-  CI: run on a weekly basis master branch [#1195](https://github.com/elastic/apm-pipeline-library/pull/1195)
+-  Enable automation for observability-test-environments [#1191](https://github.com/elastic/apm-pipeline-library/pull/1191)
+
 ## v1.1.224 (01/07/2021)
 
 #### 🚀 Enhancements
