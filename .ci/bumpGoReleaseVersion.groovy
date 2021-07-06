@@ -73,7 +73,7 @@ def generateSteps(Map args = [:]) {
             axes:[
               axis('REPO', [project.repo]),
               axis('BRANCH', project.branches),
-              axis('ENABLED', [project.get('enabled', true)])
+              axis('ENABLED', [project.get('enabled', 'true').equals('true')])
             ],
             excludes: [ axis('ENABLED', [ false ]) ]
     ) {
@@ -81,7 +81,9 @@ def generateSteps(Map args = [:]) {
                        scriptFile: "${project.script}",
                        branch: env.BRANCH,
                        labels: project.get('labels', ''),
-                       title: project.get('title', ''))
+                       title: project.get('title', ''),
+                       assign: project.get('assign', ''),
+                       reviewer: project.get('reviewer', ''))
     }
   }
 }
@@ -99,12 +101,16 @@ def prepareArguments(Map args = [:]){
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def labels = args.get('labels', '').replaceAll('\\s','')
   def title = args.get('title', '').trim() ? args.title : '[automation] Update go release version'
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
+  def assign = args.get('assign', '')
+  def reviewer = args.get('reviewer', '')
+
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = createPRDescription(env.GO_RELEASE_VERSION)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile, goReleaseVersion: env.GO_RELEASE_VERSION, message: message]
+  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile,
+          goReleaseVersion: env.GO_RELEASE_VERSION, message: message, assign: assign, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -116,7 +122,7 @@ def createPullRequest(Map args = [:]) {
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -128,7 +134,16 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    def arguments = [
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+    ]
+    if (args.assign?.trim()) {
+      arguments['assign'] = args.assign
+    }
+    if (args.reviewer?.trim()) {
+      arguments['reviewer'] = args.reviewer
+    }
+    githubCreatePullRequest(arguments)
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }

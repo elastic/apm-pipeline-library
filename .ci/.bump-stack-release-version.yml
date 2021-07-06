@@ -9,6 +9,8 @@
 ##  enabled: whether the automation has been enabled for this project.
 ##  labels: list of GitHub labels to be added to the Pull Request (comma separated).
 ##  title: the PR title, empty if you'd like to use the default one.
+##  assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
+##  reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
 ##
 projects:
   - repo: apm-pipeline-library
@@ -17,6 +19,7 @@ projects:
       - master
     enabled: true
     labels: dependency
+    reviewer: elastic/observablt-robots-on-call
   - repo: apm-integration-testing
     script: .ci/bump-stack-release-version.sh
     branches:
@@ -24,6 +27,7 @@ projects:
       - 7.x
     enabled: true
     labels: dependency
+    reviewer: elastic/observablt-robots-on-call
   - repo: observability-test-environments
     script: .ci/bump-stack-release-version.sh
     branches:
@@ -33,6 +37,7 @@ projects:
       - release
     enabled: true
     labels: dependency
+    reviewer: elastic/observablt-robots-on-call
   - repo: azure-vm-extension
     script: .ci/bump-stack-release-version.sh
     branches:

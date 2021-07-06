@@ -297,6 +297,7 @@ def notifySlack(Map args = [:]) {
           "jenkinsUrl": env.JENKINS_URL,
           "jobUrl": boURL,
           "log": log,
+          "observabilityUrl": env.OTEL_ELASTIC_URL,
           "statsUrl": statsUrl,
           "statusSuccess": statusSuccess,
           "stepsErrors": stepsErrors,
