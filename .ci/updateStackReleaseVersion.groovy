@@ -19,8 +19,8 @@ import groovy.transform.Field
 
 @Library('apm@master') _
 
-// To store all the latest release versions
-@Field def latestVersions
+// To store the next and current release versions
+@Field def releaseVersions
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -50,19 +50,18 @@ pipeline {
         git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/${ORG_NAME}/${REPO}.git")
       }
     }
-    stage('Fetch versions') {
+    stage('Fetch latest versions') {
       steps {
-        script {
-          latestVersions = readProperties(text: libraryResource("versions/releases.properties"))
-        }
+        echo ' TODO: calculate the versions'
       }
     }
     stage('Send Pull Request'){
-      options {
-        warnError('Pull Requests failed')
-      }
       steps {
-        generateSteps()
+        createPullRequest(repo: env.REPO,
+                          branchName: 'master',
+                          labels: 'automation',
+                          reviewer: 'elastic/observablt-robots-on-call',
+                          title: '[automation] Update Elastic stack release version source of truth')
       }
     }
   }
@@ -73,68 +72,25 @@ pipeline {
   }
 }
 
-def generateSteps(Map args = [:]) {
-  def projects = readYaml(file: '.ci/.bump-stack-release-version.yml')
-  projects['projects'].each { project ->
-    matrix( agent: 'linux && immutable',
-            axes:[
-              axis('REPO', [project.repo]),
-              axis('BRANCH', project.branches),
-              axis('ENABLED', [project.get('enabled', 'true').equals('true')])
-            ],
-            excludes: [ axis('ENABLED', [ false ]) ]
-    ) {
-      bumpStackVersion(repo: env.REPO,
-                       scriptFile: "${project.script}",
-                       branch: env.BRANCH,
-                       labels: project.get('labels', ''),
-                       title: project.get('title', ''),
-                       assign: project.get('assign', ''),
-                       reviewer: project.get('reviewer', ''))
-    }
-  }
-}
-
-def bumpStackVersion(Map args = [:]){
-  catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    def arguments = prepareArguments(args)
-    createPullRequest(arguments)
-  }
-}
-
-def prepareArguments(Map args = [:]){
-  def repo = args.containsKey('repo') ? args.get('repo') : error('prepareArguments: repo argument is required')
-  def scriptFile = args.containsKey('scriptFile') ? args.get('scriptFile') : error('prepareArguments: scriptFile argument is required')
-  def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
-  def labels = args.get('labels', '').replaceAll('\\s','')
-  def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
-  def assign = args.get('assign', '')
-  def reviewer = args.get('reviewer', '')
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = createPRDescription(latestVersions)
-  if (labels.trim() && !labels.contains('automation')) {
-    labels = "automation,${labels}"
-  }
-  return [repo: repo, branchName: branch, title: "${title} ${latestVersions}", labels: labels, scriptFile: scriptFile, stackVersions: latestVersions,
-          message: message, assign: assign, reviewer: reviewer]
-}
-
 def createPullRequest(Map args = [:]) {
+  def message = createPRDescription(latestVersions)
   prepareContext(repo: args.repo, branchName: args.branchName)
   if (args?.stackVersions?.size() == 0) {
     error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
-  sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
-  if(args.stackVersions.size() >= 2){
-    sh(script: "${args.scriptFile} '${args.stackVersions[args.stackVersions.size() - 2]}' '${args.stackVersions[args.stackVersions.size() - 1]}'", label: "Prepare changes for ${args.repo}")
-  } else if (args.stackVersions.size() == 1){
-    sh(script: "${args.scriptFile} '${args.stackVersions[0]}' ''", label: "Prepare changes for ${args.repo}")
-  } else {
-    error("There is no release versions")
-  }
+  writeFile file: 'resources/versions/releases.properties', text: """current_6=${releaseVersions.get('current.6')}
+current_7=${releaseVersions.get('current.7')}
+next_minor_7=${releaseVersions.get('next.minor.7')}
+next_patch_7=${releaseVersions.get('next.patch.7')}"""
+  sh(script: """
+  git checkout -b "update-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
+  git add resources/versions/releases.properties
+  git diff --staged --quiet || git commit -m "[Automation] Update elastic stack release versions to ${VERSION_RELEASE} and ${VERSION_DEV}"
+  git --no-pager log -1
+  """, label: "Git changes")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${message}', base: '${args.branchName}', title: '${args.title}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -153,11 +109,8 @@ def createPullRequest(Map args = [:]) {
 
   if (anyChangesToBeSubmitted("${args.branchName}")) {
     def arguments = [
-      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+      title: "${args.title}", labels: "${args.labels}", description: "${message}", base: "${args.branchName}"
     ]
-    if (args.assign?.trim()) {
-      arguments['assign'] = args.assign
-    }
     if (args.reviewer?.trim()) {
       arguments['reviewer'] = args.reviewer
     }
@@ -189,5 +142,5 @@ def prepareContext(Map args = [:]) {
 }
 
 def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest release. \n ### Further details \n ${versionEntry}"""
+  return """### What \n Update current and upcoming release details. \n ### Further details \n ${versionEntry}"""
 }
