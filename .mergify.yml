@@ -36,6 +36,6 @@ pull_request_rules:
     conditions:
       - merged
       - label=automation
-      - base~=^update-stack-version
+      - base~=^update-.*-version
     actions:
       delete_head_branch:

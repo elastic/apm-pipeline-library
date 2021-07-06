@@ -92,6 +92,25 @@ class GithubCreatePullRequestStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_empty_assign() throws Exception {
+    script.call(title: 'foo', credentialsId: 'bar', assign: '')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request"))
+    assertFalse(assertMethodCallContainsPattern('sh', '--assign'))
+    assertJobStatusSuccess()
+
+  }
+
+  @Test
+  void test_with_empty_reviewer() throws Exception {
+    script.call(title: 'foo', credentialsId: 'bar', reviewer: '')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "hub pull-request"))
+    assertFalse(assertMethodCallContainsPattern('sh', '--reviewer'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_sh_error() throws Exception {
     helper.registerAllowedMethod('sh', [Map.class], { s ->
       if(s.script.contains('hub pull-request')) {

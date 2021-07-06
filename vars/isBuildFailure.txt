@@ -1,5 +1,10 @@
 
   Return true if the build status is FAILURE or UNSTABLE
+  The status of the build changes when a stage ends,
+  This means that the `isBuildFailure` step will not return the status of the build after the current stage,
+  It returns the status of the build after previous stage.
+  If you use this step on `post` stages the result is accurate,
+  but in this cases it is better to use the [post stages](https://www.jenkins.io/doc/book/pipeline/syntax/#post)
 
   ```
   if(isBuildFailure()){

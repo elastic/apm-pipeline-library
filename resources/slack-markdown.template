@@ -1,14 +1,18 @@
 <% changes = changeSet?.find { true }%>
 <% steps = stepsErrors?.findAll{it?.result == "FAILURE" && !it?.displayName?.contains('Notifies GitHub') && !it?.displayName?.contains('Archive JUnit')}%>
 <% artifactsUrl = String.format("<%sartifacts|here>", jobUrl)%>
-<% commitUrl = String.format("<%s|%s>", changes?.issues?.first()?.url, changes?.msg)%>
+<% commitUrl = (changes?.issues?.isEmpty()) ? '' : String.format("<%s|%s>", changes?.issues?.first()?.url, changes?.msg)%>
 <% pipelineUrl = String.format("<%spipeline|#%s>", jobUrl, build?.id ?: 'build')%>
 <% testsUrl = String.format("<%stests|here>", jobUrl)%>
 <% changesMessage = (changes?.msg) ? "${commitUrl} (by `${changes?.author?.id}`)" : "No push event to branch ${build?.pipeline}" %>
 <% tookMessage = (duration?.trim()) ? "(Took `${duration}`)" : '' %>
 <% stepsMessage = (steps?.size()!= 0) ? "*Steps failures*: `${steps?.size()}` (click ${artifactsUrl} and open `build.md` for further details)" : ""%>
+<% obs11Url = String.format("<%s|here>", observabilityUrl)%>
 <% if (header?.trim()) {%>${header}<%}%>
 *Build*: `${jenkinsText}` ${pipelineUrl} for branch `${build?.pipeline}` got the status `${buildStatus}`. ${tookMessage}
 *Changes*: ${changesMessage}
 *Tests*: `${(testsSummary?.failed) ?: 0}` test/s failed out of ${(testsSummary?.total) ?: 0} (click ${testsUrl} for further details)
 ${stepsMessage}
+<% if (observabilityUrl && observabilityUrl?.trim()) {%>
+:APM: Click ${obs11Url} to see the APM traces.
+<%}%>

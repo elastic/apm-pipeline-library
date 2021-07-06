@@ -81,7 +81,7 @@ def generateSteps(Map args = [:]) {
             axes:[
               axis('REPO', [project.repo]),
               axis('BRANCH', project.branches),
-              axis('ENABLED', [project.get('enabled', true)])
+              axis('ENABLED', [project.get('enabled', 'true').equals('true')])
             ],
             excludes: [ axis('ENABLED', [ false ]) ]
     ) {
@@ -89,7 +89,9 @@ def generateSteps(Map args = [:]) {
                        scriptFile: "${project.script}",
                        branch: env.BRANCH,
                        labels: project.get('labels', ''),
-                       title: project.get('title', ''))
+                       title: project.get('title', ''),
+                       assign: project.get('assign', ''),
+                       reviewer: project.get('reviewer', ''))
     }
   }
 }
@@ -107,12 +109,15 @@ def prepareArguments(Map args = [:]){
   def branch = args.containsKey('branch') ? args.get('branch') : error('prepareArguments: branch argument is required')
   def labels = args.get('labels', '').replaceAll('\\s','')
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}')")
+  def assign = args.get('assign', '')
+  def reviewer = args.get('reviewer', '')
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = createPRDescription(latestVersions)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: title, labels: labels, scriptFile: scriptFile, stackVersions: latestVersions, message: message]
+  return [repo: repo, branchName: branch, title: "${title} ${latestVersions}", labels: labels, scriptFile: scriptFile, stackVersions: latestVersions,
+          message: message, assign: assign, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -130,13 +135,45 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
+
+  // If a similar PR was already created then do nothing.
+  // This should avoid duplicated PRs when they have not been merged yet.
+  if (githubPrExists(args)) {
+    log(level: 'INFO', text: 'A similar Pull Request already exists.')
+    return
+  }
+
+  // In case docker images are not available yet, let's skip the PR automation.
+  if (!areVersionsAvailable(args.stackVersions)) {
+    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+    return
+  }
+
   if (anyChangesToBeSubmitted("${args.branchName}")) {
-    githubCreatePullRequest(title: "${args.title} ${args.stackVersions}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}")
+    def arguments = [
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+    ]
+    if (args.assign?.trim()) {
+      arguments['assign'] = args.assign
+    }
+    if (args.reviewer?.trim()) {
+      arguments['reviewer'] = args.reviewer
+    }
+    githubCreatePullRequest(arguments)
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
+  }
+}
+
+def areVersionsAvailable(stackVersions) {
+  if(stackVersions.size() >= 2){
+    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 2]}") &&
+           dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 1]}")
+  } else if (stackVersions.size() == 1) {
+    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[0]}")
   }
 }
 

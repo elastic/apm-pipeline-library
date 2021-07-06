@@ -564,6 +564,35 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_slack_with_otel() throws Exception {
+    addEnvVar('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=abc&transactionId=123')
+    script.notifySlack(
+      build: readJSON(file: "build-info-manual.json"),
+      buildStatus: "SUCCESS",
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'https://kibana.elastic.dev'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_notify_slack_without_otel() throws Exception {
+    script.notifySlack(
+      build: readJSON(file: "build-info-manual.json"),
+      buildStatus: "SUCCESS",
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('slackSend', ':APM: Click'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_slack_with_multiple_channels() throws Exception {
     try {
       script.notifySlack(
@@ -695,6 +724,21 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         enabled: true
       )
     }
+  }
+
+  @Test
+  void test_notify_slack_with_empty_change_issues() throws Exception {
+    script.notifySlack(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "SUCCESS",
+      changeSet: readJSON(file: "changeSet-info-empty-issues.json"),
+      channel: 'test',
+      credentialId: 'test',
+      enabled: true
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('slackSend', '*Changes*:  (by'))
+    assertJobStatusSuccess()
   }
 
   @Test
@@ -937,6 +981,20 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertFalse(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildReport_with_empty_values() throws Exception {
+    script.generateBuildReport(
+      build: readJSON(file: 'empty/build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'empty/changeSet-info.json'),
+      stepsErrors: [],
+      testsErrors: [],
+      testsSummary: readJSON(file: 'empty/tests-summary.json'),
+    )
+    printCallStack()
     assertJobStatusSuccess()
   }
 

@@ -1026,6 +1026,21 @@ Arguments:
 
 [Pipeline GitHub plugin](https://plugins.jenkins.io/pipeline-github)
 
+## githubPrExists
+Search if there are any Pull Request that matches the given
+Pull Request details.
+
+```
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
+```
+
+* *labels*: Filter by labels. Optional
+* *title*: Filter by title (contains format). Mandatory
+
+NOTE: It uses `githubPullRequests`
+
 ## githubPrInfo
 Get the Pull Request details from the Github REST API.
 
@@ -1341,7 +1356,6 @@ def latestGo115Releases = goVersion(action: 'versions', unstable: false, glob: '
 * glob: What's the filter, glob format, to be applied to the list of versions. Optional. Default 'none'
 * unstable: Whether to list the rc/beta releases. Optional. Default false.
 
-
 ## googleStorageUploadExt
 Upload the given pattern files to the given bucket.
 
@@ -1511,6 +1525,11 @@ def branchIndexTrigger = isBranchIndexTrigger()
 ## isBuildFailure
 
   Return true if the build status is FAILURE or UNSTABLE
+  The status of the build changes when a stage ends,
+  This means that the `isBuildFailure` step will not return the status of the build after the current stage,
+  It returns the status of the build after previous stage.
+  If you use this step on `post` stages the result is accurate,
+  but in this cases it is better to use the [post stages](https://www.jenkins.io/doc/book/pipeline/syntax/#post)
 
   ```
   if(isBuildFailure()){

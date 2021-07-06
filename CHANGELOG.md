@@ -1,5 +1,59 @@
 # Changelog
 
+## v1.1.224 (01/07/2021)
+
+#### 🚀 Enhancements
+
+-  Verify if stageStatusCache even for the first build [#1190](https://github.com/elastic/apm-pipeline-library/pull/1190)
+
+## v1.1.223 (01/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: Fix filebeat step [#1188](https://github.com/elastic/apm-pipeline-library/pull/1188)
+
+## v1.1.222 (30/06/2021)
+
+#### 🚀 Enhancements
+
+-  Skip sleep by default in the withNode step [#1187](https://github.com/elastic/apm-pipeline-library/pull/1187)
+
+#### ⚙️ CI
+
+-  [mergify] clean up branches for the bump automation [#1186](https://github.com/elastic/apm-pipeline-library/pull/1186)
+
+## v1.1.221 (30/06/2021)
+
+#### 🚀 Enhancements
+
+-  Bump automation to detect if a similar open PR already exists [#1178](https://github.com/elastic/apm-pipeline-library/pull/1178)
+-  feat: undeploy custom kibana [#1174](https://github.com/elastic/apm-pipeline-library/pull/1174)
+-  Support go bump for beats, fleet-server and golang-crossbuild [#1166](https://github.com/elastic/apm-pipeline-library/pull/1166)
+-  goVersion step and automate the go bump when a new release is out [#1160](https://github.com/elastic/apm-pipeline-library/pull/1160)
+
+#### 🐛 Bug Fixes
+
+-  Fix slackMessage when issues is empty [#1184](https://github.com/elastic/apm-pipeline-library/pull/1184)
+-  Title was not shown, inverse logic [#1168](https://github.com/elastic/apm-pipeline-library/pull/1168)
+-  fix C&P, goVersion is not a list [#1164](https://github.com/elastic/apm-pipeline-library/pull/1164)
+-  Use sort semver until git version support the --sort flag [#1163](https://github.com/elastic/apm-pipeline-library/pull/1163)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: enable MacOs worker tests again [#1181](https://github.com/elastic/apm-pipeline-library/pull/1181)
+-  chore: enable macOS workers again [#1172](https://github.com/elastic/apm-pipeline-library/pull/1172)
+-  chore: add some more logs [#1171](https://github.com/elastic/apm-pipeline-library/pull/1171)
+-  Bump go version for the apm-its@7.x branch [#1165](https://github.com/elastic/apm-pipeline-library/pull/1165)
+-  Disabled test-infra in the beats-ci workers without docker [#1158](https://github.com/elastic/apm-pipeline-library/pull/1158)
+
+#### ⚙️ CI
+
+-  Revert "Revert "chore: enable macOS workers again"" [#1176](https://github.com/elastic/apm-pipeline-library/pull/1176)
+-  Title argument should contain the version in it [#1182](https://github.com/elastic/apm-pipeline-library/pull/1182)
+-  Revert "chore: enable macOS workers again" [#1173](https://github.com/elastic/apm-pipeline-library/pull/1173)
+-  Remove unused pipeline [#1170](https://github.com/elastic/apm-pipeline-library/pull/1170)
+-  Automate the release stack version for the apm-agent-rum-js [#1159](https://github.com/elastic/apm-pipeline-library/pull/1159)
+
 ## v1.1.220 (14/06/2021)
 
 #### 🚀 Enhancements

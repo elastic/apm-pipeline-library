@@ -41,7 +41,11 @@ def call(Map args = [:], Closure body) {
   def disableSomeWorkers = args.get('disableWorkers', false)
 
   // Sleep to smooth the ram up with the provisioner
-  sleep(randomNumber(min: sleepMin, max: sleepMax))
+  if (sleepMin == sleepMax && sleepMax == 0) {
+    log(level: 'DEBUG', text: "Skip sleep")
+  } else {
+    sleep(randomNumber(min: sleepMin, max: sleepMax))
+  }
 
   // In case of ephemeral workers then use the uuid
   def newLabels = labels

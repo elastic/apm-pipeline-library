@@ -16,8 +16,15 @@
 // under the License.
 
 /**
-  Return true if the build status is FAILURE or UNSTABLE
+  Whether the build is based on a Pull Request or no
+
+  whenTrue(githubPrExists(title: 'my-title')) {
+    echo "I'm a Pull Request"
+  }
 */
-def call() {
-  return currentBuild.currentResult == 'FAILURE' || currentBuild.currentResult == 'UNSTABLE'
+def call(Map args = [:]){
+  def title = args.containsKey('title') ? args.title : error('githubPrExists: title parameter is required.')
+  def labels = args.containsKey('labels') ? args.labels.split(',') : ''
+  def pullRequests = githubPullRequests(labels: labels, titleContains: title)
+  return (pullRequests && pullRequests.size() > 0)
 }

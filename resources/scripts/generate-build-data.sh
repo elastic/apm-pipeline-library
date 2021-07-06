@@ -405,6 +405,7 @@ function prepareEnvInfo() {
         echo "  \"JOB_NAME\": \"${JOB_NAME}\","
         echo "  \"JOB_URL\": \"${JOB_URL}\","
         echo "  \"ORG_NAME\": \"${ORG_NAME}\","
+        echo "  \"OTEL_ELASTIC_URL\": \"${OTEL_ELASTIC_URL}\","
         echo "  \"REPO_NAME\": \"${REPO_NAME}\""
         echo "}"
     } > "${file}"
