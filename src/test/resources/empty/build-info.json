@@ -1,0 +1,7 @@
+{
+    "result": "UNSTABLE",
+    "durationInMillis": 1,
+    "state": "FINISHED",
+    "causes": null,
+    "artifactsZipFile": "foo"
+  }
