@@ -29,19 +29,21 @@ import co.elastic.Nexus
 
 def call(Map args = [:]) {
   String url = args.get('url', 'https://oss.sonatype.org')
+  String username = args.get('username')
+  String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
-  def props = getVaultSecret(secret: secret)
+  //def props = getVaultSecret(secret: secret)
 
-  if(props?.errors){
-    error "Unable to get credentials from the vault: " + props.errors.toString()
-  }
+  //if(props?.errors){
+  //  error "Unable to get credentials from the vault: " + props.errors.toString()
+  //}
 
-  def data = props?.data
-  def username = data?.username
-  def password = data?.password
+  //def data = props?.data
+  //def username = data?.username
+  //def password = data?.password
 
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
