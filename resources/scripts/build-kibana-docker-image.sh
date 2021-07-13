@@ -22,7 +22,6 @@
 # the Docker image for Kibana for the current state of the Git repository.
 #
 
-set -x
 unset NVM_DIR
 
 export BABEL_DISABLE_CACHE=true
@@ -46,4 +45,4 @@ fi
 npm install -g yarn
 yarn kbn clean
 yarn kbn bootstrap
-node scripts/build --no-debug --no-oss --skip-docker-ubi --docker-images
+node scripts/build --no-debug --skip-docker-ubi --docker-images
