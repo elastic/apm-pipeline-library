@@ -27,6 +27,7 @@ unset NVM_DIR
 export BABEL_DISABLE_CACHE=true
 export FORCE_COLOR=1
 export NODE_OPTIONS=" --max-old-space-size=4096"
+export BUILD_TS_REFS_DISABLE="true"
 
 if [ -z "$(command -v nvm)" ]; then
   curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
