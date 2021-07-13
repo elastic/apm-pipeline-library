@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.227 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: set BUILD_TS_REFS_DISABLE=true [#1203](https://github.com/elastic/apm-pipeline-library/pull/1203)
+
 ## v1.1.226 (13/07/2021)
 
 #### 🐛 Bug Fixes
