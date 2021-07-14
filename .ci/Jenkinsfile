@@ -124,6 +124,11 @@ pipeline {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
           dir("${BASE_DIR}"){
             googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+            dir('target/subfolder') {
+              touch(file: 'foo.test')
+            }
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}/tests", pattern: 'target/**/*.test', sharedPublicly: false)
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}/tests", pattern: 'target/**/*.tar.gz', sharedPublicly: false)
           }
         }
       }
@@ -139,6 +144,11 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+            dir('target/subfolder') {
+              touch(file: 'foo.test')
+            }
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}/tests", pattern: 'target\\**\\*.test', sharedPublicly: false)
+            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}/tests", pattern: 'target\\**\\*.tar.gz', sharedPublicly: false)
           }
         }
       }
