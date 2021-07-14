@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.1.227 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: set BUILD_TS_REFS_DISABLE=true [#1203](https://github.com/elastic/apm-pipeline-library/pull/1203)
+
+## v1.1.226 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: remove --no-oss flag [#1202](https://github.com/elastic/apm-pipeline-library/pull/1202)
+-  [bump][pinned][version] Validate snapshot versions [#1200](https://github.com/elastic/apm-pipeline-library/pull/1200)
+
+#### ⚙️ CI
+
+-  Remove call to the license jobs [#1199](https://github.com/elastic/apm-pipeline-library/pull/1199)
+-  [test-infra] disable worker-c07c6107jyw0 and use docker-machine if possible [#1198](https://github.com/elastic/apm-pipeline-library/pull/1198)
+
+## v1.1.225 (06/07/2021)
+
+#### 🚀 Enhancements
+
+-  [notification] open-telemetry links [#1020](https://github.com/elastic/apm-pipeline-library/pull/1020)
+-  Bump automation to set the assignee and reviewer if defined [#1189](https://github.com/elastic/apm-pipeline-library/pull/1189)
+
+#### 🐛 Bug Fixes
+
+-  Validate elastic stack versions are available [#1196](https://github.com/elastic/apm-pipeline-library/pull/1196)
+
+#### ⚙️ CI
+
+-  CI: run on a weekly basis master branch [#1195](https://github.com/elastic/apm-pipeline-library/pull/1195)
+-  Enable automation for observability-test-environments [#1191](https://github.com/elastic/apm-pipeline-library/pull/1191)
+
 ## v1.1.224 (01/07/2021)
 
 #### 🚀 Enhancements

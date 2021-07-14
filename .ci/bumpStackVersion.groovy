@@ -191,7 +191,9 @@ def createPullRequest(Map args = [:]) {
 }
 
 def isVersionAvailable(stackVersion) {
-  return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersion}")
+  // pinned snapshot versions use -SNAPSHOT suffix.
+  def version = stackVersion.endsWith('SNAPSHOT') ? stackVersion : "${stackVersion}-SNAPSHOT"
+  return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${version}")
 }
 
 def anyChangesToBeSubmitted(String branch) {

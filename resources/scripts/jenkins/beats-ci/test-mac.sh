@@ -23,9 +23,11 @@ virtualenv venv
 source venv/bin/activate
 pip install testinfra
 
-## Prepare the docker for mac
-docker-machine start default || true
-eval "$(docker-machine env default)"
+## Prepare the docker for mac if docker-machine is installed
+if command -v docker-machine ; then
+  docker-machine start default || true
+  eval "$(docker-machine env default)"
+fi
 set -x
 
 ## Run test-infra and trap error to notify when required
