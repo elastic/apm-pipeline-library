@@ -40,7 +40,6 @@ def call(Map args = [:]){
   def notify = args.containsKey('githubNotifyFirstTimeContributor') ? args.get('githubNotifyFirstTimeContributor') : false
   def shallowValue = args.containsKey('shallow') ? args.get('shallow') : false
   def depthValue = args.containsKey('depth') ? args.get('depth') : 5
-  def retryValue = args.containsKey('retry') ? args.get('retry') : 3
   def refspec = '+refs/pull/*/head:refs/remotes/origin/pr/*'
   def noTags = args.containsKey('noTags') ? args.get('noTags') : false
 
