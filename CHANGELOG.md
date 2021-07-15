@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.227 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: set BUILD_TS_REFS_DISABLE=true [#1203](https://github.com/elastic/apm-pipeline-library/pull/1203)
+
+## v1.1.226 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: remove --no-oss flag [#1202](https://github.com/elastic/apm-pipeline-library/pull/1202)
+-  [bump][pinned][version] Validate snapshot versions [#1200](https://github.com/elastic/apm-pipeline-library/pull/1200)
+
+#### ⚙️ CI
+
+-  Remove call to the license jobs [#1199](https://github.com/elastic/apm-pipeline-library/pull/1199)
+-  [test-infra] disable worker-c07c6107jyw0 and use docker-machine if possible [#1198](https://github.com/elastic/apm-pipeline-library/pull/1198)
+
 ## v1.1.225 (06/07/2021)
 
 #### 🚀 Enhancements
