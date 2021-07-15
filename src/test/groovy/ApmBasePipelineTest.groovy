@@ -288,6 +288,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
+    helper.registerAllowedMethod('git', [Map.class], { true })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -386,7 +387,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/detailsURL.groovy')
       return script.call(m)
     })
-    helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
+    helper.registerAllowedMethod('dockerLogin', [Map.class], { true })    
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
       echoColor.call(m)
@@ -539,6 +541,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m, c)
     })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('setupAPMGitEmail', [Map.class], { "OK" })
     helper.registerAllowedMethod('tap2Junit', [Map.class], { m ->
       def script = loadScript('vars/tap2Junit.groovy')
       return script.call(m)
