@@ -36,7 +36,7 @@ def call(Map args = [:]) {
 
 def anyMatchesGivenThePattern(String pattern) {
   if (isUnix()) {
-    return sh(returnStatus: true, script: "ls -1 ${pattern}") != 0
+    return sh(returnStatus: true, script: "ls -1 ${pattern}") == 0
   } else {
     return powershell(returnStdout: true, script: "Get-ChildItem ${pattern} -recurse").contains("Mode")
   }
