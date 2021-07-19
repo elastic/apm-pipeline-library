@@ -30,6 +30,10 @@ private static HttpURLConnection createConnection(String baseUrl, String usernam
     HttpURLConnection conn = (HttpURLConnection)url.openConnection()
     conn.addRequestProperty("Authorization", "Basic " + new String(Base64.encoder.encode(creds.getBytes())))
     conn.addRequestProperty("Accept", "application/json")
+    System.out.println(baseUrl);
+    System.out.println(username);
+    System.out.println(password);
+    System.out.println(path);
     return conn
 }
 
