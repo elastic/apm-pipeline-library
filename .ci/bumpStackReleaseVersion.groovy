@@ -111,8 +111,8 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
+  def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${latestVersions}"""
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = createPRDescription(latestVersions)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
@@ -121,11 +121,11 @@ def prepareArguments(Map args = [:]){
 }
 
 def createPullRequest(Map args = [:]) {
-  prepareContext(repo: args.repo, branchName: args.branchName)
+  bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
   if (args?.stackVersions?.size() == 0) {
     error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
-  sh(script: """git checkout -b "update-stack-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
+  bumpUtils.createBranch(prefix: 'update-stack-version', suffix: args.branchName)
   if(args.stackVersions.size() >= 2){
     sh(script: "${args.scriptFile} '${args.stackVersions[args.stackVersions.size() - 2]}' '${args.stackVersions[args.stackVersions.size() - 1]}'", label: "Prepare changes for ${args.repo}")
   } else if (args.stackVersions.size() == 1){
@@ -152,7 +152,7 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  if (anyChangesToBeSubmitted("${args.branchName}")) {
+  if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
     def arguments = [
       title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
     ]
@@ -170,25 +170,10 @@ def createPullRequest(Map args = [:]) {
 
 def areVersionsAvailable(stackVersions) {
   if(stackVersions.size() >= 2){
-    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 2]}") &&
-           dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 1]}")
+    return bumpUtils.isVersionAvailable(stackVersions[stackVersions.size() - 2]) &&
+           bumpUtils.isVersionAvailable(stackVersions[stackVersions.size() - 1])
   } else if (stackVersions.size() == 1) {
-    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[0]}")
+    return bumpUtils.isVersionAvailable(stackVersions[0])
   }
-}
-
-def anyChangesToBeSubmitted(String branch) {
-  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
-}
-
-def prepareContext(Map args = [:]) {
-  deleteDir()
-  setupAPMGitEmail(global: true)
-  git(url: "https://github.com/${ORG_NAME}/${args.repo}.git",
-      branch: args.branchName,
-      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-}
-
-def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest release. \n ### Further details \n ${versionEntry}"""
+  return false
 }
