@@ -60,7 +60,7 @@ def call(Map args = [:]) {
       // because they are automatically generated.
       // https://central.sonatype.org/pages/releasing-the-deployment.html
       // This is a workaround to just look for open repos that begin with our groupId
-      if (repository['description'].startsWith(mungeGroupId)) {
+      if (repository['repositoryId'].startsWith(mungeGroupId)) {
           if (repository['type'] != 'open') {
                error "Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
                       "It should have been kept open when staging the release."
