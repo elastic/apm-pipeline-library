@@ -22,6 +22,9 @@ import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.util.Base64
 
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 import groovy.json.JsonSlurperClassic
 
 private static HttpURLConnection createConnection(String baseUrl, String username, String password, String path) {
