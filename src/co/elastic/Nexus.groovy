@@ -59,10 +59,8 @@ private static Object getData(HttpURLConnection conn) {
 
     String response = conn.getInputStream().getText('UTF-8') 
 	System.out.println(response)
-
-//     // conn.inputStream.withReader('UTF-8') { Reader reader ->
-//     //     data = new JsonSlurperClassic().parse(reader)
-//     // }
+    def slurper = new groovy.json.JsonSlurperClassic()
+    data = slurper.parseText(response)
     return data
 }
 
