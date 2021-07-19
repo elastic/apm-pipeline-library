@@ -60,7 +60,7 @@ private static Object getData(HttpURLConnection conn) {
 	String inputLine;
 	StringBuffer response = new StringBuffer();
 
-	while ((inputLine = in.readLine()) != null) {
+	while ((inputLine = inpt.readLine()) != null) {
 		response.append(inputLine);
 	}
 	inpt.close();
