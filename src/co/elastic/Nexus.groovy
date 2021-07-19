@@ -66,6 +66,7 @@ private static Object getData(HttpURLConnection conn) {
 
 	// print result
 	System.out.println(response.toString());
+    }   
 
     conn.inputStream.withReader('UTF-8') { Reader reader ->
         data = new JsonSlurperClassic().parse(reader)
