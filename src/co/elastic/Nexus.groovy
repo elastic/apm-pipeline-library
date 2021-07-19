@@ -53,7 +53,6 @@ private static void addData(HttpURLConnection conn, String method, byte[] bytes)
 // make the request, and parse the response as json
 private static Object getData(HttpURLConnection conn) {
     Object data = null
-    conn.inputStream.withReader('UTF-8') { Reader reader -> System.out.println(reader)}
 	BufferedReader in = new BufferedReader(new InputStreamReader(
 			conn.getInputStream()));
 	String inputLine;
