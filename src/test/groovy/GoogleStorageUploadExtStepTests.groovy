@@ -28,6 +28,7 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     env.JOB_GCS_CREDENTIALS = 'secret'
+    helper.registerAllowedMethod('sh', [Map.class], { return 0 })
     script = loadScript('vars/googleStorageUploadExt.groovy')
   }
 
@@ -35,11 +36,31 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
   void test_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
+    helper.registerAllowedMethod('powershell', [Map.class], { return 'Mode' })
     def ret = script.call(bucket: 'gs://foo', pattern: 'file.txt')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('gsutil', '-a public-read'))
     assertTrue(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
     assertFalse(ret.isEmpty())
+  }
+
+  @Test
+  void test_windows_without_match() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    helper.registerAllowedMethod('powershell', [Map.class], { return '' })
+    script.call(bucket: 'gs://foo', pattern: 'file.txt')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
+    assertTrue(assertMethodCallContainsPattern('log', 'file.txt'))
+  }
+
+  @Test
+  void test_without_match() throws Exception {
+    helper.registerAllowedMethod('sh', [Map.class], { return 1 })
+    script.call(bucket: 'gs://foo', pattern: 'file.txt')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
+    assertTrue(assertMethodCallContainsPattern('log', 'file.txt'))
   }
 
   @Test

@@ -225,6 +225,14 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
 * ssl: Set to `false` to disable SSL. Default is `true`.
 
+## bumpUtils
+Utils class for the bump automation pipelines
+
+* `areChangesToBePushed` -> if there any changes in the existing location to be pushed.
+* `createBranch` -> create a branch given the prefix and suffix arguments. Branch contains the current timestamp.
+* `isVersionAvailable` -> if the given elastic stack version is available.
+* `prepareContext` -> prepare the git context, checkout and git config user.name.
+
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -772,7 +780,6 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
 * *shallow*: Whether to enable the shallow cloning. Default: false
 * *depth*: Set shallow clone depth. Default: 5
-* *retry*: Set the number of retries if there are issues when cloning. Default: 3
 
 _NOTE_: 'shallow' is forced to be disabled when running on Pull Requests
 
@@ -3054,7 +3061,7 @@ _NOTE:_
 
 ## withNode
 Wrap the node call for three reasons:
-  1. with some latency to avoid the known issue with the scalability in gobld.
+  1. with some latency to avoid the known issue with the scalability in gobld. It requires sleepMax > 0
   2. enforce one shoot ephemeral workers with the extra/uuid label that gobld provides.
   3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
 
@@ -3072,8 +3079,8 @@ Wrap the node call for three reasons:
 ```
 
 * labels: what's the labels to be used. Mandatory
-* sleepMin: whether to sleep and for how long at least. Optional.
-* sleepMax: whether to sleep and for how long maximum. Optional.
+* sleepMin: whether to sleep and for how long at least. Optional. By default `0`
+* sleepMax: whether to sleep and for how long maximum. Optional. By default `0`
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 * disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false

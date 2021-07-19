@@ -105,7 +105,7 @@ def prepareArguments(Map args = [:]){
   def reviewer = args.get('reviewer', '')
 
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = createPRDescription(env.GO_RELEASE_VERSION)
+  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n ${env.GO_RELEASE_VERSION}"""
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
@@ -114,11 +114,11 @@ def prepareArguments(Map args = [:]){
 }
 
 def createPullRequest(Map args = [:]) {
-  prepareContext(repo: args.repo, branchName: args.branchName)
+  bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
   if (!args?.goReleaseVersion?.trim()) {
     error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
   }
-  sh(script: """git checkout -b "update-go-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}" """, label: "Git branch creation")
+  bumpUtils.createBranch(prefix: 'update-go-version', suffix: args.branchName)
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
@@ -133,7 +133,7 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  if (anyChangesToBeSubmitted("${args.branchName}")) {
+  if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
     def arguments = [
       title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
     ]
@@ -147,20 +147,4 @@ def createPullRequest(Map args = [:]) {
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
-}
-
-def anyChangesToBeSubmitted(String branch) {
-  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
-}
-
-def prepareContext(Map args = [:]) {
-  deleteDir()
-  setupAPMGitEmail(global: true)
-  git(url: "https://github.com/${ORG_NAME}/${args.repo}.git",
-      branch: args.branchName,
-      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-}
-
-def createPRDescription(versionEntry) {
-  return """### What \n Bump go release version with the latest release. \n ### Further details \n ${versionEntry}"""
 }

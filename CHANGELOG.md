@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.228 (16/07/2021)
+
+#### 📚 Documentation
+
+-  Remove retry param from gitCheckout [#1206](https://github.com/elastic/apm-pipeline-library/pull/1206)
+
+#### 🙈 No user affected
+
+-  Refactor bump pipelines [#1207](https://github.com/elastic/apm-pipeline-library/pull/1207)
+
 ## v1.1.227 (13/07/2021)
 
 #### 🐛 Bug Fixes

@@ -116,11 +116,10 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
-
   def title = '[automation] update elastic stack version for testing'
   def branchName = findBranchName(branch: branch, versions: latestVersions)
   def versionEntry = latestVersions.get(branchName)
-  def message = createPRDescription(versionEntry)
+  def message = """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry}"""
   def stackVersion = versionEntry?.build_id
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
@@ -130,7 +129,7 @@ def prepareArguments(Map args = [:]){
 }
 
 def reusePullRequest(Map args = [:]) {
-  prepareContext(repo: args.repo, branchName: args.branchName)
+  bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
   if (args.reusePullRequest && reusePullRequestIfPossible(args)) {
     try {
       sh(script: "${args.scriptFile} '${args.stackVersion}' 'false'", label: "Prepare changes for ${args.repo}")
@@ -150,7 +149,7 @@ def reusePullRequest(Map args = [:]) {
 }
 
 def createPullRequest(Map args = [:]) {
-  prepareContext(repo: args.repo, branchName: args.branchName)
+  bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
   if (!args?.stackVersion?.trim()) {
     error('createPullRequest: stackVersion is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
@@ -169,12 +168,12 @@ def createPullRequest(Map args = [:]) {
   }
 
   // In case docker image is not available yet, let's skip the PR automation.
-  if (!isVersionAvailable(args.stackVersion)) {
+  if (!bumpUtils.isVersionAvailable(args.stackVersion)) {
     log(level: 'INFO', text: "Version '${args.stackVersion}' is not available yet.")
     return
   }
 
-  if (anyChangesToBeSubmitted("${args.branchName}")) {
+  if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
     def arguments = [
       title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
     ]
@@ -188,24 +187,6 @@ def createPullRequest(Map args = [:]) {
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
-}
-
-def isVersionAvailable(stackVersion) {
-  // pinned snapshot versions use -SNAPSHOT suffix.
-  def version = stackVersion.endsWith('SNAPSHOT') ? stackVersion : "${stackVersion}-SNAPSHOT"
-  return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${version}")
-}
-
-def anyChangesToBeSubmitted(String branch) {
-  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
-}
-
-def prepareContext(Map args = [:]) {
-  deleteDir()
-  setupAPMGitEmail(global: true)
-  git(url: "https://github.com/${ORG_NAME}/${args.repo}.git",
-      branch: args.branchName,
-      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
 }
 
 def reusePullRequestIfPossible(Map args = [:]){
@@ -232,8 +213,4 @@ def findBranchName(Map args = [:]){
     branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/ }.sort().last()
   }
   return branch
-}
-
-def createPRDescription(versionEntry) {
-  return """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry}"""
 }
