@@ -17,6 +17,18 @@
 import org.yaml.snakeyaml.Yaml
 import java.util.ArrayList
 
+
+class YamlParser {
+  public static List<String> getVersions(String yamlUrl, String key){
+    Yaml yamlParser = new Yaml()
+    def yamlContent = getContent(yamlUrl)
+    return yamlParser.load(yamlContent)[key]
+  }
+  public static String getContent(String yamlUrl){
+    return new java.net.URL(yamlUrl).getText()
+  }
+}
+
 def registry = "docker.elastic.co"
 def prefix = "observability-ci"
 
@@ -125,13 +137,11 @@ def dockerImages = new ArrayList([
   ],
 ])
 
-Yaml yamlParser = new Yaml()
 
 /*
   APM Agent Python Docker images
 */
-def pythonVersionsYaml = new java.net.URL('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml').getText()
-def pythonVersions = yamlParser.load(pythonVersionsYaml).PYTHON_VERSION
+def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
 
 pythonVersions.each{ version ->
   def pythonVersion = version.replaceFirst("-",":")
@@ -149,8 +159,7 @@ pythonVersions.each{ version ->
 /*
   APM Agent Node.js Docker images
 */
-def nodeVersionsYaml = new java.net.URL('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml').getText()
-def nodeVersions = yamlParser.load(nodeVersionsYaml).NODEJS_VERSION
+def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
 nodeVersions.each{ version ->
   def nodejsVersion = version.replaceFirst('"', '')
   dockerImages.add([
@@ -178,8 +187,7 @@ dockerImages.add([
   docker_push_script: "./run.sh --action push --registry ${registry}/${prefix}"
 ])
 
-def rubyVersionsYaml = new java.net.URL('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml').getText()
-def rubyVersions = yamlParser.load(rubyVersionsYaml).RUBY_VERSION
+def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
 // The ones with the observability-ci tag are already built at the very end
 // of this pipeline.
 rubyVersions.findAll { element -> !element.contains('observability-ci') }.each { version ->
@@ -198,9 +206,8 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
 /*
   APM Agent RUM Docker images
 */
-def rumLibrariessYaml = new java.net.URL('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml').getText()
-def libraries = yamlParser.load(rumLibrariessYaml).TEST_LIBRARIES
-def nodejsVersion = new java.net.URL('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version').getText()
+def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
+def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
 libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
@@ -214,8 +221,8 @@ libraries.each { library ->
 
 dockerImages.each{ item ->
   pipelineJob("apm-shared/docker-images/${item.job ? item.job : item.name}") {
-    displayName("${item.name} - Docker image")
-    description("Job to build and push the ${item.name} Docker image")
+    displayName("${item.name} ${item.tag ? item.tag : ''} - Docker image")
+    description("Job to build and push the ${item.name} ${item.tag ? item.tag : ''} Docker image")
     parameters {
       stringParam('registry', "${registry}", "Docker Registry.")
       stringParam('prefix', "${prefix}", "Docker registry namespace.")
