@@ -54,6 +54,19 @@ private static void addData(HttpURLConnection conn, String method, byte[] bytes)
 private static Object getData(HttpURLConnection conn) {
     Object data = null
     conn.inputStream.withReader('UTF-8') { Reader reader -> System.out.println(reader)}
+	BufferedReader in = new BufferedReader(new InputStreamReader(
+			conn.getInputStream()));
+	String inputLine;
+	StringBuffer response = new StringBuffer();
+
+	while ((inputLine = in.readLine()) != null) {
+		response.append(inputLine);
+	}
+	in.close();
+
+	// print result
+	System.out.println(response.toString());
+
     conn.inputStream.withReader('UTF-8') { Reader reader ->
         data = new JsonSlurperClassic().parse(reader)
     }
