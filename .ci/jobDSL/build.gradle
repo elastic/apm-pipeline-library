@@ -45,6 +45,7 @@ dependencies {
   testCompile "org.jenkins-ci.plugins:job-dsl:${jobDslVersion}"
   testCompile "org.jenkins-ci.plugins:job-dsl:${jobDslVersion}@jar"
   testCompile 'org.jenkins-ci.plugins:structs:1.21@jar'
+  testCompile 'io.jenkins.plugins:snakeyaml-api:1.29.1'
 
   // Plugins to install in test instance
   testPlugins 'org.jenkins-ci.plugins:token-macro:2.12'
