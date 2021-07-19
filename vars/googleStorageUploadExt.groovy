@@ -27,5 +27,17 @@ def call(Map args = [:]) {
     flags = '-a public-read'
   }
 
-  return gsutil(command: "-m -q cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
+  if (anyMatchesGivenThePattern(pattern)) {
+    return gsutil(command: "-m -q cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
+  } else {
+    log(level: 'WARN', text: "googleStorageUploadExt: There are no matches given the pattern '${pattern}'")
+  }
+}
+
+def anyMatchesGivenThePattern(String pattern) {
+  if (isUnix()) {
+    return sh(returnStatus: true, script: "ls -1 ${pattern}") == 0
+  } else {
+    return powershell(returnStdout: true, script: "Get-ChildItem ${pattern} -recurse").contains("Mode")
+  }
 }
