@@ -41,6 +41,7 @@ STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
 TESTS_INFO="tests-info.json"
 TESTS_SUMMARY="tests-summary.json"
+TESTS_COBERTURA="tests-cobertura.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
@@ -158,6 +159,22 @@ function fetchAndPrepareTestsInfo() {
         echo "${default}" > "${file}"
     else
         normaliseTestsWithoutStacktrace "${file}"
+    fi
+
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+}
+
+function fetchAndPrepareTestCoberturaReport() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+
+    echo "INFO: fetchAndPrepareTestCoberturaReport (see ${file})"
+    fetch "$file" "$url"
+
+    if [ ! -e "${file}" ] ; then
+        echo "${default}" > "${file}"
     fi
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
@@ -432,6 +449,7 @@ fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "a
 fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 ### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
+fetchAndPrepareTestCoberturaReport "${TESTS_COBERTURA}" "${BUILD_URL}cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3&pretty=true" "test_cobertura" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 ### prepareEnvInfo should run the last one since it's the last field to be added
 prepareEnvInfo "${ENV_INFO}" "env"
