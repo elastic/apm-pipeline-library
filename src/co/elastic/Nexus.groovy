@@ -34,11 +34,6 @@ private static HttpURLConnection createConnection(String baseUrl, String usernam
     String encoded_auth = new String(Base64.encoder.encode(creds.getBytes()))
     conn.addRequestProperty("Authorization", "Basic ${encoded_auth}")
     conn.addRequestProperty("Accept", "application/json")
-    System.out.println(baseUrl);
-    System.out.println(username);
-    System.out.println(password);
-    System.out.println(path);
-    System.out.println(encoded_auth);
     return conn
 }
 
