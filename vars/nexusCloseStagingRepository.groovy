@@ -108,15 +108,6 @@ def call(Map args = [:]){
               }
           }
           Exception exception = new Exception(msg.join('\n'))
-          conn = Nexus.createConnection(url, username, password, "profiles/${stagingProfileId}/drop")
-          data = toJSON(['data': ['stagedRepositoryId': stagingId]])
-          Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
-          try {
-              Nexus.checkResponse(conn, 201)
-          } catch (Exception dropFailure) {
-              exception.addSuppressed(dropFailure)
-          }
-
           throw exception
       }
 
