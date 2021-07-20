@@ -10,6 +10,8 @@ nexusCreateStagingRepository(
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
+* username: The username to auth to the repository
+* password: The password to auth to the repository
 * secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging

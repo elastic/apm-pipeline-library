@@ -30,31 +30,19 @@ import net.sf.json.JSONArray
 
 def call(Map args = [:]) {
     String url = args.get('url', 'https://oss.sonatype.org')
+    String username = args.get('username')
+    String password = args.get('password')
     String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
     String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
     String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   
-    def props = getVaultSecret(secret: secret)
-    
-    if(props?.errors){
-        error "Unable to get credentials from the vault: " + props.errors.toString()
-    }
-
-    def vault_data = props?.data
-    def username = vault_data?.user
-    def password = vault_data?.password
-
     String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
     HttpURLConnection conn
     final int retries = 20
     int attemptNumber = 0
 
     while (attemptNumber < retries) {
-        withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
-            }
+        conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/drop")
         Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
         if (Nexus.is5xxError(conn.responseCode)) {
             log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to drop a staging repository in nexus, trying again.")

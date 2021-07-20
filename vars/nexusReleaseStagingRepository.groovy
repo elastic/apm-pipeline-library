@@ -23,6 +23,8 @@
     secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "co.elastic.foo"
+    username: nexus
+    password: my_password
     )
 **/
 import co.elastic.Nexus
@@ -31,19 +33,11 @@ import net.sf.json.JSONArray
 def call(Map args = [:]) {
 
   String url = args.get('url', 'https://oss.sonatype.org')
+  String username = args.get('username')
+  String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
-
-  def props = getVaultSecret(secret: secret)
-
-  if(props?.errors){
-     error "Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def vault_data = props?.data
-  def username = vault_data?.username
-  def password = vault_data?.password
 
   String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
   HttpURLConnection conn
@@ -52,11 +46,7 @@ def call(Map args = [:]) {
   int attemptNumber = 0
 
   while (attemptNumber < retries) {
-      withEnvMask(vars: [
-        [var: "NEXUS_username", password: username],
-        [var: "NEXUS_password", password: password]    ]){
-            conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/promote")
-        }
+      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/promote")
       Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
       if (Nexus.is5xxError(conn.responseCode)) {
           log(level: "WARN", "Received a ${conn.responseCode} HTTP response code while trying to release a staging repository, trying again.")

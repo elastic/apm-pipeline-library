@@ -23,6 +23,8 @@
     secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
+    username: "nexus"
+    password: "my_password"
     )
 **/
 
@@ -31,19 +33,12 @@ import net.sf.json.JSONArray
 
 def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
+  String username = args.get('username')
+  String password = args.get('password')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('stagingId') ? args.groupId : error('Must supply groupId')
-
-  def props = getVaultSecret(secret: secret)
-  if(props?.errors){
-     error "Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def vault_data = props?.data
-  def username = vault_data?.username
-  def password = vault_data?.password
 
   HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
 
@@ -58,14 +53,10 @@ def call(Map args = [:]){
   // poll repo activity for close action
   while (true) {
       try {
-          withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}/activity")
-            }
+          conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}/activity")
           Nexus.checkResponse(conn, 200)
       } catch (Exception e) {
-          // sometimes nexus just shits itself with a new repository...try again
+          // sometimes Nexus just fails with a new repository...try again
           if (Nexus.is5xxError(conn.responseCode) && activityAttempts < activityRetries) {
               activityAttempts += 1
               // slight backoff between attempts
@@ -119,11 +110,7 @@ def call(Map args = [:]){
               }
           }
           Exception exception = new Exception(msg.join('\n'))
-          withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(url, env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
-            }
+          conn = Nexus.createConnection(url, username, password, "profiles/${stagingProfileId}/drop")
           data = toJSON(['data': ['stagedRepositoryId': stagingId]])
           Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
           try {

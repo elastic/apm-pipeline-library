@@ -20,6 +20,8 @@
 
   nexusUploadStagingArtifact(
     url: "https://oss.sonatype.org",
+    username: nexus,
+    password: my_password,
     secret: "secret/release/nexus",
     stagingId: "comexampleapplication-1010",
     groupId: "com.example.applications",
@@ -32,22 +34,14 @@ import co.elastic.Nexus
 
 def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
+  String username = args.get('username')
+  String password = args.get('password')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply groupId')
   String artifactId = args.containsKey('artifactId') ? args.groupId : error('Must supply artifactId')
   String version = args.containsKey('version') ? args.version : error('Must supply version')
   String file_path = args.containsKey('file_path') ? args.file_path : error('Must supply file_path')
-
-  def props = getVaultSecret(secret: secret)
-  
-  if(props?.errors){
-     error "Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def vault_data = props?.data
-  def username = vault_data?.user
-  def password = vault_data?.password
 
   String stagingURL = Nexus.getStagingURL(url)
   log(level: "INFO", text: "Load artifact for staging from " + file_path)
@@ -58,11 +52,7 @@ def call(Map args = [:]){
 
   File md5_f = Nexus.generateHashFile(fh, 'md5')
   File sha1_f = Nexus.generateHashFile(fh, 'sha1')
-  withEnvMask(vars: [
-    [var: "NEXUS_username", password: username],
-    [var: "NEXUS_password", password: password]    ]){
-      Nexus.upload(stagingURL, env.NEXUS_username, env.NEXUS_password, path, fh)
-    }
+  Nexus.upload(stagingURL, username, password, path, fh)
 
   // The *.asc upload has been disabled because it doesn't seem necessary but there is a chance
   // that oss.sonatype.org will require it so I am keeping it here for the time being just in case

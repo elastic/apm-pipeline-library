@@ -30,19 +30,11 @@ import net.sf.json.JSONArray
 
 def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
+  String username = args.get('username')
+  String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String description = args.containsKey('description') ? args.description : error('Must supply description')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
-  
-  def props = getVaultSecret(secret: secret)
-  
-  if(props?.errors){
-     error "Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def vault_data = props?.data
-  def username = vault_data?.user
-  def password = vault_data?.password
 
   int retries = args.get('retries', 20)
 
@@ -51,11 +43,7 @@ def call(Map args = [:]){
   int attemptNumber = 0
 
   while (attemptNumber <= retries) {
-      withEnvMask(vars: [
-        [var: "NEXUS_username", password: username],
-        [var: "NEXUS_password", password: password]    ]){
-            conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/start")
-        }
+      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/start")
       Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
       if (Nexus.is5xxError(conn.responseCode)) {
           log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to create a staging repository in nexus, trying again.")
@@ -77,18 +65,10 @@ def call(Map args = [:]){
   // Reset retry counter
   attemptNumber = 0
   
-  withEnvMask(vars: [
-    [var: "NEXUS_username", password: username],
-    [var: "NEXUS_password", password: password]    ]){
-        conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}")
-    }
+  conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
   while (conn.responseCode != 200 && attemptNumber <= retries) {
       Thread.sleep(500)
-      withEnvMask(vars: [
-        [var: "NEXUS_username", password: username],
-        [var: "NEXUS_password", password: password]    ]){
-            conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}")
-      }
+      conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "repository/${stagingId}")
   }
 
   return stagingId

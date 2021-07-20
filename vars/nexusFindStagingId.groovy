@@ -23,6 +23,8 @@
     secret: "secret/release/nexus"
     stagingProfileId: "1234-1455-1242",
     groupId: co.elastic.apm
+    username: nexus
+    password: my_password
     )
 **/
 import co.elastic.Nexus
@@ -35,20 +37,9 @@ def call(Map args = [:]) {
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
   String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
-  //def props = getVaultSecret(secret: secret)
-
-  //if(props?.errors){
-  //  error "Unable to get credentials from the vault: " + props.errors.toString()
-  //}
-
-  //def data = props?.data
-  //def username = data?.username
-  //def password = data?.password
-  
 
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
-  // conn = Nexus.createConnection(stagingURL, env.NEXUS_username, env.NEXUS_password, "profile_repositories/${stagingProfileId}")
   conn = Nexus.createConnection(stagingURL, username, password, "profile_repositories/${stagingProfileId}")
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
