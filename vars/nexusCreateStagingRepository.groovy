@@ -22,7 +22,6 @@
     stagingProfileId: my_profile,
     description: "My new staging repo")
     stagingProfileId: "foo-bar-baz"
-    secret: "secret/release/nexus"
 **/
 
 import co.elastic.Nexus
@@ -34,7 +33,6 @@ def call(Map args = [:]){
   String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String description = args.containsKey('description') ? args.description : error('Must supply description')
-  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
   int retries = args.get('retries', 20)
 

@@ -20,7 +20,6 @@
 
   nexusCloseStagingRepository
     url: "https://oss.sonatype.org",
-    secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
     username: "nexus"
@@ -35,7 +34,6 @@ def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
   String username = args.get('username')
   String password = args.get('password')
-  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('stagingId') ? args.groupId : error('Must supply groupId')

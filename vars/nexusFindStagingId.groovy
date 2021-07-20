@@ -20,7 +20,6 @@
 
   nexusFindStagingId(
     url: "https://oss.sonatype.org",
-    secret: "secret/release/nexus"
     stagingProfileId: "1234-1455-1242",
     groupId: co.elastic.apm
     username: nexus
@@ -35,7 +34,6 @@ def call(Map args = [:]) {
   String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
-  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
 
 
   def HttpURLConnection conn

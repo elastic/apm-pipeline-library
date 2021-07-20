@@ -22,7 +22,6 @@
     url: "https://oss.sonatype.org",
     username: nexus,
     password: my_password,
-    secret: "secret/release/nexus",
     stagingId: "comexampleapplication-1010",
     groupId: "com.example.applications",
     artifactId: "my_tasty_artifact",
@@ -36,7 +35,6 @@ def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
   String username = args.get('username')
   String password = args.get('password')
-  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply groupId')
   String artifactId = args.containsKey('artifactId') ? args.groupId : error('Must supply artifactId')

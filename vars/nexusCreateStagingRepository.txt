@@ -4,7 +4,6 @@ Create a Nexus staging repository
 nexusCreateStagingRepository(
   stagingProfileId: my_profile,
   description: "My new staging repo",
-  secret: "secret/release/nexus",
   url: https://oss.sonatype.org,
   username: nexus
   password: my_password
@@ -13,7 +12,6 @@ nexusCreateStagingRepository(
 
 * stagingProfileId: The staging identifier to use when creating the repository
 * description: A description of the new staging repository
-* secret: Vault secret to retrieve Nexus credentials
 * url: Nexus URL (default: https://oss.sonatype.org)
 * username: The username to auth to the repository
 * password: The password to auth to the repository

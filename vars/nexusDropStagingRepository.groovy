@@ -20,7 +20,6 @@
 
   nexusDropStagingRepository(
     url: "https://oss.sonatype.org",
-    secret: "secret/release/nexus"
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
     )
@@ -34,7 +33,6 @@ def call(Map args = [:]) {
     String password = args.get('password')
     String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
     String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
-    String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   
     String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
     HttpURLConnection conn
