@@ -22,7 +22,6 @@
     url: "https://oss.sonatype.org",
     stagingProfileId: "1234-1455-1242",
     groupId: co.elastic.apm
-    secret: /my/vault/secret
     )
 **/
 import co.elastic.Nexus
@@ -41,9 +40,9 @@ def call(Map args = [:]) {
     error "Unable to get credentials from the vault: " + props.errors.toString()
   }
 
-  def data = props?.data
-  def username = data?.username
-  def password = data?.password
+  def vault_data = props?.data
+  def username = vault_data?.username
+  def password = vault_data?.password
 
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
