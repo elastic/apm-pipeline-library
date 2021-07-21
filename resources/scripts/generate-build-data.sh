@@ -171,9 +171,12 @@ function fetchAndPrepareTestCoberturaReport() {
     default=$4
 
     echo "INFO: fetchAndPrepareTestCoberturaReport (see ${file})"
+    ## overall status should not be affected if no cobertura data is available.
+    ## There are a few jobs that use the cobertura plugin.
+    CURRENT_STATUS=$STATUS
     fetch "$file" "$url"
     normaliseCoberturaSummary "$file"
-
+    STATUS=$CURRENT_STATUS
     if [ ! -e "${file}" ] ; then
         echo "${default}" > "${file}"
     fi
