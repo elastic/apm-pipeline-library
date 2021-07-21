@@ -36,15 +36,7 @@ def call(Map args = [:]) {
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
   String role_id = args.get('role_id')
   String secret_id = args.get('secret_id')
-
-  def HttpURLConnection conn
-  String stagingURL = Nexus.getStagingURL(url)
-  conn = Nexus.createConnection(stagingURL, username, password, "profile_repositories/${stagingProfileId}")
-  Nexus.checkResponse(conn, 200)
-  Object response = Nexus.getData(conn)
-  String repositoryId = null
-  String mungeGroupId = groupId.replace(".", "")
-
+  
   def props = getVaultSecret(secret: secret, role_id, secret_id)
 
   if(props?.errors){
@@ -54,6 +46,15 @@ def call(Map args = [:]) {
   def data = props?.data
   def username = data?.username
   def password = data?.password
+
+  def HttpURLConnection conn
+  String stagingURL = Nexus.getStagingURL(url)
+  conn = Nexus.createConnection(stagingURL, username, password, "profile_repositories/${stagingProfileId}")
+  Nexus.checkResponse(conn, 200)
+  Object response = Nexus.getData(conn)
+  String repositoryId = null
+  String mungeGroupId = groupId.replace(".", "")
+
 
 
   for (def repository : response['data']) {
