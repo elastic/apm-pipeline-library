@@ -53,7 +53,7 @@ pipeline {
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
     // Default build rotation for the pipeline.
     //   When using the downstream pattern for the matrix then the build rotation
     //   should be less restrictive mainly because the @master is the one normally used
