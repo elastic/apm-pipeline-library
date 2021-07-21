@@ -30,9 +30,9 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
     return """
     {
       "data": [{
-        "description": "coelasticapm-1010",
-          "type": "open",
-          "repositoryId": "my id"
+        "repositoryId": "coelasticapm-1010",
+         "type": "open",
+         "description": "my description"
         }]
     }
     """
@@ -82,9 +82,8 @@ class NexusFindStagingIdTests extends ApmBasePipelineTest {
     def ret = script.call(
       url: 'http://localhost:9999',
       stagingProfileId: 'pid',
-      secret: '/nexus/production',
       groupId: 'co.elastic.apm')
-    assertTrue(ret.equals('my id'))
+    assertTrue(ret.equals('coelasticapm-1010'))
   }
 
   @Test

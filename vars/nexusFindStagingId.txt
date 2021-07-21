@@ -3,17 +3,20 @@ Find a Nexus staging repository
 ```
 nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
-  groupId: "co.elastic.apm"
+  groupId: "co.elastic.apm",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
 * stagingProfileId: Identifier for the staging profile
 * groupid: Our group id
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
