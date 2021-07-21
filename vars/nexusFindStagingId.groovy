@@ -30,8 +30,8 @@ import co.elastic.Nexus
 
 def call(Map args = [:]) {
   String url = args.get('url', 'https://oss.sonatype.org')
-  String username = args.get('username')
-  String password = args.get('password')
+//   String username = args.get('username')
+//   String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
   String role_id = args.get('role_id')
