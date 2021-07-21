@@ -38,7 +38,7 @@ def call(Map args = [:]) {
   String secret_id = args.get('secret_id')
   String secret = args.get('secret')
 
-  def props = getVaultSecret(secret: secret, role_id, secret_id)
+  def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
 
   if(props?.errors){
     error "Unable to get credentials from the vault: " + props.errors.toString()
