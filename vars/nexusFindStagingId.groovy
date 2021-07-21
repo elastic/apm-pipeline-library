@@ -51,7 +51,7 @@ def call(Map args = [:]) {
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
   System.println(username)
-  System.prinln(stagingURL)
+  System.println(stagingURL)
   conn = Nexus.createConnection(stagingURL, username, password, "profile_repositories/${stagingProfileId}")
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
