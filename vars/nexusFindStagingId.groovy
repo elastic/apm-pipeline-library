@@ -34,7 +34,8 @@ def call(Map args = [:]) {
   String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
-
+  String role_id = args.get('role_id')
+  String secret_id = args.get('secret_id')
 
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
@@ -43,6 +44,17 @@ def call(Map args = [:]) {
   Object response = Nexus.getData(conn)
   String repositoryId = null
   String mungeGroupId = groupId.replace(".", "")
+
+  def props = getVaultSecret(secret: secret, role_id, secret_id)
+
+  if(props?.errors){
+    error "Unable to get credentials from the vault: " + props.errors.toString()
+  }
+
+  def data = props?.data
+  def username = data?.username
+  def password = data?.password
+
 
   for (def repository : response['data']) {
       // We can't look for the description if we didn't actually open the staging repo
