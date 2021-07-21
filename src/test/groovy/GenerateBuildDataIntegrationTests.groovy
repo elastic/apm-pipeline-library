@@ -216,7 +216,7 @@ class GenerateBuildDataIntegrationTests {
     assertNull("No _class object", obj.get("_class"))
     assertNull("No _index object", obj.get("_index"))
     assertNull("No actions object", obj.get("actions"))
-    assertTrue("BO_URL transformation happens successfully", obj.get("BO_URL").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
+    assertTrue("BO_URL transformation happens successfully", obj.get("url").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
   }
 
   @Test
