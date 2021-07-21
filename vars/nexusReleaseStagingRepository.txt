@@ -4,12 +4,18 @@ Release a Nexus staging repository
 nexusReleaseStagingRepository(
   url: "https://oss.sonatype.org",
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "co.elastic.foo"
+  stagingId: "co.elastic.foo",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier of staging repository
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
