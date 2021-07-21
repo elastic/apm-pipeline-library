@@ -36,7 +36,8 @@ def call(Map args = [:]) {
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
   String role_id = args.get('role_id')
   String secret_id = args.get('secret_id')
-  
+  String secret = args.get('secret')
+
   def props = getVaultSecret(secret: secret, role_id, secret_id)
 
   if(props?.errors){
