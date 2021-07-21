@@ -55,7 +55,7 @@ def call(Map args = [:]){
       withEnvMask(vars: [
       [var: "NEXUS_username", password: username],
       [var: "NEXUS_password", password: password]    ]){
-        conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, ,env.NEXUS_password, "profiles/${stagingProfileId}/start")
+        conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/start")
       }
       Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
       if (Nexus.is5xxError(conn.responseCode)) {
