@@ -22,21 +22,18 @@
     url: "https://oss.sonatype.org",
     stagingProfileId: "1234-1455-1242",
     groupId: co.elastic.apm
-    username: nexus
-    password: my_password
+    secret: /my/vault/secret
     )
 **/
 import co.elastic.Nexus
 
 def call(Map args = [:]) {
   String url = args.get('url', 'https://oss.sonatype.org')
-//   String username = args.get('username')
-//   String password = args.get('password')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('groupId') ? args.groupId : error('Must supply group id')
-  String role_id = args.get('role_id')
-  String secret_id = args.get('secret_id')
-  String secret = args.get('secret')
+  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
+  String role_id = args.containsKey('role_id') ? args.role_id : 'apm-vault-role-id'
+  String secret_id = args.containsKey('secret_id') ? args.secret_id : 'apm-vault-secret-id'
 
   def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
 
@@ -50,9 +47,13 @@ def call(Map args = [:]) {
 
   def HttpURLConnection conn
   String stagingURL = Nexus.getStagingURL(url)
-  System.println(username)
-  System.println(stagingURL)
-  conn = Nexus.createConnection(stagingURL, username, password, "profile_repositories/${stagingProfileId}")
+
+  withEnvMask(vars: [
+  [var: "NEXUS_username", password: username],
+  [var: "NEXUS_password", password: password]    ]){
+    conn = Nexus.createConnection(stagingURL, env.NEXUS_username, env.NEXUS_password, "profile_repositories/${stagingProfileId}")
+  }
+
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
   String repositoryId = null
