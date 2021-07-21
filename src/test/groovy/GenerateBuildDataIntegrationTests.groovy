@@ -36,10 +36,9 @@ import static org.junit.Assert.assertTrue
   - cd local ** make start
   - Build the jobs http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ in
   - download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
-  - java -jar wiremock-standalone-2.26.3.jar --verbose
-  - open http://localhost:8080/__admin/recorder/
-  - add the target URL http://localhost:18080 and record
-  - Then click on the BlueOcean URLs for the above jobs.
+  - java -jar wiremock-standalone-*.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
+  - Then click on the BlueOcean URLs for the builds of each of the jobs in the above folder.
+  - Replace the 18080 port with 8080, then the wiremock proxy will record the calls.
   - Once you are done you need to copy the folders mappings and __files to src/test/resources
 */
 class GenerateBuildDataIntegrationTests {
@@ -47,13 +46,13 @@ class GenerateBuildDataIntegrationTests {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(18081)
 
-  private final String URL = "http://localhost:18081/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
+  private final String BO_URL = "http://localhost:18081/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles"
+  private final String TRADITIONAL_URL = "http://localhost:18081/job/it/job/getBuildInfoJsonFiles/job"
 
   @Test
   public void abortBuild_without_tests() {
     String targetFolder = "abortBuild_without_tests"
-    String jobUrl = this.URL + "/abort/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "ABORTED", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "abort", "ABORTED")
     printStdout(process)
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
@@ -64,7 +63,7 @@ class GenerateBuildDataIntegrationTests {
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
-    assertFalse(obj.get("test_cobertura").isEmpty())
+    assertTrue(obj.get("test_cobertura").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
@@ -75,8 +74,7 @@ class GenerateBuildDataIntegrationTests {
   @Test
   public void successBuild_without_tests() {
     String targetFolder = "successBuild_without_tests"
-    String jobUrl = this.URL + "/success/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "success", "ABORTED")
     printStdout(process)
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
@@ -87,7 +85,7 @@ class GenerateBuildDataIntegrationTests {
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
-    assertFalse(obj.get("test_cobertura").isEmpty())
+    assertTrue(obj.get("test_cobertura").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
@@ -97,10 +95,32 @@ class GenerateBuildDataIntegrationTests {
   }
 
   @Test
+  public void cobertura_tests() {
+    String targetFolder = "cobertura_tests"
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "cobertura", "SUCCESS")
+    printStdout(process)
+    assertEquals("Process did finish unsuccessfully, there are no executed tests.", 1, process.waitFor())
+
+    // Tests were not executed
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
+    assertTrue(obj.isEmpty())
+
+    obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
+    assertFalse(obj.isEmpty())
+    assertFalse(obj.get("job").isEmpty())
+    assertFalse(obj.get("test_cobertura").isEmpty())
+    assertFalse(obj.get("test_summary").isEmpty())
+    assertTrue(obj.get("changeSet").isEmpty())
+    assertFalse(obj.get("artifacts").isEmpty())
+    assertTrue(obj.get("test").isEmpty())
+    assertFalse(obj.get("build").isEmpty())
+    assertFalse(obj.get("env").isEmpty())
+  }
+
+  @Test
   public void unstableBuild() {
     String targetFolder = "unstableBuild"
-    String jobUrl = this.URL + "/unstable/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "unstable", "UNSTABLE")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
@@ -111,7 +131,7 @@ class GenerateBuildDataIntegrationTests {
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
     assertFalse(obj.get("job").isEmpty())
-    assertFalse(obj.get("test_cobertura").isEmpty())
+    assertTrue(obj.get("test_cobertura").isEmpty())
     assertFalse(obj.get("test_summary").isEmpty())
     assertFalse(obj.get("changeSet").isEmpty())
     assertFalse(obj.get("artifacts").isEmpty())
@@ -150,8 +170,7 @@ class GenerateBuildDataIntegrationTests {
   @Test
   public void errorBuild() {
     String targetFolder = "errorBuild"
-    String jobUrl = this.URL + "/error/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "error", "UNSTABLE")
     printStdout(process)
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
@@ -169,8 +188,7 @@ class GenerateBuildDataIntegrationTests {
   @Test
   public void unstableBuild_with_tests_normalisation() {
     String targetFolder = "unstableBuild_with_tests_normalisation"
-    String jobUrl = this.URL + "/unstable/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "unstable", "UNSTABLE")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
@@ -188,8 +206,7 @@ class GenerateBuildDataIntegrationTests {
   @Test
   public void errorBuild_with_steps_normalisation() {
     String targetFolder = "errorBuild_with_steps_normalisation"
-    String jobUrl = this.URL + "/error/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "error", "UNSTABLE")
     printStdout(process)
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
@@ -199,14 +216,13 @@ class GenerateBuildDataIntegrationTests {
     assertNull("No _class object", obj.get("_class"))
     assertNull("No _index object", obj.get("_index"))
     assertNull("No actions object", obj.get("actions"))
-    assertTrue("URL transformation happens successfully", obj.get("url").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
+    assertTrue("BO_URL transformation happens successfully", obj.get("BO_URL").matches("http.*/blue/rest/organizations/jenkins/pipelines/it/pipelines/getBuildInfoJsonFiles/pipelines/error/runs/1/steps/7/log"));
   }
 
   @Test
   public void emptyBuild_with_default_manipulation() {
     String targetFolder = "emptyBuild_with_default_manipulation"
-    String jobUrl = this.URL + "/empty/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "SUCCESS", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "empty", "SUCCESS")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
@@ -219,8 +235,7 @@ class GenerateBuildDataIntegrationTests {
   @Test
   public void multiTestFailuresBuild() {
     String targetFolder = "multiTestFailures"
-    String jobUrl = this.URL + "/multiTestFailures/"
-    Process process = runCommand(targetFolder, jobUrl, jobUrl + "runs/1", "UNSTABLE", "1")
+    Process process = runCommand(targetFolder, TRADITIONAL_URL, BO_URL, "multiTestFailures", "UNSTABLE")
     printStdout(process)
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
@@ -234,14 +249,14 @@ class GenerateBuildDataIntegrationTests {
     }
   }
 
-  Process runCommand(String targetFolder, String jobUrl, String buildUrl, String status, String runTime) {
+  Process runCommand(String targetFolder, String traditionalUrl, String boUrl, String jobName, String status) {
     //Build command
     List<String> commands = new ArrayList<String>()
     commands.add("../../resources/scripts/generate-build-data.sh")
-    commands.add(jobUrl)
-    commands.add(buildUrl)
+    commands.add(boUrl + "/${jobName}/")
+    commands.add(boUrl + "/${jobName}/runs/1")
     commands.add(status)
-    commands.add(runTime)
+    commands.add('1')
 
     ProcessBuilder pb = new ProcessBuilder(commands)
     Map<String, String> env = pb.environment()
@@ -252,7 +267,7 @@ class GenerateBuildDataIntegrationTests {
     env.put('BUILD_ID', '1')
     env.put('BUILD_NUMBER', '1')
     env.put('BUILD_TAG', 'jenkins-project-main-1')
-    env.put('BUILD_URL', 'http://localhost:18081/job/project/job/main/1/')
+    env.put('BUILD_URL', traditionalUrl + "/${jobName}/1")
     env.put('CHANGE_AUTHOR', 'v1v')
     env.put('CHANGE_BRANCH', 'main')
     env.put('CHANGE_FORK', 'v1v/project')
@@ -262,10 +277,10 @@ class GenerateBuildDataIntegrationTests {
     env.put('GIT_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
     env.put('GIT_PREVIOUS_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
     env.put('GIT_PREVIOUS_SUCCESSFUL_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
-    env.put('JOB_BASE_NAME', 'main')
-    env.put('JOB_DISPLAY_URL', 'http://localhost:18081/job/project/job/main/display/redirect')
-    env.put('JOB_NAME', 'project/main')
-    env.put('JOB_URL', 'http://localhost:18081/job/project/job/main/')
+    env.put('JOB_BASE_NAME', jobName)
+    env.put('JOB_DISPLAY_URL', traditionalUrl + "/${jobName}/display/redirect")
+    env.put('JOB_NAME', "project/${jobName}")
+    env.put('JOB_URL', traditionalUrl + "/${jobName}")
     env.put('ORG_NAME', 'acme')
     env.put('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=38f56b69e3b7c76c8e914b2d467d0475&transactionId=b877b754e2e3a8c4')
     env.put('REPO_NAME', 'project')
