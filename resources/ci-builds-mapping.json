@@ -127,33 +127,15 @@
       "changeSet" : {
         "properties" : {
           "affectedPaths" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
+            "type" : "keyword"
           },
           "author" : {
             "properties" : {
               "fullName" : {
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "type" : "keyword",
-                    "ignore_above" : 256
-                  }
-                }
+                "type" : "keyword"
               },
               "id" : {
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "type" : "keyword",
-                    "ignore_above" : 256
-                  }
-                }
+                "type" : "keyword"
               }
             }
           },
@@ -161,49 +143,23 @@
             "type" : "long"
           },
           "commitId" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
+            "type" : "keyword"
           },
           "issues" : {
             "properties" : {
               "_class" : {
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "type" : "keyword"
-                  }
-                }
+                "type" : "keyword"
               },
               "id" : {
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "type" : "keyword"
-                  }
-                }
+                "type" : "keyword"
               },
               "url" : {
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "type" : "keyword"
-                  }
-                }
+                "type" : "keyword"
               }
             }
           },
           "msg" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword"
-              }
-            }
+            "type" : "keyword"
           },
           "timestamp" : {
             "type" : "date"
@@ -369,6 +325,88 @@
           },
           "weatherScore" : {
             "type" : "long"
+          }
+        }
+      },
+      "test_cobertura" : {
+        "properties" : {
+          "Classes" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Conditionals" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Files" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Lines" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Methods" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Packages" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
           }
         }
       },
