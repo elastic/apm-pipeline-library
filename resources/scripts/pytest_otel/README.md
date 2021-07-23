@@ -38,7 +38,7 @@ pytest_otel is configured by adding some parameters to the pytest command line h
 
 ```bash
 cd pytest_otel
-pytest --endpoint https://apm.example.com:8200 \
+pytest --endpoint https://otelcollector.example.com:4317 \
        --headers "Authorization=Bearer ASWDCcCRFfr" \
        --service-name pytest_otel \
        --session-name='My_Test_cases' \

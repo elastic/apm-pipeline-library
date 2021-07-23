@@ -72,7 +72,7 @@ install: virtualenv
 ## @help:test:Run the test.
 .PHONY: test
 test: virtualenv install
-	OTEL_EXPORTER_OTLP_ENDPOINT=127.0.0.1:9444 \
+	OTEL_EXPORTER_OTLP_ENDPOINT=127.0.0.1:4317 \
 	OTEL_SERVICE_NAME="pytest_otel_test" \
 	OTEL_EXPORTER_OTLP_INSECURE=True \
 	source $(VENV)/bin/activate;\
@@ -104,10 +104,10 @@ release: bin/gh package
 		--title $(PYTEST_OTEL_PKG) \
 		--notes "$(PYTEST_OTEL_PKG)"
 
-## @help:run-otel-collector:Run OpenTelemetri collector in debug mode.
+## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
 .PHONY: run-otel-collector
 run-otel-collector:
-	docker run --rm -p 9444:9444 \
+	docker run --rm -p 4317:4317 \
 	-v "$(CURDIR)/otel-collector.yaml":/otel-config.yaml \
 	--name otelcol otel/opentelemetry-collector \
 	--config otel-config.yaml; \
