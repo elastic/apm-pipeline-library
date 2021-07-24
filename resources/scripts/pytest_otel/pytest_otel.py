@@ -32,7 +32,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 LOGGER = logging.getLogger("pytest_otel")
 service_name = None
-trace_id = None
+traceparent = None
 session_name = None
 has_otel = True
 tracer = None
@@ -59,9 +59,9 @@ def pytest_addoption(parser):
                     dest='session_name',
                     default='Test Suit',
                     help='Name for the Main span reported.')
-    group.addoption('--trace_id',
-                    dest='trace_id',
-                    help='Trace parent id.(TRACE_ID) see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format')
+    group.addoption('--traceparent',
+                    dest='traceparent',
+                    help='Trace parent.(TRACEPARENT) see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format')
     group.addoption('--insecure',
                     dest='insecure',
                     default=False,
@@ -87,15 +87,10 @@ def init_otel():
 
 
 def start_span(span_name):
-    global has_otel, trace_id, tracer, spans
-    if trace_id:
-        context = trace.set_span_in_context(trace_id)
-        spans[span_name] = tracer.start_span(span_name, context=context)
-        LOGGER.debug('Parent transaction : {}'.format(trace_id))
-    else:
-        spans[span_name] = tracer.start_span(span_name,
-                                             record_exception=True,
-                                             set_status_on_exception=True)
+    global has_otel, tracer, spans
+    spans[span_name] = tracer.start_span(span_name,
+                                         record_exception=True,
+                                         set_status_on_exception=True)
     LOGGER.debug('The {} transaction start_span.'.format(span_name))
     return spans[span_name]
 

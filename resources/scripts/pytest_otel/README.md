@@ -33,7 +33,7 @@ pytest_otel is configured by adding some parameters to the pytest command line h
 * --headers: Additional headers to send (i.e.: key1=value1,key2=value2). Env variable `OTEL_EXPORTER_OTLP_HEADERS`
 * --service-name: Name of the service. Env variable `OTEL_SERVICE_NAME`
 * --session-name: Name for the Main span reported.
-* --trace_id: Trace parent id. Env variable `TRACE_ID` see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format
+* --traceparent: Trace parent id. Env variable `TRACEPARENT` see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format
 * --insecure: Disables TLS. Env variable `OTEL_EXPORTER_OTLP_INSECURE`
 
 ```bash
@@ -42,7 +42,7 @@ pytest --endpoint https://otelcollector.example.com:4317 \
        --headers "Authorization=Bearer ASWDCcCRFfr" \
        --service-name pytest_otel \
        --session-name='My_Test_cases' \
-       --trace_id=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
+       --traceparent=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
        --insecure=False
 ```
 
@@ -54,7 +54,7 @@ For instance, given the above example, the similar one with environment variable
 OTEL_EXPORTER_OTLP_ENDPOINT=https://apm.example.com:8200 \
 OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ASWDCcCRFfr" \
 OTEL_SERVICE_NAME=pytest_otel \
-TRACE_ID=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
+TRACEPARENT=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
 OTEL_EXPORTER_OTLP_INSECURE=False \
 pytest --apm-session-name='My_Test_cases'
 ```
