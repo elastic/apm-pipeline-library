@@ -76,7 +76,6 @@ pipeline {
               // 'worker-c07c6107jyw0', 10.15.7 has docker desktop and it gets stalled
               'worker-c07jc1nzdwym',
               'worker-c07l34n6dwym',
-              'worker-c07y20b6jyvy',
               'worker-c07y20b9jyvy',
               'worker-c07y20b4jyvy',
               'worker-c07y20bcjyvy',
