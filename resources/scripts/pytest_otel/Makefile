@@ -92,7 +92,7 @@ test-with-trace: virtualenv install
 	OTEL_EXPORTER_OTLP_INSECURE=$(OTEL_EXPORTER_OTLP_INSECURE) \
 	OTEL_EXPORTER_OTLP_HEADERS=$(OTEL_EXPORTER_OTLP_HEADERS) \
 	source $(VENV)/bin/activate;\
-	$(VENV)/bin/pytest --traceparent "00-\${TRACE_ID}-\${SPAN_ID}-01" --capture=no
+	$(VENV)/bin/pytest --traceparent "00-${TRACE_ID}-${SPAN_ID}-01" --capture=no
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage
