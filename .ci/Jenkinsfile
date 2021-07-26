@@ -99,7 +99,7 @@ pipeline {
         withGithubNotify(context: 'Test OTEL') {
           dir("${BASE_DIR}/resources/scripts/pytest_otel"){
             withOtelEnv() {
-              sh script: """
+              sh script: """#!/bin/bash -e
                 OTEL_EXPORTER_OTLP_ENDPOINT=\${OTEL_EXPORTER_OTLP_ENDPOINT} \
                 OTEL_EXPORTER_OTLP_HEADERS='Authorization=Bearer \${OTEL_TOKEN_ID}' \
                 make test-with-trace"""
