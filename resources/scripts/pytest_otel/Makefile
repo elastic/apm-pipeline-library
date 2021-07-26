@@ -14,7 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
+SHELL := /bin/bash
 PYTEST_OTEL_VERSION = 0.0.1
 PYTEST_OTEL_PKG = pytest-otel-$(PYTEST_OTEL_VERSION)
 VENV ?= .venv
