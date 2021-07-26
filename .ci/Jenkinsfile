@@ -97,16 +97,9 @@ pipeline {
     stage('Test OTEL') {
       steps {
         withGithubNotify(context: 'Test OTEL') {
-          dir("${BASE_DIR}/resources/scripts/pytest_otel"){
+          dir("${BASE_DIR}"){
             withOtelEnv() {
-              sh script: """#!/bin/bash -ex
-                OTEL_EXPORTER_OTLP_ENDPOINT=\${OTEL_EXPORTER_OTLP_ENDPOINT} \
-                OTEL_EXPORTER_OTLP_HEADERS='Authorization=Bearer \${OTEL_TOKEN_ID}' \
-                make -n test-with-trace || true"""
-              sh script: """#!/bin/bash -ex
-                OTEL_EXPORTER_OTLP_ENDPOINT=\${OTEL_EXPORTER_OTLP_ENDPOINT} \
-                OTEL_EXPORTER_OTLP_HEADERS='Authorization=Bearer \${OTEL_TOKEN_ID}' \
-                make test-with-trace || true"""
+              sh(script: '.ci/scripts/pytest-otel.sh')
             }
           }
         }
