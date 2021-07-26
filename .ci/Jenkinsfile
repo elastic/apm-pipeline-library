@@ -94,6 +94,20 @@ pipeline {
         }
       }
     }
+    stage('Test OTEL') {
+      steps {
+        withGithubNotify(context: 'Test OTEL') {
+          dir("${BASE_DIR}/resources/scripts/pytest_otel"){
+            withOtelEnv() {
+              sh script: """
+                OTEL_EXPORTER_OTLP_ENDPOINT=\${OTEL_EXPORTER_OTLP_ENDPOINT} \
+                OTEL_EXPORTER_OTLP_HEADERS='Authorization=Bearer \${OTEL_TOKEN_ID}' \
+                make test-with-trace"""
+            }
+          }
+        }
+      }
+    }
     /**
      Checkout the code and stash it, to use it on other stages.
     */
@@ -211,20 +225,6 @@ pipeline {
       post {
         always {
           junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
-        }
-      }
-    }
-    stage('Test OTEL') {
-      steps {
-        withGithubNotify(context: 'Test OTEL') {
-          dir("${BASE_DIR}/resources/scripts/pytest_otel"){
-            withOtelEnv() {
-              sh script: """
-                OTEL_EXPORTER_OTLP_ENDPOINT=\${OTEL_EXPORTER_OTLP_ENDPOINT} \
-                OTEL_EXPORTER_OTLP_HEADERS='Authorization=Bearer \${OTEL_TOKEN_ID}' \
-                make test-with-trace"""
-            }
-          }
         }
       }
     }
