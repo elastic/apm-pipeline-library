@@ -23,6 +23,10 @@
   }
 
 */
+
+import com.cloudbees.groovy.cps.NonCPS
+import jenkins.model.GlobalConfiguration
+
 def call(Map args = [:], Closure body) {
   String credentialsId = args.get('credentialsId', '')
   if (!isPluginInstalled(pluginName: 'opentelemetry')) {
@@ -46,4 +50,9 @@ def call(Map args = [:], Closure body) {
       body()
     }
   }
+}
+
+@NonCPS
+def getOtelPlugin() {
+  return Jenkins.get().getExtensionList(GlobalConfiguration.class).get(io.jenkins.plugins.opentelemetry.JenkinsOpenTelemetryPluginConfiguration.class)
 }
