@@ -115,12 +115,12 @@ def convertOutcome(outcome):
 
 
 def pytest_sessionstart(session):
-    global service_name, trace_id, session_name, insecure
+    global service_name, traceparent, session_name, insecure
     LOGGER.setLevel(logging.DEBUG)
     config = session.config
     service_name = config.getoption("service_name")
     session_name = config.getoption("session_name")
-    trace_id = config.getoption("trace_id")
+    traceparent = config.getoption("traceparent")
     endpoint = config.getoption("endpoint")
     headers = config.getoption("headers")
     insecure = config.getoption("insecure")
@@ -132,7 +132,7 @@ def pytest_sessionstart(session):
         os.environ['OTEL_SERVICE_NAME'] = service_name
     if insecure:
         os.environ['OTEL_EXPORTER_OTLP_INSECURE'] = insecure
-    if trace_id:
+    if traceparent:
         if headers:
             os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {},{}".format(traceparent, headers)
         else:
