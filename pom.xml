@@ -92,6 +92,13 @@
       <version>3.11.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- BEGIN Support for the withOtelEnv step -->
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>opentelemetry</artifactId>
+      <version>0.16</version>
+    </dependency>
+    <!-- END Support for the withOtelEnv step -->
   </dependencies>
 
   <dependencyManagement>
