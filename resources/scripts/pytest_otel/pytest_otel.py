@@ -77,7 +77,7 @@ def init_otel():
         )
     )
 
-    otel_exporter = OTLPSpanExporter(insecure=True)
+    otel_exporter = OTLPSpanExporter(insecure=insecure)
 
     trace.get_tracer_provider().add_span_processor(
         BatchSpanProcessor(otel_exporter)
