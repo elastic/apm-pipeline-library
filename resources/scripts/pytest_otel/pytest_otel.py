@@ -42,7 +42,7 @@ spans = dict()
 
 def pytest_addoption(parser):
     group = parser.getgroup(
-        "pytest-otel", "report OpenTelemetry traces about test executed."
+        "pytest-otel", "report OpenTelemetry traces for tests executed."
     )
 
     group.addoption('--endpoint',
@@ -87,7 +87,7 @@ def init_otel():
 
 
 def start_span(span_name):
-    global has_otel, tracer, spans
+    global tracer, spans
     spans[span_name] = tracer.start_span(span_name,
                                          record_exception=True,
                                          set_status_on_exception=True)
@@ -134,16 +134,16 @@ def pytest_sessionstart(session):
         os.environ['OTEL_EXPORTER_OTLP_INSECURE'] = insecure
     if trace_id:
         if headers:
-            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {},{}".format(trace_id, headers)
+            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {},{}".format(traceparent, headers)
         else:
-            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {}".format(trace_id)
+            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {}".format(traceparent)
     if has_otel:
         init_otel()
         start_span(session_name)
 
 
 def pytest_runtest_setup(item):
-    global has_otel, apm_mode, trace_id, outcome
+    global outcome
     outcome = None
 
 

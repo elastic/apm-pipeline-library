@@ -2,7 +2,7 @@
 Features
 --------
 
-pytest-otel plugin for report APM traces about test executed.
+pytest-otel plugin for reporting APM traces of tests executed.
 
 
 Requirements
@@ -27,14 +27,14 @@ pip install ./pytest_otel
 Usage
 -----
 
-pytest_otel is configured by adding some parameters to the pytest command line here are the descriptions
+`pytest_otel` is configured by adding some parameters to the pytest command line. Below are the descriptions:
 
-* --endpoint: URL for the OpenTelemetry server. (Required). Env variable `OTEL_EXPORTER_OTLP_ENDPOINT`
-* --headers: Additional headers to send (i.e.: key1=value1,key2=value2). Env variable `OTEL_EXPORTER_OTLP_HEADERS`
-* --service-name: Name of the service. Env variable `OTEL_SERVICE_NAME`
-* --session-name: Name for the Main span reported.
-* --traceparent: Trace parent id. Env variable `TRACEPARENT` see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format
-* --insecure: Disables TLS. Env variable `OTEL_EXPORTER_OTLP_INSECURE`
+* --endpoint: URL for the OpenTelemetry server. (Required). Env variable: `OTEL_EXPORTER_OTLP_ENDPOINT`
+* --headers: Additional headers to send (i.e.: key1=value1,key2=value2). Env variable: `OTEL_EXPORTER_OTLP_HEADERS`
+* --service-name: Name of the service. Env variable: `OTEL_SERVICE_NAME`
+* --session-name: Name for the main span.
+* --traceparent: Trace parent ID. Env variable: `TRACEPARENT`. See https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format
+* --insecure: Disables TLS. Env variable: `OTEL_EXPORTER_OTLP_INSECURE`
 
 ```bash
 cd pytest_otel
@@ -48,7 +48,7 @@ pytest --endpoint https://otelcollector.example.com:4317 \
 
 **IMPORTANT**: If you use `--headers` the transaction metadata might expose those arguments
 with their values. In order to avoid any credentials to be exposed, it's recommended to use the environment variables.
-For instance, given the above example, the similar one with environment variables can be seen below:
+For instance, given the above example, a similar one with environment variables can be seen below:
 
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT=https://apm.example.com:8200 \
