@@ -44,7 +44,7 @@ pipelineJob("apm-shared/oblt-test-env/create-oblt-cluster") {
           }
         }
       }
-      lightweight(true)
+      lightweight(false)
       scriptPath(".ci/create.groovy")
     }
   }
