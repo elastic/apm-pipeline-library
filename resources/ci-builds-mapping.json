@@ -328,7 +328,7 @@
           }
         }
       },
-      "test_cobertura" : {
+      "test_coverage" : {
         "properties" : {
           "Classes" : {
             "properties" : {

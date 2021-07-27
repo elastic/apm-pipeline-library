@@ -55,8 +55,8 @@ INFO: fetchAndPrepareTestsInfo (see tests-info.json)
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?limit=10000000 -o tests-info.json
 INFO: fetchAndPrepareTestSummaryReport (see tests-summary.json)
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/blueTestSummary/ -o tests-summary.json
-INFO: fetchAndPrepareTestCoberturaReport (see tests-cobertura.json)
-INFO: curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/cobertura/1//cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3&pretty=true -o tests-cobertura.json
+INFO: fetchAndPrepareTestCoberturaReport (see tests-coverage.json)
+INFO: curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/cobertura/1//cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3&pretty=true -o tests-coverage.json
 INFO: fetchAndPrepareBuildInfo (see build-info.json)
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/ -o build-info.json
 [Pipeline] archiveArtifacts
@@ -73,7 +73,7 @@ Archiving artifacts
 + jq .test_summary.total build-report.json
 + grep 0
 0
-+ grep 100 tests-cobertura.json
++ grep 100 tests-coverage.json
     "ration": 100,
     "ration": 100,
     "ration": 100,
@@ -94,7 +94,7 @@ yeah
 + '[' -e tests-info.json ']'
 + echo yeah
 yeah
-+ '[' -e tests-cobertura.json ']'
++ '[' -e tests-coverage.json ']'
 + echo yeah
 yeah
 [Pipeline] }

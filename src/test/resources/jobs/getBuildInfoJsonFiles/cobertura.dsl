@@ -50,14 +50,14 @@ DSL = '''pipeline {
       jq '.build.state' build-report.json | grep 'FINISHED'
       jq '.test_summary.total' build-report.json | grep '0'
       ## Assert cobertura contains data is there
-      grep '100' tests-cobertura.json
+      grep '100' tests-coverage.json
       ## Assert all the files are there
       [ -e 'artifacts-info.json' ] && echo yeah || exit 1
       [ -e 'changeSet-info.json' ] && echo yeah || exit 1
       [ -e 'job-info.json' ] && echo yeah || exit 1
       [ -e 'tests-summary.json' ] && echo yeah || exit 1
       [ -e 'tests-info.json' ] && echo yeah || exit 1
-      [ -e 'tests-cobertura.json' ] && echo yeah || exit 1
+      [ -e 'tests-coverage.json' ] && echo yeah || exit 1
       """
     }
   }
