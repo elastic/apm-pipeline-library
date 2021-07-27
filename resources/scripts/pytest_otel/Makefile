@@ -15,8 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-PYTEST_APM_VERSION = 0.0.1
-PYTEST_APM_PKG = pytest-apm-$(PYTEST_APM_VERSION)
+PYTEST_OTEL_VERSION = 0.0.1
+PYTEST_OTEL_PKG = pytest-otel-$(PYTEST_OTEL_VERSION)
+OTEL_EXPORTER_OTLP_ENDPOINT ?= 127.0.0.1:4317
+OTEL_SERVICE_NAME ?= "pytest_otel_test"
+OTEL_EXPORTER_OTLP_INSECURE ?= true
+OTEL_EXPORTER_OTLP_HEADERS ?=
+TRACEPARENT ?=
+
 VENV ?= .venv
 PYTHON ?= python3
 PIP ?= pip3
@@ -71,15 +77,20 @@ install: virtualenv
 
 ## @help:test:Run the test.
 .PHONY: test
-test: virtualenv
+test: virtualenv install
+	OTEL_EXPORTER_OTLP_ENDPOINT="$(OTEL_EXPORTER_OTLP_ENDPOINT)" \
+	OTEL_SERVICE_NAME="$(OTEL_SERVICE_NAME)" \
+	OTEL_EXPORTER_OTLP_INSECURE="$(OTEL_EXPORTER_OTLP_INSECURE)" \
+	OTEL_EXPORTER_OTLP_HEADERS="$(OTEL_EXPORTER_OTLP_HEADERS)" \
+	TRACEPARENT="$(TRACEPARENT)" \
 	source $(VENV)/bin/activate;\
-	pytest;
+	pytest --capture=no;
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage
 coverage: virtualenv
 	source $(VENV)/bin/activate;\
-	coverage run --source=apm -m pytest; \
+	coverage run --source=otel -m pytest; \
 	coverage report -m;
 
 ## @help:clean:Remove Python file artifacts.
@@ -96,7 +107,15 @@ package: virtualenv
 	$(PYTHON) setup.py sdist bdist_wheel
 
 release: bin/gh package
-	$(GH) release create $(PYTEST_APM_PKG) dist/$(PYTEST_APM_PKG).tar.gz \
+	$(GH) release create $(PYTEST_OTEL_PKG) dist/$(PYTEST_OTEL_PKG).tar.gz \
 		--repo elastic/apm-pipeline-library \
-		--title $(PYTEST_APM_PKG) \
-		--notes "$(PYTEST_APM_PKG)"
+		--title $(PYTEST_OTEL_PKG) \
+		--notes "$(PYTEST_OTEL_PKG)"
+
+## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
+.PHONY: run-otel-collector
+run-otel-collector:
+	docker run --rm -p 4317:4317 \
+	-v "$(CURDIR)/otel-collector.yaml":/otel-config.yaml \
+	--name otelcol otel/opentelemetry-collector \
+	--config otel-config.yaml; \
