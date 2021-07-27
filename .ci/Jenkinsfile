@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@feature/open-telemetry-with-helper') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -90,6 +90,24 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
+          }
+        }
+      }
+    }
+    stage('Test OTEL') {
+      steps {
+        withGithubNotify(context: 'Test OTEL') {
+          dir("ansible"){
+            git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+                url: 'https://github.com/elastic/observability-test-environments.git')
+            withOtelEnv() {
+              sh(label: 'run ansible', script: """#!/bin/bash
+                OTEL_EXPORTER=true \
+                OTEL_SERVICE_NAME='ansible-otel' \
+                OTEL_EXPORTER_OTLP_HEADERS='authorization=Bearer \${OTEL_TOKEN_ID}' \
+                make -C ansible unit-test ROLE='beats' MOLECULE_TEST_OPTS='--all'
+              """)
+            }
           }
         }
       }
