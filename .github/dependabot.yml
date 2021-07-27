@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "elastic/observablt-robots"
+      - "elastic/observablt-robots-on-call"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -18,4 +18,4 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "elastic/observablt-robots"
+      - "elastic/observablt-robots-on-call"
