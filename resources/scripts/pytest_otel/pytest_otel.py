@@ -58,7 +58,7 @@ def pytest_addoption(parser):
                     help='Name of the service.(OTEL_SERVICE_NAME)')
     group.addoption('--session-name',
                     dest='session_name',
-                    default='Test Suit',
+                    default='Test Suite',
                     help='Name for the Main span reported.')
     group.addoption('--traceparent',
                     dest='traceparent',
