@@ -50,7 +50,7 @@ clusters.each{ cluster ->
             }
           }
         }
-        lightweight(true)
+        lightweight(false)
         scriptPath(".ci/update.groovy")
       }
     }
