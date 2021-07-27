@@ -28,6 +28,7 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.trace.status import Status, StatusCode
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 
 LOGGER = logging.getLogger("pytest_otel")
@@ -86,9 +87,10 @@ def init_otel():
     tracer = trace.get_tracer(session_name)
 
 
-def start_span(span_name):
+def start_span(span_name, context=None):
     global tracer, spans
     spans[span_name] = tracer.start_span(span_name,
+                                         context=context,
                                          record_exception=True,
                                          set_status_on_exception=True)
     LOGGER.debug('The {} transaction start_span.'.format(span_name))
@@ -114,6 +116,12 @@ def convertOutcome(outcome):
         return Status(status_code=StatusCode.UNSET)
 
 
+def traceparent_context(traceparent):
+    carrier = dict()
+    carrier['traceparent'] = traceparent
+    return TraceContextTextMapPropagator().extract(carrier=carrier)
+
+
 def pytest_sessionstart(session):
     global service_name, traceparent, session_name, insecure
     LOGGER.setLevel(logging.DEBUG)
@@ -132,14 +140,11 @@ def pytest_sessionstart(session):
         os.environ['OTEL_SERVICE_NAME'] = service_name
     if insecure:
         os.environ['OTEL_EXPORTER_OTLP_INSECURE'] = insecure
-    if traceparent:
-        if headers:
-            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {},{}".format(traceparent, headers)
-        else:
-            os.environ['OTEL_EXPORTER_OTLP_HEADERS'] = "traceparent: {}".format(traceparent)
+    if not traceparent:
+        traceparent = os.getenv('TRACEPARENT', None)
     if has_otel:
         init_otel()
-        start_span(session_name)
+        start_span(session_name, traceparent_context(traceparent))
 
 
 def pytest_runtest_setup(item):
