@@ -1,7 +1,7 @@
 {
   "id" : "5dc9106c-59b4-3e53-8f6b-4f797cb0fccd",
   "request" : {
-    "url" : "/job/it/job/getBuildInfoJsonFiles/job/abort/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3&pretty=true",
+    "url" : "/job/it/job/getBuildInfoJsonFiles/job/abort/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3",
     "method" : "GET"
   },
   "response" : {

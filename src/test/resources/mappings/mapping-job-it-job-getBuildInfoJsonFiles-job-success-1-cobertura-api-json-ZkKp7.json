@@ -1,7 +1,7 @@
 {
   "id" : "a3437932-8105-3d44-86c4-89f94277f3d5",
   "request" : {
-    "url" : "/job/it/job/getBuildInfoJsonFiles/job/success/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3&pretty=true",
+    "url" : "/job/it/job/getBuildInfoJsonFiles/job/success/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3",
     "method" : "GET"
   },
   "response" : {

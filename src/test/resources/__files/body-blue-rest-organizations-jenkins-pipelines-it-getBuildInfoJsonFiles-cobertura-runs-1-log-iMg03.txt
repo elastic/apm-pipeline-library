@@ -56,7 +56,7 @@ INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/g
 INFO: fetchAndPrepareTestSummaryReport (see tests-summary.json)
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/blueTestSummary/ -o tests-summary.json
 INFO: fetchAndPrepareTestCoberturaReport (see tests-coverage.json)
-INFO: curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/cobertura/1//cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3&pretty=true -o tests-coverage.json
+INFO: curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/cobertura/1//cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3 -o tests-coverage.json
 INFO: fetchAndPrepareBuildInfo (see build-info.json)
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/ -o build-info.json
 [Pipeline] archiveArtifacts

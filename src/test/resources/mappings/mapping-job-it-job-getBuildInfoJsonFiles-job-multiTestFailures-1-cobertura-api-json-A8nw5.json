@@ -1,7 +1,7 @@
 {
   "id" : "6d1869fa-29fd-3601-b6d8-68d6f81e480a",
   "request" : {
-    "url" : "/job/it/job/getBuildInfoJsonFiles/job/multiTestFailures/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3&pretty=true",
+    "url" : "/job/it/job/getBuildInfoJsonFiles/job/multiTestFailures/1/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3",
     "method" : "GET"
   },
   "response" : {
