@@ -39,7 +39,7 @@ Usage
 ```bash
 cd pytest_otel
 pytest --endpoint https://otelcollector.example.com:4317 \
-       --headers "Authorization=Bearer ASWDCcCRFfr" \
+       --headers "authorization=Bearer ASWDCcCRFfr" \
        --service-name pytest_otel \
        --session-name='My_Test_cases' \
        --traceparent=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
@@ -52,7 +52,7 @@ For instance, given the above example, a similar one with environment variables 
 
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT=https://apm.example.com:8200 \
-OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ASWDCcCRFfr" \
+OTEL_EXPORTER_OTLP_HEADERS="authorization=Bearer ASWDCcCRFfr" \
 OTEL_SERVICE_NAME=pytest_otel \
 TRACEPARENT=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
 OTEL_EXPORTER_OTLP_INSECURE=False \

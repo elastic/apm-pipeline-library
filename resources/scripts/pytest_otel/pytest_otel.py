@@ -69,7 +69,7 @@ def pytest_addoption(parser):
 
 
 def init_otel():
-    global trace, tracer, session_name, service_name, insecure
+    global tracer, session_name, service_name, insecure
     LOGGER.debug('Init Otel : {}'.format(service_name))
     trace.set_tracer_provider(
         TracerProvider(
@@ -77,7 +77,7 @@ def init_otel():
         )
     )
 
-    otel_exporter = OTLPSpanExporter(insecure=True)
+    otel_exporter = OTLPSpanExporter(insecure=insecure)
 
     trace.get_tracer_provider().add_span_processor(
         BatchSpanProcessor(otel_exporter)
@@ -161,9 +161,10 @@ def pytest_sessionfinish(session, exitstatus):
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
-    global has_otel, outcome
+    global has_otel, outcome, session_name, spans
     if has_otel:
         with tracer.start_as_current_span('Running {}'.format(item.name),
+                                          context=trace.set_span_in_context(spans[session_name]),
                                           record_exception=True,
                                           set_status_on_exception=True
                                           ) as span:
