@@ -33,7 +33,7 @@ def call(Map args = [:], Closure body) {
     error('withOtelEnv: opentelemetry plugin is not available')
   }
 
-  def otelPlugin = Jenkins.get().getExtensionList(jenkins.model.GlobalConfiguration.class).get(io.jenkins.plugins.opentelemetry.JenkinsOpenTelemetryPluginConfiguration.class)
+  def otelPlugin = getOtelPlugin()
 
   // In case the credentialsId argument was not passed, then let's use the
   // OpenTelemetry configuration to dynamically provide those details.
