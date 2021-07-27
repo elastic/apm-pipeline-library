@@ -23,7 +23,7 @@ clusters.each{ cluster ->
     description("Job to create a ${cluster} oblt cluster.")
     parameters {
       stringParam("branch_specifier", "master", "the Git branch specifier to build.")
-      stringParam("CLUSTER_CONFIG_FILE", "environments/${cluster}/config-cluster.yml", "the Git branch specifier to build.")
+      stringParam("CLUSTER_CONFIG", "environments/${cluster}/config-cluster.yml", "Relative path to the cluster configuration file.")
     }
     disabled(false)
     quietPeriod(10)
