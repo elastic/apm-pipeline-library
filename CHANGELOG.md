@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.1.229 (27/07/2021)
+
+#### 🚀 Enhancements
+
+-  Ingest test coverage summary [#1214](https://github.com/elastic/apm-pipeline-library/pull/1214)
+- [**Team:Automation**] feat: create/update clusters pipelines [#1219](https://github.com/elastic/apm-pipeline-library/pull/1219)
+- [**Team:Automation**] feat: move all Docker images generation to jobDSL generated pipelines [#1177](https://github.com/elastic/apm-pipeline-library/pull/1177)
+-  Validate if pattern in googleStorageUploadExt returns any matches [#1193](https://github.com/elastic/apm-pipeline-library/pull/1193)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: increase timeout [#1216](https://github.com/elastic/apm-pipeline-library/pull/1216)
+-  fix: do not interpolate the token [#1010](https://github.com/elastic/apm-pipeline-library/pull/1010)
+
+#### 🙈 No user affected
+
+-  [dependabot] change reviewer for the oncall person [#1221](https://github.com/elastic/apm-pipeline-library/pull/1221)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.17, 7.13.3, 7.13.4, 7.14.0] [#1212](https://github.com/elastic/apm-pipeline-library/pull/1212)
+-  Test the validation in the google-storage-ext step [#1204](https://github.com/elastic/apm-pipeline-library/pull/1204)
+
 ## v1.1.228 (16/07/2021)
 
 #### 📚 Documentation
