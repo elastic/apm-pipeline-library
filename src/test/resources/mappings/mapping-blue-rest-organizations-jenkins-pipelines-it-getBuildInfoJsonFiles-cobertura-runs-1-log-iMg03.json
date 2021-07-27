@@ -1,0 +1,22 @@
+{
+  "id" : "a933749b-f6fd-31fd-990e-312aa88f583b",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/log/",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-blue-rest-organizations-jenkins-pipelines-it-getBuildInfoJsonFiles-cobertura-runs-1-log-iMg03.txt",
+    "headers" : {
+      "Date" : "Wed, 21 Jul 2021 10:37:24 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "6f05bffd",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "text/plain;charset=utf-8",
+      "X-Text-Size" : "12438",
+      "X-Text-Delivered" : "12438",
+      "Server" : "Jetty(9.4.39.v20210325)"
+    }
+  },
+  "uuid" : "a933749b-f6fd-31fd-990e-312aa88f583b"
+}

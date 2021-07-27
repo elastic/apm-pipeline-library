@@ -1,0 +1,32 @@
+{
+  "Classes": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  },
+  "Conditionals": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  },
+  "Lines": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  },
+  "Files": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  },
+  "Packages": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  },
+  "Methods": {
+    "denominator": 0,
+    "numerator": 0,
+    "ratio": 100
+  }
+}

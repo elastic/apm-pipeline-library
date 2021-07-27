@@ -1,0 +1,43 @@
+{
+  "_class" : "hudson.plugins.cobertura.targets.CoverageResult",
+  "results" : {
+    "elements" : [
+      {
+        "denominator" : 0.0,
+        "name" : "Packages",
+        "numerator" : 0.0,
+        "ratio" : 100.0
+      },
+      {
+        "denominator" : 0.0,
+        "name" : "Files",
+        "numerator" : 0.0,
+        "ratio" : 100.0
+      },
+      {
+        "denominator" : 0.0,
+        "name" : "Classes",
+        "numerator" : 0.0,
+        "ratio" : 100.0
+      },
+      {
+        "denominator" : 2.0,
+        "name" : "Methods",
+        "numerator" : 1.0,
+        "ratio" : 50.0
+      },
+      {
+        "denominator" : 0.0,
+        "name" : "Lines",
+        "numerator" : 0.0,
+        "ratio" : 100.0
+      },
+      {
+        "denominator" : 0.0,
+        "name" : "Conditionals",
+        "numerator" : 0.0,
+        "ratio" : 100.0
+      }
+    ]
+  }
+}
