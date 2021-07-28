@@ -388,7 +388,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
-    helper.registerAllowedMethod('dockerLogin', [Map.class], { true })    
+    helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
       echoColor.call(m)
@@ -488,6 +488,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/isStaticWorker.groovy')
       return script.call(m)
     })
+    helper.registerAllowedMethod('isPluginInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isPR', {
       def script = loadScript('vars/isPR.groovy')
       return script.call()
