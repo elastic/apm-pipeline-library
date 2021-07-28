@@ -1654,6 +1654,15 @@ Whether the build is based on a Pull Request or no
   }
 ```
 
+## isPluginInstalled
+Given the pluginName it validates whether it's installed and available.
+
+```
+  whenTrue(isPluginInstalled(pluginName: 'foo')) {
+    echo "Foo plugin is installed"
+  }
+```
+
 ## isStaticWorker
 Whether the existing worker is a static one
 
@@ -1939,16 +1948,20 @@ Close a Nexus staging repository
 ```
 nexusCreateStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "staging_id"
+  stagingId: "staging_id",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -1961,16 +1974,20 @@ Create a Nexus staging repository
 nexusCreateStagingRepository(
   stagingProfileId: my_profile,
   description: "My new staging repo",
-  secret: "secret/release/nexus",
   url: https://oss.sonatype.org,
-  retries: 20
+  retries: 20,
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
 * stagingProfileId: The staging identifier to use when creating the repository
 * description: A description of the new staging repository
-* secret: Vault secret to retrieve Nexus credentials
 * url: Nexus URL (default: https://oss.sonatype.org)
 * retries: Number of times to retry the remote API before giving up
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -1981,16 +1998,20 @@ Drop a Nexus staging repository
 ```
 nexusDropStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
   stagingId: "staging_id",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -2002,17 +2023,20 @@ Find a Nexus staging repository
 ```
 nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
-  groupId: "co.elastic.apm"
+  groupId: "co.elastic.apm",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
 * stagingProfileId: Identifier for the staging profile
 * groupid: Our group id
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -2024,15 +2048,19 @@ Release a Nexus staging repository
 ```
 nexusReleaseStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "co.elastic.foo"
+  stagingId: "co.elastic.foo",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier of staging repository
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -2044,24 +2072,28 @@ Upload an artifact to the Nexus staging repository
 ```
 nexusUploadStagingArtifact(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingId: "comexampleapplication-1010",
   groupId: "com.example.applications",
   artifactId: "my_tasty_artifact",
-  version: "v1.0.0"
-  file_path: "/tmp/my_local_artifact"
+  version: "v1.0.0",
+  file_path: "/tmp/my_local_artifact",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
   For additional information, please read the OSSRH guide from Sonatype:
   https://central.sonatype.org/pages/releasing-the-deployment.html
 
   * url: The base URL of the staging repo. (Usually oss.sonatype.org)
-  * secret: Vault secret to retrieve Nexus credentials
   * stagingId: The ID for the staging repository.
   * groupId: The group ID for the artifacts.
   * artifactId: The ID for the artifact to be uploaded
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
+  * secret: Vault secret (Optional)
+  * role_id: vault role ID (Optional)
+  * secret_id: vault secret ID (Optional)
 
 ## nodeArch
 Return the architecture in the current worker using the labels as the source of truth
@@ -3102,6 +3134,27 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 * npmrcFile: name of the file with the token. (Optional). Default: .npmrc
 * registry: NPM registry. (Optional). Default: registry.npmjs.org
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/elastic-observability-npmjs'
+
+## withOtelEnv
+Configure the OpenTelemetry Jenkins context to run the body closure with the below
+environment variables:
+
+* `OTEL_EXPORTER_OTLP_ENDPOINT`
+* `OTEL_SERVICE_NAME`
+* `OTEL_TOKEN_ID`
+
+```
+  withOtelEnv() {
+    // block
+  }
+
+  // If you'd like to use a different credentials
+  withOtelEnv(credentialsId: 'foo') {
+    // block
+  }
+```
+
+* credentialsId: the name of the credentials. Optional.
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
