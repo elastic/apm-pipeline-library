@@ -24,9 +24,12 @@
               }
             }
           },
-          "causes": {
-            "properties": {
-              "shortDescription": {
+          "causeOfBlockage" : {
+            "type" : "keyword"
+          },
+          "causes" : {
+            "properties" : {
+              "shortDescription" : {
                 "type" : "keyword",
                 "fields" : {
                   "analyzed" : {
@@ -34,7 +37,16 @@
                   }
                 }
               },
-              "userId": {
+              "upstreamBuild" : {
+                "type" : "long"
+              },
+              "upstreamProject" : {
+                "type" : "keyword"
+              },
+              "upstreamUrl" : {
+                "type" : "keyword"
+              },
+              "userId" : {
                 "type" : "keyword",
                 "fields" : {
                   "analyzed" : {
@@ -42,7 +54,7 @@
                   }
                 }
               },
-              "userName": {
+              "userName" : {
                 "type" : "keyword",
                 "fields" : {
                   "analyzed" : {
@@ -55,10 +67,19 @@
           "commitId" : {
             "type" : "keyword"
           },
+          "commitUrl" : {
+            "type" : "keyword"
+          },
+          "description" : {
+            "type" : "keyword"
+          },
           "durationInMillis" : {
             "type" : "long"
           },
           "enQueueTime" : {
+            "type" : "date"
+          },
+          "endTime" : {
             "type" : "date"
           },
           "estimatedDurationInMillis" : {
@@ -71,6 +92,9 @@
                 "type" : "text"
               }
             }
+          },
+          "name" : {
+            "type" : "keyword"
           },
           "organization" : {
             "type" : "keyword"
@@ -97,6 +121,48 @@
           },
           "type" : {
             "type" : "keyword"
+          }
+        }
+      },
+      "changeSet" : {
+        "properties" : {
+          "affectedPaths" : {
+            "type" : "keyword"
+          },
+          "author" : {
+            "properties" : {
+              "fullName" : {
+                "type" : "keyword"
+              },
+              "id" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          "checkoutCount" : {
+            "type" : "long"
+          },
+          "commitId" : {
+            "type" : "keyword"
+          },
+          "issues" : {
+            "properties" : {
+              "_class" : {
+                "type" : "keyword"
+              },
+              "id" : {
+                "type" : "keyword"
+              },
+              "url" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          "msg" : {
+            "type" : "keyword"
+          },
+          "timestamp" : {
+            "type" : "date"
           }
         }
       },
@@ -163,6 +229,9 @@
             "type" : "keyword"
           },
           "ORG_NAME" : {
+            "type" : "keyword"
+          },
+          "OTEL_ELASTIC_URL" : {
             "type" : "keyword"
           },
           "REPO_NAME" : {
@@ -256,6 +325,88 @@
           },
           "weatherScore" : {
             "type" : "long"
+          }
+        }
+      },
+      "test_coverage" : {
+        "properties" : {
+          "Classes" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Conditionals" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Files" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Lines" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Methods" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Packages" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
           }
         }
       },

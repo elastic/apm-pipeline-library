@@ -122,6 +122,7 @@ jobs:
   - file: "/var/pipeline-library/src/test/resources/jobs/gce-test.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/gce-test-orchestrator.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/abort.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/cobertura.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/connectionRefused.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/error.dsl"
   - file: "/var/pipeline-library/src/test/resources/jobs/getBuildInfoJsonFiles/multiTestFailures.dsl"

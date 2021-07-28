@@ -1,0 +1,105 @@
+Started by user unknown or anonymous
+Running in Durability level: MAX_SURVIVABILITY
+Loading library apm@current
+FSSCM.checkout /var/pipeline-library to /var/jenkins_home/workspace/it/getBuildInfoJsonFiles/cobertura@libs/apm
+FSSCM.check completed in 1.296 second
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on local in /tmp/workspace/it/getBuildInfoJsonFiles/cobertura
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (cobertura)
+[Pipeline] writeFile
+[Pipeline] publishHTML
+[htmlpublisher] Archiving HTML reports...
+[htmlpublisher] Archiving at BUILD level /tmp/workspace/it/getBuildInfoJsonFiles/cobertura/cobertura to /var/jenkins_home/jobs/it/jobs/getBuildInfoJsonFiles/jobs/cobertura/builds/1/htmlreports/Coverage-Sourcecode-Files
+[Pipeline] cobertura
+[Cobertura] Publishing Cobertura coverage report...
+
+[Cobertura] Publishing Cobertura coverage results...
+
+[Cobertura] Cobertura coverage report found.
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] isUnix
+[Pipeline] libraryResource
+[Pipeline] writeFile
+[Pipeline] sh
++ chmod 755 generate-build-data.sh
++ ./generate-build-data.sh http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/ http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1 SUCCESS 14097
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/steps/?limit=10000 -o steps-info.json
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?status=FAILED -o tests-errors.json
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/log/ -o pipeline-log.txt
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura// -o job-info.json
+jq: error (at job-info.json:0): Cannot index string with string "_links"
+jq: error (at job-info.json:0): Cannot index string with string "_class"
+jq: error (at job-info.json:0): Cannot index string with string "downloadable"
+jq: error (at job-info.json:0): Cannot index string with string "id"
+jq: error (at job-info.json:0): Cannot index string with string "url"
+jq: error (at job-info.json:10): Cannot index boolean with string "author"
+jq: error (at job-info.json:10): Cannot index boolean with string "author"
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/changeSet/ -o changeSet-info.json
+jq: error (at changeSet-info.json:1): Cannot index array with string "_links"
+jq: error (at changeSet-info.json:1): Cannot index array with string "_class"
+jq: error (at changeSet-info.json:1): Cannot index array with string "actions"
+jq: error (at changeSet-info.json:1): Cannot index array with string "latestRun"
+jq: error (at changeSet-info.json:1): Cannot index array with string "permissions"
+jq: error (at changeSet-info.json:1): Cannot index array with string "parameters"
+INFO: fetchAndPrepareArtifactsInfo (see artifacts-info.json)
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/artifacts/ -o artifacts-info.json
+INFO: fetchAndPrepareTestsInfo (see tests-info.json)
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?limit=10000000 -o tests-info.json
+INFO: fetchAndPrepareTestSummaryReport (see tests-summary.json)
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/blueTestSummary/ -o tests-summary.json
+INFO: fetchAndPrepareTestCoberturaReport (see tests-coverage.json)
+INFO: curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/cobertura/1//cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3 -o tests-coverage.json
+INFO: fetchAndPrepareBuildInfo (see build-info.json)
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/ -o build-info.json
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] sh
++ jq .build.result build-report.json
++ grep SUCCESS
+"SUCCESS"
++ jq .build.state build-report.json
++ grep FINISHED
+"FINISHED"
++ jq .test_summary.total build-report.json
++ grep 0
+0
++ grep 100 tests-coverage.json
+    "ration": 100,
+    "ration": 100,
+    "ration": 100,
+    "ration": 100,
+    "ration": 100,
++ '[' -e artifacts-info.json ']'
++ echo yeah
+yeah
++ '[' -e changeSet-info.json ']'
++ echo yeah
+yeah
++ '[' -e job-info.json ']'
++ echo yeah
+yeah
++ '[' -e tests-summary.json ']'
++ echo yeah
+yeah
++ '[' -e tests-info.json ']'
++ echo yeah
+yeah
++ '[' -e tests-coverage.json ']'
++ echo yeah
+yeah
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

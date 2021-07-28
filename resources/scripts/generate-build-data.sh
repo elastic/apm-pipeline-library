@@ -41,6 +41,7 @@ STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
 TESTS_INFO="tests-info.json"
 TESTS_SUMMARY="tests-summary.json"
+TESTS_COVERAGE="tests-coverage.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
@@ -158,6 +159,26 @@ function fetchAndPrepareTestsInfo() {
         echo "${default}" > "${file}"
     else
         normaliseTestsWithoutStacktrace "${file}"
+    fi
+
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+}
+
+function fetchAndPrepareTestCoverageReport() {
+    file=$1
+    url=$2
+    key=$3
+    default=$4
+
+    echo "INFO: fetchAndPrepareTestCoverageReport (see ${file})"
+    ## overall status should not be affected if no cobertura data is available.
+    ## There are a few jobs that use the cobertura plugin.
+    CURRENT_STATUS=$STATUS
+    fetch "$file" "${url}/cobertura/api/json?tree=results\[elements\[name,ratio,denominator,numerator\]\]&depth=3"
+    normaliseCoberturaSummary "$file"
+    STATUS=$CURRENT_STATUS
+    if [ ! -e "${file}" ] ; then
+        echo "${default}" > "${file}"
     fi
 
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
@@ -291,6 +312,12 @@ function normaliseTestsWithoutStacktrace() {
     ## This will help to tidy up the file size quite a lot.
     ## It might be useful to export it but lets go step by step
     jqEdit 'map(del(.errorStackTrace))' "${file}"
+}
+
+function normaliseCoberturaSummary() {
+    file=$1
+    # shellcheck disable=SC2016
+    jqEdit '.results.elements | reduce to_entries[] as $o ({}; .[$o.value.name] += { ration: $o.value.ratio, numerator: $o.value.numerator, denominator: $o.value.denominator})' "${file}"
 }
 
 function normaliseTestsSummary() {
@@ -432,6 +459,7 @@ fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "a
 fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
 ### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
+fetchAndPrepareTestCoverageReport "${TESTS_COVERAGE}" "${BUILD_URL}" "test_coverage" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 ### prepareEnvInfo should run the last one since it's the last field to be added
 prepareEnvInfo "${ENV_INFO}" "env"
