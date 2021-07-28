@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.230 (28/07/2021)
+
+#### 🐛 Bug Fixes
+
+-  Cache stage without public access and retry [#1224](https://github.com/elastic/apm-pipeline-library/pull/1224)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] feat: Otel pytest plugin [#1217](https://github.com/elastic/apm-pipeline-library/pull/1217)
+
 ## v1.1.229 (27/07/2021)
 
 #### 🚀 Enhancements
