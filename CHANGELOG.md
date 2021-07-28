@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.231 (28/07/2021)
+
+#### 🚀 Enhancements
+
+-  Provide OTEL context [#1218](https://github.com/elastic/apm-pipeline-library/pull/1218)
+
+#### 🐛 Bug Fixes
+
+-  Revert "Validate if pattern in googleStorageUploadExt returns any matches" [#1225](https://github.com/elastic/apm-pipeline-library/pull/1225)
+
+#### ⚙️ CI
+
+-  Revert "Test the validation in the google-storage-ext step" [#1227](https://github.com/elastic/apm-pipeline-library/pull/1227)
+
 ## v1.1.230 (28/07/2021)
 
 #### 🐛 Bug Fixes
