@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.232 (29/07/2021)
+*No changelog for this release.*
+
 ## v1.1.231 (28/07/2021)
 
 #### 🚀 Enhancements
