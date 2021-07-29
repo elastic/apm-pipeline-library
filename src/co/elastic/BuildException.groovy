@@ -32,16 +32,21 @@ public class BuildException extends InterruptedException {
     }
 
     public BuildException(String number, Result result, CauseOfInterruption... causes) {
-        this.number = number
-        this.result = result
-        this.causes = Arrays.asList(causes)
-        this.actualInterruption = true
+        this(number, result, true, Arrays.asList(causes))
     }
 
     public BuildException(String number, Result result, boolean actualInterruption, CauseOfInterruption... causes) {
+        this(number, result, actualInterruption, Arrays.asList(causes))
+    }
+
+    public BuildException(String number, Result result, List<CauseOfInterruption> causes) {
+        this(number, result, true, causes)
+    }
+
+    public BuildException(String number, Result result, boolean actualInterruption, List<CauseOfInterruption> causes) {
         this.number = number
         this.result = result
-        this.causes = Arrays.asList(causes)
+        this.causes = causes
         this.actualInterruption = actualInterruption
     }
 
