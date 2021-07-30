@@ -128,14 +128,15 @@ multibranchPipelineJob('apm-shared/test-mbp') {
     // https://issues.jenkins.io/browse/JENKINS-60874
     // Discovers pull requests where the origin repository is the same as the target repository.
     // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-    def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
-    traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
-      strategyId 1
-      trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
-    }
-    traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
-      strategyId 1
-    }
+    // def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
+    // java.lang.SecurityException: Rejecting unsandboxed property get: javaposse.jobdsl.dsl.jobs.MultibranchWorkflowJob.sources
+    // traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
+    //   strategyId 1
+    //   trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
+    // }
+    // traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
+    //   strategyId 1
+    // }
   }
   factory {
     workflowBranchProjectFactory {
