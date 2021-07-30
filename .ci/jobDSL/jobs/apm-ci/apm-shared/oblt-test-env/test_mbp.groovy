@@ -35,6 +35,12 @@ multibranchPipelineJob('apm-shared/test-mbp') {
           repository('apm-pipeline-library')
           repositoryUrl('https://github.com/elastic/apm-pipeline-library.git')
           configuredByUrl(true)
+          buildForkPRHead(true)
+          buildForkPRMerge(true)
+          buildOriginBranch(true)
+          buildOriginBranchWithPR(false)
+          buildOriginPRHead(true)
+          buildOriginPRMerge(true)
           // The behaviours control what is discovered from the GitHub repository.
           traits {
             checkoutOptionTrait {
