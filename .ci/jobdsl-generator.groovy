@@ -71,6 +71,7 @@ pipeline {
     stage('Generate Jobs') {
       steps {
         jobDsl(
+          ignoreExisting: true,
           failOnMissingPlugin: true,
           failOnSeedCollision: true,
           removedConfigFilesAction: 'DELETE',
@@ -81,6 +82,7 @@ pipeline {
           unstableOnDeprecation: true
         )
         jobDsl(
+          ignoreExisting: true,
           failOnMissingPlugin: true,
           failOnSeedCollision: true,
           removedConfigFilesAction: 'DELETE',

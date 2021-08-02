@@ -15,18 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
-  displayName('Custom Kibana - Deploy')
-  description('Job to deploy Custom Kibana deployments')
+pipelineJob("apm-shared/oblt-test-env/destroy-oblt-cluster") {
+  displayName('Destroy oblt cluster')
+  description('Job to destroy a oblt cluster.')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
-    stringParam('environment', "edge", "Test enviroment branch name to make the deploy into.")
-    stringParam('stack_version', "", "Force to use an stack version for Helm chart and other Elastic stack configuration related.")
-    stringParam('kibana_branch', "master", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
-    stringParam('target_tag', "", "Tag used fo the generated Docker image.")
-    stringParam('slack_channel', "#observablt-bots", "Slack channel to notify the results.")
-    booleanParam('build_kibana', true, 'Allow to skip the Kibana build stages.')
-    booleanParam('deploy_kibana', true, 'Allow to skip the Kibana deploy stage.')
+    stringParam("CLUSTER_CONFIG", "environments/CLUSTER_NAME/config-cluster.yml", "Relative path to the cluster configuration file.")
   }
   disabled(false)
   quietPeriod(10)
@@ -35,15 +29,6 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
     daysToKeep(7)
     artifactNumToKeep(10)
     artifactDaysToKeep(-1)
-  }
-  properties {
-    pipelineTriggers {
-        triggers {
-          issueCommentTrigger{
-            commentPattern('(?i)^\\/oblt-deploy$')
-          }
-        }
-    }
   }
   definition {
     cpsScm {
@@ -60,7 +45,7 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/customKibana.groovy")
+      scriptPath(".ci/destroy.groovy")
     }
   }
 }
