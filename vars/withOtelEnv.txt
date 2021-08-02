@@ -2,6 +2,7 @@ Configure the OpenTelemetry Jenkins context to run the body closure with the bel
 environment variables:
 
 * `OTEL_EXPORTER_OTLP_ENDPOINT`
+* `OTEL_SERVICE_NAME`
 * `OTEL_TOKEN_ID`
 
 ```

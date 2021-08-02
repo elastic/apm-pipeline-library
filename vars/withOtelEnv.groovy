@@ -45,7 +45,10 @@ def call(Map args = [:], Closure body) {
   }
 
   // Then, mask and provide the environemnt variables.
-  withEnvMask(vars: [[var: "OTEL_EXPORTER_OTLP_ENDPOINT", password: otelPlugin.getEndpoint()]]) {
+  withEnvMask(vars: [
+                [var: "OTEL_EXPORTER_OTLP_ENDPOINT", password: otelPlugin.getEndpoint()],
+                [var: "OTEL_SERVICE_NAME", password: otelPlugin.getServiceName()],
+              ]) {
     withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
       body()
     }
