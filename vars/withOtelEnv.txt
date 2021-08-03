@@ -3,7 +3,7 @@ environment variables:
 
 * `OTEL_EXPORTER_OTLP_ENDPOINT`
 * `OTEL_SERVICE_NAME`
-* `OTEL_TOKEN_ID`
+* `OTEL_EXPORTER_OTLP_HEADERS`
 
 ```
   withOtelEnv() {
