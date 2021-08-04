@@ -54,11 +54,18 @@ class RandomStringStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_manipulateString_with_dash() throws Exception {
+  void test_manipulateString_with_ending_dash() throws Exception {
     def ret = script.manipulateString('a-b-c-d-e-', 6)
     printCallStack()
     println ret
     assertTrue(ret == 'a-b-ca')
   }
 
+  @Test
+  void test_manipulateString_with_starting_dash() throws Exception {
+    def ret = script.manipulateString('-a-b-c-d-e', 6)
+    printCallStack()
+    println ret
+    assertTrue(ret == 'aa-b-c')
+  }
 }
