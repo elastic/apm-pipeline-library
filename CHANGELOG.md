@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.233 (04/08/2021)
+
+#### 🚀 Enhancements
+
+-  Add OTEL_SERVICE_NAME env variable [#1226](https://github.com/elastic/apm-pipeline-library/pull/1226)
+- [**Team:Automation**] Add parameters [#1230](https://github.com/elastic/apm-pipeline-library/pull/1230)
+- [**Team:Automation**] feat: pipeline to destroy clusters [#1229](https://github.com/elastic/apm-pipeline-library/pull/1229)
+
+#### 🐛 Bug Fixes
+
+-  randomString without starting with - [#1235](https://github.com/elastic/apm-pipeline-library/pull/1235)
+
 ## v1.1.232 (29/07/2021)
 *No changelog for this release.*
 
