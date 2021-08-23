@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.234 (23/08/2021)
+
+#### ⚙️ CI
+
+-  Adjust weekly Beats headers to outsmart Google [#1246](https://github.com/elastic/apm-pipeline-library/pull/1246)
+
 ## v1.1.233 (04/08/2021)
 
 #### 🚀 Enhancements
