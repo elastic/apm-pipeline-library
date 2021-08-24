@@ -521,10 +521,12 @@ this will allow to develop integrations with unreleased features.
 
 
 ```
-findOldestStackVersion(versionCondition: "^7.14.0")
+findOldestSupportedVersion(versionCondition: "^7.14.0")
 ```
 
 * versionCondition: The condition to compare with. Mandatory
+
+NOTE: Current implementation only supports the `^` operator for version conditions
 
 ## generateChangelog
 Programatically generate a CHANGELOG

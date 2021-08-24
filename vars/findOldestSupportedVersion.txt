@@ -10,3 +10,5 @@ findOldestSupportedVersion(versionCondition: "^7.14.0")
 ```
 
 * versionCondition: The condition to compare with. Mandatory
+
+NOTE: Current implementation only supports the `^` operator for version conditions

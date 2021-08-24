@@ -77,4 +77,15 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret.equals('7.13.0'))
   }
+
+  @Test
+  void test_unsupported_versionCondition() throws Exception {
+    try {
+      script.call(versionCondition: "~7.13.0")
+    } catch(e) {
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'versionCondition supports only'))
+  }
 }

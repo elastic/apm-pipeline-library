@@ -23,6 +23,9 @@ def version = findOldestSupportedVersion(versionCondition: "^7.14.0")
 
 def call(Map args = [:]) {
   def versionCondition = args.containsKey('versionCondition') ? args.versionCondition : error('findOldestStackVersion: versionCondition parameter is required')
+  if (!versionCondition.startsWith('^')) {
+    error('findOldestStackVersion: versionCondition supports only ^[0-9].* format')
+  }
   def version = versionCondition.substring(1)
   def response = httpRequest(url: 'https://artifacts-api.elastic.co/v1/versions?x-elastic-no-kpi=true')
   def availableVersions = readJSON(text: response)
