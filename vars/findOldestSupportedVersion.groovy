@@ -80,7 +80,7 @@ def call(Map args = [:]) {
   // If no version has been found so far, try with the snapshot of the next version
   // in the current major.
   def majorSnapshot = major + ".x-SNAPSHOT"
-  if (availableVersion.aliases.contains(majorSnapshot)) {
+  if (availableVersions?.aliases.contains(majorSnapshot)) {
     return majorSnapshot
   }
 
