@@ -96,4 +96,18 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret.equals('7.15.0-SNAPSHOT'))
   }
+  
+  @Test
+  void test_without_patch() throws Exception {
+    def ret = script.call(versionCondition: "^7.14")
+    printCallStack()
+    assertTrue(ret.equals('7.14.0'))
+  }
+
+  @Test
+  void test_next_minor() throws Exception {
+    def ret = script.call(versionCondition: "^7.16.0")
+    printCallStack()
+    assertTrue(ret.equals('7.x-SNAPSHOT'))
+  }
 }
