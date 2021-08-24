@@ -512,7 +512,7 @@ pipeline {
 }
 ```
 
-## findOldestStackVersion
+## findOldestSupportedVersion
 Find the oldest stack version given the condition to compare with.
 
 If the version doesn't exist yet, it will try to use the closer snapshot, for example

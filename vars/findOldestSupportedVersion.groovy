@@ -18,7 +18,7 @@
 /**
 Find the oldest stack version given the condition to compare with.
 
-def version = findOldestStackVersion(versionCondition: "^7.14.0")
+def version = findOldestSupportedVersion(versionCondition: "^7.14.0")
 */
 
 def call(Map args = [:]) {

@@ -6,7 +6,7 @@ this will allow to develop integrations with unreleased features.
 
 
 ```
-findOldestStackVersion(versionCondition: "^7.14.0")
+findOldestSupportedVersion(versionCondition: "^7.14.0")
 ```
 
 * versionCondition: The condition to compare with. Mandatory

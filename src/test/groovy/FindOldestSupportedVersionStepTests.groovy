@@ -20,13 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class FindOldestStackVersionStepTests extends ApmBasePipelineTest {
+class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/findOldestStackVersion.groovy')
+    script = loadScript('vars/findOldestSupportedVersion.groovy')
     helper.registerAllowedMethod('httpRequest', [Map.class], { f ->
       return """{
         "versions": [
