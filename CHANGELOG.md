@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.235 (24/08/2021)
+
+#### 🚀 Enhancements
+
+-  findOldestSupportedVersion step [#1248](https://github.com/elastic/apm-pipeline-library/pull/1248)
+-  Set OTEL_EXPORTER_OTLP_HEADERS [#1234](https://github.com/elastic/apm-pipeline-library/pull/1234)
+
 ## v1.1.234 (23/08/2021)
 
 #### ⚙️ CI
