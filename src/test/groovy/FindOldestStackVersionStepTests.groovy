@@ -27,6 +27,27 @@ class FindOldestStackVersionStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/findOldestStackVersion.groovy')
+    helper.registerAllowedMethod('httpRequest', [Map.class], { f ->
+      return """{
+        "versions": [
+          "7.14.0-SNAPSHOT",
+          "7.14.0",
+          "7.14.1-SNAPSHOT",
+          "7.15.0-SNAPSHOT",
+          "7.15.0",
+          "8.0.0-SNAPSHOT"
+        ],
+        "aliases": [
+          "7.x-SNAPSHOT",
+          "7.14-SNAPSHOT",
+          "7.14",
+          "7.15-SNAPSHOT",
+          "7.15",
+          "8.0-SNAPSHOT",
+          "8.0"
+        ]
+      }"""
+    })
   }
 
   @Test
@@ -37,9 +58,23 @@ class FindOldestStackVersionStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_no_match() throws Exception {
+  void test_match() throws Exception {
     def ret = script.call(versionCondition: "^7.14.0")
     printCallStack()
+    assertTrue(ret.equals('7.14.0'))
   }
 
+  @Test
+  void test_snapshot() throws Exception {
+    def ret = script.call(versionCondition: "^7.14.1")
+    printCallStack()
+    assertTrue(ret.equals('7.14.1-SNAPSHOT'))
+  }
+
+  @Test
+  void test_no_match() throws Exception {
+    def ret = script.call(versionCondition: "^7.13.0")
+    printCallStack()
+    assertTrue(ret.equals('7.13.0'))
+  }
 }

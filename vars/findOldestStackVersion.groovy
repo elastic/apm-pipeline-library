@@ -24,7 +24,7 @@ def version = findOldestStackVersion(versionCondition: "^7.14.0")
 def call(Map args = [:]) {
   def versionCondition = args.containsKey('versionCondition') ? args.versionCondition : error('findOldestStackVersion: versionCondition parameter is required')
   def version = versionCondition.substring(1)
-  def response = httpRequest(url: 'https://artifacts-api.elastic.co/v1/versions')
+  def response = httpRequest(url: 'https://artifacts-api.elastic.co/v1/versions?x-elastic-no-kpi=true')
   def availableVersions = readJSON(text: response)
 
   def parts = version.split('\\.')
