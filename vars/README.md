@@ -512,6 +512,20 @@ pipeline {
 }
 ```
 
+## findOldestStackVersion
+Find the oldest stack version given the condition to compare with.
+
+If the version doesn't exist yet, it will try to use the closer snapshot, for example
+if 7.14.1 doesn't exist, it will try to use 7.14.1-SNAPSHOT or 7.x-SNAPSHOT,
+this will allow to develop integrations with unreleased features.
+
+
+```
+findOldestStackVersion(versionCondition: "^7.14.0")
+```
+
+* versionCondition: The condition to compare with. Mandatory
+
 ## generateChangelog
 Programatically generate a CHANGELOG
 
