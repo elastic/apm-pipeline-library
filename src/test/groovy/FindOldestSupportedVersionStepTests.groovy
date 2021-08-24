@@ -88,4 +88,12 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'versionCondition supports only'))
   }
+
+  @Test
+  void test_release_in_process() throws Exception {
+    // There are already 7.15.0 artifacts, but this release hasn't happened yet, and there are only snapshots for the docker images.
+    def ret = script.call(versionCondition: "^7.15.0")
+    printCallStack()
+    assertTrue(ret.equals('7.15.0-SNAPSHOT'))
+  }
 }
