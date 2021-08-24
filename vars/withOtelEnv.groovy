@@ -33,6 +33,10 @@ def call(Map args = [:], Closure body) {
     error('withOtelEnv: opentelemetry plugin is not available')
   }
 
+  if (env.OTEL_EXPORTER_OTLP_HEADERS?.trim()) {
+    error('withOtelEnv: OTEL_EXPORTER_OTLP_HEADERS env variable is already defined.')
+  }
+
   def otelPlugin = getOtelPlugin()
 
   // In case the credentialsId argument was not passed, then let's use the
@@ -44,12 +48,13 @@ def call(Map args = [:], Closure body) {
     }
   }
 
-  // Then, mask and provide the environemnt variables.
-  withEnvMask(vars: [
-                [var: "OTEL_EXPORTER_OTLP_ENDPOINT", password: otelPlugin.getEndpoint()],
-                [var: "OTEL_SERVICE_NAME", password: otelPlugin.getServiceName()],
-              ]) {
-    withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
+  // Then, mask and provide the environment variables.
+  withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
+    withEnvMask(vars: [
+      [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: otelPlugin.getEndpoint()],
+      [var: 'OTEL_SERVICE_NAME', password: otelPlugin.getServiceName()],
+      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "authorization=Bearer ${env.OTEL_TOKEN_ID}"]
+    ]) {
       body()
     }
   }
