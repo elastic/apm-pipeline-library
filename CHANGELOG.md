@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.236 (25/08/2021)
+
+#### 🚀 Enhancements
+
+-  Add elastic specific env variables for withOtelEnv [#1250](https://github.com/elastic/apm-pipeline-library/pull/1250)
+
 ## v1.1.235 (24/08/2021)
 
 #### 🚀 Enhancements
