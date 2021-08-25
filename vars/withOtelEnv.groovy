@@ -51,11 +51,13 @@ def call(Map args = [:], Closure body) {
   // Then, mask and provide the environment variables.
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
     def entrypoint = otelPlugin.getEndpoint()
+    def serviceName = otelPlugin.getServiceName()
     withEnvMask(vars: [
-      [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
       [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
+      [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
+      [var: 'ELASTIC_APM_SERVICE_NAME', password: serviceName],
       [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: entrypoint],
-      [var: 'OTEL_SERVICE_NAME', password: otelPlugin.getServiceName()],
+      [var: 'OTEL_SERVICE_NAME', password: serviceName],
       [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "authorization=Bearer ${env.OTEL_TOKEN_ID}"]
     ]) {
       body()
