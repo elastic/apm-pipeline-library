@@ -3158,6 +3158,9 @@ environment variables:
 * `OTEL_EXPORTER_OTLP_ENDPOINT`
 * `OTEL_SERVICE_NAME`
 * `OTEL_EXPORTER_OTLP_HEADERS`
+* `ELASTIC_APM_SECRET_TOKEN`
+* `ELASTIC_APM_SERVER_URL`
+* `ELASTIC_APM_SERVICE_NAME`
 
 ```
   withOtelEnv() {
@@ -3171,6 +3174,8 @@ environment variables:
 ```
 
 * credentialsId: the name of the credentials. Optional.
+
+**NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
