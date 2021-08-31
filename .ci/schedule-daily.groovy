@@ -96,14 +96,6 @@ pipeline {
           propagate: false,
           wait: false
         )
-
-        build(job: 'apm-ui/apm-ui-e2e-tests-mbp/master',
-          parameters: [
-            booleanParam(name: 'FORCE', value: true),
-          ],
-          propagate: false,
-          wait: false
-        )
       }
     }
     stage('Populate GitHub data') {
