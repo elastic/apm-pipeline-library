@@ -4,5 +4,6 @@ google-compute-engine
 job-dsl
 metrics
 monitoring
+opentelemetry
 plot
 ssh-agent
