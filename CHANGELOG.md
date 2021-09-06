@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.237 (06/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation in JenkinsOpenTelemetryPluginConfiguration [#1256](https://github.com/elastic/apm-pipeline-library/pull/1256)
+-  fix: remove build from the daily pipeline. [#1254](https://github.com/elastic/apm-pipeline-library/pull/1254)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [7.14.1, 7.15.0] [#1257](https://github.com/elastic/apm-pipeline-library/pull/1257)
+- [**dependencies**] Use release version for metricbeat/filebeat [#1258](https://github.com/elastic/apm-pipeline-library/pull/1258)
+
 ## v1.1.236 (25/08/2021)
 
 #### 🚀 Enhancements
