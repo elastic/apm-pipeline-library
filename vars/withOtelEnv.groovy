@@ -37,21 +37,16 @@ def call(Map args = [:], Closure body) {
     error('withOtelEnv: OTEL_EXPORTER_OTLP_HEADERS env variable is already defined.')
   }
 
-  def otelPlugin = getOtelPlugin()
-
   // In case the credentialsId argument was not passed, then let's use the
   // OpenTelemetry configuration to dynamically provide those details.
   if (!credentialsId?.trim()) {
-    def otelAuthentication = otelPlugin.getAuthentication()
-    if (otelAuthentication instanceof io.jenkins.plugins.opentelemetry.authentication.BearerTokenAuthentication) {
-      credentialsId = otelAuthentication.getTokenId()
-    }
+    credentialsId = calculateCrendentialsId()
   }
 
   // Then, mask and provide the environment variables.
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
-    def entrypoint = otelPlugin.getEndpoint()
-    def serviceName = otelPlugin.getServiceName()
+    def entrypoint = getEndpoint()
+    def serviceName = getServiceName()
     withEnvMask(vars: [
       [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
       [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
@@ -67,5 +62,32 @@ def call(Map args = [:], Closure body) {
 
 @NonCPS
 def getOtelPlugin() {
-  return Jenkins.get().getExtensionList(GlobalConfiguration.class).get(io.jenkins.plugins.opentelemetry.JenkinsOpenTelemetryPluginConfiguration.class)
+  def value = Jenkins.get().getExtensionList(GlobalConfiguration.class).get(io.jenkins.plugins.opentelemetry.JenkinsOpenTelemetryPluginConfiguration.class)
+  return value
+}
+
+@NonCPS
+def calculateCrendentialsId() {
+  def otelAuthentication = getAuthentication()
+  if (otelAuthentication instanceof io.jenkins.plugins.opentelemetry.authentication.BearerTokenAuthentication) {
+    return otelAuthentication.getTokenId()
+  }
+}
+
+@NonCPS
+def getAuthentication() {
+  def value = getOtelPlugin().getAuthentication()
+  return value
+}
+
+@NonCPS
+def getEndpoint() {
+  def value = getOtelPlugin().getEndpoint()
+  return value
+}
+
+@NonCPS
+def getServiceName() {
+  def value = getOtelPlugin().getServiceName()
+  return value
 }
