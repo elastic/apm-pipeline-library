@@ -96,6 +96,14 @@ pipeline {
           propagate: false,
           wait: false
         )
+
+        build(job: 'apm-shared/gather-ci-metrics-pipeline',
+          parameters: [
+            string(name: 'MTIME_FILTER', value: '1')
+          ],
+          propagate: false,
+          wait: false
+        )
       }
     }
     stage('Populate GitHub data') {
