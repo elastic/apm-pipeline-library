@@ -96,7 +96,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>opentelemetry</artifactId>
-      <version>0.17</version>
+      <version>0.19</version>
     </dependency>
     <!-- END Support for the withOtelEnv step -->
   </dependencies>
