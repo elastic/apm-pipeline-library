@@ -19,6 +19,7 @@ import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.mock.GithubEnvMock
+import co.elastic.mock.OtelHelperMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
@@ -94,6 +95,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     binding.setProperty('docker', new DockerMock())
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('githubEnv', new GithubEnvMock())
+    binding.setProperty('otelHelper', new OtelHelperMock(true))
     binding.setProperty('pullRequest', new PullRequestMock())
     binding.setProperty('steps', new StepsMock())
   }
