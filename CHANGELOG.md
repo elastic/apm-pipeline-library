@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.238 (06/09/2021)
+
+#### 🚀 Enhancements
+
+-  Support traceparent with otel [#1260](https://github.com/elastic/apm-pipeline-library/pull/1260)
+-  Add reused workers metrics in the apm-ci [#1259](https://github.com/elastic/apm-pipeline-library/pull/1259)
+
+#### 🐛 Bug Fixes
+
+-  Remove support for the OTEL service name env variable [#1261](https://github.com/elastic/apm-pipeline-library/pull/1261)
+
 ## v1.1.237 (06/09/2021)
 
 #### 🐛 Bug Fixes

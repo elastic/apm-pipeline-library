@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/create--ccs-oblt-cluster") {
+pipelineJob("apm-shared/oblt-test-env/create-ccs-oblt-cluster") {
   displayName('Create CCS oblt cluster')
   description('Job to create a CCS cluster pointing to an oblt cluster.')
   parameters {
