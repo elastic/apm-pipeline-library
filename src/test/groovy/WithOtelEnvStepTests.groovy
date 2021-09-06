@@ -43,19 +43,4 @@ class WithOtelEnvStepTests extends ApmBasePipelineTest {
     assertJobStatusFailure()
   }
 
-  @Test
-  void test_env_variable_defined() throws Exception {
-    addEnvVar('OTEL_EXPORTER_OTLP_HEADERS', 'foo')
-    try {
-      script.call(){
-        //NOOP
-      }
-    } catch(e){
-      //NOOP
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withOtelEnv: OTEL_EXPORTER_OTLP_HEADERS env variable is already defined'))
-    assertJobStatusFailure()
-  }
-
 }
