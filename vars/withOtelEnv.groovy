@@ -33,9 +33,7 @@ def call(Map args = [:], Closure body) {
     error('withOtelEnv: opentelemetry plugin is not available')
   }
 
-  if (env.OTEL_EXPORTER_OTLP_HEADERS?.trim()) {
-    error('withOtelEnv: OTEL_EXPORTER_OTLP_HEADERS env variable is already defined.')
-  }
+  def otel_headers = env.OTEL_EXPORTER_OTLP_HEADERS ?: ''
 
   // In case the credentialsId argument was not passed, then let's use the
   // OpenTelemetry configuration to dynamically provide those details.
@@ -47,15 +45,24 @@ def call(Map args = [:], Closure body) {
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
     def entrypoint = getEndpoint()
     def serviceName = getServiceName()
+
+    // Opentelemetry Jenkins plugin version 0.19 already provides the TRACEPARENT env
+    // variable, so let's support previous versions.
+    def otelEnvs = []
+    if (!env.TRACEPARENT) {
+      otelEnvs = ["TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"]
+    }
     withEnvMask(vars: [
       [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
       [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
       [var: 'ELASTIC_APM_SERVICE_NAME', password: serviceName],
       [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: entrypoint],
       [var: 'OTEL_SERVICE_NAME', password: serviceName],
-      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "authorization=Bearer ${env.OTEL_TOKEN_ID}"]
+      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "${otel_headers} authorization=Bearer ${env.OTEL_TOKEN_ID}"]
     ]) {
-      body()
+      withEnv(otelEnvs){
+        body()
+      }
     }
   }
 }
