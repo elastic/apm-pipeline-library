@@ -44,7 +44,6 @@ def call(Map args = [:], Closure body) {
   // Then, mask and provide the environment variables.
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
     def entrypoint = getEndpoint()
-    def serviceName = getServiceName()
 
     // Opentelemetry Jenkins plugin version 0.19 already provides the TRACEPARENT env
     // variable, so let's support previous versions.
@@ -55,7 +54,6 @@ def call(Map args = [:], Closure body) {
     withEnvMask(vars: [
       [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
       [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
-      [var: 'ELASTIC_APM_SERVICE_NAME', password: serviceName],
       [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: entrypoint],
       [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "${otel_headers} authorization=Bearer ${env.OTEL_TOKEN_ID}"]
     ]) {
@@ -89,11 +87,5 @@ def getAuthentication() {
 @NonCPS
 def getEndpoint() {
   def value = getOtelPlugin().getEndpoint()
-  return value
-}
-
-@NonCPS
-def getServiceName() {
-  def value = getOtelPlugin().getServiceName()
   return value
 }
