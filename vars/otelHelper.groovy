@@ -16,55 +16,12 @@
 // under the License.
 
 /**
-  Configure the OpenTelemetry Jenkins context to run the body closure.
-
-  withOtelEnv() {
-    // block
-  }
+  Helper for the OpenTelemetry Jenkins plugin
 
 */
 
 import com.cloudbees.groovy.cps.NonCPS
 import jenkins.model.GlobalConfiguration
-
-def call(Map args = [:], Closure body) {
-  String credentialsId = args.get('credentialsId', '')
-  if (!isPluginInstalled(pluginName: 'opentelemetry')) {
-    error('withOtelEnv: opentelemetry plugin is not available')
-  }
-
-  def otel_headers = env.OTEL_EXPORTER_OTLP_HEADERS ?: ''
-
-  // In case the credentialsId argument was not passed, then let's use the
-  // OpenTelemetry configuration to dynamically provide those details.
-  if (!credentialsId?.trim()) {
-    credentialsId = calculateCrendentialsId()
-  }
-
-  // Then, mask and provide the environment variables.
-  withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
-    def entrypoint = getEndpoint()
-    def serviceName = getServiceName()
-
-    // Opentelemetry Jenkins plugin version 0.19 already provides the TRACEPARENT env
-    // variable, so let's support previous versions.
-    def otelEnvs = []
-    if (!env.TRACEPARENT) {
-      otelEnvs = ["TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"]
-    }
-    withEnvMask(vars: [
-      [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
-      [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
-      [var: 'ELASTIC_APM_SERVICE_NAME', password: serviceName],
-      [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: entrypoint],
-      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "${otel_headers} authorization=Bearer ${env.OTEL_TOKEN_ID}"]
-    ]) {
-      withEnv(otelEnvs){
-        body()
-      }
-    }
-  }
-}
 
 @NonCPS
 def getOtelPlugin() {
