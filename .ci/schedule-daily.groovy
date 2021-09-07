@@ -99,7 +99,8 @@ pipeline {
 
         build(job: 'apm-shared/gather-ci-metrics-pipeline',
           parameters: [
-            string(name: 'MTIME_FILTER', value: '1')
+            string(name: 'MTIME_FILTER', value: '1'),
+            string(name: 'AGENT_PREFIX', value: 'apm-ci')
           ],
           propagate: false,
           wait: false
