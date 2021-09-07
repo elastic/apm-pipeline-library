@@ -40,7 +40,7 @@ pipeline {
     stage('Sync GitHub labels') {
       steps {
         deleteDir()
-        git(url: "https://github.com/elastic/${REPO}.git", credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
+        git(url: "https://github.com/elastic/${REPO}.git", credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', branch: 'main')
         withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GITHUB_TOKEN')]) {
           sh '''#!/bin/bash -e
             cd .github/labels
