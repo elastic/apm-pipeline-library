@@ -94,19 +94,28 @@ pipeline {
         }
       }
     }
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
-    stage('Test') {
+    stage('Build') {
       steps {
-        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+        withGithubNotify(context: 'Build', description: 'Build') {
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
             retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-              sh './mvnw clean install -V --batch-mode -DskipTests'
+              withOtelEnv() {
+                sh './mvnw clean install -V --batch-mode -DskipTests'
+              }
             }
-            sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+          }
+        }
+      }
+    }
+    stage('Test') {
+      steps {
+        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+          dir("${BASE_DIR}"){
+            withOtelEnv() {
+              sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+            }
           }
         }
       }
