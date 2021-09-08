@@ -19,8 +19,17 @@
   Given the pluginName it validates whether it's installed and available.
 
 */
+
+import com.cloudbees.groovy.cps.NonCPS
+
 def call(Map args = [:]) {
   def pluginName = args.pluginName
-  def plugins = jenkins.model.Jenkins.instance.getPluginManager().getPlugins().collectEntries { [(it.getShortName()):it.getVersion()] }
+  def plugins = getPlugins()
   return plugins.any { key, value -> "${key}" == "${pluginName}" }
+}
+
+
+@NonCPS
+def getPlugins() {
+  return jenkins.model.Jenkins.instance.getPluginManager().getPlugins().collectEntries { [(it.getShortName()):it.getVersion()] }
 }
