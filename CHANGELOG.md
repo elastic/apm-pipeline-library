@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.239 (08/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation with hudson.PluginWrapper [#1266](https://github.com/elastic/apm-pipeline-library/pull/1266)
+
+#### 🙈 No user affected
+
+-  UTs for the withOtelEnv [#1262](https://github.com/elastic/apm-pipeline-library/pull/1262)
+
+#### ⚙️ CI
+
+-  Gather metrics for the apm-ci with apm-ci agents [#1263](https://github.com/elastic/apm-pipeline-library/pull/1263)
+-  Switch observability-dev checkouts from master branch by default to main branch [#1264](https://github.com/elastic/apm-pipeline-library/pull/1264)
+
 ## v1.1.238 (06/09/2021)
 
 #### 🚀 Enhancements
