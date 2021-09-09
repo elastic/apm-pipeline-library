@@ -22,6 +22,7 @@
 import com.cloudbees.groovy.cps.NonCPS
 import jenkins.model.GlobalConfiguration
 
+@NonCPS
 def isPluginInstalled() {
   return isPluginInstalled(pluginName: 'opentelemetry')
 }
