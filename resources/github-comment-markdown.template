@@ -101,7 +101,7 @@ ${errorStackTrace}
   <% stepsErrors?.takeRight(10)?.each{ c -> %>
   <% description = (c?.displayDescription && c?.displayDescription != 'null') ? "<li>Description: <code>${c?.displayDescription}</code></l1>" : ''%>
   <% duration = (c?.durationInMillis >= 0 ) ? "Took ${Math.round(c.durationInMillis/1000/60)} min ${Math.round(c.durationInMillis/1000)%60} sec" : ''%>
-  <% url = (c?.url && c?.url != 'null') ? ". View more details on <a href=\"${c?.url}/?start=0\">here</a>" : ''%>
+  <% url = (c?.url && c?.url != 'null') ? ". View more details <a href=\"${c?.url}/?start=0\">here</a>" : ''%>
 ##### `${c?.displayName && c?.displayName != 'null' ? c?.displayName.replaceAll('\\n', '') : ''}`
 <ul>
 <li>${duration} ${url}</li>
