@@ -182,10 +182,18 @@ def buildDockerImage(args){
       withEnv(env){
         retry(3) {
           sleep randomNumber(min: 5, max: 10)
-          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          if(isUnix()){
+            sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          } else {
+            bat(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          }
         }
         if(push){
-          sh(label: "push docker image", script: "docker push ${image}")
+          if(isUnix()){
+            sh(label: "push docker image", script: "docker push ${image}")
+          } else {
+            bat(label: "push docker image", script: "docker push ${image}")
+          }
         }
       }
     }
