@@ -189,11 +189,7 @@ def buildDockerImage(args){
           }
         }
         if(push){
-          if(isUnix()){
-            sh(label: "push docker image", script: "docker push ${image}")
-          } else {
-            bat(label: "push docker image", script: "docker push ${image}")
-          }
+          cmd(label: "push docker image", script: "docker push ${image}")
         }
       }
     }
