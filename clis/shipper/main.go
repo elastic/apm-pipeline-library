@@ -226,49 +226,22 @@ func normaliseSteps(json *gabs.Container) {
 
 	json.Set(linksSelfHref, "url")
 
-	err := json.Delete("_links")
-	if err != nil {
-		fmt.Printf(">> cannot delete _links from JSON object: %s\n", err)
-	}
-
-	err = json.DeleteP("_class")
-	if err != nil {
-		fmt.Printf(">> cannot delete _class from JSON object: %s\n", err)
-	}
-
-	err = json.DeleteP("actions")
-	if err != nil {
-		fmt.Printf(">> cannot delete actions from JSON object: %s\n", err)
+	keys := []string{"_links", "_class", "actions"}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
 	}
 }
 
 func normaliseTests(json *gabs.Container) {
-	err := json.Delete("_links")
-	if err != nil {
-		fmt.Printf(">> cannot delete _links from JSON object: %s\n", err)
+	keys := []string{"_links", "_class", "state", "hasStdLog"}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
 	}
 
-	err = json.DeleteP("_class")
-	if err != nil {
-		fmt.Printf(">> cannot delete _class from JSON object: %s\n", err)
-	}
-
-	err = json.DeleteP("state")
-	if err != nil {
-		fmt.Printf(">> cannot delete state from JSON object: %s\n", err)
-	}
-
-	err = json.DeleteP("hasStdLog")
-	if err != nil {
-		fmt.Printf(">> cannot delete hasStdLog from JSON object: %s\n", err)
-	}
 }
 
 func normaliseTestsWithoutStacktrace(json *gabs.Container) {
 	normaliseTests(json)
 
-	err := json.Delete("errorStackTrace")
-	if err != nil {
-		fmt.Printf(">> cannot delete errorStackTrace from JSON object: %s\n", err)
-	}
+	DeleteJSONKey(json, "errorStackTrace")
 }

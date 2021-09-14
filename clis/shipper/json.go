@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 
@@ -20,4 +21,12 @@ func ParseJSON(stream io.ReadCloser) (*gabs.Container, error) {
 	}
 
 	return jsonParsed, nil
+}
+
+// DeleteJSONKey deletes a key from the JSON object
+func DeleteJSONKey(json *gabs.Container, key string) {
+	err := json.DeleteP(key)
+	if err != nil {
+		fmt.Printf(">> cannot delete %s from JSON object: %s\n", key, err)
+	}
 }
