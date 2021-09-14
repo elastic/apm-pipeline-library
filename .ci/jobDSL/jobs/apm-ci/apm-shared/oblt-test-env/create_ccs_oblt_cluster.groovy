@@ -19,7 +19,7 @@ pipelineJob("apm-shared/oblt-test-env/create-ccs-oblt-cluster") {
   displayName('Create CCS oblt cluster')
   description('Job to create a CCS cluster pointing to an oblt cluster.')
   parameters {
-    stringParam("branch_specifier", "ccs_deployment_1", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }
   disabled(false)
   quietPeriod(10)
