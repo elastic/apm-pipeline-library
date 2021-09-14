@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	DEFAULT_HASH = "{ }"
 	STEPS_ERRORS = "steps-errors.json"
 	STEPS_INFO   = "steps-info.json"
+	TESTS_ERRORS = "tests-errors.json"
 )
 
 var baseURL string
@@ -43,12 +43,20 @@ func main() {
 
 	url := fmt.Sprintf("%s/steps/?limit=10000", blueOceanURL)
 
-	json, err := fetchAndDefaultStepsInfo(url, DEFAULT_HASH)
+	steps, err := fetchAndDefaultStepsInfo(url)
 	if err != nil {
 		fmt.Printf(">> %s", err)
 		os.Exit(1)
 	}
-	ioutil.WriteFile(STEPS_INFO, []byte(json.String()), 0644)
+	ioutil.WriteFile(STEPS_INFO, []byte(steps.String()), 0644)
+
+	url = fmt.Sprintf("%s/tests/?status=FAILED", blueOceanURL)
+	testErrors, err := fetchAndDefaultTestsErrors(url)
+	if err != nil {
+		fmt.Printf(">> %s", err)
+		os.Exit(1)
+	}
+	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
 }
 
 func fetch(url string) (*gabs.Container, error) {
@@ -95,7 +103,7 @@ func fetch(url string) (*gabs.Container, error) {
 	return json, nil
 }
 
-func fetchAndDefault(url string, defaultValue string) (*gabs.Container, error) {
+func fetchAndDefault(url string, list bool) (*gabs.Container, error) {
 	json, err := fetch(url)
 	if err != nil {
 		return nil, err
@@ -103,17 +111,22 @@ func fetchAndDefault(url string, defaultValue string) (*gabs.Container, error) {
 
 	if json == nil {
 		// valid response but empty
-		json, err = gabs.ParseJSON([]byte(defaultValue))
-		if err != nil {
-			return nil, err
+		if list {
+			json, err = gabs.New().Array()
+			if err != nil {
+				return nil, err
+			}
+			return json, nil
 		}
+
+		return gabs.New(), nil
 	}
 
 	return json, nil
 }
 
-func fetchAndDefaultStepsInfo(url string, hash string) (*gabs.Container, error) {
-	json, err := fetchAndDefault(url, hash)
+func fetchAndDefaultStepsInfo(url string) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, false)
 	if err != nil {
 		return nil, err
 	}
@@ -177,6 +190,25 @@ func fetchAndDefaultStepsInfo(url string, hash string) (*gabs.Container, error) 
 	return stepsErrors, nil
 }
 
+func fetchAndDefaultTestsErrors(url string) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, true)
+	if err != nil {
+		return nil, err
+	}
+
+	children := json.Children()
+	if len(children) == 0 {
+		normaliseSteps(json)
+		return json, nil
+	}
+
+	for _, child := range children {
+		normaliseTests(child)
+	}
+
+	return json, nil
+}
+
 // fileExists checks if a path exists in the file system
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
@@ -207,5 +239,36 @@ func normaliseSteps(json *gabs.Container) {
 	err = json.DeleteP("actions")
 	if err != nil {
 		fmt.Printf(">> cannot delete actions from JSON object: %s\n", err)
+	}
+}
+
+func normaliseTests(json *gabs.Container) {
+	err := json.Delete("_links")
+	if err != nil {
+		fmt.Printf(">> cannot delete _links from JSON object: %s\n", err)
+	}
+
+	err = json.DeleteP("_class")
+	if err != nil {
+		fmt.Printf(">> cannot delete _class from JSON object: %s\n", err)
+	}
+
+	err = json.DeleteP("state")
+	if err != nil {
+		fmt.Printf(">> cannot delete state from JSON object: %s\n", err)
+	}
+
+	err = json.DeleteP("hasStdLog")
+	if err != nil {
+		fmt.Printf(">> cannot delete hasStdLog from JSON object: %s\n", err)
+	}
+}
+
+func normaliseTestsWithoutStacktrace(json *gabs.Container) {
+	normaliseTests(json)
+
+	err := json.Delete("errorStackTrace")
+	if err != nil {
+		fmt.Printf(">> cannot delete errorStackTrace from JSON object: %s\n", err)
 	}
 }
