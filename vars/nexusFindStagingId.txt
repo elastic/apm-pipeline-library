@@ -5,7 +5,7 @@ nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
   stagingProfileId: "comexampleapplication-1010",
   groupId: "co.elastic.apm",
-  secret: secret/release/nexus,
+  secret: 'secret/release/nexus',
   role_id: apm-vault-role-id,
   secret_id: apm-vault-secret-id
   )
