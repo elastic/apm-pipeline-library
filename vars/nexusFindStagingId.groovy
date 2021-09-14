@@ -61,7 +61,7 @@ def call(Map args = [:]) {
 
   log(level: "INFO", text: "nexusFindStagingId: search for the repository with groupId='${groupId}'")
   for (def repository : response['data']) {
-      log(level: "INFO", text: "nexusFindStagingId: repositoryId='${repository['repositoryId']}' type='${repository['type']}'")
+      log(level: "INFO", text: "nexusFindStagingId: repositoryId=${repository['repositoryId']} type=${repository['type']}")
       // We can't look for the description if we didn't actually open the staging repo
       // because they are automatically generated.
       // https://central.sonatype.org/pages/releasing-the-deployment.html
