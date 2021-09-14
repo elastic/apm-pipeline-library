@@ -21,8 +21,8 @@
   nexusFindStagingId(
     url: "https://oss.sonatype.org",
     stagingProfileId: "1234-1455-1242",
-    groupId: co.elastic.apm
-    )
+    groupId: 'co.elastic.apm'
+  )
 **/
 import co.elastic.Nexus
 
@@ -53,21 +53,22 @@ def call(Map args = [:]) {
     conn = Nexus.createConnection(stagingURL, env.NEXUS_username, env.NEXUS_password, "profile_repositories/${stagingProfileId}")
   }
 
+  log(level: "INFO", text: "nexusFindStagingId: start the connection and validate it's available")
   Nexus.checkResponse(conn, 200)
   Object response = Nexus.getData(conn)
   String repositoryId = null
   String mungeGroupId = groupId.replace(".", "")
 
-
-
+  log(level: "INFO", text: "nexusFindStagingId: search for the repository with groupId='${groupId}'")
   for (def repository : response['data']) {
+      log(level: "INFO", text: "nexusFindStagingId: repositoryId=${repository['repositoryId']} type=${repository['type']} mungeGroupId=${mungeGroupId}")
       // We can't look for the description if we didn't actually open the staging repo
       // because they are automatically generated.
       // https://central.sonatype.org/pages/releasing-the-deployment.html
       // This is a workaround to just look for open repos that begin with our groupId
       if (repository['repositoryId'].startsWith(mungeGroupId)) {
           if (repository['type'] != 'open') {
-               error "Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
+              error "Staging repository ${repository['repositoryId']} for '${groupId}' is not open. " +
                       "It should have been kept open when staging the release."
           } else if (repositoryId != null) {
               error "Multiple staging repositories exist for '${groupId}'. " +
