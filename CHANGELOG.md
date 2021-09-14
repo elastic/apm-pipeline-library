@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.240 (14/09/2021)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: update the branch of the ccs pipeline [#1274](https://github.com/elastic/apm-pipeline-library/pull/1274)
+-  Beats webhook proof of concept [#1265](https://github.com/elastic/apm-pipeline-library/pull/1265)
+-  Enable Otel maven plugin [#1267](https://github.com/elastic/apm-pipeline-library/pull/1267)
+
+#### ⚙️ CI
+
+-  Support Windows workers for docker builds [#1273](https://github.com/elastic/apm-pipeline-library/pull/1273)
+
 ## v1.1.239 (08/09/2021)
 
 #### 🐛 Bug Fixes
