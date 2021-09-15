@@ -142,21 +142,35 @@ func fetchAndDefaultStepsInfo(url string) (*gabs.Container, error) {
 
 	for _, step := range json.Children() {
 		if step.Path("result").Data().(string) == "FAILURE" {
-			if step.Path("type").Data().(string) == "STEP" && strings.EqualFold(step.Path("displayDescription").Data().(string), "") {
+			displayDescription := step.Path("displayDescription").Data()
+			if step.Path("type").Data().(string) == "STEP" && (strings.EqualFold(displayDescription.(string), "") || displayDescription == nil) {
 				/*
+					id=$(basename "${href}")
+					new=$(curl -s "${BASE_URL}${href}log/" | head -c 100)
+					curlCommand "${tmp}" "${BASE_URL}${href}log/"
+
 					Update the displayDescription for those steps with a failure and an empty displayDescription.
 					For instance, when using the pipeline step `error('foo')`
 					then the 'foo' message is not shown in the BlueOcean restAPI.
+
+					lastIndex := strings.LastIndex(linksSelfHref, "/")
+					id := linksSelfHref[lastIndex:]
 				*/
-				linksSelfHref := step.Path("_links.self.href")
+
+				linksSelfHref := step.Path("_links.self.href").Data().(string)
 				req := HTTPRequest{
-					URL: fmt.Sprintf("%s%slog/", baseURL, linksSelfHref.Data().(string)),
+					URL: fmt.Sprintf("%s%slog/", baseURL, linksSelfHref),
 				}
 
 				response, err := Get(req)
 				/*
 					If the URL was unreachable then the file won't exist.
 					For such use case, then avoid any transformation.
+
+					if [ -e "${tmp}" ] ; then
+						new=$(head -c 100 "${tmp}")
+						jq --arg id "${id}" --arg new "${new}" '(.[] | select(.result=="FAILURE" and .displayDescription==null and .id==$id) | .displayDescription) |= $new' "${output}" > "$tmp" && mv "$tmp" "${output}"
+					fi
 				*/
 				if err == nil {
 					defer response.Close()
