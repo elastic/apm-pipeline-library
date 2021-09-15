@@ -76,28 +76,20 @@ func init() {
 func main() {
 	fmt.Print("Hello shipper!\n")
 
-	err := prepareStepsInfo()
-	if err != nil {
-		fmt.Printf(">> %s", err)
-		os.Exit(1)
+	transformations := []func() error{
+		prepareStepsInfo,
+		prepareTestErrors,
+		prepareTestErrors,
+		preparePipelineLog,
+		prepareBuildReport,
 	}
 
-	err = prepareTestErrors()
-	if err != nil {
-		fmt.Printf(">> %s", err)
-		os.Exit(1)
-	}
-
-	err = preparePipelineLog()
-	if err != nil {
-		fmt.Printf(">> %s", err)
-		os.Exit(1)
-	}
-
-	err = prepareBuildReport()
-	if err != nil {
-		fmt.Printf(">> %s", err)
-		os.Exit(1)
+	for _, transformation := range transformations {
+		err := transformation()
+		if err != nil {
+			fmt.Printf(">> %s", err)
+			os.Exit(1)
+		}
 	}
 }
 
