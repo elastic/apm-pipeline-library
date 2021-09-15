@@ -76,22 +76,17 @@ func init() {
 func main() {
 	fmt.Print("Hello shipper!\n")
 
-	url := fmt.Sprintf("%s/steps/?limit=10000", blueOceanBuildURL)
-
-	steps, err := fetchAndDefaultStepsInfo(url)
+	err := prepareStepsInfo()
 	if err != nil {
 		fmt.Printf(">> %s", err)
 		os.Exit(1)
 	}
-	ioutil.WriteFile(STEPS_INFO, []byte(steps.String()), 0644)
 
-	url = fmt.Sprintf("%s/tests/?status=FAILED", blueOceanBuildURL)
-	testErrors, err := fetchAndDefaultTestsErrors(url)
+	err = prepareTestErrors()
 	if err != nil {
 		fmt.Printf(">> %s", err)
 		os.Exit(1)
 	}
-	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
 
 	err = preparePipelineLog()
 	if err != nil {
@@ -576,6 +571,32 @@ func preparePipelineLog() error {
 
 	ioutil.WriteFile(PIPELINE_LOG, []byte(fullPipelineLog), 0644)
 	ioutil.WriteFile(PIPELINE_LOG_SUMMARY, []byte(summaryPipelineLog), 0644)
+
+	return nil
+}
+
+func prepareStepsInfo() error {
+	url := fmt.Sprintf("%s/steps/?limit=10000", blueOceanBuildURL)
+
+	steps, err := fetchAndDefaultStepsInfo(url)
+	if err != nil {
+		return err
+	}
+
+	ioutil.WriteFile(STEPS_INFO, []byte(steps.String()), 0644)
+
+	return nil
+}
+
+func prepareTestErrors() error {
+	url := fmt.Sprintf("%s/tests/?status=FAILED", blueOceanBuildURL)
+
+	testErrors, err := fetchAndDefaultTestsErrors(url)
+	if err != nil {
+		return err
+	}
+
+	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
 
 	return nil
 }
