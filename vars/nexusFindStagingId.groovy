@@ -24,7 +24,6 @@
     groupId: 'co.elastic.apm'
   )
 **/
-import co.elastic.Nexus
 
 def call(Map args = [:]) {
   String url = args.get('url', 'https://oss.sonatype.org')
@@ -44,21 +43,16 @@ def call(Map args = [:]) {
   def username = vault_data?.username
   def password = vault_data?.password
 
-  def HttpURLConnection conn
-  String stagingURL = Nexus.getStagingURL(url)
+  String stagingURL = nexusHelper.getStagingURL(url)
 
-  withEnvMask(vars: [
-  [var: "NEXUS_username", password: username],
-  [var: "NEXUS_password", password: password]    ]){
-    conn = Nexus.createConnection(stagingURL, env.NEXUS_username, env.NEXUS_password, "profile_repositories/${stagingProfileId}")
-  }
+  Object response = nexusHelper.getData(host: "oss.sonatype.org",
+                                        username: username,
+                                        password: password,
+                                        url: "${stagingURL}/profile_repositories/${stagingProfileId}")
 
-  log(level: "INFO", text: "nexusFindStagingId: start the connection and validate it's available")
-  Nexus.checkResponse(conn, 200)
-  Object response = Nexus.getData(conn)
+  log(level: "DEBUG", text: "nexusFindStagingId: response " + response)
   String repositoryId = null
   String mungeGroupId = groupId.replace(".", "")
-
   log(level: "INFO", text: "nexusFindStagingId: search for the repository with groupId='${groupId}'")
   for (def repository : response['data']) {
       log(level: "INFO", text: "nexusFindStagingId: repositoryId=${repository['repositoryId']} type=${repository['type']} mungeGroupId=${mungeGroupId}")
