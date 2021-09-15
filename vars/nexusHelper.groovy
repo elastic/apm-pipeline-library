@@ -56,17 +56,18 @@ def getData(Map args = [:]) {
     // See https://github.com/apache/httpcomponents-client/blob/4.5.x/httpclient/src/examples/org/apache/http/examples/client/ClientWithResponseHandler.java
     HttpGet httpget = new HttpGet(url)
     ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-        @Override
-        public String handleResponse(
-                final HttpResponse httpResponse) throws ClientProtocolException, IOException {
-            int status = httpResponse.getStatusLine().getStatusCode()
-            if (status >= 200 && status < 300) {
-                HttpEntity entity = httpResponse.getEntity();
-                return entity != null ? EntityUtils.toString(entity) : null;
-            } else {
-                throw new ClientProtocolException("Unexpected response status: " + status)
-            }
+      @Override
+      public String handleResponse(
+              final HttpResponse httpResponse) throws ClientProtocolException, IOException {
+        int status = httpResponse.getStatusLine().getStatusCode()
+        if (status >= 200 && status < 300) {
+          HttpEntity entity = httpResponse.getEntity();
+          return entity != null ? EntityUtils.toString(entity) : null;
+        } else {
+          log(level: 'WARN', text: "nexusHelper.getData failed: Unexpected response status " + status)
+          throw new ClientProtocolException("Unexpected response status: " + status)
         }
+      }
     }
     body = httpclient.execute(httpget, responseHandler)
     log(level: 'DEBUG', text: "nexusHelper.getData: response body " + body)
