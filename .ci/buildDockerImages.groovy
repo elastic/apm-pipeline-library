@@ -252,42 +252,6 @@ pipeline {
         )
       }
     }
-    stage('Build Apm Server test Docker images'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build Apm Server Docker images failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.apm_server }
-      }
-      steps {
-        deleteDir()
-        checkout scm
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/apm-server.git',
-          tag: "apm-server",
-          version: "daily",
-          push: true
-        )
-        dir("apm-server-images"){
-          git('https://github.com/elastic/apm-server.git')
-          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
-          retry(3){
-            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
-          }
-          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/**/junit-*.xml")
-        }
-      }
-    }
     stage('Build flakey'){
       options {
         skipDefaultCheckout()
