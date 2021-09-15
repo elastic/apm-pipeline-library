@@ -19,6 +19,7 @@ const (
 )
 
 var baseURL string
+var blueOceanBuildURL string
 var blueOceanURL string
 var jenkinsURL string
 var sharedLibPath string
@@ -26,6 +27,7 @@ var sharedLibPath string
 func init() {
 	jenkinsURL = os.Getenv("JENKINS_URL")
 	blueOceanURL = os.Getenv("BO_JOB_URL")
+	blueOceanBuildURL = os.Getenv("BO_BUILD_URL")
 	sharedLibPath = os.Getenv("UTILS_LIB")
 
 	baseURL = jenkinsURL
@@ -34,8 +36,12 @@ func init() {
 		baseURL = string([]rune(blueOceanURL)[0:index])
 	}
 
+	fmt.Printf("============\n")
+	fmt.Printf("Environment:\n")
+	fmt.Printf("============\n")
 	fmt.Printf("JENKINS_URL: %s\n", jenkinsURL)
 	fmt.Printf("BO_JOB_URL: %s\n", blueOceanURL)
+	fmt.Printf("BO_BUILD_URL: %s\n", blueOceanBuildURL)
 	fmt.Printf("UTILS_LIB: %s\n", sharedLibPath)
 	fmt.Printf("BASE_URL: %s\n", baseURL)
 }
@@ -43,7 +49,7 @@ func init() {
 func main() {
 	fmt.Print("Hello shipper!\n")
 
-	url := fmt.Sprintf("%s/steps/?limit=10000", blueOceanURL)
+	url := fmt.Sprintf("%s/steps/?limit=10000", blueOceanBuildURL)
 
 	steps, err := fetchAndDefaultStepsInfo(url)
 	if err != nil {
@@ -52,7 +58,7 @@ func main() {
 	}
 	ioutil.WriteFile(STEPS_INFO, []byte(steps.String()), 0644)
 
-	url = fmt.Sprintf("%s/tests/?status=FAILED", blueOceanURL)
+	url = fmt.Sprintf("%s/tests/?status=FAILED", blueOceanBuildURL)
 	testErrors, err := fetchAndDefaultTestsErrors(url)
 	if err != nil {
 		fmt.Printf(">> %s", err)
@@ -60,7 +66,7 @@ func main() {
 	}
 	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
 
-	url = fmt.Sprintf("%s/log/", blueOceanURL)
+	url = fmt.Sprintf("%s/log/", blueOceanBuildURL)
 	req := HTTPRequest{
 		URL: url,
 	}
