@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -45,18 +46,35 @@ func Get(r HTTPRequest) (io.ReadCloser, error) {
 	return request(r)
 }
 
-// GetString executes a GET request returning a string
-func GetString(r HTTPRequest) (string, error) {
-	stream, err := Get(r)
+// GetStringArray executes a GET request returning a string
+func GetStringArray(r HTTPRequest, limit int) ([]string, error) {
+	response, err := Get(r)
 	if err != nil {
-		return "", err
+		return []string{}, err
 	}
-	defer stream.Close()
+	defer response.Close()
 
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
+	lines := []string{}
+	rd := bufio.NewReader(response)
+	for {
+		line, err := rd.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
 
-	return buf.String(), nil
+		lines = append(lines, line)
+		if limit > 0 {
+			if len(lines) == limit {
+				// only retrieve the 'limit' first elements from the log
+				break
+			}
+		}
+	}
+
+	return lines, nil
 }
 
 // Post executes a POST request

@@ -11,10 +11,11 @@ import (
 )
 
 const (
-	PIPELINE_LOG = "pipeline-log.txt"
-	STEPS_ERRORS = "steps-errors.json"
-	STEPS_INFO   = "steps-info.json"
-	TESTS_ERRORS = "tests-errors.json"
+	PIPELINE_LOG         = "pipeline-log.txt"
+	PIPELINE_LOG_SUMMARY = "pipeline-log-summary.txt"
+	STEPS_ERRORS         = "steps-errors.json"
+	STEPS_INFO           = "steps-info.json"
+	TESTS_ERRORS         = "tests-errors.json"
 )
 
 var baseURL string
@@ -63,12 +64,29 @@ func main() {
 	req := HTTPRequest{
 		URL: url,
 	}
-	pipelineLog, err := GetString(req)
+	pipelineLog, err := GetStringArray(req, -1)
 	if err != nil {
 		fmt.Printf(">> %s", err)
 		os.Exit(1)
 	}
-	ioutil.WriteFile(PIPELINE_LOG, []byte(pipelineLog), 0644)
+
+	fullPipelineLog := ""
+	summaryPipelineLog := ""
+
+	// avoid a second call to retrieve the log iterating through the entire log
+
+	// get summary
+	for i := 0; i < 100; i++ {
+		fullPipelineLog += pipelineLog[i]
+		summaryPipelineLog += pipelineLog[i]
+	}
+	// get rest of the pipeline log
+	for i := 100; i < len(pipelineLog); i++ {
+		fullPipelineLog += pipelineLog[i]
+	}
+
+	ioutil.WriteFile(PIPELINE_LOG, []byte(fullPipelineLog), 0644)
+	ioutil.WriteFile(PIPELINE_LOG_SUMMARY, []byte(summaryPipelineLog), 0644)
 }
 
 func fetch(url string) (*gabs.Container, error) {
