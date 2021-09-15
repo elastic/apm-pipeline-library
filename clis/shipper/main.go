@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/Jeffail/gabs/v2"
@@ -22,15 +23,29 @@ const (
 var baseURL string
 var blueOceanBuildURL string
 var blueOceanURL string
+var buildResult string
 var buildURL string
+var durationInMillis int
 var jenkinsURL string
 var sharedLibPath string
 
+func checkVariable(envVar string) string {
+	value := os.Getenv(envVar)
+	if strings.EqualFold(value, "") {
+		fmt.Printf(">> %s should be present", envVar)
+		os.Exit(1)
+	}
+	return value
+}
+
 func init() {
+	blueOceanURL = checkVariable("BO_JOB_URL")
+	blueOceanBuildURL = checkVariable("BO_BUILD_URL")
+	buildResult = checkVariable("RESULT")
+	duration := checkVariable("DURATION")
+	buildURL = checkVariable("BUILD_URL")
+
 	jenkinsURL = os.Getenv("JENKINS_URL")
-	blueOceanURL = os.Getenv("BO_JOB_URL")
-	buildURL = os.Getenv("BUILD_URL")
-	blueOceanBuildURL = os.Getenv("BO_BUILD_URL")
 	sharedLibPath = os.Getenv("UTILS_LIB")
 
 	baseURL = jenkinsURL
@@ -39,6 +54,13 @@ func init() {
 		baseURL = string([]rune(blueOceanURL)[0:index])
 	}
 
+	d, err := strconv.Atoi(duration)
+	if err != nil {
+		fmt.Printf(">> DURATION should be present and a number: %v", durationInMillis)
+		os.Exit(1)
+	}
+	durationInMillis = d
+
 	fmt.Printf("============\n")
 	fmt.Printf("Environment:\n")
 	fmt.Printf("============\n")
@@ -46,6 +68,8 @@ func init() {
 	fmt.Printf("BO_JOB_URL: %s\n", blueOceanURL)
 	fmt.Printf("BO_BUILD_URL: %s\n", blueOceanBuildURL)
 	fmt.Printf("BUILD_URL: %s\n", buildURL)
+	fmt.Printf("DURATION: %d\n", durationInMillis)
+	fmt.Printf("RESULT: %s\n", buildResult)
 	fmt.Printf("UTILS_LIB: %s\n", sharedLibPath)
 	fmt.Printf("BASE_URL: %s\n", baseURL)
 }
@@ -282,6 +306,17 @@ func fetchAndPrepareArtifactsInfo(url string) (*gabs.Container, error) {
 	return json, nil
 }
 
+func fetchAndPrepareBuildInfo(url string) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, false)
+	if err != nil {
+		return nil, err
+	}
+
+	normaliseBuild(json)
+
+	return json, nil
+}
+
 func fetchAndPrepareBuildReport(url string, isList bool) (*gabs.Container, error) {
 	json, err := fetchAndDefault(url, isList)
 	if err != nil {
@@ -391,6 +426,35 @@ func normaliseArtifacts(json *gabs.Container) {
 	}
 }
 
+func normaliseBuild(json *gabs.Container) {
+	json.Set(buildResult, "result")
+	json.Set(durationInMillis, "durationInMillis")
+	json.Set("FINISHED", "state")
+
+	keys := []string{"_links", "_class", "actions", "branch", "changeSet", "pullRequest", "replayable"}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
+	}
+
+	if json.Exists("causes") {
+		causes := json.Path("causes")
+		for _, cause := range causes.Children() {
+			DeleteJSONKey(cause, "_class")
+		}
+		if len(causes.Children()) > 0 {
+			// Lets flatten the causes by only getting the first entry.
+			// There is two causes by default in the way CI builds run at the moment.
+			json.Set(causes.Index(0), "causes")
+		}
+	}
+
+	if json.Exists("artifactsZipFile") {
+		// Transform relative path to absolute URL
+		artifactsZipFile := json.Path("artifactsZipFile")
+		json.Set(jenkinsURL+artifactsZipFile.Data().(string), "artifactsZipFile")
+	}
+}
+
 func normaliseBuildReport(json *gabs.Container) {
 	keys := []string{"_links", "_class", "actions", "latestRun", "permissions", "parameters"}
 	for _, key := range keys {
@@ -489,15 +553,19 @@ func prepareBuildReport() error {
 	if err != nil {
 		return err
 	}
-
 	buildReport.Set(testSummary, "test_summary")
 
 	cobertura, err := fetchAndPrepareTestCoverageReport(buildURL + "/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3")
 	if err != nil {
 		return err
 	}
-
 	buildReport.Set(cobertura, "test_coverage")
+
+	buildInfo, err := fetchAndPrepareBuildInfo(blueOceanBuildURL)
+	if err != nil {
+		return err
+	}
+	buildReport.Set(buildInfo, "build")
 
 	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
 
