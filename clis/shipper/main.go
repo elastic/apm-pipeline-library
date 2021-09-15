@@ -22,12 +22,14 @@ const (
 var baseURL string
 var blueOceanBuildURL string
 var blueOceanURL string
+var buildURL string
 var jenkinsURL string
 var sharedLibPath string
 
 func init() {
 	jenkinsURL = os.Getenv("JENKINS_URL")
 	blueOceanURL = os.Getenv("BO_JOB_URL")
+	buildURL = os.Getenv("BUILD_URL")
 	blueOceanBuildURL = os.Getenv("BO_BUILD_URL")
 	sharedLibPath = os.Getenv("UTILS_LIB")
 
@@ -43,6 +45,7 @@ func init() {
 	fmt.Printf("JENKINS_URL: %s\n", jenkinsURL)
 	fmt.Printf("BO_JOB_URL: %s\n", blueOceanURL)
 	fmt.Printf("BO_BUILD_URL: %s\n", blueOceanBuildURL)
+	fmt.Printf("BUILD_URL: %s\n", buildURL)
 	fmt.Printf("UTILS_LIB: %s\n", sharedLibPath)
 	fmt.Printf("BASE_URL: %s\n", baseURL)
 }
@@ -295,6 +298,22 @@ func fetchAndPrepareBuildReport(url string, isList bool) (*gabs.Container, error
 	return json, nil
 }
 
+func fetchAndPrepareTestCoverageReport(url string) (*gabs.Container, error) {
+	json, err := fetch(url)
+	if err != nil {
+		// in the case there is not code coverage report, we return an empty object
+		if strings.EqualFold(err.Error(), "GET request failed with 404") {
+			fmt.Printf(">> code coverage not found at %s: %v", url, err)
+			return gabs.New(), nil
+		}
+
+		return nil, err
+	}
+
+	coverage := normaliseCoberturaSummary(json)
+	return coverage, nil
+}
+
 func fetchAndPrepareTestsInfo(url string) (*gabs.Container, error) {
 	json, err := fetchAndDefault(url, true)
 	if err != nil {
@@ -379,6 +398,25 @@ func normaliseBuildReport(json *gabs.Container) {
 	}
 }
 
+func normaliseCoberturaSummary(json *gabs.Container) *gabs.Container {
+	elements := json.Path("results.elements")
+
+	coverage := gabs.New()
+
+	for _, element := range elements.Children() {
+		item := gabs.New()
+		item.Set(element.Path("ratio").Data(), "ratio")
+		item.Set(element.Path("numerator").Data(), "numerator")
+		item.Set(element.Path("denominator").Data(), "denominator")
+
+		name := element.Path("name").Data().(string)
+
+		coverage.SetP(item, name)
+	}
+
+	return coverage
+}
+
 func normaliseChangeset(json *gabs.Container) {
 	keys := []string{"author._links", "author._class"}
 	for _, key := range keys {
@@ -453,6 +491,13 @@ func prepareBuildReport() error {
 	}
 
 	buildReport.Set(testSummary, "test_summary")
+
+	cobertura, err := fetchAndPrepareTestCoverageReport(buildURL + "/cobertura/api/json?tree=results[elements[name,ratio,denominator,numerator]]&depth=3")
+	if err != nil {
+		return err
+	}
+
+	buildReport.Set(cobertura, "test_coverage")
 
 	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
 
