@@ -15,7 +15,6 @@ const (
 	BUILD_REPORT         = "build-report.json"
 	PIPELINE_LOG         = "pipeline-log.txt"
 	PIPELINE_LOG_SUMMARY = "pipeline-log-summary.txt"
-	STEPS_ERRORS         = "steps-errors.json"
 	STEPS_INFO           = "steps-info.json"
 	TESTS_ERRORS         = "tests-errors.json"
 )
@@ -94,38 +93,11 @@ func main() {
 	}
 	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
 
-	url = fmt.Sprintf("%s/log/", blueOceanBuildURL)
-	req := HTTPRequest{
-		URL: url,
-	}
-	pipelineLog, err := GetStringArray(req, -1)
+	err = preparePipelineLog()
 	if err != nil {
 		fmt.Printf(">> %s", err)
 		os.Exit(1)
 	}
-
-	fullPipelineLog := ""
-	summaryPipelineLog := ""
-
-	// avoid a second call to retrieve the log iterating through the entire log
-
-	// get summary
-	for i := 0; i < 100; i++ {
-		line := pipelineLog[i]
-		fullPipelineLog += line
-
-		// remove useless log entries from the summary
-		if !strings.Contains(line, "[Pipeline]") {
-			summaryPipelineLog += line
-		}
-	}
-	// get rest of the pipeline log
-	for i := 100; i < len(pipelineLog); i++ {
-		fullPipelineLog += pipelineLog[i]
-	}
-
-	ioutil.WriteFile(PIPELINE_LOG, []byte(fullPipelineLog), 0644)
-	ioutil.WriteFile(PIPELINE_LOG_SUMMARY, []byte(summaryPipelineLog), 0644)
 
 	err = prepareBuildReport()
 	if err != nil {
@@ -568,6 +540,42 @@ func prepareBuildReport() error {
 	buildReport.Set(buildInfo, "build")
 
 	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
+
+	return nil
+}
+
+func preparePipelineLog() error {
+	url := fmt.Sprintf("%s/log/", blueOceanBuildURL)
+	req := HTTPRequest{
+		URL: url,
+	}
+	pipelineLog, err := GetStringArray(req, -1)
+	if err != nil {
+		return err
+	}
+
+	fullPipelineLog := ""
+	summaryPipelineLog := ""
+
+	// avoid a second call to retrieve the log iterating through the entire log
+
+	// get summary
+	for i := 0; i < 100; i++ {
+		line := pipelineLog[i]
+		fullPipelineLog += line
+
+		// remove useless log entries from the summary
+		if !strings.Contains(line, "[Pipeline]") {
+			summaryPipelineLog += line
+		}
+	}
+	// get rest of the pipeline log
+	for i := 100; i < len(pipelineLog); i++ {
+		fullPipelineLog += pipelineLog[i]
+	}
+
+	ioutil.WriteFile(PIPELINE_LOG, []byte(fullPipelineLog), 0644)
+	ioutil.WriteFile(PIPELINE_LOG_SUMMARY, []byte(summaryPipelineLog), 0644)
 
 	return nil
 }
