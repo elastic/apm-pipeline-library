@@ -136,7 +136,7 @@ func fetch(url string) (*gabs.Container, error) {
 			}
 
 			if times > 1 {
-				fmt.Printf(">> Retrying (%d)! %s\n", (times - i), err)
+				fmt.Printf(">> Retrying (%d)! %s\n", (times - i - 1), err)
 				continue
 			}
 		}
@@ -255,26 +255,26 @@ func fetchAndDefaultTestsErrors(url string) (*gabs.Container, error) {
 		return nil, err
 	}
 
-	children := json.Children()
-	if len(children) == 0 {
-		normaliseSteps(json)
-		return json, nil
+	if json.Exists("code") && json.Path("code").Data().(int) == 404 {
+		return gabs.New().Array()
 	}
 
-	for _, child := range children {
+	for _, child := range json.Children() {
 		normaliseTests(child)
 	}
 
 	return json, nil
 }
 
-func fetchAndPrepareArtifactsInfo(url string, isList bool) (*gabs.Container, error) {
-	json, err := fetchAndDefault(url, isList)
+func fetchAndPrepareArtifactsInfo(url string) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, true)
 	if err != nil {
 		return nil, err
 	}
 
-	normaliseArtifacts(json)
+	for _, child := range json.Children() {
+		normaliseArtifacts(child)
+	}
 
 	return json, nil
 }
@@ -287,7 +287,32 @@ func fetchAndPrepareBuildReport(url string, isList bool) (*gabs.Container, error
 
 	normaliseArtifacts(json)
 	normaliseBuildReport(json)
-	normaliseChangeset(json)
+
+	for _, child := range json.Children() {
+		normaliseChangeset(child)
+	}
+
+	return json, nil
+}
+
+func fetchAndPrepareTestsInfo(url string) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, true)
+	if err != nil {
+		return nil, err
+	}
+
+	/*
+		Tests json response differs when there were tests executed in
+		the pipeline, otherwise it returns:
+		{ message: "no tests", code: 404, errors: [] }
+	*/
+	if json.Exists("code") && json.Path("code").Data().(int) == 404 {
+		return gabs.New(), nil
+	}
+
+	for _, child := range json.Children() {
+		normaliseTestsWithoutStacktrace(child)
+	}
 
 	return json, nil
 }
@@ -306,10 +331,8 @@ func fileExists(path string) (bool, error) {
 
 func normaliseArtifacts(json *gabs.Container) {
 	keys := []string{"_links", "_class", "downloadable", "id", "url"}
-	for _, child := range json.Children() {
-		for _, key := range keys {
-			DeleteJSONKey(child, key)
-		}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
 	}
 }
 
@@ -322,10 +345,8 @@ func normaliseBuildReport(json *gabs.Container) {
 
 func normaliseChangeset(json *gabs.Container) {
 	keys := []string{"author._links", "author._class"}
-	for _, child := range json.Children() {
-		for _, key := range keys {
-			DeleteJSONKey(child, key)
-		}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
 	}
 }
 
@@ -351,6 +372,8 @@ func normaliseTests(json *gabs.Container) {
 func normaliseTestsWithoutStacktrace(json *gabs.Container) {
 	normaliseTests(json)
 
+	// This will help to tidy up the file size quite a lot.
+	// It might be useful to export it but lets go step by step
 	DeleteJSONKey(json, "errorStackTrace")
 }
 
@@ -369,11 +392,17 @@ func prepareBuildReport() error {
 	}
 	buildReport.Set(changeSet, "changeSet")
 
-	artifacts, err := fetchAndPrepareArtifactsInfo(blueOceanBuildURL+"/artifacts/", true)
+	artifacts, err := fetchAndPrepareArtifactsInfo(blueOceanBuildURL + "/artifacts/")
 	if err != nil {
 		return err
 	}
 	buildReport.Set(artifacts, "artifacts")
+
+	testInfo, err := fetchAndPrepareTestsInfo(blueOceanBuildURL + "/tests/?limit=10000000")
+	if err != nil {
+		return err
+	}
+	buildReport.Set(testInfo, "test")
 
 	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
 
