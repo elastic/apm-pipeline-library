@@ -2,20 +2,21 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 
 	"github.com/Jeffail/gabs/v2"
 )
 
-// ParseJSON takes a stream representing a JSON, unmarshalling it into a gabs container
-func ParseJSON(stream io.ReadCloser) (*gabs.Container, error) {
-	data, err := ioutil.ReadAll(stream)
+// Get executes a GET request returning a JSON, unmarshalling it into a gabs container
+func GetJSON(r HTTPRequest) (*gabs.Container, error) {
+	r.method = "GET"
+
+	stream, err := Get(r)
 	if err != nil {
 		return nil, err
 	}
+	defer stream.Close()
 
-	jsonParsed, err := gabs.ParseJSON(data)
+	jsonParsed, err := gabs.ParseJSONBuffer(stream)
 	if err != nil {
 		return nil, err
 	}

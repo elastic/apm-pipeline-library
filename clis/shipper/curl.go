@@ -45,6 +45,20 @@ func Get(r HTTPRequest) (io.ReadCloser, error) {
 	return request(r)
 }
 
+// GetString executes a GET request returning a string
+func GetString(r HTTPRequest) (string, error) {
+	stream, err := Get(r)
+	if err != nil {
+		return "", err
+	}
+	defer stream.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stream)
+
+	return buf.String(), nil
+}
+
 // Post executes a POST request
 func Post(r HTTPRequest) (io.ReadCloser, error) {
 	r.method = "POST"
