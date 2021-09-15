@@ -83,8 +83,13 @@ func main() {
 
 	// get summary
 	for i := 0; i < 100; i++ {
-		fullPipelineLog += pipelineLog[i]
-		summaryPipelineLog += pipelineLog[i]
+		line := pipelineLog[i]
+		fullPipelineLog += line
+
+		// remove useless log entries from the summary
+		if !strings.Contains(line, "[Pipeline]") {
+			summaryPipelineLog += line
+		}
 	}
 	// get rest of the pipeline log
 	for i := 100; i < len(pipelineLog); i++ {
