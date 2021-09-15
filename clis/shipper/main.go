@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	BUILD_REPORT         = "build-report.json"
 	PIPELINE_LOG         = "pipeline-log.txt"
 	PIPELINE_LOG_SUMMARY = "pipeline-log-summary.txt"
 	STEPS_ERRORS         = "steps-errors.json"
@@ -98,6 +99,12 @@ func main() {
 
 	ioutil.WriteFile(PIPELINE_LOG, []byte(fullPipelineLog), 0644)
 	ioutil.WriteFile(PIPELINE_LOG_SUMMARY, []byte(summaryPipelineLog), 0644)
+
+	err = prepareBuildReport()
+	if err != nil {
+		fmt.Printf(">> %s", err)
+		os.Exit(1)
+	}
 }
 
 func fetch(url string) (*gabs.Container, error) {
@@ -261,6 +268,30 @@ func fetchAndDefaultTestsErrors(url string) (*gabs.Container, error) {
 	return json, nil
 }
 
+func fetchAndPrepareArtifactsInfo(url string, isList bool) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, isList)
+	if err != nil {
+		return nil, err
+	}
+
+	normaliseArtifacts(json)
+
+	return json, nil
+}
+
+func fetchAndPrepareBuildReport(url string, isList bool) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, isList)
+	if err != nil {
+		return nil, err
+	}
+
+	normaliseArtifacts(json)
+	normaliseBuildReport(json)
+	normaliseChangeset(json)
+
+	return json, nil
+}
+
 // fileExists checks if a path exists in the file system
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
@@ -271,6 +302,31 @@ func fileExists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+func normaliseArtifacts(json *gabs.Container) {
+	keys := []string{"_links", "_class", "downloadable", "id", "url"}
+	for _, child := range json.Children() {
+		for _, key := range keys {
+			DeleteJSONKey(child, key)
+		}
+	}
+}
+
+func normaliseBuildReport(json *gabs.Container) {
+	keys := []string{"_links", "_class", "actions", "latestRun", "permissions", "parameters"}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
+	}
+}
+
+func normaliseChangeset(json *gabs.Container) {
+	keys := []string{"author._links", "author._class"}
+	for _, child := range json.Children() {
+		for _, key := range keys {
+			DeleteJSONKey(child, key)
+		}
+	}
 }
 
 func normaliseSteps(json *gabs.Container) {
@@ -296,4 +352,30 @@ func normaliseTestsWithoutStacktrace(json *gabs.Container) {
 	normaliseTests(json)
 
 	DeleteJSONKey(json, "errorStackTrace")
+}
+
+func prepareBuildReport() error {
+	buildReport := gabs.New()
+
+	job, err := fetchAndPrepareBuildReport(blueOceanURL, false)
+	if err != nil {
+		return err
+	}
+	buildReport.Set(job, "job")
+
+	changeSet, err := fetchAndPrepareBuildReport(blueOceanBuildURL+"/changeSet/", true)
+	if err != nil {
+		return err
+	}
+	buildReport.Set(changeSet, "changeSet")
+
+	artifacts, err := fetchAndPrepareArtifactsInfo(blueOceanBuildURL+"/artifacts/", true)
+	if err != nil {
+		return err
+	}
+	buildReport.Set(artifacts, "artifacts")
+
+	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
+
+	return nil
 }
