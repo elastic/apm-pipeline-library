@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	PIPELINE_LOG = "pipeline-log.txt"
 	STEPS_ERRORS = "steps-errors.json"
 	STEPS_INFO   = "steps-info.json"
 	TESTS_ERRORS = "tests-errors.json"
@@ -57,6 +58,17 @@ func main() {
 		os.Exit(1)
 	}
 	ioutil.WriteFile(TESTS_ERRORS, []byte(testErrors.String()), 0644)
+
+	url = fmt.Sprintf("%s/log/", blueOceanURL)
+	req := HTTPRequest{
+		URL: url,
+	}
+	pipelineLog, err := GetString(req)
+	if err != nil {
+		fmt.Printf(">> %s", err)
+		os.Exit(1)
+	}
+	ioutil.WriteFile(PIPELINE_LOG, []byte(pipelineLog), 0644)
 }
 
 func fetch(url string) (*gabs.Container, error) {
@@ -81,7 +93,7 @@ func fetch(url string) (*gabs.Container, error) {
 	var json *gabs.Container
 
 	for i := 0; i < times; i++ {
-		response, err := Get(req)
+		json, err = GetJSON(req)
 		if err != nil {
 			if i == times-1 {
 				return nil, err
@@ -92,11 +104,8 @@ func fetch(url string) (*gabs.Container, error) {
 				continue
 			}
 		}
-
-		defer response.Close()
-		json, err = gabs.ParseJSONBuffer(response)
-		if err != nil {
-			return nil, err
+		if json != nil {
+			break
 		}
 	}
 
