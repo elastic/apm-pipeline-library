@@ -37,7 +37,7 @@ func checkVariable(envVar string) string {
 	return value
 }
 
-func init() {
+func initChecks() {
 	blueOceanURL = checkVariable("BO_JOB_URL")
 	blueOceanBuildURL = checkVariable("BO_BUILD_URL")
 	buildResult = checkVariable("RESULT")
@@ -75,6 +75,8 @@ func init() {
 
 func main() {
 	fmt.Print("Hello shipper!\n")
+
+	initChecks()
 
 	transformations := []func() error{
 		prepareStepsInfo,
