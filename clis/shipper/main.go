@@ -317,6 +317,42 @@ func fetchAndPrepareTestsInfo(url string) (*gabs.Container, error) {
 	return json, nil
 }
 
+func fetchAndPrepareTestSummaryReport(url string, testJSON *gabs.Container) (*gabs.Container, error) {
+	json, err := fetchAndDefault(url, true)
+	if err != nil {
+		// BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
+		if testJSON != nil {
+			total := len(testJSON.Children())
+			passed := 0
+			failed := 0
+			skipped := 0
+			for _, test := range testJSON.Children() {
+				status := test.Path("status").Data().(string)
+				switch status {
+				case "FAILED":
+					failed++
+				case "PASSED":
+					passed++
+				case "SKIPPED":
+					skipped++
+				}
+			}
+
+			json = gabs.New()
+			json.Set(total, "total")
+			json.Set(passed, "passed")
+			json.Set(failed, "failed")
+			json.Set(skipped, "skipped")
+		}
+
+		return nil, err
+	}
+
+	normaliseTestsSummary(json)
+
+	return json, nil
+}
+
 // fileExists checks if a path exists in the file system
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
@@ -369,6 +405,13 @@ func normaliseTests(json *gabs.Container) {
 
 }
 
+func normaliseTestsSummary(json *gabs.Container) {
+	keys := []string{"_links", "_class"}
+	for _, key := range keys {
+		DeleteJSONKey(json, key)
+	}
+}
+
 func normaliseTestsWithoutStacktrace(json *gabs.Container) {
 	normaliseTests(json)
 
@@ -403,6 +446,13 @@ func prepareBuildReport() error {
 		return err
 	}
 	buildReport.Set(testInfo, "test")
+
+	testSummary, err := fetchAndPrepareTestSummaryReport(blueOceanBuildURL+"/blueTestSummary/?limit=10000000", testInfo)
+	if err != nil {
+		return err
+	}
+
+	buildReport.Set(testSummary, "test_summary")
 
 	ioutil.WriteFile(BUILD_REPORT, []byte(buildReport.String()), 0644)
 
