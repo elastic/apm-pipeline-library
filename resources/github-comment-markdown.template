@@ -127,3 +127,8 @@ ${log}
 </details>
 
 <%}%>
+
+
+To re-run your PR in the CI, just comment with:
+
+`/test`
