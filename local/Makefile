@@ -1,5 +1,8 @@
 VAULT_TOKEN ?= $(shell cat $${HOME}/.vault-token)
 LOG_LEVEL ?= WARNING
+WIREMOCK_JOBS := abort cobertura connectionRefused error multiTestFailures success unstable
+WIREMOCK_SECTIONS := pipeline changes tests artifacts
+WIREMOCK_VERSION ?= 2.26.3
 .DEFAULT_GOAL := help
 
 .PHONY: build
@@ -106,6 +109,36 @@ stop:  ## Stop the local Jenkins master and related processes
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
 			stop $${SERVICE}
+
+.PHONY: wiremock-bo
+wiremock-bo:  ## Hit the Blue Ocean URLs for wiremock tests
+	for JOB in $(WIREMOCK_JOBS); do\
+		for SECTION in $(WIREMOCK_SECTIONS); do\
+        	curl -I -s http://localhost:8080/blue/organizations/jenkins/it%2FgetBuildInfoJsonFiles%2F$$JOB/detail/$$JOB/1/$$SECTION/ > /dev/null ;\
+		done \
+	done
+
+	cp -R __files ../src/test/resources/
+	cp -R mappings ../src/test/resources/
+
+.PHONY: wiremock-clean
+wiremock-clean:  ## Remove wiremock-standalone.jar
+	rm -fr wiremock-standalone.jar
+	rm -fr __files
+	rm -fr mappings
+
+wiremock-standalone.jar:  ## Download wiremock
+	curl https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/$(WIREMOCK_VERSION)/wiremock-standalone-$(WIREMOCK_VERSION).jar -o wiremock-standalone.jar
+
+.PHONY: wiremock-start
+wiremock-start:  ## Start wiremock to proxy all requests to the Jenkins instance
+	java -jar wiremock-standalone.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
+
+.PHONY: wiremock-tests
+wiremock-tests: ## Prepare the environment to run the wiremock tests, starting a local worker for it
+	for JOB in $(WIREMOCK_JOBS); do\
+		curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/$$JOB/build?delay=0sec ;\
+	done
 
 .PHONY: help
 help:  ## Show this help message
