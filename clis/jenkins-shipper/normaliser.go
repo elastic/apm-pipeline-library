@@ -31,14 +31,16 @@ func normaliseBuild(json *gabs.Container) {
 		if len(causes.Children()) > 0 {
 			// Lets flatten the causes by only getting the first entry.
 			// There is two causes by default in the way CI builds run at the moment.
-			json.Set(causes.Index(0), "causes")
+			json.Set(causes.Index(0).Data(), "causes")
 		}
 	}
 
 	if json.Exists("artifactsZipFile") {
 		// Transform relative path to absolute URL
 		artifactsZipFile := json.Path("artifactsZipFile")
-		json.Set(jenkinsURL+artifactsZipFile.Data().(string), "artifactsZipFile")
+		if artifactsZipFile.Data() != nil {
+			json.Set(jenkinsURL+artifactsZipFile.Data().(string), "artifactsZipFile")
+		}
 	}
 }
 
