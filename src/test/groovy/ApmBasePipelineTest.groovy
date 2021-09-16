@@ -536,6 +536,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
     })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('obsGitHubComments', [], {
+      def script = loadScript('vars/obsGitHubComments.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })

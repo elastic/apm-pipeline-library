@@ -21,6 +21,6 @@ import java.util.Date
   The list of GitHub comments supported to be used in conjunction with the
   triggers { issueCommentTrigger ... }
 */
-def call(Map args = [:]) {
+def call() {
   return '(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)'
 }
