@@ -80,7 +80,7 @@ pipeline {
     // particular cron scheduler then it will be required to add the when condition
     // accordingly.
     // cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger('(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
   }
   parameters {
     // Let's use input parameters with capital cases.
