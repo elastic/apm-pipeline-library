@@ -25,10 +25,8 @@
 def call(Map args = [:]){
   def secret = args.containsKey('secret') ? args.secret : error("dockerLogin: No valid secret to looking for.")
   def registry = args.containsKey('registry') ? args.registry : "docker.io"
-  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
-  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
 
-  def jsonValue = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
+  def jsonValue = getVaultSecret(args)
   def data = jsonValue.containsKey('data') ? jsonValue.data : error("dockerLogin: No valid data in secret.")
   def dockerUser = data.containsKey('user') ? data.user : error("dockerLogin: No valid user in secret.")
   def dockerPassword = data.containsKey('password') ? data.password : error("dockerLogin: No valid password in secret.")
