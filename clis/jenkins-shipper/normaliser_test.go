@@ -99,6 +99,42 @@ func TestNormaliseCoberturaSummary(t *testing.T) {
 
 }
 
+func TestNormaliseChangeSet(t *testing.T) {
+	changeSets, err := gabs.ParseJSON([]byte(`[
+		{
+		  "affectedPaths": [
+			"pipeline.yml"
+		  ],
+		  "author": {
+			"avatar": null,
+			"_links": [ ],
+			"_class": "co.elastic",
+			"email": null,
+			"fullName": "Lola Flores",
+			"id": "Lola.Flores",
+			"permission": null
+		  },
+		  "checkoutCount": 0,
+		  "commitId": "abcdefg",
+		  "issues": [ ],
+		  "msg": "indicator type url is in upper case (#1234)",
+		  "timestamp": "2021-02-22T10:23:51.000+0000"
+		}
+	  ]`))
+	if err != nil {
+		t.Errorf("could not parse JSON from string")
+	}
+
+	keys := []string{"author._links", "author._class"}
+	for _, changeSet := range changeSets.Children() {
+		normaliseChangeset(changeSets)
+
+		for _, key := range keys {
+			assert.False(t, changeSet.Exists(key), "key should not be present after normalisation")
+		}
+	}
+}
+
 func getJSONFile(t *testing.T, p string) *gabs.Container {
 	pFilePath := append(resourcesPath, p)
 

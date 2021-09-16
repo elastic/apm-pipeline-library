@@ -26,7 +26,7 @@ func GetJSON(r HTTPRequest) (*gabs.Container, error) {
 
 // DeleteJSONKey deletes a key from the JSON object
 func DeleteJSONKey(json *gabs.Container, key string) {
-	if !json.Exists(key) {
+	if !json.ExistsP(key) {
 		return
 	}
 
