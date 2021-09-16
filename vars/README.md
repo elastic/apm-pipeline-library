@@ -393,6 +393,8 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'
 
 ## dockerLogs
 Archive all the docker containers in the current context.
@@ -730,6 +732,8 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
@@ -2041,7 +2045,7 @@ nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
   stagingProfileId: "comexampleapplication-1010",
   groupId: "co.elastic.apm",
-  secret: secret/release/nexus,
+  secret: 'secret/release/nexus',
   role_id: apm-vault-role-id,
   secret_id: apm-vault-secret-id
   )
@@ -2179,6 +2183,22 @@ opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 ```
 
 * downstreamJobs: What downstream pipelines should be triggered once the release has been done. Default: []
+
+## otelHelper
+Helper method to interact with the OpenTelemetry Jenkins plugin
+
+```
+  withOtelEnv() {
+    // block
+  }
+
+  // If you'd like to use a different credentials
+  withOtelEnv(credentialsId: 'foo') {
+    // block
+  }
+```
+
+**NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
 
 ## pipelineManager
 This step adds certain validations which might be required to be done per build, for such it does
@@ -3155,12 +3175,12 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Configure the OpenTelemetry Jenkins context to run the body closure with the below
 environment variables:
 
-* `OTEL_EXPORTER_OTLP_ENDPOINT`
-* `OTEL_SERVICE_NAME`
-* `OTEL_EXPORTER_OTLP_HEADERS`
+* `OTEL_EXPORTER_OTLP_ENDPOINT`, opentelemetry 0.19 already provides this environment variable.
+* `OTEL_EXPORTER_OTLP_HEADERS`, opentelemetry 0.19 already provides this environment variable.
 * `ELASTIC_APM_SECRET_TOKEN`
 * `ELASTIC_APM_SERVER_URL`
 * `ELASTIC_APM_SERVICE_NAME`
+* `TRACEPARENT`, opentelemetry 0.19 already provides this environment variable.
 
 ```
   withOtelEnv() {
