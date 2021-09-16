@@ -61,4 +61,13 @@ class DockerLoginStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('bat', 'docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "other.docker.io"'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_role_secret() throws Exception {
+    script.call(secret: VaultSecret.SECRET_NAME.toString(), role_id: "role-id", secret_id: 'secret-id')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('getVaultSecret', 'role_id=role-id, secret_id=secret-id'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" "docker.io"'))
+    assertJobStatusSuccess()
+  }
 }
