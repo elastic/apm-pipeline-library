@@ -121,6 +121,12 @@ wiremock-bo:  ## Hit the Blue Ocean URLs for wiremock tests
 	cp -R __files ../src/test/resources/
 	cp -R mappings ../src/test/resources/
 
+.PHONY: wiremock-build-jobs
+wiremock-build-jobs: ## Prepare the environment to run the wiremock tests, running the first builds for each job
+	for JOB in $(WIREMOCK_JOBS); do\
+		curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/$$JOB/build?delay=0sec ;\
+	done
+
 .PHONY: wiremock-clean
 wiremock-clean:  ## Remove wiremock-standalone.jar
 	rm -fr wiremock-standalone.jar
@@ -133,12 +139,6 @@ wiremock-standalone.jar:  ## Download wiremock
 .PHONY: wiremock-start
 wiremock-start:  ## Start wiremock to proxy all requests to the Jenkins instance
 	java -jar wiremock-standalone.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
-
-.PHONY: wiremock-tests
-wiremock-tests: ## Prepare the environment to run the wiremock tests, starting a local worker for it
-	for JOB in $(WIREMOCK_JOBS); do\
-		curl http://localhost:18080/job/it/job/getBuildInfoJsonFiles/job/$$JOB/build?delay=0sec ;\
-	done
 
 .PHONY: help
 help:  ## Show this help message
