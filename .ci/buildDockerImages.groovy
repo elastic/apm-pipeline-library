@@ -39,7 +39,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger('(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
+    issueCommentTrigger(obsGitHubComments())
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
