@@ -140,7 +140,7 @@ wiremock-standalone.jar:  ## Download wiremock
 	curl https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/$(WIREMOCK_VERSION)/wiremock-standalone-$(WIREMOCK_VERSION).jar -o wiremock-standalone.jar
 
 .PHONY: wiremock-start
-wiremock-start:  ## Start wiremock to proxy all requests to the Jenkins instance
+wiremock-start: wiremock-standalone.jar  ## Start wiremock to proxy all requests to the Jenkins instance
 	java -jar wiremock-standalone.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
 
 .PHONY: help

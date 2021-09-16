@@ -37,11 +37,11 @@ import static org.junit.Assert.assertTrue
   - wait for Jenkins to start
   - cd local ** make start-local-worker 
   - cd local ** make wiremock-build-jobs
-    1. will download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
-    2. will build the jobs in http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ folder
+    1. will build the jobs in http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ folder
   - wait for Jenkins builds to finish
   - cd local ** make wiremock-start
-    1. will run java -jar wiremock-standalone-*.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
+    1. will download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
+    2. will run java -jar wiremock-standalone-*.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
   - cd local ** make wiremock-bo
     1. will hit on the BlueOcean URLs for the builds of each of the jobs in the above folder, replacing the 18080 port with 8080, therefore the wiremock proxy will record the calls.
     2. will copy the folders mappings and __files to src/test/resources
