@@ -25,8 +25,10 @@
 def call(Map args = [:]){
   def secret = args.containsKey('secret') ? args.secret : error("dockerLogin: No valid secret to looking for.")
   def registry = args.containsKey('registry') ? args.registry : "docker.io"
+  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
 
-  def jsonValue = getVaultSecret(secret: secret)
+  def jsonValue = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
   def data = jsonValue.containsKey('data') ? jsonValue.data : error("dockerLogin: No valid data in secret.")
   def dockerUser = data.containsKey('user') ? data.user : error("dockerLogin: No valid user in secret.")
   def dockerPassword = data.containsKey('password') ? data.password : error("dockerLogin: No valid password in secret.")
@@ -47,10 +49,10 @@ def call(Map args = [:]){
           sh(label: "Docker login", script: """
             set +x
             if command -v host 2>&1 > /dev/null; then
-              host ${registry} 2>&1 > /dev/null 
+              host ${registry} 2>&1 > /dev/null
             fi
             if command -v dig 2>&1 > /dev/null; then
-              dig ${registry} 2>&1 > /dev/null 
+              dig ${registry} 2>&1 > /dev/null
             fi
             docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
             """)
