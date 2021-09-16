@@ -57,14 +57,11 @@ func normaliseCoberturaSummary(json *gabs.Container) *gabs.Container {
 	coverage := gabs.New()
 
 	for _, element := range elements.Children() {
-		item := gabs.New()
-		item.Set(element.Path("ratio").Data(), "ratio")
-		item.Set(element.Path("numerator").Data(), "numerator")
-		item.Set(element.Path("denominator").Data(), "denominator")
-
 		name := element.Path("name").Data().(string)
 
-		coverage.SetP(item, name)
+		coverage.SetP(element.Path("ratio").Data(), name+".ratio")
+		coverage.SetP(element.Path("numerator").Data(), name+".numerator")
+		coverage.SetP(element.Path("denominator").Data(), name+".denominator")
 	}
 
 	return coverage
