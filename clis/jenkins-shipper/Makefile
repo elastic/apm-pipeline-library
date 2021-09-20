@@ -1,0 +1,3 @@
+.PHONY: test
+test:
+	gotestsum --format short-verbose -- -coverprofile=cover.txt ./...
