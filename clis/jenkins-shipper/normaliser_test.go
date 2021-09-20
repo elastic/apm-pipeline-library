@@ -156,6 +156,45 @@ func TestNormaliseSteps_UpdatesUrlFromLinks(t *testing.T) {
 	assert.Equal(t, "http://example.com/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/log", job.Path("url").Data().(string))
 }
 
+func TestNormaliseTests(t *testing.T) {
+	testsInfo := getJSONFile(t, "tests-info.json")
+
+	keys := []string{"_links", "_class", "state", "hasStdLog"}
+	for _, testInfo := range testsInfo.Children() {
+		normaliseTests(testInfo)
+
+		for _, key := range keys {
+			assert.False(t, testInfo.Exists(key), "key should not be present after normalisation")
+		}
+	}
+}
+
+func TestNormaliseTestsSummary(t *testing.T) {
+	testsInfo := getJSONFile(t, "tests-summary.json")
+
+	keys := []string{"_links", "_class"}
+	for _, testInfo := range testsInfo.Children() {
+		normaliseTestsSummary(testInfo)
+
+		for _, key := range keys {
+			assert.False(t, testInfo.Exists(key), "key should not be present after normalisation")
+		}
+	}
+}
+
+func TestNormaliseTestsWithoutStackTrace(t *testing.T) {
+	testsInfo := getJSONFile(t, "tests-info.json")
+
+	keys := []string{"_links", "_class", "state", "hasStdLog", "errorStackTrace"}
+	for _, testInfo := range testsInfo.Children() {
+		normaliseTestsWithoutStacktrace(testInfo)
+
+		for _, key := range keys {
+			assert.False(t, testInfo.Exists(key), "key should not be present after normalisation")
+		}
+	}
+}
+
 func getJSONFile(t *testing.T, p string) *gabs.Container {
 	pFilePath := append(resourcesPath, p)
 
