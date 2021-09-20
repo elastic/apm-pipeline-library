@@ -133,6 +133,7 @@ pipeline {
         withGithubNotify(context: 'Test', description: 'Jenkins Shipper Tests', tab: 'tests') {
           dir("${BASE_DIR}/clis/jenkins-shipper"){
             withGoEnv(){
+              sh 'go mod tidy'
               sh 'make test'
             }
           }
