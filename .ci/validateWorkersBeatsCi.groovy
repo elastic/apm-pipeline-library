@@ -62,9 +62,22 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
+<<<<<<< HEAD
               'ubuntu && immutable',
               'ubuntu-1404-i386',
               'ubuntu-16',
+=======
+              'arm',  // ephemeral workers
+              'immutable && windows-2019 && docker',
+              'immutable && windows-2019',
+              'immutable && windows-2016',
+              'immutable && windows-2012-r2',
+              'immutable && windows-10',
+              'immutable && windows-8',
+              'immutable && windows-2008-r2',
+              'immutable && windows-7-32-bit',
+              'immutable && windows-7',
+>>>>>>> b1c692e ([test-infra][beats-ci] validate windows-2019 with docker (#1280))
               'ubuntu-18',
               'ubuntu-20',
               'worker-c07jc1nzdwym',
