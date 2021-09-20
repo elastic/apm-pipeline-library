@@ -6,7 +6,7 @@ the given GitHub comments.
 pipeline {
   ...
   triggers {
-    issueCommentTrigger("(${obsGitHubComments()}|/run benchmark tests)")
+    issueCommentTrigger("(${obltGitHubComments()}|/run benchmark tests)")
   }
 }
 ```

@@ -2174,7 +2174,7 @@ emails on Failed builds that are not pull request.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/master`.
 
-## obsGitHubComments
+## obltGitHubComments
 The list of GitHub comments supported to be used in conjunction with the
 `triggers { issueCommentTrigger ... }` in order to trigger builds based on
 the given GitHub comments.
@@ -2183,7 +2183,7 @@ the given GitHub comments.
 pipeline {
   ...
   triggers {
-    issueCommentTrigger("(${obsGitHubComments()}|/run benchmark tests)")
+    issueCommentTrigger("(${obltGitHubComments()}|/run benchmark tests)")
   }
 }
 ```
