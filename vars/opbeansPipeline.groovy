@@ -52,7 +52,7 @@ def call(Map pipelineParams) {
       quietPeriod(10)
     }
     triggers {
-      issueCommentTrigger(obsGitHubComments())
+      issueCommentTrigger('(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
       // Only master branch will run on a timer basis
       cron(env.BRANCH_NAME == 'master' ? '@weekly' : '')
     }

@@ -80,9 +80,7 @@ pipeline {
     // particular cron scheduler then it will be required to add the when condition
     // accordingly.
     // cron 'H H(3-4) * * 1-5'
-    // obsGitHubComments is the default list of supported GitHub comments for the Observability
-    // projects, though it's also supported with some of the use cases
-    issueCommentTrigger("(${obsGitHubComments()}|/run benchmark tests)")
+    issueCommentTrigger('(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
   }
   parameters {
     // Let's use input parameters with capital cases.
