@@ -29,7 +29,7 @@ func TestNormaliseBuild(t *testing.T) {
 
 	keys := []string{"_links", "_class", "actions", "branch", "changeSet", "pullRequest", "replayable"}
 
-	normaliseBuild(buildInfo)
+	normaliseBuild("https://jenkins.com", buildInfo)
 
 	assert.True(t, buildInfo.Exists("durationInMillis"), "key should be present after normalisation")
 	assert.True(t, buildInfo.Exists("result"), "key should be present after normalisation")
@@ -46,13 +46,26 @@ func TestNormaliseBuild_ShouldHaveOneCause(t *testing.T) {
 	causes := buildInfo.Path("causes")
 	shortDescription := causes.Index(0).Path("shortDescription").Data().(string)
 
-	normaliseBuild(buildInfo)
+	normaliseBuild("https://jenkins.com", buildInfo)
 
 	causes = buildInfo.Path("causes")
 	// was converted from an array to an object
 	assert.Equal(t, shortDescription, causes.Path("shortDescription").Data())
 	// sample file is nil
 	assert.Nil(t, buildInfo.Path("artifactsZipFile").Data())
+}
+
+func TestNormaliseBuil_ShouldHaveArtifactsPrefixedByJenkinsURL(t *testing.T) {
+	buildReport := getJSONFile(t, filepath.Join("corrupted", "build-info.json"))
+
+	prefix := "https://foo.com"
+	expectedArtifactsZipFile := prefix + buildReport.Path("artifactsZipFile").Data().(string)
+
+	normaliseBuild(prefix, buildReport)
+
+	artifactsZipFile := buildReport.Path("artifactsZipFile").Data().(string)
+
+	assert.Equal(t, artifactsZipFile, expectedArtifactsZipFile)
 }
 
 func TestNormaliseBuildReport(t *testing.T) {

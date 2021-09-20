@@ -13,7 +13,7 @@ func normaliseArtifacts(json *gabs.Container) {
 	}
 }
 
-func normaliseBuild(json *gabs.Container) {
+func normaliseBuild(prefix string, json *gabs.Container) {
 	json.Set(buildResult, "result")
 	json.Set(durationInMillis, "durationInMillis")
 	json.Set("FINISHED", "state")
@@ -39,7 +39,7 @@ func normaliseBuild(json *gabs.Container) {
 		// Transform relative path to absolute URL
 		artifactsZipFile := json.Path("artifactsZipFile")
 		if artifactsZipFile.Data() != nil {
-			json.Set(jenkinsURL+artifactsZipFile.Data().(string), "artifactsZipFile")
+			json.Set(prefix+artifactsZipFile.Data().(string), "artifactsZipFile")
 		}
 	}
 }

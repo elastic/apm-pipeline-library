@@ -273,7 +273,7 @@ func fetchAndPrepareBuildInfo(url string) (*gabs.Container, error) {
 		return nil, err
 	}
 
-	normaliseBuild(json)
+	normaliseBuild(jenkinsURL, json)
 
 	return json, nil
 }
