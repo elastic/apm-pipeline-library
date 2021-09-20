@@ -128,6 +128,22 @@ pipeline {
         }
       }
     }
+    stage('Jenkins Shipper Tests') {
+      steps {
+        withGithubNotify(context: 'Test', description: 'Jenkins Shipper Tests', tab: 'tests') {
+          dir("${BASE_DIR}/clis/jenkins-shipper"){
+            withGoEnv(){
+              sh 'make test'
+            }
+          }
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/clis/jenkins-shipper/build/test-results/TEST-*.xml")
+        }
+      }
+    }
     stage('Google Storage') {
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
