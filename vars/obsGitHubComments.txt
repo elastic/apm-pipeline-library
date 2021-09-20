@@ -1,0 +1,12 @@
+The list of GitHub comments supported to be used in conjunction with the
+`triggers { issueCommentTrigger ... }` in order to trigger builds based on
+the given GitHub comments.
+
+```
+pipeline {
+  ...
+  triggers {
+    issueCommentTrigger("(${obsGitHubComments()}|/run benchmark tests)")
+  }
+}
+```
