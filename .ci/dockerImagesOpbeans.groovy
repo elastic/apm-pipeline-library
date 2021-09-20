@@ -39,7 +39,7 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)')
+    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
