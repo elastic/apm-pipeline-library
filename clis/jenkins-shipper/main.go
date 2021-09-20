@@ -98,7 +98,6 @@ func main() {
 	transformations := []func() error{
 		prepareStepsInfo,
 		prepareTestErrors,
-		prepareTestErrors,
 		preparePipelineLog,
 		prepareBuildReport,
 	}
