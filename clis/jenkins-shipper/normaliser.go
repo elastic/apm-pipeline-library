@@ -74,8 +74,8 @@ func normaliseChangeset(json *gabs.Container) {
 	}
 }
 
-func normaliseSteps(json *gabs.Container) {
-	linksSelfHref := fmt.Sprintf("%s%slog", baseURL, json.Path("_links.self.href").Data().(string))
+func normaliseSteps(prefix string, json *gabs.Container) {
+	linksSelfHref := fmt.Sprintf("%s%slog", prefix, json.Path("_links.self.href").Data().(string))
 
 	json.Set(linksSelfHref, "url")
 

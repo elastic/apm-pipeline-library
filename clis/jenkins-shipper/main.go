@@ -225,7 +225,7 @@ func fetchAndDefaultStepsInfo(url string) (*gabs.Container, error) {
 				}
 			}
 
-			normaliseSteps(step)
+			normaliseSteps(baseURL, step)
 
 			err = stepsErrors.ArrayAppend(step)
 			if err != nil {

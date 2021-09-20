@@ -135,6 +135,27 @@ func TestNormaliseChangeSet(t *testing.T) {
 	}
 }
 
+func TestNormaliseSteps_RemoveKeys(t *testing.T) {
+	job := getJSONFile(t, "build-report.json").Path("job")
+
+	normaliseSteps("http://example.com", job)
+
+	keys := []string{"_links", "_class", "actions"}
+	for _, key := range keys {
+		assert.False(t, job.Exists(key), "key should not be present after normalisation")
+	}
+}
+
+func TestNormaliseSteps_UpdatesUrlFromLinks(t *testing.T) {
+	job := getJSONFile(t, "build-report.json").Path("job")
+
+	normaliseSteps("http://example.com", job)
+
+	assert.True(t, job.Exists("url"), "key should be present after normalisation")
+	// _links.self.href
+	assert.Equal(t, "http://example.com/blue/rest/organizations/jenkins/pipelines/apm-shared/pipelines/apm-apm-pipeline-library-mbp/pipelines/develop/log", job.Path("url").Data().(string))
+}
+
 func getJSONFile(t *testing.T, p string) *gabs.Container {
 	pFilePath := append(resourcesPath, p)
 
