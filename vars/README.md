@@ -393,6 +393,8 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+* role_id: vault role ID (Optional).
+* secret_id: vault secret ID (Optional).
 
 ## dockerLogs
 Archive all the docker containers in the current context.
@@ -730,6 +732,8 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
