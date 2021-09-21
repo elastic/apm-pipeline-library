@@ -1,14 +1,10 @@
 <%if (githubComments?.size() > 0) {%>
-<details>
-<summary>Re-run your PR in the CI</summary>
+## :robot: GitHub comments
 
-<br />
+To re-run your PR in the CI, just comment with:
 
-You can trigger a new Build by commenting on this pull request:
 <% githubComments?.each { githubComment -> %>
 - `${githubComment}`
 <%}%>
-
-</details>
 
 <%}%>
