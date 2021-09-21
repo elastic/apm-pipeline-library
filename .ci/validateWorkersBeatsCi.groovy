@@ -63,6 +63,7 @@ pipeline {
             name 'PLATFORM'
             values (
               'arm',  // ephemeral workers
+              'immutable && windows-2019 && docker',
               'immutable && windows-2019',
               'immutable && windows-2016',
               'immutable && windows-2012-r2',
