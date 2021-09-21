@@ -361,7 +361,7 @@ def generateBuildReport(Map args = [:]) {
         "stepsErrors": stepsErrors,
         "testsErrors": testsErrors,
         "testsSummary": testsSummary,
-        "githubComment": issueCommentTrigger()
+        "githubComments": issueCommentTriggers()
       ])
       if (archiveFile) {
         writeFile(file: 'build.md', text: output)
@@ -423,15 +423,16 @@ def queryFilter(jobName) {
  * This method searches for the IssueCommentTrigger in the project itself
  * and if so, then look for the GitHub comment trigger which it's supported.
  */
-def issueCommentTrigger() {
+def issueCommentTriggers() {
   def issueCommentTrigger = findIssueCommentTrigger()
 
   if (issueCommentTrigger == null) {
     log(level: 'WARN', text: "No IssueCommentTrigger has been triggered")
-    return ''
+    return []
   }
 
-  //
+  def comments = []
+
   // NOTE:
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
@@ -441,9 +442,17 @@ def issueCommentTrigger() {
   // PR comment includes the section for the support trigger comments
   //
   if (issueCommentTrigger.getCommentPattern().contains('^/test')) {
-    return '/test'
+    comments << '/test'
   }
-  return ''
+
+  // NOTE:
+  // Support obltGitHubComments
+  if (issueCommentTrigger.getCommentPattern().contains('obltGitHubComments')) {
+    comments << '/test'
+    comments << 'jenkins run the tests'
+  }
+
+  return comments
 }
 
 @NonCPS
