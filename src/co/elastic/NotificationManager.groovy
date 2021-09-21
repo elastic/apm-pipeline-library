@@ -455,7 +455,6 @@ def issueCommentTriggers() {
 
   def comments = []
 
-  // NOTE:
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
   // what GitHub comment triggers are allowed to be notified in the
@@ -467,10 +466,8 @@ def issueCommentTriggers() {
     comments << '/test'
   }
 
-  // NOTE:
-  // Support obltGitHubComments
-  if (issueCommentTrigger.getCommentPattern().contains('obltGitHubComments')) {
-    comments << '/test'
+  // Support obltGitHubComments interpolation
+  if (issueCommentTrigger.getCommentPattern().contains('^(?:jenkins')) {
     comments << 'jenkins run the tests'
   }
 
