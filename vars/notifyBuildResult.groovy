@@ -204,7 +204,7 @@ def analyzeFlaky(def args=[:]) {
 
 def notifyGitHubCommentsInPR(def args=[:]) {
   if(args.when) {
-    log(level: 'DEBUG', text: "notifyGitHubCommentsInPR: Add GitHub comment.")
+    log(level: 'DEBUG', text: "notifyGitHubCommentsInPR: Add GitHub comment with the commands.")
     catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       def prComment = (new NotificationManager()).notifyGitHubCommentsInPR(args.data)
       args.notifications << prComment
