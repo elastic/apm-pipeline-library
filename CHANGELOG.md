@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.241 (20/09/2021)
+
+#### 🚀 Enhancements
+
+-  Support role and secret vault in dockerLogin [#1282](https://github.com/elastic/apm-pipeline-library/pull/1282)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: remove APM Server Docker images build [#1276](https://github.com/elastic/apm-pipeline-library/pull/1276)
+
 ## v1.1.240 (14/09/2021)
 
 #### 🙈 No user affected

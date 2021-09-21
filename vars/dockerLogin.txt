@@ -11,3 +11,5 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+* role_id: vault role ID (Optional).
+* secret_id: vault secret ID (Optional).
