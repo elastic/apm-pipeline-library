@@ -50,15 +50,6 @@
 | Total        | ${(testsSummary?.total) ?: 0}   |
 <%}%>
 
-#### Trends :test_tube:
-
-<% if(env?.JOB_URL != null && !env?.JOB_URL.equals('null')) {%>
-![Image of Build Times](${env?.JOB_URL}buildTimeGraph/png)
-<%}%>
-<% if(env?.BUILD_URL != null && !env?.BUILD_URL.equals('null') && testsSummary?.total != 0) {%>
-![Image of Tests](${env?.BUILD_URL}testReport/history/countGraph/png?start=0&amp;end=25)
-<%}%>
-
 </p>
 </details>
 
@@ -110,20 +101,4 @@ ${description}
   <%}%>
   </p>
   </details>
-<%}%>
-
-<% if (!statusSuccess) {%>
-<!-- LOG OUTPUT-->
-### Log output
-
-<details><summary>Expand to view the last 100 lines of log output</summary>
-<p>
-
-```
-${log}
-```
-
-</p>
-</details>
-
 <%}%>

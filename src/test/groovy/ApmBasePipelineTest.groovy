@@ -403,7 +403,6 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
           build: {},
           buildStatus: currentBuild.currentResult,
           changeSet: [],
-          log: '',
           stepsErrors: [],
           testsErrors: [],
           testsSummary: []
