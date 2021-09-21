@@ -256,9 +256,12 @@ def notifyPR(Map args = [:]) {
 
 
 /**
-This method sends a GitHub comment with the GitHub comments that are enabled in the pipeline.
+ * This method sends a GitHub comment with the GitHub comments that are enabled in the pipeline.
+ * @param disableGHComment whether to disable the GH comment notification.
 */
 def notifyGitHubCommentsInPR(Map args = [:]) {
+    def disableGHComment = args.get('disableGHComment', false)
+
     // Decorate comment
     def body = buildTemplate([
       "template": 'comment-github-comment-markdown.template',
