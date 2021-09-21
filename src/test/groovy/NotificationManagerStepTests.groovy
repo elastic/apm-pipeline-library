@@ -30,7 +30,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('src/co/elastic/NotificationManager.groovy')
-    f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "test"
     def runBuilding = new RunMock(building: true)
     def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'SUCCESS')
@@ -46,7 +45,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json"),
       changeSet: readJSON(file: "changeSet-info.json"),
       statsUrl: "https://ecs.example.com/app/kibana",
-      log: f.getText(),
       testsErrors: readJSON(file: "tests-errors.json"),
       stepsErrors: readJSON(file: "steps-errors.json")
     )
@@ -78,7 +76,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json"),
       changeSet: readJSON(file: "changeSet-info.json"),
       statsUrl: "https://ecs.example.com/app/kibana",
-      log: f.getText(),
       testsErrors: readJSON(file: "tests-errors.json"),
       stepsErrors: readJSON(file: "steps-errors.json")
     )
@@ -97,7 +94,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsSummary: readJSON(file: "tests-summary.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
         statsUrl: "https://ecs.example.com/app/kibana",
-        log: f.getText(),
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
@@ -114,7 +110,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsSummary: readJSON(file: "tests-summary.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
         statsUrl: "https://ecs.example.com/app/kibana",
-        log: f.getText(),
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
@@ -131,7 +126,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
         testsSummary: readJSON(file: "tests-summary.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
         statsUrl: "https://ecs.example.com/app/kibana",
-        log: f.getText(),
         testsErrors: readJSON(file: "tests-errors.json"),
         stepsErrors: readJSON(file: "steps-errors.json")
       )
@@ -145,7 +139,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       buildStatus: "SUCCESS",
       changeSet: readJSON(file: "changeSet-info.json"),
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -166,7 +159,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       script.notifyPR(
         build: readJSON(file: "build-info.json"),
         changeSet: readJSON(file: "changeSet-info.json"),
-        log: f.getText(),
         statsUrl: "https://ecs.example.com/app/kibana",
         stepsErrors: readJSON(file: "steps-errors.json"),
         testsErrors: readJSON(file: "tests-errors.json"),
@@ -182,7 +174,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       script.notifyPR(
         buildStatus: "FAILURE",
         changeSet: readJSON(file: "changeSet-info.json"),
-        log: f.getText(),
         statsUrl: "https://ecs.example.com/app/kibana",
         stepsErrors: readJSON(file: "steps-errors.json"),
         testsErrors: readJSON(file: "tests-errors.json"),
@@ -196,7 +187,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "ABORTED",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -214,7 +204,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info_aborted.json"),
       buildStatus: "ABORTED",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -233,7 +222,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -252,7 +240,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       buildStatus: "UNSTABLE",
       changeSet: readJSON(file: "changeSet-info.json"),
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -272,7 +259,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -289,7 +275,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-multiline.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -306,7 +291,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-multiple.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -324,7 +308,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNSTABLE",
       changeSet: [],
-      log: f.getText(),
       stepsErrors: [],
       testsErrors: readJSON(file: "tests-errors-with-long-stacktrace.json"),
       testsSummary: readJSON(file: 'tests-summary.json')
@@ -343,7 +326,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "UNKNOWN",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -360,7 +342,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "foo",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -379,7 +360,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       changeSet: readJSON(file: "changeSet-info.json"),
       disableGHComment: true,
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors.json"),
       testsErrors: readJSON(file: "tests-errors.json"),
@@ -398,7 +378,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       buildStatus: "SUCCESS",
       changeSet: readJSON(file: "corrupted/changeSet-info.json"),
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "corrupted/steps-errors.json"),
       testsErrors: readJSON(file: "corrupted/tests-errors.json"),
@@ -419,7 +398,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
       testsErrors: [],
@@ -437,7 +415,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-deleteDir-issue.json"),
       testsErrors: [],
@@ -465,7 +442,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
                     build: readJSON(file: "build-info.json"),
                     buildStatus: "FAILURE",
                     changeSet: readJSON(file: "changeSet-info.json"),
-                    log: f.getText(),
                     statsUrl: "https://ecs.example.com/app/kibana",
                     stepsErrors: readJSON(file: "steps-errors-with-github-environmental-issue.json"),
                     testsErrors: [],
@@ -481,7 +457,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       build: readJSON(file: "build-info.json"),
       buildStatus: "FAILURE",
       changeSet: readJSON(file: "changeSet-info.json"),
-      log: f.getText(),
       statsUrl: "https://ecs.example.com/app/kibana",
       stepsErrors: readJSON(file: "steps-errors-with-also-github-environmental-issue.json"),
       testsErrors: [],
@@ -953,7 +928,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       buildStatus: 'SUCCESS',
       changeSet: readJSON(file: 'changeSet-info.json'),
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: 'https://ecs.example.com/app/kibana',
       stepsErrors: readJSON(file: 'steps-errors.json'),
       testsErrors: readJSON(file: 'tests-errors.json'),
@@ -963,7 +937,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'github-comment-markdown.template'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', 'Image of Build Times'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
@@ -976,7 +949,6 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       buildStatus: 'SUCCESS',
       changeSet: readJSON(file: 'changeSet-info.json'),
       docsUrl: 'foo',
-      log: f.getText(),
       statsUrl: 'https://ecs.example.com/app/kibana',
       stepsErrors: readJSON(file: 'steps-errors.json'),
       testsErrors: readJSON(file: 'tests-errors.json'),
