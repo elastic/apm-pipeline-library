@@ -112,22 +112,6 @@ ${description}
   </details>
 <%}%>
 
-<% if (!statusSuccess) {%>
-<!-- LOG OUTPUT-->
-### Log output
-
-<details><summary>Expand to view the last 100 lines of log output</summary>
-<p>
-
-```
-${log}
-```
-
-</p>
-</details>
-
-<%}%>
-
 <!-- GITHUB COMMENTS -->
 <%if (githubComments?.size() > 0) {%>
 To re-run your PR in the CI, just comment with:
