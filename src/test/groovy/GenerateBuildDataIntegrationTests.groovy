@@ -34,12 +34,17 @@ import static org.junit.Assert.assertTrue
 
   For such:
   - cd local ** make start
-  - Build the jobs http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ in
-  - download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
-  - java -jar wiremock-standalone-*.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
-  - Then click on the BlueOcean URLs for the builds of each of the jobs in the above folder.
-  - Replace the 18080 port with 8080, then the wiremock proxy will record the calls.
-  - Once you are done you need to copy the folders mappings and __files to src/test/resources
+  - wait for Jenkins to start
+  - cd local ** make start-local-worker 
+  - cd local ** make wiremock-build-jobs
+    1. will build the jobs in http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ folder
+  - wait for Jenkins builds to finish
+  - cd local ** make wiremock-start
+    1. will download https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar
+    2. will run java -jar wiremock-standalone-*.jar --proxy-all="http://localhost:18080" --record-mappings --verbose
+  - cd local ** make wiremock-bo
+    1. will hit on the BlueOcean URLs for the builds of each of the jobs in the above folder, replacing the 18080 port with 8080, therefore the wiremock proxy will record the calls.
+    2. will copy the folders mappings and __files to src/test/resources
 */
 class GenerateBuildDataIntegrationTests {
 
@@ -268,6 +273,8 @@ class GenerateBuildDataIntegrationTests {
     env.put('BUILD_NUMBER', '1')
     env.put('BUILD_TAG', 'jenkins-project-main-1')
     env.put('BUILD_URL', traditionalUrl + "/${jobName}/1")
+    env.put('BO_JOB_URL', BO_URL + "/${jobName}")
+    env.put('BO_BUILD_URL', BO_URL + "/${jobName}/1")
     env.put('CHANGE_AUTHOR', 'v1v')
     env.put('CHANGE_BRANCH', 'main')
     env.put('CHANGE_FORK', 'v1v/project')

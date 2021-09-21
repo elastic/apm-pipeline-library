@@ -317,7 +317,7 @@ function normaliseTestsWithoutStacktrace() {
 function normaliseCoberturaSummary() {
     file=$1
     # shellcheck disable=SC2016
-    jqEdit '.results.elements | reduce to_entries[] as $o ({}; .[$o.value.name] += { ration: $o.value.ratio, numerator: $o.value.numerator, denominator: $o.value.denominator})' "${file}"
+    jqEdit '.results.elements | reduce to_entries[] as $o ({}; .[$o.value.name] += { ratio: $o.value.ratio, numerator: $o.value.numerator, denominator: $o.value.denominator})' "${file}"
 }
 
 function normaliseTestsSummary() {

@@ -36,5 +36,8 @@ local.log
 test-infra/apm-ci/__pycache__/
 latest-versions.json
 
+## Wiremock
+wiremock-standalone.jar
+
 ## For the bump automation
 *.bck
