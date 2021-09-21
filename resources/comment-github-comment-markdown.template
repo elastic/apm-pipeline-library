@@ -1,6 +1,14 @@
 <%if (githubComments?.size() > 0) {%>
-To re-run your PR in the CI, just comment with:
+<details>
+<summary>Re-run your PR in the CI</summary>
+
+<br />
+
+You can trigger a new Build by commenting on this pull request:
 <% githubComments?.each { githubComment -> %>
-`${githubComment}`
+- `${githubComment}`
 <%}%>
+
+</details>
+
 <%}%>
