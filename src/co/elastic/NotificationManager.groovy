@@ -470,6 +470,13 @@ def getSupportedGithubCommands() {
     comments << 'jenkins run the tests'
   }
 
+  // Support for APM server
+  if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package|arm')) {
+    comments << 'run the arm tests'
+    comments << '/hey-ap'
+    comments << '/package'
+  }
+
   return comments
 }
 
