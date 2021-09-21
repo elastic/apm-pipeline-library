@@ -427,9 +427,10 @@ def issueCommentTrigger() {
   def issueCommentTrigger = findIssueCommentTrigger()
 
   if (issueCommentTrigger == null) {
-    log(level: 'WARN', text: "No comment bad happened when creating")
+    log(level: 'WARN', text: "No IssueCommentTrigger has been triggered")
     return ''
   }
+
   //
   // NOTE:
   // In order to avoid re-triggering a build when commenting the
