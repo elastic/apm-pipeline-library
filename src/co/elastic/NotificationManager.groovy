@@ -255,6 +255,28 @@ def notifyPR(Map args = [:]) {
 }
 
 /**
+ * This method sends a GitHub comment with the GitHub commands that are enabled in the pipeline.
+ * @param disableGHComment whether to disable the GH comment notification.
+*/
+def notifyGitHubCommandsInPR(Map args = [:]) {
+    def disableGHComment = args.get('disableGHComment', false)
+
+    // Decorate comment
+    def body = buildTemplate([
+      "template": 'commands-github-comment-markdown.template',
+      "githubCommands": getSupportedGithubCommands()
+    ])
+    writeFile(file: 'comment.md', text: body)
+    catchError(buildResult: 'SUCCESS', message: 'notifyGitHubCommandsInPR: Error commenting the PR') {
+      if (!disableGHComment) {
+        githubPrComment(commentFile: 'comment.id', message: body)
+      }
+    }
+    archiveArtifacts 'comment.md'
+    return body
+}
+
+/**
  * This method sends a slack message with data from Jenkins
  * @param build
  * @param buildStatus String with job result
@@ -360,8 +382,7 @@ def generateBuildReport(Map args = [:]) {
         "statusSuccess": statusSuccess,
         "stepsErrors": stepsErrors,
         "testsErrors": testsErrors,
-        "testsSummary": testsSummary,
-        "githubComments": issueCommentTriggers()
+        "testsSummary": testsSummary
       ])
       if (archiveFile) {
         writeFile(file: 'build.md', text: output)
@@ -421,9 +442,9 @@ def queryFilter(jobName) {
 
 /**
  * This method searches for the IssueCommentTrigger in the project itself
- * and if so, then look for the GitHub comment trigger which it's supported.
+ * and if so, then look for the GitHub comment triggers which are supported.
  */
-def issueCommentTriggers() {
+def getSupportedGithubCommands() {
   def issueCommentTrigger = findIssueCommentTrigger()
 
   if (issueCommentTrigger == null) {
@@ -433,7 +454,6 @@ def issueCommentTriggers() {
 
   def comments = []
 
-  // NOTE:
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
   // what GitHub comment triggers are allowed to be notified in the
@@ -445,10 +465,8 @@ def issueCommentTriggers() {
     comments << '/test'
   }
 
-  // NOTE:
-  // Support obltGitHubComments
-  if (issueCommentTrigger.getCommentPattern().contains('obltGitHubComments')) {
-    comments << '/test'
+  // Support obltGitHubComments interpolation
+  if (issueCommentTrigger.getCommentPattern().contains('^(?:jenkins')) {
     comments << 'jenkins run the tests'
   }
 
