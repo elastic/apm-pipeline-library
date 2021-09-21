@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import co.elastic.mock.RunMock
+import co.elastic.mock.RunWrapperMock
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
@@ -30,6 +32,9 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script = loadScript('src/co/elastic/NotificationManager.groovy')
     f = new File("src/test/resources/console-100-lines.log")
     env.TEST = "test"
+    def runBuilding = new RunMock(building: true)
+    def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'SUCCESS')
+    binding.setVariable('currentBuild', build)
   }
 
   @Test

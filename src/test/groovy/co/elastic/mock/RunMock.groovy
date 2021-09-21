@@ -40,4 +40,16 @@ public class RunMock implements Serializable {
   public void setDescription(description) {
     this.description = description
   }
+
+  public Parent getParent() {
+    return new Parent()
+  }
+
+  private class Parent implements Serializable {
+    public Parent() { }
+
+    public Map getTriggers() {
+      return [:]
+    }
+  }
 }
