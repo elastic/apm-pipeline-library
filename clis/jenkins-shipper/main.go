@@ -351,35 +351,35 @@ func fetchAndPrepareTestsInfo(url string) (*gabs.Container, error) {
 func fetchAndPrepareTestSummaryReport(url string, testJSON *gabs.Container) (*gabs.Container, error) {
 	json, err := fetchAndDefault(url, true)
 	if err != nil {
-		// BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
-		if testJSON != nil {
-			total := len(testJSON.Children())
-			passed := 0
-			failed := 0
-			skipped := 0
-			for _, test := range testJSON.Children() {
-				status := test.Path("status").Data().(string)
-				switch status {
-				case "FAILED":
-					failed++
-				case "PASSED":
-					passed++
-				case "SKIPPED":
-					skipped++
-				}
-			}
-
-			json = gabs.New()
-			json.Set(total, "total")
-			json.Set(passed, "passed")
-			json.Set(failed, "failed")
-			json.Set(skipped, "skipped")
-
-			// no need to normalise, as we are controlling the keys
-			return json, nil
+		if testJSON == nil {
+			return nil, err
 		}
 
-		return nil, err
+		// BlueOcean might return 500 in some scenarios. If so, let's parse the tests entrypoint
+		total := len(testJSON.Children())
+		passed := 0
+		failed := 0
+		skipped := 0
+		for _, test := range testJSON.Children() {
+			status := test.Path("status").Data().(string)
+			switch status {
+			case "FAILED":
+				failed++
+			case "PASSED":
+				passed++
+			case "SKIPPED":
+				skipped++
+			}
+		}
+
+		json = gabs.New()
+		json.Set(total, "total")
+		json.Set(passed, "passed")
+		json.Set(failed, "failed")
+		json.Set(skipped, "skipped")
+
+		// no need to normalise, as we are controlling the keys
+		return json, nil
 	}
 
 	normaliseTestsSummary(json)
