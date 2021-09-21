@@ -96,7 +96,7 @@ def call(Map args = [:]) {
         // Should analyze flakey but exclude it when aborted
         analyzeFlaky(data: data, notifications: notifications, when: (analyzeFlakey && currentBuild.currentResult != 'ABORTED'))
 
-        notifyGitHubCommentsInPR(data: data, notifications: notifications, when: notifyPRComment)
+        notifyGitHubCommandsInPR(data: data, notifications: notifications, when: notifyPRComment)
 
         notifySlack(data: data, when: notifySlackComment)
 
@@ -202,11 +202,11 @@ def analyzeFlaky(def args=[:]) {
   }
 }
 
-def notifyGitHubCommentsInPR(def args=[:]) {
+def notifyGitHubCommandsInPR(def args=[:]) {
   if(args.when) {
-    log(level: 'DEBUG', text: "notifyGitHubCommentsInPR: Add GitHub comment with the commands.")
+    log(level: 'DEBUG', text: "notifyGitHubCommandsInPR: Add GitHub comment with the commands.")
     catchError(message: "There were some failures when notifying results in the PR", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-      def prComment = (new NotificationManager()).notifyGitHubCommentsInPR(args.data)
+      def prComment = (new NotificationManager()).notifyGitHubCommandsInPR(args.data)
       args.notifications << prComment
     }
   }

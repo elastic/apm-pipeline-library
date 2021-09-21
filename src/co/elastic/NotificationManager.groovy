@@ -254,21 +254,20 @@ def notifyPR(Map args = [:]) {
     return body
 }
 
-
 /**
- * This method sends a GitHub comment with the GitHub comments that are enabled in the pipeline.
+ * This method sends a GitHub comment with the GitHub commands that are enabled in the pipeline.
  * @param disableGHComment whether to disable the GH comment notification.
 */
-def notifyGitHubCommentsInPR(Map args = [:]) {
+def notifyGitHubCommandsInPR(Map args = [:]) {
     def disableGHComment = args.get('disableGHComment', false)
 
     // Decorate comment
     def body = buildTemplate([
-      "template": 'comment-github-comment-markdown.template',
-      "githubComments": issueCommentTriggers()
+      "template": 'commands-github-comment-markdown.template',
+      "githubCommands": getSupportedGithubCommands()
     ])
     writeFile(file: 'comment.md', text: body)
-    catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
+    catchError(buildResult: 'SUCCESS', message: 'notifyGitHubCommandsInPR: Error commenting the PR') {
       if (!disableGHComment) {
         githubPrComment(commentFile: 'comment.id', message: body)
       }
@@ -443,9 +442,9 @@ def queryFilter(jobName) {
 
 /**
  * This method searches for the IssueCommentTrigger in the project itself
- * and if so, then look for the GitHub comment trigger which it's supported.
+ * and if so, then look for the GitHub comment triggers which are supported.
  */
-def issueCommentTriggers() {
+def getSupportedGithubCommands() {
   def issueCommentTrigger = findIssueCommentTrigger()
 
   if (issueCommentTrigger == null) {

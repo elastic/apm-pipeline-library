@@ -999,9 +999,9 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_notifyGitHubCommentsInPR_with_empty() throws Exception {
+  void test_notifyGitHubCommandsInPR_with_empty() throws Exception {
     helper.registerAllowedMethod('isPR', { return true })
-    script.notifyGitHubCommentsInPR()
+    script.notifyGitHubCommandsInPR()
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubPrComment', "GitHub comments"))
   }
