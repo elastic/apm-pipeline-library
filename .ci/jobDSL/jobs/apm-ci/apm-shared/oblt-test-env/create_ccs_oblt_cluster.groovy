@@ -22,7 +22,6 @@ pipelineJob("apm-shared/oblt-test-env/create-ccs-oblt-cluster") {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }
   disabled(false)
-  quietPeriod(10)
   logRotator {
     numToKeep(10)
     daysToKeep(7)
