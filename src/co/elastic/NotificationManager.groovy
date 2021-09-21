@@ -254,6 +254,26 @@ def notifyPR(Map args = [:]) {
     return body
 }
 
+
+/**
+This method sends a GitHub comment with the GitHub comments that are enabled in the pipeline.
+*/
+def notifyGitHubCommentsInPR(Map args = [:]) {
+    // Decorate comment
+    def body = buildTemplate([
+      "template": 'comment-github-comment-markdown.template',
+      "githubComments": issueCommentTriggers()
+    ])
+    writeFile(file: 'comment.md', text: body)
+    catchError(buildResult: 'SUCCESS', message: 'notifyPR: Error commenting the PR') {
+      if (!disableGHComment) {
+        githubPrComment(commentFile: 'comment.id', message: body)
+      }
+    }
+    archiveArtifacts 'comment.md'
+    return body
+}
+
 /**
  * This method sends a slack message with data from Jenkins
  * @param build
@@ -360,8 +380,7 @@ def generateBuildReport(Map args = [:]) {
         "statusSuccess": statusSuccess,
         "stepsErrors": stepsErrors,
         "testsErrors": testsErrors,
-        "testsSummary": testsSummary,
-        "githubComments": issueCommentTriggers()
+        "testsSummary": testsSummary
       ])
       if (archiveFile) {
         writeFile(file: 'build.md', text: output)

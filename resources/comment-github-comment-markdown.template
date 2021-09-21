@@ -1,0 +1,6 @@
+<%if (githubComments?.size() > 0) {%>
+To re-run your PR in the CI, just comment with:
+<% githubComments?.each { githubComment -> %>
+`${githubComment}`
+<%}%>
+<%}%>
