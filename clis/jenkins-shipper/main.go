@@ -374,6 +374,9 @@ func fetchAndPrepareTestSummaryReport(url string, testJSON *gabs.Container) (*ga
 			json.Set(passed, "passed")
 			json.Set(failed, "failed")
 			json.Set(skipped, "skipped")
+
+			// no need to normalise, as we are controlling the keys
+			return json, nil
 		}
 
 		return nil, err
