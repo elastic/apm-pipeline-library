@@ -473,7 +473,7 @@ def getSupportedGithubCommands() {
   // Support for APM server
   if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package|arm')) {
     comments << 'run the arm tests'
-    comments << '/hey-ap'
+    comments << '/hey-apm'
     comments << '/package'
   }
 
