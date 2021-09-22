@@ -462,7 +462,7 @@ def getSupportedGithubCommands() {
   // PR comment includes the section for the support trigger comments
   //
   if (issueCommentTrigger.getCommentPattern().contains('^/test')) {
-    comments['/test'] = 'Retrigger the build.'
+    comments['/test'] = 'Re-trigger the build.'
   }
 
   // Support for APM server
