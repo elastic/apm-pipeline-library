@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.242 (21/09/2021)
+
+#### 🚀 Enhancements
+
+-  Add GitHub comment bot commands at the end [#1290](https://github.com/elastic/apm-pipeline-library/pull/1290)
+-  Remove log output console and trend in the PR comment with the Build Status  [#1289](https://github.com/elastic/apm-pipeline-library/pull/1289)
+- [**backport-skip**] GitHub comment bot commands [#1278](https://github.com/elastic/apm-pipeline-library/pull/1278)
+
+#### 🙈 No user affected
+
+-  Use obltGitHubComments [#1288](https://github.com/elastic/apm-pipeline-library/pull/1288)
+-  [test-infra][beats-ci] validate windows-2019 with docker [#1280](https://github.com/elastic/apm-pipeline-library/pull/1280)
+
+#### ⚙️ CI
+
+- [**backport-skip**] standardise the issueCommentTrigger with obltGitHubComments [#1281](https://github.com/elastic/apm-pipeline-library/pull/1281)
+
 ## v1.1.241 (20/09/2021)
 
 #### 🚀 Enhancements

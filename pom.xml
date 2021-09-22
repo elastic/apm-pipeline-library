@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.242-SNAPSHOT</version>
+  <version>1.1.243-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -44,13 +44,13 @@
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8</artifactId>
-      <version>2.30.1</version>
+      <version>2.31.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.lesfurets</groupId>
       <artifactId>jenkins-pipeline-unit</artifactId>
-      <version>1.9</version>
+      <version>1.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -82,6 +82,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>pipeline-github</artifactId>
+      <version>2.7</version>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-support</artifactId>
       <scope>test</scope>
@@ -96,7 +101,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>opentelemetry</artifactId>
-      <version>0.19</version>
+      <version>0.20</version>
     </dependency>
     <!-- END Support for the withOtelEnv step -->
   </dependencies>
@@ -172,7 +177,7 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.12.1</version>
+        <version>1.13.0</version>
         <executions>
           <execution>
             <goals>

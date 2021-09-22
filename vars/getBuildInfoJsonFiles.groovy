@@ -55,7 +55,6 @@ def call(Map args = [:]) {
       timeout(5) {
         buildData = readJSON(file: 'build-info.json')
         changeSet = readJSON(file: 'changeSet-info.json')
-        logData = readFile(file: 'pipeline-log-summary.txt')
         stepsErrors = readJSON(file: 'steps-errors.json')
         testsErrors = readJSON(file: 'tests-errors.json')
         testsSummary = readJSON(file: 'tests-summary.json')
@@ -68,7 +67,6 @@ def call(Map args = [:]) {
       build: buildData,
       buildStatus: currentBuild.currentResult,
       changeSet: changeSet,
-      log: logData,
       stepsErrors: stepsErrors,
       testsErrors: testsErrors,
       testsSummary: testsSummary

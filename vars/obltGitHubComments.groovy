@@ -15,41 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic.mock
+import java.util.Date
 
 /**
- * Mock Run class.
- */
-public class RunMock implements Serializable {
-
-  def building = false
-  def description
-
-  public RunMock(Map params = [:]) {
-    this.building = params.building
-  }
-
-  public boolean isBuilding() {
-    return building
-  }
-
-  public void doStop() {
-    println 'Stopping...'
-  }
-
-  public void setDescription(description) {
-    this.description = description
-  }
-
-  public Parent getParent() {
-    return new Parent()
-  }
-
-  private class Parent implements Serializable {
-    public Parent() { }
-
-    public Map getTriggers() {
-      return [:]
-    }
-  }
+  The list of GitHub comments supported to be used in conjunction with the
+  triggers { issueCommentTrigger ... }
+*/
+def call() {
+  return '(?i)(^(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*|^/test(?:\\W+.*)?$)'
 }
