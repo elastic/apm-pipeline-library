@@ -449,10 +449,10 @@ def getSupportedGithubCommands() {
 
   if (issueCommentTrigger == null) {
     log(level: 'WARN', text: "No IssueCommentTrigger has been triggered")
-    return []
+    return [:]
   }
 
-  def comments = []
+  def comments = [:]
 
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
@@ -462,19 +462,36 @@ def getSupportedGithubCommands() {
   // PR comment includes the section for the support trigger comments
   //
   if (issueCommentTrigger.getCommentPattern().contains('^/test')) {
-    comments << '/test'
-  }
-
-  // Support obltGitHubComments interpolation
-  if (issueCommentTrigger.getCommentPattern().contains('^(?:jenkins')) {
-    comments << 'jenkins run the tests'
+    comments['/test'] = 'Re-trigger the build.'
   }
 
   // Support for APM server
-  if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package|arm')) {
-    comments << 'run the arm tests'
-    comments << '/hey-apm'
-    comments << '/package'
+  if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package')) {
+    comments['/hey-apm'] = 'Run the hey-apm benchmark.'
+    comments['/package'] = 'Generate and publish the docker images.'
+  }
+
+  // Support for benchmark tests
+  if (issueCommentTrigger.getCommentPattern().contains('^run benchmark tests')) {
+    comments['run benchmark tests'] = 'Run the benchmark test.'
+  }
+
+  // Support for the nodejs APM agent
+  if (issueCommentTrigger.getCommentPattern().contains('^run (module|benchmark) tests')) {
+    comments['run module tests for <module>'] = 'Run TAV tests for one or more modules, where <modules> can be either a comma separated list of modules (e.g. memcached,redis) or the string literal ALL to test all modules'
+    comments['run benchmark tests'] = 'Run the benchmark test only.'
+  }
+
+  // Support for the java APM agent
+  if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration)')) {
+    comments['run benchmark tests'] = 'Run the benchmark test.'
+    comments['run compatibility tests'] = 'Run the JDK Compatibility test.'
+    comments['run integration tests'] = 'Run the APM-ITs.'
+  }
+
+  // Support for the APM pipeline library
+  if (issueCommentTrigger.getCommentPattern().contains('^run infra tests')) {
+    comments['run infra tests'] = 'Run the test-infra test.'
   }
 
   return comments

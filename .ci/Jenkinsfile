@@ -41,7 +41,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger("${obltGitHubComments()}")
+    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests)")
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
@@ -197,6 +197,7 @@ pipeline {
         anyOf {
           expression { return env.TEST_INFRA == "true" }
           branch 'master'
+          expression { return env.GITHUB_COMMENT?.contains('infra tests') }
         }
       }
       steps {
