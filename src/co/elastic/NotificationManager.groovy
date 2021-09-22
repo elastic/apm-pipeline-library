@@ -478,7 +478,7 @@ def getSupportedGithubCommands() {
 
   // Support for the nodejs APM agent
   if (issueCommentTrigger.getCommentPattern().contains('^run (module|benchmark) tests')) {
-    comments['run module tests for <module>'] = 'un TAV tests for one or more modules, where <modules> can be either a comma separated list of modules (e.g. memcached,redis) or the string literal ALL to test all modules'
+    comments['run module tests for <module>'] = 'Run TAV tests for one or more modules, where <modules> can be either a comma separated list of modules (e.g. memcached,redis) or the string literal ALL to test all modules'
     comments['run benchmark tests'] = 'Run the benchmark test only.'
   }
 
