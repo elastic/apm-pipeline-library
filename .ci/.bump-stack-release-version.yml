@@ -44,6 +44,7 @@ projects:
       - master
     enabled: true
     labels: dependency
+    reviewer: elastic/integrations-platforms
   - repo: apm-agent-rum-js
     script: .ci/bump-stack-release-version.sh
     branches:
