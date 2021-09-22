@@ -496,8 +496,8 @@ def getSupportedGithubCommands() {
 
   // Support for the Beats specific GitHub commands
   if (env.REPO?.equals('beats') || env.REPO_NAME?.equals('beats')) {
-    comments['/package'] = 'Generate the packages and run the E2E Tests.'
-    comments['/beats-tester'] = 'Validate the generated packages.'
+    comments['/package'] = 'Generate the packages and run the E2E tests.'
+    comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
   }
 
   return comments
