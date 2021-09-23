@@ -217,6 +217,25 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_aborted_not_allowed_to_run() throws Exception {
+    script.notifyPR(
+      build: readJSON(file: "build-info_aborted_allowed_to_run.json"),
+      buildStatus: "ABORTED",
+      changeSet: readJSON(file: "changeSet-info.json"),
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readJSON(file: "steps-errors-allowed-to-run.json"),
+      testsErrors: readJSON(file: "tests-errors.json"),
+      testsSummary: readJSON(file: "tests-summary.json")
+    )
+    printCallStack()
+    // Then the description contains the reason and therefore there is no need to report the Error for the githubPrCheckApproved
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', '> The PR is not allowed to run in the CI yet'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'githubPrCheckApproved'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_with_failure() throws Exception {
     script.notifyPR(
       build: readJSON(file: "build-info.json"),

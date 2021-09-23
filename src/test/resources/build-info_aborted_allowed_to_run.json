@@ -1,0 +1,23 @@
+{
+  "artifactsZipFile": "https://apm-ci.elastic.co//job/apm-agent-nodejs/job/ecs-logging-nodejs-mbp/job/PR-101/1/artifact/*zip*/archive.zip",
+  "causeOfBlockage": null,
+  "causes": {
+    "shortDescription": "Pull request #101 opened"
+  },
+  "description": "The PR is not allowed to run in the CI yet",
+  "durationInMillis": 189755,
+  "enQueueTime": "2021-09-22T09:29:02.777+0000",
+  "endTime": null,
+  "estimatedDurationInMillis": -1,
+  "id": "1",
+  "name": null,
+  "organization": "jenkins",
+  "pipeline": "PR-101",
+  "result": "ABORTED",
+  "runSummary": "?",
+  "startTime": "2021-09-22T09:29:02.785+0000",
+  "state": "FINISHED",
+  "type": "WorkflowRun",
+  "commitId": "f61cab1e9b150b9fe1216efb8431849fa6224099+ae3cd0763415e131cee39d13539addead2b13665 (91d9f874aa47b1d2b93e7bdc36afe02ff5627221)",
+  "commitUrl": null
+}
