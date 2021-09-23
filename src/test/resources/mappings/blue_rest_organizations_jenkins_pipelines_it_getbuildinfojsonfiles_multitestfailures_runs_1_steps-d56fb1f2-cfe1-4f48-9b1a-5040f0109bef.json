@@ -2,7 +2,7 @@
   "id" : "d56fb1f2-cfe1-4f48-9b1a-5040f0109bef",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_multitestfailures_runs_1_steps",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/steps/?limit=10000",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/steps/?limit=30000",
     "method" : "GET"
   },
   "response" : {

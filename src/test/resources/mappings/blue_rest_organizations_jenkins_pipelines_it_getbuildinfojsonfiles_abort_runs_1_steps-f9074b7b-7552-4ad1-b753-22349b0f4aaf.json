@@ -2,7 +2,7 @@
   "id" : "f9074b7b-7552-4ad1-b753-22349b0f4aaf",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_abort_runs_1_steps",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/steps/?limit=10000",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/steps/?limit=30000",
     "method" : "GET"
   },
   "response" : {
