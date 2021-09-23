@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.244 (23/09/2021)
+
+#### 🙈 No user affected
+
+-  Exclude errors related to the approval-list and githubPrCheckApproved in the GitHub comment [#1295](https://github.com/elastic/apm-pipeline-library/pull/1295)
+-  Remove test stats in the Flakyness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
+
 ## v1.1.243 (23/09/2021)
 
 #### 🚀 Enhancements
