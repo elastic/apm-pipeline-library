@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.245 (23/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Retrive 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
+
+#### 🙈 No user affected
+
+-  Fix nodejs GitHub command [#1298](https://github.com/elastic/apm-pipeline-library/pull/1298)
+
 ## v1.1.244 (23/09/2021)
 
 #### 🙈 No user affected
