@@ -494,6 +494,12 @@ def getSupportedGithubCommands() {
     comments['run infra tests'] = 'Run the test-infra test.'
   }
 
+  // Support for the Beats specific GitHub commands
+  if (env.REPO?.equals('beats') || env.REPO_NAME?.equals('beats')) {
+    comments['/package'] = 'Generate the packages and run the E2E tests.'
+    comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
+  }
+
   return comments
 }
 
