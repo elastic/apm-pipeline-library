@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.243 (23/09/2021)
+
+#### 🚀 Enhancements
+
+-  Add GitHub commands for the Beats project [#1294](https://github.com/elastic/apm-pipeline-library/pull/1294)
+-  GitHub commands for the apm-server [#1292](https://github.com/elastic/apm-pipeline-library/pull/1292)
+
+#### ⚙️ CI
+
+-  Add GitHub commands with the description [#1293](https://github.com/elastic/apm-pipeline-library/pull/1293)
+
 ## v1.1.242 (21/09/2021)
 
 #### 🚀 Enhancements
