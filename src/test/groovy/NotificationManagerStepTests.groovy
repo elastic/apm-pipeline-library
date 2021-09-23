@@ -228,9 +228,11 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json")
     )
     printCallStack()
-    // Then the description contains the reason and therefore there is no need to report the Error for the githubPrCheckApproved
+    // Then the description contains the reason, there is no need to report the Error for the githubPrCheckApproved
+    // and load resources for the approval-list should not be reported in the GitHub comment.
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', '> The PR is not allowed to run in the CI yet'))
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'approval-list/elastic'))
     assertFalse(assertMethodCallContainsPattern('githubPrComment', 'githubPrCheckApproved'))
     assertJobStatusSuccess()
   }
