@@ -2,7 +2,7 @@
   "id" : "fb5412aa-feea-4ccd-a33f-60d6bc76e741",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_success_runs_1_steps",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/success/runs/1/steps/?limit=10000",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/success/runs/1/steps/?limit=30000",
     "method" : "GET"
   },
   "response" : {

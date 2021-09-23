@@ -1,7 +1,7 @@
 {
   "id" : "1bee78fa-9ded-30e1-9568-de52fa294a2d",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/steps/?limit=10000",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/steps/?limit=30000",
     "method" : "GET"
   },
   "response" : {
