@@ -80,23 +80,6 @@ def installPackages(Map args = [:]) {
   }
 }
 
-def isBeforeGo1_16(Map args = [:]) {
-  def ref = "1.16"
-  def version = args.containsKey('version') ? args.version : goDefaultVersion()
-  version = version.startsWith('go') ? version.minus('go') : version
-  def vVer = version.tokenize(".")
-  def vRef = ref.tokenize(".")
-  def n = Math.min(vVer.size(), vRef.size())
-  for (int i = 0; i < n; i++) {
-    def q = vVer[i].toInteger()
-    def r = vRef[i].toInteger()
-    if (q != r) {
-      return q < r
-    }
-  }
-  return vVer.size() < vRef.size()
-}
-
 def goArch() {
   // Unsupported architectures:
   //    darwin for arm64 in case isArm() needs a tweak
