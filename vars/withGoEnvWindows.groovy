@@ -46,6 +46,8 @@ def call(Map args = [:], Closure body) {
   def goDir = ".gvm\\versions\\go${lastCoordinate != ".0" ? version : version[0..-3]}.${os}.${goArch}"
   def goRoot = "${userProfile}\\${goDir}"
   def path = "${env.WORKSPACE}\\bin;${goRoot}\\bin;${chocoPath};C:\\tools\\mingw${mingwArch}\\bin;${env.PATH}"
+  def method = isBeforeGo1_16(version: version) ? "get -u" : "install"
+  def atVersion = isBeforeGo1_16(version: version) ?: "@latest"
 
   withEnv([
     "HOME=${env.WORKSPACE}",
@@ -61,9 +63,26 @@ def call(Map args = [:], Closure body) {
     }
     pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        bat(label: "Installing ${p}", script: "go get -u ${p}")
+        bat(label: "Installing ${p}", script: "go ${method} ${p}${atVersion}")
       }
     }
     body()
   }
+}
+
+def isBeforeGo1_16(Map args = [:]) {
+  def ref = "1.16"
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
+  version = version.startsWith('go') ? version.minus('go') : version
+  def vVer = version.tokenize(".")
+  def vRef = ref.tokenize(".")
+  def n = Math.min(vVer.size(), vRef.size())
+  for (int i = 0; i < n; i++) {
+    def q = vVer[i].toInteger()
+    def r = vRef[i].toInteger()
+    if (q != r) {
+      return q < r
+    }
+  }
+  return vVer.size() < vRef.size()
 }
