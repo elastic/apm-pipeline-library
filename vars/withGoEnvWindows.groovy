@@ -47,7 +47,7 @@ def call(Map args = [:], Closure body) {
   def goRoot = "${userProfile}\\${goDir}"
   def path = "${env.WORKSPACE}\\bin;${goRoot}\\bin;${chocoPath};C:\\tools\\mingw${mingwArch}\\bin;${env.PATH}"
   def method = isBeforeGo1_16(version: version) ? "get -u" : "install"
-  def atVersion = isBeforeGo1_16(version: version) ?: "@latest"
+  def atVersion = isBeforeGo1_16(version: version) ? '' : "@latest"
 
   withEnv([
     "HOME=${env.WORKSPACE}",

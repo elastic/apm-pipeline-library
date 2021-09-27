@@ -70,7 +70,7 @@ def installPackages(Map args = [:]) {
   log(level: 'DEBUG', text: "installPackages: GOARCH=${arch}")
   def version = args.containsKey('version') ? args.version : goDefaultVersion()
   def method = isBeforeGo1_16(version: version) ? "get -u" : "install"
-  def atVersion = isBeforeGo1_16(version: version) ?: "@latest"
+  def atVersion = isBeforeGo1_16(version: version) ? '' : "@latest"
   withEnv(["GOARCH=${arch}"]){
     args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
