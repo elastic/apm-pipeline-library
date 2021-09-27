@@ -33,13 +33,13 @@ projects:
     branches:
       - master
     enabled: true
-    labels: dependency
+    labels: dependency,backport-skip
   - repo: fleet-server
     script: .ci/bump-go-release-version.sh
     branches:
       - master
     enabled: true
-    labels: dependency
+    labels: dependency,backport-skip
   - repo: golang-crossbuild
     script: .ci/bump-go-release-version.sh
     branches:
