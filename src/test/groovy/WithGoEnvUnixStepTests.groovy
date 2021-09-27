@@ -136,7 +136,7 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testPkgs() throws Exception {
+  void testPkgs_go_1_12() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "linux" })
     def isOK = false
     script.call(version: "1.12.2", pkgs: [ "P1", "P2" ]){
@@ -148,8 +148,26 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P1'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'Installing P2'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'go get -u P1'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'go get -u P2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testPkgs_go_1_16() throws Exception {
+    helper.registerAllowedMethod('nodeOS', [], { "linux" })
+    def isOK = false
+    script.call(version: "1.16.1", pkgs: [ "P1", "P2" ]){
+      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.16.1.linux.amd64/bin:/foo/bin"
+        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.16.1.linux.amd64"
+        && binding.getVariable("GOPATH") == "WS" ){
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('sh', 'go install P1@latest'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'go install P2@latest'))
     assertJobStatusSuccess()
   }
 
