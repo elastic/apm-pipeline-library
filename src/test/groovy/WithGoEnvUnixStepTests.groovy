@@ -118,22 +118,22 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
-@Test
-void testOSArg() throws Exception {
-  env.GO_VERSION = "1.12.2"
-  def isOK = false
-  script.call(os: 'custom-os'){
-    if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.custom-os.amd64/bin:/foo/bin"
-      && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.custom-os.amd64"
-      && binding.getVariable("GOPATH") == "WS" ){
-        isOK = true
-      }
+  @Test
+  void testOSArg() throws Exception {
+    env.GO_VERSION = "1.12.2"
+    def isOK = false
+    script.call(os: 'custom-os'){
+      if(binding.getVariable("PATH") == "WS/bin:WS/.gvm/versions/go1.12.2.custom-os.amd64/bin:/foo/bin"
+        && binding.getVariable("GOROOT") == "WS/.gvm/versions/go1.12.2.custom-os.amd64"
+        && binding.getVariable("GOPATH") == "WS" ){
+          isOK = true
+        }
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
+    assertJobStatusSuccess()
   }
-  printCallStack()
-  assertTrue(isOK)
-  assertTrue(assertMethodCallContainsPattern('sh', 'Installing go 1.12.2'))
-  assertJobStatusSuccess()
-}
 
   @Test
   void testPkgs() throws Exception {
