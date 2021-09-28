@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/create-ccs-oblt-cluster") {
-  displayName('Create CCS oblt cluster')
-  description('Job to create a CCS cluster pointing to an oblt cluster.')
+pipelineJob("apm-shared/oblt-test-env/manage-user-oblt-clusters") {
+  displayName('Manage User oblt clusters')
+  description('Job to create/update/destroy User oblt clusters using the configuration files changes at environments/users.')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }
@@ -43,7 +43,7 @@ pipelineJob("apm-shared/oblt-test-env/create-ccs-oblt-cluster") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/ccs-cluster-create.groovy")
+      scriptPath(".ci/manage-user-oblt-clusters.groovy")
     }
   }
 }
