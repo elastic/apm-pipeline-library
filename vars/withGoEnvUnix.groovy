@@ -52,7 +52,7 @@ def call(Map args = [:], Closure body) {
     "GOARCH=${arch}"
   ]){
     installGo(version: version)
-    installPackages(pkgs: pkgs)
+    installPackages(version: version, pkgs: pkgs)
     debugGoEnv()
     body()
   }
@@ -68,10 +68,13 @@ def installPackages(Map args = [:]) {
   // GOARCH is required to be able to install the given packages for the specific arch
   def arch = (env.GOARCH?.trim()) ?: goArch()
   log(level: 'DEBUG', text: "installPackages: GOARCH=${arch}")
+  def version = args.containsKey('version') ? args.version : goDefaultVersion()
+  def method = isBeforeGo1_16(version: version) ? "get -u" : "install"
+  def atVersion = isBeforeGo1_16(version: version) ? '' : "@latest"
   withEnv(["GOARCH=${arch}"]){
     args.pkgs?.each{ p ->
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        sh(label: "Installing ${p}", script: "go get -u ${p}")
+        sh(label: "Installing ${p}", script: "go ${method} ${p}${atVersion}")
       }
     }
   }

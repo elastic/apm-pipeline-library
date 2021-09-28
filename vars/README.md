@@ -1529,6 +1529,17 @@ Whether the architecture is an arm based using the `nodeArch` step
     }
 ```
 
+## isBeforeGo1_16
+if the given Golang version is pre 1.16.
+
+```
+  whenTrue(isBeforeGo1_16(version: '1.17')) {
+    ...
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
+
 ## isBranch
 Whether the build is based on a Branch or no
 
