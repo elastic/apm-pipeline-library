@@ -17,7 +17,7 @@
 
 pipelineJob("apm-shared/oblt-test-env/manage-user-oblt-clusters") {
   displayName('Manage User oblt clusters')
-  description('Job to create/update/destroy User oblt clusters using the fonfiguration files changes at environments/users.')
+  description('Job to create/update/destroy User oblt clusters using the configuration files changes at environments/users.')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
   }
