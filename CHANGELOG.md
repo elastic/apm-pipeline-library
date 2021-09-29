@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.246 (29/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: teach withGoEnv about Go executable package installation for Go 1.16 and up [#1300](https://github.com/elastic/apm-pipeline-library/pull/1300)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: rename CCS job to a more generic name [#1303](https://github.com/elastic/apm-pipeline-library/pull/1303)
+-  [bump][automation] skip backports for the automation [#1301](https://github.com/elastic/apm-pipeline-library/pull/1301)
+
 ## v1.1.245 (23/09/2021)
 
 #### 🐛 Bug Fixes
