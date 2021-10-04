@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.247 (04/10/2021)
+*No changelog for this release.*
+
 ## v1.1.246 (29/09/2021)
 
 #### 🐛 Bug Fixes
