@@ -2879,6 +2879,26 @@ Wrap the cluster credentials and entrypoints as environment variables that are m
 NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
       vault location
 
+## withDockerEnv
+Configure the Docker context to run the body closure, logining to hub.docker.com with an
+authentication credentials from a Vault secret. The vault secret contains `user` and `password`
+fields with the authentication details. with the below environment variables:
+
+* `DOCKER_USER`
+* `DOCKER_PASSWORD`
+
+```
+  withDockerEnv() {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name') {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name', registry: "docker.io") {
+    // block
+  }
+```
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
