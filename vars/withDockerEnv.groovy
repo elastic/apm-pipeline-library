@@ -1,0 +1,73 @@
+// Licensed to Elasticsearch B.V. under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Elasticsearch B.V. licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+/**
+  Configure the Docker context to run the body closure, login to hub.docker.com with an
+  authentication credentials from a Vault secret. The vault secret contains `user` and `password`
+  fields with the authentication details.
+
+  withDockerEnv() {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name') {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name', registry: "docker.io") {
+    // block
+  }
+
+*/
+def call(Map args = [:], Closure body){
+  def secret = args.containsKey('secret') ? args.secret : error("withDockerEnv: No valid secret to looking for.")
+  def registry = args.containsKey('registry') ? args.registry : "docker.io"
+
+  def jsonValue = getVaultSecret(args)
+  def data = jsonValue.containsKey('data') ? jsonValue.data : error("withDockerEnv: No valid data in secret.")
+  def dockerUser = data.containsKey('user') ? data.user : error("withDockerEnv: No valid user in secret.")
+  def dockerPassword = data.containsKey('password') ? data.password : error("withDockerEnv: No valid password in secret.")
+
+  withEnvMask(vars: [
+    [var: "DOCKER_USER", password: dockerUser],
+    [var: "DOCKER_PASSWORD", password: dockerPassword]
+  ]){
+    // When running in the CI with multiple parallel stages
+    // the access could be considered as a DDOS attack.
+    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+      if (isUnix()) {
+        sh(label: "Docker login", script: """
+          set +x
+          if command -v host 2>&1 > /dev/null; then
+            host ${registry} 2>&1 > /dev/null
+          fi
+          if command -v dig 2>&1 > /dev/null; then
+            dig ${registry} 2>&1 > /dev/null
+          fi
+          docker login -u "\${DOCKER_USER}" -p "\${DOCKER_PASSWORD}" "${registry}" 2>/dev/null
+          """)
+      } else {
+        bat(label: 'is registry service up?', script: """@ECHO OFF
+          nslookup ${registry} > NUL 2>&1
+        """)
+        bat(label: 'Docker Login', script: """@ECHO OFF
+          docker login -u "%DOCKER_USER%" -p "%DOCKER_PASSWORD%" "${registry}" 2> NUL
+        """)
+      }
+    }
+
+    body()
+  }
+}
