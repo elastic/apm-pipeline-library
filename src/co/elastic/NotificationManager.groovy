@@ -500,6 +500,13 @@ def getSupportedGithubCommands() {
     comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
   }
 
+  // Support for the Obs11 test environments specific GitHub commands
+  if (env.REPO?.equals('observability-test-environments') || env.REPO_NAME?.equals('observability-test-environments')) {
+    comments['/test ansible'] = 'Run the ansible tests.'
+    comments['/test cypress'] = 'Run the cypress tests.'
+    comments['/test tools'] = 'Build and test the CLI tools.'
+  }
+
   return comments
 }
 
