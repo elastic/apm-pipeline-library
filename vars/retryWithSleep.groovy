@@ -32,6 +32,7 @@ def call(Map args = [:], Closure body) {
   def seconds = args.get('seconds', 10)
   def backoff = args.get('backoff', false)
   def sleepFirst = args.get('sleepFirst', false)
+  def sideEffect = args.get('sideEffect', { })
 
   def factor = 0
   retry(i) {
@@ -41,6 +42,7 @@ def call(Map args = [:], Closure body) {
       if(sleepFirst) { sleepWith(seconds, factor, backoff) }
       body()
     } catch(e) {
+      sideEffect()
       if(!sleepFirst) { sleepWith(seconds, factor, backoff) }
       throw e
     }
