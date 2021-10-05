@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.248 (05/10/2021)
+
+#### 📚 Documentation
+
+-  docs: update changelog [#1307](https://github.com/elastic/apm-pipeline-library/pull/1307)
+
+#### 🙈 No user affected
+
+-  [github][commands] for the observability-test-environments [#1308](https://github.com/elastic/apm-pipeline-library/pull/1308)
+
 ## v1.1.247 (04/10/2021)
 
 #### 🚀 Enhancements
