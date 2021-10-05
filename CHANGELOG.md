@@ -1,7 +1,14 @@
 # Changelog
 
 ## v1.1.247 (04/10/2021)
-*No changelog for this release.*
+
+#### 🚀 Enhancements
+
+-  Add a step to pass the Docker environment to closures [#1306](https://github.com/elastic/apm-pipeline-library/pull/1306)
+
+#### 🙈 No user affected
+
+-  Bump local jenkins instance [#1304](https://github.com/elastic/apm-pipeline-library/pull/1304)
 
 ## v1.1.246 (29/09/2021)
 
