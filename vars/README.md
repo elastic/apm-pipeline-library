@@ -2343,12 +2343,20 @@ retryWithSleep(retries: 2) {
 retryWithSleep(retries: 3, seconds: 5, backoff: true) {
   //
 }
+
+// Retry up to 3 times and on each retry, execute a closure
+def myEffect = { echo 'Side effect!' }
+retryWithSleep(retries: 3, sideEffect: myEffect)
+  //
+}
+
 ```
 
 * retries: the number of retries. Mandatory
 * seconds: the seconds to wait for. Optional. Default 10.
 * backoff: whether the wait period backs off after each retry. Optional. Default false
 * sleepFirst: whether to sleep before running the command. Optional. Default false
+* sideEffect: A closure to run after every retry
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
@@ -2961,6 +2969,17 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
+
+## withGCPEnv
+Configure the GCP context to run the given body closure
+
+```
+withGCPEnv(credentialsId: 'foo') {
+  // block
+}
+```
+
+* credentialsId: The credentials to login to GCP. Mandatory
 
 ## withGitRelease
 Configure the git release context to run the body closure.
