@@ -38,7 +38,8 @@ def call(Map args = [:], Closure body) {
    "github.com/magefile/mage",
    "github.com/elastic/go-licenser",
    "golang.org/x/tools/cmd/goimports",
-   "github.com/jstemmer/go-junit-report"
+   "github.com/jstemmer/go-junit-report",
+   "gotest.tools/gotestsum"
   ])
   args.pkgs = pkgs
   withGoEnv(args, body)
