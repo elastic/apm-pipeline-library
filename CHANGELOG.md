@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.250 (06/10/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: add gotest.tools/gotestsum to basic Go packages [#1311](https://github.com/elastic/apm-pipeline-library/pull/1311)
+-  Add withGCPEnv step [#1310](https://github.com/elastic/apm-pipeline-library/pull/1310)
+
 ## v1.1.249 (06/10/2021)
 
 #### ⚙️ CI
