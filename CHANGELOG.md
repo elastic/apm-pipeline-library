@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.249 (06/10/2021)
+
+#### ⚙️ CI
+
+-  Retry side effect [#1309](https://github.com/elastic/apm-pipeline-library/pull/1309)
+
 ## v1.1.248 (05/10/2021)
 
 #### 📚 Documentation
