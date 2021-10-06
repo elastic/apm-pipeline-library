@@ -1,0 +1,9 @@
+Configure the GCP context to run the given body closure
+
+```
+withGCPEnv(credentialsId: 'foo') {
+  // block
+}
+```
+
+* credentialsId: The credentials to login to GCP. Mandatory
