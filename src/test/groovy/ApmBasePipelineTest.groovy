@@ -548,6 +548,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGCPEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGCPEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
