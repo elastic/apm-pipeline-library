@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.252 (13/10/2021)
+
+#### 🚀 Enhancements
+
+-  Enable goDefaultVersion to read from the root folder or base_dir folder [#1316](https://github.com/elastic/apm-pipeline-library/pull/1316)
+
+#### 📚 Documentation
+
+-  changelog dependencies and pre-commit badge [#1315](https://github.com/elastic/apm-pipeline-library/pull/1315)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.19, 6.8.20, 7.14.2, 7.15.0, 7.15.1] [#1317](https://github.com/elastic/apm-pipeline-library/pull/1317)
+
 ## v1.1.251 (11/10/2021)
 *No changelog for this release.*
 
