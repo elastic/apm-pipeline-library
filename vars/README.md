@@ -234,6 +234,8 @@ Utils class for the bump automation pipelines
 * `prepareContext` -> prepare the git context, checkout and git config user.name.
 
 ## cancelPreviousRunningBuilds
+**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: true)`
+
 Abort any previously running builds as soon as a new build starts
 
 ```

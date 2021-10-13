@@ -65,6 +65,9 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
+    // Option to disable concurrent builds by aborting previous ones.
+    //   Only supported from https://github.com/jenkinsci/workflow-job-plugin/releases/tag/workflow-job-2.42
+    disableConcurrentBuilds(abortPrevious: true)
     // As long as we use ephemeral workers we cannot use the resume. The below couple of
     // options will help to speed up the performance.
     disableResume()
@@ -105,7 +108,8 @@ pipeline {
         deleteDir()
 
         // Wrapper to trigger certain steps when given certain conditions.
-        // For instance, to cancel all the previous running old builds for the current PR.
+        //   For instance, to cancel all the previous running old builds for the current PR.
+        //   This configuration is deprecated in favour of the option disableConcurrentBuilds(abortPrevious: true)
         pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
 
         // gitCheckout does expose certain env variables besides of gatekeeping whether
