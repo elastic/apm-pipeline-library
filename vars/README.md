@@ -2977,9 +2977,14 @@ Configure the GCP context to run the given body closure
 withGCPEnv(credentialsId: 'foo') {
   // block
 }
+
+withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
+  // block
+}
 ```
 
-* credentialsId: The credentials to login to GCP. Mandatory
+* credentialsId: The credentials to login to GCP. (Optional).
+* secret: Name of the secret on the the vault root path. (Optional).
 
 ## withGitRelease
 Configure the git release context to run the body closure.

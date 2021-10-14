@@ -53,7 +53,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin'), SECRET_GCP_PROVISIONER('service-account/provisioner')
 
     VaultSecret(String value) {
       this.value = value
@@ -357,7 +357,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
-      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
+      File f = new File("target/${m.file}")
+      f.getParentFile().mkdirs()
+      f.withWriter('UTF-8') { writer ->
         writer.write(m.text)
       }
     })
@@ -650,6 +652,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_GCP.equals(s)){
       return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_GCP_PROVISIONER.equals(s)){
+      return [data: [ credentials: 'my_json_credentials' ]]
     }
     if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
       return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]
