@@ -42,7 +42,7 @@ def call(Map args = [:]) {
     if (failNever) {
       currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
     } else {
-      error("tar: step failled with error ${e?.message}")
+      error("tar: step failed with error ${e?.message}")
     }
   }
 }
