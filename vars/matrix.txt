@@ -1,11 +1,11 @@
 Matrix parallel task execution in parallel implemented on a step.
-It compose a matrix of parallel tasks, each task has a set of enviroment variables
+It compose a matrix of parallel tasks, each task has a set of environment variables
 created from the axes values.
 
 * **agent:** Jenkins agent labels to provision a new agent for parallel task.
-* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+* **axes :** Vector of pairs to define environment variables to pass to the parallel tasks,
 each pair has a variable name and a vector of values (see #axis)
-* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+* **excludes :** Vector of pairs to define combinations of environment variables to exclude
 when we create the parallel tasks (axes-excludes=parallel tasks).
 
 ```
