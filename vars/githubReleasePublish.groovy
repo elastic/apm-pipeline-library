@@ -35,7 +35,7 @@ the data structure of the return.
 
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0', // Release name 
+      name: 'Release v1.0.0', // Release name
     )
 
 To learn more about what individual flags mean, please visit the GitHub

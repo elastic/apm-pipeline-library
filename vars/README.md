@@ -70,7 +70,7 @@ It is mandatory to pass a serviceName. If a service name is no passes apmCli do 
 and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
 * transactionName: Name of the transaction to report, it is mandatory.
 By default the "STAGE_NAME" environment variable is used.
-* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* parentTransaction: Allow to group several transactions as children of another (distributed tracing)
 * spanName : Name of the span to report.
 * spanCommand Command to execute as span,
 if spanName is no set, spanCommand param would be used as span name.
@@ -531,7 +531,7 @@ findOldestSupportedVersion(versionCondition: "^7.14.0")
 NOTE: Current implementation only supports the `^` operator for version conditions
 
 ## generateChangelog
-Programatically generate a CHANGELOG
+Programmatically generate a CHANGELOG
 
 ```
 generateChangelog(
@@ -847,7 +847,7 @@ gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
-* credentialsId: tthe credentials to access the repo.
+* credentialsId: the credentials to access the repo.
 
 ## gitPush
 Push changes to the git repo.
@@ -958,7 +958,7 @@ _NOTE_: Windows is not supported yet.
 
 ## githubCreatePullRequest
 Create a Pull Request in GitHub as long as the command runs in the git repo and
-there are commited changes.
+there are committed changes.
 
 ```
 githubCreatePullRequest(title: 'Foo')
@@ -1395,7 +1395,7 @@ Upload the given pattern files to the given bucket.
 * bucket: The Google Storage bucket format gs://bucket/folder/subfolder/. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
-* sharedPublicly: Whether to shared those objects publically. Optional. Default false.
+* sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
@@ -1851,13 +1851,13 @@ NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubE
 
 ## matrix
 Matrix parallel task execution in parallel implemented on a step.
-It compose a matrix of parallel tasks, each task has a set of enviroment variables
+It compose a matrix of parallel tasks, each task has a set of environment variables
 created from the axes values.
 
 * **agent:** Jenkins agent labels to provision a new agent for parallel task.
-* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+* **axes :** Vector of pairs to define environment variables to pass to the parallel tasks,
 each pair has a variable name and a vector of values (see #axis)
-* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+* **excludes :** Vector of pairs to define combinations of environment variables to exclude
 when we create the parallel tasks (axes-excludes=parallel tasks).
 
 ```
@@ -1967,7 +1967,7 @@ mvnVersion(
 )
 ```
  * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
-                       such as additional labels for pre-release or build metadata. Speficially,
+                       such as additional labels for pre-release or build metadata. Specifically,
                        this means the IncrementalVersion, BuildNumber, and Qualifier sections from
                        the Maven version as specified in the Maven versioning guide.
 

@@ -27,7 +27,7 @@ def call(Map args = [:]) {
   def allowMissing = args.get('allowMissing', true)
   def failNever = args.get('failNever', true)
 
-  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled 
+  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled
   if (args.pathPrefix?.trim()) {
     log(level: 'WARN', text: 'tar: pathPrefix parameter is deprecated.')
   }
@@ -42,7 +42,7 @@ def call(Map args = [:]) {
     if (failNever) {
       currentBuild.result = allowMissing ? 'SUCCESS' : 'UNSTABLE'
     } else {
-      error("tar: step failled with error ${e?.message}")
+      error("tar: step failed with error ${e?.message}")
     }
   }
 }

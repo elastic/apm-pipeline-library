@@ -17,7 +17,7 @@
 
 /**
   Configure the git release context to run the body closure.
-  
+
   withGitRelease() {
     // block
   }
@@ -40,7 +40,7 @@ def call(Map args = [:], Closure body) {
 
   withCredentials([usernamePassword(credentialsId: "${credentialsId}",
                                     passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
-    try {                       
+    try {
       sh(label: 'Setup git release', script: libraryResource('scripts/setup-git-release.sh'))
       body()
     } catch (err) {

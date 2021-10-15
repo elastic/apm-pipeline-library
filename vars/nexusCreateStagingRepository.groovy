@@ -77,7 +77,7 @@ def call(Map args = [:]){
 
   // Reset retry counter
   attemptNumber = 0
-  
+
   withEnvMask(vars: [
   [var: "NEXUS_username", password: username],
   [var: "NEXUS_password", password: password]    ]){

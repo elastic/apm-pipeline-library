@@ -18,7 +18,7 @@
 /**
   Wrapper to interact with the gh command line. It returns the stdout output.
 
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body

@@ -14,7 +14,7 @@ For instance:
 ```
 
 Could be simplified with:
-    
+
 ```
     cmd(label: 'foo', script: 'git fetch --all')
 ```

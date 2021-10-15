@@ -16,10 +16,10 @@
 // under the License.
 
 /**
-  Unstash the given stashed id, for such it downloads the given stashed id, and 
+  Unstash the given stashed id, for such it downloads the given stashed id, and
   uncompresses in the current location.
 
-  The configuration can be delegated through env variables or explicitly. The 
+  The configuration can be delegated through env variables or explicitly. The
   explicit parameters do have precedence over the environment variables.
 
   withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){
@@ -71,6 +71,6 @@ def call(Map args = [:]) {
   extract(filename)
 }
 
-def extract(String filename) {  
+def extract(String filename) {
   untar(file: filename, dir: '.', failNever: false)
 }

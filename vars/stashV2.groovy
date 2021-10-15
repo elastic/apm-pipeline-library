@@ -19,7 +19,7 @@
   Stash the current location, for such it compresses the current path and
   upload it to Google Storage.
 
-  The configuration can be delegated through env variables or explicitly. The 
+  The configuration can be delegated through env variables or explicitly. The
   explicit parameters do have precedence over the environment variables.
 
   withEnv(["JOB_GCS_BUCKET=my-bucket", "JOB_GCS_CREDENTIALS=my-credentials"]){

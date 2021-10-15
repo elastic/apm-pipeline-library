@@ -17,7 +17,7 @@
 
 /**
   Create a Pull Request in GitHub as long as the command runs in the git repo and
-  there are commited changes
+  there are committed changes
 
   githubCreatePullRequest(title: 'Foo')
 
