@@ -302,7 +302,7 @@ For instance:
 ```
 
 Could be simplified with:
-    
+
 ```
     cmd(label: 'foo', script: 'git fetch --all')
 ```
@@ -737,11 +737,11 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
-It requires to be executed within the git workspace, otherwise it will use 
+It requires to be executed within the git workspace, otherwise it will use
 `REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body
@@ -935,7 +935,7 @@ Comment an existing GitHub issue
 * repo: The GitHub repository. Optional. Default the REPO_REPO env variable
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
-_NOTE_: 
+_NOTE_:
 * Windows is not supported yet.
 * It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
@@ -1122,12 +1122,12 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
 ## githubPullRequests
-Look for the GitHub Pull Requests in the current project given the labels to be 
+Look for the GitHub Pull Requests in the current project given the labels to be
 filtered with. It returns a dictionary with the Pull Request id as primary key and
 then the title and branch values.
 
 ```
-  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // Look for all the open GitHub pull requests with titleContains: foo and
   // the foo and bar labels
   githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
 ```
@@ -1203,7 +1203,7 @@ Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0'  // Release name 
+      name: 'Release v1.0.0'  // Release name
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -1401,13 +1401,16 @@ Upload the given pattern files to the given bucket.
 Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 ```
-  // Copy file.txt into the bucket
+  // Copy file.txt into the bucket using the Jenkins credentials
   gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
 
+  // Copy file.txt into the bucket using Vault
+  gsutil(command: 'cp file.txt gs://bucket/folder/', secret: 'foo' ])
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
 
 ## hasCommentAuthorWritePermissions
 
@@ -2317,10 +2320,10 @@ def value = randomString(size: 15)
 Send notifications with the release status by email and slack.
 
 If body is slack format based then it will be transformed to the email format
-  
+
 ```
 releaseNotification(slackColor: 'good',
-                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created",
                     body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
 ```
 
@@ -2605,7 +2608,7 @@ pipeline {
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2697,10 +2700,10 @@ net.sf.json.JSON obj = toJSON(p)
 ```
 
 ## unstashV2
-Unstash the given stashed id, for such it downloads the given stashed id, and 
+Unstash the given stashed id, for such it downloads the given stashed id, and
 uncompresses in the current location.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -3161,7 +3164,7 @@ NOTE: If the `GOARCH` environment variable is defined then it will be used to in
 
 ## withHubCredentials
 Configure the hub app to run the body closure.
-  
+
 ```
   withHubCredentials(credentialsId: 'some-credentials') {
     // block

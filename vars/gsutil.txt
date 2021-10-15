@@ -1,10 +1,13 @@
 Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 ```
-  // Copy file.txt into the bucket
+  // Copy file.txt into the bucket using the Jenkins credentials
   gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
 
+  // Copy file.txt into the bucket using Vault
+  gsutil(command: 'cp file.txt gs://bucket/folder/', secret: 'foo' ])
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withGCPEnv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withGCPEnv)

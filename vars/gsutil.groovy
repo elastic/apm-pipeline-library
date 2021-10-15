@@ -17,9 +17,8 @@
 
 def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gsutil: command parameter is required.')
-  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('gsutil: credentialsId parameter is required.')
 
-  withGCPEnv(credentialsId: credentialsId) {
+  withGCPEnv(args) {
     return cmd(label: "gsutil ${command}", script: "gsutil ${command}", returnStdout: true)
   }
 }
