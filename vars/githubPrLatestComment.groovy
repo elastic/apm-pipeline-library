@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Search in the current Pull Request context the latest comment from the given list of 
+  Search in the current Pull Request context the latest comment from the given list of
   users and pattern to match with.
 
   // Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is

@@ -34,7 +34,7 @@ def call(Map args = [:]) {
   def template = args.containsKey('template') ? args.template : error('createFileFromTemplate: template parameter is required.')
   def output = args.containsKey('output') ? args.output : error('createFileFromTemplate: output parameter is required.')
   def localTemplate = args.get('localTemplate', false)
-  
+
   if(!localTemplate) {
     writeFile file: "${template}", text: libraryResource("templates/${template}")
   }
@@ -50,5 +50,5 @@ def call(Map args = [:]) {
             set -x
             chmod 755 ${scriptFile}
             ./${scriptFile} -f ${data} -t ${template} -o ${output} """,
-     label: 'createTemplate')       
+     label: 'createTemplate')
 }

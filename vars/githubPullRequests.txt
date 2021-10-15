@@ -1,9 +1,9 @@
-Look for the GitHub Pull Requests in the current project given the labels to be 
+Look for the GitHub Pull Requests in the current project given the labels to be
 filtered with. It returns a dictionary with the Pull Request id as primary key and
 then the title and branch values.
 
 ```
-  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // Look for all the open GitHub pull requests with titleContains: foo and
   // the foo and bar labels
   githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
 ```

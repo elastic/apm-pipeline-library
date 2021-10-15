@@ -17,7 +17,7 @@
 
 /**
   Configure the hub app to run the body closure.
-  
+
   withHubCredentials(credentialsId: 'credential') {
     // block
   }

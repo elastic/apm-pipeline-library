@@ -27,7 +27,7 @@ def call(Map args = [:]) {
   def allowMissing = args.get('allowMissing', true)
   def failNever = args.get('failNever', true)
 
-  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled 
+  // NOTE: pathPrefix is not required anymore since tar --exclude has been enabled
   if (args.pathPrefix?.trim()) {
     log(level: 'WARN', text: 'tar: pathPrefix parameter is deprecated.')
   }
