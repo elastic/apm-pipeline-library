@@ -58,7 +58,17 @@ def call(Map args = [:], Closure body) {
       }
     }
     try {
-      body()
+      if (secret) {
+        // Somehow the login works for google bucket integrations but something
+        // it's not right when using the VM creation with terraform and GCP
+        // Setting GOOGLE_APPLICATION_CREDENTIALS seems to be the workaround
+        // https://cloud.google.com/docs/authentication/getting-started
+        withEnv(["GOOGLE_APPLICATION_CREDENTIALS=${secretFileLocation}"]){
+          body()
+        }
+      } else {
+        body()
+      }
     } finally {
       if (fileExists("${secretFileLocation}")) {
         if(isUnix()){
