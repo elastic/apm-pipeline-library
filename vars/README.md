@@ -70,7 +70,7 @@ It is mandatory to pass a serviceName. If a service name is no passes apmCli do 
 and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
 * transactionName: Name of the transaction to report, it is mandatory.
 By default the "STAGE_NAME" environment variable is used.
-* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* parentTransaction: Allow to group several transactions as children of another (distributed tracing)
 * spanName : Name of the span to report.
 * spanCommand Command to execute as span,
 if spanName is no set, spanCommand param would be used as span name.
@@ -302,7 +302,7 @@ For instance:
 ```
 
 Could be simplified with:
-    
+
 ```
     cmd(label: 'foo', script: 'git fetch --all')
 ```
@@ -531,7 +531,7 @@ findOldestSupportedVersion(versionCondition: "^7.14.0")
 NOTE: Current implementation only supports the `^` operator for version conditions
 
 ## generateChangelog
-Programatically generate a CHANGELOG
+Programmatically generate a CHANGELOG
 
 ```
 generateChangelog(
@@ -737,11 +737,11 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
-It requires to be executed within the git workspace, otherwise it will use 
+It requires to be executed within the git workspace, otherwise it will use
 `REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body
@@ -847,7 +847,7 @@ gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
-* credentialsId: tthe credentials to access the repo.
+* credentialsId: the credentials to access the repo.
 
 ## gitPush
 Push changes to the git repo.
@@ -935,7 +935,7 @@ Comment an existing GitHub issue
 * repo: The GitHub repository. Optional. Default the REPO_REPO env variable
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
-_NOTE_: 
+_NOTE_:
 * Windows is not supported yet.
 * It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
@@ -958,7 +958,7 @@ _NOTE_: Windows is not supported yet.
 
 ## githubCreatePullRequest
 Create a Pull Request in GitHub as long as the command runs in the git repo and
-there are commited changes.
+there are committed changes.
 
 ```
 githubCreatePullRequest(title: 'Foo')
@@ -1122,12 +1122,12 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
 ## githubPullRequests
-Look for the GitHub Pull Requests in the current project given the labels to be 
+Look for the GitHub Pull Requests in the current project given the labels to be
 filtered with. It returns a dictionary with the Pull Request id as primary key and
 then the title and branch values.
 
 ```
-  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // Look for all the open GitHub pull requests with titleContains: foo and
   // the foo and bar labels
   githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
 ```
@@ -1203,7 +1203,7 @@ Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0'  // Release name 
+      name: 'Release v1.0.0'  // Release name
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -1395,7 +1395,7 @@ Upload the given pattern files to the given bucket.
 * bucket: The Google Storage bucket format gs://bucket/folder/subfolder/. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
-* sharedPublicly: Whether to shared those objects publically. Optional. Default false.
+* sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
@@ -1848,13 +1848,13 @@ NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubE
 
 ## matrix
 Matrix parallel task execution in parallel implemented on a step.
-It compose a matrix of parallel tasks, each task has a set of enviroment variables
+It compose a matrix of parallel tasks, each task has a set of environment variables
 created from the axes values.
 
 * **agent:** Jenkins agent labels to provision a new agent for parallel task.
-* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+* **axes :** Vector of pairs to define environment variables to pass to the parallel tasks,
 each pair has a variable name and a vector of values (see #axis)
-* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+* **excludes :** Vector of pairs to define combinations of environment variables to exclude
 when we create the parallel tasks (axes-excludes=parallel tasks).
 
 ```
@@ -1964,7 +1964,7 @@ mvnVersion(
 )
 ```
  * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
-                       such as additional labels for pre-release or build metadata. Speficially,
+                       such as additional labels for pre-release or build metadata. Specifically,
                        this means the IncrementalVersion, BuildNumber, and Qualifier sections from
                        the Maven version as specified in the Maven versioning guide.
 
@@ -2317,10 +2317,10 @@ def value = randomString(size: 15)
 Send notifications with the release status by email and slack.
 
 If body is slack format based then it will be transformed to the email format
-  
+
 ```
 releaseNotification(slackColor: 'good',
-                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created",
                     body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
 ```
 
@@ -2605,7 +2605,7 @@ pipeline {
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2697,10 +2697,10 @@ net.sf.json.JSON obj = toJSON(p)
 ```
 
 ## unstashV2
-Unstash the given stashed id, for such it downloads the given stashed id, and 
+Unstash the given stashed id, for such it downloads the given stashed id, and
 uncompresses in the current location.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -3156,7 +3156,7 @@ NOTE: If the `GOARCH` environment variable is defined then it will be used to in
 
 ## withHubCredentials
 Configure the hub app to run the body closure.
-  
+
 ```
   withHubCredentials(credentialsId: 'some-credentials') {
     // block
