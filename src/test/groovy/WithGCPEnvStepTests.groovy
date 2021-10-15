@@ -28,12 +28,13 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { return false })
     script = loadScript('vars/withGCPEnv.groovy')
   }
 
   @Test
-  void test_missing_credentialsId() throws Exception {
-    testMissingArgument('credentialsId') {
+  void test_missing_credentialsId_or_secret() throws Exception {
+    testMissingArgument('credentialsId or secret', 'parameters are required') {
       script.call() {
         // NOOP
       }
@@ -52,6 +53,24 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
     assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_secret() throws Exception {
+    def ret = false
+    try {
+    script.call(secret: VaultSecret.SECRET_GCP_PROVISIONER.toString()) {
+      ret = true
+    }
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertFalse(assertMethodCallContainsPattern('withCredentials', ''))
+    assertTrue(assertMethodCallContainsPattern('sh', 'gcloud auth activate-service-account --key-file'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm'))
     assertJobStatusSuccess()
   }
 

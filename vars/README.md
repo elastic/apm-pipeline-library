@@ -1401,13 +1401,16 @@ Upload the given pattern files to the given bucket.
 Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 ```
-  // Copy file.txt into the bucket
+  // Copy file.txt into the bucket using the Jenkins credentials
   gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
 
+  // Copy file.txt into the bucket using Vault
+  gsutil(command: 'cp file.txt gs://bucket/folder/', secret: 'foo' ])
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
 
 ## hasCommentAuthorWritePermissions
 
@@ -2977,9 +2980,14 @@ Configure the GCP context to run the given body closure
 withGCPEnv(credentialsId: 'foo') {
   // block
 }
+
+withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
+  // block
+}
 ```
 
-* credentialsId: The credentials to login to GCP. Mandatory
+* credentialsId: The credentials to login to GCP. (Optional).
+* secret: Name of the secret on the the vault root path. (Optional).
 
 ## withGitRelease
 Configure the git release context to run the body closure.
