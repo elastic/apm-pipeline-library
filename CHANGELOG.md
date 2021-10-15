@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.253 (15/10/2021)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support secret from vault [#1320](https://github.com/elastic/apm-pipeline-library/pull/1320)
+
+#### 🙈 No user affected
+
+-  pre-commit: fix linting [#1322](https://github.com/elastic/apm-pipeline-library/pull/1322)
+-  Update pre-commit [#1321](https://github.com/elastic/apm-pipeline-library/pull/1321)
+-  bump: obs-test-env is not a multibranch repo [#1319](https://github.com/elastic/apm-pipeline-library/pull/1319)
+
 ## v1.1.252 (13/10/2021)
 
 #### 🚀 Enhancements
