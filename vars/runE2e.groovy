@@ -21,11 +21,11 @@
   runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml')
 */
 def call(Map args = [:]) {
-  def jobName = args.get('jobName')
-  def testMatrixFile = args.get('testMatrixFile', '')
-  def gitHubCheckName = args.get('gitHubCheckName')
+  def beatVersion = args.containsKey('beatVersion') ? args.beatVersion : error('runE2e: beatVersion parameter is required')
+  def gitHubCheckName = args.containsKey('gitHubCheckName') ? args.gitHubCheckName : error('runE2e: gitHubCheckName parameter is required')
+  def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
   def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
-  def beatVersion = args.get('beatVersion')
+  def testMatrixFile = args.get('testMatrixFile', '')
 
   def e2eTestsPipeline = "${jobName}/${isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}"}"
 
