@@ -111,6 +111,18 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_extraParameters() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    // extraParameters format should be based on the support parameters (string, booleanParam) and so on
+    // but the testing framework does not support string or booleanParam at this test level.
+    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', extraParameters: [ 'foo': 'bar', 'another': 'value'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('build', 'foo=bar'))
+    assertTrue(assertMethodCallContainsPattern('build', 'another=value'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_unsupported_ci_controller() throws Exception {
     addEnvVar('JENKINS_URL', 'https://apm-ci.elastic.co/')
     try {

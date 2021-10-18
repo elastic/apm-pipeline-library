@@ -27,6 +27,7 @@ def call(Map args = [:]) {
   def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
   def testMatrixFile = args.get('testMatrixFile', '')
   def runTestsSuites = args.get('runTestsSuites', '')
+  def extraParameters = args.get('extraParameters', [])
 
   if (!env.JENKINS_URL?.contains('beats-ci')) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
@@ -50,6 +51,10 @@ def call(Map args = [:]) {
 
   if (runTestsSuites?.trim()) {
     parameters << string(name: 'runTestsSuites', value: runTestsSuites)
+  }
+
+  extraParameters?.each { it
+    parameters << it
   }
 
   build(job: "${e2eTestsPipeline}",
