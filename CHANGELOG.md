@@ -77,7 +77,7 @@
 
 #### 🐛 Bug Fixes
 
--  Retrive 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
+-  Retrieve 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
 
 #### 🙈 No user affected
 
@@ -88,7 +88,7 @@
 #### 🙈 No user affected
 
 -  Exclude errors related to the approval-list and githubPrCheckApproved in the GitHub comment [#1295](https://github.com/elastic/apm-pipeline-library/pull/1295)
--  Remove test stats in the Flakyness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
+-  Remove test stats in the Flakiness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
 
 ## v1.1.243 (23/09/2021)
 
