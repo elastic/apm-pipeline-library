@@ -27,6 +27,10 @@ def call(Map args = [:]) {
   def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
   def testMatrixFile = args.get('testMatrixFile', '')
 
+  if (!env.JENKINS_URL?.contains('beats-ci')) {
+    error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
+  }
+
   def e2eTestsPipeline = "${jobName}/${isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}"}"
 
   def parameters = [
@@ -37,7 +41,7 @@ def call(Map args = [:]) {
     string(name: 'testMatrixFile', value: testMatrixFile),
     string(name: 'GITHUB_CHECK_NAME', value: gitHubCheckName),
     string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
-    string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT),
+    string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)
   ]
 
   build(job: "${e2eTestsPipeline}",
