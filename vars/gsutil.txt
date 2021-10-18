@@ -9,5 +9,5 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withGCPEnv)
-* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withGCPEnv)
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
