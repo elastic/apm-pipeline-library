@@ -1409,8 +1409,8 @@ Wrapper to interact with the gsutil command line. It returns the stdout output.
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
-* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withGCPEnv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withGCPEnv)
 
 ## hasCommentAuthorWritePermissions
 
@@ -2377,6 +2377,21 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runE2e
+Trigger the end 2 end testing job.
+
+```
+  runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+```
+
+* *jobName*: the name of the job. Mandatory
+* *gitHubCheckName*: the GitHub check name. Mandatory
+* *beatVersion*: the beat Version. Mandatory
+* *notifyOnGreenBuilds*: whether to notify the build status. Optional (default false for PRs)
+* *testMatrixFile*: the name of the matrix file in the e2e-testing repo to be used for running the test suites and scenarios. Optional
+
+**NOTE**: It works only in Multibranch Pipelines.
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
