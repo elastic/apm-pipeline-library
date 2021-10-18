@@ -9,5 +9,6 @@ Trigger the end 2 end testing job.
 * *beatVersion*: the beat Version. Mandatory
 * *notifyOnGreenBuilds*: whether to notify the build status. Optional (default false for PRs)
 * *testMatrixFile*: the name of the matrix file in the e2e-testing repo to be used for running the test suites and scenarios. Optional
+* *runTestsSuites*: the test suites to test. Optional
 
 **NOTE**: It works only for Multibranch Pipelines in the `beats-ci` controller.

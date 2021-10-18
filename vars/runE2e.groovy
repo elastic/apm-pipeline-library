@@ -26,6 +26,7 @@ def call(Map args = [:]) {
   def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
   def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
   def testMatrixFile = args.get('testMatrixFile', '')
+  def runTestsSuites = args.get('runTestsSuites', '')
 
   if (!env.JENKINS_URL?.contains('beats-ci')) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
@@ -38,11 +39,18 @@ def call(Map args = [:]) {
     booleanParam(name: 'forceSkipPresubmit', value: true),
     booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
     string(name: 'BEAT_VERSION', value: beatVersion),
-    string(name: 'testMatrixFile', value: testMatrixFile),
     string(name: 'GITHUB_CHECK_NAME', value: gitHubCheckName),
     string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
     string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)
   ]
+
+  if (testMatrixFile?.trim()) {
+    parameters << string(name: 'testMatrixFile', value: testMatrixFile)
+  }
+
+  if (runTestsSuites?.trim()) {
+    parameters << string(name: 'runTestsSuites', value: runTestsSuites)
+  }
 
   build(job: "${e2eTestsPipeline}",
     parameters: parameters,

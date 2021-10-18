@@ -55,6 +55,8 @@ class RunE2eStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/main'))
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=false'))
+    assertFalse(assertMethodCallContainsPattern('string', 'testMatrixFile'))
+    assertFalse(assertMethodCallContainsPattern('string', 'runTestsSuites'))
     assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
     assertJobStatusSuccess()
   }
@@ -66,6 +68,8 @@ class RunE2eStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/7.x'))
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=true'))
+    assertFalse(assertMethodCallContainsPattern('string', 'testMatrixFile'))
+    assertFalse(assertMethodCallContainsPattern('string', 'runTestsSuites'))
     assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
     assertJobStatusSuccess()
   }
@@ -85,6 +89,24 @@ class RunE2eStepTests extends ApmBasePipelineTest {
     script.call(beatVersion: 'foo', gitHubCheckName: 'bar', jobName: 'my-job')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=my-job/7.x'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_testMatrixFile() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', testMatrixFile: '.ci/test.yml')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('string', 'testMatrixFile, value=.ci/test.yml'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_runTestsSuites() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', runTestsSuites: 'my-suite')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('string', 'runTestsSuites, value=my-suite'))
     assertJobStatusSuccess()
   }
 
