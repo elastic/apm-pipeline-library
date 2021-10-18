@@ -2385,13 +2385,13 @@ Trigger the end 2 end testing job.
   runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
 ```
 
-* *jobName*: the name of the job. Mandatory
+* *jobName*: the name of the job. Mandatory. Default 'e2e-tests/e2e-testing-mbp'
 * *gitHubCheckName*: the GitHub check name. Mandatory
 * *beatVersion*: the beat Version. Mandatory
 * *notifyOnGreenBuilds*: whether to notify the build status. Optional (default false for PRs)
 * *testMatrixFile*: the name of the matrix file in the e2e-testing repo to be used for running the test suites and scenarios. Optional
 
-**NOTE**: It works only in Multibranch Pipelines.
+**NOTE**: It works only for Multibranch Pipelines in the `beats-ci` controller.
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
