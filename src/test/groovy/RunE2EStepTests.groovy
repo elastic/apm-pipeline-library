@@ -20,7 +20,7 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class RunE2eStepTests extends ApmBasePipelineTest {
+class RunE2EStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
