@@ -2378,30 +2378,37 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 
 * secret: Vault secret where the user, password or apiKey are stored.
 
-## runE2e
+## runE2E
 Trigger the end 2 end testing job.
 
 ```
-  runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+  runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
 
   // Run the e2e and add further parameters.
-  runE2e(beatVersion: '7.15.0-SNAPSHOT',
+  runE2E(beatVersion: '7.15.0-SNAPSHOT',
          gitHubCheckName: 'fleet-server-e2e-testing',
-         extraParameters: [ booleanParam(name: 'NIGHTLY_SCENARIOS', value: true),
-                            string(name: 'runTestsSuites', value: 'fleet'),
-                            string(name: 'SLACK_CHANNEL', value: "elastic-agent")
-         ])
+         runTestsSuites: 'fleet',
+         slackChannel: "elastic-agent")
 ```
 
-* *jobName*: the name of the job. Mandatory. Default 'e2e-tests/e2e-testing-mbp'
-* *gitHubCheckName*: the GitHub check name. Mandatory
-* *beatVersion*: the beat Version. Mandatory
-* *notifyOnGreenBuilds*: whether to notify the build status. Optional (default false for PRs)
-* *testMatrixFile*: the name of the matrix file in the e2e-testing repo to be used for running the test suites and scenarios. Optional
-* *runTestsSuites*: the test suites to test. Optional
-* *extraParameters*: the list of extra parameters to be passed to the e2e pipeline. Optional. Default []
+* *jobName*: the name of the job. Optional. Default 'e2e-tests/e2e-testing-mbp'
+* *fullJobName*: the name of the full job, it precedes jobName and requires the full name.
+* *gitHubCheckName*: the GitHub check name. Optional
+* *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
+* *gitHubCheckSha1*: the git commit for the github check. Optional
+* *beatVersion*: the beat Version. Optional
+* *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
+* *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
+* *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
+* *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
+* *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
+* *testMatrixFile*: the file with the test suite and scenarios to be tested. Optional
+* *propagate*: the test suites to test. Optional (default false)
+* *wait*: the test suites to test. Optional (default false)
 
-**NOTE**: It works only for Multibranch Pipelines in the `beats-ci` controller.
+**NOTE**: It works only in the `beats-ci` controller.
+
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
