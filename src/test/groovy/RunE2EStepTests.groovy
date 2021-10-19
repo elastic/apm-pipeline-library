@@ -120,9 +120,16 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_addKeyIfExists() throws Exception {
+  void test_addStringParameterIfKey() throws Exception {
     assertTrue(script.addStringParameterIfKey('key', 'value', null) == null)
-    assertTrue(script.addStringParameterIfKey('key', 'value', []).size() > 0)
+    assertTrue(script.addStringParameterIfKey('key', 'value', []).size() == 1)
+  }
+
+  @Test
+  void test_createParameters() throws Exception {
+    assertTrue(script.createParameters().size() == 3)
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml').size() == 4)
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml', gitHubCheckName: 'bar').size() == 5)
   }
 
   @Test
