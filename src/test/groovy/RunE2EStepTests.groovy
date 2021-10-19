@@ -120,9 +120,9 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_addStringParameterIfKey() throws Exception {
-    assertTrue(script.addStringParameterIfKey('key', 'value', null) == null)
-    assertTrue(script.addStringParameterIfKey('key', 'value', []).size() == 1)
+  void test_addStringParameterIfValue() throws Exception {
+    assertTrue(script.addStringParameterIfValue('key', 'value', null) == null)
+    assertTrue(script.addStringParameterIfValue('key', 'value', []).size() == 1)
   }
 
   @Test

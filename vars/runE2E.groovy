@@ -70,22 +70,22 @@ def createParameters(Map args = [:]) {
     booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
   ]
 
-  addStringParameterIfKey(beatVersion, 'BEAT_VERSION', parameters)
-  addStringParameterIfKey(gitHubCheckSha1, 'GITHUB_CHECK_SHA1', parameters)
-  addStringParameterIfKey(gitHubCheckRepo, 'GITHUB_CHECK_REPO', parameters)
-  addStringParameterIfKey(gitHubCheckName, 'GITHUB_CHECK_NAME', parameters)
-  addStringParameterIfKey(runTestsSuites, 'runTestsSuites', parameters)
-  addStringParameterIfKey(slackChannel, 'slackChannel', parameters)
-  addStringParameterIfKey(testMatrixFile, 'testMatrixFile', parameters)
+  addStringParameterIfValue(beatVersion, 'BEAT_VERSION', parameters)
+  addStringParameterIfValue(gitHubCheckSha1, 'GITHUB_CHECK_SHA1', parameters)
+  addStringParameterIfValue(gitHubCheckRepo, 'GITHUB_CHECK_REPO', parameters)
+  addStringParameterIfValue(gitHubCheckName, 'GITHUB_CHECK_NAME', parameters)
+  addStringParameterIfValue(runTestsSuites, 'runTestsSuites', parameters)
+  addStringParameterIfValue(slackChannel, 'slackChannel', parameters)
+  addStringParameterIfValue(testMatrixFile, 'testMatrixFile', parameters)
 
   return parameters
 }
 
-def addStringParameterIfKey(arg, name, parameters) {
+def addStringParameterIfValue(value, name, parameters) {
   if (parameters == null) {
     return
   }
-  if (arg?.trim()) {
-    parameters << string(name: name, value: arg)
+  if (value?.trim()) {
+    parameters << string(name: name, value: value)
   }
 }
