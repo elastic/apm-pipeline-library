@@ -95,9 +95,18 @@ class RunE2EStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_gitHubCheckName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(gitHubCheckName: 'bar', fullJobName: 'folder/job-foo')
+    script.call(gitHubCheckName: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_disableGitHubCheck() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(gitHubCheckName: 'bar', disableGitHubCheck: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('githubNotify', 0))
     assertJobStatusSuccess()
   }
 
