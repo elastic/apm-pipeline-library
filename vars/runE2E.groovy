@@ -18,50 +18,74 @@
 /**
   Trigger the end 2 end testing job.
 
-  runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml')
+  runE2E(testMatrixFile: '.ci/.fleet-server.yml')
 */
 def call(Map args = [:]) {
-  def beatVersion = args.containsKey('beatVersion') ? args.beatVersion : error('runE2e: beatVersion parameter is required')
-  def gitHubCheckName = args.containsKey('gitHubCheckName') ? args.gitHubCheckName : error('runE2e: gitHubCheckName parameter is required')
-  def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
-  def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
-  def testMatrixFile = args.get('testMatrixFile', '')
-  def runTestsSuites = args.get('runTestsSuites', '')
-  def extraParameters = args.get('extraParameters', [])
 
   if (!env.JENKINS_URL?.contains('beats-ci')) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
   }
 
-  def e2eTestsPipeline = "${jobName}/${isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}"}"
+  def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
+  def fullJobName = args.get('fullJobName', '')
+  def gitHubCheckName = args.get('gitHubCheckName', '')
+  def propagate = args.get('propagate', false)
+  def wait = args.get('wait', false)
 
-  def parameters = [
-    booleanParam(name: 'forceSkipGitChecks', value: true),
-    booleanParam(name: 'forceSkipPresubmit', value: true),
-    booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
-    string(name: 'BEAT_VERSION', value: beatVersion),
-    string(name: 'GITHUB_CHECK_NAME', value: gitHubCheckName),
-    string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
-    string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)
-  ]
-
-  if (testMatrixFile?.trim()) {
-    parameters << string(name: 'testMatrixFile', value: testMatrixFile)
+  if (jobName?.trim() && fullJobName?.trim()) {
+    log(level: 'WARNING', text: 'runE2E: jobName amd fullJobName are set. fullJobName param got precedency instead.')
   }
 
-  if (runTestsSuites?.trim()) {
-    parameters << string(name: 'runTestsSuites', value: runTestsSuites)
-  }
-
-  extraParameters?.each { it
-    parameters << it
-  }
+  def e2eTestsPipeline = (fullJobName?.trim()) ? fullJobName : "${jobName}/${isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}"}"
 
   build(job: "${e2eTestsPipeline}",
-    parameters: parameters,
-    propagate: false,
-    wait: false
+    parameters: createParameters(args),
+    propagate: propagate,
+    wait: wait
   )
 
-  githubNotify(context: "${gitHubCheckName}", description: "${gitHubCheckName} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${e2eTestsPipeline.replaceAll('/','+')}")
+  if (gitHubCheckName?.trim()) {
+    githubNotify(context: "${gitHubCheckName}",
+                description: "${gitHubCheckName} ...",
+                status: 'PENDING',
+                targetUrl: "${env.JENKINS_URL}search/?q=${e2eTestsPipeline.replaceAll('/','+')}")
+  }
+}
+
+def createParameters(Map args = [:]) {
+  def beatVersion = args.get('beatVersion', '')
+  def gitHubCheckName = args.get('gitHubCheckName', '')
+  def gitHubCheckRepo = args.get('gitHubCheckRepo', '')
+  def gitHubCheckSha1 = args.get('gitHubCheckSha1', '')
+  def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
+  def forceSkipGitChecks = args.get('forceSkipGitChecks', true)
+  def forceSkipPresubmit = args.get('forceSkipPresubmit', true)
+  def runTestsSuites = args.get('runTestsSuites', '')
+  def slackChannel = args.get('slackChannel', '')
+  def testMatrixFile = args.get('testMatrixFile', '')
+
+  def parameters = [
+    booleanParam(name: 'forceSkipGitChecks', value: forceSkipGitChecks),
+    booleanParam(name: 'forceSkipPresubmit', value: forceSkipPresubmit),
+    booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
+  ]
+
+  addStringParameterIfKey(beatVersion, 'BEAT_VERSION', parameters)
+  addStringParameterIfKey(gitHubCheckSha1, 'GITHUB_CHECK_SHA1', parameters)
+  addStringParameterIfKey(gitHubCheckRepo, 'GITHUB_CHECK_REPO', parameters)
+  addStringParameterIfKey(gitHubCheckName, 'GITHUB_CHECK_NAME', parameters)
+  addStringParameterIfKey(runTestsSuites, 'runTestsSuites', parameters)
+  addStringParameterIfKey(slackChannel, 'slackChannel', parameters)
+  addStringParameterIfKey(testMatrixFile, 'testMatrixFile', parameters)
+
+  return parameters
+}
+
+def addStringParameterIfKey(arg, name, parameters) {
+  if (parameters == null) {
+    return
+  }
+  if (arg?.trim()) {
+    parameters << string(name: name, value: arg)
+  }
 }

@@ -35,42 +35,32 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_beatVersion() throws Exception {
-    testMissingArgument('beatVersion') {
-      script.call()
-    }
-  }
-
-  @Test
-  void test_without_gitHubCheckName() throws Exception {
-    testMissingArgument('gitHubCheckName') {
-      script.call(beatVersion: 'foo')
-    }
-  }
-
-  @Test
-  void test_prs() throws Exception {
+  void test_prs_with_default() throws Exception {
     helper.registerAllowedMethod('isPR', { return true })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar')
+    script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/main'))
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=false'))
+    assertTrue(assertMethodCallContainsPattern('booleanParam', 'forceSkipGitChecks, value=true'))
+    assertTrue(assertMethodCallContainsPattern('booleanParam', 'forceSkipPresubmit, value=true'))
     assertFalse(assertMethodCallContainsPattern('string', 'testMatrixFile'))
     assertFalse(assertMethodCallContainsPattern('string', 'runTestsSuites'))
-    assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
+    assertTrue(assertMethodCallOccurrences('githubNotify', 0))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_branches() throws Exception {
+  void test_branches_with_default() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar')
+    script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/7.x'))
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=true'))
+    assertTrue(assertMethodCallContainsPattern('booleanParam', 'forceSkipGitChecks, value=true'))
+    assertTrue(assertMethodCallContainsPattern('booleanParam', 'forceSkipPresubmit, value=true'))
     assertFalse(assertMethodCallContainsPattern('string', 'testMatrixFile'))
     assertFalse(assertMethodCallContainsPattern('string', 'runTestsSuites'))
-    assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
+    assertTrue(assertMethodCallOccurrences('githubNotify', 0))
     assertJobStatusSuccess()
   }
 
@@ -93,9 +83,28 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_fullJobName() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(jobName: 'my-job', fullJobName: 'folder/job-foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('build', 'job=folder/job-foo'))
+    assertTrue(assertMethodCallContainsPattern('log', 'fullJobName param got precedency instead'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_gitHubCheckName() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(gitHubCheckName: 'bar', fullJobName: 'folder/job-foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_testMatrixFile() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', testMatrixFile: '.ci/test.yml')
+    script.call(testMatrixFile: '.ci/test.yml')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('string', 'testMatrixFile, value=.ci/test.yml'))
     assertJobStatusSuccess()
@@ -104,22 +113,16 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_runTestsSuites() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', runTestsSuites: 'my-suite')
+    script.call(runTestsSuites: 'my-suite')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('string', 'runTestsSuites, value=my-suite'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_extraParameters() throws Exception {
-    helper.registerAllowedMethod('isPR', { return false })
-    // extraParameters format should be based on the support parameters (string, booleanParam) and so on
-    // but the testing framework does not support string or booleanParam at this test level.
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', extraParameters: [ 'foo': 'bar', 'another': 'value'])
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'foo=bar'))
-    assertTrue(assertMethodCallContainsPattern('build', 'another=value'))
-    assertJobStatusSuccess()
+  void test_addKeyIfExists() throws Exception {
+    assertTrue(script.addKeyIfExists('key', 'value', null) == null)
+    assertTrue(script.addKeyIfExists('key', 'value', []).size() > 0)
   }
 
   @Test
