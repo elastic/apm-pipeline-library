@@ -54,34 +54,21 @@ def call(Map args = [:]) {
 }
 
 def createParameters(Map args = [:]) {
-  def beatVersion = args.get('beatVersion', '')
-  def gitHubCheckName = args.get('gitHubCheckName', '')
-  def gitHubCheckRepo = args.get('gitHubCheckRepo', '')
-  def gitHubCheckSha1 = args.get('gitHubCheckSha1', '')
-  def kibanaVersion = args.get('kibanaVersion', '')
-  def nightlyScenarios = args.get('nightlyScenarios', false)
-  def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
-  def forceSkipGitChecks = args.get('forceSkipGitChecks', true)
-  def forceSkipPresubmit = args.get('forceSkipPresubmit', true)
-  def runTestsSuites = args.get('runTestsSuites', '')
-  def slackChannel = args.get('slackChannel', '')
-  def testMatrixFile = args.get('testMatrixFile', '')
-
   def parameters = [
-    booleanParam(name: 'forceSkipGitChecks', value: forceSkipGitChecks),
-    booleanParam(name: 'forceSkipPresubmit', value: forceSkipPresubmit),
-    booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
-    booleanParam(name: 'NIGHTLY_SCENARIOS', value: nightlyScenarios),
+    booleanParam(name: 'forceSkipGitChecks', value: args.get('forceSkipGitChecks', true)),
+    booleanParam(name: 'forceSkipPresubmit', value: args.get('forceSkipPresubmit', true)),
+    booleanParam(name: 'notifyOnGreenBuilds', value: args.get('notifyOnGreenBuilds', !isPR())),
+    booleanParam(name: 'NIGHTLY_SCENARIOS', value: args.get('nightlyScenarios', false)),
   ]
 
-  addStringParameterIfValue(beatVersion, 'BEAT_VERSION', parameters)
-  addStringParameterIfValue(gitHubCheckSha1, 'GITHUB_CHECK_SHA1', parameters)
-  addStringParameterIfValue(gitHubCheckRepo, 'GITHUB_CHECK_REPO', parameters)
-  addStringParameterIfValue(gitHubCheckName, 'GITHUB_CHECK_NAME', parameters)
-  addStringParameterIfValue(kibanaVersion, 'KIBANA_VERSION', parameters)
-  addStringParameterIfValue(runTestsSuites, 'runTestsSuites', parameters)
-  addStringParameterIfValue(slackChannel, 'slackChannel', parameters)
-  addStringParameterIfValue(testMatrixFile, 'testMatrixFile', parameters)
+  addStringParameterIfValue(args.get('beatVersion', ''), 'BEAT_VERSION', parameters)
+  addStringParameterIfValue(args.get('gitHubCheckSha1', ''), 'GITHUB_CHECK_SHA1', parameters)
+  addStringParameterIfValue(args.get('gitHubCheckRepo', ''), 'GITHUB_CHECK_REPO', parameters)
+  addStringParameterIfValue(args.get('gitHubCheckName', ''), 'GITHUB_CHECK_NAME', parameters)
+  addStringParameterIfValue(args.get('kibanaVersion', ''), 'KIBANA_VERSION', parameters)
+  addStringParameterIfValue(args.get('runTestsSuites', ''), 'runTestsSuites', parameters)
+  addStringParameterIfValue(args.get('slackChannel', ''), 'slackChannel', parameters)
+  addStringParameterIfValue(args.get('testMatrixFile', ''), 'testMatrixFile', parameters)
 
   return parameters
 }
