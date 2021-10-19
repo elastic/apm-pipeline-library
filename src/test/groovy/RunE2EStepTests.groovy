@@ -121,8 +121,8 @@ class RunE2eStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_addKeyIfExists() throws Exception {
-    assertTrue(script.addKeyIfExists('key', 'value', null) == null)
-    assertTrue(script.addKeyIfExists('key', 'value', []).size() > 0)
+    assertTrue(script.addStringParameterIfKey('key', 'value', null) == null)
+    assertTrue(script.addStringParameterIfKey('key', 'value', []).size() > 0)
   }
 
   @Test
