@@ -1,10 +1,10 @@
 Trigger the end 2 end testing job.
 
 ```
-  runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+  runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
 
   // Run the e2e and add further parameters.
-  runE2e(beatVersion: '7.15.0-SNAPSHOT',
+  runE2E(beatVersion: '7.15.0-SNAPSHOT',
          gitHubCheckName: 'fleet-server-e2e-testing',
          extraParameters: [ booleanParam(name: 'NIGHTLY_SCENARIOS', value: true),
                             string(name: 'runTestsSuites', value: 'fleet'),

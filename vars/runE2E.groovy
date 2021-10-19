@@ -18,7 +18,7 @@
 /**
   Trigger the end 2 end testing job.
 
-  runE2e(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml')
+  runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml')
 */
 def call(Map args = [:]) {
   def beatVersion = args.containsKey('beatVersion') ? args.beatVersion : error('runE2e: beatVersion parameter is required')

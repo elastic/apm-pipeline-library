@@ -26,7 +26,7 @@ class RunE2eStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/runE2e.groovy')
+    script = loadScript('vars/runE2E.groovy')
     addEnvVar('JENKINS_URL', 'https://beats-ci.elastic.co/')
     addEnvVar('CHANGE_TARGET', 'main')
     addEnvVar('JOB_BASE_NAME', '7.x')
