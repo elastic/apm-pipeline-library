@@ -2379,7 +2379,7 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 * secret: Vault secret where the user, password or apiKey are stored.
 
 ## runE2E
-Trigger the end 2 end testing job.
+Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job/e2e-testing-mbp/ is the default one though it can be customised if needed.
 
 ```
   runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
