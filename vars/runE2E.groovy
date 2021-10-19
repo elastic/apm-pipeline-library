@@ -26,20 +26,20 @@ def call(Map args = [:]) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
   }
 
-  def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
-  def fullJobName = args.get('fullJobName', '')
+  def jobPath = args.get('jobPath', 'e2e-tests/e2e-testing-mbp')
+  def jobName = args.get('jobName', isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}")
   def gitHubCheckName = args.get('gitHubCheckName', '')
   def disableGitHubCheck =  args.get('disableGitHubCheck', false)
   def propagate = args.get('propagate', false)
   def wait = args.get('wait', false)
 
-  if (jobName?.trim() && fullJobName?.trim()) {
-    log(level: 'WARNING', text: 'runE2E: jobName amd fullJobName are set. fullJobName param got precedency instead.')
+  if (!jobPath?.trim() && !jobName?.trim()) {
+    error('runE2E: jobName and suffixJobName are empty.')
   }
 
-  def e2eTestsPipeline = (fullJobName?.trim()) ? fullJobName : "${jobName}/${isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}"}"
+  def e2eTestsPipeline = "${jobPath}/${jobName}"
 
-  build(job: "${e2eTestsPipeline}",
+  build(job: e2eTestsPipeline,
     parameters: createParameters(args),
     propagate: propagate,
     wait: wait

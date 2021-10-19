@@ -67,29 +67,45 @@ class RunE2EStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_notifyOnGreenBuilds() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', notifyOnGreenBuilds: true)
+    script.call(notifyOnGreenBuilds: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=true'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_jobName() throws Exception {
+  void test_with_jobPath() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', jobName: 'my-job')
+    script.call(jobPath: 'my-job')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('build', 'job=my-job/7.x'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_fullJobName() throws Exception {
+  void test_with_jobName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(jobName: 'my-job', fullJobName: 'folder/job-foo')
+    script.call(jobName: 'folder/job-foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=folder/job-foo'))
-    assertTrue(assertMethodCallContainsPattern('log', 'fullJobName param got precedency instead'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/folder/job-foo'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_jobName_and_jobPath() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(jobName: 'my-job', jobPath: 'folder')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('build', 'job=folder/my-job'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_empty_jobName_and_jobPath() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    testMissingArgument('jobName and suffixJobName', 'are empty') {
+      script.call(jobName: '', jobPath: '')
+    }
   }
 
   @Test
