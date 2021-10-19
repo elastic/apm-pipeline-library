@@ -2378,6 +2378,38 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 
 * secret: Vault secret where the user, password or apiKey are stored.
 
+## runE2E
+Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job/e2e-testing-mbp/ is the default one though it can be customised if needed.
+
+```
+  runE2E(jobName: 'foo', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+
+  // Run the e2e and add further parameters.
+  runE2E(beatVersion: '7.15.0-SNAPSHOT',
+         gitHubCheckName: 'fleet-server-e2e-testing',
+         runTestsSuites: 'fleet',
+         slackChannel: "elastic-agent")
+```
+
+* *jobName*: the name of the job. Optional. Default 'e2e-tests/e2e-testing-mbp'
+* *fullJobName*: the name of the full job, it precedes jobName and requires the full name.
+* *gitHubCheckName*: the GitHub check name. Optional
+* *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
+* *gitHubCheckSha1*: the git commit for the github check. Optional
+* *beatVersion*: the beat Version. Optional
+* *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
+* *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
+* *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
+* *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
+* *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
+* *testMatrixFile*: the file with the test suite and scenarios to be tested. Optional
+* *propagate*: the test suites to test. Optional (default false)
+* *wait*: the test suites to test. Optional (default false)
+
+**NOTE**: It works only in the `beats-ci` controller.
+
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
+
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
 
