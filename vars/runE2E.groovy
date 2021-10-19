@@ -29,6 +29,7 @@ def call(Map args = [:]) {
   def jobName = args.get('jobName', 'e2e-tests/e2e-testing-mbp')
   def fullJobName = args.get('fullJobName', '')
   def gitHubCheckName = args.get('gitHubCheckName', '')
+  def disableGitHubCheck =  args.get('disableGitHubCheck', false)
   def propagate = args.get('propagate', false)
   def wait = args.get('wait', false)
 
@@ -44,7 +45,7 @@ def call(Map args = [:]) {
     wait: wait
   )
 
-  if (gitHubCheckName?.trim()) {
+  if (gitHubCheckName?.trim() && !disableGitHubCheck) {
     githubNotify(context: "${gitHubCheckName}",
                 description: "${gitHubCheckName} ...",
                 status: 'PENDING',
@@ -57,6 +58,8 @@ def createParameters(Map args = [:]) {
   def gitHubCheckName = args.get('gitHubCheckName', '')
   def gitHubCheckRepo = args.get('gitHubCheckRepo', '')
   def gitHubCheckSha1 = args.get('gitHubCheckSha1', '')
+  def kibanaVersion = args.get('kibanaVersion', '')
+  def nightlyScenarios = args.get('nightlyScenarios', false)
   def notifyOnGreenBuilds = args.get('notifyOnGreenBuilds', !isPR())
   def forceSkipGitChecks = args.get('forceSkipGitChecks', true)
   def forceSkipPresubmit = args.get('forceSkipPresubmit', true)
@@ -68,12 +71,14 @@ def createParameters(Map args = [:]) {
     booleanParam(name: 'forceSkipGitChecks', value: forceSkipGitChecks),
     booleanParam(name: 'forceSkipPresubmit', value: forceSkipPresubmit),
     booleanParam(name: 'notifyOnGreenBuilds', value: notifyOnGreenBuilds),
+    booleanParam(name: 'NIGHTLY_SCENARIOS', value: nightlyScenarios),
   ]
 
   addStringParameterIfValue(beatVersion, 'BEAT_VERSION', parameters)
   addStringParameterIfValue(gitHubCheckSha1, 'GITHUB_CHECK_SHA1', parameters)
   addStringParameterIfValue(gitHubCheckRepo, 'GITHUB_CHECK_REPO', parameters)
   addStringParameterIfValue(gitHubCheckName, 'GITHUB_CHECK_NAME', parameters)
+  addStringParameterIfValue(kibanaVersion, 'KIBANA_VERSION', parameters)
   addStringParameterIfValue(runTestsSuites, 'runTestsSuites', parameters)
   addStringParameterIfValue(slackChannel, 'slackChannel', parameters)
   addStringParameterIfValue(testMatrixFile, 'testMatrixFile', parameters)
