@@ -10,8 +10,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
          slackChannel: "elastic-agent")
 ```
 
-* *jobPath*: the location of the jobPath. Optional (default 'e2e-tests/e2e-testing-mbp')
-* *jobName*: the name of the relative job. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
+* *jobName*: the name of the e2e job. In a multibranch pipeline then the name of the job could be the branch. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
 * *disableGitHubCheck*: whether to disable the GitHub check notifications. (default false)
 * *gitHubCheckName*: the GitHub check name. Optional
 * *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional

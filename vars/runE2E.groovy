@@ -26,18 +26,18 @@ def call(Map args = [:]) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
   }
 
-  def jobPath = args.get('jobPath', 'e2e-tests/e2e-testing-mbp')
+  def jobFolderPath = 'e2e-tests/e2e-testing-mbp'
   def jobName = args.get('jobName', isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}")
   def gitHubCheckName = args.get('gitHubCheckName', '')
   def disableGitHubCheck =  args.get('disableGitHubCheck', false)
   def propagate = args.get('propagate', false)
   def wait = args.get('wait', false)
 
-  if (!jobPath?.trim() && !jobName?.trim()) {
-    error('runE2E: jobName and suffixJobName are empty.')
+  if (!jobName?.trim()) {
+    error('runE2E: jobName is empty.')
   }
 
-  def e2eTestsPipeline = "${jobPath}/${jobName}"
+  def e2eTestsPipeline = "${jobFolderPath}/${jobName}"
 
   build(job: e2eTestsPipeline,
     parameters: createParameters(args),

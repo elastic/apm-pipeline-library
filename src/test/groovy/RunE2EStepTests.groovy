@@ -74,37 +74,19 @@ class RunE2EStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_jobPath() throws Exception {
-    helper.registerAllowedMethod('isPR', { return false })
-    script.call(jobPath: 'my-job')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=my-job/7.x'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_with_jobName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(jobName: 'folder/job-foo')
+    script.call(jobName: 'job-foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/folder/job-foo'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/job-foo'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_jobName_and_jobPath() throws Exception {
+  void test_with_empty_jobName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(jobName: 'my-job', jobPath: 'folder')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=folder/my-job'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_with_empty_jobName_and_jobPath() throws Exception {
-    helper.registerAllowedMethod('isPR', { return false })
-    testMissingArgument('jobName and suffixJobName', 'are empty') {
-      script.call(jobName: '', jobPath: '')
+    testMissingArgument('jobName', 'is empty') {
+      script.call(jobName: '')
     }
   }
 
