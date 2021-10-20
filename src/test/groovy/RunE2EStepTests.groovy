@@ -67,7 +67,7 @@ class RunE2EStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_notifyOnGreenBuilds() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', notifyOnGreenBuilds: true)
+    script.call(notifyOnGreenBuilds: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('booleanParam', 'notifyOnGreenBuilds, value=true'))
     assertJobStatusSuccess()
@@ -76,28 +76,35 @@ class RunE2EStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_jobName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(beatVersion: 'foo', gitHubCheckName: 'bar', jobName: 'my-job')
+    script.call(jobName: 'job-foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=my-job/7.x'))
+    assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/job-foo'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_with_fullJobName() throws Exception {
+  void test_with_empty_jobName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(jobName: 'my-job', fullJobName: 'folder/job-foo')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=folder/job-foo'))
-    assertTrue(assertMethodCallContainsPattern('log', 'fullJobName param got precedency instead'))
-    assertJobStatusSuccess()
+    testMissingArgument('jobName', 'is empty') {
+      script.call(jobName: '')
+    }
   }
 
   @Test
   void test_with_gitHubCheckName() throws Exception {
     helper.registerAllowedMethod('isPR', { return false })
-    script.call(gitHubCheckName: 'bar', fullJobName: 'folder/job-foo')
+    script.call(gitHubCheckName: 'bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubNotify', 'context=bar'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_disableGitHubCheck() throws Exception {
+    helper.registerAllowedMethod('isPR', { return false })
+    script.call(gitHubCheckName: 'bar', disableGitHubCheck: true)
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('githubNotify', 0))
     assertJobStatusSuccess()
   }
 
@@ -127,9 +134,9 @@ class RunE2EStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_createParameters() throws Exception {
-    assertTrue(script.createParameters().size() == 3)
-    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml').size() == 4)
-    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml', gitHubCheckName: 'bar').size() == 5)
+    assertTrue(script.createParameters().size() == 4)
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml').size() == 5)
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml', gitHubCheckName: 'bar').size() == 6)
   }
 
   @Test
