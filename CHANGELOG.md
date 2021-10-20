@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.254 (20/10/2021)
+
+#### 🚀 Enhancements
+
+-  Add more parameters in runE2E [#1328](https://github.com/elastic/apm-pipeline-library/pull/1328)
+-  Support runE2E step [#1325](https://github.com/elastic/apm-pipeline-library/pull/1325)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: use Ubuntu workers [#1327](https://github.com/elastic/apm-pipeline-library/pull/1327)
+
+#### 🙈 No user affected
+
+-  docs: fix codespell [#1324](https://github.com/elastic/apm-pipeline-library/pull/1324)
+
+#### 📦 Dependency updates
+
+- [**dependencies**][**java**] chore(deps): bump opentelemetry from 0.20 to 0.21 [#1323](https://github.com/elastic/apm-pipeline-library/pull/1323)
+
 ## v1.1.253 (15/10/2021)
 
 #### 🚀 Enhancements
