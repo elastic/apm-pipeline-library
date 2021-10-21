@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.255 (21/10/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix parameter name for the e2e pipeline [#1331](https://github.com/elastic/apm-pipeline-library/pull/1331)
+
 ## v1.1.254 (20/10/2021)
 
 #### 🚀 Enhancements
