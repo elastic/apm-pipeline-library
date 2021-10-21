@@ -35,6 +35,7 @@ CI_BUILD_REPORT="ci-build-report.json"
 CHANGESET_INFO="changeSet-info.json"
 ENV_INFO="env-info.json"
 JOB_INFO="job-info.json"
+OS_INFO="os-info.json"
 PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
 STEPS_INFO="steps-info.json"
@@ -140,6 +141,35 @@ function fetchAndPrepareBuildReport() {
     normaliseArtifacts "${file}"
     normaliseBuildReport "${file}"
     normaliseChangeset "${file}"
+    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+}
+
+## This function uses Linux's /etc/os-release file to extract OS information.
+## cat /etc/os-release
+##    NAME="Ubuntu"
+##    VERSION="20.04.2 LTS (Focal Fossa)"
+##    ID=ubuntu
+##    ID_LIKE=debian
+##    PRETTY_NAME="Ubuntu 20.04.2 LTS"
+##    VERSION_ID="20.04"
+##    HOME_URL="https://www.ubuntu.com/"
+##    SUPPORT_URL="https://help.ubuntu.com/"
+##    BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+##    PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+##    VERSION_CODENAME=focal
+##    UBUNTU_CODENAME=focal
+## Besides, it uses "uname" to extract hardware platform information.
+##     uname -i, --hardware-platform  print the hardware platform (non-portable)
+function fetchAndPrepareOSReport() {
+    file=$1
+    key=$2
+    default=$3
+
+    name=$(grep -E '^(NAME)=' /etc/os-release | awk -F\" '{print $(NF-1)}')
+    version=$(grep -E '^(VERSION)=' /etc/os-release | awk -F\" '{print $(NF-1)}')
+
+    echo "INFO: fetchAndPrepareOSReport (see ${file})"
+    echo "{\"name\": \"${name}\", \"version\": \"${version}\", \"arch\": \"$(uname -i)\" }" > "${file}"
     echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
 }
 
@@ -453,6 +483,7 @@ fi
 
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
+fetchAndPrepareOSReport "${OS_INFO}" "os" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
