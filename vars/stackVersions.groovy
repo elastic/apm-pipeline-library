@@ -55,7 +55,7 @@ def dev(Map args = [:]){
 
 def release(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def releaseVersion = "7.15.0"
+  def releaseVersion = "6.8.20"
   return version(releaseVersion, args)
 }
 
