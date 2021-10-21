@@ -67,7 +67,7 @@ def createParameters(Map args = [:]) {
   addStringParameterIfValue(args.get('gitHubCheckName', ''), 'GITHUB_CHECK_NAME', parameters)
   addStringParameterIfValue(args.get('kibanaVersion', ''), 'KIBANA_VERSION', parameters)
   addStringParameterIfValue(args.get('runTestsSuites', ''), 'runTestsSuites', parameters)
-  addStringParameterIfValue(args.get('slackChannel', ''), 'slackChannel', parameters)
+  addStringParameterIfValue(args.get('slackChannel', ''), 'SLACK_CHANNEL', parameters)
   addStringParameterIfValue(args.get('testMatrixFile', ''), 'testMatrixFile', parameters)
 
   return parameters
