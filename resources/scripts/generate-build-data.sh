@@ -163,7 +163,6 @@ function fetchAndPrepareBuildReport() {
 function fetchAndPrepareOSReport() {
     file=$1
     key=$2
-    default=$3
 
     name=$(grep -E '^(NAME)=' /etc/os-release | awk -F\" '{print $(NF-1)}')
     version=$(grep -E '^(VERSION)=' /etc/os-release | awk -F\" '{print $(NF-1)}')
@@ -483,7 +482,7 @@ fi
 
 ### Prepare build report file
 echo '{' > "${BUILD_REPORT}"
-fetchAndPrepareOSReport "${OS_INFO}" "os" "${DEFAULT_HASH}"
+fetchAndPrepareOSReport "${OS_INFO}" "os"
 fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
