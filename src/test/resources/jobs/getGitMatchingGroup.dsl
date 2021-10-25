@@ -61,9 +61,10 @@ DSL = '''pipeline {
       steps {
         gitCheckout(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
                     repo: 'https://github.com/elastic/beats.git',
-                    branch: 'master',
+                    branch: '85d35917f05482a66e58a7f6f4a46d48bcb3f872',
                     basedir: 'beats',
-                    shallow: false)
+                    shallow: true,
+                    depth: 2)
         dir('beats') {
           script {
             // https://github.com/elastic/beats/pull/28577/files
