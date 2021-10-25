@@ -40,6 +40,8 @@ def call(Map args = [:]){
   def dryRun = args?.data
   def noCache = args?.get('noCache', false)
 
+  log(level: 'INFO', text: 'githubApiCall: just been called.')
+
   log(level: 'DEBUG', text: "githubApiCall: REST API call ${url}")
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
     [var: 'GITHUB_TOKEN', password: "${token}"],
@@ -56,7 +58,7 @@ def call(Map args = [:]){
           // toJSON(data).toString() caused some issues with metadata entries in the output.
           json = httpRequest(parameters + [method: method, data: new groovy.json.JsonBuilder(data).toPrettyString()])
         } else {
-          // Force default method from GET to POST if it's not overriden
+          // Force default method from GET to POST if it's not overridden
           if (forceMethod) {
             parameters << [method: method]
           }
