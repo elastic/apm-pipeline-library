@@ -55,7 +55,8 @@ def toJunit(String name, String status, String message, reportSkipped=false) {
   if (status?.toLowerCase()?.contains('skipped') && reportSkipped) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else if (status?.toLowerCase()?.contains('failed')) {
-    output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
+    // use error and failure to populate the errorStackTrace when using resources/scripts/generate-build-data.sh
+    output += "><error message=\"error\"/><failure message=![CDATA[${normalise(message)}]]/></testcase>"
   } else {
     output += " />"
   }
