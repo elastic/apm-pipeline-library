@@ -50,6 +50,8 @@ def call(Map args = [:]){
     error('githubReleasePublish: Environment not initialized. Try to call githubEnv step before')
   }
 
+  log(level: 'INFO', text: 'githubReleasePublish: just been called.')
+
   def token = getGithubToken()
 
   def id = args.containsKey('id') ? args.id : error('githubReleasePublish: id parameter is required.')
