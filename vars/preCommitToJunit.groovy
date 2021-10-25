@@ -56,7 +56,7 @@ def toJunit(String name, String status, String message, reportSkipped=false) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else if (status?.toLowerCase()?.contains('failed')) {
     // use error and failure to populate the errorStackTrace when using resources/scripts/generate-build-data.sh
-    output += "><error message=\"error\"/><failure message=![CDATA[${normalise(message)}]]/></testcase>"
+    output += "><error message=\"error\">![CDATA[${normaliseXml(normalise(message))}]]</error></testcase>"
   } else {
     output += " />"
   }
@@ -67,4 +67,8 @@ def toJunit(String name, String status, String message, reportSkipped=false) {
 def normalise(String message) {
   String xml10pattern = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff]"
   return message.replaceAll(xml10pattern, '')
+}
+
+def normaliseXml(String message) {
+  return message.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&', '&amp;')
 }
