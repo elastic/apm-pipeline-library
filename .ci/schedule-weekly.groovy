@@ -41,7 +41,7 @@ pipeline {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
         runWatcher(watcher: 'report-beats-top-failing-tests-weekly-master', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests in master branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.x', subject: "[7.x] ${env.YYYY_MM_DD}: Top failing Beats tests in 7.x branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.16', subject: "[7.16] ${env.YYYY_MM_DD}: Top failing Beats tests in 7.16 branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
         runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7-release', subject: "[7-release] ${env.YYYY_MM_DD}: Top failing Beats tests in 7 release branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
       }
     }
