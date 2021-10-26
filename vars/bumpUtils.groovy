@@ -40,3 +40,12 @@ def prepareContext(Map args = [:]) {
       branch: args.branchName,
       credentialsId: args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'))
 }
+
+def getCurrentReleaseFor7Minor() {
+  def stackVersions = readProperties(text: libraryResource('versions/releases.properties'))
+  def version = stackVersions['current_7']
+  if (!version?.trim()) {
+    error('getCurrentReleaseFor7Minor: "current_7" has got an empty value')
+  }
+  return version
+}
