@@ -93,15 +93,28 @@ void testOSArg() throws Exception {
 }
 
   @Test
-  void testPkgs() throws Exception {
+  void testPkgs_go_1_12() throws Exception {
     def isOK = false
     script.call(version: '1.12.2', pkgs: [ "P1", "P2" ]){
       isOK = definedVariables('1.12.2', 'windows')
     }
     printCallStack()
     assertTrue(isOK)
-    assertTrue(assertMethodCallContainsPattern('bat', 'Installing P1'))
-    assertTrue(assertMethodCallContainsPattern('bat', 'Installing P2'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'go get -u P1'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'go get -u P2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testPkgs_go_1_16() throws Exception {
+    def isOK = false
+    script.call(version: "1.16.1", pkgs: [ "P1", "P2" ]){
+      isOK = definedVariables('1.16.1', 'windows')
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('bat', 'go install P1@latest'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'go install P2@latest'))
     assertJobStatusSuccess()
   }
 

@@ -38,8 +38,8 @@ def call(Map args = [:]) {
 }
 
 /**
-  Alphanumeric and dash are allowed but not ending with dash
+  Alphanumeric and dash are allowed but not ending nor starting with dash
 */
 def manipulateString(String value, int size) {
-  return value.replaceAll("[\\W]|-", "-").take(size).replaceAll('-$', 'a')
+  return value.replaceAll("[\\W]|-", "-").take(size).replaceAll('-$', 'a').replaceAll('^-', 'a')
 }

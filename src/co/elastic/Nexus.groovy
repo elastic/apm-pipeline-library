@@ -22,13 +22,17 @@ import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.util.Base64
 
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 import groovy.json.JsonSlurperClassic
 
 private static HttpURLConnection createConnection(String baseUrl, String username, String password, String path) {
     String creds = "${username}:${password}"
     URL url = new URL("${baseUrl}/${path}")
     HttpURLConnection conn = (HttpURLConnection)url.openConnection()
-    conn.addRequestProperty("Authorization", "Basic " + new String(Base64.encoder.encode(creds.getBytes())))
+    String encoded_auth = new String(Base64.encoder.encode(creds.getBytes()))
+    conn.addRequestProperty("Authorization", "Basic ${encoded_auth}")
     conn.addRequestProperty("Accept", "application/json")
     return conn
 }
@@ -46,10 +50,10 @@ private static void addData(HttpURLConnection conn, String method, byte[] bytes)
 
 // make the request, and parse the response as json
 private static Object getData(HttpURLConnection conn) {
-    Object data = null
-    conn.inputStream.withReader('UTF-8') { Reader reader ->
-        data = new JsonSlurperClassic().parse(reader)
-    }
+    Object data = null;
+    String response = conn.getInputStream().getText('UTF-8') 
+    def slurper = new groovy.json.JsonSlurperClassic()
+    data = slurper.parseText(response)
     return data
 }
 

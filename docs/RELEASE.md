@@ -8,7 +8,7 @@ has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](http
 Follow the below steps:
 
 * Make sure your PRs contain the proper Github labels to group them under the proper changelog section, as defined in [Gren's configuration file, `groupBy` section](../.grenrc.js).
-* Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/build?delay=0sec) 
+* Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/build?delay=0sec)
 * Choose `Build with Parameters`
 * Select the `make_release` checkbox.
 * Click `Build` and wait for ~25 minutes to complete.

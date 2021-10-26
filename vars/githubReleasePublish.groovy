@@ -35,7 +35,7 @@ the data structure of the return.
 
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0', // Release name 
+      name: 'Release v1.0.0', // Release name
     )
 
 To learn more about what individual flags mean, please visit the GitHub
@@ -49,6 +49,8 @@ def call(Map args = [:]){
   if(env.ORG_NAME == null || env.REPO_NAME == null){
     error('githubReleasePublish: Environment not initialized. Try to call githubEnv step before')
   }
+
+  log(level: 'INFO', text: 'githubReleasePublish: just been called.')
 
   def token = getGithubToken()
 

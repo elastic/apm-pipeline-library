@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.2.3
+    rev: v4.0.1
     hooks:
     -   id: check-case-conflict
         exclude: ^target/
@@ -17,6 +17,8 @@ repos:
         exclude: ^target/
     -   id: end-of-file-fixer
         exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md)
+    -   id: mixed-line-ending
+    -   id: trailing-whitespace
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
@@ -37,7 +39,7 @@ repos:
         types: [yaml]
         exclude: (^.pre-commit-config.yaml$|^.pre-commit-hooks.yaml$|^.ci/.yamlint.yml$|^target/)
 
--   repo: git@github.com:elastic/apm-pipeline-library
+-   repo: https://github.com/elastic/apm-pipeline-library.git
     rev: current
     hooks:
     -   id: check-bash-syntax
@@ -53,3 +55,8 @@ repos:
     -   id: remove-en-dashes
         exclude: ^src/test/resources/mappings/
     -   id: check-jjbb
+
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.1.0
+    hooks:
+    -   id: codespell

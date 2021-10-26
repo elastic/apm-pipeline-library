@@ -53,7 +53,7 @@ pipeline {
   }
   options {
     // Let's ensure the pipeline doesn't get stale forever.
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
     // Default build rotation for the pipeline.
     //   When using the downstream pattern for the matrix then the build rotation
     //   should be less restrictive mainly because the @master is the one normally used
@@ -80,7 +80,9 @@ pipeline {
     // particular cron scheduler then it will be required to add the when condition
     // accordingly.
     // cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?(?:benchmark\\W+)?tests(?:\\W+please)?.*')
+    // obltGitHubComments is the default list of supported GitHub comments for the Observability
+    // projects. It can be extended with further regex patterns.
+    issueCommentTrigger("(${obltGitHubComments()}|^/run benchmark tests)")
   }
   parameters {
     // Let's use input parameters with capital cases.
@@ -170,6 +172,7 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
+              'arm',
               'debian-9',
               'ubuntu-18',
               'ubuntu-20'

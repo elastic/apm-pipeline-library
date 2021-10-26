@@ -1,5 +1,333 @@
 # Changelog
 
+## v1.1.255 (21/10/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix parameter name for the e2e pipeline [#1331](https://github.com/elastic/apm-pipeline-library/pull/1331)
+
+## v1.1.254 (20/10/2021)
+
+#### 🚀 Enhancements
+
+-  Add more parameters in runE2E [#1328](https://github.com/elastic/apm-pipeline-library/pull/1328)
+-  Support runE2E step [#1325](https://github.com/elastic/apm-pipeline-library/pull/1325)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: use Ubuntu workers [#1327](https://github.com/elastic/apm-pipeline-library/pull/1327)
+
+#### 🙈 No user affected
+
+-  docs: fix codespell [#1324](https://github.com/elastic/apm-pipeline-library/pull/1324)
+
+#### 📦 Dependency updates
+
+- [**dependencies**][**java**] chore(deps): bump opentelemetry from 0.20 to 0.21 [#1323](https://github.com/elastic/apm-pipeline-library/pull/1323)
+
+## v1.1.253 (15/10/2021)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support secret from vault [#1320](https://github.com/elastic/apm-pipeline-library/pull/1320)
+
+#### 🙈 No user affected
+
+-  pre-commit: fix linting [#1322](https://github.com/elastic/apm-pipeline-library/pull/1322)
+-  Update pre-commit [#1321](https://github.com/elastic/apm-pipeline-library/pull/1321)
+-  bump: obs-test-env is not a multibranch repo [#1319](https://github.com/elastic/apm-pipeline-library/pull/1319)
+
+## v1.1.252 (13/10/2021)
+
+#### 🚀 Enhancements
+
+-  Enable goDefaultVersion to read from the root folder or base_dir folder [#1316](https://github.com/elastic/apm-pipeline-library/pull/1316)
+
+#### 📚 Documentation
+
+-  changelog dependencies and pre-commit badge [#1315](https://github.com/elastic/apm-pipeline-library/pull/1315)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.19, 6.8.20, 7.14.2, 7.15.0, 7.15.1] [#1317](https://github.com/elastic/apm-pipeline-library/pull/1317)
+
+## v1.1.251 (11/10/2021)
+*No changelog for this release.*
+
+## v1.1.250 (06/10/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: add gotest.tools/gotestsum to basic Go packages [#1311](https://github.com/elastic/apm-pipeline-library/pull/1311)
+-  Add withGCPEnv step [#1310](https://github.com/elastic/apm-pipeline-library/pull/1310)
+
+## v1.1.249 (06/10/2021)
+
+#### ⚙️ CI
+
+-  Retry side effect [#1309](https://github.com/elastic/apm-pipeline-library/pull/1309)
+
+## v1.1.248 (05/10/2021)
+
+#### 📚 Documentation
+
+-  docs: update changelog [#1307](https://github.com/elastic/apm-pipeline-library/pull/1307)
+
+#### 🙈 No user affected
+
+-  [github][commands] for the observability-test-environments [#1308](https://github.com/elastic/apm-pipeline-library/pull/1308)
+
+## v1.1.247 (04/10/2021)
+
+#### 🚀 Enhancements
+
+-  Add a step to pass the Docker environment to closures [#1306](https://github.com/elastic/apm-pipeline-library/pull/1306)
+
+#### 🙈 No user affected
+
+-  Bump local jenkins instance [#1304](https://github.com/elastic/apm-pipeline-library/pull/1304)
+
+## v1.1.246 (29/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  fix: teach withGoEnv about Go executable package installation for Go 1.16 and up [#1300](https://github.com/elastic/apm-pipeline-library/pull/1300)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: rename CCS job to a more generic name [#1303](https://github.com/elastic/apm-pipeline-library/pull/1303)
+-  [bump][automation] skip backports for the automation [#1301](https://github.com/elastic/apm-pipeline-library/pull/1301)
+
+## v1.1.245 (23/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Retrieve 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
+
+#### 🙈 No user affected
+
+-  Fix nodejs GitHub command [#1298](https://github.com/elastic/apm-pipeline-library/pull/1298)
+
+## v1.1.244 (23/09/2021)
+
+#### 🙈 No user affected
+
+-  Exclude errors related to the approval-list and githubPrCheckApproved in the GitHub comment [#1295](https://github.com/elastic/apm-pipeline-library/pull/1295)
+-  Remove test stats in the Flakiness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
+
+## v1.1.243 (23/09/2021)
+
+#### 🚀 Enhancements
+
+-  Add GitHub commands for the Beats project [#1294](https://github.com/elastic/apm-pipeline-library/pull/1294)
+-  GitHub commands for the apm-server [#1292](https://github.com/elastic/apm-pipeline-library/pull/1292)
+
+#### ⚙️ CI
+
+-  Add GitHub commands with the description [#1293](https://github.com/elastic/apm-pipeline-library/pull/1293)
+
+## v1.1.242 (21/09/2021)
+
+#### 🚀 Enhancements
+
+-  Add GitHub comment bot commands at the end [#1290](https://github.com/elastic/apm-pipeline-library/pull/1290)
+-  Remove log output console and trend in the PR comment with the Build Status  [#1289](https://github.com/elastic/apm-pipeline-library/pull/1289)
+- [**backport-skip**] GitHub comment bot commands [#1278](https://github.com/elastic/apm-pipeline-library/pull/1278)
+
+#### 🙈 No user affected
+
+-  Use obltGitHubComments [#1288](https://github.com/elastic/apm-pipeline-library/pull/1288)
+-  [test-infra][beats-ci] validate windows-2019 with docker [#1280](https://github.com/elastic/apm-pipeline-library/pull/1280)
+
+#### ⚙️ CI
+
+- [**backport-skip**] standardise the issueCommentTrigger with obltGitHubComments [#1281](https://github.com/elastic/apm-pipeline-library/pull/1281)
+
+## v1.1.241 (20/09/2021)
+
+#### 🚀 Enhancements
+
+-  Support role and secret vault in dockerLogin [#1282](https://github.com/elastic/apm-pipeline-library/pull/1282)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: remove APM Server Docker images build [#1276](https://github.com/elastic/apm-pipeline-library/pull/1276)
+
+## v1.1.240 (14/09/2021)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: update the branch of the ccs pipeline [#1274](https://github.com/elastic/apm-pipeline-library/pull/1274)
+-  Beats webhook proof of concept [#1265](https://github.com/elastic/apm-pipeline-library/pull/1265)
+-  Enable Otel maven plugin [#1267](https://github.com/elastic/apm-pipeline-library/pull/1267)
+
+#### ⚙️ CI
+
+-  Support Windows workers for docker builds [#1273](https://github.com/elastic/apm-pipeline-library/pull/1273)
+
+## v1.1.239 (08/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation with hudson.PluginWrapper [#1266](https://github.com/elastic/apm-pipeline-library/pull/1266)
+
+#### 🙈 No user affected
+
+-  UTs for the withOtelEnv [#1262](https://github.com/elastic/apm-pipeline-library/pull/1262)
+
+#### ⚙️ CI
+
+-  Gather metrics for the apm-ci with apm-ci agents [#1263](https://github.com/elastic/apm-pipeline-library/pull/1263)
+-  Switch observability-dev checkouts from master branch by default to main branch [#1264](https://github.com/elastic/apm-pipeline-library/pull/1264)
+
+## v1.1.238 (06/09/2021)
+
+#### 🚀 Enhancements
+
+-  Support traceparent with otel [#1260](https://github.com/elastic/apm-pipeline-library/pull/1260)
+-  Add reused workers metrics in the apm-ci [#1259](https://github.com/elastic/apm-pipeline-library/pull/1259)
+
+#### 🐛 Bug Fixes
+
+-  Remove support for the OTEL service name env variable [#1261](https://github.com/elastic/apm-pipeline-library/pull/1261)
+
+## v1.1.237 (06/09/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation in JenkinsOpenTelemetryPluginConfiguration [#1256](https://github.com/elastic/apm-pipeline-library/pull/1256)
+-  fix: remove build from the daily pipeline. [#1254](https://github.com/elastic/apm-pipeline-library/pull/1254)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [7.14.1, 7.15.0] [#1257](https://github.com/elastic/apm-pipeline-library/pull/1257)
+- [**dependencies**] Use release version for metricbeat/filebeat [#1258](https://github.com/elastic/apm-pipeline-library/pull/1258)
+
+## v1.1.236 (25/08/2021)
+
+#### 🚀 Enhancements
+
+-  Add elastic specific env variables for withOtelEnv [#1250](https://github.com/elastic/apm-pipeline-library/pull/1250)
+
+## v1.1.235 (24/08/2021)
+
+#### 🚀 Enhancements
+
+-  findOldestSupportedVersion step [#1248](https://github.com/elastic/apm-pipeline-library/pull/1248)
+-  Set OTEL_EXPORTER_OTLP_HEADERS [#1234](https://github.com/elastic/apm-pipeline-library/pull/1234)
+
+## v1.1.234 (23/08/2021)
+
+#### ⚙️ CI
+
+-  Adjust weekly Beats headers to outsmart Google [#1246](https://github.com/elastic/apm-pipeline-library/pull/1246)
+
+## v1.1.233 (04/08/2021)
+
+#### 🚀 Enhancements
+
+-  Add OTEL_SERVICE_NAME env variable [#1226](https://github.com/elastic/apm-pipeline-library/pull/1226)
+- [**Team:Automation**] Add parameters [#1230](https://github.com/elastic/apm-pipeline-library/pull/1230)
+- [**Team:Automation**] feat: pipeline to destroy clusters [#1229](https://github.com/elastic/apm-pipeline-library/pull/1229)
+
+#### 🐛 Bug Fixes
+
+-  randomString without starting with - [#1235](https://github.com/elastic/apm-pipeline-library/pull/1235)
+
+## v1.1.232 (29/07/2021)
+*No changelog for this release.*
+
+## v1.1.231 (28/07/2021)
+
+#### 🚀 Enhancements
+
+-  Provide OTEL context [#1218](https://github.com/elastic/apm-pipeline-library/pull/1218)
+
+#### 🐛 Bug Fixes
+
+-  Revert "Validate if pattern in googleStorageUploadExt returns any matches" [#1225](https://github.com/elastic/apm-pipeline-library/pull/1225)
+
+#### ⚙️ CI
+
+-  Revert "Test the validation in the google-storage-ext step" [#1227](https://github.com/elastic/apm-pipeline-library/pull/1227)
+
+## v1.1.230 (28/07/2021)
+
+#### 🐛 Bug Fixes
+
+-  Cache stage without public access and retry [#1224](https://github.com/elastic/apm-pipeline-library/pull/1224)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] feat: Otel pytest plugin [#1217](https://github.com/elastic/apm-pipeline-library/pull/1217)
+
+## v1.1.229 (27/07/2021)
+
+#### 🚀 Enhancements
+
+-  Ingest test coverage summary [#1214](https://github.com/elastic/apm-pipeline-library/pull/1214)
+- [**Team:Automation**] feat: create/update clusters pipelines [#1219](https://github.com/elastic/apm-pipeline-library/pull/1219)
+- [**Team:Automation**] feat: move all Docker images generation to jobDSL generated pipelines [#1177](https://github.com/elastic/apm-pipeline-library/pull/1177)
+-  Validate if pattern in googleStorageUploadExt returns any matches [#1193](https://github.com/elastic/apm-pipeline-library/pull/1193)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: increase timeout [#1216](https://github.com/elastic/apm-pipeline-library/pull/1216)
+-  fix: do not interpolate the token [#1010](https://github.com/elastic/apm-pipeline-library/pull/1010)
+
+#### 🙈 No user affected
+
+-  [dependabot] change reviewer for the oncall person [#1221](https://github.com/elastic/apm-pipeline-library/pull/1221)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.17, 7.13.3, 7.13.4, 7.14.0] [#1212](https://github.com/elastic/apm-pipeline-library/pull/1212)
+-  Test the validation in the google-storage-ext step [#1204](https://github.com/elastic/apm-pipeline-library/pull/1204)
+
+## v1.1.228 (16/07/2021)
+
+#### 📚 Documentation
+
+-  Remove retry param from gitCheckout [#1206](https://github.com/elastic/apm-pipeline-library/pull/1206)
+
+#### 🙈 No user affected
+
+-  Refactor bump pipelines [#1207](https://github.com/elastic/apm-pipeline-library/pull/1207)
+
+## v1.1.227 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: set BUILD_TS_REFS_DISABLE=true [#1203](https://github.com/elastic/apm-pipeline-library/pull/1203)
+
+## v1.1.226 (13/07/2021)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: remove --no-oss flag [#1202](https://github.com/elastic/apm-pipeline-library/pull/1202)
+-  [bump][pinned][version] Validate snapshot versions [#1200](https://github.com/elastic/apm-pipeline-library/pull/1200)
+
+#### ⚙️ CI
+
+-  Remove call to the license jobs [#1199](https://github.com/elastic/apm-pipeline-library/pull/1199)
+-  [test-infra] disable worker-c07c6107jyw0 and use docker-machine if possible [#1198](https://github.com/elastic/apm-pipeline-library/pull/1198)
+
+## v1.1.225 (06/07/2021)
+
+#### 🚀 Enhancements
+
+-  [notification] open-telemetry links [#1020](https://github.com/elastic/apm-pipeline-library/pull/1020)
+-  Bump automation to set the assignee and reviewer if defined [#1189](https://github.com/elastic/apm-pipeline-library/pull/1189)
+
+#### 🐛 Bug Fixes
+
+-  Validate elastic stack versions are available [#1196](https://github.com/elastic/apm-pipeline-library/pull/1196)
+
+#### ⚙️ CI
+
+-  CI: run on a weekly basis master branch [#1195](https://github.com/elastic/apm-pipeline-library/pull/1195)
+-  Enable automation for observability-test-environments [#1191](https://github.com/elastic/apm-pipeline-library/pull/1191)
+
 ## v1.1.224 (01/07/2021)
 
 #### 🚀 Enhancements

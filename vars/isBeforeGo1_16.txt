@@ -1,0 +1,9 @@
+if the given Golang version is pre 1.16.
+
+```
+  whenTrue(isBeforeGo1_16(version: '1.17')) {
+    ...
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)

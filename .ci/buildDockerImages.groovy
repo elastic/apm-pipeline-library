@@ -39,7 +39,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   triggers {
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger("${obltGitHubComments()}")
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
@@ -252,61 +252,6 @@ pipeline {
         )
       }
     }
-    stage('Build Apm Server test Docker images'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build Apm Server Docker images failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.apm_server }
-      }
-      steps {
-        deleteDir()
-        checkout scm
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/apm-server.git',
-          tag: "apm-server",
-          version: "daily",
-          push: true
-        )
-        dir("apm-server-images"){
-          git('https://github.com/elastic/apm-server.git')
-          sh(label: 'Test Docker containers', script: 'make -C .ci/docker all-tests')
-          retry(3){
-            sh(label: 'Push Docker images', script: 'make -C .ci/docker all-push')
-          }
-          sh(label: 'clean Docker images', script: 'docker rmi --force $(docker images --filter=reference="docker.elastic.co/observability-ci/*:*" -q)')
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/**/junit-*.xml")
-        }
-      }
-    }
-    stage('Build Curator image'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build Curator image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.python }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/elastic/curator.git',
-          tag: "curator",
-          version: "daily",
-          push: true)
-      }
-    }
     stage('Build flakey'){
       options {
         skipDefaultCheckout()
@@ -450,25 +395,6 @@ pipeline {
         }
       }
     }
-    stage('Build helm-kubernetes Docker hub image'){
-      options {
-        skipDefaultCheckout()
-        warnError('Build helm-kubernetes Docker hub image failed')
-      }
-      when{
-        beforeAgent true
-        expression { return params.helm_kubectl }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        buildDockerImage(
-          repo: 'https://github.com/dtzar/helm-kubectl.git',
-          tag: "helm-kubectl",
-          version: "latest",
-          push: true)
-      }
-    }
     stage('Build Integration test Docker images'){
       options {
         skipDefaultCheckout()
@@ -543,36 +469,6 @@ pipeline {
           folder: ".ci/docker/azure-vm-tools",
           push: true
         )
-      }
-    }
-    stage('Build opbot'){
-      options {
-        skipDefaultCheckout()
-      }
-      when{
-        beforeAgent true
-        expression { return params.opbot }
-      }
-      steps {
-        deleteDir()
-        dockerLoginElasticRegistry()
-        dir("opbot-latest"){
-          script {
-            def creds = getVaultSecret('secret/k8s/elastic-apps/apm/opbot-google-creds')
-            def writeClosure = {writeFile(file: 'credentials.json', text: creds.data.value)}
-            buildDockerImage(
-              repo: 'https://github.com/elastic/opbot.git',
-              tag: "opbot",
-              version: "latest",
-              prepareWith: writeClosure,
-              push: true)
-          }
-        }
-      }
-      post {
-        cleanup {
-          deleteDir()
-        }
       }
     }
     stage('Cache Oracle Instant Client Docker Image'){

@@ -70,7 +70,7 @@ It is mandatory to pass a serviceName. If a service name is no passes apmCli do 
 and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
 * transactionName: Name of the transaction to report, it is mandatory.
 By default the "STAGE_NAME" environment variable is used.
-* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* parentTransaction: Allow to group several transactions as children of another (distributed tracing)
 * spanName : Name of the span to report.
 * spanCommand Command to execute as span,
 if spanName is no set, spanCommand param would be used as span name.
@@ -225,6 +225,14 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
 * ssl: Set to `false` to disable SSL. Default is `true`.
 
+## bumpUtils
+Utils class for the bump automation pipelines
+
+* `areChangesToBePushed` -> if there any changes in the existing location to be pushed.
+* `createBranch` -> create a branch given the prefix and suffix arguments. Branch contains the current timestamp.
+* `isVersionAvailable` -> if the given elastic stack version is available.
+* `prepareContext` -> prepare the git context, checkout and git config user.name.
+
 ## cancelPreviousRunningBuilds
 Abort any previously running builds as soon as a new build starts
 
@@ -294,7 +302,7 @@ For instance:
 ```
 
 Could be simplified with:
-    
+
 ```
     cmd(label: 'foo', script: 'git fetch --all')
 ```
@@ -385,6 +393,8 @@ dockerLogin(secret: 'secret/team/ci/secret-name', registry: "docker.io")
 
 * secret: Vault secret where the user and password stored.
 * registry: Registry to login into.
+* role_id: vault role ID (Optional).
+* secret_id: vault secret ID (Optional).
 
 ## dockerLogs
 Archive all the docker containers in the current context.
@@ -504,8 +514,24 @@ pipeline {
 }
 ```
 
+## findOldestSupportedVersion
+Find the oldest stack version given the condition to compare with.
+
+If the version doesn't exist yet, it will try to use the closer snapshot, for example
+if 7.14.1 doesn't exist, it will try to use 7.14.1-SNAPSHOT or 7.x-SNAPSHOT,
+this will allow to develop integrations with unreleased features.
+
+
+```
+findOldestSupportedVersion(versionCondition: "^7.14.0")
+```
+
+* versionCondition: The condition to compare with. Mandatory
+
+NOTE: Current implementation only supports the `^` operator for version conditions
+
 ## generateChangelog
-Programatically generate a CHANGELOG
+Programmatically generate a CHANGELOG
 
 ```
 generateChangelog(
@@ -706,14 +732,16 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 ```
 
 * *secret-name*: Name of the secret on the the vault root path.
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
-It requires to be executed within the git workspace, otherwise it will use 
+It requires to be executed within the git workspace, otherwise it will use
 `REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body
@@ -772,7 +800,6 @@ gitCheckout(basedir: 'sub-folder', branch: 'master',
 * *githubNotifyFirstTimeContributor*: Whether to notify the status if first time contributor. Default: false
 * *shallow*: Whether to enable the shallow cloning. Default: false
 * *depth*: Set shallow clone depth. Default: 5
-* *retry*: Set the number of retries if there are issues when cloning. Default: 3
 
 _NOTE_: 'shallow' is forced to be disabled when running on Pull Requests
 
@@ -820,7 +847,7 @@ gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
-* credentialsId: tthe credentials to access the repo.
+* credentialsId: the credentials to access the repo.
 
 ## gitPush
 Push changes to the git repo.
@@ -908,7 +935,7 @@ Comment an existing GitHub issue
 * repo: The GitHub repository. Optional. Default the REPO_REPO env variable
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
-_NOTE_: 
+_NOTE_:
 * Windows is not supported yet.
 * It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
@@ -931,7 +958,7 @@ _NOTE_: Windows is not supported yet.
 
 ## githubCreatePullRequest
 Create a Pull Request in GitHub as long as the command runs in the git repo and
-there are commited changes.
+there are committed changes.
 
 ```
 githubCreatePullRequest(title: 'Foo')
@@ -1095,12 +1122,12 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
 ## githubPullRequests
-Look for the GitHub Pull Requests in the current project given the labels to be 
+Look for the GitHub Pull Requests in the current project given the labels to be
 filtered with. It returns a dictionary with the Pull Request id as primary key and
 then the title and branch values.
 
 ```
-  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // Look for all the open GitHub pull requests with titleContains: foo and
   // the foo and bar labels
   githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
 ```
@@ -1176,7 +1203,7 @@ Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0'  // Release name 
+      name: 'Release v1.0.0'  // Release name
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -1368,19 +1395,22 @@ Upload the given pattern files to the given bucket.
 * bucket: The Google Storage bucket format gs://bucket/folder/subfolder/. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
-* sharedPublicly: Whether to shared those objects publically. Optional. Default false.
+* sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 ```
-  // Copy file.txt into the bucket
+  // Copy file.txt into the bucket using the Jenkins credentials
   gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
 
+  // Copy file.txt into the bucket using Vault
+  gsutil(command: 'cp file.txt gs://bucket/folder/', secret: 'foo' ])
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
 
 ## hasCommentAuthorWritePermissions
 
@@ -1501,6 +1531,17 @@ Whether the architecture is an arm based using the `nodeArch` step
         ...
     }
 ```
+
+## isBeforeGo1_16
+if the given Golang version is pre 1.16.
+
+```
+  whenTrue(isBeforeGo1_16(version: '1.17')) {
+    ...
+  }
+```
+
+* version: Go version to install, if it is not set, it'll use GO_VERSION env var or [default version](#goDefaultVersion)
 
 ## isBranch
 Whether the build is based on a Branch or no
@@ -1644,6 +1685,15 @@ Whether the build is based on a Pull Request or no
   // Use whenTrue condition
   whenTrue(isPR()) {
     echo "I'm a Pull Request"
+  }
+```
+
+## isPluginInstalled
+Given the pluginName it validates whether it's installed and available.
+
+```
+  whenTrue(isPluginInstalled(pluginName: 'foo')) {
+    echo "Foo plugin is installed"
   }
 ```
 
@@ -1801,13 +1851,13 @@ NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubE
 
 ## matrix
 Matrix parallel task execution in parallel implemented on a step.
-It compose a matrix of parallel tasks, each task has a set of enviroment variables
+It compose a matrix of parallel tasks, each task has a set of environment variables
 created from the axes values.
 
 * **agent:** Jenkins agent labels to provision a new agent for parallel task.
-* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+* **axes :** Vector of pairs to define environment variables to pass to the parallel tasks,
 each pair has a variable name and a vector of values (see #axis)
-* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+* **excludes :** Vector of pairs to define combinations of environment variables to exclude
 when we create the parallel tasks (axes-excludes=parallel tasks).
 
 ```
@@ -1917,7 +1967,7 @@ mvnVersion(
 )
 ```
  * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
-                       such as additional labels for pre-release or build metadata. Speficially,
+                       such as additional labels for pre-release or build metadata. Specifically,
                        this means the IncrementalVersion, BuildNumber, and Qualifier sections from
                        the Maven version as specified in the Maven versioning guide.
 
@@ -1932,16 +1982,20 @@ Close a Nexus staging repository
 ```
 nexusCreateStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "staging_id"
+  stagingId: "staging_id",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -1954,16 +2008,20 @@ Create a Nexus staging repository
 nexusCreateStagingRepository(
   stagingProfileId: my_profile,
   description: "My new staging repo",
-  secret: "secret/release/nexus",
   url: https://oss.sonatype.org,
-  retries: 20
+  retries: 20,
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
 * stagingProfileId: The staging identifier to use when creating the repository
 * description: A description of the new staging repository
-* secret: Vault secret to retrieve Nexus credentials
 * url: Nexus URL (default: https://oss.sonatype.org)
 * retries: Number of times to retry the remote API before giving up
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -1974,16 +2032,20 @@ Drop a Nexus staging repository
 ```
 nexusDropStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
   stagingId: "staging_id",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier for staging
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -1995,17 +2057,20 @@ Find a Nexus staging repository
 ```
 nexusFindStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingProfileId: "comexampleapplication-1010",
-  groupId: "co.elastic.apm"
+  groupId: "co.elastic.apm",
+  secret: 'secret/release/nexus',
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
   )
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* username: The username to auth to the repository
-* password: The password to auth to the repository
 * stagingProfileId: Identifier for the staging profile
 * groupid: Our group id
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -2017,15 +2082,19 @@ Release a Nexus staging repository
 ```
 nexusReleaseStagingRepository(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus"
   stagingProfileId: "comexampleapplication-1010",
-  stagingId: "co.elastic.foo"
+  stagingId: "co.elastic.foo",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
 * url: The URL to the repository. Usually https://oss.sonatype.org
-* secret: Vault secret to retrieve Nexus credentials
 * stagingProfileId: Identifier for the staging profile
 * stagingId: Identifier of staging repository
+* secret: Vault secret (Optional)
+* role_id: vault role ID (Optional)
+* secret_id: vault secret ID (Optional)
 
 
 [Nexus staging documentation](https://help.sonatype.com/repomanager2/staging-releases)
@@ -2037,24 +2106,28 @@ Upload an artifact to the Nexus staging repository
 ```
 nexusUploadStagingArtifact(
   url: "https://oss.sonatype.org",
-  secret: "secret/release/nexus",
   stagingId: "comexampleapplication-1010",
   groupId: "com.example.applications",
   artifactId: "my_tasty_artifact",
-  version: "v1.0.0"
-  file_path: "/tmp/my_local_artifact"
+  version: "v1.0.0",
+  file_path: "/tmp/my_local_artifact",
+  secret: secret/release/nexus,
+  role_id: apm-vault-role-id,
+  secret_id: apm-vault-secret-id
 ```
 
   For additional information, please read the OSSRH guide from Sonatype:
   https://central.sonatype.org/pages/releasing-the-deployment.html
 
   * url: The base URL of the staging repo. (Usually oss.sonatype.org)
-  * secret: Vault secret to retrieve Nexus credentials
   * stagingId: The ID for the staging repository.
   * groupId: The group ID for the artifacts.
   * artifactId: The ID for the artifact to be uploaded
   * version: The release version
   * file_path: The location on local disk where the artifact to be uploaded can be found.
+  * secret: Vault secret (Optional)
+  * role_id: vault role ID (Optional)
+  * secret_id: vault secret ID (Optional)
 
 ## nodeArch
 Return the architecture in the current worker using the labels as the source of truth
@@ -2115,6 +2188,20 @@ emails on Failed builds that are not pull request.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/master`.
 
+## obltGitHubComments
+The list of GitHub comments supported to be used in conjunction with the
+`triggers { issueCommentTrigger ... }` in order to trigger builds based on
+the given GitHub comments.
+
+```
+pipeline {
+  ...
+  triggers {
+    issueCommentTrigger("(${obltGitHubComments()}|/run benchmark tests)")
+  }
+}
+```
+
 ## opbeansPipeline
 Opbeans Pipeline
 
@@ -2124,6 +2211,22 @@ opbeansPipeline(downstreamJobs: ['job1', 'folder/job1', 'mbp/PR-1'])
 ```
 
 * downstreamJobs: What downstream pipelines should be triggered once the release has been done. Default: []
+
+## otelHelper
+Helper method to interact with the OpenTelemetry Jenkins plugin
+
+```
+  withOtelEnv() {
+    // block
+  }
+
+  // If you'd like to use a different credentials
+  withOtelEnv(credentialsId: 'foo') {
+    // block
+  }
+```
+
+**NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
 
 ## pipelineManager
 This step adds certain validations which might be required to be done per build, for such it does
@@ -2217,10 +2320,10 @@ def value = randomString(size: 15)
 Send notifications with the release status by email and slack.
 
 If body is slack format based then it will be transformed to the email format
-  
+
 ```
 releaseNotification(slackColor: 'good',
-                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created",
                     body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
 ```
 
@@ -2243,12 +2346,20 @@ retryWithSleep(retries: 2) {
 retryWithSleep(retries: 3, seconds: 5, backoff: true) {
   //
 }
+
+// Retry up to 3 times and on each retry, execute a closure
+def myEffect = { echo 'Side effect!' }
+retryWithSleep(retries: 3, sideEffect: myEffect)
+  //
+}
+
 ```
 
 * retries: the number of retries. Mandatory
 * seconds: the seconds to wait for. Optional. Default 10.
 * backoff: whether the wait period backs off after each retry. Optional. Default false
 * sleepFirst: whether to sleep before running the command. Optional. Default false
+* sideEffect: A closure to run after every retry
 
 ## rubygemsLogin
 Login to Rubygems.com with an authentication credentials from a Vault secret.
@@ -2266,6 +2377,41 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runE2E
+Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job/e2e-testing-mbp/ is the default one though it can be customised if needed.
+
+```
+  runE2E(jobName: 'PR-123', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+
+  // Run the e2e and add further parameters.
+  runE2E(beatVersion: '7.15.0-SNAPSHOT',
+         gitHubCheckName: 'fleet-server-e2e-testing',
+         runTestsSuites: 'fleet',
+         slackChannel: "elastic-agent")
+```
+
+* *jobPath*: the location of the jobPath. Optional (default 'e2e-tests/e2e-testing-mbp')
+* *jobName*: the name of the relative job. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
+* *disableGitHubCheck*: whether to disable the GitHub check notifications. (default false)
+* *gitHubCheckName*: the GitHub check name. Optional
+* *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
+* *gitHubCheckSha1*: the git commit for the github check. Optional
+* *beatVersion*: the beat Version. Optional
+* *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
+* *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
+* *kibanaVersion*: Docker tag of the kibana to be used for the tests. Optional
+* *nightlyScenarios*: whether to include the scenarios marked as @nightly in the test execution. Optional (default false)
+* *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
+* *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
+* *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
+* *testMatrixFile*: the file with the test suite and scenarios to be tested. Optional
+* *propagate*: the test suites to test. Optional (default false)
+* *wait*: the test suites to test. Optional (default false)
+
+**NOTE**: It works only in the `beats-ci` controller.
+
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
@@ -2497,7 +2643,7 @@ pipeline {
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2589,10 +2735,10 @@ net.sf.json.JSON obj = toJSON(p)
 ```
 
 ## unstashV2
-Unstash the given stashed id, for such it downloads the given stashed id, and 
+Unstash the given stashed id, for such it downloads the given stashed id, and
 uncompresses in the current location.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2779,6 +2925,26 @@ Wrap the cluster credentials and entrypoints as environment variables that are m
 NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
       vault location
 
+## withDockerEnv
+Configure the Docker context to run the body closure, logining to hub.docker.com with an
+authentication credentials from a Vault secret. The vault secret contains `user` and `password`
+fields with the authentication details. with the below environment variables:
+
+* `DOCKER_USER`
+* `DOCKER_PASSWORD`
+
+```
+  withDockerEnv() {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name') {
+    // block
+  }
+  withDockerEnv(secret: 'secret/team/ci/secret-name', registry: "docker.io") {
+    // block
+  }
+```
+
 ## withEnvMask
 This step will define some environment variables and mask their content in the
 console output, it simplifies Declarative syntax
@@ -2841,6 +3007,22 @@ withEsEnv(url: 'https://url.exanple.com', secret: 'secret-name'){
   //block
 }
 ```
+
+## withGCPEnv
+Configure the GCP context to run the given body closure
+
+```
+withGCPEnv(credentialsId: 'foo') {
+  // block
+}
+
+withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
+  // block
+}
+```
+
+* credentialsId: The credentials to login to GCP. (Optional).
+* secret: Name of the secret on the the vault root path. (Optional).
 
 ## withGitRelease
 Configure the git release context to run the body closure.
@@ -3017,7 +3199,7 @@ NOTE: If the `GOARCH` environment variable is defined then it will be used to in
 
 ## withHubCredentials
 Configure the hub app to run the body closure.
-  
+
 ```
   withHubCredentials(credentialsId: 'some-credentials') {
     // block
@@ -3054,7 +3236,7 @@ _NOTE:_
 
 ## withNode
 Wrap the node call for three reasons:
-  1. with some latency to avoid the known issue with the scalability in gobld.
+  1. with some latency to avoid the known issue with the scalability in gobld. It requires sleepMax > 0
   2. enforce one shoot ephemeral workers with the extra/uuid label that gobld provides.
   3. allocate a new workspace to workaround the flakiness of windows workers with deleteDir.
 
@@ -3072,8 +3254,8 @@ Wrap the node call for three reasons:
 ```
 
 * labels: what's the labels to be used. Mandatory
-* sleepMin: whether to sleep and for how long at least. Optional.
-* sleepMax: whether to sleep and for how long maximum. Optional.
+* sleepMin: whether to sleep and for how long at least. Optional. By default `0`
+* sleepMax: whether to sleep and for how long maximum. Optional. By default `0`
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 * disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
@@ -3095,6 +3277,32 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 * npmrcFile: name of the file with the token. (Optional). Default: .npmrc
 * registry: NPM registry. (Optional). Default: registry.npmjs.org
 * secret: Name of the secret on the the vault root path. (Optional). Default: 'secret/apm-team/ci/elastic-observability-npmjs'
+
+## withOtelEnv
+Configure the OpenTelemetry Jenkins context to run the body closure with the below
+environment variables:
+
+* `OTEL_EXPORTER_OTLP_ENDPOINT`, opentelemetry 0.19 already provides this environment variable.
+* `OTEL_EXPORTER_OTLP_HEADERS`, opentelemetry 0.19 already provides this environment variable.
+* `ELASTIC_APM_SECRET_TOKEN`
+* `ELASTIC_APM_SERVER_URL`
+* `ELASTIC_APM_SERVICE_NAME`
+* `TRACEPARENT`, opentelemetry 0.19 already provides this environment variable.
+
+```
+  withOtelEnv() {
+    // block
+  }
+
+  // If you'd like to use a different credentials
+  withOtelEnv(credentialsId: 'foo') {
+    // block
+  }
+```
+
+* credentialsId: the name of the credentials. Optional.
+
+**NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been

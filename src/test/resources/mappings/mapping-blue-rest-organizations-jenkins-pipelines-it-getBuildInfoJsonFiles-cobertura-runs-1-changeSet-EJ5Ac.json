@@ -1,0 +1,23 @@
+{
+  "id" : "1e5b4a7f-be48-3214-abe9-2da5ff1f5aac",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/changeSet/",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-blue-rest-organizations-jenkins-pipelines-it-getBuildInfoJsonFiles-cobertura-runs-1-changeSet-EJ5Ac.json",
+    "headers" : {
+      "Date" : "Wed, 21 Jul 2021 10:37:00 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "6f05bffd",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/changeSet/?start=100&limit=100>; rel=\"next\"",
+      "X-Jenkins" : "2.289",
+      "X-Jenkins-Session" : "6f05bffd",
+      "Content-Type" : "application/json;charset=utf-8",
+      "Server" : "Jetty(9.4.39.v20210325)"
+    }
+  },
+  "uuid" : "1e5b4a7f-be48-3214-abe9-2da5ff1f5aac"
+}

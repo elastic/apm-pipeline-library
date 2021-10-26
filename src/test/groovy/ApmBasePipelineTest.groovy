@@ -19,6 +19,7 @@ import com.lesfurets.jenkins.unit.declarative.DeclarativePipelineTest
 import co.elastic.mock.DockerMock
 import co.elastic.mock.GetVaultSecretMock
 import co.elastic.mock.GithubEnvMock
+import co.elastic.mock.OtelHelperMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
@@ -52,7 +53,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin'), SECRET_GCP_PROVISIONER('service-account/provisioner')
 
     VaultSecret(String value) {
       this.value = value
@@ -94,6 +95,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     binding.setProperty('docker', new DockerMock())
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('githubEnv', new GithubEnvMock())
+    binding.setProperty('otelHelper', new OtelHelperMock(true))
     binding.setProperty('pullRequest', new PullRequestMock())
     binding.setProperty('steps', new StepsMock())
   }
@@ -288,6 +290,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('fileExists', [String.class], { true })
     helper.registerAllowedMethod('fileExists', [Map.class], { true })
     helper.registerAllowedMethod('getContext', [org.jenkinsci.plugins.workflow.graph.FlowNode.class], null)
+    helper.registerAllowedMethod('git', [Map.class], { true })
     helper.registerAllowedMethod('githubNotify', [Map.class], { m ->
       if(m.context.equalsIgnoreCase('failed')){
         updateBuildStatus('FAILURE')
@@ -354,7 +357,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
-      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
+      File f = new File("target/${m.file}")
+      f.getParentFile().mkdirs()
+      f.withWriter('UTF-8') { writer ->
         writer.write(m.text)
       }
     })
@@ -386,6 +391,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/detailsURL.groovy')
       return script.call(m)
     })
+    helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
@@ -399,7 +405,6 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
           build: {},
           buildStatus: currentBuild.currentResult,
           changeSet: [],
-          log: '',
           stepsErrors: [],
           testsErrors: [],
           testsSummary: []
@@ -478,6 +483,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isBeforeGo1_16', [Map.class], { m ->
+      def script = loadScript('vars/isBeforeGo1_16.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('isInstalled', [Map.class], { m ->
       def script = loadScript('vars/isInstalled.groovy')
       return script.call(m)
@@ -486,6 +495,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/isStaticWorker.groovy')
       return script.call(m)
     })
+    helper.registerAllowedMethod('isPluginInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isPR', {
       def script = loadScript('vars/isPR.groovy')
       return script.call()
@@ -531,6 +541,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
     })
     helper.registerAllowedMethod('notifyBuildResult', [], null)
+    helper.registerAllowedMethod('obltGitHubComments', [], {
+      def script = loadScript('vars/obltGitHubComments.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
@@ -539,6 +553,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m, c)
     })
     helper.registerAllowedMethod('sendDataToElasticsearch', [Map.class], { "OK" })
+    helper.registerAllowedMethod('setupAPMGitEmail', [Map.class], { "OK" })
     helper.registerAllowedMethod('tap2Junit', [Map.class], { m ->
       def script = loadScript('vars/tap2Junit.groovy')
       return script.call(m)
@@ -560,8 +575,16 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
+    helper.registerAllowedMethod('withDockerEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withDockerEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
+    helper.registerAllowedMethod('withGCPEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGCPEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
@@ -629,6 +652,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_GCP.equals(s)){
       return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_GCP_PROVISIONER.equals(s)){
+      return [data: [ credentials: 'my_json_credentials' ]]
     }
     if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
       return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]

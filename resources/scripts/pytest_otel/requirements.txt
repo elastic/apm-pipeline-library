@@ -1,0 +1,9 @@
+ConfigArgParse
+coverage
+opentelemetry-api==1.2.0
+opentelemetry-exporter-otlp==1.2.0
+opentelemetry-sdk==1.2.0
+psutil
+pytest
+pytest-bdd
+pytest-mock

@@ -17,9 +17,9 @@
 
 /**
   Send notifications with the release status by email and slack
-  
+
   releaseNotification(slackColor: 'good',
-                      subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                      subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created",
                       body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
 
 */
@@ -39,7 +39,7 @@ def call(Map args = [:]) {
   } else {
     log(level: 'INFO', text: 'releaseNotification: missing slackChannel therefore skipped the slack notification.')
   }
-  
+
   emailext(subject: subject,
            to: to,
            body: transformSlackURLFormatToEmailFormat(body))

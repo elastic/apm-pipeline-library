@@ -105,80 +105,14 @@ pipeline {
           wait: false
         )
 
-        build(job: 'apm-ui/apm-ui-e2e-tests-mbp/master',
+        build(job: 'apm-shared/gather-ci-metrics-pipeline',
           parameters: [
-            booleanParam(name: 'FORCE', value: true),
+            string(name: 'MTIME_FILTER', value: '1'),
+            string(name: 'AGENT_PREFIX', value: 'apm-ci')
           ],
           propagate: false,
           wait: false
         )
-      }
-    }
-    stage('Third-party license scan'){
-      matrix {
-        axes {
-          axis {
-            name 'REPO'
-            values (
-              'apm-agent-dotnet',
-              'apm-agent-go',
-              'apm-agent-java',
-              'apm-agent-js-core',
-              'apm-agent-nodejs-opentracing',
-              'apm-agent-nodejs',
-              'apm-agent-php',
-              'apm-agent-python-benchmarks',
-              'apm-agent-python',
-              'apm-agent-ruby',
-              'apm-agent-rum-js',
-              'apm-integration-testing',
-              'apm-pipeline-library',
-              'apm-server',
-              'beats',
-              //'code',
-              //'ctags-langserver',
-              //'ctags',
-              'ecs-dotnet',
-              'ecs-logging-go-zap',
-              'ecs-logging-java',
-              'ecs-logging-php',
-              'ecs-logging-python',
-              //'go-langserver-plugin',
-              //'go-langserver',
-              'go-lookslike',
-              //'gradle-code-manifest-plugin',
-              'hey-apm',
-              'integrations',
-              //'java-langserver',
-              //'javascript-typescript-langserver',
-              //'node-ctags',
-              'observability-test-environments',
-              'opbeans-dotnet',
-              'opbeans-flask',
-              'opbeans-frontend',
-              'opbeans-go',
-              'opbeans-ruby',
-              'package-registry',
-              'package-storage',
-              //'typescript-language-server'
-            )
-          }
-        }
-        stages {
-          stage('License Scan'){
-            steps {
-              build(
-                job: 'apm-shared/license-scan-general',
-                parameters: [
-                  string(name: 'branch_specifier', value: 'master'),
-                  string(name: 'repo', value:"${env.REPO}")
-                ],
-                wait: false,
-                quietPeriod: 10
-              )
-            }
-          }
-        }
       }
     }
     stage('Populate GitHub data') {

@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotEquals
+import static org.junit.Assert.assertTrue
 
 class GoDefaultVersionStepTests extends ApmBasePipelineTest {
 
@@ -26,6 +27,7 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
+    addEnvVar('BASE_DIR', './src')
     script = loadScript('vars/goDefaultVersion.groovy')
     helper.registerAllowedMethod('fileExists', [String.class], { false })
   }
@@ -44,16 +46,20 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
     String version = script.call()
     printCallStack()
     assertEquals("foo", version)
+    assertTrue(assertMethodCallOccurrences('fileExists', 0))
+    assertTrue(assertMethodCallOccurrences('readFile', 0))
     assertJobStatusSuccess()
   }
 
   @Test
   void testGoVersionFromFile() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { true })
+    helper.registerAllowedMethod('fileExists', [String.class], { s-> return s.equals('.go-version') })
     helper.registerAllowedMethod('readFile', [Map.class], { 'fooFromFile\n' })
     String version = script.call()
     printCallStack()
     assertEquals("fooFromFile", version)
+    assertTrue(assertMethodCallOccurrences('fileExists', 1))
+    assertTrue(assertMethodCallContainsPattern('readFile', '.go-version'))
     assertJobStatusSuccess()
   }
 
@@ -65,6 +71,20 @@ class GoDefaultVersionStepTests extends ApmBasePipelineTest {
     String version = script.call()
     printCallStack()
     assertEquals("foo", version)
+    assertTrue(assertMethodCallOccurrences('fileExists', 0))
+    assertTrue(assertMethodCallOccurrences('readFile', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testGoVersionFromFileFallback() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { s-> return s.contains('/.go-version') })
+    helper.registerAllowedMethod('readFile', [Map.class], { 'fooFromFile\n' })
+    String version = script.call()
+    printCallStack()
+    assertEquals("fooFromFile", version)
+    assertTrue(assertMethodCallOccurrences('fileExists', 2))
+    assertTrue(assertMethodCallContainsPattern('readFile', '/.go-version'))
     assertJobStatusSuccess()
   }
 }

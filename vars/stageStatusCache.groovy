@@ -45,10 +45,13 @@ def call(Map args, Closure body){
 def saveStageStatus(Map args){
   def statusFileName = stageStatusId(args)
   writeFile(file: statusFileName, text: "OK")
-  googleStorageUploadExt(bucket: "gs://${args.bucket}/ci/cache/",
-    credentialsId: "${args.credentialsId}",
-    pattern: "${statusFileName}",
-    sharedPublicly: true)
+  // Retry in case the google storage is temporarily not accessible.
+  retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+    googleStorageUploadExt(bucket: "gs://${args.bucket}/ci/cache/",
+      credentialsId: "${args.credentialsId}",
+      pattern: "${statusFileName}",
+      sharedPublicly: false)
+  }
 }
 
 /**

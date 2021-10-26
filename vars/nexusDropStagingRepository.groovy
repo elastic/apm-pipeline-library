@@ -20,7 +20,6 @@
 
   nexusDropStagingRepository(
     url: "https://oss.sonatype.org",
-    secret: "secret/release/nexus"
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
     )
@@ -33,15 +32,17 @@ def call(Map args = [:]) {
     String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
     String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
     String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
-  
-    def props = getVaultSecret(secret: secret)
-    
+    String role_id = args.containsKey('role_id') ? args.role_id : 'apm-vault-role-id'
+    String secret_id = args.containsKey('secret_id') ? args.secret_id : 'apm-vault-secret-id'
+
+    def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
+
     if(props?.errors){
-        error "Unable to get credentials from the vault: " + props.errors.toString()
+      error "Unable to get credentials from the vault: " + props.errors.toString()
     }
 
     def vault_data = props?.data
-    def username = vault_data?.user
+    def username = vault_data?.username
     def password = vault_data?.password
 
     String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
@@ -51,10 +52,10 @@ def call(Map args = [:]) {
 
     while (attemptNumber < retries) {
         withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
-            }
+        [var: "NEXUS_username", password: username],
+        [var: "NEXUS_password", password: password]    ]){
+            conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
+        }
         Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
         if (Nexus.is5xxError(conn.responseCode)) {
             log(level: "WARN", text: "Received a ${conn.responseCode} HTTP response code while trying to drop a staging repository in nexus, trying again.")

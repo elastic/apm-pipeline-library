@@ -14,7 +14,8 @@ module.exports = {
         "Bug Fixes": ["bug", "fix"],
         "Documentation": ["docs", "question"],
         "No user affected": ["chore", "refactor", "perf", "test", "style"],
-        "CI": ["ci"]
+        "CI": ["ci"],
+        "Dependency updates": ["dependency", "dependencies"]
     },
     "changelogFilename": "CHANGELOG.md",
     "template": {
@@ -37,6 +38,8 @@ module.exports = {
             icon = "🙈"
           } else if(placeholders.heading == 'CI'){
             icon = "⚙️"
+          } else if(placeholders.heading == 'Dependency updates'){
+            icon = "📦"
           }
           return '\n#### ' + icon + ' ' + placeholders.heading + '\n';
         }

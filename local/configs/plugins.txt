@@ -4,5 +4,15 @@ google-compute-engine
 job-dsl
 metrics
 monitoring
+opentelemetry
 plot
 ssh-agent
+
+blueocean
+blueocean-jira
+configuration-as-code
+git
+git-client
+github-branch-source
+pipeline-model-definition
+workflow-cps-global-lib

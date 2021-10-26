@@ -15,7 +15,41 @@
 // specific language governing permissions and limitations
 // under the License.
 
-folder('apm-shared/oblt-test-env') {
-  displayName('Oblt test Clusters')
-  description('Folder for Oblt test Clusters CI jobs')
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertFalse
+
+class IsBeforeGo1_16Tests extends ApmBasePipelineTest {
+
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/isBeforeGo1_16.groovy')
+  }
+
+  @Test
+  void test_go_1_15() throws Exception {
+    def ret = script.call(version: '1.15')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_go_1_16() throws Exception {
+    def ret = script.call(version: '1.16')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_default() throws Exception {
+    def ret = script.call()
+    printCallStack()
+    assertJobStatusSuccess()
+  }
+
 }

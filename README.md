@@ -4,6 +4,7 @@
 [![Contributors](https://img.shields.io/github/contributors/elastic/apm-pipeline-library.svg)](https://github.com/elastic/apm-pipeline-library/graphs/contributors)
 [![GitHub release](https://img.shields.io/github/release/elastic/apm-pipeline-library.svg?label=changelog)](https://github.com/elastic/apm-pipeline-library/releases/latest)
 [![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg)](https://github-tools.github.io/github-release-notes/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
 ## User Documentation
 

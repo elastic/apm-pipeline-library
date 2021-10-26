@@ -39,7 +39,7 @@ pipeline {
   }
   triggers {
     cron 'H H(3-4) * * 1-5'
-    issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
+    issueCommentTrigger("${obltGitHubComments()}")
   }
   parameters {
     string(name: 'registry', defaultValue: "docker.elastic.co", description: "")
@@ -56,7 +56,7 @@ pipeline {
       }
       parallel {
         stage('Opbeans-dotnet') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-dotnet.git',
@@ -66,7 +66,7 @@ pipeline {
           }
         }
         stage('Opbeans-node') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-node.git',
@@ -76,7 +76,7 @@ pipeline {
           }
         }
         stage('Opbeans-python') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-python.git',
@@ -86,7 +86,7 @@ pipeline {
           }
         }
         stage('Opbeans-frontend') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-frontend.git',
@@ -96,7 +96,7 @@ pipeline {
           }
         }
         stage('Opbeans-java') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-java.git',
@@ -106,7 +106,7 @@ pipeline {
           }
         }
         stage('Opbeans-go') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-go.git',
@@ -116,7 +116,7 @@ pipeline {
           }
         }
         stage('Opbeans-loadgen') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-loadgen.git',
@@ -126,7 +126,7 @@ pipeline {
           }
         }
         stage('Opbeans-flask') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5 */
           when {
@@ -140,7 +140,7 @@ pipeline {
           }
         }
         stage('Opbeans-ruby') {
-          agent { label 'docker' }
+          agent { label 'ubuntu-20' }
           options { skipDefaultCheckout() }
           steps {
             buildDockerImage(repo: 'https://github.com/elastic/opbeans-ruby.git',
@@ -182,10 +182,10 @@ def buildDockerImage(args){
       withEnv(env){
         retry(3) {
           sleep randomNumber(min: 5, max: 10)
-          sh(label: "build docker image", script: "docker build ${options} -t ${image} .")
+          cmd(label: "build docker image", script: "docker build ${options} -t ${image} .")
         }
         if(push){
-          sh(label: "push docker image", script: "docker push ${image}")
+          cmd(label: "push docker image", script: "docker push ${image}")
         }
       }
     }

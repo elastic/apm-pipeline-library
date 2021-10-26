@@ -1,0 +1,20 @@
+{
+  "id" : "f47b6672-c981-39cd-bd28-a00433ec2ff7",
+  "request" : {
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?limit=10000000",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-blue-rest-organizations-jenkins-pipelines-it-getBuildInfoJsonFiles-cobertura-runs-1-tests-0WDC4.json",
+    "headers" : {
+      "Date" : "Wed, 21 Jul 2021 10:37:10 GMT",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Blueocean-Refresher" : "6f05bffd",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Content-Type" : "application/json",
+      "Server" : "Jetty(9.4.39.v20210325)"
+    }
+  },
+  "uuid" : "f47b6672-c981-39cd-bd28-a00433ec2ff7"
+}

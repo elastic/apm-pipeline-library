@@ -1,0 +1,7 @@
+Given the pluginName it validates whether it's installed and available.
+
+```
+  whenTrue(isPluginInstalled(pluginName: 'foo')) {
+    echo "Foo plugin is installed"
+  }
+```

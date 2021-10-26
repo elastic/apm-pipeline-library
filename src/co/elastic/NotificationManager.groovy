@@ -15,9 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package co.elastic;
+package co.elastic
 
 import groovy.text.StreamingTemplateEngine
+import org.jenkinsci.plugins.pipeline.github.trigger.IssueCommentTrigger
+import com.cloudbees.groovy.cps.NonCPS
 
 /**
  * This method returns a string with the template filled with groovy variables
@@ -41,7 +43,7 @@ This method generates flakey test data from Jenkins test results
  * @param disableGHComment whether to disable the GH comment notification.
  * @param disableGHIssueCreation whether to disable the GH create issue if any flaky matches.
  * @param jobName
-*/ 
+*/
 def analyzeFlakey(Map args = [:]) {
     def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is required')
     def jobName = args.containsKey('jobName') ? args.jobName : error('analyzeFlakey: jobName parameter is required')
@@ -78,7 +80,7 @@ def analyzeFlakey(Map args = [:]) {
       // we wish to include the number of flakes found in the time period. (Currently hard-coded to 90d)
       //
       //def testFlakyFreq = [:]
-      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] } 
+      //flakeyTestsParsed?.aggregations?.test_name?.buckets?.each { it -> testFlakyFreq[it['key']] = it['doc_count'] }
 
       def foundFlakyList = testFlaky?.size() > 0 ? testFailures.intersect(testFlaky) : []
       genuineTestFailures = testFailures.minus(foundFlakyList)
@@ -253,6 +255,28 @@ def notifyPR(Map args = [:]) {
 }
 
 /**
+ * This method sends a GitHub comment with the GitHub commands that are enabled in the pipeline.
+ * @param disableGHComment whether to disable the GH comment notification.
+*/
+def notifyGitHubCommandsInPR(Map args = [:]) {
+    def disableGHComment = args.get('disableGHComment', false)
+
+    // Decorate comment
+    def body = buildTemplate([
+      "template": 'commands-github-comment-markdown.template',
+      "githubCommands": getSupportedGithubCommands()
+    ])
+    writeFile(file: 'comment.md', text: body)
+    catchError(buildResult: 'SUCCESS', message: 'notifyGitHubCommandsInPR: Error commenting the PR') {
+      if (!disableGHComment) {
+        githubPrComment(commentFile: 'comment.id', message: body)
+      }
+    }
+    archiveArtifacts 'comment.md'
+    return body
+}
+
+/**
  * This method sends a slack message with data from Jenkins
  * @param build
  * @param buildStatus String with job result
@@ -413,4 +437,80 @@ def queryFilter(jobName) {
   }
 }
   """
+}
+
+
+/**
+ * This method searches for the IssueCommentTrigger in the project itself
+ * and if so, then look for the GitHub comment triggers which are supported.
+ */
+def getSupportedGithubCommands() {
+  def issueCommentTrigger = findIssueCommentTrigger()
+
+  if (issueCommentTrigger == null) {
+    log(level: 'WARN', text: "No IssueCommentTrigger has been triggered")
+    return [:]
+  }
+
+  def comments = [:]
+
+  // In order to avoid re-triggering a build when commenting the
+  // build status as a PR comment, it's required to filter here
+  // what GitHub comment triggers are allowed to be notified in the
+  // PR comment.
+  // For instance, '^/test' pattern won't trigger a build if the
+  // PR comment includes the section for the support trigger comments
+  //
+  if (issueCommentTrigger.getCommentPattern().contains('^/test')) {
+    comments['/test'] = 'Re-trigger the build.'
+  }
+
+  // Support for APM server
+  if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package')) {
+    comments['/hey-apm'] = 'Run the hey-apm benchmark.'
+    comments['/package'] = 'Generate and publish the docker images.'
+  }
+
+  // Support for benchmark tests
+  if (issueCommentTrigger.getCommentPattern().contains('^run benchmark tests')) {
+    comments['run benchmark tests'] = 'Run the benchmark test.'
+  }
+
+  // Support for the nodejs APM agent
+  if (issueCommentTrigger.getCommentPattern().contains('^run (module|benchmark) tests')) {
+    comments['run module tests for <modules>'] = 'Run TAV tests for one or more modules, where `<modules>` can be either a comma separated list of modules (e.g. memcached,redis) or the string literal ALL to test all modules'
+    comments['run benchmark tests'] = 'Run the benchmark test only.'
+  }
+
+  // Support for the java APM agent
+  if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration)')) {
+    comments['run benchmark tests'] = 'Run the benchmark test.'
+    comments['run compatibility tests'] = 'Run the JDK Compatibility test.'
+    comments['run integration tests'] = 'Run the APM-ITs.'
+  }
+
+  // Support for the APM pipeline library
+  if (issueCommentTrigger.getCommentPattern().contains('^run infra tests')) {
+    comments['run infra tests'] = 'Run the test-infra test.'
+  }
+
+  // Support for the Beats specific GitHub commands
+  if (env.REPO?.equals('beats') || env.REPO_NAME?.equals('beats')) {
+    comments['/package'] = 'Generate the packages and run the E2E tests.'
+    comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
+  }
+
+  // Support for the Obs11 test environments specific GitHub commands
+  if (env.REPO?.equals('observability-test-environments') || env.REPO_NAME?.equals('observability-test-environments')) {
+    comments['/test ansible'] = 'Run the ansible tests.'
+    comments['/test cypress'] = 'Run the cypress tests.'
+    comments['/test tools'] = 'Build and test the CLI tools.'
+  }
+
+  return comments
+}
+
+@NonCPS
+def findIssueCommentTrigger() {
+  return currentBuild.rawBuild.getParent().getTriggers().collect { it.value }.find { it instanceof IssueCommentTrigger }
 }

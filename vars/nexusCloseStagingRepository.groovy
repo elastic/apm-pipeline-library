@@ -20,7 +20,6 @@
 
   nexusCloseStagingRepository
     url: "https://oss.sonatype.org",
-    secret: "secret/release/nexus",
     stagingProfileId: "comexampleapplication-1010",
     stagingId: "staging_id"
     )
@@ -31,41 +30,47 @@ import net.sf.json.JSONArray
 
 def call(Map args = [:]){
   String url = args.get('url', 'https://oss.sonatype.org')
-  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
   String stagingId = args.containsKey('stagingId') ? args.stagingId : error('Must supply stagingId')
   String stagingProfileId = args.containsKey('stagingProfileId') ? args.stagingProfileId : error('Must supply stagingProfileId')
   String groupId = args.containsKey('stagingId') ? args.groupId : error('Must supply groupId')
+  String secret = args.containsKey('secret') ? args.secret : 'secret/release/nexus'
+  String role_id = args.containsKey('role_id') ? args.role_id : 'apm-vault-role-id'
+  String secret_id = args.containsKey('secret_id') ? args.secret_id : 'apm-vault-secret-id'
 
-  def props = getVaultSecret(secret: secret)
+  def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
+
   if(props?.errors){
-     error "Unable to get credentials from the vault: " + props.errors.toString()
+    error "Unable to get credentials from the vault: " + props.errors.toString()
   }
 
   def vault_data = props?.data
   def username = vault_data?.username
   def password = vault_data?.password
 
-  HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), username, password, "profiles/${stagingProfileId}/finish")
 
-  String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
+  withEnvMask(vars: [
+  [var: "NEXUS_username", password: username],
+  [var: "NEXUS_password", password: password]    ]){
+    HttpURLConnection conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/finish")
+    String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
+    Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
+    Nexus.checkResponse(conn, 201)
+  }
 
-  Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
-
-  Nexus.checkResponse(conn, 201)
 
   final int activityRetries = 20
   int activityAttempts = 1
   // poll repo activity for close action
   while (true) {
+      withEnvMask(vars: [
+      [var: "NEXUS_username", password: username],
+      [var: "NEXUS_password", password: password]    ]){
+        conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}/activity")
+      }
       try {
-          withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(Nexus.getStagingURL(url), env.NEXUS_username, env.NEXUS_password, "repository/${stagingId}/activity")
-            }
           Nexus.checkResponse(conn, 200)
       } catch (Exception e) {
-          // sometimes nexus just shits itself with a new repository...try again
+          // sometimes Nexus just fails with a new repository...try again
           if (Nexus.is5xxError(conn.responseCode) && activityAttempts < activityRetries) {
               activityAttempts += 1
               // slight backoff between attempts
@@ -119,19 +124,6 @@ def call(Map args = [:]){
               }
           }
           Exception exception = new Exception(msg.join('\n'))
-          withEnvMask(vars: [
-            [var: "NEXUS_username", password: username],
-            [var: "NEXUS_password", password: password]    ]){
-                conn = Nexus.createConnection(url, env.NEXUS_username, env.NEXUS_password, "profiles/${stagingProfileId}/drop")
-            }
-          data = toJSON(['data': ['stagedRepositoryId': stagingId]])
-          Nexus.addData(conn, 'POST', data.getBytes('UTF-8'))
-          try {
-              Nexus.checkResponse(conn, 201)
-          } catch (Exception dropFailure) {
-              exception.addSuppressed(dropFailure)
-          }
-
           throw exception
       }
 

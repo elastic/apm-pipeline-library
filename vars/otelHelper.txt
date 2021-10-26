@@ -1,0 +1,14 @@
+Helper method to interact with the OpenTelemetry Jenkins plugin
+
+```
+  withOtelEnv() {
+    // block
+  }
+
+  // If you'd like to use a different credentials
+  withOtelEnv(credentialsId: 'foo') {
+    // block
+  }
+```
+
+**NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
