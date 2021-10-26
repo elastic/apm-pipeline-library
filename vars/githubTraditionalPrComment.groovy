@@ -20,10 +20,10 @@ Add a comment or edit an existing comment in the GitHub Pull Request
 using the GitHub API.
 
   // create a new comment
-  githubTradditionalPrComment(message: 'foo bar')
+  githubTraditionalPrComment(message: 'foo bar')
 
   // edit an existing comment
-  githubTradditionalPrComment(message: 'foo bar', id: 12323)
+  githubTraditionalPrComment(message: 'foo bar', id: 12323)
 
   _NOTE_: To edit the existing comment is required these environment variables:
           - `CHANGE_ID`
@@ -35,7 +35,7 @@ import groovy.json.JsonOutput
 
 def call(Map args = [:]){
   def id = "${args.get('id', '')}"
-  def message = args.containsKey('message') ? args.message : error('githubTradditionalPrComment: message parameter is required')
+  def message = args.containsKey('message') ? args.message : error('githubTraditionalPrComment: message parameter is required')
 
   if (isPR()) {
     def token = getGithubToken()
@@ -48,6 +48,6 @@ def call(Map args = [:]){
     def comment = githubApiCall(token: token, url: url, data: [ "body": "${message}" ], method: method, noCache: true)
     return comment.id
   } else {
-    log(level: 'WARN', text: 'githubTradditionalPrComment: is only available for PRs.')
+    log(level: 'WARN', text: 'githubTraditionalPrComment: is only available for PRs.')
   }
 }

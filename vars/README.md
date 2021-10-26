@@ -1301,16 +1301,16 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
 
-## githubTradditionalPrComment
+## githubTraditionalPrComment
 Add a comment or edit an existing comment in the GitHub Pull Request
 using the GitHub API.
 
 ```
   // create a new comment
-  githubTradditionalPrComment(message: 'foo bar')
+  githubTraditionalPrComment(message: 'foo bar')
 
   // edit an existing comment
-  githubTradditionalPrComment(message: 'foo bar', id: 12323)
+  githubTraditionalPrComment(message: 'foo bar', id: 12323)
 ```
 
 Arguments:

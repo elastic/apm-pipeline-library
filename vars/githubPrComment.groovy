@@ -85,7 +85,7 @@ def addComment(String details) {
     id = comment?.id
   } catch (err) {
     log(level: 'WARN', text: "githubPrComment: pullRequest.comment failed with message: ${err.toString()}")
-    id = githubTradditionalPrComment(message: details)
+    id = githubTraditionalPrComment(message: details)
   }
   return id
 }
@@ -97,7 +97,7 @@ def editComment(id, details) {
   } catch (errorWithEdit) {
     try {
       log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with error '${errorWithEdit.toString()}'. Let's fallback to the tradditional PR comment approach.")
-      githubTradditionalPrComment(message: details, id: id)
+      githubTraditionalPrComment(message: details, id: id)
     } catch (err) {
       log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}' failed with error '${err.toString()}'. Let's fallback to add a comment.")
       id = addComment(details)

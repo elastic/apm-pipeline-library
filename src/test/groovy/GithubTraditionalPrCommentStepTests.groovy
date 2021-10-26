@@ -21,7 +21,7 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
-class GithubTradditionalPrCommenttStepTests extends ApmBasePipelineTest {
+class githubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
 
   def commentInterceptor = [
     id: 1,
@@ -41,7 +41,7 @@ class GithubTradditionalPrCommenttStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/githubTradditionalPrComment.groovy')
+    script = loadScript('vars/githubTraditionalPrComment.groovy')
     env.ORG_NAME = 'octocat'
     env.REPO_NAME = 'Hello-World'
     env.CHANGE_ID = 'PR-1'

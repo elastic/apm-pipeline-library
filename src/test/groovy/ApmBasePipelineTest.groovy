@@ -456,8 +456,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
-    helper.registerAllowedMethod('githubTradditionalPrComment', [Map.class], { m ->
-      def script = loadScript('vars/githubTradditionalPrComment.groovy')
+    helper.registerAllowedMethod('githubTraditionalPrComment', [Map.class], { m ->
+      def script = loadScript('vars/githubTraditionalPrComment.groovy')
       return script.call(m)
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
