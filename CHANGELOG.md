@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.1.256 (26/10/2021)
+
+#### 🚀 Enhancements
+
+-  Support pre commit error stack trace [#1338](https://github.com/elastic/apm-pipeline-library/pull/1338)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issue with java.util.regex.Matcher [#1336](https://github.com/elastic/apm-pipeline-library/pull/1336)
+
+#### 🙈 No user affected
+
+-  test-infra: test ARM workers [#1337](https://github.com/elastic/apm-pipeline-library/pull/1337)
+-  Weekly email for Beats (7.16 and master) [#1335](https://github.com/elastic/apm-pipeline-library/pull/1335)
+-  Add traces for GitHub release publish [#1333](https://github.com/elastic/apm-pipeline-library/pull/1333)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.20, 7.15.1, 7.16.0] [#1334](https://github.com/elastic/apm-pipeline-library/pull/1334)
+
 ## v1.1.255 (21/10/2021)
 
 #### 🐛 Bug Fixes
