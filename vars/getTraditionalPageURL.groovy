@@ -26,8 +26,8 @@
   * cobertura
   * gcs
 
-  def testURL = getTradditionalPageURL('tests')
-  def artifactURL = getTradditionalPageURL('artifacts')
+  def testURL = getTraditionalPageURL('tests')
+  def artifactURL = getTraditionalPageURL('artifacts')
 
 */
 def call(String page) {
@@ -53,7 +53,7 @@ def call(String page) {
       url = "${env.BUILD_URL}gcsObjects"
       break
     default:
-      error 'getTradditionalPageURL: Unsupported type'
+      error 'getTraditionalPageURL: Unsupported type'
   }
   return url
 }

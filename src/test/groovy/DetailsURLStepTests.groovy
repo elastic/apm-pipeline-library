@@ -41,7 +41,7 @@ class DetailsURLStepTests extends ApmBasePipelineTest {
   void test_default_without_blueocean() throws Exception {
     def url = script.call(isBlueOcean: false)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('getTradditionalPageURL', 'pipeline'))
+    assertTrue(assertMethodCallContainsPattern('getTraditionalPageURL', 'pipeline'))
     assertJobStatusSuccess()
   }
 

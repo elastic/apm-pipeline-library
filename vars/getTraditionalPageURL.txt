@@ -10,6 +10,6 @@ Tab refers to the kind of available pages in the tradditional view. So far:
 
 
 ```
-def testURL = getTradditionalPageURL('tests')
-def artifactURL = getTradditionalPageURL('artifacts')
+def testURL = getTraditionalPageURL('tests')
+def artifactURL = getTraditionalPageURL('artifacts')
 ```

@@ -418,7 +418,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
     helper.registerAllowedMethod('getStageId', [], null)
-    helper.registerAllowedMethod('getTradditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
     })

@@ -112,9 +112,9 @@ class WithGithubStatusStepTests extends ApmBasePipelineTest {
 
   @Test
   void testSuccessWithWrongTab() throws Exception {
-    helper.registerAllowedMethod('getTradditionalPageURL', [String.class], {
+    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], {
       updateBuildStatus('FAILURE')
-      throw new Exception('getTradditionalPageURL: Unsupported type')
+      throw new Exception('getTraditionalPageURL: Unsupported type')
     })
     def isOK = false
     try {

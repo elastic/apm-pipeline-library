@@ -699,7 +699,7 @@ Get the stage ID in the current context.
 def stage = getStageId()
 ```
 
-## getTradditionalPageURL
+## getTraditionalPageURL
 Provides the specific tradditional URL tab for the current build/run
 
 Tab refers to the kind of available pages in the tradditional view. So far:
@@ -712,8 +712,8 @@ Tab refers to the kind of available pages in the tradditional view. So far:
 
 
 ```
-def testURL = getTradditionalPageURL('tests')
-def artifactURL = getTradditionalPageURL('artifacts')
+def testURL = getTraditionalPageURL('tests')
+def artifactURL = getTraditionalPageURL('artifacts')
 ```
 
 ## getVaultSecret
