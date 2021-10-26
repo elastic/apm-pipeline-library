@@ -699,10 +699,10 @@ Get the stage ID in the current context.
 def stage = getStageId()
 ```
 
-## getTraditionalPageURL
-Provides the specific traditional URL tab for the current build/run
+## getTradditionalPageURL
+Provides the specific tradditional URL tab for the current build/run
 
-Tab refers to the kind of available pages in the traditional view. So far:
+Tab refers to the kind of available pages in the tradditional view. So far:
 * pipeline -> aka the build run (for BO compatibilities)
 * tests
 * changes
@@ -712,8 +712,8 @@ Tab refers to the kind of available pages in the traditional view. So far:
 
 
 ```
-def testURL = getTraditionalPageURL('tests')
-def artifactURL = getTraditionalPageURL('artifacts')
+def testURL = getTradditionalPageURL('tests')
+def artifactURL = getTradditionalPageURL('artifacts')
 ```
 
 ## getVaultSecret
@@ -1301,16 +1301,16 @@ githubRepoGetUserPermission(token: token, repo: 'org/repo', user: 'username')
 
 [Github API call](https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level)
 
-## githubTraditionalPrComment
+## githubTradditionalPrComment
 Add a comment or edit an existing comment in the GitHub Pull Request
 using the GitHub API.
 
 ```
   // create a new comment
-  githubTraditionalPrComment(message: 'foo bar')
+  githubTradditionalPrComment(message: 'foo bar')
 
   // edit an existing comment
-  githubTraditionalPrComment(message: 'foo bar', id: 12323)
+  githubTradditionalPrComment(message: 'foo bar', id: 12323)
 ```
 
 Arguments:

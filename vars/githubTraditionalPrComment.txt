@@ -3,10 +3,10 @@ using the GitHub API.
 
 ```
   // create a new comment
-  githubTraditionalPrComment(message: 'foo bar')
+  githubTradditionalPrComment(message: 'foo bar')
 
   // edit an existing comment
-  githubTraditionalPrComment(message: 'foo bar', id: 12323)
+  githubTradditionalPrComment(message: 'foo bar', id: 12323)
 ```
 
 Arguments:

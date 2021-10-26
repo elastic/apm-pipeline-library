@@ -20,13 +20,13 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
+class getTradditionalPageURLStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/getTraditionalPageURL.groovy')
+    script = loadScript('vars/getTradditionalPageURL.groovy')
   }
 
   @Test
@@ -37,7 +37,7 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getTraditionalPageURL: Unsupported type'))
+    assertTrue(assertMethodCallContainsPattern('error', 'getTradditionalPageURL: Unsupported type'))
     assertJobStatusFailure()
   }
 
@@ -49,7 +49,7 @@ class getTraditionalPageURLStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'getTraditionalPageURL: Unsupported type'))
+    assertTrue(assertMethodCallContainsPattern('error', 'getTradditionalPageURL: Unsupported type'))
     assertJobStatusFailure()
   }
 

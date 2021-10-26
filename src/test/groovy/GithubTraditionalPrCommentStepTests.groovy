@@ -21,7 +21,7 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
-class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
+class GithubTradditionalPrCommenttStepTests extends ApmBasePipelineTest {
 
   def commentInterceptor = [
     id: 1,
@@ -41,12 +41,12 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/githubTraditionalPrComment.groovy')
+    script = loadScript('vars/githubTradditionalPrComment.groovy')
     env.ORG_NAME = 'octocat'
     env.REPO_NAME = 'Hello-World'
     env.CHANGE_ID = 'PR-1'
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {	
-      return commentInterceptor	
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return commentInterceptor
     })
   }
 
@@ -67,7 +67,7 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_add_a_new_comment() throws Exception {	
+  void test_add_a_new_comment() throws Exception {
     def obj = script.call(message: 'Me too')
     printCallStack()
     assertEquals(obj, 1)
@@ -75,7 +75,7 @@ class GithubTraditionalPrCommenttStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_edit_a_comment() throws Exception {	
+  void test_edit_a_comment() throws Exception {
     def obj = script.call(message: 'Me too', id: 1)
     printCallStack()
     assertEquals(obj, 1)

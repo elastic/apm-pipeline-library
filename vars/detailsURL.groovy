@@ -40,5 +40,5 @@ def call(Map args = [:]) {
   if (isBlueOcean) {
     return getBlueoceanTabURL(tab)
   }
-  return getTraditionalPageURL(tab)
+  return getTradditionalPageURL(tab)
 }

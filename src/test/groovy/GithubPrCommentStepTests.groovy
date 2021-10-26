@@ -90,7 +90,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   void testAddCommentForUnexisting() throws Exception {
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubTraditionalPrComment', 0))
+    assertTrue(assertMethodCallOccurrences('githubTradditionalPrComment', 0))
     assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'artifacts=comment.id'))
@@ -103,7 +103,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('readFile', [String.class], { return '2' } )
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubTraditionalPrComment', 0))
+    assertTrue(assertMethodCallOccurrences('githubTradditionalPrComment', 0))
     assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "githubPrComment: Edit comment with id '2'."))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=comment.id'))
@@ -112,12 +112,12 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_addOrEditComment_fallback_to_traditional() throws Exception {
+  void test_addOrEditComment_fallback_to_tradditional() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubTraditionalPrComment', 1))
+    assertTrue(assertMethodCallOccurrences('githubTradditionalPrComment', 1))
     assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "pullRequest.editComment failed with error"))
     assertFalse(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
@@ -130,12 +130,12 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   void test_addOrEditComment_fallback_to_addComment() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
-    helper.registerAllowedMethod('githubTraditionalPrComment', [Map.class], {
+    helper.registerAllowedMethod('githubTradditionalPrComment', [Map.class], {
       throw new Exception('Something bad happened')
     })
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubTraditionalPrComment', 1))
+    assertTrue(assertMethodCallOccurrences('githubTradditionalPrComment', 1))
     assertTrue(assertMethodCallContainsPattern('copyArtifacts', 'filter=comment.id'))
     assertTrue(assertMethodCallContainsPattern('log', "pullRequest.editComment failed with error"))
     assertTrue(assertMethodCallContainsPattern('log', 'githubPrComment: Add a new comment.'))
@@ -241,18 +241,18 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_addComment_fallback_to_githubTraditionalPrComment() throws Exception {
+  void test_addComment_fallback_to_githubTradditionalPrComment() throws Exception {
     def ret = script.addComment('error')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubTraditionalPrComment', 'message=error'))
+    assertTrue(assertMethodCallContainsPattern('githubTradditionalPrComment', 'message=error'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_editComment_fallback_to_githubTraditionalPrComment() throws Exception {
+  void test_editComment_fallback_to_githubTradditionalPrComment() throws Exception {
     script.editComment(PullRequestMock.ERROR, 'foo')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubTraditionalPrComment', "message=foo, id=${PullRequestMock.ERROR}"))
+    assertTrue(assertMethodCallContainsPattern('githubTradditionalPrComment', "message=foo, id=${PullRequestMock.ERROR}"))
     assertJobStatusSuccess()
   }
 }

@@ -16,9 +16,9 @@
 // under the License.
 
 /**
-  Provides the specific traditional URL tab for the current build/run
+  Provides the specific tradditional URL tab for the current build/run
 
-  Tab refers to the kind of available pages in the traditional view. So far:
+  Tab refers to the kind of available pages in the tradditional view. So far:
   * pipeline -> aka the build run (for BO compatibilities)
   * tests
   * changes
@@ -26,8 +26,8 @@
   * cobertura
   * gcs
 
-  def testURL = getTraditionalPageURL('tests')
-  def artifactURL = getTraditionalPageURL('artifacts')
+  def testURL = getTradditionalPageURL('tests')
+  def artifactURL = getTradditionalPageURL('artifacts')
 
 */
 def call(String page) {
@@ -53,7 +53,7 @@ def call(String page) {
       url = "${env.BUILD_URL}gcsObjects"
       break
     default:
-      error 'getTraditionalPageURL: Unsupported type'
+      error 'getTradditionalPageURL: Unsupported type'
   }
   return url
 }

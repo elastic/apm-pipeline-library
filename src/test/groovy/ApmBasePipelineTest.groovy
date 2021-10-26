@@ -418,7 +418,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
     helper.registerAllowedMethod('getStageId', [], null)
-    helper.registerAllowedMethod('getTraditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
+    helper.registerAllowedMethod('getTradditionalPageURL', [String.class], { "${env.JENKINS_URL}job/folder-mbp/job/${env.BRANCH_NAME}/${env.BUILD_ID}/testReport" })
     helper.registerAllowedMethod('getVaultSecret', [Map.class], { m ->
       getVaultSecret(m.secret)
     })
@@ -456,8 +456,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('githubPrLatestComment', [Map.class], null)
-    helper.registerAllowedMethod('githubTraditionalPrComment', [Map.class], { m ->
-      def script = loadScript('vars/githubTraditionalPrComment.groovy')
+    helper.registerAllowedMethod('githubTradditionalPrComment', [Map.class], { m ->
+      def script = loadScript('vars/githubTradditionalPrComment.groovy')
       return script.call(m)
     })
     helper.registerAllowedMethod('gitPush', [Map.class], { return "OK" })
