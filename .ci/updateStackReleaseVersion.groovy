@@ -53,6 +53,12 @@ pipeline {
     stage('Fetch latest versions') {
       steps {
         echo ' TODO: calculate the versions'
+        script {
+          releaseVersions['current.6'] = '6.8.20'
+          releaseVersions['current.7'] = '7.15.1'
+          releaseVersions['next.minor.7'] = '7.16.0'
+          releaseVersions['next.patch.7'] = '7.15.2'
+        }
       }
     }
     stage('Send Pull Request'){
@@ -61,6 +67,7 @@ pipeline {
                           branchName: 'master',
                           labels: 'automation',
                           reviewer: 'elastic/observablt-robots-on-call',
+                          stackVersions: releaseVersions,
                           title: '[automation] Update Elastic stack release version source of truth')
       }
     }
@@ -73,21 +80,9 @@ pipeline {
 }
 
 def createPullRequest(Map args = [:]) {
-  def message = createPRDescription(latestVersions)
-  prepareContext(repo: args.repo, branchName: args.branchName)
-  if (args?.stackVersions?.size() == 0) {
-    error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
-  }
-  writeFile file: 'resources/versions/releases.properties', text: """current_6=${releaseVersions.get('current.6')}
-current_7=${releaseVersions.get('current.7')}
-next_minor_7=${releaseVersions.get('next.minor.7')}
-next_patch_7=${releaseVersions.get('next.patch.7')}"""
-  sh(script: """
-  git checkout -b "update-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
-  git add resources/versions/releases.properties
-  git diff --staged --quiet || git commit -m "[Automation] Update elastic stack release versions to ${VERSION_RELEASE} and ${VERSION_DEV}"
-  git --no-pager log -1
-  """, label: "Git changes")
+  bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
+
+  updateReleasesPropertiesFile(args)
 
   if (params.DRY_RUN_MODE) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${message}', base: '${args.branchName}', title: '${args.title}', reviewer: '${args.reviewer}')")
@@ -101,16 +96,19 @@ next_patch_7=${releaseVersions.get('next.patch.7')}"""
     return
   }
 
-  // In case docker images are not available yet, let's skip the PR automation.
-  if (!areVersionsAvailable(args.stackVersions)) {
-    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+  // In case docker image is not available yet, let's skip the PR automation.
+  if (!bumpUtils.isVersionAvailable(args.stackVersion)) {
+    log(level: 'INFO', text: "Version '${args.stackVersion}' is not available yet.")
     return
   }
 
-  if (anyChangesToBeSubmitted("${args.branchName}")) {
+  if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
     def arguments = [
-      title: "${args.title}", labels: "${args.labels}", description: "${message}", base: "${args.branchName}"
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
     ]
+    if (args.assign?.trim()) {
+      arguments['assign'] = args.assign
+    }
     if (args.reviewer?.trim()) {
       arguments['reviewer'] = args.reviewer
     }
@@ -120,27 +118,20 @@ next_patch_7=${releaseVersions.get('next.patch.7')}"""
   }
 }
 
-def areVersionsAvailable(stackVersions) {
-  if(stackVersions.size() >= 2){
-    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 2]}") &&
-           dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[stackVersions.size() - 1]}")
-  } else if (stackVersions.size() == 1) {
-    return dockerImageExists(image: "docker.elastic.co/elasticsearch/elasticsearch:${stackVersions[0]}")
+def updateReleasesPropertiesFile(Map args = [:]) {
+  if (!args?.stackVersions?.trim() || args?.stackVersions?.size() == 0) {
+    error('updateReleasesPropertiesFile: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
-}
+  // Update the properties file with the new releases
+  writeFile file: 'resources/versions/releases.properties', text: """current_6=${args.stackVersions.get('current.6')}
+current_7=${args.stackVersions.get('current.7')}
+next_minor_7=${args.stackVersions.get('next.minor.7')}
+next_patch_7=${args.stackVersions.get('next.patch.7')}"""
 
-def anyChangesToBeSubmitted(String branch) {
-  return sh(returnStatus: true, script: "git diff --quiet HEAD..${branch}") != 0
-}
-
-def prepareContext(Map args = [:]) {
-  deleteDir()
-  setupAPMGitEmail(global: true)
-  git(url: "https://github.com/${ORG_NAME}/${args.repo}.git",
-      branch: args.branchName,
-      credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
-}
-
-def createPRDescription(versionEntry) {
-  return """### What \n Update current and upcoming release details. \n ### Further details \n ${versionEntry}"""
+  // Prepare the changeset in git.
+  sh(script: """
+    git checkout -b "update-stack-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
+    git add resources/versions/releases.properties
+    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${VERSION_RELEASE} and ${VERSION_DEV}"
+    git --no-pager log -1""", label: "Git changes")
 }
