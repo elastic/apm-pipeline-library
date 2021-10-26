@@ -60,4 +60,4 @@ repos:
     rev: v2.1.0
     hooks:
     -   id: codespell
-        args: ['--ignore-words-list','pullRequest']
+        args: ['--ignore-words-list','pull request']
