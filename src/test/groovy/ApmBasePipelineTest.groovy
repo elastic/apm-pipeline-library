@@ -323,6 +323,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
     })
+    helper.registerAllowedMethod('readProperties', [Map.class], { [:] })
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { count, c ->
       Exception lastError = null
       while (count-- > 0) {

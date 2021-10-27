@@ -41,11 +41,28 @@ def prepareContext(Map args = [:]) {
       credentialsId: args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'))
 }
 
-def getCurrentReleaseFor7Minor() {
+def getCurrentMinorReleaseFor7() {
+  return getValueForPropertyKey('current_7')
+}
+
+def getCurrentMinorReleaseFor6() {
+  return getValueForPropertyKey('current_6')
+}
+
+def getNextMinorReleaseFor7() {
+  return getValueForPropertyKey('next_minor_7')
+}
+
+def getNextPatchReleaseFor7() {
+  return getValueForPropertyKey('next_patch_7')
+}
+
+// for internal purposes
+def getValueForPropertyKey(String key) {
   def stackVersions = readProperties(text: libraryResource('versions/releases.properties'))
-  def version = stackVersions['current_7']
+  def version = stackVersions[key]
   if (!version?.trim()) {
-    error('getCurrentReleaseFor7Minor: "current_7" has got an empty value')
+    error("getValueForPropertyKey: '${key}' has an empty value")
   }
   return version
 }

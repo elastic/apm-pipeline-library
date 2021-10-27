@@ -98,7 +98,7 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
-  def stackVersion = bumpUtils.getCurrentReleaseFor7Minor()
+  def stackVersion = bumpUtils.getCurrentMinorReleaseFor7()
   def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${stackVersion}"""
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   if (labels.trim() && !labels.contains('automation')) {
