@@ -52,6 +52,19 @@ class ListGithubReleasesStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_gh_error_and_failNever() throws Exception {
+    helper.registerAllowedMethod('gh', [Map.class], { throw new Exception('unknown command "foo" for "gh release"') })
+    try {
+      script.call(failNever: false)
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'error'))
+  }
+
+
+  @Test
   void test_with_single_row() throws Exception {
     helper.registerAllowedMethod('gh', [Map.class], {
       return 'v1.1.256  Latest  (v1.1.256)  about 21 hours ago' })

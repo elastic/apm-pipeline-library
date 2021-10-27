@@ -23,6 +23,7 @@
 */
 def call(Map args = [:]) {
   def limit = args.get('limit', 200)
+  def failNever = args.get('failNever', true)
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def output = [:]
   def releases
@@ -36,8 +37,13 @@ def call(Map args = [:]) {
       }
     }
   } catch (err) {
-    log(level: 'WARN', text: "githubReleases: It failed but let's notify the error but keep going. gh command returned: '${releases}' with error: ${err.toString()}")
+    def errorMessage = "listGithubReleases: gh command returned: '${releases}' with error: ${err.toString()}"
+    if (failNever) {
+      log(level: 'WARN', text: "${errorMessage}. But let's keep going")
+    } else {
+      error("listGithubReleases: ${errorMessage}")
+    }
   }
-  log(level: 'DEBUG', text: "githubReleases: output ${output}.")
+  log(level: 'DEBUG', text: "listGithubReleases: output ${output}.")
   return output
 }
