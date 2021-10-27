@@ -36,7 +36,6 @@ def call(Map args = [:]) {
       }
     }
   } catch (err) {
-    // no issues to be reported.
     log(level: 'WARN', text: "githubReleases: It failed but let's notify the error but keep going. gh command returned: '${releases}' with error: ${err.toString()}")
   }
   log(level: 'DEBUG', text: "githubReleases: output ${output}.")
