@@ -16,10 +16,10 @@
 // under the License.
 
 /**
-  Look for the GitHub releases in the current project given the labels to be filtered with. It returns
+  List the GitHub releases in the current project. It returns
   a dictionary with the release id as primary key and then the whole information.
 
-  githubReleases()
+  listGithubReleases()
 */
 def call(Map args = [:]) {
   def limit = args.get('limit', 200)

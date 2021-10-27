@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class GithubReleasesStepTests extends ApmBasePipelineTest {
+class ListGithubReleasesStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/githubReleases.groovy')
+    script = loadScript('vars/listGithubReleases.groovy')
   }
 
   @Test

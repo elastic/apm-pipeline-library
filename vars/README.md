@@ -1289,17 +1289,6 @@ Sample return:
 }
 ```
 
-## githubReleases
-Look for the GitHub releases in the current project. It returns
-a dictionary with the release id as primary key and then the whole information.
-
-```
-  // Look for all the GitHub release
-  githubReleases()
-```
-
-* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
-
 ## githubRepoGetUserPermission
 Get a user's permission level on a Github repo.
 
@@ -1810,6 +1799,16 @@ Scan the repository for third-party dependencies and report the results.
 ```
 licenseScan()
 ```
+
+## listGithubReleases
+List the GitHub releases in the current project. It returns
+a dictionary with the release id as primary key and then the whole information.
+
+```
+  listGithubReleases()
+```
+
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
