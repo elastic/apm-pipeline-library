@@ -2672,7 +2672,7 @@
 
 #### 🚀 Enhancements
 
--  fix: support traditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
+-  fix: support tradditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
 
 ---
 
@@ -2807,7 +2807,7 @@
 -  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
 -  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 -  enable issueCommentTrigger and expose GITHUB_COMMENT environment [#136](https://github.com/elastic/apm-pipeline-library/pull/136)
--  enable cobertura and gsc tabs with the traditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
+-  enable cobertura and gsc tabs with the tradditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
 -  ci: release process [#123](https://github.com/elastic/apm-pipeline-library/pull/123)
 
 #### 🐛 Bug Fixes

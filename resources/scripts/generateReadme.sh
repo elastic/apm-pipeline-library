@@ -33,7 +33,7 @@ echo "README=${FOLDER}/README.md"
 echo "# Steps Documentation" > ${README}
 for i in ${FOLDER}/*.txt
 do
-  echo "Procesing $i"
+  echo "Processing $i"
   step=$(basename $i .txt)
   echo "## ${step}" >>  ${README}
   cat $i >>  ${README}

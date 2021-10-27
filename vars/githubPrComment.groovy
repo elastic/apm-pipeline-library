@@ -18,6 +18,7 @@
 /**
   Add a comment or edit an existing comment in the GitHub.
 
+
   githubPrComment()
 
   githubPrComment(details: "${env.BUILD_URL}artifact/docs.txt")
@@ -95,7 +96,7 @@ def editComment(id, details) {
     pullRequest.editComment(id, details)
   } catch (errorWithEdit) {
     try {
-      log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with error '${errorWithEdit.toString()}'. Let's fallback to the traditional PR comment approach.")
+      log(level: 'DEBUG', text: "githubPrComment: pullRequest.editComment failed with error '${errorWithEdit.toString()}'. Let's fallback to the tradditional PR comment approach.")
       githubTraditionalPrComment(message: details, id: id)
     } catch (err) {
       log(level: 'DEBUG', text: "githubPrComment: Edit comment with id '${id}' failed with error '${err.toString()}'. Let's fallback to add a comment.")

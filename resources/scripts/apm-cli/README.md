@@ -9,7 +9,7 @@ You can use `pip` passing the folder of the apm-cli
 ```
 virtualenv -q --python=python3 .venv
 . .venv/bin/activate
-pip install /resurces/scripts/apm-cli
+pip install /resources/scripts/apm-cli
 ```
 
 Other option is to use `setup.py` to install the script
@@ -17,7 +17,7 @@ Other option is to use `setup.py` to install the script
 ```
 virtualenv -q --python=python3 .venv
 . .venv/bin/activate
-cd  /resurces/scripts/apm-cli
+cd  /resources/scripts/apm-cli
 python setup.py install -v
 ```
 

@@ -208,7 +208,7 @@ def help(){
   def body = """
   # ChatOps commands Help
   * **/approve** - Approve the PR.
-  * **/assign [cancel] @Someone** - Assing the PR to Someone.
+  * **/assign [cancel] @Someone** - Assign the PR to Someone.
   * **/bark** - Add a dog image to the issue or PR.
   * **/build** - Launch the build process.
   * **/cc [cancel] @Someone** - Requests a review from the user(s).
@@ -218,10 +218,10 @@ def help(){
   * **/hold [cancel]** - Adds or removes the `do-not-merge/hold` Label which is used to indicate that the PR should not be automatically merged.
   * **/label [cancel]** labelName - Adds a label to the PR
   * **/lgtm [cancel]** - Adds or removes the 'lgtm' label which is typically used to gate merging.
-  * **/lint** - Launch the linting proces.
+  * **/lint** - Launch the linting process.
   * **/meow** - Add a cat image to the issue or PR.
   * **/ok-to-test** - Marks a PR as 'trusted' and starts tests.
-  * **/package** - Launch the packaging proces.
+  * **/package** - Launch the packaging process.
   * **/reopen** - Reopen the PR.
   * **/run [something]** - Launch the "something" process
   * **/skip [cancel]** - Mark the PR to be skipped from build in CI.

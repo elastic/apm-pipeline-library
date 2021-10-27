@@ -81,7 +81,7 @@ def stop(Map args = [:]){
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
   // we need to change the permission because the group others never will have permissions
-  // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
+  // due to the hardcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
     docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
