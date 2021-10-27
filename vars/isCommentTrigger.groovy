@@ -31,7 +31,7 @@ def call(){
     try {
       def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
                                             url: "https://api.github.com/orgs/elastic/members/${env.GITHUB_COMMENT_AUTHOR}")
-      // githubApiCall returns either a raw ouput or an error message if so it means the user is not a member.
+      // githubApiCall returns either a raw output or an error message if so it means the user is not a member.
       found = membershipResponse.message?.trim() ? false : true
     } catch(err) {
       log(level: 'WARN', text: "isCommentTrigger: only users under the Elastic organisation are allowed. Message: See ${err.toString()}")

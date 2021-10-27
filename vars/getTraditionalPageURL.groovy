@@ -16,9 +16,9 @@
 // under the License.
 
 /**
-  Provides the specific traditional URL tab for the current build/run
+  Provides the specific tradditional URL tab for the current build/run
 
-  Tab refers to the kind of available pages in the traditional view. So far:
+  Tab refers to the kind of available pages in the tradditional view. So far:
   * pipeline -> aka the build run (for BO compatibilities)
   * tests
   * changes

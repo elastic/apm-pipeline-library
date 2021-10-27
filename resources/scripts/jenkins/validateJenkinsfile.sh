@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Validate a Jenkins file syntax againt a Jenkins instance.
+# Validate a Jenkins file syntax against a Jenkins instance.
 # https://jenkins.io/doc/book/pipeline/development/
 #
 # curl (REST API)

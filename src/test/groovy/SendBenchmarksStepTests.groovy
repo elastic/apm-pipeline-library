@@ -90,7 +90,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: unknow protocol, the url is not http(s).'))
+    assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: unknown protocol, the url is not http(s).'))
     assertJobStatusFailure()
   }
 

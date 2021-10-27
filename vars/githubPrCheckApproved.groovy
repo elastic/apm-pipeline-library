@@ -92,7 +92,7 @@ def isPrApproved(reviews){
 */
 def hasWritePermission(token, repo, user){
   def json = githubRepoGetUserPermission(token: token, repo: repo, user: user)
-  log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${user}, Repo: ${repo}, Permision: ${json?.permission}")
+  log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${user}, Repo: ${repo}, Permission: ${json?.permission}")
   return json?.permission == 'admin' || json?.permission == 'write'
 }
 
