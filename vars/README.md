@@ -1800,6 +1800,16 @@ Scan the repository for third-party dependencies and report the results.
 licenseScan()
 ```
 
+## listGithubReleases
+List the GitHub releases in the current project. It returns
+a dictionary with the release id as primary key and then the whole information.
+
+```
+  listGithubReleases()
+```
+
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
@@ -2391,8 +2401,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
          slackChannel: "elastic-agent")
 ```
 
-* *jobPath*: the location of the jobPath. Optional (default 'e2e-tests/e2e-testing-mbp')
-* *jobName*: the name of the relative job. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
+* *jobName*: the name of the e2e job. In a multibranch pipeline then the name of the job could be the branch. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
 * *disableGitHubCheck*: whether to disable the GitHub check notifications. (default false)
 * *gitHubCheckName*: the GitHub check name. Optional
 * *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
@@ -2401,7 +2410,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
 * *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
 * *kibanaVersion*: Docker tag of the kibana to be used for the tests. Optional
-* *nightlyScenarios*: whether to include the scenarios marked as @nightly in the test execution. Optional (default false)
+* *nightlyScenarios*: whether to  include the scenarios marked as @nightly in the test execution. Optional (default false)
 * *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
 * *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
 * *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
