@@ -31,8 +31,7 @@ echo "FOLDER=${1}"
 echo "README=${FOLDER}/README.md"
 
 echo "# Steps Documentation" > "${README}"
-# shellcheck disable=SC2231
-for i in ${FOLDER}/*.txt
+for i in "${FOLDER}"/*.txt
 do
   echo "Processing $i"
   step=$(basename "$i" .txt)
