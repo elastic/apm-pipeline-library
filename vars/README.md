@@ -2391,8 +2391,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
          slackChannel: "elastic-agent")
 ```
 
-* *jobPath*: the location of the jobPath. Optional (default 'e2e-tests/e2e-testing-mbp')
-* *jobName*: the name of the relative job. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
+* *jobName*: the name of the e2e job. In a multibranch pipeline then the name of the job could be the branch. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
 * *disableGitHubCheck*: whether to disable the GitHub check notifications. (default false)
 * *gitHubCheckName*: the GitHub check name. Optional
 * *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
@@ -2401,7 +2400,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
 * *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
 * *kibanaVersion*: Docker tag of the kibana to be used for the tests. Optional
-* *nightlyScenarios*: whether to include the scenarios marked as @nightly in the test execution. Optional (default false)
+* *nightlyScenarios*: whether to  include the scenarios marked as @nightly in the test execution. Optional (default false)
 * *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
 * *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
 * *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
