@@ -140,7 +140,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testHasWritePermision() throws Exception {
+  void testHasWritePermission() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
       return [
         "permission": "write",
@@ -163,7 +163,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testHasAdminPermision() throws Exception {
+  void testHasAdminPermission() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
       return [
         "permission": "admin",

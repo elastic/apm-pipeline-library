@@ -21,7 +21,7 @@
 
   Blueocean doesn't provide any env variable with the final URL to the BO view.
   Besides, folder separator is raw encoded, aka %2F, rather than '/'. Therefore,
-  it's not easy to detect progammatically what items are either MBP or folders.
+  it's not easy to detect programmatically what items are either MBP or folders.
 
   Further details: https://groups.google.com/forum/#!topic/jenkinsci-users/-fuk4BK6Hvs
 

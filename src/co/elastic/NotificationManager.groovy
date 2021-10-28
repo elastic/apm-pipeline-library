@@ -60,7 +60,7 @@ def analyzeFlakey(Map args = [:]) {
 
     // 1. Only if there are test failures to analyse
     // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve
-    // backward compatability.
+    // backward compatibility.
     if(testsErrors.size() > 0 && jobName?.trim()) {
 
       def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
