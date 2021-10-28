@@ -30,12 +30,11 @@ README="${FOLDER}/README.md"
 echo "FOLDER=${1}"
 echo "README=${FOLDER}/README.md"
 
-echo "# Steps Documentation" > ${README}
+echo "# Steps Documentation" > "${README}"
+# shellcheck disable=SC2231
 for i in ${FOLDER}/*.txt
 do
   echo "Processing $i"
-  step=$(basename $i .txt)
-  echo "## ${step}" >>  ${README}
-  cat $i >>  ${README}
-  echo "" >> ${README}
+  step=$(basename "$i" .txt)
+  { echo "## ${step}" ; cat "$i" >>  "${README}"; echo ""; } >> "${README}"
 done
