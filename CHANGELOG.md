@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.257 (01/11/2021)
+
+#### 🚀 Enhancements
+
+-  Add listGithubReleases step [#1341](https://github.com/elastic/apm-pipeline-library/pull/1341)
+
+#### 🐛 Bug Fixes
+
+-  fix: resolve shell-lint warnings [#1342](https://github.com/elastic/apm-pipeline-library/pull/1342)
+
+#### ⚙️ CI
+
+- [**backport-skip**] Use a file to store the current and next release details [#1197](https://github.com/elastic/apm-pipeline-library/pull/1197)
+-  linting: fix codespell typos and disable pullRequest from codespell [#1340](https://github.com/elastic/apm-pipeline-library/pull/1340)
+
 ## v1.1.256 (26/10/2021)
 
 #### 🚀 Enhancements
