@@ -15,12 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import groovy.transform.Field
-
 @Library('apm@master') _
-
-// To store all the latest release versions
-@Field def latestVersions
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -48,14 +43,6 @@ pipeline {
     stage('Checkout') {
       steps {
         git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/${ORG_NAME}/${REPO}.git")
-      }
-    }
-    stage('Fetch latest versions') {
-      steps {
-        script {
-          latestVersions = artifactsApi(action: 'latest-release-versions')
-        }
-        archiveArtifacts 'latest-release-versions.json'
       }
     }
     stage('Send Pull Request'){
@@ -111,31 +98,25 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
-  def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${latestVersions}"""
+  def stackVersion = bumpUtils.getCurrentMinorReleaseFor7()
+  def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${stackVersion}"""
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: "${title} ${latestVersions}", labels: labels, scriptFile: scriptFile, stackVersions: latestVersions,
+  return [repo: repo, branchName: branch, title: "${title} ${stackVersion}", labels: labels, scriptFile: scriptFile, stackVersion: stackVersion,
           message: message, assign: assign, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
   bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
-  if (args?.stackVersions?.size() == 0) {
-    error('createPullRequest: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
-  }
+
   bumpUtils.createBranch(prefix: 'update-stack-version', suffix: args.branchName)
-  if(args.stackVersions.size() >= 2){
-    sh(script: "${args.scriptFile} '${args.stackVersions[args.stackVersions.size() - 2]}' '${args.stackVersions[args.stackVersions.size() - 1]}'", label: "Prepare changes for ${args.repo}")
-  } else if (args.stackVersions.size() == 1){
-    sh(script: "${args.scriptFile} '${args.stackVersions[0]}' ''", label: "Prepare changes for ${args.repo}")
-  } else {
-    error("There is no release versions")
-  }
+
+  sh(script: "${args.scriptFile} '${stackVersion}' ''", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -146,9 +127,9 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  // In case docker images are not available yet, let's skip the PR automation.
-  if (!areVersionsAvailable(args.stackVersions)) {
-    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+  // In case the docker image is not available yet, let's skip the PR automation.
+  if (!bumpUtils.isVersionAvailable(args.stackVersion)) {
+    log(level: 'INFO', text: "Version '${args.stackVersion}' is not available yet.")
     return
   }
 
@@ -166,14 +147,4 @@ def createPullRequest(Map args = [:]) {
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
-}
-
-def areVersionsAvailable(stackVersions) {
-  if(stackVersions.size() >= 2){
-    return bumpUtils.isVersionAvailable(stackVersions[stackVersions.size() - 2]) &&
-           bumpUtils.isVersionAvailable(stackVersions[stackVersions.size() - 1])
-  } else if (stackVersions.size() == 1) {
-    return bumpUtils.isVersionAvailable(stackVersions[0])
-  }
-  return false
 }

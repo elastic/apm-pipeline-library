@@ -97,6 +97,14 @@ pipeline {
           wait: false
         )
 
+        build(job: 'apm-shared/update-stack-release-version-pipeline',
+          parameters: [
+            booleanParam(name: 'DRY_RUN_MODE', value: false)
+          ],
+          propagate: false,
+          wait: false
+        )
+
         build(job: 'apm-shared/gather-ci-metrics-pipeline',
           parameters: [
             string(name: 'MTIME_FILTER', value: '1'),
