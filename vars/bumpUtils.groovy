@@ -55,18 +55,15 @@ def parseArguments(Map args = [:]) {
 }
 
 def getCurrentMinorReleaseFor8() {
-  // TODO: to support the 8.x branches
-  return "TODO"
+  return getValueForPropertyKey(current8Key())
 }
 
 def getNextMinorReleaseFor8() {
-  // TODO: to support the 8.x branches
-  return "TODO"
+  return getValueForPropertyKey(nextMinor8Key())
 }
 
 def getNextPatchReleaseFor8() {
-  // TODO: to support the 8.x branches
-  return "TODO"
+  return getValueForPropertyKey(nextPatch8Key())
 }
 
 def getCurrentMinorReleaseFor7() {
