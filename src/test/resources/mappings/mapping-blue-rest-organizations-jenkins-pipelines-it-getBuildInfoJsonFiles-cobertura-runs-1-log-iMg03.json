@@ -1,7 +1,7 @@
 {
   "id" : "a933749b-f6fd-31fd-990e-312aa88f583b",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/log/",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/log/?start=0",
     "method" : "GET"
   },
   "response" : {
