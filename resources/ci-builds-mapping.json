@@ -1,6 +1,25 @@
 {
   "mappings" : {
     "properties" : {
+      "analysis" : {
+        "properties" : {
+          "reusedWorkers" : {
+            "type" : "long"
+          },
+          "closedChannelException" : {
+            "type" : "long"
+          },
+          "liveNode" : {
+            "type" : "long"
+          },
+          "missingContextVariableException" : {
+            "type" : "long"
+          },
+          "interruptedException" : {
+            "type" : "long"
+          }
+        }
+      },
       "artifacts" : {
         "properties" : {
           "name" : {
