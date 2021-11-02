@@ -20,7 +20,7 @@ import groovy.transform.Field
 @Library('apm@master') _
 
 // To store the next and current release versions
-@Field def releaseVersions
+@Field def releaseVersions = [:]
 
 pipeline {
   agent { label 'linux && immutable' }
