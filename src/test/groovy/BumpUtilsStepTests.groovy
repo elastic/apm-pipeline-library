@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class BumpUtilsStepTests extends ApmBasePipelineTest {
@@ -117,5 +118,16 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
+  @Test
+  void test_parseArguments() throws Exception {
+    def result = script.parseArguments([title: "my-title", labels: "my-label"])
+    printCallStack()
+    assertTrue(result.containsKey('title'))
+    assertFalse(result.containsKey('assign'))
+    result = script.parseArguments([title: "my-title", labels: "my-label", assign: 'my-assign'])
+    printCallStack()
+    assertTrue(result.containsKey('assign'))
   }
 }

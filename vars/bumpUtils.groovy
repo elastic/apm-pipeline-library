@@ -41,6 +41,19 @@ def prepareContext(Map args = [:]) {
       credentialsId: args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken'))
 }
 
+def parseArguments(Map args = [:]) {
+  def arguments = [
+      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
+  ]
+  if (args.assign?.trim()) {
+    arguments['assign'] = args.assign
+  }
+  if (args.reviewer?.trim()) {
+    arguments['reviewer'] = args.reviewer
+  }
+  return arguments
+}
+
 def getCurrentMinorReleaseFor7() {
   return getValueForPropertyKey('current_7')
 }
