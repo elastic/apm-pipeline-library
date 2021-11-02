@@ -182,4 +182,11 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', """--search='"[automation] foo bar" in:title'"""))
   }
+
+  @Test
+  void test_with_multiple_flag_entries() throws Exception {
+    script.call(command: 'workflow run build_and_test.yml', flags: [field: ['id=1', 'runner=ubuntu']])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "gh workflow run build_and_test.yml --field='id=1' --field='runner=ubuntu'"))
+  }
 }
