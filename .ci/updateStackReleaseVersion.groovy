@@ -98,7 +98,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   // In case docker images are not available yet, let's skip the PR automation.
-  if (!bumpUtils.isStackVersionsAvailable(args.stackVersions)) {
+  if (!bumpUtils.areStackVersionsAvailable(args.stackVersions)) {
     log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
     return
   }

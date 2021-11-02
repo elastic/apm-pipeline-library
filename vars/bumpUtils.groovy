@@ -96,7 +96,7 @@ def nextPatch7Key() {
   return 'next_patch_7'
 }
 
-def isStackVersionsAvailable(stackVersions) {
+def areStackVersionsAvailable(stackVersions) {
   return isVersionAvailable(stackVersions.get(current6Key())) &&
     isVersionAvailable(stackVersions.get(current7Key())) &&
     isVersionAvailable(stackVersions.get(nextMinor7Key())) &&
