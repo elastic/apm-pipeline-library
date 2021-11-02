@@ -54,14 +54,14 @@ pipeline {
       steps {
         echo ' TODO: calculate the versions'
         script {
-          releaseVersions['current.6'] = '6.8.20'
-          releaseVersions['current.7'] = '7.15.1'
-          releaseVersions['next.minor.7'] = '7.16.0'
-          releaseVersions['next.patch.7'] = '7.15.2'
+          releaseVersions[bumpUtils.current6Key()] = '6.8.20'
+          releaseVersions[bumpUtils.current7Key()] = '7.15.1'
+          releaseVersions[bumpUtils.nextMinor7Key()] = '7.16.0'
+          releaseVersions[bumpUtils.nextPatch7Key()] = '7.15.2'
           // TODO: to support the 8.x branches
-          releaseVersions['current.8'] = '8.0.0'
-          releaseVersions['next.minor.8'] = '8.1.0'
-          releaseVersions['next.patch.8'] = '8.0.1'
+          releaseVersions[bumpUtils.current8Key()] = '8.0.0'
+          releaseVersions[bumpUtils.nextMinor8Key()] = '8.1.0'
+          releaseVersions[bumpUtils.nextPatch8Key()] = '8.0.1'
         }
       }
     }
