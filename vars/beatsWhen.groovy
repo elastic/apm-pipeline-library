@@ -15,8 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
 import groovy.transform.Field
-
 
 @Field def buildReasons = []
 
@@ -123,11 +123,11 @@ private Boolean changeset(Map args = [:]) {
   def match = false
   if (partialMatch) {
     match = patterns?.find { pattern ->
-      fileContent?.split('\n').any { line -> line ==~ pattern }
+      fileContent?.split('\n').any { isMatch(it, pattern) }
     }
   } else {
     match = patterns?.every { pattern ->
-      fileContent?.split('\n').every { line -> line ==~ pattern }
+      fileContent?.split('\n').every { isMatch(it, pattern) }
     }
   }
   if (match) {
@@ -252,4 +252,10 @@ private void flushBuildReason() {
     def content = "${data}\r\n${buildReasons.join('\n')}"
     writeFile(file: fileName, text: "${content}")
   }
+}
+
+@NonCPS
+def isMatch(line, pattern) {
+  def value = (line ==~ pattern)
+  return value
 }
