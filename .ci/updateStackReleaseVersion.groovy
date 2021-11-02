@@ -119,7 +119,7 @@ def createPullRequest(Map args = [:]) {
 }
 
 def updateReleasesPropertiesFile(Map args = [:]) {
-  if (!args?.stackVersions?.trim() || args?.stackVersions?.size() == 0) {
+  if (args?.stackVersions?.size() == 0) {
     error('updateReleasesPropertiesFile: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
   // Update the properties file with the new releases
