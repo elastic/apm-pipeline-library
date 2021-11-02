@@ -97,9 +97,9 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  // In case docker image is not available yet, let's skip the PR automation.
-  if (!bumpUtils.isVersionAvailable(args.stackVersion)) {
-    log(level: 'INFO', text: "Version '${args.stackVersion}' is not available yet.")
+  // In case docker images are not available yet, let's skip the PR automation.
+  if (!bumpUtils.isStackVersionsAvailable(args.stackVersions)) {
+    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
     return
   }
 
@@ -115,15 +115,15 @@ def updateReleasesPropertiesFile(Map args = [:]) {
     error('updateReleasesPropertiesFile: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
   // Update the properties file with the new releases
-  writeFile file: 'resources/versions/releases.properties', text: """current_6=${args.stackVersions.get('current.6')}
-current_7=${args.stackVersions.get('current.7')}
-next_minor_7=${args.stackVersions.get('next.minor.7')}
-next_patch_7=${args.stackVersions.get('next.patch.7')}"""
+  writeFile file: 'resources/versions/releases.properties', text: """${bumpUtils.current6Key()}=${args.stackVersions.get(bumpUtils.current6Key())}
+${bumpUtils.current7Key()}=${args.stackVersions.get(bumpUtils.current7Key())}
+${bumpUtils.nextMinor7Key()}=${args.stackVersions.get(bumpUtils.nextMinor7Key())}
+${bumpUtils.nextPatch7Key()}=${args.stackVersions.get(bumpUtils.nextPatch7Key())}"""
 
   // Prepare the changeset in git.
   sh(script: """
     git checkout -b "update-stack-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
     git add resources/versions/releases.properties
-    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${args.stackVersions.get('current.7')} and ${args.stackVersions.get('next.minor.7')}"
+    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${args.stackVersions.get(bumpUtils.current7Key())} and ${args.stackVersions.get(bumpUtils.nextMinor7Key())}"
     git --no-pager log -1""", label: "Git changes")
 }

@@ -55,19 +55,19 @@ def parseArguments(Map args = [:]) {
 }
 
 def getCurrentMinorReleaseFor7() {
-  return getValueForPropertyKey('current_7')
+  return getValueForPropertyKey(current7Key())
 }
 
 def getCurrentMinorReleaseFor6() {
-  return getValueForPropertyKey('current_6')
+  return getValueForPropertyKey(current6Key())
 }
 
 def getNextMinorReleaseFor7() {
-  return getValueForPropertyKey('next_minor_7')
+  return getValueForPropertyKey(nextMinor7Key())
 }
 
 def getNextPatchReleaseFor7() {
-  return getValueForPropertyKey('next_patch_7')
+  return getValueForPropertyKey(nextPatch7Key())
 }
 
 // for internal purposes
@@ -78,4 +78,27 @@ def getValueForPropertyKey(String key) {
     error("getValueForPropertyKey: '${key}' has an empty value")
   }
   return version
+}
+
+def current7Key() {
+  return 'current_7'
+}
+
+def current6Key() {
+  return 'current_6'
+}
+
+def nextMinor7Key() {
+  return 'next_minor_7'
+}
+
+def nextPatch7Key() {
+  return 'next_patch_7'
+}
+
+def isStackVersionsAvailable(stackVersions) {
+  return isVersionAvailable(stackVersions.get(current6Key())) &&
+    isVersionAvailable(stackVersions.get(current7Key())) &&
+    isVersionAvailable(stackVersions.get(nextMinor7Key())) &&
+    isVersionAvailable(stackVersions.get(nextPatch7Key()))
 }

@@ -113,10 +113,10 @@ def createPullRequest(Map args = [:]) {
 
   bumpUtils.createBranch(prefix: 'update-stack-version', suffix: args.branchName)
 
-  sh(script: "${args.scriptFile} '${stackVersion}' ''", label: "Prepare changes for ${args.repo}")
+  sh(script: "${args.scriptFile} '${args.stackVersion}' ''", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
