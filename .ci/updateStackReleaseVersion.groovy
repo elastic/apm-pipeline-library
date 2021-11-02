@@ -103,16 +103,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
-    def arguments = [
-      title: "${args.title}", labels: "${args.labels}", description: "${args.message}", base: "${args.branchName}"
-    ]
-    if (args.assign?.trim()) {
-      arguments['assign'] = args.assign
-    }
-    if (args.reviewer?.trim()) {
-      arguments['reviewer'] = args.reviewer
-    }
-    githubCreatePullRequest(arguments)
+    githubCreatePullRequest(bumpUtils.parseArguments(args))
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
@@ -132,6 +123,6 @@ next_patch_7=${args.stackVersions.get('next.patch.7')}"""
   sh(script: """
     git checkout -b "update-stack-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
     git add resources/versions/releases.properties
-    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${VERSION_RELEASE} and ${VERSION_DEV}"
+    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${args.stackVersions.get('current.7')} and ${args.stackVersions.get('next.minor.7')}"
     git --no-pager log -1""", label: "Git changes")
 }
