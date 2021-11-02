@@ -408,7 +408,6 @@ function jqAppend() {
 
 function prepareBuildAnalysis() {
     key=$1
-    set -x
     echo "INFO: prepareBuildAnalysis"
     if [ -e "${PIPELINE_LOG}" ] ; then
       ## Cannot contact beats-ci-immutable-ubuntu-1804-1634663159155867962: java.lang.InterruptedException
@@ -421,21 +420,25 @@ function prepareBuildAnalysis() {
       closedChannelException=$(grep -i 'java.nio.channels.ClosedChannelException' --count ${PIPELINE_LOG})
       ## search for reused workers within the same build
       reusedWorkers=$(grep "Running on .*-ci-" ${PIPELINE_LOG} | sed 's#.*Running on \(beats-ci.*\) in.*#\1#g' | sort | uniq -c | grep -v '^\s\+1' --count)
+      ## java.io.NotSerializableException: java.util.regex.Matcher
+      notSerializableException=$(grep -i 'java.io.NotSerializableException' --count ${PIPELINE_LOG})
     else
       interruptedException=0
       missingContextVariableException=0
       liveNode=0
       closedChannelException=0
       reusedWorkers=0
+      notSerializableException=0
     fi
 
     {
       echo "{"
-      echo "  \"reusedWorkers\": ${reusedWorkers},"
       echo "  \"closedChannelException\": ${closedChannelException},"
+      echo "  \"interruptedException\": ${interruptedException},"
       echo "  \"liveNode\": ${liveNode},"
       echo "  \"missingContextVariableException\": ${missingContextVariableException},"
-      echo "  \"interruptedException\": ${interruptedException},"
+      echo "  \"notSerializableException\": ${notSerializableException},"
+      echo "  \"reusedWorkers\": ${reusedWorkers}"
       echo "}"
     } > "${ANALYSIS_INFO}"
     echo "\"${key}\": $(cat "${ANALYSIS_INFO}")," >> "${BUILD_REPORT}"

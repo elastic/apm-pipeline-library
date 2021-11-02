@@ -3,10 +3,10 @@
     "properties" : {
       "analysis" : {
         "properties" : {
-          "reusedWorkers" : {
+          "closedChannelException" : {
             "type" : "long"
           },
-          "closedChannelException" : {
+          "interruptedException" : {
             "type" : "long"
           },
           "liveNode" : {
@@ -15,7 +15,10 @@
           "missingContextVariableException" : {
             "type" : "long"
           },
-          "interruptedException" : {
+          "notSerializableException" : {
+            "type" : "long"
+          },
+          "reusedWorkers" : {
             "type" : "long"
           }
         }
