@@ -406,9 +406,9 @@ function jqAppend() {
     jq --arg a "${argument}" "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
 }
 
-function prepareBuildAnalysis() {
+function prepareErrorMetrics() {
     key=$1
-    echo "INFO: prepareBuildAnalysis"
+    echo "INFO: prepareErrorMetrics($key)"
     if [ -e "${PIPELINE_LOG}" ] ; then
       ## Cannot contact beats-ci-immutable-ubuntu-1804-1634663159155867962: java.lang.InterruptedException
       interruptedException=$(grep -i 'cannot contact .*InterruptedException' --count ${PIPELINE_LOG})
@@ -500,7 +500,7 @@ fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000"
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
 fetchAndPrepareTestCoverageReport "${TESTS_COVERAGE}" "${BUILD_URL}" "test_coverage" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
-prepareBuildAnalysis "analysis"
+prepareErrorMetrics "errorMetrics"
 ### prepareEnvInfo should run the last one since it's the last field to be added
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
