@@ -58,6 +58,10 @@ pipeline {
           releaseVersions['current.7'] = '7.15.1'
           releaseVersions['next.minor.7'] = '7.16.0'
           releaseVersions['next.patch.7'] = '7.15.2'
+          // TODO: to support the 8.x branches
+          releaseVersions['current.8'] = '8.0.0'
+          releaseVersions['next.minor.8'] = '8.1.0'
+          releaseVersions['next.patch.8'] = '8.0.1'
         }
       }
     }
@@ -118,7 +122,10 @@ def updateReleasesPropertiesFile(Map args = [:]) {
   writeFile file: 'resources/versions/releases.properties', text: """${bumpUtils.current6Key()}=${args.stackVersions.get(bumpUtils.current6Key())}
 ${bumpUtils.current7Key()}=${args.stackVersions.get(bumpUtils.current7Key())}
 ${bumpUtils.nextMinor7Key()}=${args.stackVersions.get(bumpUtils.nextMinor7Key())}
-${bumpUtils.nextPatch7Key()}=${args.stackVersions.get(bumpUtils.nextPatch7Key())}"""
+${bumpUtils.nextPatch7Key()}=${args.stackVersions.get(bumpUtils.nextPatch7Key())}
+${bumpUtils.current8Key()}=${args.stackVersions.get(bumpUtils.current8Key())}
+${bumpUtils.nextMinor8Key()}=${args.stackVersions.get(bumpUtils.nextMinor8Key())}
+${bumpUtils.nextPatch8Key()}=${args.stackVersions.get(bumpUtils.nextPatch8Key())}"""
 
   // Prepare the changeset in git.
   sh(script: """
