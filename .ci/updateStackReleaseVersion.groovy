@@ -66,6 +66,7 @@ pipeline {
         createPullRequest(repo: env.REPO,
                           branchName: 'master',
                           labels: 'automation',
+                          message: """### What \n Bump stack version with the latest one. \n ### Further details \n ${releaseVersions}""",
                           reviewer: 'elastic/observablt-robots-on-call',
                           stackVersions: releaseVersions,
                           title: '[automation] Update Elastic stack release version source of truth')
@@ -85,7 +86,7 @@ def createPullRequest(Map args = [:]) {
   updateReleasesPropertiesFile(args)
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${message}', base: '${args.branchName}', title: '${args.title}', reviewer: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersions}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', reviewer: '${args.reviewer}')")
     return
   }
 
