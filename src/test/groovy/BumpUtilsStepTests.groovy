@@ -46,6 +46,16 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_areStackVersionsAvailable() throws Exception {
+    script.areStackVersionsAvailable([ current_7 : '7.15.1', current_6: '6.8.20', next_minor_7: '7.16.0', next_patch_7: '7.15.2' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '6.8.20-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.15.1-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.15.2-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.16.0-SNAPSHOT'))
+  }
+
+  @Test
   void test_createBranch() throws Exception {
     def result = script.createBranch(prefix: 'foo', suffix: 'bar')
     printCallStack()
