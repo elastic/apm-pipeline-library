@@ -30,10 +30,12 @@ def call(Map args = [:]) {
   try {
     // filter all the issues given those labels.
     releases = gh(command: 'release list', flags: [limit: limit])
+    log(level: 'DEBUG', text: "listGithubReleases: output ${releases}")
     if (releases?.trim()) {
       releases.split('\n').each { line ->
-        def data = line.split(' ')
-        output.put("${data[0]}", [ value: line ])
+        log(level: 'DEBUG', text: "listGithubReleases: parsing line ${line}")
+        def data = line.split('\t')
+        output.put(data[2], [ value: line ])
       }
     }
   } catch (err) {
