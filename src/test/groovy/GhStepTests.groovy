@@ -87,6 +87,7 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallContainsPattern('sh', '1.9.2'))
     assertJobStatusSuccess()
   }
 
@@ -188,5 +189,21 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'workflow run build_and_test.yml', flags: [field: ['id=1', 'runner=ubuntu']])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "gh workflow run build_and_test.yml --field='id=1' --field='runner=ubuntu'"))
+  }
+
+  @Test
+  void test_with_version() throws Exception {
+    script.call(command: 'issue list', version: "2.0.0")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+  }
+
+  @Test
+  void test_with_force_installation() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('gh') })
+    script.call(command: 'issue list', version: "2.0.0", forceInstallation: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertJobStatusSuccess()
   }
 }

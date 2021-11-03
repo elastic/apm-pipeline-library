@@ -231,6 +231,7 @@ Utils class for the bump automation pipelines
 * `areChangesToBePushed` -> if there any changes in the existing location to be pushed.
 * `createBranch` -> create a branch given the prefix and suffix arguments. Branch contains the current timestamp.
 * `isVersionAvailable` -> if the given elastic stack version is available.
+* `parseArguments` -> parse the given arguments.
 * `prepareContext` -> prepare the git context, checkout and git config user.name.
 * `getCurrentMinorReleaseFor7` -> retrieve the LATEST known minor release for the 7 major version of the Elastic Stack.
 * `getCurrentMinorReleaseFor6` -> retrieve the LATEST known minor release for the 6 major version of the Elastic Stack.
@@ -755,6 +756,8 @@ It requires to be executed within the git workspace, otherwise it will use
 * command: The gh command to be executed title. Mandatory
 * flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+* version: The gh CLI version to be installed. Optional (1.9.2)
+* forceInstallation: Whether to install gh regardless. Optional (false)
 
 _NOTE_: Windows is not supported yet.
 
@@ -1813,6 +1816,7 @@ a dictionary with the release id as primary key and then the whole information.
 ```
 
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+* failNever: whether to fail the step in case on any failures when interacting with the GH cli tool. Default true.
 
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
