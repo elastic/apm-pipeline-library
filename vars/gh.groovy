@@ -37,6 +37,8 @@ def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gh: command parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def flags = args.get('flags', [:])
+  def version = args.get('version', '1.9.2')
+  def forceInstallation = args.get('forceInstallation', false)
 
   // Use the current location as the git repo otherwise uses the env variables to pass
   // the repo information to the gh command
@@ -58,8 +60,8 @@ def call(Map args = [:]) {
   }
 
   withEnv(["PATH+GH=${ghLocation}"]) {
-    if(!isInstalled(tool: 'gh', flag: '--version')) {
-      downloadInstaller(ghLocation)
+    if (forceInstallation || !isInstalled(tool: 'gh', flag: '--version')) {
+      downloadInstaller(ghLocation, version)
     }
     withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
       def flagsCommand = ''
@@ -87,8 +89,8 @@ def runCommand(command, flagsCommand) {
   return output
 }
 
-def downloadInstaller(where) {
-  def url = 'https://github.com/cli/cli/releases/download/v1.9.2/gh_1.9.2_linux_amd64.tar.gz'
+def downloadInstaller(where, version) {
+  def url = "https://github.com/cli/cli/releases/download/v${version}/gh_${version}_linux_amd64.tar.gz"
   def tarball = 'gh.tar.gz'
   if(isInstalled(tool: 'wget', flag: '--version')) {
     dir(where) {
