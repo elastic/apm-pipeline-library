@@ -90,7 +90,12 @@ def runCommand(command, flagsCommand) {
 }
 
 def downloadInstaller(where, version) {
-  def url = "https://github.com/cli/cli/releases/download/v${version}/gh_${version}_linux_amd64.tar.gz"
+  def os = nodeOS()
+  if (os.equals('darwin')) {
+    os = 'macOS'
+  }
+  def arch = (isArm()) ? 'arm64' : 'amd64'
+  def url = "https://github.com/cli/cli/releases/download/v${version}/gh_${version}_${os}_${arch}.tar.gz"
   def tarball = 'gh.tar.gz'
   if(isInstalled(tool: 'wget', flag: '--version')) {
     dir(where) {

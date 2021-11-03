@@ -87,7 +87,7 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('sh', '1.9.2'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'linux_amd64.tar.gz'))
     assertJobStatusSuccess()
   }
 
@@ -205,6 +205,27 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'issue list', version: "2.0.0", forceInstallation: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_in_darwin() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    helper.registerAllowedMethod('nodeOS', [], { return 'darwin' })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'macOS_amd64.tar.gz'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_in_arm() throws Exception {
+    helper.registerAllowedMethod('isArm', [], { return true })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    helper.registerAllowedMethod('nodeOS', [], { return 'linux' })
+    script.call(command: 'issue list')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'linux_arm64.tar.gz'))
     assertJobStatusSuccess()
   }
 }
