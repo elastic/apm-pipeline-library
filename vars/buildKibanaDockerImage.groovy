@@ -88,13 +88,17 @@ def call(Map args = [:]){
     sh(label: 'Push Docker image', script: """
       docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaDockerTargetTag}
       docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${deployName}
+      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaVersion}-${kibanaDockerTargetTag}
+      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaVersion}-${deployName}
       docker push ${dockerImageTarget}:${kibanaDockerTargetTag}
       docker push ${dockerImageTarget}:${deployName}
+      docker push ${dockerImageTarget}:${kibanaVersion}-${kibanaDockerTargetTag}
+      docker push ${dockerImageTarget}:${kibanaVersion}-${deployName}
     """)
   }
 
   setEnvVar('DEPLOY_NAME', deployName)
-  setEnvVar('KIBANA_DOCKER_TAG', deployName)
+  setEnvVar('KIBANA_DOCKER_TAG', "${kibanaVersion}-${deployName}")
   log(level: 'DEBUG', text: "${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName} were pushed")
 }
 
