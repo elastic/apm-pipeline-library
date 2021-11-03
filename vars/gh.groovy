@@ -31,9 +31,6 @@ import groovy.transform.Field
 @Field def ghLocation = ''
 
 def call(Map args = [:]) {
-  if(!isUnix()) {
-    error 'gh: windows is not supported yet.'
-  }
   def command = args.containsKey('command') ? args.command : error('gh: command parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def flags = args.get('flags', [:])
@@ -61,7 +58,11 @@ def call(Map args = [:]) {
 
   withEnv(["PATH+GH=${ghLocation}"]) {
     if (forceInstallation || !isInstalled(tool: 'gh', flag: '--version')) {
-      downloadInstaller(ghLocation, version)
+      if(isUnix()) {
+        downloadInstaller(ghLocation, version)
+      } else {
+        installTools([[ tool: 'gh', version: version, provider: 'choco']])
+      }
     }
     withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
       def flagsCommand = ''
@@ -85,7 +86,7 @@ def call(Map args = [:]) {
 }
 
 def runCommand(command, flagsCommand) {
-  def output = sh(label: "gh ${command}", script: "gh ${command} ${flagsCommand}", returnStdout: true)
+  def output = cmd(label: "gh ${command}", script: "gh ${command} ${flagsCommand}", returnStdout: true)
   return output
 }
 

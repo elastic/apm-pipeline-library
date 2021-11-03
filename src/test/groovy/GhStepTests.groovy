@@ -32,17 +32,22 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_windows() throws Exception {
-    testWindows() {
+  void test_without_args() throws Exception {
+    testMissingArgument('command') {
       script.call()
     }
   }
 
   @Test
-  void test_without_args() throws Exception {
-    testMissingArgument('command') {
-      script.call()
-    }
+  void test_windows() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    script.call(command: 'issue list', flags: [ label: 'foo'])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
+    assertTrue(assertMethodCallContainsPattern('cmd', "gh issue list --label='foo'"))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
+    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertJobStatusSuccess()
   }
 
   @Test
