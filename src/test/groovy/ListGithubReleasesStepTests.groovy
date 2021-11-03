@@ -67,7 +67,7 @@ class ListGithubReleasesStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_single_row() throws Exception {
     helper.registerAllowedMethod('gh', [Map.class], {
-      return 'v1.1.256  Latest  (v1.1.256)  about 21 hours ago' })
+      return 'Go 1.17.2	Latest	1.17.2	2021-10-12T13:26:25Z' })
     def ret = script.call()
     printCallStack()
     assertTrue(ret.size() == 1)
@@ -76,9 +76,9 @@ class ListGithubReleasesStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_multiple_data() throws Exception {
     helper.registerAllowedMethod('gh', [Map.class], {
-      return '''v1.1.256  Latest  (v1.1.256)  about 21 hours ago
-v1.1.255          (v1.1.255)  about 5 days ago
-v1.1.254          (v1.1.254)  about 6 days ago'''})
+      return '''Go 1.17.2	Latest	1.17.2	2021-10-12T13:26:25Z
+Go 1.17.1		1.17.1	2021-10-05T10:20:08Z
+Go 1.15.12		1.15	2021-05-25T17:10:49Z'''})
     def ret = script.call()
     printCallStack()
     assertTrue(ret.size() == 3)
