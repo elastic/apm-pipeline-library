@@ -37,7 +37,7 @@ def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gh: command parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
   def flags = args.get('flags', [:])
-  def version = args.get('version', [:])
+  def version = args.get('version', '1.9.2')
   def forceInstallation = args.get('forceInstallation', false)
 
   // Use the current location as the git repo otherwise uses the env variables to pass
