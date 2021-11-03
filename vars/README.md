@@ -759,8 +759,6 @@ It requires to be executed within the git workspace, otherwise it will use
 * version: The gh CLI version to be installed. Optional (1.9.2)
 * forceInstallation: Whether to install gh regardless. Optional (false)
 
-_NOTE_: Windows is not supported yet.
-
 ## git
 Override the `git` step to retry the checkout up to 3 times.
 
