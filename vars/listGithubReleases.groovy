@@ -29,7 +29,7 @@ def call(Map args = [:]) {
   def releases
   try {
     // filter all the issues given those labels.
-    releases = gh(command: 'release list', flags: [limit: limit])
+    releases = gh(command: 'release list', flags: [limit: limit], version: '2.2.0', forceInstallation: true)
     log(level: 'DEBUG', text: "listGithubReleases: output ${releases}")
     if (releases?.trim()) {
       releases.split('\n').each { line ->
