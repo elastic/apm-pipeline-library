@@ -27,6 +27,7 @@ DURATION=${4:?'Missing the build duration'}
 
 ## To report the status afterwards
 STATUS=0
+ANALYSIS_INFO="analysis-info.json"
 ARTIFACTS_INFO="artifacts-info.json"
 BUILD_INFO="build-info.json"
 BUILD_REPORT="build-report.json"
@@ -405,6 +406,44 @@ function jqAppend() {
     jq --arg a "${argument}" "${query}" "${file}" > "$tmp" && mv "$tmp" "${file}"
 }
 
+function prepareErrorMetrics() {
+    key=$1
+    echo "INFO: prepareErrorMetrics($key)"
+    if [ -e "${PIPELINE_LOG}" ] ; then
+      ## Cannot contact beats-ci-immutable-ubuntu-1804-1634663159155867962: java.lang.InterruptedException
+      interruptedException=$(grep -i 'cannot contact .*InterruptedException' --count ${PIPELINE_LOG})
+      ## Required context class hudson.Launcher.
+      missingContextVariableException=$(grep -i 'org.jenkinsci.plugins.workflow.steps.MissingContextVariableException' --count ${PIPELINE_LOG})
+      ## Computer does not correspond to a live node
+      liveNode=$(grep -i 'computer does not correspond to a live node' --count ${PIPELINE_LOG})
+      ## beats-ci-immutable-ubuntu-1804-1634816467154904530 was marked offline: Connection was broken: java.nio.channels.ClosedChannelException
+      closedChannelException=$(grep -i 'java.nio.channels.ClosedChannelException' --count ${PIPELINE_LOG})
+      ## search for reused workers within the same build
+      reusedWorkers=$(grep "Running on .*-ci-" ${PIPELINE_LOG} | sed 's#.*Running on \(beats-ci.*\) in.*#\1#g' | sort | uniq -c | grep -v '^\s\+1' --count)
+      ## java.io.NotSerializableException: java.util.regex.Matcher
+      notSerializableException=$(grep -i 'java.io.NotSerializableException' --count ${PIPELINE_LOG})
+    else
+      interruptedException=0
+      missingContextVariableException=0
+      liveNode=0
+      closedChannelException=0
+      reusedWorkers=0
+      notSerializableException=0
+    fi
+
+    {
+      echo "{"
+      echo "  \"closedChannelException\": ${closedChannelException},"
+      echo "  \"interruptedException\": ${interruptedException},"
+      echo "  \"liveNode\": ${liveNode},"
+      echo "  \"missingContextVariableException\": ${missingContextVariableException},"
+      echo "  \"notSerializableException\": ${notSerializableException},"
+      echo "  \"reusedWorkers\": ${reusedWorkers}"
+      echo "}"
+    } > "${ANALYSIS_INFO}"
+    echo "\"${key}\": $(cat "${ANALYSIS_INFO}")," >> "${BUILD_REPORT}"
+}
+
 function prepareEnvInfo() {
     file=$1
     key=$2
@@ -444,7 +483,7 @@ function prepareEnvInfo() {
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
 fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/?limit=30000" "${DEFAULT_HASH}"
 fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
-fetchAndDefault "${PIPELINE_LOG}" "${BO_BUILD_URL}/log/" "${DEFAULT_STRING}"
+fetchAndDefault "${PIPELINE_LOG}" "${BO_BUILD_URL}/log/?start=0" "${DEFAULT_STRING}"
 
 ### Prepare the log summary
 if [ -e "${PIPELINE_LOG}" ] ; then
@@ -461,6 +500,7 @@ fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000"
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
 fetchAndPrepareTestCoverageReport "${TESTS_COVERAGE}" "${BUILD_URL}" "test_coverage" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
+prepareErrorMetrics "errorMetrics"
 ### prepareEnvInfo should run the last one since it's the last field to be added
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"

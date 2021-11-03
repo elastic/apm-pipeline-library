@@ -2,7 +2,7 @@
   "id" : "5cd4b2df-95a8-49af-8443-9732239d5959",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_unstable_runs_1_log",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/log/",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/log/?start=0",
     "method" : "GET"
   },
   "response" : {
