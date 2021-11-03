@@ -200,7 +200,7 @@ class GhStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_force_installation() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('gh') })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     script.call(command: 'issue list', version: "2.0.0", forceInstallation: true)
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
