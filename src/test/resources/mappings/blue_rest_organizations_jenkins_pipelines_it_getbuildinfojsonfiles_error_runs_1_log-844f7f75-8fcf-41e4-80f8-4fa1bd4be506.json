@@ -2,7 +2,7 @@
   "id" : "844f7f75-8fcf-41e4-80f8-4fa1bd4be506",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_error_runs_1_log",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/error/runs/1/log/",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/error/runs/1/log/?start=0",
     "method" : "GET"
   },
   "response" : {
