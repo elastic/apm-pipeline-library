@@ -1,0 +1,113 @@
+Run workflow on github actions
+
+### Run as step:
+
+```
+  Map runInfo = githubWorkflowRun(repo: "owner/repository", workflow: "build.yml", ref: "main",
+    parameters: [path: "filebeat"], credentialsId: "github-workflow-token")
+```
+
+#### Run asyncronous:
+
+```
+  script {
+    Map args = [
+       repo: "owner/repository",
+       workflow: "build.yml", 
+       ref: "main",
+       parameters: [path: "filebeat"],
+       credentialsId: "github-workflow-token"]
+    int runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
+    Map runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId]) 
+  }
+
+```
+
+### Arguments:
+
+* repo: repositiry owner and name
+* workflow: workflow file name
+* ref: reference ( branch, tag or hash)
+* parameters: map with parameters to pass to the workflow 
+
+### Returs:
+
+runInfo : information about run
+
+
+### Workflow script example:
+
+```
+name: build
+
+# default environment suitable for linux runners
+env:
+  GOPATH: /home/runner/work/gotest/gotest
+  GO111MODULE: off
+  REPO_PATH: src/gotest
+  MACOS_GOPATH: /Users/runner/work/gotest/gotest
+
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: 'Run ID'
+        required: true
+      runner:
+        description: 'Github actions runner'
+        required: true
+        default: 'ubuntu-latest'
+      path:
+        description: 'Directory in repo where to run and build'
+        required: false
+        default: ''
+jobs:
+
+  build:
+    runs-on: ${{ github.event.inputs.runner }}
+    steps:
+
+    - name: ${{ format('Run ID {0}', github.event.inputs.id) }}
+      run: echo Run ID ${{github.event.inputs.id}}
+
+    - name: Set environment for macos
+      if: ${{ contains(github.event.inputs.runner, 'macos') }}
+      run: |
+        echo Changed GOPATH to ${{ env.MACOS_GOPATH }}
+        echo "GOPATH="${{ env.MACOS_GOPATH }} >> $GITHUB_ENV
+
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.ref }}
+        path: ${{ env.REPO_PATH }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Build
+      run: |
+        cd ${{ env.GOPATH }}/${{ env.REPO_PATH }}/${{ github.event.inputs.path }}
+        go build -v ./...
+
+    - name: Test
+      run: |
+        cd ${{ env.GOPATH }}/${{ env.REPO_PATH }}/${{ github.event.inputs.path }}
+        go test -v ./...
+```
+
+The first step is important for detection run id and should always by the first
+step in each workflow which supposed to be run with githubWorkflowRun:
+
+
+```
+    - name: ${{ format('Run ID {0}', github.event.inputs.id) }}
+      run: echo Run ID ${{github.event.inputs.id}}
+```
+
+
+### Links:
+
+* https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#on
+* https://docs.github.com/en/rest/reference/actions#get-a-workflow-run
