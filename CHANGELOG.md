@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.1.258 (03/11/2021)
+
+#### 🚀 Enhancements
+
+-  Gather environmental errors with the workers [#1348](https://github.com/elastic/apm-pipeline-library/pull/1348)
+
+#### 🐛 Bug Fixes
+
+-  Use tab separator for listGithubReleases [#1352](https://github.com/elastic/apm-pipeline-library/pull/1352)
+-  Set the message for the updateStackReleaseVersion [#1349](https://github.com/elastic/apm-pipeline-library/pull/1349)
+-  Fix trim for a map in updateStackReleaseVersion.groovy [#1345](https://github.com/elastic/apm-pipeline-library/pull/1345)
+-  Fix serialisation issue with java.util.regex.Matcher  [#1344](https://github.com/elastic/apm-pipeline-library/pull/1344)
+-  bump release version: fix NPE [#1343](https://github.com/elastic/apm-pipeline-library/pull/1343)
+
+#### 🙈 No user affected
+
+-  Add test coverage for multi field arguments in gh [#1346](https://github.com/elastic/apm-pipeline-library/pull/1346)
+
+#### ⚙️ CI
+
+-  Refactor properties key and search for all the docker images [#1350](https://github.com/elastic/apm-pipeline-library/pull/1350)
+-  Refactor parseArguments for the bump automation [#1347](https://github.com/elastic/apm-pipeline-library/pull/1347)
+
 ## v1.1.257 (01/11/2021)
 
 #### 🚀 Enhancements
