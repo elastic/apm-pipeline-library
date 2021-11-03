@@ -29,13 +29,6 @@ class ListGithubReleasesStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_windows() throws Exception {
-    testWindows() {
-      script.call()
-    }
-  }
-
-  @Test
   void test_with_no_data() throws Exception {
     helper.registerAllowedMethod('gh', [Map.class], { return '' })
     def ret = script.call()
