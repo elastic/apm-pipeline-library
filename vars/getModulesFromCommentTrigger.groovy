@@ -46,7 +46,7 @@ private findPatternMatch(line, pattern) {
 
 @NonCPS
 private getPatterns(line, pattern, delimiter) {
-  def matcher = findPatternMatch(env.GITHUB_COMMENT, regex)
+  def matcher = findPatternMatch(line, pattern)
   def result = []
   while(matcher.find()) {
     matcher.group(1).split(delimiter).sort().each {
