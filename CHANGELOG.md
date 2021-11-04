@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.259 (04/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**][**Team:Ecosystem**] Find oldest version with or conditions [#1359](https://github.com/elastic/apm-pipeline-library/pull/1359)
+-  Pin the gh version for the listGithubReleases step [#1354](https://github.com/elastic/apm-pipeline-library/pull/1354)
+-  Support for macos, arm and windows in the gh step [#1355](https://github.com/elastic/apm-pipeline-library/pull/1355)
+-  Add gh version and forceInstallation parameters [#1353](https://github.com/elastic/apm-pipeline-library/pull/1353)
+
+#### 🙈 No user affected
+
+-  chore: add arch [#1356](https://github.com/elastic/apm-pipeline-library/pull/1356)
+
 ## v1.1.258 (03/11/2021)
 
 #### 🚀 Enhancements
