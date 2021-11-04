@@ -39,15 +39,12 @@ pull_request_rules:
       - base~=^update-.*-version
     actions:
       delete_head_branch:
-  - name: assign PRs and add reviewers
+  - name: assign PRs
     conditions:
       - -merged
       - -closed
+      - "#assignee=0"
     actions:
       assign:
         add_users:
           - "{{author}}"
-      request_reviews:
-        teams:
-          - "@elastic/observablt-robots"
-          - "@elastic/observablt-robots-contractors"
