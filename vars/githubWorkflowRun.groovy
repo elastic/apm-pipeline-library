@@ -17,22 +17,11 @@
 
 /**
 
-  Triggers workflow run on Github actions.
-
-  githubWorkflowRun( args map )
-
-  Args:
-    repo - repositiry owner and name 
-    workflow - workflow file name
-    ref - reference ( branch, tag or hash)
-    parameters - map with parameters to pass to the workflow 
-
-  Returs:
-    runInfo - information about
+  This step triggers workflow run on Github actions.
 
   Example:
      script {
-       Map args = [
+       def args = [
            repo: "owner/repository",
            workflow: "build.yml", 
            ref: "main",
@@ -41,34 +30,27 @@
            ],
            credentialsId: "github-workflow-token",
            ghVersion: "2.1.0"]
-       int runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
-       Map runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId]) 
+       def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
+       def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId]) 
    }
 */
 
 import groovy.json.JsonSlurperClassic 
 
 def call(Map args = [:]) {
-    try {
-        def buildTimeLimit = args.get('buildTimeLimit', 1)
-        def runId = triggerGithubActionsWorkflow(args)
-        def startDate = new Date()
-        while(startDate.time  + buildTimeLimit*3600000 -  new Date().time > 0) {
-            def runInfo = getWorkflowRun(args + [runId: runId])
-            if (runInfo.status == "completed") return runInfo
-            Thread.sleep(300000); // sleep 5 min
-        }
-        throw new Error("Build time out")
-    } catch(error) {
-        log(level: 'ERROR', text: "githubWorkflowRun: Failed to run workflow:\n${error.message} ")
+    def buildTimeLimit = args.get('buildTimeLimit', 1)
+    def runId = triggerGithubActionsWorkflow(args)
+    def startDate = new Date()
+    while(startDate.time  + buildTimeLimit*3600000 -  new Date().time > 0) {
+        def runInfo = getWorkflowRun(args + [runId: runId])
+        if (runInfo.status == "completed") return runInfo
+        sleep(300); // sleep 5 min
     }
-    return null
+    error("Build time out")
 }
 
 def triggerGithubActionsWorkflow(Map args = [:]) {
-    if (!args.repo || !args.workflow) {
-        throw new IllegalArgumentException("repo: '${args.repo}', workflow: '${args.workflow}'")
-    }
+    if (!args.workflow) error('gh: workflow parameter is required.')
     def ghVersion = args.get("ghVersion", "2.1.0")
     def ref = args.get("ref", "master")
     def runner = args.get("runner", "ubuntu-latest")
@@ -78,7 +60,7 @@ def triggerGithubActionsWorkflow(Map args = [:]) {
     gh(command: "workflow run ${args.workflow}", credentialsId: args.credentialsId,
         version: ghVersion, forceInstallation: true,
         flags: [repo: args.repo, ref: ref, field: inputs ])
-    Thread.sleep(30000)
+    sleep(30)
     def runsText = gh(command: "run list", credentialsId: args.credentialsId,
         version: ghVersion, forceInstallation: false,
         flags: [repo: args.repo, workflow: args.workflow, limit: 100])
@@ -98,9 +80,7 @@ def triggerGithubActionsWorkflow(Map args = [:]) {
 }
 
 def getWorkflowRun(Map args = [:]) {
-    if (!args.repo || !args.runId) {
-        throw new IllegalArgumentException("repo: '${args.repo}', runId: '${args.runId}'")
-    }
+    if (!args.runId) error('gh: runId parameter is required.')
     def ghVersion = args.get("ghVersion", "2.1.0")
     String response = gh(command: "api repos/${args.repo}/actions/runs/${args.runId}",
         version: ghVersion, forceInstallation: false, credentialsId: args.credentialsId, flags: [])
