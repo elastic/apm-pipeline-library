@@ -61,28 +61,28 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
   void test_match() throws Exception {
     def ret = script.call(versionCondition: "^7.14.0")
     printCallStack()
-    assertTrue(ret.equals('7.14.0'))
+    assert ret.equals('7.14.0')
   }
 
   @Test
   void test_match_ge() throws Exception {
     def ret = script.call(versionCondition: ">=7.14.0")
     printCallStack()
-    assertTrue(ret.equals('7.14.0'))
+    assert ret.equals('7.14.0')
   }
 
   @Test
   void test_snapshot() throws Exception {
     def ret = script.call(versionCondition: "^7.14.1")
     printCallStack()
-    assertTrue(ret.equals('7.14.1-SNAPSHOT'))
+    assert ret.equals('7.14.1-SNAPSHOT')
   }
 
   @Test
   void test_no_match() throws Exception {
     def ret = script.call(versionCondition: "^7.13.0")
     printCallStack()
-    assertTrue(ret.equals('7.13.0'))
+    assert ret.equals('7.13.0')
   }
 
   @Test
@@ -93,7 +93,7 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'versionCondition supports only'))
+    assert assertMethodCallContainsPattern('error', 'versionCondition supports only')
   }
 
   @Test
@@ -101,34 +101,34 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
     // There are already 7.15.0 artifacts, but this release hasn't happened yet, and there are only snapshots for the docker images.
     def ret = script.call(versionCondition: "^7.15.0")
     printCallStack()
-    assertTrue(ret.equals('7.15.0-SNAPSHOT'))
+    assert ret.equals('7.15.0-SNAPSHOT')
   }
   
   @Test
   void test_without_patch() throws Exception {
     def ret = script.call(versionCondition: "^7.14")
     printCallStack()
-    assertTrue(ret.equals('7.14.0'))
+    assert ret.equals('7.14.0')
   }
 
   @Test
   void test_next_minor() throws Exception {
     def ret = script.call(versionCondition: "^7.16.0")
     printCallStack()
-    assertTrue(ret.equals('7.x-SNAPSHOT'))
+    assert ret.equals('7.x-SNAPSHOT')
   }
 
   @Test
   void test_or_condition() throws Exception {
     def ret = script.call(versionCondition: "^7.14.0 || ^8.0.0")
     printCallStack()
-    assertTrue(ret.equals('7.14.0'))
+    assert ret.equals('7.14.0')
   }
 
   @Test
   void test_or_condition_reversed() throws Exception {
     def ret = script.call(versionCondition: "^8.0.0 || ^7.14.0")
     printCallStack()
-    assertTrue(ret.equals('7.14.0'))
+    assert ret.equals('7.14.0')
   }
 }
