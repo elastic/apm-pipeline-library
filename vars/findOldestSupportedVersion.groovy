@@ -114,6 +114,6 @@ def handleOr(String versionCondition) {
       result = candidate
     }
   }
-  
+
   return result
 }
