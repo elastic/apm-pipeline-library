@@ -91,7 +91,7 @@ def call(Map args = [:]) {
 def removeOperator(String versionCondition) {
   if (versionCondition.startsWith('^')) {
     return versionCondition.substring(1)
-  } 
+  }
   if (versionCondition.startsWith('~')) {
     return versionCondition.substring(1)
   }
