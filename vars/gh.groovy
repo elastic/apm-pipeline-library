@@ -57,7 +57,7 @@ def call(Map args = [:]) {
   }
 
   withEnv(["PATH+GH=${ghLocation}"]) {
-    if (forceInstallation || !isInstalled(tool: 'gh', flag: '--version')) {
+    if (forceInstallation || !isInstalled(tool: 'gh', flag: '--version', version: version)) {
       if(isUnix()) {
         downloadInstaller(ghLocation, version)
       } else {
