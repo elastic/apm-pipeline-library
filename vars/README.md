@@ -1631,7 +1631,8 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tools is installed and available.
+Whether the given tools is installed and available. It does also support version
+validation.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -1647,6 +1648,7 @@ Whether the given tools is installed and available.
 
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
+* version: The version of the tool to check with. Optional.
 
 ## isInternalCI
 Whether the CI instance is the internal-ci one.
