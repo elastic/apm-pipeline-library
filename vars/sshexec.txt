@@ -1,0 +1,7 @@
+Wrapper to run ssh commands on a remote system
+
+Example:
+
+```
+sshexec(connection: "user@1.2.3.4", sshPrivateKey: ${env.WORKSPACE}/ssh_id_rsa, cmd: """sudo bash /home/user/script.sh """)
+``
