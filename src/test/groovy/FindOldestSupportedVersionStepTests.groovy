@@ -65,6 +65,13 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_match_ge() throws Exception {
+    def ret = script.call(versionCondition: ">=7.14.0")
+    printCallStack()
+    assertTrue(ret.equals('7.14.0'))
+  }
+
+  @Test
   void test_snapshot() throws Exception {
     def ret = script.call(versionCondition: "^7.14.1")
     printCallStack()
@@ -109,5 +116,19 @@ class FindOldestSupportedVersionStepTests extends ApmBasePipelineTest {
     def ret = script.call(versionCondition: "^7.16.0")
     printCallStack()
     assertTrue(ret.equals('7.x-SNAPSHOT'))
+  }
+
+  @Test
+  void test_or_condition() throws Exception {
+    def ret = script.call(versionCondition: "^7.14.0 || ^8.0.0")
+    printCallStack()
+    assertTrue(ret.equals('7.14.0'))
+  }
+
+  @Test
+  void test_or_condition_reversed() throws Exception {
+    def ret = script.call(versionCondition: "^8.0.0 || ^7.14.0")
+    printCallStack()
+    assertTrue(ret.equals('7.14.0'))
   }
 }
