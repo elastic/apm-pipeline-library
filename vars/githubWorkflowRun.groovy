@@ -35,8 +35,6 @@
    }
 */
 
-import groovy.json.JsonSlurperClassic 
-
 def call(Map args = [:]) {
     def buildTimeLimit = args.get('buildTimeLimit', 1)
     def runId = triggerGithubActionsWorkflow(args)
