@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Parse the pre-commit log file and generates a junit report
 
@@ -29,7 +31,7 @@ def call(Map args = [:]) {
   def id, status, message = '', inprogress = false
   def data = '<?xml version="1.0" encoding="UTF-8"?><testsuite>'
   content.split('\n').each { line ->
-    def matcher = line =~ '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$'
+    def matcher = findPatternMatch(line, '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$')
     if (matcher.find()) {
       if (id) {
         data += toJunit(id, status, message, reportSkipped)
@@ -71,4 +73,10 @@ def normalise(String message) {
 
 def normaliseXml(String message) {
   return message.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&', '&amp;')
+}
+
+@NonCPS
+private findPatternMatch(line, pattern) {
+  def matcher = line =~ pattern
+  return matcher
 }
