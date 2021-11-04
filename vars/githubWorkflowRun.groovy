@@ -39,48 +39,74 @@ def call(Map args = [:]) {
     def buildTimeLimit = args.get('buildTimeLimit', 1)
     def runId = triggerGithubActionsWorkflow(args)
     def startDate = new Date()
+    // the following loop intended to wait till triggered run completed
+    // or time out specifed by buildTimeLimit
     while(startDate.time  + buildTimeLimit*3600000 -  new Date().time > 0) {
         def runInfo = getWorkflowRun(args + [runId: runId])
         if (runInfo.status == "completed") return runInfo
-        sleep(300); // sleep 5 min
+        sleep(300) // sleep 5 min
     }
     error("Build time out")
 }
 
 def triggerGithubActionsWorkflow(Map args = [:]) {
     if (!args.workflow) error('gh: workflow parameter is required.')
-    def ghVersion = args.get("ghVersion", "2.1.0")
     def ref = args.get("ref", "master")
     def runner = args.get("runner", "ubuntu-latest")
-    def runId = "${ref}-${new Date().getTime()}-${env.BUILD_ID}"
+    def lookupId = "${ref}-${new Date().getTime()}-${env.BUILD_ID}"
+    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
     def parameters = args.get("parameters", [:])
-    def inputs = (parameters + [id: runId, runner: runner]).collect{ "${it}" }
-    gh(command: "workflow run ${args.workflow}", credentialsId: args.credentialsId,
-        version: ghVersion, forceInstallation: true,
-        flags: [repo: args.repo, ref: ref, field: inputs ])
+    def inputs = (parameters + [id: lookupId, runner: runner]).collect{ "${it}" }
+    gh(ghDefaultArgs(args) + [command: "workflow run ${args.workflow}", 
+        forceInstallation: true, flags: [repo: repo, ref: ref, field: inputs]])
     sleep(30)
-    def runsText = gh(command: "run list", credentialsId: args.credentialsId,
-        version: ghVersion, forceInstallation: false,
-        flags: [repo: args.repo, workflow: args.workflow, limit: 100])
-    def runIds = []
-    for(def s: runsText.split("\n")) {
-        def r = s.split(/\s+/)
-        if (r[-1] == "0m"|| r[-1] == "1m") runIds.add(r[-3]) 
-    }
-    for(def run: runIds) {
-        def runText=gh(command: "run view -v ${run}", credentialsId: args.credentialsId,
-            version: ghVersion, forceInstallation: false, flags: [repo: args.repo])
-        if (runText.split("\n").find { it ==~ /^\s+\S\s+Run ID ${runId}\s*$/} ) {
+    def runId = lookupForRunId(args+[lookupId: lookupId])
+    if (runId) return runId
+    error("Triggered workflow with id '${lookupId}' but failed to get runId for it")
+}
+
+def lookupForRunId(Map args = [:]) {
+    if (!args.workflow) error('gh: workflow parameter is required.')
+    if (!args.lookupId) error('gh: lookupId parameter is required.')
+    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
+    def limit = args.get("limit", 100)
+    def runsText = gh(ghDefaultArgs(args) + [command: "run list", 
+        flags: [repo: repo, workflow: args.workflow, limit: limit]])
+    for(def run: getRunIdsFromGhOutput(runsText)) {
+        def runText=gh(ghDefaultArgs(args) + [command: "run view -v ${run}",
+            flags: [repo: repo]])
+        if (checkTextForLookupId(runText, args.lookupId)) {
             return run as int
         }
     }
     return 0
 }
 
+@NonCPS
+def checkTextForLookupId(def text, def lookupId) {
+    return text.split("\n").find { it ==~ /^\s+\S\s+Run ID ${lookupId}\s*$/}
+}
+
 def getWorkflowRun(Map args = [:]) {
     if (!args.runId) error('gh: runId parameter is required.')
-    def ghVersion = args.get("ghVersion", "2.1.0")
-    String response = gh(command: "api repos/${args.repo}/actions/runs/${args.runId}",
-        version: ghVersion, forceInstallation: false, credentialsId: args.credentialsId, flags: [])
-    return toJSON(response)
+    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
+    return toJSON(gh(ghDefaultArgs(args) + [forceInstallation: true,
+        command: "api repos/${repo}/actions/runs/${args.runId}"]))
+}
+
+def ghDefaultArgs(Map args = [:]) {
+    def ghArgs = [
+        version: args.get("ghVersion", "2.1.0"),
+        forceInstallation: false]
+    if (args.credentialsId) ghArgs += [credentialsId: args.credentialsId]
+    return ghArgs
+}
+
+def getRunIdsFromGhOutput(def runsText) {
+    def runIds = []
+    for(def s: runsText.split("\n")) {
+        def r = s.split(/\s+/)
+        runIds.add(r[-3]) 
+    }
+   return runIds
 }
