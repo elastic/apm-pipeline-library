@@ -50,11 +50,11 @@ import groovy.json.JsonSlurperClassic
 
 def call(Map args = [:]) {
     try {
-        int buildTimeLimit = args.get('buildTimeLimit', 1)
-        int runId = triggerGithubActionsWorkflow(args)
-        Date startDate = new Date()
+        def buildTimeLimit = args.get('buildTimeLimit', 1)
+        def runId = triggerGithubActionsWorkflow(args)
+        def startDate = new Date()
         while(startDate.time  + buildTimeLimit*3600000 -  new Date().time > 0) {
-            Map runInfo = getWorkflowRun(args + [runId: runId])
+            def runInfo = getWorkflowRun(args + [runId: runId])
             if (runInfo.status == "completed") return runInfo
             Thread.sleep(300000); // sleep 5 min
         }
@@ -65,7 +65,7 @@ def call(Map args = [:]) {
     return null
 }
 
-int triggerGithubActionsWorkflow(Map args = [:]) {
+def triggerGithubActionsWorkflow(Map args = [:]) {
     if (!args.repo || !args.workflow) {
         throw new IllegalArgumentException("repo: '${args.repo}', workflow: '${args.workflow}'")
     }
@@ -97,7 +97,7 @@ int triggerGithubActionsWorkflow(Map args = [:]) {
     return 0
 }
 
-Map getWorkflowRun(Map args = [:]) {
+def getWorkflowRun(Map args = [:]) {
     if (!args.repo || !args.runId) {
         throw new IllegalArgumentException("repo: '${args.repo}', runId: '${args.runId}'")
     }
@@ -106,4 +106,3 @@ Map getWorkflowRun(Map args = [:]) {
         version: ghVersion, forceInstallation: false, credentialsId: args.credentialsId, flags: [])
     return new groovy.json.JsonSlurperClassic().parseText(response)
 }
-
