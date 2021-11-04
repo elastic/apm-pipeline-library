@@ -74,7 +74,7 @@ def isFullPatternMatch(gitDiffFile, patterns) {
 def isPartialPatternMatch(gitDiffFile, patterns) {
   def fileContent = readFile(gitDiffFile)
   def match = patterns.any { pattern ->
-    fileContent.split('\n').any { isPatternMatch(it, pattern) }
+    fileContent.split('\n').any { line -> isPatternMatch(it, pattern) }
   }
   return match
 }
