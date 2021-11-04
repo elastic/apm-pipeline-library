@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.260 (04/11/2021)
+
+#### 🙈 No user affected
+
+-  [mergify][codeowners] Auto-assign and add reviewers [#1360](https://github.com/elastic/apm-pipeline-library/pull/1360)
+
 ## v1.1.259 (04/11/2021)
 
 #### 🚀 Enhancements
