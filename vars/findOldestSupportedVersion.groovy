@@ -91,11 +91,14 @@ def call(Map args = [:]) {
 def removeOperator(String versionCondition) {
   if (versionCondition.startsWith('^')) {
     return versionCondition.substring(1)
-  } 
+  }
+  if (versionCondition.startsWith('~')) {
+    return versionCondition.substring(1)
+  }
   if (versionCondition.startsWith('>=')) {
     return versionCondition.substring(2)
   }
-  error('findOldestStackVersion: versionCondition supports only ^ and >= operators')
+  error('findOldestStackVersion: versionCondition supports only ^, ~ and >= operators')
 }
 
 def handleOr(String versionCondition) {
@@ -111,6 +114,6 @@ def handleOr(String versionCondition) {
       result = candidate
     }
   }
-  
+
   return result
 }
