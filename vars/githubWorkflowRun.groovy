@@ -84,5 +84,5 @@ def getWorkflowRun(Map args = [:]) {
     def ghVersion = args.get("ghVersion", "2.1.0")
     String response = gh(command: "api repos/${args.repo}/actions/runs/${args.runId}",
         version: ghVersion, forceInstallation: false, credentialsId: args.credentialsId, flags: [])
-    return new groovy.json.JsonSlurperClassic().parseText(response)
+    return toJSON(response)
 }
