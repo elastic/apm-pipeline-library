@@ -1,4 +1,5 @@
-Whether the given tools is installed and available.
+Whether the given tool is installed and available. It does also supports specifying the version.
+validation.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -14,3 +15,4 @@ Whether the given tools is installed and available.
 
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
+* version: The version of the tool to check with. Optional.
