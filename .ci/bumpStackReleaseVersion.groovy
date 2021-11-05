@@ -99,14 +99,15 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
   // TODO: to be adapted to the 8 releases, so maybe the branch should be the one driving this dynamically.
-  def stackVersion = bumpUtils.getCurrentMinorReleaseFor7()
-  def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${stackVersion}"""
+  def stackCurrentVersion = bumpUtils.getCurrentMinorReleaseFor7()
+  def stackNextMinorVersion = bumpUtils.getNextMinorReleaseFor7()
+  def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${stackCurrentVersion} ${stackNextMinorVersion}"""
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: "${title} ${stackVersion}", labels: labels, scriptFile: scriptFile, stackVersion: stackVersion,
-          message: message, assign: assign, reviewer: reviewer]
+  return [repo: repo, branchName: branch, title: "${title} ${stackCurrentVersion} ${stackNextMinorVersion}", labels: labels, scriptFile: scriptFile,
+          stackCurrentVersion: stackCurrentVersion, stackNextMinorVersion: stackNextMinorVersion, message: message, assign: assign, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -114,10 +115,10 @@ def createPullRequest(Map args = [:]) {
 
   bumpUtils.createBranch(prefix: 'update-stack-version', suffix: args.branchName)
 
-  sh(script: "${args.scriptFile} '${args.stackVersion}' ''", label: "Prepare changes for ${args.repo}")
+  sh(script: "${args.scriptFile} '${args.stackCurrentVersion}' '${args.stackNextMinorVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
-    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.stackVersion}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
+    log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
     return
   }
 
@@ -129,8 +130,8 @@ def createPullRequest(Map args = [:]) {
   }
 
   // In case the docker image is not available yet, let's skip the PR automation.
-  if (!bumpUtils.isVersionAvailable(args.stackVersion)) {
-    log(level: 'INFO', text: "Version '${args.stackVersion}' is not available yet.")
+  if (!bumpUtils.isVersionAvailable(args.stackCurrentVersion) || !bumpUtils.isVersionAvailable(args.stackNextMinorVersion)) {
+    log(level: 'INFO', text: "Versions '${args.stackCurrentVersion}'/'${args.stackNextMinorVersion}' are not available yet.")
     return
   }
 
