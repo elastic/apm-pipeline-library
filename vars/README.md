@@ -1631,7 +1631,7 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tools is installed and available. It does also support version
+Whether the given tool is installed and available. It also supports specifying a version.
 validation.
 
 ```
