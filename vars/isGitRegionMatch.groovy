@@ -64,7 +64,7 @@ def isFullPatternMatch(gitDiffFile, patterns) {
   def match = true
   fileContent.split('\n').each { String line ->
     log(level: 'DEBUG', text: "changeset element: '${line}'")
-    if (!patterns.every { line ==~ it }) {
+    if (!patterns.every { pattern -> isPatternMatch(line, pattern) }) {
       match = false
     }
   }
@@ -74,7 +74,13 @@ def isFullPatternMatch(gitDiffFile, patterns) {
 def isPartialPatternMatch(gitDiffFile, patterns) {
   def fileContent = readFile(gitDiffFile)
   def match = patterns.any { pattern ->
-    fileContent.split('\n').any { line -> line ==~ pattern }
+    fileContent.split('\n').any { line -> isPatternMatch(line, pattern) }
   }
+  return match
+}
+
+@NonCPS
+def isPatternMatch(line, pattern) {
+  def match = line ==~ pattern
   return match
 }
