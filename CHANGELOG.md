@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.261 (05/11/2021)
+
+#### 🚀 Enhancements
+
+-  Enable version validation in the isInstalled step [#1364](https://github.com/elastic/apm-pipeline-library/pull/1364)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issue with the Matcher pattern [#1365](https://github.com/elastic/apm-pipeline-library/pull/1365)
+
+#### ⚙️ CI
+
+-  Bump release stack version: support for the dev version [#1361](https://github.com/elastic/apm-pipeline-library/pull/1361)
+
 ## v1.1.260 (04/11/2021)
 
 #### 🙈 No user affected
