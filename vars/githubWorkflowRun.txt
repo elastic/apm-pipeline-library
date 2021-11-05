@@ -31,7 +31,8 @@ Run workflow on github actions
 * ref: reference (branch, tag or hash). Optional, default is master.
 * parameters: map with parameters to pass to the workflow as inputs. Optional, 
   default is empty map.
-* buildTimeLimit: How long wait till the run completed. It's set in hours, default is 1 hour.
+* buildTimeLimit: How long wait till the run completed. It's set in minutes, 
+  default is 30 min.
 * credentialsId: github credentials id. Optional.
 * version: version of github cli. Optional, default is 2.1.0
 

@@ -38,15 +38,16 @@
 import com.cloudbees.groovy.cps.NonCPS
 
 def call(Map args = [:]) {
-    def buildTimeLimit = args.get('buildTimeLimit', 1)
+    // time in minutes to wait before build completed
+    def buildTimeLimit = args.get('buildTimeLimit', 30)
     def runId = triggerGithubActionsWorkflow(args)
     def startDate = new Date()
     // the following loop intended to wait till triggered run completed
-    // or time out specifed by buildTimeLimit
-    while(startDate.time  + buildTimeLimit*3600000 -  new Date().time > 0) {
+    // or time out specifed by buildTimeLimit is reached
+    while(startDate.time  + buildTimeLimit*60000 -  new Date().time > 0) {
         def runInfo = getWorkflowRun(args + [runId: runId])
         if (runInfo.status == "completed") return runInfo
-        sleep(300) // sleep 5 min
+        sleep(buildTimeLimit > 10 ? 300 : 60)
     }
     error("Build time out")
 }
@@ -56,7 +57,7 @@ def triggerGithubActionsWorkflow(Map args = [:]) {
     def ref = args.get("ref", "master")
     def runner = args.get("runner", "ubuntu-latest")
     def lookupId = "${ref}-${new Date().getTime()}-${env.BUILD_ID}"
-    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
+    def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def parameters = args.get("parameters", [:])
     def inputs = (parameters + [id: lookupId, runner: runner]).collect{ "${it}" }
     gh(ghDefaultArgs(args) + [command: "workflow run ${args.workflow}", 
@@ -70,7 +71,7 @@ def triggerGithubActionsWorkflow(Map args = [:]) {
 def lookupForRunId(Map args = [:]) {
     if (!args.workflow) error('gh: workflow parameter is required.')
     if (!args.lookupId) error('gh: lookupId parameter is required.')
-    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
+    def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def limit = args.get("limit", 100)
     def runsText = gh(ghDefaultArgs(args) + [command: "run list", 
         flags: [repo: repo, workflow: args.workflow, limit: limit]])
@@ -91,7 +92,7 @@ def checkTextForLookupId(def text, def lookupId) {
 
 def getWorkflowRun(Map args = [:]) {
     if (!args.runId) error('gh: runId parameter is required.')
-    def repo = args.repo? args.repo : "${env.ORG_NAME}/${env.REPO_NAME}"
+    def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     return toJSON(gh(ghDefaultArgs(args) + [forceInstallation: true,
         command: "api repos/${repo}/actions/runs/${args.runId}"]))
 }
