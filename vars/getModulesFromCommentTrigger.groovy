@@ -40,7 +40,7 @@ def call(Map args = [:]) {
 
 @NonCPS
 private findPatternMatch(line, pattern) {
-  def matcher = (line =~ /${pattern/)
+  def matcher = (line =~ /${pattern}/)
   return matcher
 }
 
