@@ -35,6 +35,8 @@
    }
 */
 
+import com.cloudbees.groovy.cps.NonCPS
+
 def call(Map args = [:]) {
     def buildTimeLimit = args.get('buildTimeLimit', 1)
     def runId = triggerGithubActionsWorkflow(args)
