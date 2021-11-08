@@ -34,7 +34,7 @@ Wrap the junit built-in step to perform extra operations with the test reports.
     }
 */
 def call(Map args = [:]) {
-  def hasCallback = args.containsKey('callback') ? true : false
+  def hasCallback = args.containsKey('callback')
   def testResults = args.containsKey('testResults') ? args.testResults : error('junit: testResults parameter is required')
   def junitArgs = args.findAll { k,v -> !(k.equals('callback')) }
 
