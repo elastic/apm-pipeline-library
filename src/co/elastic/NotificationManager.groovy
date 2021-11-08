@@ -452,7 +452,7 @@ def getSupportedGithubCommands() {
     return [:]
   }
 
-  def comments = ['@elasticmachine, run elasticsearch-ci/docs': 'Re-trigger the docs validation.']
+  def comments = [:]
 
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
@@ -505,6 +505,11 @@ def getSupportedGithubCommands() {
     comments['/test ansible'] = 'Run the ansible tests.'
     comments['/test cypress'] = 'Run the cypress tests.'
     comments['/test tools'] = 'Build and test the CLI tools.'
+  }
+
+  // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
+  if (env.REPO?.startsWith('apm') || env.REPO_NAME?.endsWith('server') || env.REPO_NAME?.equals('beats')) {
+    comments['@elasticmachine, run elasticsearch-ci/docs'] = 'Re-trigger the docs validation.'
   }
 
   return comments
