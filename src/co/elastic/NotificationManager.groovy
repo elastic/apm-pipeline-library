@@ -452,7 +452,7 @@ def getSupportedGithubCommands() {
     return [:]
   }
 
-  def comments = [:]
+  def comments = ['@elasticmachine, run elasticsearch-ci/docs': 'Re-trigger the docs validation.']
 
   // In order to avoid re-triggering a build when commenting the
   // build status as a PR comment, it's required to filter here
