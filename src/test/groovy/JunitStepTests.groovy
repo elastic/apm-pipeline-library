@@ -43,26 +43,7 @@ class JunitStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_callback_parameter() throws Exception {
-    def initialCount = 0
-
-    try {
-      def callback = { initialCount++ }
-
-      script.call(testResults: 'build/TEST-*.xml', callback: callback)
-    } catch(err) {
-      //
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('junit', 'testResults=build/TEST-*.xml'))
-    assertTrue(assertMethodCallContainsPattern('log', 'junit: Running callback operations after junit'))
-    assertEquals(initialCount, 1)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_callback_parameter() throws Exception {
-    def initialCount = 0
+  void test_with_extra_logic() throws Exception {
     try {
       script.call(testResults: 'build/TEST-*.xml')
     } catch(err) {
@@ -70,8 +51,7 @@ class JunitStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('junit', 'testResults=build/TEST-*.xml'))
-    assertFalse(assertMethodCallContainsPattern('log', 'junit: Running callback operations after junit'))
-    assertEquals(initialCount, 0)
+    assertTrue(assertMethodCallContainsPattern('log', 'junit: Running extra operations after junit'))
     assertJobStatusSuccess()
   }
 }

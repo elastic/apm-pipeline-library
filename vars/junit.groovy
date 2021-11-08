@@ -25,7 +25,7 @@ Wrap the junit built-in step to perform extra operations with the test reports.
                 post {
                     always {
                         // JUnit on steroids
-                        junit(callback: closure(), ...)
+                        junit(...)
                     }
                 }
             }
@@ -34,17 +34,7 @@ Wrap the junit built-in step to perform extra operations with the test reports.
     }
 */
 def call(Map args = [:]) {
-  def hasCallback = args.containsKey('callback')
-  def junitArgs = args.findAll { k,v -> !(k.equals('callback')) }
+  junit(args)
 
-  junit(junitArgs)
-
-  if (!hasCallback) {
-      return
-  }
-
-  def callback = args.callback
-
-  log(level: 'DEBUG', text: "junit: Running callback operations after junit")
-  callback()
+  log(level: 'DEBUG', text: "junit: Running extra operations after junit")
 }

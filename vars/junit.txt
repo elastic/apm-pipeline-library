@@ -8,7 +8,7 @@ Wrap the junit built-in step to perform extra operations with the test reports.
                 post {
                     always {
                         // JUnit on steroids
-                        junit(callback: closure(), ...)
+                        junit(...)
                     }
                 }
             }
@@ -20,7 +20,5 @@ Wrap the junit built-in step to perform extra operations with the test reports.
 * *testResults*: from the `junit` step. Mandatory
 * *allowEmptyResults*: from the `junit` step. Optional
 * *keepLongStdio*: from the `junit` step. Optional
-* *callback*: A closure to run after the built-in `junit` step if set.Optional, default empty.
-
 
 **NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
