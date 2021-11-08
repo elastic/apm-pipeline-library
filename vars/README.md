@@ -1766,6 +1766,34 @@ Whether the architecture is a x86 based using the `nodeArch` step
     }
 ```
 
+## junit
+Wrap the junit built-in step to perform extra operations with the test reports.
+
+```
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit on steroids
+                        junit(callback: closure(), ...)
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+* *callback*: A closure to run after the built-in `junit` step if set.Optional, default empty.
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
+
 ## junitAndStore
 Wrap the junit built-in step to archive the test reports that are going to be
 populated later on with the runbld post build step.
