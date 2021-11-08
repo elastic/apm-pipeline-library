@@ -39,8 +39,7 @@ class JunitStepTests extends ApmBasePipelineTest {
       //
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'junit: testResults parameter is required'))
-    assertJobStatusFailure()
+    assertJobStatusSuccess()
   }
 
   @Test
