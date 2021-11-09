@@ -508,7 +508,7 @@ def getSupportedGithubCommands() {
   }
 
   // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
-  if (env.REPO?.startsWith('apm') || env.REPO_NAME?.endsWith('server') || env.REPO_NAME?.equals('beats')) {
+  if (env.REPO?.startsWith('apm') || env.REPO_NAME?.startsWith('ecs') || env.REPO_NAME?.equals('beats') || env.REPO_NAME?.equals('observability-docs')) {
     comments['@elasticmachine, run elasticsearch-ci/docs'] = 'Re-trigger the docs validation.'
   }
 
