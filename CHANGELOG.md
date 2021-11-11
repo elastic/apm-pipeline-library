@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.262 (11/11/2021)
+
+#### 🚀 Enhancements
+
+-  feat: push a tag with the Stack version [#1357](https://github.com/elastic/apm-pipeline-library/pull/1357)
+-  Add GH command for rebuilding the docs builds [#1369](https://github.com/elastic/apm-pipeline-library/pull/1369)
+
+#### 🐛 Bug Fixes
+
+-  fix: remove concurrentBuild [#1366](https://github.com/elastic/apm-pipeline-library/pull/1366)
+
 ## v1.1.261 (05/11/2021)
 
 #### 🚀 Enhancements
