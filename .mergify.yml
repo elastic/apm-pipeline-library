@@ -59,4 +59,4 @@ pull_request_rules:
     actions:
       comment:
         message: |
-          This pull request has not been merged yet. Could you please review it @{{assignee}}? 🙏
+          This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
