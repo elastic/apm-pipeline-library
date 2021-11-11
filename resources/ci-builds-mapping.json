@@ -9,9 +9,6 @@
           "interruptedException" : {
             "type" : "long"
           },
-          "liveNode" : {
-            "type" : "long"
-          },
           "missingContextVariableException" : {
             "type" : "long"
           },
