@@ -414,8 +414,6 @@ function prepareErrorMetrics() {
       interruptedException=$(grep -i 'cannot contact .*InterruptedException' --count ${PIPELINE_LOG})
       ## Required context class hudson.Launcher.
       missingContextVariableException=$(grep -i 'org.jenkinsci.plugins.workflow.steps.MissingContextVariableException' --count ${PIPELINE_LOG})
-      ## Computer does not correspond to a live node
-      liveNode=$(grep -i 'computer does not correspond to a live node' --count ${PIPELINE_LOG})
       ## beats-ci-immutable-ubuntu-1804-1634816467154904530 was marked offline: Connection was broken: java.nio.channels.ClosedChannelException
       closedChannelException=$(grep -i 'java.nio.channels.ClosedChannelException' --count ${PIPELINE_LOG})
       ## search for reused workers within the same build
@@ -425,7 +423,6 @@ function prepareErrorMetrics() {
     else
       interruptedException=0
       missingContextVariableException=0
-      liveNode=0
       closedChannelException=0
       reusedWorkers=0
       notSerializableException=0
@@ -435,7 +432,6 @@ function prepareErrorMetrics() {
       echo "{"
       echo "  \"closedChannelException\": ${closedChannelException},"
       echo "  \"interruptedException\": ${interruptedException},"
-      echo "  \"liveNode\": ${liveNode},"
       echo "  \"missingContextVariableException\": ${missingContextVariableException},"
       echo "  \"notSerializableException\": ${notSerializableException},"
       echo "  \"reusedWorkers\": ${reusedWorkers}"
