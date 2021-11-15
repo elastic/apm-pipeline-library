@@ -14,9 +14,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
+
+/*
+FIXME require to approve a few classes to run, we have to find an alternative.
 import org.yaml.snakeyaml.Yaml
 import java.util.ArrayList
-
 
 class YamlParser {
   public static List<String> getVersions(String yamlUrl, String key){
@@ -29,10 +32,18 @@ class YamlParser {
   }
 }
 
+def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
+def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
+def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
+def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
+def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
+
+*/
+
 def registry = "docker.elastic.co"
 def prefix = "observability-ci"
 
-def dockerImages = new ArrayList([
+def dockerImages = [
   [
     name: 'opbeans-dotnet',
     repo: 'https://github.com/elastic/opbeans-dotnet.git',
@@ -135,14 +146,20 @@ def dockerImages = new ArrayList([
     folder: 'tools/apm_proxy/backend',
     push: true
   ],
-])
+]
 
 
 /*
   APM Agent Python Docker images
 */
-def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
-
+def pythonVersions = [
+  "python-3.6",
+  "python-3.7",
+  "python-3.8",
+  "python-3.9",
+  "python-3.10-rc",
+  "pypy-3"
+]
 pythonVersions.each{ version ->
   def pythonVersion = version.replaceFirst("-",":")
   dockerImages.add([
@@ -159,7 +176,19 @@ pythonVersions.each{ version ->
 /*
   APM Agent Node.js Docker images
 */
-def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
+def nodeVersions = [
+  "17",
+  "16",
+  "16.0",
+  "14",
+  "14.0",
+  "12",
+  "12.0",
+  "10",
+  "10.0",
+  "8",
+  "8.6"
+]
 nodeVersions.each{ version ->
   def nodejsVersion = version.replaceFirst('"', '')
   dockerImages.add([
@@ -187,7 +216,17 @@ dockerImages.add([
   docker_push_script: "./run.sh --action push --registry ${registry}/${prefix}"
 ])
 
-def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
+def rubyVersions = [
+  "ruby:3.0",
+  "ruby:2.7",
+  "ruby:2.6",
+  "ruby:2.5",
+  "ruby:2.4",
+  "jruby:9.2",
+  "docker.elastic.co/observability-ci/jruby:9.2-13-jdk",
+  "docker.elastic.co/observability-ci/jruby:9.2-11-jdk",
+  "docker.elastic.co/observability-ci/jruby:9.2-8-jdk"
+]
 // The ones with the observability-ci tag are already built at the very end
 // of this pipeline.
 rubyVersions.findAll { element -> !element.contains('observability-ci') }.each { version ->
@@ -206,8 +245,11 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
 /*
   APM Agent RUM Docker images
 */
-def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
-def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
+def libraries = [
+  "playwright",
+  "puppeteer"
+]
+def nodejsVersion = "12"
 libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
@@ -231,11 +273,11 @@ dockerImages.each{ item ->
       stringParam('folder', "${item.folder ? item.folder : '.'}", "Folder where the Dockrefile is.")
       stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
       booleanParam('push', item.push, "True to push the Docker image to the registry.")
-      stringParam('docker_build_opts', "", "Aditional flags to the default docker build command.")
+      stringParam('docker_build_opts', "", "Additional flags to the default docker build command.")
       stringParam('docker_build_script', "${item.build_script ? item.build_script : ''}", "Script/command to build the Docker image.")
       stringParam('docker_test_script', "${item.test_script ? item.test_script : ''}", "Script/command to test the Docker image.")
       stringParam('docker_push_script', "${item.push_script ? item.push_script : ''}", "Script/command to push the Docker image.")
-      stringParam('prepare_script', "${item.prepare_script ? item.prepare_script : ''}", "Script/command to run before everithing.")
+      stringParam('prepare_script', "${item.prepare_script ? item.prepare_script : ''}", "Script/command to run before everything.")
     }
     disabled(false)
     quietPeriod(10)
