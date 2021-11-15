@@ -33,4 +33,34 @@ pull_request_rules:
       merge:
         method: squash
         strict: smart+fasttrack
+<<<<<<< HEAD
         priority: low
+=======
+  - name: delete upstream branch after merging changes
+    conditions:
+      - merged
+      - label=automation
+      - base~=^update-.*-version
+    actions:
+      delete_head_branch:
+  - name: assign PRs
+    conditions:
+      - -merged
+      - -closed
+      - "#assignee=0"
+    actions:
+      assign:
+        add_users:
+          - "{{author}}"
+  - name: notify the backport has not been merged yet
+    conditions:
+      - -merged
+      - -closed
+      - author=mergify[bot]
+      - check-success=CLA
+      - schedule=Mon-Mon 14:00-16:00[Europe/Paris]
+    actions:
+      comment:
+        message: |
+          This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
+>>>>>>> 85f7d1af (mergify: once a week (#1379))
