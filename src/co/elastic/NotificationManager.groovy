@@ -507,6 +507,12 @@ def getSupportedGithubCommands() {
     comments['/test tools'] = 'Build and test the CLI tools.'
   }
 
+  if (isProjectSupported('apm-agent-python')) {
+    comments['/test linters'] = 'Run the Python linters only.'
+    comments['/test full'] = 'Run the full matris of tests.'
+    comments['/test benchmark'] = 'Run the APM Agent Python benchmarks tests.'
+  }
+
   // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
   if (isElasticsearchDocsSupported()) {
     // `run` is needed to avoid the comment to trigger a build itself!
