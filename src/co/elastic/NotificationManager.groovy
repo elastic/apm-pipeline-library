@@ -509,7 +509,7 @@ def getSupportedGithubCommands() {
 
   if (isProjectSupported('apm-agent-python')) {
     comments['/test linters'] = 'Run the Python linters only.'
-    comments['/test full'] = 'Run the full matris of tests.'
+    comments['/test full'] = 'Run the full matrix of tests.'
     comments['/test benchmark'] = 'Run the APM Agent Python benchmarks tests.'
   }
 
