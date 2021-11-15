@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.263 (15/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: report apm Python chatOps [#1377](https://github.com/elastic/apm-pipeline-library/pull/1377)
+- [**Team:Automation**] feat: build docker images isolated [#1370](https://github.com/elastic/apm-pipeline-library/pull/1370)
+
+#### 🐛 Bug Fixes
+
+-  Fix upstream build reasons [#1378](https://github.com/elastic/apm-pipeline-library/pull/1378)
+- [**Team:Automation**] fix: trailing-whitespace [#1372](https://github.com/elastic/apm-pipeline-library/pull/1372)
+
 ## v1.1.262 (11/11/2021)
 
 #### 🚀 Enhancements
