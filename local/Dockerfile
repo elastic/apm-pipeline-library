@@ -1,4 +1,4 @@
-FROM docker.elastic.co/infra/jenkins:202109131610.ef2e7a6a5a14
+FROM docker.elastic.co/infra/jenkins:202111081526.13f733a5d475
 
 
 COPY configs/plugins.txt /usr/share/jenkins/ref/plugins.txt
