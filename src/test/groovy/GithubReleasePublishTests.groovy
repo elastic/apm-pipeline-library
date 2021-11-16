@@ -79,6 +79,7 @@ class GithubReleasePublishTests extends ApmBasePipelineTest {
     script.BUILD_TAG = "dummy_tag"
     def ret = script.call(url: "dummy", token: "dummy", id: 1, name: "Release v1.0.0")
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'draft=false'))
     assertTrue(ret.tag_name == "v1.0.0")
     assertJobStatusSuccess()
   }
