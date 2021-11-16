@@ -28,7 +28,7 @@ If githubReleaseCreate() was called with the `draft` flag set to `false`,
 this has no effect.
 
 The `id` field required by this script is accessible in the return from
-ithubReleaseCreate(). See documentation for that script for more details about
+githubReleaseCreate(). See documentation for that script for more details about
 the data structure of the return.
 
   Example invocation:
@@ -61,7 +61,7 @@ def call(Map args = [:]){
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases/${id}"
 
   def release_params = [
-  "draft": true
+    "draft": false
   ]
 
   // Call the GitHub API
