@@ -56,7 +56,9 @@ pull_request_rules:
       - -closed
       - author=mergify[bot]
       - check-success=CLA
-      - schedule=Mon-Mon 14:00-16:00[Europe/Paris]
+      - schedule=Mon-Fri 13:00-14:00[Europe/Paris]
+      - updated-at<2 days ago
+      - "#assignee>=1"
     actions:
       comment:
         message: |
