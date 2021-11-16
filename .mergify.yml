@@ -17,6 +17,8 @@ pull_request_rules:
       - label=backport-to-7.x
     actions:
       backport:
+        assignees:
+          - "{{ author }}"
         branches:
           - 7.x
         title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
@@ -39,3 +41,25 @@ pull_request_rules:
       - base~=^update-.*-version
     actions:
       delete_head_branch:
+  - name: assign PRs
+    conditions:
+      - -merged
+      - -closed
+      - "#assignee=0"
+    actions:
+      assign:
+        add_users:
+          - "{{author}}"
+  - name: notify the backport has not been merged yet
+    conditions:
+      - -merged
+      - -closed
+      - author=mergify[bot]
+      - check-success=CLA
+      - schedule=Mon-Fri 13:00-14:00[Europe/Paris]
+      - updated-at<2 days ago
+      - "#assignee>=1"
+    actions:
+      comment:
+        message: |
+          This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏

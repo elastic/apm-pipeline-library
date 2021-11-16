@@ -495,19 +495,46 @@ def getSupportedGithubCommands() {
   }
 
   // Support for the Beats specific GitHub commands
-  if (env.REPO?.equals('beats') || env.REPO_NAME?.equals('beats')) {
+  if (isProjectSupported('beats')) {
     comments['/package'] = 'Generate the packages and run the E2E tests.'
     comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
   }
 
   // Support for the Obs11 test environments specific GitHub commands
-  if (env.REPO?.equals('observability-test-environments') || env.REPO_NAME?.equals('observability-test-environments')) {
+  if (isProjectSupported('observability-test-environments')) {
     comments['/test ansible'] = 'Run the ansible tests.'
     comments['/test cypress'] = 'Run the cypress tests.'
     comments['/test tools'] = 'Build and test the CLI tools.'
   }
 
+  if (isProjectSupported('apm-agent-python')) {
+    comments['/test linters'] = 'Run the Python linters only.'
+    comments['/test full'] = 'Run the full matrix of tests.'
+    comments['/test benchmark'] = 'Run the APM Agent Python benchmarks tests.'
+  }
+
+  // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
+  if (isElasticsearchDocsSupported()) {
+    // `run` is needed to avoid the comment to trigger a build itself!
+    comments['`run` `elasticsearch-ci/docs`'] = 'Re-trigger the docs validation. (use unformatted text in the comment!)'
+  }
+
   return comments
+}
+
+private isProjectSupported(String value) {
+  return env.REPO?.equals(value) || env.REPO_NAME?.equals(value)
+}
+
+private isElasticsearchDocsSupported() {
+  return isElasticsearchDocsSupported(env.REPO) || isElasticsearchDocsSupported(env.REPO_NAME)
+}
+
+private isElasticsearchDocsSupported(String value) {
+  return value?.startsWith('apm') ||
+         value?.startsWith('ecs') ||
+         value?.equals('beats') ||
+         value?.equals('observability-docs')
 }
 
 @NonCPS

@@ -759,8 +759,6 @@ It requires to be executed within the git workspace, otherwise it will use
 * version: The gh CLI version to be installed. Optional (1.9.2)
 * forceInstallation: Whether to install gh regardless. Optional (false)
 
-_NOTE_: Windows is not supported yet.
-
 ## git
 Override the `git` step to retry the checkout up to 3 times.
 
@@ -1633,7 +1631,8 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tools is installed and available.
+Whether the given tool is installed and available. It also supports specifying a version.
+validation.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -1649,6 +1648,7 @@ Whether the given tools is installed and available.
 
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
+* version: The version of the tool to check with. Optional.
 
 ## isInternalCI
 Whether the CI instance is the internal-ci one.

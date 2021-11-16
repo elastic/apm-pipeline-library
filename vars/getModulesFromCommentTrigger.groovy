@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   If the build was triggered by a comment in GitHub then get the sorted list of
   modules which were referenced in the comment
@@ -30,13 +32,25 @@
 def call(Map args = [:]) {
   def regex = args.containsKey('regex') ? args.regex : '(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests\\W+for\\W+the\\W+module\\W+(.+)'
   def delimiter = args.containsKey('delimiter') ? args.delimiter : ','
-  result = []
   if(env.GITHUB_COMMENT && env.GITHUB_COMMENT.trim()){
-    matcher = (env.GITHUB_COMMENT =~ /${regex}/)
-    while(matcher.find()) {
-      matcher.group(1).split(delimiter).sort().each {
-        result << it
-      }
+    return getPatterns(env.GITHUB_COMMENT, regex, delimiter)
+  }
+  return []
+}
+
+@NonCPS
+private findPatternMatch(line, pattern) {
+  def matcher = (line =~ /${pattern}/)
+  return matcher
+}
+
+@NonCPS
+private getPatterns(line, pattern, delimiter) {
+  def matcher = findPatternMatch(line, pattern)
+  def result = []
+  while(matcher.find()) {
+    matcher.group(1).split(delimiter).sort().each {
+      result << it
     }
   }
   return result

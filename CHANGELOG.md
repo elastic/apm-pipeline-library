@@ -1,5 +1,61 @@
 # Changelog
 
+## v1.1.263 (15/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: report apm Python chatOps [#1377](https://github.com/elastic/apm-pipeline-library/pull/1377)
+- [**Team:Automation**] feat: build docker images isolated [#1370](https://github.com/elastic/apm-pipeline-library/pull/1370)
+
+#### 🐛 Bug Fixes
+
+-  Fix upstream build reasons [#1378](https://github.com/elastic/apm-pipeline-library/pull/1378)
+- [**Team:Automation**] fix: trailing-whitespace [#1372](https://github.com/elastic/apm-pipeline-library/pull/1372)
+
+## v1.1.262 (11/11/2021)
+
+#### 🚀 Enhancements
+
+-  feat: push a tag with the Stack version [#1357](https://github.com/elastic/apm-pipeline-library/pull/1357)
+-  Add GH command for rebuilding the docs builds [#1369](https://github.com/elastic/apm-pipeline-library/pull/1369)
+
+#### 🐛 Bug Fixes
+
+-  fix: remove concurrentBuild [#1366](https://github.com/elastic/apm-pipeline-library/pull/1366)
+
+## v1.1.261 (05/11/2021)
+
+#### 🚀 Enhancements
+
+-  Enable version validation in the isInstalled step [#1364](https://github.com/elastic/apm-pipeline-library/pull/1364)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issue with the Matcher pattern [#1365](https://github.com/elastic/apm-pipeline-library/pull/1365)
+
+#### ⚙️ CI
+
+-  Bump release stack version: support for the dev version [#1361](https://github.com/elastic/apm-pipeline-library/pull/1361)
+
+## v1.1.260 (04/11/2021)
+
+#### 🙈 No user affected
+
+-  [mergify][codeowners] Auto-assign and add reviewers [#1360](https://github.com/elastic/apm-pipeline-library/pull/1360)
+
+## v1.1.259 (04/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**][**Team:Ecosystem**] Find oldest version with or conditions [#1359](https://github.com/elastic/apm-pipeline-library/pull/1359)
+-  Pin the gh version for the listGithubReleases step [#1354](https://github.com/elastic/apm-pipeline-library/pull/1354)
+-  Support for macos, arm and windows in the gh step [#1355](https://github.com/elastic/apm-pipeline-library/pull/1355)
+-  Add gh version and forceInstallation parameters [#1353](https://github.com/elastic/apm-pipeline-library/pull/1353)
+
+#### 🙈 No user affected
+
+-  chore: add arch [#1356](https://github.com/elastic/apm-pipeline-library/pull/1356)
+
 ## v1.1.258 (03/11/2021)
 
 #### 🚀 Enhancements

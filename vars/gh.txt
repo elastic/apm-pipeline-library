@@ -15,5 +15,3 @@ It requires to be executed within the git workspace, otherwise it will use
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 * version: The gh CLI version to be installed. Optional (1.9.2)
 * forceInstallation: Whether to install gh regardless. Optional (false)
-
-_NOTE_: Windows is not supported yet.
