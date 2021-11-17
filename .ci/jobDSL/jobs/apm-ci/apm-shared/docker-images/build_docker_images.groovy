@@ -266,6 +266,7 @@ dockerImages.each{ item ->
     displayName("${item.name} ${item.tag ? item.tag : ''} - Docker image")
     description("Job to build and push the ${item.name} ${item.tag ? item.tag : ''} Docker image")
     parameters {
+      stringParam('branch_specifier', "master", "Branch where the Jenkinsfile is.")
       stringParam('registry', "${registry}", "Docker Registry.")
       stringParam('prefix', "${prefix}", "Docker registry namespace.")
       stringParam('tag', "${item.tag ? item.tag : 'latest'}", "Docker image tag.")
