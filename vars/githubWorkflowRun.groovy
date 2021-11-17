@@ -53,10 +53,10 @@ def call(Map args = [:]) {
 }
 
 def triggerGithubActionsWorkflow(Map args = [:]) {
-    if (!args.workflow) error('gh: workflow parameter is required.')
+    if (!args.workflow) error('triggerGithubActionsWorkflow: workflow parameter is required.')
     def ref = args.get("ref", "master")
     def runner = args.get("runner", "ubuntu-latest")
-    def lookupId = "${ref}-${new Date().getTime()}-${env.BUILD_ID}"
+    def lookupId = args.get("lookupId", "${ref}-${new Date().getTime()}-${env.BUILD_ID}")
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def parameters = args.get("parameters", [:])
     def inputs = (parameters + [id: lookupId, runner: runner]).collect{ "${it}" }
@@ -69,8 +69,8 @@ def triggerGithubActionsWorkflow(Map args = [:]) {
 }
 
 def lookupForRunId(Map args = [:]) {
-    if (!args.workflow) error('gh: workflow parameter is required.')
-    if (!args.lookupId) error('gh: lookupId parameter is required.')
+    if (!args.workflow) error('lookupForRunId: workflow parameter is required.')
+    if (!args.lookupId) error('lookupForRunId: lookupId parameter is required.')
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def limit = args.get("limit", 100)
     def runsText = gh(ghDefaultArgs(args) + [command: "run list", 
@@ -87,11 +87,11 @@ def lookupForRunId(Map args = [:]) {
 
 @NonCPS
 def checkTextForLookupId(def text, def lookupId) {
-    return text.split("\n").find { it ==~ /^\s+\S\s+Run ID ${lookupId}\s*$/}
+    return text.split("\n").find { it ==~ /^\s+\S\s+Run ID ${lookupId}\s*$/} != null
 }
 
 def getWorkflowRun(Map args = [:]) {
-    if (!args.runId) error('gh: runId parameter is required.')
+    if (!args.runId) error('getWorkflowRun: runId parameter is required.')
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     return toJSON(gh(ghDefaultArgs(args) + [forceInstallation: true,
         command: "api repos/${repo}/actions/runs/${args.runId}"]))
