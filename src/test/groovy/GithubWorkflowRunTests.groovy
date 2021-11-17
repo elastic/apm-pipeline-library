@@ -42,7 +42,7 @@ JOBS
   ✓ Complete job
 
 For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/1441334029"""
+View this run on GitHub: https://github.com/owner/repo/actions/runs/1441334029"""
 
   def gh_run_list_output = """completed        Added parameters input to the workflow  build_and_test  main    workflow_dispatch  1412226110  8s       0m
 completed       Added parameters input to the workflow  build_and_test  main    workflow_dispatch  1412111022  22s      33m
@@ -77,7 +77,7 @@ JOBS
   ✓ Complete job
 
 For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/1441334029
+View this run on GitHub: https://github.com/owner/repo/actions/runs/1441334029
 """
       }
       if (args.command == "run view -v 1441316856") {
@@ -98,7 +98,7 @@ JOBS
   ✓ Complete job
 
 For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/1441316856
+View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 """
       }
 
@@ -120,17 +120,17 @@ JOBS
   ✓ Complete job
 
 For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/1441316856
+View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 """
       }
 
-      if (args.command == "api repos/unlim2/gotest/actions/runs/1441316856") {
+      if (args.command == "api repos/owner/repo/actions/runs/1441316856") {
         return '{"id": 1441316856, "status": "completed"}'
       }
-      if (args.command == "api repos/unlim2/gotest/actions/runs/1441334029") {
+      if (args.command == "api repos/owner/repo/actions/runs/1441334029") {
         return '{"message": "Not Found"}'
       }
-      if (args.command == "api repos/unlim2/gotest/actions/runs/1441316123") {
+      if (args.command == "api repos/owner/repo/actions/runs/1441316123") {
         return '{"id": 1441316123, "status": "queued"}'
       }
       return ""
@@ -209,7 +209,6 @@ View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/144131685
     def result = script.lookupForRunId(workflow: "build", lookupId: "main-1636490543641-121")
     def expected = 1441316856
     assertTrue(expected == result)
-
     result = script.lookupForRunId(workflow: "build", lookupId: "missing-id")
     expected = 0
     assertTrue(expected == result)
@@ -234,7 +233,7 @@ View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/144131685
 
   @Test
   void test_call() throws Exception {
-    def result = script.call(workflow: "build", lookupId: "main-1636490543641-121", repo: "unlim2/gotest") 
+    def result = script.call(workflow: "build", lookupId: "main-1636490543641-121", repo: "owner/repo") 
     def expected = [id: 1441316856, status: "completed"]
     assertTrue(expected.id == result.id && expected.status == result.status)
   }
@@ -242,20 +241,27 @@ View this run on GitHub: https://github.com/unlim2/gotest/actions/runs/144131685
   @Test
   void test_not_found_error_call() throws Exception {
     Exception exception = assertThrows(java.lang.Exception, {
-      script.call(workflow: "build", lookupId: "main-1636490856318-122", repo: "unlim2/gotest") 
-    });
-    String expectedMessage = "Triggered workflow run but failed to get run info";
-    String actualMessage = exception.getMessage();
-    assertTrue(actualMessage.contains(expectedMessage));
+      script.call(workflow: "build", lookupId: "main-1636490856318-122", repo: "owner/repo") 
+    })
+    String expectedMessage = "Triggered workflow run but failed to get run info"
+    String actualMessage = exception.getMessage()
+    assertTrue(actualMessage.contains(expectedMessage))
   }
 
   @Test
   void test_timeout_call() throws Exception {
      Exception exception = assertThrows(java.lang.Exception, {
-       script.call(workflow: "build", lookupId: "main-1636490543641-120", repo: "unlim2/gotest", buildTimeLimit: 0.1) 
-     });
-    String expectedMessage = "Build time out";
-    String actualMessage = exception.getMessage();
-    assertTrue(actualMessage.contains(expectedMessage));
+       script.call(workflow: "build", lookupId: "main-1636490543641-120", repo: "owner/repo", buildTimeLimit: 0.1) 
+     })
+    String expectedMessage = "Build time out"
+    String actualMessage = exception.getMessage()
+    assertTrue(actualMessage.contains(expectedMessage))
+  }
+
+  @Test
+  void test_getWorkflowRun() throws Exception {
+    def result = script.getWorkflowRun(runId: 1441316856, repo: "owner/repo") 
+    def expected = [id: 1441316856, status: "completed"]
+    assertTrue(expected.id == result.id && expected.status == result.status)
   }
 }
