@@ -46,6 +46,7 @@ def call(Map args = [:]) {
     // or time out specifed by buildTimeLimit is reached
     while(startDate.time  + buildTimeLimit*60000 -  new Date().time > 0) {
         def runInfo = getWorkflowRun(args + [runId: runId])
+        if (runInfo.message == "Not Found") error("Triggered workflow run but failed to get run info")
         if (runInfo.status == "completed") return runInfo
         sleep(buildTimeLimit > 10 ? 300 : 60)
     }
@@ -111,5 +112,5 @@ def getRunIdsFromGhOutput(def runsText) {
         def r = s.split(/\s+/)
         runIds.add(r[-3]) 
     }
-   return runIds
+    return runIds
 }
