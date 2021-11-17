@@ -28,10 +28,27 @@ import groovy.transform.Field
 pipeline {
   // Top level agent is required to ensure the MBP does populate the environment
   // variables accordingly. Otherwise the built-in environment variables won't
-  // be available. It's worthy to use an immutable worker rather than the master
+  // be available.
+  // Recommended to use a light worker in k8s if possible.
+  // Otherwise, use an immutable worker rather than the master
   // worker to avoid any kind of bottlenecks or performance issues.
   // NOTE: ephemeral workers cannot be allocated when using `||` see https://github.com/elastic/infra/issues/13823
-  agent { label 'linux && immutable' }
+  agent {
+    kubernetes {
+      yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: shell
+    image: ubuntu
+    command:
+    - sleep
+    args:
+    - infinity
+  '''
+    }
+  }
   environment {
     // Forced the REPO name to help with some limitations: https://issues.jenkins-ci.org/browse/JENKINS-58450
     REPO = 'apm-pipeline-library'
