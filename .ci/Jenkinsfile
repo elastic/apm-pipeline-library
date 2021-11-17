@@ -32,7 +32,6 @@ spec:
     args:
     - infinity
   '''
-      defaultContainer 'shell'
     }
   }
   environment {
