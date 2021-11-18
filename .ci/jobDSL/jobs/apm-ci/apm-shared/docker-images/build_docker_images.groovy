@@ -76,68 +76,15 @@ def dockerImages = [
     push: true
   ],
   [
-    name: "apache-ant",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-apache-ant',
-    push: true
-  ],
-  [
-    name: "github-label-sync",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-github-label-sync',
-    push: true
-  ],
-  [
-    name: "gren",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-gren',
-    push: true
-  ],
-  [
-    name: "shellcheck",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-shellcheck',
-    push: true
-  ],
-  [
-    name: "yamllint",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-yamllint',
-    push: true
-  ],
-  [
-    name: "kibana-yarn",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-kibana-yarn',
-    push: true
-  ],
-  [
-    name: "kibana-devmode",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
-    tag: 'latest',
-    folder: '.ci/docker',
-    test_script: 'make test-kibana-run',
-    push: true
-  ],
-  [
     name: 'functional-opbeans',
     repo: 'https://github.com/elastic/observability-test-environments.git',
+    tag: 'latest',
     folder: 'tests',
+    docker_build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
+    docker_push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
     test_script: 'make test-functional-opbeans',
     push: true
-  ],
+  ]
 ]
 
 /*
@@ -179,7 +126,6 @@ def apmPipelineLibraryDockerImages = [
   "kibana-yarn",
   "kibana-devmode"
 ]
-
 apmPipelineLibraryDockerImages.each{ name ->
   def tag = 'latest'
   def dockerImage = "${registry}/${prefix}/${name}:${tag}"
