@@ -93,6 +93,13 @@ coverage: virtualenv
 	coverage run --source=otel -m pytest; \
 	coverage report -m;
 
+## @precomit:pre-commit:Run precommit hooks.
+lint: virtualenv
+	source $(VENV)/bin/activate;\
+	pre-commit run; \
+	mypy src/pytest_otel; \
+	mypy tests;
+
 ## @help:clean:Remove Python file artifacts.
 .PHONY: clean
 clean:
@@ -119,3 +126,18 @@ run-otel-collector:
 	-v "$(CURDIR)/otel-collector.yaml":/otel-config.yaml \
 	--name otelcol otel/opentelemetry-collector \
 	--config otel-config.yaml; \
+
+#https://upload.pypi.org/legacy/
+#https://test.pypi.org/legacy/
+#secret/apm-team/ci/apm-agent-python-pypi-test
+#secret/apm-team/ci/apm-agent-python-pypi-prod
+## @help:publish REPO_URL=${REPO_URL} TWINE_USER=${TWINE_USER} TWINE_PASSWORD=${TWINE_PASSWORD}:Publish the Python project in a PyPI repository.
+.PHONY: publish
+publish: package
+	set +xe\
+	source $(VENV)/bin/activate;\
+	python -m pip install --user twine;\
+	python setup.py sdist;\
+	echo "Uploading to $${REPO_URL} with user $${TWINE_USER}";\
+	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.tar.gz;\
+	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} wheelhouse/*.whl

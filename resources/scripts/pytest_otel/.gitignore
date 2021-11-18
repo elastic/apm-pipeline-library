@@ -1,9 +1,15 @@
 __pycache__
+.bash_history
+.cache
 .coverage
 .idea
+.local
+.mypy_cache
 .pytest_cache
+.tox
 .venv
 *.pyc
 **/*.egg-info
 **/build
 **/dist
+otel-traces-file-output.json

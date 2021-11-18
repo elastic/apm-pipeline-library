@@ -18,15 +18,4 @@
 
 from setuptools import setup
 
-setup(
-    name='pytest-otel',
-    version='0.0.1',
-    py_modules=["pytest_otel"],
-    entry_points={"pytest11": ["otel = pytest_otel"]},
-    install_requires=["setuptools>=40.0", "pytest >= 5.0", "opentelemetry-api==1.2.0", "opentelemetry-exporter-otlp==1.2.0", "opentelemetry-sdk==1.2.0"],
-    python_requires=">=3.5",
-    url='https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_otel',
-    license='Apache License Version 2.0',
-    description='OpenTelemetry pytest plugin for report OpenTelemetry traces about test executed.',
-    classifiers=["Framework :: Pytest"],
-)
+setup()
