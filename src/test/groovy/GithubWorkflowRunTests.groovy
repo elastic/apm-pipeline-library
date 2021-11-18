@@ -24,7 +24,6 @@ import static org.junit.Assert.assertArrayEquals
 import static org.junit.Assert.assertThrows
 
 class GithubWorkflowRunTests extends ApmBasePipelineTest {
-
   def gh_run_view_output = """
 ✓ main build · 1441334029
 Triggered via workflow_dispatch about 7 days ago
@@ -51,13 +50,11 @@ completed       Added parameters input to the workflow  build_and_test  main    
 
   def gh_run_list_output_expected_result =  ["1412226110", "1412111022", "1411943898", "1411689241"]
 
-
-  def ghClosure = { args -> 
+  def ghClosure = { args ->
       if (args.command == "run list") {
         return """completed       success test 1006       build   main    workflow_dispatch       1441334029      31s     7d
 completed       success test 1006       build   main    workflow_dispatch       1441316856      18s     7d
 completed       success test 1006       build   main    workflow_dispatch       1441316123      18s     7d"""
-
       }
       if (args.command == "run view -v 1441334029") {
         return """
@@ -101,7 +98,6 @@ For more information about a job, try: gh run view --job=<job-id>
 View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 """
       }
-
       if (args.command == "run view -v 1441316123") {
         return """
 ✓ main build · 1441316123
@@ -123,7 +119,6 @@ For more information about a job, try: gh run view --job=<job-id>
 View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 """
       }
-
       if (args.command == "api repos/owner/repo/actions/runs/1441316856") {
         return '{"id": 1441316856, "status": "completed"}'
       }
@@ -223,7 +218,7 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 
   @Test
   void test_failed_triggerGithubActionsWorkflow() throws Exception {
-     Exception exception = assertThrows(java.lang.Exception, {
+    Exception exception = assertThrows(java.lang.Exception, {
         script.triggerGithubActionsWorkflow(workflow: "build", lookupId: "missing-id")
     })
     String expectedMessage = "Triggered workflow with id 'missing-id' but failed to get runId for it"
@@ -233,7 +228,7 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 
   @Test
   void test_call() throws Exception {
-    def result = script.call(workflow: "build", lookupId: "main-1636490543641-121", repo: "owner/repo") 
+    def result = script.call(workflow: "build", lookupId: "main-1636490543641-121", repo: "owner/repo")
     def expected = [id: 1441316856, status: "completed"]
     assertTrue(expected.id == result.id && expected.status == result.status)
   }
@@ -241,7 +236,7 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
   @Test
   void test_not_found_error_call() throws Exception {
     Exception exception = assertThrows(java.lang.Exception, {
-      script.call(workflow: "build", lookupId: "main-1636490856318-122", repo: "owner/repo") 
+      script.call(workflow: "build", lookupId: "main-1636490856318-122", repo: "owner/repo")
     })
     String expectedMessage = "Triggered workflow run but failed to get run info"
     String actualMessage = exception.getMessage()
@@ -250,9 +245,9 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 
   @Test
   void test_timeout_error_call() throws Exception {
-     Exception exception = assertThrows(java.lang.Exception, {
-       script.call(workflow: "build", lookupId: "main-1636490543641-120", repo: "owner/repo", buildTimeLimit: 0.1) 
-     })
+    Exception exception = assertThrows(java.lang.Exception, {
+      script.call(workflow: "build", lookupId: "main-1636490543641-120", repo: "owner/repo", buildTimeLimit: 0.1)
+    })
     String expectedMessage = "Build time out"
     String actualMessage = exception.getMessage()
     assertTrue(actualMessage.contains(expectedMessage))
@@ -260,7 +255,7 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
 
   @Test
   void test_getWorkflowRun() throws Exception {
-    def result = script.getWorkflowRun(runId: 1441316856, repo: "owner/repo") 
+    def result = script.getWorkflowRun(runId: 1441316856, repo: "owner/repo")
     def expected = [id: 1441316856, status: "completed"]
     assertTrue(expected.id == result.id && expected.status == result.status)
   }
