@@ -249,7 +249,7 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
   }
 
   @Test
-  void test_timeout_call() throws Exception {
+  void test_timeout_error_call() throws Exception {
      Exception exception = assertThrows(java.lang.Exception, {
        script.call(workflow: "build", lookupId: "main-1636490543641-120", repo: "owner/repo", buildTimeLimit: 0.1) 
      })

@@ -7,7 +7,7 @@ Run workflow on github actions
     parameters: [path: "filebeat"], credentialsId: "github-workflow-token")
 ```
 
-### Run asyncronous:
+### Run asynchronous:
 
 ```
   script {

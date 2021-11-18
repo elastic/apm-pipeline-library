@@ -43,7 +43,7 @@ def call(Map args = [:]) {
     def runId = triggerGithubActionsWorkflow(args)
     def startDate = new Date()
     // the following loop intended to wait till triggered run completed
-    // or time out specifed by buildTimeLimit is reached
+    // or time out specified by buildTimeLimit is reached
     while(startDate.time  + buildTimeLimit*60000 -  new Date().time > 0) {
         def runInfo = getWorkflowRun(args + [runId: runId])
         if (runInfo.message == "Not Found") error("Triggered workflow run but failed to get run info")
