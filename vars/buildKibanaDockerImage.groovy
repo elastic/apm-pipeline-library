@@ -90,8 +90,8 @@ def call(Map args = [:]){
       "${kibanaDockerTargetTag}",
       "${deployName}",
       "${kibanaVersion}-${kibanaDockerTargetTag}",
-      "${kibanaVersion}-${deployName}
-    "]
+      "${kibanaVersion}-${deployName}"
+    ]
     def dockerImages = ["${dockerImageSource}", "${dockerCloudImageSource}"]
     tags.each{ tag ->
       dockerImages.each { dockerImage ->
