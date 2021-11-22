@@ -44,7 +44,11 @@ def call(Map args = [:]) {
   if (isGitWorkspace) {
     log(level: 'DEBUG', text: 'gh: running within a git workspace.')
   } else {
-    if (!forceRepo) {
+    if (forceRepo) {
+      if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim() && flags.containsKey('repo')) {
+        log(level: 'WARN', text: 'gh: repo flag has higher precedence over REPO_NAME and ORG_NAME')
+      }
+    } else {
       log(level: 'DEBUG', text: 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set')
       if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
         flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
