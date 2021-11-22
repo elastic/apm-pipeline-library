@@ -36,16 +36,23 @@ def call(Map args = [:]) {
   def flags = args.get('flags', [:])
   def version = args.get('version', '1.9.2')
   def forceInstallation = args.get('forceInstallation', false)
+  def forceRepo = args.get('forceRepo', false)
 
   // Use the current location as the git repo otherwise uses the env variables to pass
-  // the repo information to the gh command
+  // the repo information to the gh command or forceRepo to allow using the repo flag
   def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1 1> /dev/null 2>&1', returnStatus: true) == 0
   if (isGitWorkspace) {
     log(level: 'DEBUG', text: 'gh: running within a git workspace.')
   } else {
-    log(level: 'DEBUG', text: 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set')
-    if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
-      flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
+    if (forceRepo) {
+      if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim() && flags.containsKey('repo')) {
+        log(level: 'WARN', text: 'gh: repo flag has higher precedence over REPO_NAME and ORG_NAME')
+      }
+    } else {
+      log(level: 'DEBUG', text: 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set')
+      if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
+        flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
+      }
     }
   }
 
