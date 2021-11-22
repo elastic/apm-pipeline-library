@@ -41,6 +41,7 @@ def call(Map args = [:]){
   def dockerRegistry = isEmptyString(args.dockerRegistry) ? 'docker.elastic.co' : args.dockerRegistry
   def dockerRegistrySecret = isEmptyString(args.dockerRegistrySecret) ? 'secret/observability-team/ci/docker-registry/prod' : args.dockerRegistrySecret
   def dockerImageSource = isEmptyString(args.dockerImageSource) ?  "${dockerRegistry}/kibana/kibana" : args.dockerImageSource
+  def dockerCloudImageSource = isEmptyString(args.dockerCloudImageSource) ?  "${dockerRegistry}/kibana-ci/kibana-cloud" : args.dockerCloudImageSource
   def dockerImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana" : args.dockerImageTarget
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
@@ -85,16 +86,23 @@ def call(Map args = [:]){
   log(level: 'DEBUG', text: "Tagging ${dockerImageSource}:${kibanaVersion} to ${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName}")
 
   retryWithSleep(retries: 3) {
-    sh(label: 'Push Docker image', script: """
-      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaDockerTargetTag}
-      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${deployName}
-      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaVersion}-${kibanaDockerTargetTag}
-      docker tag ${dockerImageSource}:${kibanaVersion} ${dockerImageTarget}:${kibanaVersion}-${deployName}
-      docker push ${dockerImageTarget}:${kibanaDockerTargetTag}
-      docker push ${dockerImageTarget}:${deployName}
-      docker push ${dockerImageTarget}:${kibanaVersion}-${kibanaDockerTargetTag}
-      docker push ${dockerImageTarget}:${kibanaVersion}-${deployName}
-    """)
+    def tags = [
+      "${kibanaDockerTargetTag}",
+      "${deployName}",
+      "${kibanaVersion}-${kibanaDockerTargetTag}",
+      "${kibanaVersion}-${deployName}"
+    ]
+    def dockerImages = ["${dockerImageSource}", "${dockerCloudImageSource}"]
+    tags.each{ tag ->
+      dockerImages.each { dockerImage ->
+        def src = "${dockerImage}:${kibanaVersion}"
+        def dst = "${dockerImage}:${tag}"
+        sh(label: 'Push Docker image', script: """
+          docker tag ${src} ${dst}
+          docker push ${dst}
+        """)
+      }
+    }
   }
 
   setEnvVar('DEPLOY_NAME', deployName)
