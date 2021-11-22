@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.1.264 (22/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: push kibana-cloud Docker images [#1391](https://github.com/elastic/apm-pipeline-library/pull/1391)
+-  Added githubWorkflowRun to run workflows on github action [#1358](https://github.com/elastic/apm-pipeline-library/pull/1358)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: add branch_specifier parameter  [#1386](https://github.com/elastic/apm-pipeline-library/pull/1386)
+-  Fix publishing github release [#1383](https://github.com/elastic/apm-pipeline-library/pull/1383)
+
+#### 🙈 No user affected
+
+-  [local] bump docker version to 2.303.3 [#1384](https://github.com/elastic/apm-pipeline-library/pull/1384)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.15.2 7.16.0 [#1396](https://github.com/elastic/apm-pipeline-library/pull/1396)
+-  Bump versions [#1397](https://github.com/elastic/apm-pipeline-library/pull/1397)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.0.0 to 4.1.0 [#1398](https://github.com/elastic/apm-pipeline-library/pull/1398)
+-  chore(deps-dev): bump jenkins-pipeline-unit from 1.10 to 1.12 [#1399](https://github.com/elastic/apm-pipeline-library/pull/1399)
+
 ## v1.1.263 (15/11/2021)
 
 #### 🚀 Enhancements
