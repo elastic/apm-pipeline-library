@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithNodeEnvUnixStepTests extends ApmBasePipelineTest {
+class WithNodejsEnvUnixStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/withNodeEnvUnix.groovy')
+    script = loadScript('vars/withNodejsEnvUnix.groovy')
     env.PATH = '/foo/bin'
     helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, b -> b() })
   }
@@ -52,7 +52,7 @@ class WithNodeEnvUnixStepTests extends ApmBasePipelineTest {
   void test_default_nodeVersion() throws Exception {
     def version = "1.15.1"
     helper.registerAllowedMethod('readFile', [Map.class], { version })
-    helper.registerAllowedMethod('nodeDefaultVersion', [], { version })
+    helper.registerAllowedMethod('nodejsDefaultVersion', [], { version })
     def isOK = false
     script.call(){
       if(binding.getVariable("PATH+NVM") == "WS/.nvm/versions/node/${version}/bin"){

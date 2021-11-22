@@ -21,14 +21,14 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotEquals
 import static org.junit.Assert.assertTrue
 
-class NodeDefaultVersionStepTests extends ApmBasePipelineTest {
+class NodejsDefaultVersionStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     addEnvVar('BASE_DIR', './src')
-    script = loadScript('vars/nodeDefaultVersion.groovy')
+    script = loadScript('vars/nodejsDefaultVersion.groovy')
     helper.registerAllowedMethod('fileExists', [String.class], { false })
   }
 

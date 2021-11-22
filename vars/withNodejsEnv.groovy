@@ -16,19 +16,19 @@
 // under the License.
 
 /**
-  Return the value in the file `.nvmrc`, or a default value.
+Install Node.js with NVM and run some command in a pre-configured environment for Unix.
 
-  nodeDefaultVersion()
-**/
-def call(Map args = [:]) {
-  def nodeDefaultVersion = defaultVersion()
-  def found = ['.nvmrc', "${env.BASE_DIR}/.nvmrc"].find { fileExists(it) }
-  if (found) {
-    nodeDefaultVersion = readFile(file: found)?.trim()
-  }
-  return nodeDefaultVersion
+withNodejsEnv(version: 'v14.17.5'){
+  cmd(label: 'Run node test',script: 'node test')
 }
 
-def defaultVersion(){
-  return '14.17.5'
+*/
+def call(Map args = [:], Closure body) {
+  if (isUnix()) {
+    withNodejsEnvUnix(args) {
+      body()
+    }
+  } else {
+    error 'withNodejsEnv: unsupported'
+  }
 }
