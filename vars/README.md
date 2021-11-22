@@ -758,6 +758,7 @@ It requires to be executed within the git workspace, otherwise it will use
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 * version: The gh CLI version to be installed. Optional (1.9.2)
 * forceInstallation: Whether to install gh regardless. Optional (false)
+* forceRepo: Whether to force the repo configuration flag instead reading the ones from the env variables. Optional (false)
 
 ## git
 Override the `git` step to retry the checkout up to 3 times.
@@ -1328,6 +1329,76 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `ORG_NAME`
         - `REPO_NAME`
 
+## githubWorkflowRun
+Run workflow on github actions
+
+### Run as step:
+
+```
+  def runInfo = githubWorkflowRun(repo: "owner/repository", workflow: "build.yml", ref: "main",
+    parameters: [path: "filebeat"], credentialsId: "github-workflow-token")
+```
+
+### Run asynchronous:
+
+```
+  script {
+    def args = [
+       repo: "owner/repository",
+       workflow: "build.yml",
+       ref: "main",
+       parameters: [path: "filebeat"],
+       credentialsId: "github-workflow-token"]
+    def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
+    def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId])
+  }
+
+```
+
+### Arguments:
+
+* workflow: workflow file name. Mandatory argument.
+* repo: repository owner and name. Optional, if it's not set then this
+  information will be taken from ORG_NAME and REPO_NAME environment variables.
+* ref: reference (branch, tag or hash). Optional, default is master.
+* parameters: map with parameters to pass to the workflow as inputs. Optional,
+  default is empty map.
+* buildTimeLimit: How long wait till the run completed. It's set in minutes,
+  default is 30 min.
+* credentialsId: github credentials id. Optional.
+* version: version of github cli. Optional, default is 2.1.0
+
+
+
+
+### Returns:
+
+runInfo : information about run
+
+### Requirements for workflows to be compatible with githubWorkflowRun.
+
+
+1. Inputs in workflow should have id parameter:
+
+```
+    inputs:
+      id:
+        description: 'Run ID'
+        required: true
+```
+
+2. The first step in workflow should be following step:
+
+```
+    - name: ${{ format('Run ID {0}', github.event.inputs.id) }}
+      run: echo Run ID ${{github.event.inputs.id}}
+```
+
+### Links:
+
+* https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#on
+* https://docs.github.com/en/rest/reference/actions#get-a-workflow-run
+
 ## goDefaultVersion
 
   Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
@@ -1631,7 +1702,7 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tool is installed and available. It also supports specifying a version.
+Whether the given tool is installed and available. It does also supports specifying the version.
 validation.
 
 ```

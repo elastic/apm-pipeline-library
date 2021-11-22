@@ -233,4 +233,18 @@ class GhStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'linux_arm64.tar.gz'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_outside_of_a_repo_with_variables_and_force_repo() throws Exception {
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    try {
+      script.call(command: 'issue list', flags: [ repo: 'acme/bar'], forceRepo: true)
+    } catch(err) { println err}
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "--repo='acme/bar'"))
+    assertJobStatusSuccess()
+  }
 }
