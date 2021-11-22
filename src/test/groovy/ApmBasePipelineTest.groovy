@@ -603,6 +603,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withMageEnv.groovy')
       return script.call(c)
     })
+    helper.registerAllowedMethod('withNodeEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withNodeEnv.groovy')
+      return script.call(m, c)
+    })
+    helper.registerAllowedMethod('withNodeEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
+    })
   }
 
   def getVaultSecret(String s) {

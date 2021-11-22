@@ -2225,6 +2225,13 @@ Return the architecture in the current worker using the labels as the source of 
  def arch = nodeArch()
 ```
 
+## nodeDefaultVersion
+Return the value in the file `.nvmrc`, or a default value.
+
+```
+  goDefaultVersion()
+```
+
 ## nodeOS
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
@@ -3347,6 +3354,28 @@ Wrap the node call for three reasons:
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 * disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
+
+## withNodeEnv
+Install Node.js with NVM and run some command in a pre-configured environment multiplatform. For such
+it's recommended to use the `cmd` step.
+
+```
+  withNodeEnv(version: '14.17.5'){
+    cmd(label: 'Node version', script: 'node --version')
+  }
+```
+
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeDefaultVersion)
+
+## withNodeEnvUnix
+Install Node.js with NVM and run some command in a pre-configured environment for Unix.
+
+```
+  withNodeEnvUnix(version: '14.17.5'){
+    sh(label: 'Node version', script: 'node --version')
+  }
+```
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeDefaultVersion)
 
 ## withNpmrc
 Wrap the npmrc token
