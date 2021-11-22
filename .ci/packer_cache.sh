@@ -27,8 +27,8 @@ alpine:3.10.1
 node:12-slim
 node:12.7.0-stretch-slim
 python:3.7.4-alpine3.10
-docker.elastic.co/beats/filebeat:7.15.1
-docker.elastic.co/beats/metricbeat:7.15.1
+docker.elastic.co/beats/filebeat:7.15.2
+docker.elastic.co/beats/metricbeat:7.15.2
 docker.elastic.co/infra/jjbb
 docker.elastic.co/observability-ci/codecov
 docker.elastic.co/observability-ci/golang-mage
