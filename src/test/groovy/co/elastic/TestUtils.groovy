@@ -20,14 +20,18 @@ package co.elastic
 public class TestUtils {
 
   public static withEnvInterceptor = { list, closure ->
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], fields[1])
+    def savedVars = []
+    // filter invlaid entries - with name empty or containing only spaces
+    list.findAll{ it&&it=~/^\s*[^=\s]+\s*=?/ }.forEach{
+      List fields = it.split("=");
+      def name = fields.remove(0);
+      def value = fields.join("="); // add back = chars deleted by split
+      savedVars.add([name, binding.hasVariable(name) ? binding.getVariable(name) : null])
+      binding.setVariable(name, value.size()> 0 ? value : null)
     }
     def res = closure.call()
-    list.forEach {
-      def fields = it.split("=")
-      binding.setVariable(fields[0], null)
+    savedVars.reverse().forEach {
+      binding.setVariable(it[0], it[1])
     }
     return res
   }
