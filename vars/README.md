@@ -424,6 +424,26 @@ dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: fa
 
 _NOTE_: Windows is not supported.
 
+## downloadWithCurl
+Download the given URL using CUrl, if possible. It returns true if possible otherwise false
+
+```
+downloadWithCurl(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the CUrl output will be written to. Mandatory.
+
+## downloadWithWget
+Download the given URL using Wget, if possible. It returns true if possible otherwise false
+
+```
+downloadWithWget(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the wget output will be written to. Mandatory.
+
 ## dummy
 A sample of a step implemantetion.
 
