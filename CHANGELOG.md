@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.266 (23/11/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNodeJSEnv, withNodeJSEnvUnix and nodeJSDefaultVersion [#1402](https://github.com/elastic/apm-pipeline-library/pull/1402)
+-  Add downloadWithCurl and downloadWithWget steps [#1401](https://github.com/elastic/apm-pipeline-library/pull/1401)
+
 ## v1.1.265 (23/11/2021)
 
 #### 🚀 Enhancements
