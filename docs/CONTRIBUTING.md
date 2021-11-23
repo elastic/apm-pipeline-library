@@ -41,7 +41,7 @@ Once your changes are ready to submit for review:
 
 2. Code your changes
 
-   See [development guidelines of this project][apm-pipeline-library-guidelines] for details.
+   See [development guidelines of this project][apm-pipeline-library-development] for details.
 
 3. Test your changes
 
