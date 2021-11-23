@@ -21,7 +21,7 @@ public class TestUtils {
 
   public static withEnvInterceptor = { list, closure ->
     def savedVars = []
-    // filter invlaid entries - with name empty or containing only spaces
+    // filter invalid entries - with name empty or containing only spaces
     list.findAll{ it&&it=~/^\s*[^=\s]+\s*=?/ }.forEach{
       List fields = it.split("=");
       def name = fields.remove(0);
