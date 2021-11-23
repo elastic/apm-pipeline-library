@@ -18,17 +18,17 @@
 /**
 Install Node.js with NVM and run some command in a pre-configured environment for Unix.
 
-withNodejsEnv(version: 'v14.17.5'){
+withNodeJSEnv(version: 'v14.17.5'){
   cmd(label: 'Run node test',script: 'node test')
 }
 
 */
 def call(Map args = [:], Closure body) {
   if (isUnix()) {
-    withNodejsEnvUnix(args) {
+    withNodeJSEnvUnix(args) {
       body()
     }
   } else {
-    error 'withNodejsEnv: unsupported'
+    error 'withNodeJSEnv: unsupported'
   }
 }

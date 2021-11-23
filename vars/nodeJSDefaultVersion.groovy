@@ -18,7 +18,7 @@
 /**
   Return the value in the file `.nvmrc`, or a default value.
 
-  nodejsDefaultVersion()
+  nodeJSDefaultVersion()
 **/
 def call(Map args = [:]) {
   def nodeDefaultVersion = defaultVersion()

@@ -18,7 +18,7 @@
 /**
  Install Node.js with NVM and run some command in a pre-configured environment for Unix.
 
-  withNodejsEnvUnix(version: '14.17.5'){
+  withNodeJSEnvUnix(version: '14.17.5'){
     sh(label: 'Node version', script: 'node --version')
   }
 
@@ -35,7 +35,7 @@ def call(Map args = [:], Closure body) {
 }
 
 def installNode(Map args = [:]) {
-  def version = args.containsKey('version') ? args.version : nodejsDefaultVersion()
+  def version = args.containsKey('version') ? args.version : nodeJSDefaultVersion()
   def nodeVersionLocation = pwd(tmp: true)
   retryWithSleep(retries: 3, seconds: 5, backoff: true){
     sh(label: 'Installing nvm', script: '''

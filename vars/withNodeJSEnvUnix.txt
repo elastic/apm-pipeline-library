@@ -1,8 +1,8 @@
 Install Node.js with NVM and run some command in a pre-configured environment for Unix.
 
 ```
-  withNodejsEnvUnix(version: '14.17.5'){
+  withNodeJSEnvUnix(version: '14.17.5'){
     sh(label: 'Node version', script: 'node --version')
   }
 ```
-* version: Node.js version to install, if it is not set, it'll use [default version](#nodejsDefaultVersion)
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)

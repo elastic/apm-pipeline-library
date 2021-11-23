@@ -19,14 +19,14 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithNodejsEnvStepTests extends ApmBasePipelineTest {
+class WithNodeJSEnvStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     env.GOPATH = "${env.WORKSPACE}"
-    script = loadScript('vars/withNodejsEnv.groovy')
+    script = loadScript('vars/withNodeJSEnv.groovy')
   }
 
   @Test
@@ -38,7 +38,7 @@ class WithNodejsEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('withNodejsEnvUnix', 0))
+    assertTrue(assertMethodCallOccurrences('withNodeJSEnvUnix', 0))
     assertTrue(assertMethodCallContainsPattern('error', 'unsupported'))
   }
 
@@ -47,7 +47,7 @@ class WithNodejsEnvStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { return true })
     script.call(){}
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('withNodejsEnvUnix', 1))
+    assertTrue(assertMethodCallOccurrences('withNodeJSEnvUnix', 1))
     assertJobStatusSuccess()
   }
 }
