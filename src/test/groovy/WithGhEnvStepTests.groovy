@@ -132,8 +132,8 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
     assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: get the ghLocation from cache.'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: set the ghLocation.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: get the ghLocation from cache.'))
+    assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: set the ghLocation.'))
     assertTrue(ret)
     assertJobStatusSuccess()
   }

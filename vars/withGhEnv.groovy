@@ -33,9 +33,9 @@ def call(Map args = [:], Closure body) {
   def forceInstallation = args.get('forceInstallation', false)
 
   if (ghLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
+    log(level: 'DEBUG', text: 'withGhEnv: get the ghLocation from cache.')
   } else {
-    log(level: 'DEBUG', text: 'gh: set the ghLocation.')
+    log(level: 'DEBUG', text: 'withGhEnv: set the ghLocation.')
     ghLocation = pwd(tmp: true)
   }
 
