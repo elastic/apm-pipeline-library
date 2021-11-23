@@ -96,7 +96,7 @@ def call(Map args = [:]){
     tags.each{ tag ->
       dockerImages.each { dockerImage ->
         def src = "${dockerImage}:${kibanaVersion}"
-        def dst = "${dockerImage}:${tag}"
+        def dst = "${dockerImageTarget}:${tag}"
         sh(label: 'Push Docker image', script: """
           docker tag ${src} ${dst}
           docker push ${dst}
