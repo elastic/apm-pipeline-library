@@ -18,7 +18,7 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'master' }
+  agent { label 'ubuntu && immutable' }
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
@@ -64,6 +64,13 @@ pipeline {
           propagate: false,
           wait: false
         )
+      }
+    }
+    stage('Stalled Beats Bumps') {
+      steps {
+        notifyStalledBeatsBumps(branch: 'master', sendEmail: false, to: 'beats-contrib@elastic.co')
+        notifyStalledBeatsBumps(branch: '8.0', sendEmail: false, to: 'beats-contrib@elastic.co')
+        notifyStalledBeatsBumps(branch: '7.16', sendEmail: false, to: 'beats-contrib@elastic.co')
       }
     }
   }
