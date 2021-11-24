@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.1.267 (23/11/2021)
+*No changelog for this release.*
+
+## v1.1.266 (23/11/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNodeJSEnv, withNodeJSEnvUnix and nodeJSDefaultVersion [#1402](https://github.com/elastic/apm-pipeline-library/pull/1402)
+-  Add downloadWithCurl and downloadWithWget steps [#1401](https://github.com/elastic/apm-pipeline-library/pull/1401)
+
+## v1.1.265 (23/11/2021)
+
+#### 🚀 Enhancements
+
+-  Allow repo customisation for the GH [#1394](https://github.com/elastic/apm-pipeline-library/pull/1394)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: tag and push to the image target name [#1405](https://github.com/elastic/apm-pipeline-library/pull/1405)
+
 ## v1.1.264 (22/11/2021)
 
 #### 🚀 Enhancements

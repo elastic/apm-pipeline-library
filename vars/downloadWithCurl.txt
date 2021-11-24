@@ -1,0 +1,8 @@
+Download the given URL using CUrl, if possible. It returns true if possible otherwise false
+
+```
+downloadWithCurl(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the CUrl output will be written to. Mandatory.
