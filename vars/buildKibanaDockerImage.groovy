@@ -43,6 +43,8 @@ def call(Map args = [:]){
   def dockerImageSource = isEmptyString(args.dockerImageSource) ?  "${dockerRegistry}/kibana/kibana" : args.dockerImageSource
   def dockerCloudImageSource = isEmptyString(args.dockerCloudImageSource) ?  "${dockerRegistry}/kibana-ci/kibana-cloud" : args.dockerCloudImageSource
   def dockerImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana" : args.dockerImageTarget
+  def dockerCloudImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana-cloud" : args.dockerImageTarget
+
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
@@ -92,11 +94,14 @@ def call(Map args = [:]){
       "${kibanaVersion}-${kibanaDockerTargetTag}",
       "${kibanaVersion}-${deployName}"
     ]
-    def dockerImages = ["${dockerImageSource}", "${dockerCloudImageSource}"]
+    def dockerImages = [
+      [src:"${dockerImageSource}", dst:"${dockerImageTarget}"],
+      [src:"${dockerCloudImageSource}", dst:"${dockerCloudImageTarget}"]
+    ]
     tags.each{ tag ->
       dockerImages.each { dockerImage ->
-        def src = "${dockerImage}:${kibanaVersion}"
-        def dst = "${dockerImageTarget}:${tag}"
+        def src = "${dockerImage.src}:${kibanaVersion}"
+        def dst = "${dockerImage.dst}:${tag}"
         sh(label: 'Push Docker image', script: """
           docker tag ${src} ${dst}
           docker push ${dst}
