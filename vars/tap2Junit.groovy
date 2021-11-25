@@ -44,7 +44,7 @@ def call(Map args = [:]) {
      returnStatus: failNever,
      script: """#!/bin/bash
         chmod 755 ${scriptFile}
-        ./${scriptFile} '${pattern}' '${packageName}' '${nodeVersion}' '${suffix}'
+        ./${scriptFile} '${pattern}' '${packageName}' '${suffix}' '${nodeVersion}'
   """)
 
   if (archiveJunit) {

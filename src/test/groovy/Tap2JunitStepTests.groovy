@@ -39,7 +39,7 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "./tap-to-junit.sh '*.tap' 'co.elastic' 'node:12-alpine' 'junit-report.xml'"))
+    assertTrue(assertMethodCallContainsPattern('sh', "./tap-to-junit.sh '*.tap' 'co.elastic' 'junit-report.xml' 'node:12-alpine'"))
     assertTrue(assertMethodCallContainsPattern('junit', 'junit-report.xml'))
     assertJobStatusSuccess()
   }
