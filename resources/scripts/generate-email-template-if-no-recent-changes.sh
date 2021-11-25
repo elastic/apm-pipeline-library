@@ -41,9 +41,11 @@ git clone "$REPO_URL" --branch "$BRANCH" "$BRANCH"
 
 cd "$BRANCH"
 
-if git log --name-only \
+if git --no-pager \
+    log --pretty=format: \
+      --name-only \
       --since="${DAYS} days ago" \
-    | grep -q 'testing/environments/snapshot-oss.yml' ; then
+    | grep 'testing/environments/snapshot-oss.yml' ; then
 
   echo 'nothing to be reported'
 else
