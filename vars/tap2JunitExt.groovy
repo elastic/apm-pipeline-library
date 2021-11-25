@@ -40,9 +40,13 @@ def call(Map args = [:]) {
   def scriptFile = 'tap-to-junit-ext.sh'
   def resourceContent = libraryResource("scripts/${scriptFile}")
   writeFile file: scriptFile, text: resourceContent
-  sh(label: scriptFile, script: """#!/bin/bash -x
-                                    chmod 755 ${scriptFile}
-                                    ./${scriptFile} '${pattern}' """)
+  sh(label: scriptFile,
+     returnStatus: failNever,
+     script: """#!/bin/bash
+        chmod 755 ${scriptFile}
+        ./${scriptFile} '${pattern}'
+  """)
+
   args.pattern = "${pattern}.ext"
   archiveArtifacts(allowEmptyArchive: true, artifacts: "${pattern}")
   archiveArtifacts(allowEmptyArchive: true, artifacts: "${args.pattern}")
