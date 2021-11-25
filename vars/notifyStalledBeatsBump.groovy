@@ -24,58 +24,35 @@
 */
 
 def call(Map args = [:]) {
-  def branch = args.branch
+  def branch = args.containsKey('branch') ? args.branch : error('notifyStalledBeatsBumps: branch parameter is required')
   def days = args.get('days', 7)
   def sendEmail = args.get('sendEmail', 'false')
   def to = args.get('to', '')
 
   // Proceed but notify with a warning
   if (sendEmail && !to?.trim()) {
-    log(level: 'WARN', text: "stalledBeatsBump: email won't be sent since 'to' param is empty.")
+    log(level: 'WARN', text: "notifyStalledBeatsBumps: email won't be sent since 'to' param is empty.")
   }
 
-  // Look whether the file has changed recently
-  def didFileChangeRecently = true
-  dir(branch) {
-    // TODO: review is a full checkout or at least n number of days
-    git(branch: branch, url: 'https://github.com/elastic/beats.git')
-    fileDidNotChangeRecently = sh(script: "git log --name-only --since='${days} days ago' | grep 'testing/environments/snapshot-oss.yml'", returnStatus: true) > 0
-  }
+  // Run the script in charge to create the email.txt if there are things to be notified
+  def scriptFile = 'generate-email-template-if-no-recent-changes.sh'
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile(file: scriptFile, text: resourceContent)
 
-  if (fileDidNotChangeRecently) {
+  // TODO: within the gh context
+  sh(label: scriptFile, returnStatus: true, script: """#!/bin/bash -x
+    chmod 755 ${scriptFile}
+    ./${scriptFile} 'https://github.com/elastic/beats.git' ${branch} ${days}""")
+
+  if (fileExists("email.txt")) {
     if (sendEmail && to?.trim()) {
       mail(to: to,
-        subject: getSubject(branch),
-        body: getBody(branch, openPullRequest(branch), days),
+        subject: "[Bump][${branch}] Elastic Stack version has not been updated.",
+        body: readFile("email.txt"),
         mimeType: 'text/html'
       )
     }
   } else {
-    log(level: 'WARN', text: "stalledBeatsBump: there are no changes to be reported")
+    log(level: 'WARN', text: "notifyStalledBeatsBumps: there are no changes to be reported")
   }
-}
-
-private openPullRequest(branch) {
-  def filter = "is:open is:pr author:apmmachine base:${branch}"
-  def template = '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}'
-  return gh(command: 'pr list', flags: [ search: filter, json: "url,createdAt", template: template ])
-}
-
-private getSubject(branch){
-  return "[Bump][${branch}] Elastic Stack version has not been updated."
-}
-
-private getBody(branch, list, days){
-  return """
-  Just wanted to share with you that the Elastic Stack version for the ${branch} branch has not been updated for a while ( > ${days} days).
-
-  Those bumps are automatically merged if it passes the CI checks. Otherwise, it might be related to some problems with the
-  Integrations Tests.
-
-  ${list}
-
-  If any of the existing PRs are obsolete please close them.
-
-  Thanks
-  """
 }
