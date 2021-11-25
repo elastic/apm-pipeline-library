@@ -2819,6 +2819,34 @@ to customise the generated output.
 * *suffix*: The suffix in the JUnit output files. Default 'junit-report.xml'
 * *nodeVersion*: What docker image used for transforming the tap to junit. Default 'node:12-alpine'
 * *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *archiveJunit*: Whether to save the junit parsed files for debugging purposes. Optional. Default 'false'
+
+**NOTE**: No windows support
+
+## tap2JunitExt
+Extend the tap2Junit step to support the quite specific use case
+from the Node.js where the TAP output is aggregated in one single
+file. Therefore it is required to parse the output to populate all
+the executed tests correctly. NOTE: this is nothing about the
+TAP, JUnit or CI since it's a specific characteristic of how the
+project handle the test report in one single file.
+
+```
+  // Use default setup
+  tap2JunitExt()
+
+  // Convert TAP files to JUnit using the suffix junit.xml
+  tap2JunitExt(pattern: '*.TAP', suffix: 'junit.xml')
+```
+
+* *package*: Name of the package in the JUnit report. Default 'co.elastic'.
+* *pattern*: What files that are TAP based should be searched. Default '*.tap'.
+* *suffix*: The suffix in the JUnit output files. Default 'junit-report.xml'
+* *nodeVersion*: What docker image used for transforming the tap to junit. Default 'node:12-alpine'
+* *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *archiveJunit*: Whether to save the junit parsed files for debugging purposes. Optional. Default 'false'
+
+**NOTE**: No windows support
 
 ## tar
 Compress a folder into a tar file.
