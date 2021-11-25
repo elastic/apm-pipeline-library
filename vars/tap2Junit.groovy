@@ -32,6 +32,7 @@ def call(Map args = [:]) {
   def suffix = args.get('suffix', 'junit-report.xml')
   def nodeVersion =  args.get('nodeVersion', 'node:12-alpine')
   def failNever = args.get('failNever', false)
+  def archiveJunit = args.get('archiveJunit', false)
   sh(label: 'TAP to JUnit',
     returnStatus: failNever,
     script: """
@@ -42,5 +43,8 @@ def call(Map args = [:]) {
         ${nodeVersion} \
         sh -c 'export HOME=/tmp ; mkdir ~/.npm-global; npm config set prefix ~/.npm-global ; npm install tap-xunit -g ; for i in "${pattern}" ; do cat \${i} | /tmp/.npm-global/bin/tap-xunit --package="${packageName}" > \${i%.*}-${suffix} ; done'
     """)
-  junit testResults: "*-${suffix}", allowEmptyResults: true, keepLongStdio: true
+  if (archiveJunit) {
+    archiveArtifacts(allowEmptyArchive: true, artifacts: "*-${suffix}")
+  }
+  junit(testResults: "*-${suffix}", allowEmptyResults: true, keepLongStdio: true)
 }
