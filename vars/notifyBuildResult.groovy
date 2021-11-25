@@ -125,6 +125,10 @@ def call(Map args = [:]) {
           }
         }
       }
+      // Ensure we don't leave any leftovers if running in the jenkins controller.
+      catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        deleteDir()
+      }
     }
   }
 }

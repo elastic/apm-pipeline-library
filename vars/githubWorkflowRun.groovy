@@ -26,8 +26,8 @@
            workflow: "build.yml",
            ref: "main",
            parameters: [
-             path: "filebeat"
-           ],
+             path: "filebeat",
+             runner: "ubuntu-latest"],
            credentialsId: "github-workflow-token",
            ghVersion: "2.1.0"]
        def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
@@ -56,11 +56,10 @@ def call(Map args = [:]) {
 def triggerGithubActionsWorkflow(Map args = [:]) {
     if (!args.workflow) error('triggerGithubActionsWorkflow: workflow parameter is required.')
     def ref = args.get("ref", "master")
-    def runner = args.get("runner", "ubuntu-latest")
     def lookupId = args.get("lookupId", "${ref}-${new Date().getTime()}-${env.BUILD_ID}")
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def parameters = args.get("parameters", [:])
-    def inputs = (parameters + [id: lookupId, runner: runner]).collect{ "${it}" }
+    def inputs = (parameters + [id: lookupId]).collect{ "${it}" }
     gh(ghDefaultArgs(args) + [command: "workflow run ${args.workflow}",
         forceInstallation: true, flags: [repo: repo, ref: ref, field: inputs]])
     sleep(30)
