@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 set -eo pipefail
-set -x
+
 if [ -n "${PIPELINE_LOG_LEVEL}" ] && [ "${PIPELINE_LOG_LEVEL}" == "DEBUG" ] ; then
   set -x
 fi
