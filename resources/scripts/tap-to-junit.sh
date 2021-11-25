@@ -32,6 +32,6 @@ docker run --rm \
   -w /usr/src/app \
   -u "$(id -u)":"$(id -g)" \
   "${NODEVERSION}" \
-  sh -c "export HOME=/tmp ; mkdir ~/.npm-global; npm config set prefix ~/.npm-global ; npm install tap-xunit -g ; for i in ${PATTERN} ; do (echo \${i}; cat \${i} | /tmp/.npm-global/bin/tap-xunit --package='${PACKAGENAME}' > \${i%.*}-${SUFFIX}) ; done" || error=1
+  sh -c "export HOME=/tmp ; mkdir ~/.npm-global; npm config set prefix ~/.npm-global; npm install tap-junit -g ; for i in ${PATTERN} ; do (echo \${i}; ./node_modules/.bin/tap-junit -i \${i} --suite '${PACKAGENAME}' > \${i%.*}-${SUFFIX}) ; done" || error=1
 
 exit $error
