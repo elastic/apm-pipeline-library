@@ -24,6 +24,8 @@ PATTERN=${1:?'Missing the pattern'}
 
 for file in ${PATTERN} ; do
 echo "Parsing ${file}"
+filepath=$(dirname "$file")
+name=$(basename "$file")
 python3 -c "from itertools import count
 with open('${file}') as file:
     for i in count():
@@ -31,7 +33,7 @@ with open('${file}') as file:
         if firstline is None:
             break
         print(firstline)
-        with open(f'${file}-{i}.tap.ext', 'w') as out:
+        with open(f'${filepath}/{i}-${name}.ext', 'w') as out:
             out.write(firstline)
             for line in file:
                 out.write(line)
