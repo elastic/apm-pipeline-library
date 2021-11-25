@@ -69,9 +69,9 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        notifyStalledBeatsBumps(branch: 'master', sendEmail: false, to: 'beats-contrib@elastic.co')
-        notifyStalledBeatsBumps(branch: '8.0', sendEmail: false, to: 'beats-contrib@elastic.co')
-        notifyStalledBeatsBumps(branch: '7.16', sendEmail: false, to: 'beats-contrib@elastic.co')
+        runNotifyStalledBeatsBumps(branch: 'master')
+        runNotifyStalledBeatsBumps(branch: '8.<current>')
+        runNotifyStalledBeatsBumps(branch: '7.<next>')
       }
     }
   }
@@ -82,25 +82,37 @@ pipeline {
   }
 }
 
+def runNotifyStalledBeatsBumps(Map args = [:]){
+  def branch = getMajorMinorGivenTheBranch(args)
+  notifyStalledBeatsBumps(branch: branch,
+                          sendEmail: false,
+                          to: 'beats-contrib@elastic.co')
+}
+
 def runWatcherForBranch(Map args = [:]){
-  def branch = args.branch
-  if (branch.contains('8.<current>')) {
-    current8 = bumpUtils.getCurrentMinorReleaseFor8()
-    def parts = current8.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
-  if (branch.contains('7.<current>')) {
-    current7 = bumpUtils.getCurrentMinorReleaseFor7()
-    def parts = current7.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
-  if (branch.contains('7.<next>')) {
-    current7 = bumpUtils.getNextMinorReleaseFor7()
-    def parts = current7.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
+  def branch = getMajorMinorGivenTheBranch(args)
   runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
              subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
              sendEmail: true,
              to: 'beats-contrib@elastic.co')
+}
+
+// Helper function to resolve current and next special keywords.
+def getMajorMinorGivenTheBranch(Map args = [:]) {
+  def branch = args.branch
+  if (branch.contains('8.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor8())
+  }
+  if (branch.contains('7.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor7())
+  }
+  if (branch.contains('7.<next>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getNextMinorReleaseFor7())
+  }
+  return branch
+}
+
+def getMajorMinorGivenTheVersion(version) {
+  def parts = version.split('\\.')
+  return "${parts[0]}.${parts[1]}"
 }
