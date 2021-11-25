@@ -153,13 +153,43 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_force_installation() throws Exception {
+  void test_with_force_installation_and_version_already_installed() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     def ret = false
     script.call(version: "2.0.0", forceInstallation: true) {
       ret = true
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_force_installation_and_version_not_installed() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    def ret = false
+    script.call(version: "2.0.0", forceInstallation: true) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_force_installation_and_version_not_installed() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') || !m.tool.equals('gh') })
+    def ret = false
+    script.call(version: "2.0.0", forceInstallation: false) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
