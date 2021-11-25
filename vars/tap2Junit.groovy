@@ -33,16 +33,17 @@ def call(Map args = [:]) {
   def nodeVersion =  args.get('nodeVersion', 'node:12-alpine')
   def failNever = args.get('failNever', false)
   def archiveJunit = args.get('archiveJunit', false)
-  sh(label: 'TAP to JUnit',
-    returnStatus: failNever,
-    script: """
-      docker run --rm \
-        -v \$(pwd):/usr/src/app \
-        -w /usr/src/app \
-        -u \$(id -u):\$(id -g) \
-        ${nodeVersion} \
-        sh -c 'export HOME=/tmp ; mkdir ~/.npm-global; npm config set prefix ~/.npm-global ; npm install tap-xunit -g ; for i in "${pattern}" ; do cat \${i} | /tmp/.npm-global/bin/tap-xunit --package="${packageName}" > \${i%.*}-${suffix} ; done'
-    """)
+
+  def scriptFile = 'tap-to-junit.sh'
+  def resourceContent = libraryResource("scripts/${scriptFile}")
+  writeFile file: scriptFile, text: resourceContent
+  sh(label: scriptFile,
+     returnStatus: failNever,
+     script: """#!/bin/bash
+        chmod 755 ${scriptFile}
+        ./${scriptFile} '${pattern}' '${packageName}' '${nodeVersion} '${suffix}'
+  """)
+
   if (archiveJunit) {
     archiveArtifacts(allowEmptyArchive: true, artifacts: "*-${suffix}")
   }
