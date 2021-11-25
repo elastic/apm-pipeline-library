@@ -18,5 +18,6 @@ project handle the test report in one single file.
 * *suffix*: The suffix in the JUnit output files. Default 'junit-report.xml'
 * *nodeVersion*: What docker image used for transforming the tap to junit. Default 'node:12-alpine'
 * *failNever*: Never fail the build, regardless of the step result. Optional. Default 'false'
+* *archiveJunit*: Whether to save the junit parsed files for debugging purposes. Optional. Default 'false'
 
 **NOTE**: No windows support

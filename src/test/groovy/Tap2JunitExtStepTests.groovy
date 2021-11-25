@@ -41,6 +41,7 @@ class Tap2JunitExtStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "tap-to-junit-ext.sh '*.tap'"))
     assertTrue(assertMethodCallContainsPattern('tap2Junit', '*.tap.ext'))
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 0))
     assertJobStatusSuccess()
   }
 
@@ -49,6 +50,14 @@ class Tap2JunitExtStepTests extends ApmBasePipelineTest {
     script.call(pattern: 'foo.*')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "tap-to-junit-ext.sh 'foo.*'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_archiveJunit() throws Exception {
+    script.call(pattern: 'foo.*', archiveJunit: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'foo.*'))
     assertJobStatusSuccess()
   }
 }

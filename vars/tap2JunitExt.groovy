@@ -39,6 +39,7 @@ def call(Map args = [:]) {
   def suffix = args.get('suffix', 'junit-report.xml')
   def nodeVersion =  args.get('nodeVersion', 'node:12-alpine')
   def failNever = args.get('failNever', false)
+  def archiveJunit = args.get('archiveJunit', false)
 
   def scriptFile = 'tap-to-junit-ext.sh'
   def resourceContent = libraryResource("scripts/${scriptFile}")
@@ -51,7 +52,9 @@ def call(Map args = [:]) {
   """)
 
   args.pattern = "${pattern}.ext"
-  archiveArtifacts(allowEmptyArchive: true, artifacts: "${pattern}")
-  archiveArtifacts(allowEmptyArchive: true, artifacts: "${args.pattern}")
+  if (archiveJunit) {
+    archiveArtifacts(allowEmptyArchive: true, artifacts: "${pattern}")
+    archiveArtifacts(allowEmptyArchive: true, artifacts: "${args.pattern}")
+  }
   tap2Junit(args)
 }
