@@ -31,6 +31,9 @@
 
 */
 def call(Map args = [:]) {
+  if(!isUnix()) {
+    error 'tap2Junit: windows is not supported yet.'
+  }
   def packageName = args.get('package', 'co.elastic')
   def pattern = args.get('pattern', '*.tap')
   def suffix = args.get('suffix', 'junit-report.xml')

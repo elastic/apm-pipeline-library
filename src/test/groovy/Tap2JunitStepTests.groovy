@@ -29,6 +29,13 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testWindows() throws Exception {
+    testWindows() {
+      script.call()
+    }
+  }
+
+  @Test
   void test() throws Exception {
     script.call()
     printCallStack()

@@ -29,11 +29,26 @@ class Tap2JunitExtStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testWindows() throws Exception {
+    testWindows() {
+      script.call()
+    }
+  }
+
+  @Test
   void test() throws Exception {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "tap-to-junit-ext.sh '*.tap'"))
     assertTrue(assertMethodCallContainsPattern('tap2Junit', '*.tap.ext'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_pattern() throws Exception {
+    script.call(pattern: 'foo.*')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "tap-to-junit-ext.sh 'foo.*'"))
     assertJobStatusSuccess()
   }
 }
