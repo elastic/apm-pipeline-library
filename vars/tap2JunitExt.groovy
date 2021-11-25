@@ -44,5 +44,7 @@ def call(Map args = [:]) {
                                     chmod 755 ${scriptFile}
                                     ./${scriptFile} '${pattern}' """)
   args.pattern = "${pattern}.ext"
+  archiveArtifacts(allowEmptyArchive: true, artifacts: "${pattern}")
+  archiveArtifacts(allowEmptyArchive: true, artifacts: "${args.pattern}")
   tap2Junit(args)
 }
