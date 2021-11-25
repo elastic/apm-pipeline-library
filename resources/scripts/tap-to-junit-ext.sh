@@ -22,6 +22,7 @@ fi
 
 PATTERN=${1:?'Missing the pattern'}
 
+error=0
 for file in ${PATTERN} ; do
 echo "Parsing ${file}"
 filepath=$(dirname "$file")
@@ -32,11 +33,12 @@ with open('${file}') as file:
         firstline = next(file, None)
         if firstline is None:
             break
-        print(firstline)
         with open(f'${filepath}/{i}-${name}.ext', 'w') as out:
             out.write(firstline)
             for line in file:
                 out.write(line)
                 if line.startswith('running (cwd: ./'):
-                    break" || true
+                    break" || error=1
 done
+
+exit $error
