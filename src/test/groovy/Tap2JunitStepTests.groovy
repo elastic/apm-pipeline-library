@@ -32,11 +32,8 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'node:12-alpine'))
-    assertTrue(assertMethodCallContainsPattern('sh', '-junit-report.xml'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--package="co.elastic"'))
+    assertTrue(assertMethodCallContainsPattern('sh', "./tap-to-junit.sh '*.tap' 'co.elastic' 'node:12-alpine' 'junit-report.xml'"))
     assertTrue(assertMethodCallContainsPattern('junit', 'junit-report.xml'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'for i in "*.tap"'))
     assertJobStatusSuccess()
   }
 
@@ -60,7 +57,7 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
   void test_with_package() throws Exception {
     script.call(package: 'foo.bar')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '--package="foo.bar"'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'foo.bar'))
     assertJobStatusSuccess()
   }
 
@@ -68,7 +65,7 @@ class Tap2JunitStepTests extends ApmBasePipelineTest {
   void test_with_pattern() throws Exception {
     script.call(pattern: 'foo.*')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'for i in "foo.*"'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'foo.*'))
     assertJobStatusSuccess()
   }
 }
