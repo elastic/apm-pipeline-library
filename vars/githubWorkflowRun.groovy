@@ -26,8 +26,8 @@
            workflow: "build.yml",
            ref: "main",
            parameters: [
-             path: "filebeat"
-           ],
+             path: "filebeat",
+             runner: "ubuntu-latest"],
            credentialsId: "github-workflow-token",
            ghVersion: "2.1.0"]
        def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)

@@ -15,7 +15,9 @@ Run workflow on github actions
        repo: "owner/repository",
        workflow: "build.yml",
        ref: "main",
-       parameters: [path: "filebeat"],
+       parameters: [
+           path: "filebeat",
+           runner: "ubuntu-latest"],
        credentialsId: "github-workflow-token"]
     def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
     def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId])
