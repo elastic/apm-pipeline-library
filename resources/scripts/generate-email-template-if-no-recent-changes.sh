@@ -28,7 +28,6 @@
 
 set -euo pipefail
 
-
 REPO_URL=${1:?'Missing the GitHub repo URL'}
 BRANCH=${2:?'Missing the branch'}
 DAYS=${3:?'Missing the days since the file has not changed result'}
@@ -38,7 +37,9 @@ if [ -e ${EMAIL_FILE} ] ; then
   rm ${EMAIL_FILE}
 fi
 
-git clone "$REPO_URL" --branch "$BRANCH" .
+git clone "$REPO_URL" --branch "$BRANCH" "$BRANCH"
+
+cd "$BRANCH"
 
 if git log --name-only \
       --since="${DAYS} days ago" \
@@ -46,7 +47,7 @@ if git log --name-only \
 
   echo 'nothing to be reported'
 else
-cat <<EOT > ${EMAIL_FILE}
+cat <<EOT > ../${EMAIL_FILE}
 Just wanted to share with you that the Elastic Stack version for the ${BRANCH} branch has not been updated for a while ( > ${DAYS} days).
 
 Those bumps are automatically merged if it passes the CI checks. Otherwise, it might be related to some problems with the
@@ -57,9 +58,9 @@ EOT
   gh pr list \
     --search "is:open is:pr author:apmmachine base:$BRANCH" \
     --json url,createdAt \
-    --template '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}' >> ${EMAIL_FILE}
+    --template '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}' >> ../${EMAIL_FILE}
 
-cat <<EOT >> ${EMAIL_FILE}
+cat <<EOT >> ../${EMAIL_FILE}
 
 If any of the existing PRs are obsolete please close them.
 
