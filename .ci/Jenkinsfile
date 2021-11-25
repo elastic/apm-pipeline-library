@@ -63,6 +63,7 @@ pipeline {
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
           }
+          tap2JunitExt(pattern: 'src/test/resources/tap2JunitExt/*-suite-output.tap', suffix: 'junit.xml', package: 'Node.js', failNever: true, archiveJunit: true)
         }
       }
     }
