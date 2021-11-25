@@ -40,8 +40,9 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-master', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests in master branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.16', subject: "[7.16] ${env.YYYY_MM_DD}: Top failing Beats tests in 7.16 branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcherForBranch(branch: 'master')
+        runWatcherForBranch(branch: '7.<next>')
+        runWatcherForBranch(branch: '8.<current>')
       }
     }
     stage('Sync GitHub labels') {
@@ -72,4 +73,27 @@ pipeline {
       notifyBuildResult()
     }
   }
+}
+
+def runWatcherForBranch(Map args = [:]){
+  def branch = args.branch
+  if (branch.contains('8.<current>')) {
+    current8 = bumpUtils.getCurrentMinorReleaseFor8()
+    def parts = current8.split('\\.')
+    branch = "${parts[0]}.${parts[1]}"
+  }
+  if (branch.contains('7.<current>')) {
+    current7 = bumpUtils.getCurrentMinorReleaseFor7()
+    def parts = current7.split('\\.')
+    branch = "${parts[0]}.${parts[1]}"
+  }
+  if (branch.contains('7.<next>')) {
+    current7 = bumpUtils.getNextMinorReleaseFor7()
+    def parts = current7.split('\\.')
+    branch = "${parts[0]}.${parts[1]}"
+  }
+  runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
+             subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
+             sendEmail: true,
+             to: 'beats-contrib@elastic.co')
 }

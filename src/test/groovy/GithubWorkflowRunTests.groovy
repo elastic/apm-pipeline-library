@@ -259,4 +259,36 @@ View this run on GitHub: https://github.com/owner/repo/actions/runs/1441316856
     def expected = [id: 1441316856, status: "completed"]
     assertTrue(expected.id == result.id && expected.status == result.status)
   }
+
+  @Test
+  void test_getWorkflowRun_works_properly_with_ORG_NAME_and_REPO_NAME_set() throws Exception {
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    def result = script.getWorkflowRun(runId: 1441316856, repo: "owner/repo")
+    def expected = [id: 1441316856, status: "completed"]
+    assertTrue(expected.id == result.id && expected.status == result.status)
+    env.REPO_NAME = 'repo'
+    env.ORG_NAME = 'owner'
+    result = script.getWorkflowRun(runId: 1441316856)
+    expected = [id: 1441316856, status: "completed"]
+    assertTrue(expected.id == result.id && expected.status == result.status)
+  }
+
+  @Test
+  void test_getWorkflowRun_vars_ORG_NAME_and_REPO_NAME_not_used_when_repo_arg_set() throws Exception {
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    script.getWorkflowRun(runId: 1441316856, repo: "owner/repo")
+    assertFalse(assertMethodCallContainsPattern("gh", "--repo='org/foo'"))
+    assertTrue(assertMethodCallContainsPattern("gh", "repos/owner/repo/actions/runs/1441316856"))
+  }
+
+  @Test
+  void test_getWorkflowRun_vars_ORG_NAME_and_REPO_NAME_used_when_repo_arg_not_set() throws Exception {
+    env.REPO_NAME = 'repo'
+    env.ORG_NAME = 'owner'
+    script.getWorkflowRun(runId: 1441316856)
+    assertFalse(assertMethodCallContainsPattern("gh", "--repo='owner/repo'"))
+    assertTrue(assertMethodCallContainsPattern("gh", "repos/owner/repo/actions/runs/1441316856"))
+  }
 }

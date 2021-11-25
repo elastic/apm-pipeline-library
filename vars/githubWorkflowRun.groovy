@@ -23,15 +23,15 @@
      script {
        def args = [
            repo: "owner/repository",
-           workflow: "build.yml", 
+           workflow: "build.yml",
            ref: "main",
            parameters: [
-             path: "filebeat"
-           ],
+             path: "filebeat",
+             runner: "ubuntu-latest"],
            credentialsId: "github-workflow-token",
            ghVersion: "2.1.0"]
        def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
-       def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId]) 
+       def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId])
    }
 */
 
@@ -56,12 +56,11 @@ def call(Map args = [:]) {
 def triggerGithubActionsWorkflow(Map args = [:]) {
     if (!args.workflow) error('triggerGithubActionsWorkflow: workflow parameter is required.')
     def ref = args.get("ref", "master")
-    def runner = args.get("runner", "ubuntu-latest")
     def lookupId = args.get("lookupId", "${ref}-${new Date().getTime()}-${env.BUILD_ID}")
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def parameters = args.get("parameters", [:])
-    def inputs = (parameters + [id: lookupId, runner: runner]).collect{ "${it}" }
-    gh(ghDefaultArgs(args) + [command: "workflow run ${args.workflow}", 
+    def inputs = (parameters + [id: lookupId]).collect{ "${it}" }
+    gh(ghDefaultArgs(args) + [command: "workflow run ${args.workflow}",
         forceInstallation: true, flags: [repo: repo, ref: ref, field: inputs]])
     sleep(30)
     def runId = lookupForRunId(args+[lookupId: lookupId])
@@ -74,7 +73,7 @@ def lookupForRunId(Map args = [:]) {
     if (!args.lookupId) error('lookupForRunId: lookupId parameter is required.')
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def limit = args.get("limit", 100)
-    def runsText = gh(ghDefaultArgs(args) + [command: "run list", 
+    def runsText = gh(ghDefaultArgs(args) + [command: "run list",
         flags: [repo: repo, workflow: args.workflow, limit: limit]])
     for(def run: getRunIdsFromGhOutput(runsText)) {
         def runText=gh(ghDefaultArgs(args) + [command: "run view -v ${run}",
@@ -94,7 +93,7 @@ def checkTextForLookupId(def text, def lookupId) {
 def getWorkflowRun(Map args = [:]) {
     if (!args.runId) error('getWorkflowRun: runId parameter is required.')
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
-    return toJSON(gh(ghDefaultArgs(args) + [forceInstallation: true,
+    return toJSON(gh(ghDefaultArgs(args) + [forceInstallation: true, forceRepo: true,
         command: "api repos/${repo}/actions/runs/${args.runId}"]))
 }
 
@@ -110,7 +109,7 @@ def getRunIdsFromGhOutput(def runsText) {
     def runIds = []
     for(def s: runsText.split("\n")) {
         def r = s.split(/\s+/)
-        runIds.add(r[-3]) 
+        runIds.add(r[-3])
     }
     return runIds
 }

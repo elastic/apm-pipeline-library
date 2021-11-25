@@ -394,6 +394,14 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('downloadWithCurl', [Map.class], { m ->
+      def script = loadScript('vars/downloadWithCurl.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('downloadWithWget', [Map.class], { m ->
+      def script = loadScript('vars/downloadWithWget.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
       echoColor.call(m)
@@ -606,6 +614,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
       def script = loadScript('vars/withMageEnv.groovy')
       return script.call(c)
+    })
+    helper.registerAllowedMethod('withNodeJSEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withNodeJSEnv.groovy')
+      return script.call(m, c)
+    })
+    helper.registerAllowedMethod('withNodeJSEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
     })
   }
 
