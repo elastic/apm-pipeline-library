@@ -54,7 +54,8 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 0))
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -84,22 +85,22 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'linux_amd64.tar.gz'))
+    assertTrue(assertMethodCallContainsPattern('downloadWithWget', 'linux_amd64.tar.gz'))
+    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 0))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
   void test_without_gh_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('curl') })
+    helper.registerAllowedMethod('downloadWithWget', [Map.class], { return false })
     def ret = false
     script.call() {
       ret = true
     }
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo '))
+    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
@@ -115,7 +116,8 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallContainsPattern('downloadWithWget', ''))
+    assertTrue(assertMethodCallOccurrences('pwd', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
@@ -131,7 +133,8 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertTrue(assertMethodCallOccurrences('pwd', 1))
+    assertTrue(assertMethodCallContainsPattern('downloadWithWget', ''))
     assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: get the ghLocation from cache.'))
     assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: set the ghLocation.'))
     assertTrue(ret)

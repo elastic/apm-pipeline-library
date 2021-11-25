@@ -60,33 +60,13 @@ def downloadInstaller(where, version) {
 
   if(isUnix()) {
     dir(where) {
-      if (!downloadWithWget(tarball, url)) {
-        downloadWithCurl(tarball, url)
+      if (!downloadWithWget(url: url, output: tarball)) {
+        downloadWithCurl(url: url, output: tarball)
       }
       uncompress(tarball)
     }
   } else {
     installTools([[ tool: 'gh', version: version, provider: 'choco']])
-  }
-}
-
-def downloadWithWget(tarball, url) {
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-      sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")
-    }
-    return true
-  } else {
-    log(level: 'WARN', text: 'withGhEnv: wget is not available. gh will not be installed then.')
-  }
-  return false
-}
-
-def downloadWithCurl(tarball, url) {
-  if(isInstalled(tool: 'curl', flag: '--version')) {
-    sh(label: 'download gsutil', script: "curl -sSLo ${tarball} --retry 3 --retry-delay 2 --max-time 10 ${url}")
-  } else {
-    log(level: 'WARN', text: 'withGhEnv: curl is not available. gh will not be installed then.')
   }
 }
 
