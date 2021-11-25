@@ -62,8 +62,10 @@ pipeline {
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
+            sh "./resources/scripts/tap-to-junit-ext.sh 'src/test/resources/tap2JunitExt/*-suite-output.tap'"
+            archiveArtifacts(allowEmptyArchive: true, artifacts: "src/test/resources/tap2JunitExt/*-suite-output.tap*")
+            tap2Junit(pattern: 'src/test/resources/tap2JunitExt/*-suite-output.tap.ext', suffix: 'junit.xml', package: 'Node.js', failNever: true, archiveJunit: true)
           }
-          tap2JunitExt(pattern: 'src/test/resources/tap2JunitExt/*-suite-output.tap', suffix: 'junit.xml', package: 'Node.js', failNever: true, archiveJunit: true)
         }
       }
     }
