@@ -26,10 +26,6 @@
 
 */
 
-import groovy.transform.Field
-
-@Field def ghLocation = ''
-
 def call(Map args = [:]) {
   def command = args.containsKey('command') ? args.command : error('gh: command parameter is required.')
   def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
@@ -56,65 +52,29 @@ def call(Map args = [:]) {
     }
   }
 
-  if (ghLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
-  } else {
-    log(level: 'DEBUG', text: 'gh: set the ghLocation.')
-    ghLocation = pwd(tmp: true)
-  }
-
-  withEnv(["PATH+GH=${ghLocation}"]) {
-    if (forceInstallation || !isInstalled(tool: 'gh', flag: '--version', version: version)) {
-      if(isUnix()) {
-        downloadInstaller(ghLocation, version)
-      } else {
-        installTools([[ tool: 'gh', version: version, provider: 'choco']])
-      }
-    }
-    withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
-      def flagsCommand = ''
-      if (flags) {
-        flags.each { k, v ->
-          log(level: 'DEBUG', text: "gh: k ${k} - v ${v}")
-          if (v instanceof java.util.ArrayList || v instanceof List) {
-            v.findAll { it }.each { value ->
-              flagsCommand += "--${k}='${normalise(value)}' "
-            }
-          } else {
-            if (v) {
-              flagsCommand += "--${k}='${normalise(v)}' "
-            }
+  withGhEnv(args) {
+    def flagsCommand = ''
+    if (flags) {
+      flags.each { k, v ->
+        log(level: 'DEBUG', text: "gh: k ${k} - v ${v}")
+        if (v instanceof java.util.ArrayList || v instanceof List) {
+          v.findAll { it }.each { value ->
+            flagsCommand += "--${k}='${normalise(value)}' "
+          }
+        } else {
+          if (v) {
+            flagsCommand += "--${k}='${normalise(v)}' "
           }
         }
       }
-      return runCommand(command, flagsCommand)
     }
+    return runCommand(command, flagsCommand)
   }
 }
 
 def runCommand(command, flagsCommand) {
   def output = cmd(label: "gh ${command}", script: "gh ${command} ${flagsCommand}", returnStdout: true)
   return output
-}
-
-def downloadInstaller(where, version) {
-  def os = nodeOS()
-  if (os.equals('darwin')) {
-    os = 'macOS'
-  }
-  def arch = (isArm()) ? 'arm64' : 'amd64'
-  def url = "https://github.com/cli/cli/releases/download/v${version}/gh_${version}_${os}_${arch}.tar.gz"
-  def tarball = 'gh.tar.gz'
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    dir(where) {
-      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")
-        sh(label: 'untar gh', script: "tar -xpf ${tarball} --strip-components=2")
-      }
-    }
-  } else {
-    log(level: 'WARN', text: 'gh: wget is not available. gh will not be installed then.')
-  }
 }
 
 /**
