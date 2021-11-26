@@ -28,7 +28,7 @@ class NotifyStalledBeatsBumpsStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/notifyStalledBeatsBump.groovy')
+    script = loadScript('vars/notifyStalledBeatsBumps.groovy')
   }
 
   @Test
