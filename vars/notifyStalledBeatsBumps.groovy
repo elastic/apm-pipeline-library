@@ -39,10 +39,11 @@ def call(Map args = [:]) {
   def resourceContent = libraryResource("scripts/${scriptFile}")
   writeFile(file: scriptFile, text: resourceContent)
 
-  // TODO: within the gh context
-  sh(label: scriptFile, returnStatus: true, script: """#!/bin/bash -x
-    chmod 755 ${scriptFile}
-    ./${scriptFile} 'https://github.com/elastic/beats.git' ${branch} ${days}""")
+  withGhEnv() {
+    sh(label: scriptFile, returnStatus: true, script: """#!/bin/bash -x
+      chmod 755 ${scriptFile}
+      ./${scriptFile} 'https://github.com/elastic/beats.git' ${branch} ${days}""")
+  }
 
   if (fileExists("email.txt")) {
     if (sendEmail && to?.trim()) {
