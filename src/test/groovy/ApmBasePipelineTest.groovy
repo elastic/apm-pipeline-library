@@ -594,6 +594,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withGCPEnv.groovy')
       return script.call(m, c)
     })
+    helper.registerAllowedMethod('withGhEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGhEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
