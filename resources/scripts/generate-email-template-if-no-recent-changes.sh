@@ -62,6 +62,7 @@ Integrations Tests.
 EOT
 
   echo "3. List the open Pull Requests targeting $BRANCH"
+
   gh pr list \
     --search "is:open is:pr author:apmmachine base:$BRANCH" \
     --json url,createdAt \

@@ -39,7 +39,8 @@ def call(Map args = [:]) {
   def resourceContent = libraryResource("scripts/${scriptFile}")
   writeFile(file: scriptFile, text: resourceContent)
 
-  withGhEnv() {
+  // Use version 2.2.0 to support gh template with 'tablerow'
+  withGhEnv(version: '2.2.0') {
     sh(label: scriptFile, returnStatus: true, script: """#!/bin/bash -x
       chmod 755 ${scriptFile}
       ./${scriptFile} 'https://github.com/elastic/beats.git' ${branch} ${days}""")
