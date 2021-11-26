@@ -109,10 +109,6 @@ def call(Map args = [:]) {
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         timeout(5) {
-          // Deprecated index
-          def datafile = readFile(file: 'build-report.json')
-          sendDataToElasticsearch(es: es, secret: secret, data: datafile)
-
           // New indexes
           def bulkFile = 'ci-test-report-bulk.json'
           if (fileExists(bulkFile)) {
