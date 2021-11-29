@@ -1,0 +1,11 @@
+Evaluate if the latest bump update was merged a few days ago and if so
+send an email if configured for such an action.
+
+```
+  notifyStalledBeatsBumps(branch: '8.0', sendEmail: true, to: 'foo@acme.com')
+```
+
+* *sendEmail*: whether to send an email. Optional. Default false
+* *to*: who should receive the email. Optional.
+* *branch*: what branch to be searched for. Mandatory.
+* *days*: search for any changes before those days. Optional. Default 7
