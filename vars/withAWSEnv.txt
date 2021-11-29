@@ -1,0 +1,11 @@
+Configure the AWS context to run the given body closure
+
+```
+withAWSEnv(secret: 'secret/team/ci/service-account/aws-provisioner') {
+  // block
+}
+```
+
+* secret: Name of the secret on the the vault root path. (Optional).
+* version: The aws CLI version to be installed. Optional (2.4.2)
+* forceInstallation: Whether to install aws regardless. Optional (false)
