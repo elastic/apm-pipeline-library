@@ -10,6 +10,10 @@
           name: branch_specifier
           default: master
           description: the Git branch specifier to build
+      - string:
+          name: BEATS_MAILING_LIST
+          default: 'beats-contrib@elastic.co'
+          description: 'the Beats Mailing List to send the emails with the weekly reports.'
     pipeline-scm:
       script-path: .ci/schedule-weekly.groovy
       scm:

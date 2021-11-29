@@ -24,6 +24,7 @@ pipeline {
     PIPELINE_LOG_LEVEL='INFO'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -32,6 +33,9 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  parameters {
+    string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -85,8 +89,8 @@ pipeline {
 def runNotifyStalledBeatsBumps(Map args = [:]){
   def branch = getMajorMinorGivenTheBranch(args)
   notifyStalledBeatsBumps(branch: branch,
-                          sendEmail: false,
-                          to: 'beats-contrib@elastic.co')
+                          sendEmail: true,
+                          to: env.BEATS_MAILING_LIST)
 }
 
 def runWatcherForBranch(Map args = [:]){
@@ -94,7 +98,7 @@ def runWatcherForBranch(Map args = [:]){
   runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
              subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
              sendEmail: true,
-             to: 'beats-contrib@elastic.co')
+             to: env.BEATS_MAILING_LIST)
 }
 
 // Helper function to resolve current and next special keywords.
