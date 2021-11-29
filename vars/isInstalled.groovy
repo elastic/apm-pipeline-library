@@ -33,8 +33,9 @@ def call(Map args = [:]) {
   def flag = args.get('flag', '')
   def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
 
-  if (version?.trim()) {
-    return cmd(returnStdout: true, script: "${tool} ${flag}").contains(version)
+  def isToolInstalled = cmd(label: 'isToolInstalled', returnStatus: true, script: "${tool} ${flag} ${redirectStdout}")
+  if (version?.trim() && isToolInstalled == 0) {
+    return cmd(label: 'isToolVersionInstalled', returnStdout: true, script: "${tool} ${flag}").contains(version)
   }
-  return cmd(returnStatus: true, script: "${tool} ${flag} ${redirectStdout}") == 0
+  return isToolInstalled == 0
 }
