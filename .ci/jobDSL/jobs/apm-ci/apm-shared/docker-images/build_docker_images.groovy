@@ -45,91 +45,20 @@ def prefix = "observability-ci"
 
 def dockerImages = [
   [
-    name: 'opbeans-dotnet',
-    repo: 'https://github.com/elastic/opbeans-dotnet.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-node',
-    repo: 'https://github.com/elastic/opbeans-node.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-python',
-    repo: 'https://github.com/elastic/opbeans-python.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-frontend',
-    repo: 'https://github.com/elastic/opbeans-frontend.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-java',
-    repo: 'https://github.com/elastic/opbeans-java.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-go',
-    repo: 'https://github.com/elastic/opbeans-go.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-loadgen',
-    repo: 'https://github.com/elastic/opbeans-loadgen.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-ruby',
-    repo: 'https://github.com/elastic/opbeans-ruby.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-loadgen',
-    repo: 'https://github.com/elastic/opbeans-loadgen.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5
-  [
-    name: 'opbeans-flask',
-    repo: 'https://github.com/elastic/opbeans-flask.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],*/
-  [
     name: 'metricbeat-integrations-images',
     repo: 'https://github.com/elastic/beats.git',
     folder: 'metricbeat',
     push: true,
-    docker_build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
-    docker_push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
+    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
   ],
   [
     name: 'metricbeat-integrations-images-x-pack',
     repo: 'https://github.com/elastic/beats.git',
     folder: 'x-pack/metricbeat',
     push: true,
-    docker_build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
-    docker_push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
+    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
   ],
   [
     name: 'apm-proxy',
@@ -146,8 +75,72 @@ def dockerImages = [
     folder: 'tools/apm_proxy/backend',
     push: true
   ],
+  [
+    name: 'functional-opbeans',
+    repo: 'https://github.com/elastic/observability-test-environments.git',
+    tag: 'latest',
+    folder: 'tests',
+    build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
+    push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
+    test_script: 'make test-functional-opbeans',
+    push: true
+  ]
 ]
 
+/*
+  Opbeans Docker images
+*/
+
+def opbeansDockerImages = [
+  "opbeans-dotnet",
+  "opbeans-node",
+  "opbeans-python",
+  "opbeans-frontend",
+  "opbeans-java",
+  "opbeans-go",
+  "opbeans-loadgen",
+  "opbeans-ruby"
+  /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5
+  "opbeans-flask",*/
+]
+
+opbeansDockerImages.each{ name ->
+  dockerImages.add([
+    name: "${name}",
+    repo: "https://github.com/elastic/${name}.git",
+    tag: 'daily',
+    folder: '.',
+    push: true
+  ])
+}
+
+/*
+  APM Pipeline library Docker images
+*/
+def apmPipelineLibraryDockerImages = [
+  "apache-ant",
+  "github-label-sync",
+  "gren",
+  "shellcheck",
+  "yamllint",
+  "kibana-yarn",
+  "kibana-devmode"
+]
+
+apmPipelineLibraryDockerImages.each{ name ->
+  def tag = 'latest'
+  def dockerImage = "${registry}/${prefix}/${name}:${tag}"
+  dockerImages.add([
+    name: "${name}",
+    repo: 'https://github.com/elastic/apm-pipeline-library.git',
+    tag: "${tag}",
+    folder: '.ci/docker',
+    build_script: "docker build --force-rm -t ${dockerImage} ${name}",
+    push_script: "docker push ${dockerImage}",
+    test_script: "make test-${name}",
+    push: true
+  ])
+}
 
 /*
   APM Agent Python Docker images
@@ -211,9 +204,9 @@ dockerImages.add([
   repo: 'https://github.com/elastic/apm-agent-ruby.git',
   folder: '.ci/docker/jruby',
   push: true,
-  docker_build_script: "./run.sh --action build --registry ${registry}/${prefix}",
+  build_script: "./run.sh --action build --registry ${registry}/${prefix}",
   docker_test_script: "./run.sh --action test --registry ${registry}/${prefix}",
-  docker_push_script: "./run.sh --action push --registry ${registry}/${prefix}"
+  push_script: "./run.sh --action push --registry ${registry}/${prefix}"
 ])
 
 def rubyVersions = [
@@ -274,7 +267,7 @@ dockerImages.each{ item ->
       stringParam('folder', "${item.folder ? item.folder : '.'}", "Folder where the Dockrefile is.")
       stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
       booleanParam('push', item.push, "True to push the Docker image to the registry.")
-      stringParam('docker_build_opts', "", "Additional flags to the default docker build command.")
+      stringParam('docker_build_opts', "${item.build_opts ? item.build_opts : ''}", "Additional flags to the default docker build command.")
       stringParam('docker_build_script', "${item.build_script ? item.build_script : ''}", "Script/command to build the Docker image.")
       stringParam('docker_test_script', "${item.test_script ? item.test_script : ''}", "Script/command to test the Docker image.")
       stringParam('docker_push_script', "${item.push_script ? item.push_script : ''}", "Script/command to push the Docker image.")

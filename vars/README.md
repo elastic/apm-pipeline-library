@@ -239,6 +239,8 @@ Utils class for the bump automation pipelines
 * `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
 
 ## cancelPreviousRunningBuilds
+**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: true)`
+
 Abort any previously running builds as soon as a new build starts
 
 ```
