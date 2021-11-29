@@ -40,7 +40,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod("getVaultSecret", [Map.class], {
       return [data: [user: "admin", password: "admin123"]]
     })
-    helper.registerAllowedMethod('fileExists', [String.class], { return !it.contains('ci-') })
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
 
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
@@ -61,7 +61,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -82,7 +82,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', "secret=${VaultSecret.SECRET_NAME.toString()}"))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
@@ -92,7 +92,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
@@ -101,7 +101,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call(es: EXAMPLE_URL)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     assertTrue(assertMethodCallContainsPattern('sendDataToElasticsearch', 'secret=secret/observability-team/ci/jenkins-stats-cloud'))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
@@ -119,7 +119,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     printCallStack()
 
     // Then senddata to ElasticSearch happens
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 1))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     // Then unstable the stage
     assertTrue(assertMethodCallContainsPattern('catchError', 'buildResult=SUCCESS, stageResult=UNSTABLE'))
     assertJobStatusSuccess()
@@ -329,13 +329,12 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void test_bulk_update() throws Exception {
     // When PR and there is a builk file
     helper.registerAllowedMethod('isPR', { return true })
-    helper.registerAllowedMethod('fileExists', [String.class], { return true })
 
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
 
     // Then sendDataToElasticsearch happens three times
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 3))
+    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
   }
 
   @Test
