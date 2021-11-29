@@ -81,7 +81,7 @@ def dockerImages = [
     tag: 'latest',
     folder: 'tests',
     docker_build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
-    docker_push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest"
+    docker_push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
     test_script: 'make test-functional-opbeans',
     push: true
   ]
@@ -91,7 +91,7 @@ def dockerImages = [
   Opbeans Docker images
 */
 
-def opbeansDockerImages [
+def opbeansDockerImages = [
   "opbeans-dotnet",
   "opbeans-node",
   "opbeans-python",
@@ -126,6 +126,7 @@ def apmPipelineLibraryDockerImages = [
   "kibana-yarn",
   "kibana-devmode"
 ]
+
 apmPipelineLibraryDockerImages.each{ name ->
   def tag = 'latest'
   def dockerImage = "${registry}/${prefix}/${name}:${tag}"
@@ -135,7 +136,7 @@ apmPipelineLibraryDockerImages.each{ name ->
     tag: "${tag}",
     folder: '.ci/docker',
     docker_build_script: "docker build --force-rm -t ${dockerImage} ${name}",
-    docker_push_script: "docker push ${dockerImage}"
+    docker_push_script: "docker push ${dockerImage}",
     test_script: "make test-${name}",
     push: true
   ])
