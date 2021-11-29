@@ -71,7 +71,7 @@ def dockerImages = [
   [
     name: 'apm-proxy-be',
     repo: 'git@github.com:elastic/observability-dev',
-    branch: 'main'
+    branch: 'main',
     tag: 'latest',
     folder: 'tools/apm_proxy/backend',
     push: true
