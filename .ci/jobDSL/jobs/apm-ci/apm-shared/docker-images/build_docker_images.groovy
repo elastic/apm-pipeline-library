@@ -45,77 +45,6 @@ def prefix = "observability-ci"
 
 def dockerImages = [
   [
-    name: 'opbeans-dotnet',
-    repo: 'https://github.com/elastic/opbeans-dotnet.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-node',
-    repo: 'https://github.com/elastic/opbeans-node.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-python',
-    repo: 'https://github.com/elastic/opbeans-python.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-frontend',
-    repo: 'https://github.com/elastic/opbeans-frontend.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-java',
-    repo: 'https://github.com/elastic/opbeans-java.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-go',
-    repo: 'https://github.com/elastic/opbeans-go.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-loadgen',
-    repo: 'https://github.com/elastic/opbeans-loadgen.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-ruby',
-    repo: 'https://github.com/elastic/opbeans-ruby.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  [
-    name: 'opbeans-loadgen',
-    repo: 'https://github.com/elastic/opbeans-loadgen.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],
-  /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5
-  [
-    name: 'opbeans-flask',
-    repo: 'https://github.com/elastic/opbeans-flask.git',
-    tag: 'daily',
-    folder: '.',
-    push: true
-  ],*/
-  [
     name: 'metricbeat-integrations-images',
     repo: 'https://github.com/elastic/beats.git',
     folder: 'metricbeat',
@@ -146,8 +75,72 @@ def dockerImages = [
     folder: 'tools/apm_proxy/backend',
     push: true
   ],
+  [
+    name: 'functional-opbeans',
+    repo: 'https://github.com/elastic/observability-test-environments.git',
+    tag: 'latest',
+    folder: 'tests',
+    docker_build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
+    docker_push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
+    test_script: 'make test-functional-opbeans',
+    push: true
+  ]
 ]
 
+/*
+  Opbeans Docker images
+*/
+
+def opbeansDockerImages = [
+  "opbeans-dotnet",
+  "opbeans-node",
+  "opbeans-python",
+  "opbeans-frontend",
+  "opbeans-java",
+  "opbeans-go",
+  "opbeans-loadgen",
+  "opbeans-ruby"
+  /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5
+  "opbeans-flask",*/
+]
+
+opbeansDockerImages.each{ name ->
+  dockerImages.add([
+    name: "${name}",
+    repo: "https://github.com/elastic/${name}.git",
+    tag: 'daily',
+    folder: '.',
+    push: true
+  ])
+}
+
+/*
+  APM Pipeline library Docker images
+*/
+def apmPipelineLibraryDockerImages = [
+  "apache-ant",
+  "github-label-sync",
+  "gren",
+  "shellcheck",
+  "yamllint",
+  "kibana-yarn",
+  "kibana-devmode"
+]
+
+apmPipelineLibraryDockerImages.each{ name ->
+  def tag = 'latest'
+  def dockerImage = "${registry}/${prefix}/${name}:${tag}"
+  dockerImages.add([
+    name: "${name}",
+    repo: 'https://github.com/elastic/apm-pipeline-library.git',
+    tag: "${tag}",
+    folder: '.ci/docker',
+    docker_build_script: "docker build --force-rm -t ${dockerImage} ${name}",
+    docker_push_script: "docker push ${dockerImage}",
+    test_script: "make test-${name}",
+    push: true
+  ])
+}
 
 /*
   APM Agent Python Docker images
