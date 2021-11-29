@@ -1,0 +1,9 @@
+List the GitHub releases in the current project. It returns
+a dictionary with the release id as primary key and then the whole information.
+
+```
+  listGithubReleases()
+```
+
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+* failNever: whether to fail the step in case on any failures when interacting with the GH cli tool. Default true.

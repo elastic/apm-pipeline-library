@@ -57,6 +57,31 @@ DSL = '''pipeline {
         }
       }
     }
+    stage('serialisation_fix') {
+      steps {
+        gitCheckout(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+                    repo: 'https://github.com/elastic/beats.git',
+                    branch: 'da2bc892fe5460a50284c37c538618e7a6b8117c',
+                    basedir: 'beats',
+                    shallow: true,
+                    depth: 3)
+        dir('beats') {
+          script {
+            // Forced to reset the repo to avoid a conflict with the initial gitCheckout for the apm-pipeline-library
+            withEnv(["REPO_NAME=beats"]){
+              // https://github.com/elastic/beats/pull/28577/files
+              def module = getGitMatchingGroup(pattern: '^[a-z0-9]+beat\\\\/module\\\\/([^\\\\/]+)\\\\/.*',
+                                          from: '85d35917f05482a66e58a7f6f4a46d48bcb3f872',
+                                          to: 'da2bc892fe5460a50284c37c538618e7a6b8117c',
+                                          exclude: '^resources.*')
+              whenFalse(module.equals('')){
+                error("Expected module name to be empty")
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }'''
 

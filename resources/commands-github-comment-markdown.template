@@ -4,7 +4,8 @@
 To re-run your PR in the CI, just comment with:
 
 <% githubCommands?.each { githubCommand, description -> %>
-- `${githubCommand}` : ${description}
+<% githubFormattedCommand = githubCommand.contains('`') ? "${githubCommand}" : "`${githubCommand}`" %>
+- ${githubFormattedCommand} : ${description}
 <%}%>
 
 <%}%>

@@ -176,6 +176,7 @@ pipeline {
           axis {
             name 'PLATFORM'
             values (
+              'arm',
               'debian-9',
               'ubuntu-18',
               'ubuntu-20'

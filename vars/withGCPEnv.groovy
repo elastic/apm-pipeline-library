@@ -23,9 +23,16 @@ withGCPEnv(credentialsId: 'foo') {
 }
 */
 def call(Map args = [:], Closure body) {
-  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : error('withGCPEnv: credentialsId parameter is required.')
+  def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : ''
+  def secret = args.containsKey('secret') ? args.secret : ''
+
+  if (!credentialsId.trim() && !secret.trim()) {
+    error('withGCPEnv: credentialsId or secret parameters are required.')
+  }
+
   def gsUtilLocation = pwd(tmp: true)
   def gsUtilLocationWin = "${gsUtilLocation}/google-cloud-sdk"
+  def secretFileLocation = "${gsUtilLocation}/google-cloud-credentials.json"
 
   withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin",
            "PATH+GSUTILWIN=${gsUtilLocationWin}", "PATH+GSUTILWIN_BIN=${gsUtilLocationWin}/bin"]) {
@@ -33,12 +40,49 @@ def call(Map args = [:], Closure body) {
       downloadInstaller(gsUtilLocation)
     }
 
-    withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) {
-      def credentialsVariable = isUnix() ? '${FILE_CREDENTIAL}' : '%FILE_CREDENTIAL%'
-      cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ' + credentialsVariable)
+    if (secret) {
+      def props = getVaultSecret(secret: secret)
+      if (props?.errors) {
+        error "withGCPEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
+      }
+      def value = props?.data
+      def credentialsContent = value?.credentials
+      if (!credentialsContent?.trim()) {
+        error "withGCPEnv: Unable to read the credentials value"
+      }
+      writeFile(file: secretFileLocation, text: credentialsContent)
+      gcloudAuth(secretFileLocation)
+    } else {
+      withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) {
+        gcloudAuth(isUnix() ? '${FILE_CREDENTIAL}' : '%FILE_CREDENTIAL%')
+      }
     }
-    body()
+    try {
+      if (secret) {
+        // Somehow the login works for google bucket integrations but something
+        // it's not right when using the VM creation with terraform and GCP
+        // Setting GOOGLE_APPLICATION_CREDENTIALS seems to be the workaround
+        // https://cloud.google.com/docs/authentication/getting-started
+        withEnv(["GOOGLE_APPLICATION_CREDENTIALS=${secretFileLocation}"]){
+          body()
+        }
+      } else {
+        body()
+      }
+    } finally {
+      if (fileExists("${secretFileLocation}")) {
+        if(isUnix()){
+          sh "rm ${secretFileLocation}"
+        } else {
+          bat "del ${secretFileLocation}"
+        }
+      }
+    }
   }
+}
+
+def gcloudAuth(keyFile) {
+  cmd(label: 'authenticate', script: 'gcloud auth activate-service-account --key-file ' + keyFile)
 }
 
 def downloadInstaller(where) {
@@ -46,30 +90,10 @@ def downloadInstaller(where) {
   def tarball = "gsutil.${isUnix() ? 'tar.gz' : 'zip'}"
 
   dir(where) {
-    if (!downloadWithWget(tarball, url)) {
-      downloadWithCurl(tarball, url)
+    if (!downloadWithWget(url: url, output: tarball)) {
+      downloadWithCurl(url: url, output: tarball)
     }
     uncompress(tarball)
-  }
-}
-
-def downloadWithWget(tarball, url) {
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-      cmd(label: 'download gsutil', script: "wget -q -O ${tarball} ${url}")
-    }
-    return true
-  } else {
-    log(level: 'WARN', text: 'withGCPEnv: wget is not available. gsutil will not be installed then.')
-  }
-  return false
-}
-
-def downloadWithCurl(tarball, url) {
-  if(isInstalled(tool: 'curl', flag: '--version')) {
-    cmd(label: 'download gsutil', script: "curl -sSLo ${tarball} --retry 3 --retry-delay 2 --max-time 10 ${url}")
-  } else {
-    log(level: 'WARN', text: 'withGCPEnv: curl is not available. gsutil will not be installed then.')
   }
 }
 

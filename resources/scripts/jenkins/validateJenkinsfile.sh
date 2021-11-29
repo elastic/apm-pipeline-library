@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Validate a Jenkins file syntax againt a Jenkins instance.
+# Validate a Jenkins file syntax against a Jenkins instance.
 # https://jenkins.io/doc/book/pipeline/development/
 #
 # curl (REST API)
@@ -38,5 +38,5 @@ if [ ! -f "${JENKINS_FILE}" ]; then
   exit 1
 fi
 
-JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
+JENKINS_CRUMB=$(curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
 curl -X POST -H "$JENKINS_CRUMB" -F "jenkinsfile=<${JENKINS_FILE}" "$JENKINS_URL/pipeline-model-converter/validate"

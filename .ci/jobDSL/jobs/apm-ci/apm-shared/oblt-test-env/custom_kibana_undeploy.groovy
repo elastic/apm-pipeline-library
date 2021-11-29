@@ -20,7 +20,7 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
   description('Job to undeploy Custom Kibana deployments')
   parameters {
     stringParam("branch_specifier", "master", "the Git branch specifier to build.")
-    stringParam('environment', "edge", "Test enviroment branch name to make the deploy into.")
+    stringParam('environment', "edge", "Test environment branch name to make the deploy into.")
     stringParam('kibana_branch', "master", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
   }
   disabled(false)

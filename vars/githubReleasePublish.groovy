@@ -28,14 +28,14 @@ If githubReleaseCreate() was called with the `draft` flag set to `false`,
 this has no effect.
 
 The `id` field required by this script is accessible in the return from
-ithubReleaseCreate(). See documentation for that script for more details about
+githubReleaseCreate(). See documentation for that script for more details about
 the data structure of the return.
 
   Example invocation:
 
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0', // Release name 
+      name: 'Release v1.0.0', // Release name
     )
 
 To learn more about what individual flags mean, please visit the GitHub
@@ -50,6 +50,8 @@ def call(Map args = [:]){
     error('githubReleasePublish: Environment not initialized. Try to call githubEnv step before')
   }
 
+  log(level: 'INFO', text: 'githubReleasePublish: just been called.')
+
   def token = getGithubToken()
 
   def id = args.containsKey('id') ? args.id : error('githubReleasePublish: id parameter is required.')
@@ -59,7 +61,7 @@ def call(Map args = [:]){
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases/${id}"
 
   def release_params = [
-  "draft": true
+    "draft": false
   ]
 
   // Call the GitHub API

@@ -99,7 +99,7 @@ class WithEsEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withEsEnv: unknow protocol, the url is not http(s).'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withEsEnv: unknown protocol, the url is not http(s).'))
     assertJobStatusFailure()
   }
 }

@@ -32,13 +32,6 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_windows() throws Exception {
-    testWindows() {
-      script.call()
-    }
-  }
-
-  @Test
   void test_without_args() throws Exception {
     testMissingArgument('command') {
       script.call()
@@ -78,25 +71,6 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
     assertNull(result)
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_with_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
-    script.call(command: 'issue list')
-    printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
   }
 
   @Test
@@ -144,30 +118,6 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_cache() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: get the ghLocation from cache.'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: set the ghLocation.'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_normalisation() throws Exception {
     script.call(command: 'issue list', flags: [ label: "foo-'" ])
     printCallStack()
@@ -181,5 +131,43 @@ class GhStepTests extends ApmBasePipelineTest {
     script.call(command: 'pr list', flags: [ search: '"[automation] foo bar" in:title'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', """--search='"[automation] foo bar" in:title'"""))
+  }
+
+  @Test
+  void test_with_multiple_flag_entries() throws Exception {
+    script.call(command: 'workflow run build_and_test.yml', flags: [field: ['id=1', 'runner=ubuntu']])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "gh workflow run build_and_test.yml --field='id=1' --field='runner=ubuntu'"))
+  }
+
+  @Test
+  void test_with_version() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(command: 'issue list', version: "2.0.0")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+  }
+
+  @Test
+  void test_with_force_installation() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    script.call(command: 'issue list', version: "2.0.0", forceInstallation: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_outside_of_a_repo_with_variables_and_force_repo() throws Exception {
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    try {
+      script.call(command: 'issue list', flags: [ repo: 'acme/bar'], forceRepo: true)
+    } catch(err) { println err}
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', "--repo='acme/bar'"))
+    assertJobStatusSuccess()
   }
 }

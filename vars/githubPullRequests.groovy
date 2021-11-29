@@ -16,7 +16,7 @@
 // under the License.
 
 /**
-  Look for the GitHub Pull Requests in the current project given the labels to be 
+  Look for the GitHub Pull Requests in the current project given the labels to be
   filtered with. It returns a dictionary with the Pull Request id as primary key and
   then the title and branch values.
 

@@ -39,7 +39,7 @@ master:
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
-			up --detach --no-recreate jenkins
+			up --detach jenkins
 
 .PHONY: pull
 pull:  ## Pull required images for all Jenkins-related processes

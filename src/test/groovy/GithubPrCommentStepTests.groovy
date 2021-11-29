@@ -112,7 +112,7 @@ class GithubPrCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_addOrEditComment_fallback_to_traditional() throws Exception {
+  void test_addOrEditComment_fallback_to_tradditional() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { return true } )
     helper.registerAllowedMethod('readFile', [String.class], { return "${PullRequestMock.ERROR}" } )
     script.addOrEditComment(commentFile: 'comment.id', details: 'foo')

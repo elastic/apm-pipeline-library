@@ -15,8 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
-  Search in the current Pull Request context the latest comment from the given list of 
+  Search in the current Pull Request context the latest comment from the given list of
   users and pattern to match with.
 
   // Return the comment that matches the pattern '<!--foo-->' and the owner of the comment is
@@ -32,12 +34,18 @@ def call(Map args = [:]){
     def comments = githubApiCall(token: token, url: url, noCache: true)
     return comments.reverse().find { comment ->
       if (users) {
-        users.find { it == comment.user.login } && comment.body =~ "${pattern}"
+        users.find { it == comment.user.login } && findPatternMatch(comment.body, "${pattern}")
       } else {
-        comment.body =~ "${pattern}"
+        findPatternMatch(comment.body, "${pattern}")
       }
     }
   } else {
     log(level: 'WARN', text: 'githubPrLatestComment: is only available for PRs.')
   }
+}
+
+@NonCPS
+private findPatternMatch(line, pattern) {
+  def matcher = line =~ pattern
+  return matcher
 }

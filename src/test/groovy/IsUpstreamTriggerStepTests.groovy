@@ -164,4 +164,25 @@ class IsUpstreamTriggerStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('log', "isUpstreamTrigger: apm-integration-tests/PR-695, filter: 'PR-'"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_build_upstream_cause() throws Exception {
+    binding.getVariable('currentBuild').getBuildCauses = {
+      return [
+        [
+          _class: 'org.jenkinsci.plugins.workflow.support.steps.build.BuildUpstreamCause',
+          shortDescription: 'Started by upstream project "Beats/beats/PR-28919" build number 2',
+          upstreamBuild: 2,
+          upstreamProject: 'Beats/beats/PR-28919',
+          upstreamUrl: 'job/Beats/job/beats/job/PR-28919/'
+        ]
+      ]
+    }
+
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('log', "isUpstreamTrigger: Beats/beats/PR-28919, filter: 'all'"))
+    assertJobStatusSuccess()
+  }
 }

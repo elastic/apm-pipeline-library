@@ -1,5 +1,226 @@
 # Changelog
 
+## v1.1.268 (24/11/2021)
+
+#### 🐛 Bug Fixes
+
+-  Gha build get workflow run forced repo [#1409](https://github.com/elastic/apm-pipeline-library/pull/1409)
+
+#### ⚙️ CI
+
+- [**Team:Automation**] fix: use a diferent target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
+
+## v1.1.267 (23/11/2021)
+*No changelog for this release.*
+
+## v1.1.266 (23/11/2021)
+
+#### 🚀 Enhancements
+
+-  Add withNodeJSEnv, withNodeJSEnvUnix and nodeJSDefaultVersion [#1402](https://github.com/elastic/apm-pipeline-library/pull/1402)
+-  Add downloadWithCurl and downloadWithWget steps [#1401](https://github.com/elastic/apm-pipeline-library/pull/1401)
+
+## v1.1.265 (23/11/2021)
+
+#### 🚀 Enhancements
+
+-  Allow repo customisation for the GH [#1394](https://github.com/elastic/apm-pipeline-library/pull/1394)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: tag and push to the image target name [#1405](https://github.com/elastic/apm-pipeline-library/pull/1405)
+
+## v1.1.264 (22/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: push kibana-cloud Docker images [#1391](https://github.com/elastic/apm-pipeline-library/pull/1391)
+-  Added githubWorkflowRun to run workflows on github action [#1358](https://github.com/elastic/apm-pipeline-library/pull/1358)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: add branch_specifier parameter  [#1386](https://github.com/elastic/apm-pipeline-library/pull/1386)
+-  Fix publishing github release [#1383](https://github.com/elastic/apm-pipeline-library/pull/1383)
+
+#### 🙈 No user affected
+
+-  [local] bump docker version to 2.303.3 [#1384](https://github.com/elastic/apm-pipeline-library/pull/1384)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.15.2 7.16.0 [#1396](https://github.com/elastic/apm-pipeline-library/pull/1396)
+-  Bump versions [#1397](https://github.com/elastic/apm-pipeline-library/pull/1397)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.0.0 to 4.1.0 [#1398](https://github.com/elastic/apm-pipeline-library/pull/1398)
+-  chore(deps-dev): bump jenkins-pipeline-unit from 1.10 to 1.12 [#1399](https://github.com/elastic/apm-pipeline-library/pull/1399)
+
+## v1.1.263 (15/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: report apm Python chatOps [#1377](https://github.com/elastic/apm-pipeline-library/pull/1377)
+- [**Team:Automation**] feat: build docker images isolated [#1370](https://github.com/elastic/apm-pipeline-library/pull/1370)
+
+#### 🐛 Bug Fixes
+
+-  Fix upstream build reasons [#1378](https://github.com/elastic/apm-pipeline-library/pull/1378)
+- [**Team:Automation**] fix: trailing-whitespace [#1372](https://github.com/elastic/apm-pipeline-library/pull/1372)
+
+## v1.1.262 (11/11/2021)
+
+#### 🚀 Enhancements
+
+-  feat: push a tag with the Stack version [#1357](https://github.com/elastic/apm-pipeline-library/pull/1357)
+-  Add GH command for rebuilding the docs builds [#1369](https://github.com/elastic/apm-pipeline-library/pull/1369)
+
+#### 🐛 Bug Fixes
+
+-  fix: remove concurrentBuild [#1366](https://github.com/elastic/apm-pipeline-library/pull/1366)
+
+## v1.1.261 (05/11/2021)
+
+#### 🚀 Enhancements
+
+-  Enable version validation in the isInstalled step [#1364](https://github.com/elastic/apm-pipeline-library/pull/1364)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issue with the Matcher pattern [#1365](https://github.com/elastic/apm-pipeline-library/pull/1365)
+
+#### ⚙️ CI
+
+-  Bump release stack version: support for the dev version [#1361](https://github.com/elastic/apm-pipeline-library/pull/1361)
+
+## v1.1.260 (04/11/2021)
+
+#### 🙈 No user affected
+
+-  [mergify][codeowners] Auto-assign and add reviewers [#1360](https://github.com/elastic/apm-pipeline-library/pull/1360)
+
+## v1.1.259 (04/11/2021)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**][**Team:Ecosystem**] Find oldest version with or conditions [#1359](https://github.com/elastic/apm-pipeline-library/pull/1359)
+-  Pin the gh version for the listGithubReleases step [#1354](https://github.com/elastic/apm-pipeline-library/pull/1354)
+-  Support for macos, arm and windows in the gh step [#1355](https://github.com/elastic/apm-pipeline-library/pull/1355)
+-  Add gh version and forceInstallation parameters [#1353](https://github.com/elastic/apm-pipeline-library/pull/1353)
+
+#### 🙈 No user affected
+
+-  chore: add arch [#1356](https://github.com/elastic/apm-pipeline-library/pull/1356)
+
+## v1.1.258 (03/11/2021)
+
+#### 🚀 Enhancements
+
+-  Gather environmental errors with the workers [#1348](https://github.com/elastic/apm-pipeline-library/pull/1348)
+
+#### 🐛 Bug Fixes
+
+-  Use tab separator for listGithubReleases [#1352](https://github.com/elastic/apm-pipeline-library/pull/1352)
+-  Set the message for the updateStackReleaseVersion [#1349](https://github.com/elastic/apm-pipeline-library/pull/1349)
+-  Fix trim for a map in updateStackReleaseVersion.groovy [#1345](https://github.com/elastic/apm-pipeline-library/pull/1345)
+-  Fix serialisation issue with java.util.regex.Matcher  [#1344](https://github.com/elastic/apm-pipeline-library/pull/1344)
+-  bump release version: fix NPE [#1343](https://github.com/elastic/apm-pipeline-library/pull/1343)
+
+#### 🙈 No user affected
+
+-  Add test coverage for multi field arguments in gh [#1346](https://github.com/elastic/apm-pipeline-library/pull/1346)
+
+#### ⚙️ CI
+
+-  Refactor properties key and search for all the docker images [#1350](https://github.com/elastic/apm-pipeline-library/pull/1350)
+-  Refactor parseArguments for the bump automation [#1347](https://github.com/elastic/apm-pipeline-library/pull/1347)
+
+## v1.1.257 (01/11/2021)
+
+#### 🚀 Enhancements
+
+-  Add listGithubReleases step [#1341](https://github.com/elastic/apm-pipeline-library/pull/1341)
+
+#### 🐛 Bug Fixes
+
+-  fix: resolve shell-lint warnings [#1342](https://github.com/elastic/apm-pipeline-library/pull/1342)
+
+#### ⚙️ CI
+
+- [**backport-skip**] Use a file to store the current and next release details [#1197](https://github.com/elastic/apm-pipeline-library/pull/1197)
+-  linting: fix codespell typos and disable pullRequest from codespell [#1340](https://github.com/elastic/apm-pipeline-library/pull/1340)
+
+## v1.1.256 (26/10/2021)
+
+#### 🚀 Enhancements
+
+-  Support pre commit error stack trace [#1338](https://github.com/elastic/apm-pipeline-library/pull/1338)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issue with java.util.regex.Matcher [#1336](https://github.com/elastic/apm-pipeline-library/pull/1336)
+
+#### 🙈 No user affected
+
+-  test-infra: test ARM workers [#1337](https://github.com/elastic/apm-pipeline-library/pull/1337)
+-  Weekly email for Beats (7.16 and master) [#1335](https://github.com/elastic/apm-pipeline-library/pull/1335)
+-  Add traces for GitHub release publish [#1333](https://github.com/elastic/apm-pipeline-library/pull/1333)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.20, 7.15.1, 7.16.0] [#1334](https://github.com/elastic/apm-pipeline-library/pull/1334)
+
+## v1.1.255 (21/10/2021)
+
+#### 🐛 Bug Fixes
+
+-  Fix parameter name for the e2e pipeline [#1331](https://github.com/elastic/apm-pipeline-library/pull/1331)
+
+## v1.1.254 (20/10/2021)
+
+#### 🚀 Enhancements
+
+-  Add more parameters in runE2E [#1328](https://github.com/elastic/apm-pipeline-library/pull/1328)
+-  Support runE2E step [#1325](https://github.com/elastic/apm-pipeline-library/pull/1325)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: use Ubuntu workers [#1327](https://github.com/elastic/apm-pipeline-library/pull/1327)
+
+#### 🙈 No user affected
+
+-  docs: fix codespell [#1324](https://github.com/elastic/apm-pipeline-library/pull/1324)
+
+#### 📦 Dependency updates
+
+- [**dependencies**][**java**] chore(deps): bump opentelemetry from 0.20 to 0.21 [#1323](https://github.com/elastic/apm-pipeline-library/pull/1323)
+
+## v1.1.253 (15/10/2021)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support secret from vault [#1320](https://github.com/elastic/apm-pipeline-library/pull/1320)
+
+#### 🙈 No user affected
+
+-  pre-commit: fix linting [#1322](https://github.com/elastic/apm-pipeline-library/pull/1322)
+-  Update pre-commit [#1321](https://github.com/elastic/apm-pipeline-library/pull/1321)
+-  bump: obs-test-env is not a multibranch repo [#1319](https://github.com/elastic/apm-pipeline-library/pull/1319)
+
+## v1.1.252 (13/10/2021)
+
+#### 🚀 Enhancements
+
+-  Enable goDefaultVersion to read from the root folder or base_dir folder [#1316](https://github.com/elastic/apm-pipeline-library/pull/1316)
+
+#### 📚 Documentation
+
+-  changelog dependencies and pre-commit badge [#1315](https://github.com/elastic/apm-pipeline-library/pull/1315)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version [6.8.19, 6.8.20, 7.14.2, 7.15.0, 7.15.1] [#1317](https://github.com/elastic/apm-pipeline-library/pull/1317)
+
 ## v1.1.251 (11/10/2021)
 *No changelog for this release.*
 
@@ -51,7 +272,7 @@
 
 #### 🐛 Bug Fixes
 
--  Retrive 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
+-  Retrieve 3x times more steps [#1297](https://github.com/elastic/apm-pipeline-library/pull/1297)
 
 #### 🙈 No user affected
 
@@ -62,7 +283,7 @@
 #### 🙈 No user affected
 
 -  Exclude errors related to the approval-list and githubPrCheckApproved in the GitHub comment [#1295](https://github.com/elastic/apm-pipeline-library/pull/1295)
--  Remove test stats in the Flakyness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
+-  Remove test stats in the Flakiness github comment [#1296](https://github.com/elastic/apm-pipeline-library/pull/1296)
 
 ## v1.1.243 (23/09/2021)
 
@@ -2601,7 +2822,7 @@
 
 #### 🚀 Enhancements
 
--  fix: support traditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
+-  fix: support tradditional views as BO returns 404 with crumb [#173](https://github.com/elastic/apm-pipeline-library/pull/173)
 
 ---
 
@@ -2736,7 +2957,7 @@
 -  GitHub comment trigger parser step [#139](https://github.com/elastic/apm-pipeline-library/pull/139)
 -  feat: backport config [#137](https://github.com/elastic/apm-pipeline-library/pull/137)
 -  enable issueCommentTrigger and expose GITHUB_COMMENT environment [#136](https://github.com/elastic/apm-pipeline-library/pull/136)
--  enable cobertura and gsc tabs with the traditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
+-  enable cobertura and gsc tabs with the tradditional view [#135](https://github.com/elastic/apm-pipeline-library/pull/135)
 -  ci: release process [#123](https://github.com/elastic/apm-pipeline-library/pull/123)
 
 #### 🐛 Bug Fixes

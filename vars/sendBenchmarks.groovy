@@ -145,7 +145,7 @@ def getProtocol(url){
     log(level: 'INFO', text: "Benchmarks: you are using 'http' protocol to access to the service.")
     protocol = "http://"
   } else {
-    error "Benchmarks: unknow protocol, the url is not http(s)."
+    error "Benchmarks: unknown protocol, the url is not http(s)."
   }
   return protocol
 }

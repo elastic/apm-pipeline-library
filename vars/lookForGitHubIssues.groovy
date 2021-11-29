@@ -17,7 +17,7 @@
 
 /**
   Look for all the open issues given some filters.
-  
+
   For backward compatibilities the default behaviour uses the flaky tests. It returns
   a dictionary with the test-name as primary key and the github issue if any or empty otherwise.
 

@@ -11,7 +11,7 @@ jenkins:
   scmCheckoutRetryCount: 2
   nodes:
   - permanent:
-      labelString: "linux immutable docker"
+      labelString: "linux immutable docker x86_64"
       launcher:
         jnlp:
           workDirSettings:

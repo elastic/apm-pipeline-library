@@ -44,7 +44,7 @@ def call(Map args = [:], Closure body) {
     url = url - "http://"
     protocol = "http://"
   } else {
-    error "withEsEnv: unknow protocol, the url is not http(s)."
+    error "withEsEnv: unknown protocol, the url is not http(s)."
   }
 
   def data = props?.data

@@ -44,18 +44,21 @@ def version(value, args = [:]){
 }
 
 def edge(Map args = [:]){
-  return version("8.0.0", args)
+  // TODO: this should not use a hardcoded string but bmptUtils.getNextMinorReleaseFor8()
+  return version("8.1.0", args)
 }
 
 def dev(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def devVersion = "7.15.1"
+  def devVersion = "7.16.0"
+  // TODO: this should not use a hardcoded string but bmptUtils.getNextMinorReleaseFor7()
   return version(devVersion, args)
 }
 
 def release(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def releaseVersion = "7.15.0"
+  // TODO: this should not use a hardcoded string but bmptUtils.getCurrentMinorReleaseFor7()
+  def releaseVersion = "7.15.2"
   return version(releaseVersion, args)
 }
 

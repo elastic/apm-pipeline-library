@@ -1,6 +1,25 @@
 {
   "mappings" : {
     "properties" : {
+      "errorMetrics" : {
+        "properties" : {
+          "closedChannelException" : {
+            "type" : "long"
+          },
+          "interruptedException" : {
+            "type" : "long"
+          },
+          "missingContextVariableException" : {
+            "type" : "long"
+          },
+          "notSerializableException" : {
+            "type" : "long"
+          },
+          "reusedWorkers" : {
+            "type" : "long"
+          }
+        }
+      },
       "artifacts" : {
         "properties" : {
           "name" : {
