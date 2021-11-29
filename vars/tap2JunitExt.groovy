@@ -27,7 +27,7 @@
   tap2JunitExt()
 
   // Convert TAP files to JUnit using the suffix junit.xml
-  tap2JunitExt(pattern: '*.TAP', suffix: 'junit.xml')
+  tap2JunitExt(pattern: '*.tap', suffix: 'junit.xml')
 
 */
 def call(Map args = [:]) {

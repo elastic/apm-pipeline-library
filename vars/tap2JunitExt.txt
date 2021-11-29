@@ -10,7 +10,7 @@ project handle the test report in one single file.
   tap2JunitExt()
 
   // Convert TAP files to JUnit using the suffix junit.xml
-  tap2JunitExt(pattern: '*.TAP', suffix: 'junit.xml')
+  tap2JunitExt(pattern: '*.tap', suffix: 'junit.xml')
 ```
 
 * *package*: Name of the package in the JUnit report. Default 'co.elastic'.
