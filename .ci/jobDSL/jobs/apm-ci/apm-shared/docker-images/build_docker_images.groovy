@@ -49,16 +49,16 @@ def dockerImages = [
     repo: 'https://github.com/elastic/beats.git',
     folder: 'metricbeat',
     push: true,
-    docker_build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
-    docker_push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
+    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
   ],
   [
     name: 'metricbeat-integrations-images-x-pack',
     repo: 'https://github.com/elastic/beats.git',
     folder: 'x-pack/metricbeat',
     push: true,
-    docker_build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
-    docker_push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
+    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
   ],
   [
     name: 'apm-proxy',
@@ -80,8 +80,8 @@ def dockerImages = [
     repo: 'https://github.com/elastic/observability-test-environments.git',
     tag: 'latest',
     folder: 'tests',
-    docker_build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
-    docker_push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
+    build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
+    push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
     test_script: 'make test-functional-opbeans',
     push: true
   ]
@@ -135,8 +135,8 @@ apmPipelineLibraryDockerImages.each{ name ->
     repo: 'https://github.com/elastic/apm-pipeline-library.git',
     tag: "${tag}",
     folder: '.ci/docker',
-    docker_build_script: "docker build --force-rm -t ${dockerImage} ${name}",
-    docker_push_script: "docker push ${dockerImage}",
+    build_script: "docker build --force-rm -t ${dockerImage} ${name}",
+    push_script: "docker push ${dockerImage}",
     test_script: "make test-${name}",
     push: true
   ])
@@ -204,9 +204,9 @@ dockerImages.add([
   repo: 'https://github.com/elastic/apm-agent-ruby.git',
   folder: '.ci/docker/jruby',
   push: true,
-  docker_build_script: "./run.sh --action build --registry ${registry}/${prefix}",
+  build_script: "./run.sh --action build --registry ${registry}/${prefix}",
   docker_test_script: "./run.sh --action test --registry ${registry}/${prefix}",
-  docker_push_script: "./run.sh --action push --registry ${registry}/${prefix}"
+  push_script: "./run.sh --action push --registry ${registry}/${prefix}"
 ])
 
 def rubyVersions = [
@@ -267,7 +267,7 @@ dockerImages.each{ item ->
       stringParam('folder', "${item.folder ? item.folder : '.'}", "Folder where the Dockrefile is.")
       stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
       booleanParam('push', item.push, "True to push the Docker image to the registry.")
-      stringParam('docker_build_opts', "", "Additional flags to the default docker build command.")
+      stringParam('docker_build_opts', "${item.build_opts ? item.build_opts : ''}", "Additional flags to the default docker build command.")
       stringParam('docker_build_script', "${item.build_script ? item.build_script : ''}", "Script/command to build the Docker image.")
       stringParam('docker_test_script', "${item.test_script ? item.test_script : ''}", "Script/command to test the Docker image.")
       stringParam('docker_push_script', "${item.push_script ? item.push_script : ''}", "Script/command to push the Docker image.")
