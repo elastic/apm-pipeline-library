@@ -126,6 +126,7 @@ def apmPipelineLibraryDockerImages = [
   "kibana-yarn",
   "kibana-devmode"
 ]
+
 apmPipelineLibraryDockerImages.each{ name ->
   def tag = 'latest'
   def dockerImage = "${registry}/${prefix}/${name}:${tag}"
