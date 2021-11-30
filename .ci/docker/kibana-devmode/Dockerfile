@@ -3,7 +3,7 @@ FROM kibana-yarn:latest AS src
 
 ARG GID=1001
 ARG UID=1001
-ARG REFSPEC=master
+ARG REFSPEC=main
 
 RUN git fetch --quiet --jobs 5 origin "${REFSPEC}" \
   && git checkout "origin/${REFSPEC}" -b "branch_run"

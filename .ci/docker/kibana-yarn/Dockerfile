@@ -3,7 +3,7 @@ FROM node:${NODE_VERSION} AS src
 
 ARG GID=1001
 ARG UID=1001
-ARG REFSPEC=master
+ARG REFSPEC=main
 
 RUN mkdir -p /usr/share/kibana
 WORKDIR /usr/share/kibana
