@@ -4,7 +4,7 @@ DSL = '''pipeline {
   stages {
     stage('withAWSEnv') {
       steps {
-        withAWSEnv(secret: 'secret/observability-team/ci/service-account/aws-create-user') {{
+        withAWSEnv(secret: 'secret/observability-team/ci/service-account/aws-create-user') {
           sh 'aws --version'
         }
       }
