@@ -81,8 +81,9 @@ def downloadAndInstall(where, version) {
   dir(where) {
     download(url: url, output: zipfile)
     unzip(quiet: true, zipFile: zipfile)
-    sh(label: 'aws-install', script: "sh -x ./aws/install --install-dir ${where}/aws-cli --bin-dir ${where}/bin --update")
-    sh(label: 'change permissions', script: "chmod 755 ./aws/dist/aws")
+    sh(label: 'aws-install', script: "sh ./aws/install --install-dir ${where}/aws-cli --bin-dir ${where}/bin --update")
+    // Otherwise @tmp/bin/aws: Permission denied
+    sh(label: 'change permissions', script: "chmod -R 755 ${where}")
   }
 }
 
