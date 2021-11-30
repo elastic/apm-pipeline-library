@@ -41,7 +41,7 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         dir("${BASE_DIR}"){
-          git "${params.repo}"
+          git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
         }
         prepare()
       }
