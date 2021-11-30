@@ -20,7 +20,7 @@
 pipeline {
   agent { label "ubuntu-20"}
   environment {
-    BASE_DIR="${name}-${tag}"
+    BASE_DIR="${params.name}-${params.tag}"
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
     DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
@@ -41,7 +41,7 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         dir("${BASE_DIR}"){
-          git "${params.repo}"
+          git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
         }
         prepare()
       }
@@ -79,10 +79,10 @@ pipeline {
 
 def generateImageName(){
   def image = "${params.registry}"
-  if(args.prefix != null && args.prefix != ""){
+  if(isNotBlank(params.prefix)){
     image += "/${params.prefix}"
   }
-  image += "/${name}:${tag}"
+  image += "/${params.name}:${params.tag}"
   return image
 }
 
@@ -99,7 +99,7 @@ def buildDocker(){
 }
 
 def testDocker(){
-  def script = isNotBlank(params.docker_build_script) ? params.docker_build_script : "echo 'TBD'"
+  def script = isNotBlank(params.docker_test_script) ? params.docker_test_script : "echo 'TBD'"
   dir("${BASE_DIR}"){
     dir("${params.folder}"){
       sh(label: 'Test the Docker image', script: script)
@@ -108,7 +108,7 @@ def testDocker(){
 }
 
 def pushDocker(){
-  def script = isNotBlank(params.docker_build_script) ? params.docker_build_script : "docker push ${generateImageName()}"
+  def script = isNotBlank(params.docker_push_script) ? params.docker_push_script : "docker push ${generateImageName()}"
   dir("${BASE_DIR}"){
     dir("${params.folder}"){
       retry(3) {

@@ -18,12 +18,13 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'master' }
+  agent { label 'ubuntu && immutable' }
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -32,6 +33,9 @@ pipeline {
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+  }
+  parameters {
+    string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -67,6 +71,13 @@ pipeline {
         )
       }
     }
+    stage('Stalled Beats Bumps') {
+      steps {
+        runNotifyStalledBeatsBumps(branch: 'master')
+        runNotifyStalledBeatsBumps(branch: '8.<current>')
+        runNotifyStalledBeatsBumps(branch: '7.<next>')
+      }
+    }
   }
   post {
     cleanup {
@@ -75,25 +86,38 @@ pipeline {
   }
 }
 
+def runNotifyStalledBeatsBumps(Map args = [:]){
+  def branch = getMajorMinorGivenTheBranch(args)
+  notifyStalledBeatsBumps(branch: branch,
+                          subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
+                          sendEmail: true,
+                          to: env.BEATS_MAILING_LIST)
+}
+
 def runWatcherForBranch(Map args = [:]){
-  def branch = args.branch
-  if (branch.contains('8.<current>')) {
-    current8 = bumpUtils.getCurrentMinorReleaseFor8()
-    def parts = current8.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
-  if (branch.contains('7.<current>')) {
-    current7 = bumpUtils.getCurrentMinorReleaseFor7()
-    def parts = current7.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
-  if (branch.contains('7.<next>')) {
-    current7 = bumpUtils.getNextMinorReleaseFor7()
-    def parts = current7.split('\\.')
-    branch = "${parts[0]}.${parts[1]}"
-  }
+  def branch = getMajorMinorGivenTheBranch(args)
   runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
              subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
              sendEmail: true,
-             to: 'beats-contrib@elastic.co')
+             to: env.BEATS_MAILING_LIST)
+}
+
+// Helper function to resolve current and next special keywords.
+def getMajorMinorGivenTheBranch(Map args = [:]) {
+  def branch = args.branch
+  if (branch.contains('8.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor8())
+  }
+  if (branch.contains('7.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor7())
+  }
+  if (branch.contains('7.<next>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getNextMinorReleaseFor7())
+  }
+  return branch
+}
+
+def getMajorMinorGivenTheVersion(version) {
+  def parts = version.split('\\.')
+  return "${parts[0]}.${parts[1]}"
 }

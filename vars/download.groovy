@@ -16,26 +16,15 @@
 // under the License.
 
 /**
-  Check it the given tools is installed and available. It does also support version
-  validation.
+ Download the given URL regardless of the tool.
 
-  whenTrue(isInstalled(tool: 'docker', flag: '--version')) {
-    // ...
-  }
+ download(url: 'https://....', output: 'gsutil.tar.gz')
 
-  whenTrue(isInstalled(tool: '7z')) {
-    // ...
-  }
 */
 def call(Map args = [:]) {
-  def tool = args.containsKey('tool') ? args.tool : error('isInstalled: tool parameter is required')
-  def version = args.get('version', '')
-  def flag = args.get('flag', '')
-  def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
-
-  def isToolInstalled = cmd(label: 'isToolInstalled', returnStatus: true, script: "${tool} ${flag} ${redirectStdout}")
-  if (version?.trim() && isToolInstalled == 0) {
-    return cmd(label: 'isToolVersionInstalled', returnStdout: true, script: "${tool} ${flag}").contains(version)
+  def url = args.containsKey('url') ? args.url : error('download: url parameter is required')
+  def output = args.containsKey('output') ? args.output : error('download: output parameter is required')
+  if (!downloadWithWget(url: url, output: output)) {
+    downloadWithCurl(url: url, output: output)
   }
-  return isToolInstalled == 0
 }
