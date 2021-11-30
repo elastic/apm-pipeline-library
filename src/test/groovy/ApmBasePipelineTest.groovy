@@ -394,6 +394,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('download', [Map.class], { m ->
+      def script = loadScript('vars/download.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('downloadWithCurl', [Map.class], { m ->
       def script = loadScript('vars/downloadWithCurl.groovy')
       return script.call(m)

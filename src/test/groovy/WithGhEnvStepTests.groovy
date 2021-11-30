@@ -27,7 +27,6 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/withGhEnv.groovy')
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
   }
 
   @Test
@@ -54,8 +53,7 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
-    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 0))
+    assertTrue(assertMethodCallOccurrences('download', 1))
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -78,34 +76,6 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_gh_installed_by_default_with_wget() throws Exception {
-    def ret = false
-    script.call() {
-      ret = true
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('downloadWithWget', 'linux_amd64.tar.gz'))
-    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 0))
-    assertTrue(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('downloadWithWget', [Map.class], { return false })
-    def ret = false
-    script.call() {
-      ret = true
-    }
-    printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 1))
-    assertTrue(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_cache() throws Exception {
     def ret = false
     script.call() {
@@ -116,25 +86,8 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('downloadWithWget', ''))
+    assertTrue(assertMethodCallContainsPattern('download', ''))
     assertTrue(assertMethodCallOccurrences('pwd', 1))
-    assertTrue(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
-    def ret = false
-    script.call() {
-      ret = true
-    }
-    script.call() {
-      ret = true
-    }
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallOccurrences('pwd', 1))
-    assertTrue(assertMethodCallContainsPattern('downloadWithWget', ''))
     assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: get the ghLocation from cache.'))
     assertTrue(assertMethodCallContainsPattern('log', 'withGhEnv: set the ghLocation.'))
     assertTrue(ret)
@@ -148,7 +101,7 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
       ret = true
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallContainsPattern('isInstalled', 'version=2.0.0'))
     assertTrue(ret)
   }
 
@@ -161,7 +114,7 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
-    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(assertMethodCallOccurrences('download', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
@@ -175,7 +128,7 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
-    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(assertMethodCallOccurrences('download', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
@@ -189,7 +142,7 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
-    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertTrue(assertMethodCallOccurrences('download', 1))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
@@ -197,13 +150,9 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
   @Test
   void test_in_darwin() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { return 'darwin' })
-    def ret = false
-    script.call() {
-      ret = true
-    }
+    script.downloadInstaller("/var", '1.1.0')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'macOS_amd64.tar.gz'))
-    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('download', 'gh_1.1.0_macOS_amd64.tar.gz'))
     assertJobStatusSuccess()
   }
 
@@ -211,13 +160,9 @@ class WithGhEnvStepTests extends ApmBasePipelineTest {
   void test_in_arm() throws Exception {
     helper.registerAllowedMethod('isArm', [], { return true })
     helper.registerAllowedMethod('nodeOS', [], { return 'linux' })
-    def ret = false
-    script.call() {
-      ret = true
-    }
+    script.downloadInstaller("/var", '1.1.0')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'linux_arm64.tar.gz'))
-    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('download', 'gh_1.1.0_linux_arm64.tar.gz'))
     assertJobStatusSuccess()
   }
 }

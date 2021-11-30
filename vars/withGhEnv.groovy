@@ -60,9 +60,7 @@ def downloadInstaller(where, version) {
 
   if(isUnix()) {
     dir(where) {
-      if (!downloadWithWget(url: url, output: tarball)) {
-        downloadWithCurl(url: url, output: tarball)
-      }
+      download(url: url, output: tarball)
       uncompress(tarball)
     }
   } else {
