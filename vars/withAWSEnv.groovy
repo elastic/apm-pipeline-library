@@ -46,6 +46,10 @@ def call(Map args = [:], Closure body) {
     if (!credentialsContent?.trim()) {
       error("withAWSEnv: Unable to read the credentials value")
     }
+    def user = value?.user
+    if (!user?.trim()) {
+      error("withAWSEnv: Unable to read the user value")
+    }
     // Fix csv format with User Name rather than User name
     // Rather than changing the vault secret let's enforce the string manipulation
     // otherwise it might be forgotten if it gets updated.
@@ -54,11 +58,13 @@ def call(Map args = [:], Closure body) {
     // See https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/import.html
     cmd(label: 'authenticate', script: 'aws configure import --csv file://' + secretFileLocation)
     try {
-      body()
+      // For the profile to match the user name
+      withEnv(["AWS_PROFILE=${user}"]){
+        body()
+      }
     } finally {
       if (fileExists("${secretFileLocation}")) {
         if(isUnix()){
-          return
           sh "rm ${secretFileLocation}"
         } else {
           bat "del ${secretFileLocation}"

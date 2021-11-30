@@ -646,7 +646,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return [data: [token: 'my-token-1', url: 'my-url-1']]
     }
     if(VaultSecret.SECRET_AWS_PROVISIONER.equals(s)){
-      return [data: [ csv: 'my_csv_credentials' ]]
+      return [data: [ csv: 'my_csv_credentials', user: 'user@acme.co' ]]
     }
     if(VaultSecret.SECRET_AZURE.equals(s)){
       return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]

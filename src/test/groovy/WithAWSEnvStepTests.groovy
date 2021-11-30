@@ -53,6 +53,7 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('cmd', 'aws configure import --csv file://'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'AWS_PROFILE'))
     assertTrue(assertMethodCallContainsPattern('sh', 'rm'))
     assertJobStatusSuccess()
   }

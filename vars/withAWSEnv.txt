@@ -1,4 +1,5 @@
-Configure the AWS context to run the given body closure
+Configure the AWS context to run the given body closure. The AWS_PROFILE environment variable
+is also configured with the profile to be used.
 
 ```
 withAWSEnv(secret: 'secret/team/ci/service-account/aws-provisioner') {
