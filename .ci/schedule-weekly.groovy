@@ -89,6 +89,7 @@ pipeline {
 def runNotifyStalledBeatsBumps(Map args = [:]){
   def branch = getMajorMinorGivenTheBranch(args)
   notifyStalledBeatsBumps(branch: branch,
+                          subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
                           sendEmail: true,
                           to: env.BEATS_MAILING_LIST)
 }

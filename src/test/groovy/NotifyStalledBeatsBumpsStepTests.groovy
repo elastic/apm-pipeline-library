@@ -59,10 +59,11 @@ class NotifyStalledBeatsBumpsStepTests extends ApmBasePipelineTest {
   @Test
   void test_with_email() throws Exception {
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
-    script.call(branch: 'foo', sendEmail: true, to: 'me@acme.com')
+    script.call(branch: 'foo', sendEmail: true, to: 'me@acme.com', subject: 'foo: bar')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', "'https://github.com/elastic/beats.git' foo 7"))
     assertTrue(assertMethodCallContainsPattern('mail', "to=me@acme.com"))
+    assertTrue(assertMethodCallContainsPattern('mail', "subject=foo: bar"))
   }
 
   @Test
