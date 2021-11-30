@@ -30,30 +30,29 @@ def call(Map args = [:], Closure body) {
   def version = args.get('version', '2.4.2')
   def forceInstallation = args.get('forceInstallation', false)
 
-  def gsUtilLocation = pwd(tmp: true)
-  def secretFileLocation = "${gsUtilLocation}/aws-cloud-credentials.json"
+  def awsUtilLocation = pwd(tmp: true)
+  def secretFileLocation = "${awsUtilLocation}/aws-credentials.json"
 
-  withEnv(["PATH+AWS=${gsUtilLocation}/aws-cli", "PATH+AWS_BIN=${gsUtilLocation}/bin"]) {
+  withEnv(["PATH+AWS=${awsUtilLocation}/aws-cli", "PATH+AWS_BIN=${awsUtilLocation}/bin"]) {
     if (forceInstallation || !isInstalled(tool: 'aws', flag: '--version', version: version)) {
-      downloadInstaller(gsUtilLocation, version)
+      downloadAndInstall(awsUtilLocation, version)
     }
     def props = getVaultSecret(secret: secret)
     if (props?.errors) {
-      error "withAWSEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
+      error("withAWSEnv: Unable to get credentials from the vault: ${props.errors.toString()}")
     }
     def value = props?.data
-    // TODO: define the content format
-    def credentialsContent = value?.issue
+    def credentialsContent = value?.csv
     if (!credentialsContent?.trim()) {
-      error "withAWSEnv: Unable to read the credentials value"
+      error("withAWSEnv: Unable to read the credentials value")
     }
     writeFile(file: secretFileLocation, text: credentialsContent)
-    awsAuth(secretFileLocation)
+    // See https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/import.html
+    cmd(label: 'authenticate', script: 'aws configure import --csv ' + secretFileLocation)
     try {
       body()
     } finally {
       if (fileExists("${secretFileLocation}")) {
-        return
         if(isUnix()){
           sh "rm ${secretFileLocation}"
         } else {
@@ -64,20 +63,15 @@ def call(Map args = [:], Closure body) {
   }
 }
 
-def awsAuth(keyFile) {
-  // TBD
-  cmd(label: 'authenticate', script: 'echo ' + keyFile)
-}
-
-def downloadInstaller(where, version) {
+def downloadAndInstall(where, version) {
   def url = awsURL(version)
-  def zipfile = "awscli.zip"
+  def zipfile = 'awscli.zip'
 
   dir(where) {
     download(url: url, output: zipfile)
     unzip(quiet: true, zipFile: zipfile)
-    sh "sh -x ./aws/install --install-dir ${where}/aws-cli --bin-dir ${where}/bin --update"
-    sh "chmod 755 ./aws/dist/aws"
+    sh(label: 'aws-install', script: "sh -x ./aws/install --install-dir ${where}/aws-cli --bin-dir ${where}/bin --update")
+    sh(label: 'change permissions', script: "chmod 755 ./aws/dist/aws")
   }
 }
 
