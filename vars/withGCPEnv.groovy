@@ -90,9 +90,7 @@ def downloadInstaller(where) {
   def tarball = "gsutil.${isUnix() ? 'tar.gz' : 'zip'}"
 
   dir(where) {
-    if (!downloadWithWget(url: url, output: tarball)) {
-      downloadWithCurl(url: url, output: tarball)
-    }
+    download(url: url, output: tarball)
     uncompress(tarball)
   }
 }
