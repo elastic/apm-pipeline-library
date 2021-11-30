@@ -23,6 +23,9 @@ withAWSEnv(secret: 'foo') {
 }
 */
 def call(Map args = [:], Closure body) {
+  if(!isUnix()){
+    error('withAWSEnv: windows is not supported yet.')
+  }
   def secret = args.containsKey('secret') ? args.secret : error('withAWSEnv: secret parameter is required.')
   def version = args.get('version', '2.4.2')
   def forceInstallation = args.get('forceInstallation', false)
@@ -71,10 +74,8 @@ def downloadInstaller(where, version) {
   def zipfile = "awscli.zip"
 
   dir(where) {
-    if (!downloadWithWget(url: url, output: zipfile)) {
-      downloadWithCurl(url: url, output: zipfile)
-    }
-    uncompress(zipfile)
+    download(url: url, output: zipfile)
+    unzip(quiet: true, zipFile: zipfile)
     sh "sh -x ./aws/install --install-dir ${where}/aws-cli --bin-dir ${where}/bin --update"
     sh "chmod 755 ./aws/dist/aws"
   }
@@ -86,9 +87,5 @@ def awsURL(version) {
   if (isUnix()) {
     return "${url}-linux-${arch}-${version}.zip"
   }
-  error 'unsupported'
-}
-
-def uncompress(zipFile) {
-  unzip(quiet: true, zipFile: zipFile)
+  error 'withAWSEnv: windows is not supported yet.'
 }

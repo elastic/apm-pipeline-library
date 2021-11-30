@@ -28,7 +28,6 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
-    helper.registerAllowedMethod('fileExists', [Map.class], { return false })
     script = loadScript('vars/withAWSEnv.groovy')
   }
 
@@ -53,8 +52,6 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(ret)
-    assertFalse(assertMethodCallContainsPattern('withCredentials', ''))
-    assertTrue(assertMethodCallContainsPattern('sh', 'rm'))
     assertJobStatusSuccess()
   }
 
@@ -75,49 +72,75 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_aws_installed_by_default_with_wget() throws Exception {
+  void test_with_force_installation_and_version_already_installed() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
+    def ret = false
+    script.call(secret: VaultSecret.SECRET_AWS_PROVISIONER.toString(), version: "2.0.0", forceInstallation: true) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('download', 1))
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_force_installation_and_version_not_installed() throws Exception {
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
+    def ret = false
+    script.call(secret: VaultSecret.SECRET_AWS_PROVISIONER.toString(), version: "2.0.0", forceInstallation: true) {
+      ret = true
     }
     printCallStack()
-    assertTrue(result)
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+AWS'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O awscli.zip'))
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('download', 1))
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_without_aws_installed_by_default_no_wget_no_curl() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
+  void test_without_force_installation_and_version_not_installed() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') || !m.tool.equals('aws') })
+    def ret = false
+    script.call(secret: VaultSecret.SECRET_AWS_PROVISIONER.toString(), version: "2.0.0", forceInstallation: false) {
+      ret = true
     }
     printCallStack()
-    assertTrue(result)
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertFalse(assertMethodCallContainsPattern('sh', 'curl'))
+    assertTrue(assertMethodCallContainsPattern('sh', '2.0.0'))
+    assertTrue(assertMethodCallOccurrences('download', 1))
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_without_aws_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return !(m.tool.equals('wget') || m.tool.equals('aws'))})
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
+  void test_awsURL_in_windows() throws Exception {
+    helper.registerAllowedMethod('isUnix', [], { false })
+    try {
+      script.awsURL('2.2.2')
+    } catch(err) {
+      println err
+      // NOOP
     }
     printCallStack()
-    assertTrue(result)
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O awscli.zip'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo awscli.zip --retry 3 --retry-delay 2 --max-time 10'))
+    assertTrue(assertMethodCallContainsPattern('error', 'windows is not supported yet'))
+  }
+
+  @Test
+  void test_awsURL_in_32_bits() throws Exception {
+    helper.registerAllowedMethod('is64', [], { return false })
+    def ret = script.awsURL('2.2.2')
+    printCallStack()
+    assertTrue(ret.contains("linux-x86-2.2.2.zip"))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_windows() throws Exception {
+  void testWindows() throws Exception {
+    testWindows() {
+      script.call() {
+        // NOOP
+      }
+    }
   }
-
 }
