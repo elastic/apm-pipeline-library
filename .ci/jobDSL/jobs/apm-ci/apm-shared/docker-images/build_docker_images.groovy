@@ -46,7 +46,7 @@ def prefix = "observability-ci"
 def dockerImages = [
   [
     name: 'metricbeat-integrations-images',
-    repo: 'https://github.com/elastic/beats.git',
+    repo: 'git@github.com:elastic/beats.git',
     folder: 'metricbeat',
     push: true,
     build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
@@ -54,7 +54,7 @@ def dockerImages = [
   ],
   [
     name: 'metricbeat-integrations-images-x-pack',
-    repo: 'https://github.com/elastic/beats.git',
+    repo: 'git@github.com:elastic/beats.git',
     folder: 'x-pack/metricbeat',
     push: true,
     build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
@@ -62,22 +62,23 @@ def dockerImages = [
   ],
   [
     name: 'apm-proxy',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
-    prepare_script: 'git clone https://github.com/haproxytech/spoa-mirror.git'
+    prepare_script: 'git clone git@github.com:haproxytech/spoa-mirror.git'
   ],
   [
     name: 'apm-proxy-be',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
+    branch: 'main',
     tag: 'latest',
     folder: 'tools/apm_proxy/backend',
     push: true
   ],
   [
     name: 'functional-opbeans',
-    repo: 'https://github.com/elastic/observability-test-environments.git',
+    repo: 'git@github.com:elastic/observability-test-environments.git',
     tag: 'latest',
     folder: 'tests',
     build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
@@ -100,14 +101,14 @@ def opbeansDockerImages = [
   "opbeans-go",
   "opbeans-loadgen",
   "opbeans-ruby"
-  /** FIXME disable until it is fully implemented: https://github.com/elastic/opbeans-flask/pull/5
+  /** FIXME disable until it is fully implemented: git@github.com:elastic/opbeans-flask/pull/5
   "opbeans-flask",*/
 ]
 
 opbeansDockerImages.each{ name ->
   dockerImages.add([
     name: "${name}",
-    repo: "https://github.com/elastic/${name}.git",
+    repo: "git@github.com:elastic/${name}.git",
     tag: 'daily',
     folder: '.',
     push: true
@@ -132,7 +133,7 @@ apmPipelineLibraryDockerImages.each{ name ->
   def dockerImage = "${registry}/${prefix}/${name}:${tag}"
   dockerImages.add([
     name: "${name}",
-    repo: 'https://github.com/elastic/apm-pipeline-library.git',
+    repo: 'git@github.com:elastic/apm-pipeline-library.git',
     tag: "${tag}",
     folder: '.ci/docker',
     build_script: "docker build --force-rm -t ${dockerImage} ${name}",
@@ -158,7 +159,7 @@ pythonVersions.each{ version ->
   dockerImages.add([
     job: "apm-agent-python-${version}",
     name: "apm-agent-python",
-    repo: 'https://github.com/elastic/apm-agent-python.git',
+    repo: 'git@github.com:elastic/apm-agent-python.git',
     tag: "${version}",
     folder: 'tests',
     docker_build_opts: "--build-arg PYTHON_IMAGE=${pythonVersion}",
@@ -187,7 +188,7 @@ nodeVersions.each{ version ->
   dockerImages.add([
     job: "apm-agent-nodejs-${version}",
     name: "apm-agent-nodejs",
-    repo: 'https://github.com/elastic/apm-agent-nodejs.git',
+    repo: 'git@github.com:elastic/apm-agent-nodejs.git',
     tag: "${version}",
     folder: '.ci/docker/node-container',
     docker_build_opts: "--build-arg NODE_VERSION=${nodejsVersion}",
@@ -201,7 +202,7 @@ nodeVersions.each{ version ->
 
 dockerImages.add([
   name: "apm-agent-jruby",
-  repo: 'https://github.com/elastic/apm-agent-ruby.git',
+  repo: 'git@github.com:elastic/apm-agent-ruby.git',
   folder: '.ci/docker/jruby',
   push: true,
   build_script: "./run.sh --action build --registry ${registry}/${prefix}",
@@ -227,7 +228,7 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
   dockerImages.add([
     job: "apm-agent-ruby-${rubyVersion}",
     name: "apm-agent-ruby",
-    repo: 'https://github.com/elastic/apm-agent-ruby.git',
+    repo: 'git@github.com:elastic/apm-agent-ruby.git',
     tag: "${rubyVersion}",
     folder: 'spec',
     docker_build_opts: "--build-arg RUBY_IMAGE='${version}'",
@@ -246,7 +247,7 @@ def nodejsVersion = "12"
 libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
-    repo: 'https://github.com/elastic/apm-agent-ruby.git',
+    repo: 'git@github.com:elastic/apm-agent-ruby.git',
     tag: "${nodejsVersion}",
     folder: '.ci/docker/node-${library}',
     docker_build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
@@ -255,23 +256,23 @@ libraries.each { library ->
 }
 
 dockerImages.each{ item ->
-  pipelineJob("apm-shared/docker-images/${item.job ? item.job : item.name}") {
-    displayName("${item.name} ${item.tag ? item.tag : ''} - Docker image")
-    description("Job to build and push the ${item.name} ${item.tag ? item.tag : ''} Docker image")
+  pipelineJob("apm-shared/docker-images/${item.job ?: item.name}") {
+    displayName("${item.name} ${item.tag ?: ''} - Docker image")
+    description("Job to build and push the ${item.name} ${item.tag ?: ''} Docker image")
     parameters {
-      stringParam('branch_specifier', "master", "Branch where the Jenkinsfile is.")
+      stringParam('branch_specifier', "${item.branch ?: 'master'}", "Branch where the Jenkinsfile is.")
       stringParam('registry', "${registry}", "Docker Registry.")
       stringParam('prefix', "${prefix}", "Docker registry namespace.")
-      stringParam('tag', "${item.tag ? item.tag : 'latest'}", "Docker image tag.")
+      stringParam('tag', "${item.tag ?: 'latest'}", "Docker image tag.")
       stringParam('name', "${item.name}", "Docker image name.")
-      stringParam('folder', "${item.folder ? item.folder : '.'}", "Folder where the Dockrefile is.")
+      stringParam('folder', "${item.folder ?: '.'}", "Folder where the Dockrefile is.")
       stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
       booleanParam('push', item.push, "True to push the Docker image to the registry.")
-      stringParam('docker_build_opts', "${item.build_opts ? item.build_opts : ''}", "Additional flags to the default docker build command.")
-      stringParam('docker_build_script', "${item.build_script ? item.build_script : ''}", "Script/command to build the Docker image.")
-      stringParam('docker_test_script', "${item.test_script ? item.test_script : ''}", "Script/command to test the Docker image.")
-      stringParam('docker_push_script', "${item.push_script ? item.push_script : ''}", "Script/command to push the Docker image.")
-      stringParam('prepare_script', "${item.prepare_script ? item.prepare_script : ''}", "Script/command to run before everything.")
+      stringParam('docker_build_opts', "${item.build_opts ?: ''}", "Additional flags to the default docker build command.")
+      stringParam('docker_build_script', "${item.build_script ?: ''}", "Script/command to build the Docker image.")
+      stringParam('docker_test_script', "${item.test_script ?: ''}", "Script/command to test the Docker image.")
+      stringParam('docker_push_script', "${item.push_script ?: ''}", "Script/command to push the Docker image.")
+      stringParam('prepare_script', "${item.prepare_script ?: ''}", "Script/command to run before everything.")
     }
     disabled(false)
     quietPeriod(10)
