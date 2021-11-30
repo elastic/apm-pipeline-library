@@ -426,6 +426,16 @@ dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: fa
 
 _NOTE_: Windows is not supported.
 
+## download
+Download the given URL regardless of the tool.
+
+```
+download(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the output will be written to. Mandatory.
+
 ## downloadWithCurl
 Download the given URL using CUrl, if possible. It returns true if possible otherwise false
 
