@@ -162,7 +162,7 @@ pythonVersions.each{ version ->
     repo: 'git@github.com:elastic/apm-agent-python.git',
     tag: "${version}",
     folder: 'tests',
-    docker_build_opts: "--build-arg PYTHON_IMAGE=${pythonVersion}",
+    build_opts: "--build-arg PYTHON_IMAGE=${pythonVersion}",
     push: true
   ])
 }
@@ -191,7 +191,7 @@ nodeVersions.each{ version ->
     repo: 'git@github.com:elastic/apm-agent-nodejs.git',
     tag: "${version}",
     folder: '.ci/docker/node-container',
-    docker_build_opts: "--build-arg NODE_VERSION=${nodejsVersion}",
+    build_opts: "--build-arg NODE_VERSION=${nodejsVersion}",
     push: true
   ])
 }
@@ -206,7 +206,7 @@ dockerImages.add([
   folder: '.ci/docker/jruby',
   push: true,
   build_script: "./run.sh --action build --registry ${registry}/${prefix}",
-  docker_test_script: "./run.sh --action test --registry ${registry}/${prefix}",
+  test_script: "./run.sh --action test --registry ${registry}/${prefix}",
   push_script: "./run.sh --action push --registry ${registry}/${prefix}"
 ])
 
@@ -231,7 +231,7 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
     repo: 'git@github.com:elastic/apm-agent-ruby.git',
     tag: "${rubyVersion}",
     folder: 'spec',
-    docker_build_opts: "--build-arg RUBY_IMAGE='${version}'",
+    build_opts: "--build-arg RUBY_IMAGE='${version}'",
     push: true
   ])
 }
@@ -250,7 +250,7 @@ libraries.each { library ->
     repo: 'git@github.com:elastic/apm-agent-ruby.git',
     tag: "${nodejsVersion}",
     folder: '.ci/docker/node-${library}',
-    docker_build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
+    build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
     push: true
   ])
 }
