@@ -35,38 +35,66 @@ def testdir(testdir):
         testdir.runpytest = testdir.runpytest_subprocess
     return testdir
 
+def assertTestSuit(span):
+    assert span["kind"] == "SpanKind.SERVER"
+    assert span["status"]["status_code"] == "OK"
+    assert span["attributes"]["test.outcome"] == "passed"
+    assert span["parent_id"] is None
+    return True
 
-def test_basic_wrapper(testdir):
-    testdir.makepyfile(
-        common_code
-        + """
-def test_basic(caplog):
-    time.sleep(5)
-    pass
-"""
-    )
+def assertSpan(span, name, outcome, status):
+    assert span["kind"] == "SpanKind.INTERNAL"
+    assert span["status"]["status_code"] == status
+    assert span["attributes"]["test.name"] == name
+    assert span["attributes"]["test.outcome"] == outcome
+    assert len(span["parent_id"]) > 0
+    return True
+
+def assertTest(testdir, name, outcome, status):
     testdir.runpytest("--otel-span-file-output=./test_spans.json")
     span_list = None
     with open("test_spans.json", encoding='utf-8') as input:
         span_list = json.loads(input.read())
-    foundTestBasic = False
+    foundTest = False
     foundTestSuit = False
     for span in span_list:
-        if span["name"] == "Running test_basic":
-            assert span["kind"] == "SpanKind.INTERNAL"
-            assert span["status"]["status_code"] == "OK"
-            assert span["attributes"]["test.name"] == "test_basic"
-            assert span["attributes"]["test.outcome"] == "passed"
-            assert len(span["parent_id"]) > 0
-            foundTestBasic = True
+        if span["name"] == "Running {}".format(name):
+            foundTest = assertSpan(span, name, outcome, status)
         if span["name"] == "Test Suite":
-            assert span["kind"] == "SpanKind.SERVER"
-            assert span["status"]["status_code"] == "OK"
-            assert span["attributes"]["test.outcome"] == "passed"
-            assert span["parent_id"] is None
-            foundTestSuit = True
-    assert foundTestBasic
+            foundTestSuit = assertTestSuit(span)
+    assert foundTest
     assert foundTestSuit
+
+def test_basic_plugin(testdir):
+    testdir.makepyfile(
+        common_code
+        + """
+def test_basic():
+    time.sleep(5)
+    pass
+""")
+    assertTest(testdir, "test_basic", "passed", "OK")
+
+
+def test_success_plugin(testdir):
+    testdir.makepyfile(
+        common_code
+        + """
+def test_success():
+    assert True
+""")
+    assertTest(testdir, "test_success", "passed", "OK")
+
+
+def test_failure_plugin(testdir):
+    testdir.makepyfile(
+        common_code
+        + """
+def test_failure():
+    assert 1 < 0
+""")
+    assertTest(testdir, "test_failure", "failed", "ERROR")
+
 #
 # def test_success():
 #     """Success."""
