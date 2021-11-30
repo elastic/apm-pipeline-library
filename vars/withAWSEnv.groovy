@@ -46,14 +46,19 @@ def call(Map args = [:], Closure body) {
     if (!credentialsContent?.trim()) {
       error("withAWSEnv: Unable to read the credentials value")
     }
-    writeFile(file: secretFileLocation, text: credentialsContent)
+    // Fix csv format with User Name rather than User name
+    // Rather than changing the vault secret let's enforce the string manipulation
+    // otherwise it might be forgotten if it gets updated.
+    // https://forums.aws.amazon.com/thread.jspa?threadID=328307
+    writeFile(file: secretFileLocation, text: credentialsContent.replaceAll('User name,', 'User Name,'))
     // See https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/import.html
-    cmd(label: 'authenticate', script: 'aws configure import --csv ' + secretFileLocation)
+    cmd(label: 'authenticate', script: 'aws configure import --csv file://' + secretFileLocation)
     try {
       body()
     } finally {
       if (fileExists("${secretFileLocation}")) {
         if(isUnix()){
+          return
           sh "rm ${secretFileLocation}"
         } else {
           bat "del ${secretFileLocation}"
