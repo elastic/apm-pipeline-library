@@ -374,6 +374,17 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_notify_pr_with_not_built() throws Exception {
+    script.notifyPR(
+      build: readJSON(file: "build-info.json"),
+      buildStatus: "NOT_BUILT"
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'There is a new build on-going so the previous on-going builds have been aborted'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_notify_pr_without_comment_notifications() throws Exception {
     script.notifyPR(
       build: readJSON(file: "build-info.json"),

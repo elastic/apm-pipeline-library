@@ -1,5 +1,7 @@
 <%if (statusSuccess) {%>
 ## :green_heart: Build Succeeded
+<%} else if (abortedBuild) {%>
+  > There is a new build on-going so the previous on-going builds have been aborted.
 <%} else if (buildStatus?.equals('ABORTED')) {%>
 ## :grey_exclamation: Build Aborted
   <%if (!build?.description != null && build?.description.toString().toLowerCase().contains('aborted')) {%>
@@ -7,7 +9,7 @@
   <%} else if (!build?.description != null && build?.description.toString().toLowerCase().contains('allowed')) {%>
   > ${build.description}
   <%} else {%>
-  > Either there was a build timeout or someone aborted the build.'}
+  > Either there was a build timeout or someone aborted the build.
   <%}%>
 <%} else {%>
 ## :broken_heart: ${(testsSummary?.failed != 0) ? 'Tests Failed' : 'Build Failed'}
