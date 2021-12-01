@@ -45,11 +45,19 @@ public class RunMock implements Serializable {
     return new Parent()
   }
 
+  public Action getAction(java.lang.Class clazz) {
+    return new Action()
+  }
+
   private class Parent implements Serializable {
     public Parent() { }
 
     public Map getTriggers() {
       return [:]
     }
+  }
+
+  private class Action implements Serializable {
+    public Action() { }
   }
 }

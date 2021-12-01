@@ -202,8 +202,8 @@ def notifyEmail(Map params = [:]) {
       def statusSuccess = true
 
       if(buildStatus != "SUCCESS") {
-          icon = "❌"
-          statusSuccess = false
+        icon = "❌"
+        statusSuccess = false
       }
 
       def boURL = getBlueoceanDisplayURL()
@@ -366,11 +366,13 @@ def generateBuildReport(Map args = [:]) {
     def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
       def statusSuccess = (buildStatus == "SUCCESS")
+      def abortedBuild = (buildStatus == 'NOT_BUILT' && isCancelledCausedFromADisableConcurrentBuilds())
       def boURL = getBlueoceanDisplayURL()
       output = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
         "buildStatus": buildStatus,
+        "abortedBuild": abortedBuild,
         "changeSet": changeSet,
         "docsUrl": docsUrl,
         "env": env,
@@ -540,4 +542,9 @@ private isElasticsearchDocsSupported(String value) {
 @NonCPS
 def findIssueCommentTrigger() {
   return currentBuild.rawBuild.getParent().getTriggers().collect { it.value }.find { it instanceof IssueCommentTrigger }
+}
+
+@NonCPS
+def isCancelledCausedFromADisableConcurrentBuilds() {
+  return currentBuild.rawBuild.getAction(org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty.CancelledCause.class)
 }
