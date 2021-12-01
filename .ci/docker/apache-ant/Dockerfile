@@ -1,6 +1,6 @@
 FROM openjdk:11-jdk
 
-ARG ANT_VERSION=1.10.8
+ARG ANT_VERSION=1.10.12
 ARG BASE_URL=https://mirrors.ircam.fr/pub/apache/ant/binaries
 
 RUN mkdir -p /usr/share/ant /usr/share/maven/ref \
