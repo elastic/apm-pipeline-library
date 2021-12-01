@@ -102,7 +102,7 @@ def init_otel():
         trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(otel_exporter))
         otel_exporter.clear()
     else:
-        otel_exporter = OTLPSpanExporter(insecure=insecure)
+        otel_exporter = OTLPSpanExporter()
         trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(otel_exporter))
 
     tracer = trace.get_tracer(session_name)
@@ -153,15 +153,15 @@ def pytest_sessionstart(session):
     endpoint = config.getoption("endpoint")
     headers = config.getoption("headers")
     insecure = config.getoption("insecure")
-    if endpoint:
+    if endpoint is not None:
         os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = endpoint
-    if headers:
+    if headers is not None:
         os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = headers
-    if service_name:
+    if service_name is not None:
         os.environ["OTEL_SERVICE_NAME"] = service_name
-    if insecure:
-        os.environ["OTEL_EXPORTER_OTLP_INSECURE"] = insecure
-    if not traceparent:
+    if insecure is not None:
+        os.environ["OTEL_EXPORTER_OTLP_INSECURE"] = f'{insecure}'
+    if traceparent is None:
         traceparent = os.getenv("TRACEPARENT", None)
     if len(os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "")) == 0:
         in_memory_span_exporter = True
