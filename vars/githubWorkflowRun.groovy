@@ -48,7 +48,7 @@ def call(Map args = [:]) {
         def runInfo = getWorkflowRun(args + [runId: runId])
         if (runInfo.message == "Not Found") error("Triggered workflow run but failed to get run info")
         if (runInfo.status == "completed") return runInfo
-        sleep(buildTimeLimit > 10 ? 300 : 60)
+        sleep(buildTimeLimit > 10 ? 120 : 60)
     }
     error("Build time out")
 }
