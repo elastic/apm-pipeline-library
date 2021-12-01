@@ -23,17 +23,9 @@ pytest_plugins = ["pytester"]
 common_code = """
 import time
 import logging
+import pytest
 
 """
-
-
-@pytest.fixture
-def testdir(testdir):
-    if hasattr(testdir, "runpytest_subprocess"):
-        # on pytest-2.8 runpytest runs inline by default
-        # patch the testdir instance to use the subprocess method
-        testdir.runpytest = testdir.runpytest_subprocess
-    return testdir
 
 
 def assertTestSuit(span, outcome, status):
@@ -56,8 +48,8 @@ def assertSpan(span, name, outcome, status):
     return True
 
 
-def assertTest(testdir, name, ts_outcome, ts_status, outcome, status):
-    testdir.runpytest("--otel-span-file-output=./test_spans.json")
+def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
+    pytester.runpytest("--otel-span-file-output=./test_spans.json")
     span_list = None
     with open("test_spans.json", encoding='utf-8') as input:
         span_list = json.loads(input.read())
@@ -72,76 +64,76 @@ def assertTest(testdir, name, ts_outcome, ts_status, outcome, status):
     assert foundTestSuit
 
 
-def test_basic_plugin(testdir):
-    testdir.makepyfile(
+def test_basic_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 def test_basic():
     time.sleep(5)
     pass
 """)
-    assertTest(testdir, "test_basic", "passed", "OK", "passed", "OK")
+    assertTest(pytester, "test_basic", "passed", "OK", "passed", "OK")
 
 
-def test_success_plugin(testdir):
-    testdir.makepyfile(
+def test_success_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 def test_success():
     assert True
 """)
-    assertTest(testdir, "test_success", "passed", "OK", "passed", "OK")
+    assertTest(pytester, "test_success", "passed", "OK", "passed", "OK")
 
 
-def test_failure_plugin(testdir):
-    testdir.makepyfile(
+def test_failure_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 def test_failure():
     assert 1 < 0
 """)
-    assertTest(testdir, "test_failure", "failed", "OK", "failed", "ERROR")
+    assertTest(pytester, "test_failure", "failed", "OK", "failed", "ERROR")
 
 
-def test_failure_code_plugin(testdir):
-    testdir.makepyfile(
+def test_failure_code_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 def test_failure_code():
     d = 1/0
     pass
 """)
-    assertTest(testdir, "test_failure_code", "failed", "OK", "failed", "ERROR")
+    assertTest(pytester, "test_failure_code", "failed", "OK", "failed", "ERROR")
 
 
-def test_skip_plugin(testdir):
-    testdir.makepyfile(
+def test_skip_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 @pytest.mark.skip
 def test_skip():
     assert True
 """)
-    assertTest(testdir, None, None, "UNSET", None, None)
+    assertTest(pytester, None, "passed", "OK", None, None)
 
 
-def test_xfail_plugin(testdir):
-    testdir.makepyfile(
+def test_xfail_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 @pytest.mark.xfail
 def test_xfail():
     assert False
 """)
-    assertTest(testdir, None, None, "UNSET", None, None)
+    assertTest(pytester, None, "passed", "OK", None, None)
 
 
-def test_xfail_no_run_plugin(testdir):
-    testdir.makepyfile(
+def test_xfail_no_run_plugin(pytester):
+    pytester.makepyfile(
         common_code
         + """
 @pytest.mark.xfail(run=False)
 def test_xfail_no_run():
     assert False
 """)
-    assertTest(testdir, None, None, "UNSET", None, None)
+    assertTest(pytester, None, "passed", "OK", None, None)
