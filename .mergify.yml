@@ -1,3 +1,8 @@
+queue_rules:
+  - name: default
+    conditions:
+      - check-success=apm-ci/pr-merge
+
 pull_request_rules:
   - name: Automatic squash and merge on approval with success checks and ready-to-merge label
     conditions:
@@ -8,9 +13,9 @@ pull_request_rules:
       - label=ready-to-merge
       - base=master
     actions:
-      merge:
+      queue:
         method: squash
-        strict: smart+fasttrack
+        name: default
   - name: backport patches to 7.x branch
     conditions:
       - base=master
@@ -31,9 +36,9 @@ pull_request_rules:
       - check-success=Test
       - base=7.x
     actions:
-      merge:
+      queue:
         method: squash
-        strict: smart+fasttrack
+        name: default
   - name: delete upstream branch after merging changes
     conditions:
       - merged
