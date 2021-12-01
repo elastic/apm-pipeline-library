@@ -1,0 +1,22 @@
+---
+version: "3.7"
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib-dev:latest
+    command: ["--config=/etc/otel-collector.yaml"]
+    volumes:
+      - ./otel-collector.yaml:/etc/otel-collector.yaml
+    ports:
+      - "4317:14317"  # OTLP gRPC receiver
+    networks:
+      - default_net
+
+volumes:
+  default_net:
+    driver: local
+  esdata:
+    driver: local
+
+networks:
+  default_net:
+    driver: bridge
