@@ -8,7 +8,8 @@ receivers:
 exporters:
   logging:
     logLevel: debug
-
+  file:
+      path: /tmp/tests.json
 processors:
   batch:
 
@@ -21,3 +22,4 @@ service:
         - batch
       exporters:
         - logging
+        - file
