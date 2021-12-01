@@ -13,3 +13,5 @@ __pycache__
 **/build
 **/dist
 otel-traces-file-output.json
+temp
+test_spans.json
