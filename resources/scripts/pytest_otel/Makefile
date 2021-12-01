@@ -136,10 +136,10 @@ run-otel-collector:
 ## @help:publish REPO_URL=${REPO_URL} TWINE_USER=${TWINE_USER} TWINE_PASSWORD=${TWINE_PASSWORD}:Publish the Python project in a PyPI repository.
 .PHONY: publish
 publish: package
-	set +xe\
+	set +xe; \
 	source $(VENV)/bin/activate;\
-	python -m pip install --user twine;\
+	python -m pip install twine;\
 	python setup.py sdist;\
 	echo "Uploading to $${REPO_URL} with user $${TWINE_USER}";\
 	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.tar.gz;\
-	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} wheelhouse/*.whl
+	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.whl
