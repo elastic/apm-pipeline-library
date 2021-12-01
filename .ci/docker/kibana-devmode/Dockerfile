@@ -1,4 +1,3 @@
-ARG NODE_VERSION=16.11.1
 FROM kibana-yarn:latest AS src
 
 ARG GID=1001
@@ -12,7 +11,11 @@ ENV HOME=/usr/share/kibana
 ENV NODE_OPTIONS= --max-old-space-size=4096
 ENV FORCE_COLOR=1
 ENV BABEL_DISABLE_CACHE=true
-RUN yarn config set cache-folder ${HOME}/.yarn_cache \
+ENV NVM_DIR=${HOME}/.nvm
+RUN . "${NVM_DIR}/nvm.sh" \
+  && nvm install $(cat .node-version) \
+  && nvm alias default $(cat .node-version) \
+  && yarn config set cache-folder ${HOME}/.yarn_cache \
   && npm install -g yarn-deduplicate \
   && yarn-deduplicate yarn.lock \
   && npm set progress=false \
