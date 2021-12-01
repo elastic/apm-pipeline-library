@@ -17,9 +17,9 @@
 
 PYTEST_OTEL_VERSION = 0.0.1
 PYTEST_OTEL_PKG = pytest-otel-$(PYTEST_OTEL_VERSION)
-OTEL_EXPORTER_OTLP_ENDPOINT ?= 127.0.0.1:4317
+OTEL_EXPORTER_OTLP_ENDPOINT ?= http://127.0.0.1:4317
 OTEL_SERVICE_NAME ?= "pytest_otel_test"
-OTEL_EXPORTER_OTLP_INSECURE ?= true
+OTEL_EXPORTER_OTLP_INSECURE ?= True
 OTEL_EXPORTER_OTLP_HEADERS ?=
 TRACEPARENT ?=
 
@@ -122,8 +122,10 @@ release: bin/gh package
 ## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
 .PHONY: run-otel-collector
 run-otel-collector:
-	docker run --rm -p 4317:4317 \
-	-v "$(CURDIR)/otel-collector.yaml":/otel-config.yaml \
+	mkdir -p "$(CURDIR)/temp"
+	docker run --rm -p 4317:4317 -u "$(id -u):$(id -g)" \
+	-v "$(CURDIR)/temp:/tmp" \
+	-v "$(CURDIR)/tests/otel-collector.yaml":/otel-config.yaml \
 	--name otelcol otel/opentelemetry-collector \
 	--config otel-config.yaml; \
 
