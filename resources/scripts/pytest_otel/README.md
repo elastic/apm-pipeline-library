@@ -19,7 +19,7 @@ Installation
 You can install "pytest-otel" via `pip` or using the `setup.py` script.
 
 ```
-pip install pytest_otel
+pip install pytest-otel
 ```
 
 Usage
