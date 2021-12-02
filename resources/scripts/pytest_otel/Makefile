@@ -64,13 +64,14 @@ install: virtualenv
 ## @help:test:Run the test.
 .PHONY: test
 test: virtualenv install
-	OTEL_EXPORTER_OTLP_ENDPOINT="$(OTEL_EXPORTER_OTLP_ENDPOINT)" \
-	OTEL_SERVICE_NAME="$(OTEL_SERVICE_NAME)" \
-	OTEL_EXPORTER_OTLP_INSECURE="$(OTEL_EXPORTER_OTLP_INSECURE)" \
-	OTEL_EXPORTER_OTLP_HEADERS="$(OTEL_EXPORTER_OTLP_HEADERS)" \
-	TRACEPARENT="$(TRACEPARENT)" \
 	source $(VENV)/bin/activate;\
-	pytest --capture=no;
+	pytest --capture=no -p pytester --runpytest=subprocess;
+
+## @help:test:Run the test.
+.PHONY: test
+it-test: virtualenv install
+	source $(VENV)/bin/activate;\
+	pytest --capture=no -p pytester --runpytest=subprocess tests/it_tests_pytest_otel.py;
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage
