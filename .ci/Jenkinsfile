@@ -110,45 +110,50 @@ pipeline {
         }
       }
     }
-    stage('Test') {
-      steps {
-        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          dir("${BASE_DIR}"){
-            withOtelEnv() {
-              sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+    stage('Run Tests') {
+      parallel {
+        stage('Test') {
+          steps {
+            withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+              dir("${BASE_DIR}"){
+                withOtelEnv() {
+                  sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+                }
+              }
+            }
+          }
+          post {
+            always {
+              archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
+              junit(allowEmptyResults: true,
+                keepLongStdio: true,
+                testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
             }
           }
         }
-      }
-      post {
-        always {
-          archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-        }
-      }
-    }
-    stage('Google Storage') {
-      steps {
-        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+        stage('Test On Linux') {
+          agent { label "linux && immutable" }
+          steps {
+            withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+              dir("${BASE_DIR}"){
+                googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+              }
+            }
           }
         }
-      }
-    }
-    stage('Google Storage Windows') {
-      agent { label 'windows-2019-immutable' }
-      when {
-        branch 'master'
-      }
-      steps {
-        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+        stage('Google Storage Windows') {
+          agent { label 'windows-2019-immutable' }
+          when {
+            branch 'master'
+          }
+          steps {
+            withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+              }
+            }
           }
         }
       }
