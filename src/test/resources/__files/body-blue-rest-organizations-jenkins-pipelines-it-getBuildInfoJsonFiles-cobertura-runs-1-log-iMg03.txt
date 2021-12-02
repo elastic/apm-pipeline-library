@@ -32,7 +32,7 @@ Running on local in /tmp/workspace/it/getBuildInfoJsonFiles/cobertura
 + chmod 755 generate-build-data.sh
 + ./generate-build-data.sh http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/ http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1 SUCCESS 14097
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/steps/?limit=10000 -o steps-info.json
-INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?status=FAILED -o tests-errors.json
+INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/tests/?status=FAILED&limit=1000 -o tests-errors.json
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura/runs/1/log/ -o pipeline-log.txt
 INFO: curl http://localhost:18080/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/cobertura// -o job-info.json
 jq: error (at job-info.json:0): Cannot index string with string "_links"

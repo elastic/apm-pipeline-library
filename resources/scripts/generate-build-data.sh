@@ -40,7 +40,6 @@ PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
 STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
-TESTS_INFO="tests-info.json"
 TESTS_SUMMARY="tests-summary.json"
 TESTS_COVERAGE="tests-coverage.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
@@ -478,7 +477,7 @@ function prepareEnvInfo() {
 
 ### Fetch some artifacts that won't be attached to the data to be sent to ElasticSearch
 fetchAndDefaultStepsInfo "${STEPS_INFO}" "${BO_BUILD_URL}/steps/?limit=30000" "${DEFAULT_HASH}"
-fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED" "${DEFAULT_LIST}"
+fetchAndDefaultTestsErrors "${TESTS_ERRORS}" "${BO_BUILD_URL}/tests/?status=FAILED&limit=1000" "${DEFAULT_LIST}"
 fetchAndDefault "${PIPELINE_LOG}" "${BO_BUILD_URL}/log/?start=0" "${DEFAULT_STRING}"
 
 ### Prepare the log summary
@@ -491,9 +490,9 @@ echo '{' > "${BUILD_REPORT}"
 fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}"
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
-fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}"
+echo "\"test\": $(cat "${TESTS_ERRORS}")," >> "${BUILD_REPORT}"
 ### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
-fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_INFO}"
+fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_ERRORS}"
 fetchAndPrepareTestCoverageReport "${TESTS_COVERAGE}" "${BUILD_URL}" "test_coverage" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
 prepareErrorMetrics "errorMetrics"
