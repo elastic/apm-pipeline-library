@@ -135,6 +135,8 @@ pipeline {
           agent { label "linux && immutable" }
           steps {
             withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+              deleteDir()
+              unstash 'source'
               dir("${BASE_DIR}"){
                 googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
               }
