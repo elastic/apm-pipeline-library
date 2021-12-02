@@ -5,7 +5,5 @@ opentelemetry-exporter-otlp==1.7.0
 opentelemetry-sdk==1.7.0
 psutil
 pytest
-pytest-bdd
-pytest-mock
 pre-commit
 mypy==0.902
