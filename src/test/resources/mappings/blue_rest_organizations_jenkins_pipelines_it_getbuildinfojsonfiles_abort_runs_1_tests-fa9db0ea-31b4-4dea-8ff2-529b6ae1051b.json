@@ -2,7 +2,7 @@
   "id" : "fa9db0ea-31b4-4dea-8ff2-529b6ae1051b",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_abort_runs_1_tests",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/tests/?status=FAILED",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/abort/runs/1/tests/?status=FAILED&limit=1000",
     "method" : "GET"
   },
   "response" : {
