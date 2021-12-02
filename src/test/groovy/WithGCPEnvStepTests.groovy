@@ -28,12 +28,13 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
+    helper.registerAllowedMethod('fileExists', [Map.class], { return false })
     script = loadScript('vars/withGCPEnv.groovy')
   }
 
   @Test
-  void test_missing_credentialsId() throws Exception {
-    testMissingArgument('credentialsId') {
+  void test_missing_credentialsId_or_secret() throws Exception {
+    testMissingArgument('credentialsId or secret', 'parameters are required') {
       script.call() {
         // NOOP
       }
@@ -48,10 +49,29 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('download', 0))
     assertTrue(assertMethodCallContainsPattern('withCredentials', ''))
     assertTrue(assertMethodCallContainsPattern('sh', 'gcloud auth activate-service-account --key-file ${FILE_CREDENTIAL}'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_secret() throws Exception {
+    def ret = false
+    try {
+    script.call(secret: VaultSecret.SECRET_GCP_PROVISIONER.toString()) {
+      ret = true
+    }
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('download', 0))
+    assertFalse(assertMethodCallContainsPattern('withCredentials', ''))
+    assertTrue(assertMethodCallContainsPattern('sh', 'gcloud auth activate-service-account --key-file'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'rm'))
     assertJobStatusSuccess()
   }
 
@@ -72,7 +92,7 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_without_gh_installed_by_default_with_wget() throws Exception {
+  void test_without_gh_installed_by_default() throws Exception {
     helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
     def result = false
     script.call(credentialsId: 'foo') {
@@ -81,35 +101,8 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(result)
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O gsutil.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-linux-x86_64.tar.gz'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_no_wget_no_curl() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
-    }
-    printCallStack()
-    assertTrue(result)
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertFalse(assertMethodCallContainsPattern('sh', 'curl'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return !(m.tool.equals('wget') || m.tool.equals('gsutil'))})
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
-    }
-    printCallStack()
-    assertTrue(result)
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O gsutil.tar.gz'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo gsutil.tar.gz --retry 3 --retry-delay 2 --max-time 10'))
+    assertTrue(assertMethodCallOccurrences('download', 1))
+    assertTrue(assertMethodCallContainsPattern('sh', 'linux-x86_64.tar.gz'))
     assertJobStatusSuccess()
   }
 
@@ -122,25 +115,29 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(result)
+    assertTrue(assertMethodCallOccurrences('download', 0))
     assertTrue(assertMethodCallContainsPattern('withCredentials', ''))
     assertTrue(assertMethodCallContainsPattern('bat', 'gcloud auth activate-service-account --key-file %FILE_CREDENTIAL%'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertFalse(assertMethodCallContainsPattern('bat', "wget -q -O"))
+    assertFalse(assertMethodCallContainsPattern('download', "windows-x86_64-bundled-python.zip"))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_without_gh_installed_by_default_with_wget_in_windows() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+  void test_googleCloudSdkURL_in_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
-    def result = false
-    script.call(credentialsId: 'foo') {
-      result = true
-    }
+    def ret = script.googleCloudSdkURL()
     printCallStack()
-    assertTrue(result)
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
-    assertTrue(assertMethodCallContainsPattern('bat', 'wget -q -O gsutil.zip https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-windows-x86_64-bundled-python.zip'))
+    assertTrue(ret.contains("windows-x86_64-bundled-python.zip"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_googleCloudSdkURL_in_32_bits() throws Exception {
+    helper.registerAllowedMethod('is64', [], { return false })
+    def ret = script.googleCloudSdkURL()
+    printCallStack()
+    assertTrue(ret.contains("linux-x86.tar.gz"))
     assertJobStatusSuccess()
   }
 }

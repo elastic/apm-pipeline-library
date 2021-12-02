@@ -39,8 +39,8 @@ class GsutilStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_missing_credentialsId() throws Exception {
-    testMissingArgument('credentialsId') {
+  void test_missing_credentialsId_or_secret() throws Exception {
+    testMissingArgument('credentialsId or secret', 'parameters are required') {
       script.call(command: 'cp')
     }
   }

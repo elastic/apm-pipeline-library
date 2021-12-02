@@ -70,7 +70,7 @@ It is mandatory to pass a serviceName. If a service name is no passes apmCli do 
 and the `APM_CLI_PARENT_TRANSACTION` environment variable is defined.
 * transactionName: Name of the transaction to report, it is mandatory.
 By default the "STAGE_NAME" environment variable is used.
-* parentTransaction: Allow to group several transactions as childs of another (distributed tracing)
+* parentTransaction: Allow to group several transactions as children of another (distributed tracing)
 * spanName : Name of the span to report.
 * spanCommand Command to execute as span,
 if spanName is no set, spanCommand param would be used as span name.
@@ -231,9 +231,16 @@ Utils class for the bump automation pipelines
 * `areChangesToBePushed` -> if there any changes in the existing location to be pushed.
 * `createBranch` -> create a branch given the prefix and suffix arguments. Branch contains the current timestamp.
 * `isVersionAvailable` -> if the given elastic stack version is available.
+* `parseArguments` -> parse the given arguments.
 * `prepareContext` -> prepare the git context, checkout and git config user.name.
+* `getCurrentMinorReleaseFor7` -> retrieve the LATEST known minor release for the 7 major version of the Elastic Stack.
+* `getCurrentMinorReleaseFor6` -> retrieve the LATEST known minor release for the 6 major version of the Elastic Stack.
+* `getNextMinorReleaseFor7` -> retrieve the NEXT minor release for the 7 major version of the Elastic Stack. It might not be public available yet.
+* `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
 
 ## cancelPreviousRunningBuilds
+**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: true)`
+
 Abort any previously running builds as soon as a new build starts
 
 ```
@@ -302,7 +309,7 @@ For instance:
 ```
 
 Could be simplified with:
-    
+
 ```
     cmd(label: 'foo', script: 'git fetch --all')
 ```
@@ -419,6 +426,36 @@ dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: fa
 
 _NOTE_: Windows is not supported.
 
+## download
+Download the given URL regardless of the tool.
+
+```
+download(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the output will be written to. Mandatory.
+
+## downloadWithCurl
+Download the given URL using CUrl, if possible. It returns true if possible otherwise false
+
+```
+downloadWithCurl(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the CUrl output will be written to. Mandatory.
+
+## downloadWithWget
+Download the given URL using Wget, if possible. It returns true if possible otherwise false
+
+```
+downloadWithWget(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the wget output will be written to. Mandatory.
+
 ## dummy
 A sample of a step implemantetion.
 
@@ -531,7 +568,7 @@ findOldestSupportedVersion(versionCondition: "^7.14.0")
 NOTE: Current implementation only supports the `^` operator for version conditions
 
 ## generateChangelog
-Programatically generate a CHANGELOG
+Programmatically generate a CHANGELOG
 
 ```
 generateChangelog(
@@ -700,9 +737,9 @@ def stage = getStageId()
 ```
 
 ## getTraditionalPageURL
-Provides the specific traditional URL tab for the current build/run
+Provides the specific tradditional URL tab for the current build/run
 
-Tab refers to the kind of available pages in the traditional view. So far:
+Tab refers to the kind of available pages in the tradditional view. So far:
 * pipeline -> aka the build run (for BO compatibilities)
 * tests
 * changes
@@ -737,11 +774,11 @@ def jsonValue = getVaultSecret(secret: 'secret/team/ci/secret-name')
 
 ## gh
 Wrapper to interact with the gh command line. It returns the stdout output.
-It requires to be executed within the git workspace, otherwise it will use 
+It requires to be executed within the git workspace, otherwise it will use
 `REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body
@@ -751,8 +788,9 @@ It requires to be executed within the git workspace, otherwise it will use
 * command: The gh command to be executed title. Mandatory
 * flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
-
-_NOTE_: Windows is not supported yet.
+* version: The gh CLI version to be installed. Optional (1.9.2)
+* forceInstallation: Whether to install gh regardless. Optional (false)
+* forceRepo: Whether to force the repo configuration flag instead reading the ones from the env variables. Optional (false)
 
 ## git
 Override the `git` step to retry the checkout up to 3 times.
@@ -847,7 +885,7 @@ gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
-* credentialsId: tthe credentials to access the repo.
+* credentialsId: the credentials to access the repo.
 
 ## gitPush
 Push changes to the git repo.
@@ -935,7 +973,7 @@ Comment an existing GitHub issue
 * repo: The GitHub repository. Optional. Default the REPO_REPO env variable
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
-_NOTE_: 
+_NOTE_:
 * Windows is not supported yet.
 * It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
 
@@ -958,7 +996,7 @@ _NOTE_: Windows is not supported yet.
 
 ## githubCreatePullRequest
 Create a Pull Request in GitHub as long as the command runs in the git repo and
-there are commited changes.
+there are committed changes.
 
 ```
 githubCreatePullRequest(title: 'Foo')
@@ -1122,12 +1160,12 @@ def pr = githubPrReviews(token: token, repo: 'org/repo', pr: env.CHANGE_ID)
 [Github API call](https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request)
 
 ## githubPullRequests
-Look for the GitHub Pull Requests in the current project given the labels to be 
+Look for the GitHub Pull Requests in the current project given the labels to be
 filtered with. It returns a dictionary with the Pull Request id as primary key and
 then the title and branch values.
 
 ```
-  // Look for all the open GitHub pull requests with titleContains: foo and 
+  // Look for all the open GitHub pull requests with titleContains: foo and
   // the foo and bar labels
   githubPullRequests(labels: [ 'foo', 'bar' ], titleContains: 'foo')
 ```
@@ -1203,7 +1241,7 @@ Takes a GitHub release that is written as a draft and makes it public.
 ```
     githubReleasePublish(
       id: '1',                // Release ID
-      name: 'Release v1.0.0'  // Release name 
+      name: 'Release v1.0.0'  // Release name
     )
 ```
 * id: The ID of the draft release to publish. This should be in the return from githubReleaseCreate()
@@ -1323,6 +1361,78 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `ORG_NAME`
         - `REPO_NAME`
 
+## githubWorkflowRun
+Run workflow on github actions
+
+### Run as step:
+
+```
+  def runInfo = githubWorkflowRun(repo: "owner/repository", workflow: "build.yml", ref: "main",
+    parameters: [path: "filebeat"], credentialsId: "github-workflow-token")
+```
+
+### Run asynchronous:
+
+```
+  script {
+    def args = [
+       repo: "owner/repository",
+       workflow: "build.yml",
+       ref: "main",
+       parameters: [
+           path: "filebeat",
+           runner: "ubuntu-latest"],
+       credentialsId: "github-workflow-token"]
+    def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
+    def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId])
+  }
+
+```
+
+### Arguments:
+
+* workflow: workflow file name. Mandatory argument.
+* repo: repository owner and name. Optional, if it's not set then this
+  information will be taken from ORG_NAME and REPO_NAME environment variables.
+* ref: reference (branch, tag or hash). Optional, default is master.
+* parameters: map with parameters to pass to the workflow as inputs. Optional,
+  default is empty map.
+* buildTimeLimit: How long wait till the run completed. It's set in minutes,
+  default is 30 min.
+* credentialsId: github credentials id. Optional.
+* version: version of github cli. Optional, default is 2.1.0
+
+
+
+
+### Returns:
+
+runInfo : information about run
+
+### Requirements for workflows to be compatible with githubWorkflowRun.
+
+
+1. Inputs in workflow should have id parameter:
+
+```
+    inputs:
+      id:
+        description: 'Run ID'
+        required: true
+```
+
+2. The first step in workflow should be following step:
+
+```
+    - name: ${{ format('Run ID {0}', github.event.inputs.id) }}
+      run: echo Run ID ${{github.event.inputs.id}}
+```
+
+### Links:
+
+* https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#on
+* https://docs.github.com/en/rest/reference/actions#get-a-workflow-run
+
 ## goDefaultVersion
 
   Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
@@ -1395,19 +1505,22 @@ Upload the given pattern files to the given bucket.
 * bucket: The Google Storage bucket format gs://bucket/folder/subfolder/. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
-* sharedPublicly: Whether to shared those objects publically. Optional. Default false.
+* sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
 
 ```
-  // Copy file.txt into the bucket
+  // Copy file.txt into the bucket using the Jenkins credentials
   gsutil(command: 'cp file.txt gs://bucket/folder/', credentialsId: 'foo' ])
 
+  // Copy file.txt into the bucket using Vault
+  gsutil(command: 'cp file.txt gs://bucket/folder/', secret: 'foo' ])
 ```
 
 * command: The gsutil command to be executed. Mandatory
-* credentialsId: The credentials to access the repo (repo permissions). Mandatory.
+* credentialsId: The credentials to login to GCP. (Optional). See [withGCPEnv](#withgcpenv)
+* secret: Name of the secret on the the vault root path. (Optional). See [withGCPEnv](#withgcpenv)
 
 ## hasCommentAuthorWritePermissions
 
@@ -1623,7 +1736,8 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tools is installed and available.
+Whether the given tool is installed and available. It does also supports specifying the version.
+validation.
 
 ```
   // if docker is installed, the validation uses docker --version
@@ -1639,6 +1753,7 @@ Whether the given tools is installed and available.
 
 * tool: The name of the tool to check whether it is installed and available. Mandatory.
 * flag: The flag to be added to the validation. For instance `--version`. Optional.
+* version: The version of the tool to check with. Optional.
 
 ## isInternalCI
 Whether the CI instance is the internal-ci one.
@@ -1797,6 +1912,17 @@ Scan the repository for third-party dependencies and report the results.
 licenseScan()
 ```
 
+## listGithubReleases
+List the GitHub releases in the current project. It returns
+a dictionary with the release id as primary key and then the whole information.
+
+```
+  listGithubReleases()
+```
+
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
+* failNever: whether to fail the step in case on any failures when interacting with the GH cli tool. Default true.
+
 ## log
 Allow to print messages with different levels of verbosity. It will show all messages that match
 to an upper log level than defined, the default level is debug.
@@ -1848,13 +1974,13 @@ NOTE: `ORG_NAME` and `REPO_NAME` environment variables are required, so `gitHubE
 
 ## matrix
 Matrix parallel task execution in parallel implemented on a step.
-It compose a matrix of parallel tasks, each task has a set of enviroment variables
+It compose a matrix of parallel tasks, each task has a set of environment variables
 created from the axes values.
 
 * **agent:** Jenkins agent labels to provision a new agent for parallel task.
-* **axes :** Vector of pairs to define enviroment variables to pass to the parallel tasks,
+* **axes :** Vector of pairs to define environment variables to pass to the parallel tasks,
 each pair has a variable name and a vector of values (see #axis)
-* **excludes :** Vector of pairs to define combinations of enviroment variables to exclude
+* **excludes :** Vector of pairs to define combinations of environment variables to exclude
 when we create the parallel tasks (axes-excludes=parallel tasks).
 
 ```
@@ -1964,7 +2090,7 @@ mvnVersion(
 )
 ```
  * qualifiers: Show any non-numerical text that may be present after MAJOR.MINOR.PATCH,
-                       such as additional labels for pre-release or build metadata. Speficially,
+                       such as additional labels for pre-release or build metadata. Specifically,
                        this means the IncrementalVersion, BuildNumber, and Qualifier sections from
                        the Maven version as specified in the Maven versioning guide.
 
@@ -2133,6 +2259,13 @@ Return the architecture in the current worker using the labels as the source of 
  def arch = nodeArch()
 ```
 
+## nodeJSDefaultVersion
+Return the value in the file `.nvmrc`, or a default value.
+
+```
+  nodeJSDefaultVersion()
+```
+
 ## nodeOS
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
@@ -2184,6 +2317,20 @@ emails on Failed builds that are not pull request.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/master`.
+
+## notifyStalledBeatsBumps
+Evaluate if the latest bump update was merged a few days ago and if so
+send an email if configured for such an action.
+
+```
+  notifyStalledBeatsBumps(branch: '8.0', sendEmail: true, to: 'foo@acme.com')
+```
+
+* *sendEmail*: whether to send an email. Optional. Default false
+* *to*: who should receive the email. Optional.
+* *subject*: what's the email subject. Optional. Default: `[Autogenerated]`
+* *branch*: what branch to be searched for. Mandatory.
+* *days*: search for any changes before those days. Optional. Default 7
 
 ## obltGitHubComments
 The list of GitHub comments supported to be used in conjunction with the
@@ -2317,10 +2464,10 @@ def value = randomString(size: 15)
 Send notifications with the release status by email and slack.
 
 If body is slack format based then it will be transformed to the email format
-  
+
 ```
 releaseNotification(slackColor: 'good',
-                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created", 
+                    subject: "[${env.REPO}] Release tag *${env.TAG_NAME}* has been created",
                     body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
 ```
 
@@ -2374,6 +2521,40 @@ rubygemsLogin.withApi(secret: 'secret/team/ci/secret-name') {
 ```
 
 * secret: Vault secret where the user, password or apiKey are stored.
+
+## runE2E
+Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job/e2e-testing-mbp/ is the default one though it can be customised if needed.
+
+```
+  runE2E(jobName: 'PR-123', testMatrixFile: '.ci/.fleet-server.yml', beatVersion: '7.15.0-SNAPSHOT', gitHubCheckName: 'fleet-server-e2e-testing')
+
+  // Run the e2e and add further parameters.
+  runE2E(beatVersion: '7.15.0-SNAPSHOT',
+         gitHubCheckName: 'fleet-server-e2e-testing',
+         runTestsSuites: 'fleet',
+         slackChannel: "elastic-agent")
+```
+
+* *jobName*: the name of the e2e job. In a multibranch pipeline then the name of the job could be the branch. Optional (default if PR then 'env.CHANGE_TARGET' otherwise 'env.JOB_BASE_NAME')
+* *disableGitHubCheck*: whether to disable the GitHub check notifications. (default false)
+* *gitHubCheckName*: the GitHub check name. Optional
+* *gitHubCheckRepo*: the GitHub repo where the github check will be created to. Optional
+* *gitHubCheckSha1*: the git commit for the github check. Optional
+* *beatVersion*: the beat Version. Optional
+* *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
+* *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
+* *kibanaVersion*: Docker tag of the kibana to be used for the tests. Optional
+* *nightlyScenarios*: whether to  include the scenarios marked as @nightly in the test execution. Optional (default false)
+* *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
+* *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
+* *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional
+* *testMatrixFile*: the file with the test suite and scenarios to be tested. Optional
+* *propagate*: the test suites to test. Optional (default false)
+* *wait*: the test suites to test. Optional (default false)
+
+**NOTE**: It works only in the `beats-ci` controller.
+
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
@@ -2605,7 +2786,7 @@ pipeline {
 Stash the current location, for such it compresses the current path and
 upload it to Google Storage.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2697,10 +2878,10 @@ net.sf.json.JSON obj = toJSON(p)
 ```
 
 ## unstashV2
-Unstash the given stashed id, for such it downloads the given stashed id, and 
+Unstash the given stashed id, for such it downloads the given stashed id, and
 uncompresses in the current location.
 
-The configuration can be delegated through env variables or explicitly. The 
+The configuration can be delegated through env variables or explicitly. The
 explicit parameters do have precedence over the environment variables.
 
 ```
@@ -2977,9 +3158,14 @@ Configure the GCP context to run the given body closure
 withGCPEnv(credentialsId: 'foo') {
   // block
 }
+
+withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
+  // block
+}
 ```
 
-* credentialsId: The credentials to login to GCP. Mandatory
+* credentialsId: The credentials to login to GCP. (Optional).
+* secret: Name of the secret on the the vault root path. (Optional).
 
 ## withGitRelease
 Configure the git release context to run the body closure.
@@ -3156,7 +3342,7 @@ NOTE: If the `GOARCH` environment variable is defined then it will be used to in
 
 ## withHubCredentials
 Configure the hub app to run the body closure.
-  
+
 ```
   withHubCredentials(credentialsId: 'some-credentials') {
     // block
@@ -3216,6 +3402,28 @@ Wrap the node call for three reasons:
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 * disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
+
+## withNodeJSEnv
+Install Node.js with NVM and run some command in a pre-configured environment multiplatform. For such
+it's recommended to use the `cmd` step.
+
+```
+  withNodeJSEnv(version: '14.17.5'){
+    cmd(label: 'Node version', script: 'node --version')
+  }
+```
+
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)
+
+## withNodeJSEnvUnix
+Install Node.js with NVM and run some command in a pre-configured environment for Unix.
+
+```
+  withNodeJSEnvUnix(version: '14.17.5'){
+    sh(label: 'Node version', script: 'node --version')
+  }
+```
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)
 
 ## withNpmrc
 Wrap the npmrc token

@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue
   For such:
   - cd local ** make start
   - wait for Jenkins to start
-  - cd local ** make start-local-worker 
+  - cd local ** make start-local-worker
   - cd local ** make wiremock-build-jobs
     1. will build the jobs in http://localhost:18080/job/it/job/getBuildInfoJsonFiles/ folder
   - wait for Jenkins builds to finish
@@ -62,8 +62,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -84,8 +84,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -107,8 +107,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully, there are no executed tests.", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -130,8 +130,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertFalse(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") > 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -180,8 +180,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     JSONArray errors = JSONSerializer.toJSON(new File("target/${targetFolder}/steps-errors.json").text)
     assertFalse("There are steps errors", errors.isEmpty())
@@ -198,14 +198,16 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONArray tests = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
+    JSONArray tests = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-errors.json").text)
     assertFalse("There are tests", tests.isEmpty())
+
     JSONObject obj = tests.get(0)
+    println obj
     assertNull("No _links object", obj.get("_links"))
     assertNull("No _class object", obj.get("_class"))
     assertNull("No state object", obj.get("state"))
     assertNull("No hasStdLog object", obj.get("hasStdLog"))
-    assertNull("No errorStackTrace object", obj.get("errorStackTrace"))
+    assertNotNull("There is an errorStackTrace object", obj.get("errorStackTrace"))
   }
 
   @Test
@@ -254,7 +256,7 @@ class GenerateBuildDataIntegrationTests {
     }
   }
 
-  Process runCommand(String targetFolder, String traditionalUrl, String boUrl, String jobName, String status) {
+  Process runCommand(String targetFolder, String tradditionalUrl, String boUrl, String jobName, String status) {
     //Build command
     List<String> commands = new ArrayList<String>()
     commands.add("../../resources/scripts/generate-build-data.sh")
@@ -272,7 +274,7 @@ class GenerateBuildDataIntegrationTests {
     env.put('BUILD_ID', '1')
     env.put('BUILD_NUMBER', '1')
     env.put('BUILD_TAG', 'jenkins-project-main-1')
-    env.put('BUILD_URL', traditionalUrl + "/${jobName}/1")
+    env.put('BUILD_URL', tradditionalUrl + "/${jobName}/1")
     env.put('BO_JOB_URL', BO_URL + "/${jobName}")
     env.put('BO_BUILD_URL', BO_URL + "/${jobName}/1")
     env.put('CHANGE_AUTHOR', 'v1v')
@@ -285,9 +287,9 @@ class GenerateBuildDataIntegrationTests {
     env.put('GIT_PREVIOUS_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
     env.put('GIT_PREVIOUS_SUCCESSFUL_COMMIT', '4f0aea0e892678e46d62fd0a156f9c9c4b670995')
     env.put('JOB_BASE_NAME', jobName)
-    env.put('JOB_DISPLAY_URL', traditionalUrl + "/${jobName}/display/redirect")
+    env.put('JOB_DISPLAY_URL', tradditionalUrl + "/${jobName}/display/redirect")
     env.put('JOB_NAME', "project/${jobName}")
-    env.put('JOB_URL', traditionalUrl + "/${jobName}")
+    env.put('JOB_URL', tradditionalUrl + "/${jobName}")
     env.put('ORG_NAME', 'acme')
     env.put('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=38f56b69e3b7c76c8e914b2d467d0475&transactionId=b877b754e2e3a8c4')
     env.put('REPO_NAME', 'project')

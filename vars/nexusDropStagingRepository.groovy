@@ -44,7 +44,7 @@ def call(Map args = [:]) {
     def vault_data = props?.data
     def username = vault_data?.username
     def password = vault_data?.password
-  
+
     String data = toJSON(['data': ['stagedRepositoryId': stagingId]])
     HttpURLConnection conn
     final int retries = 20

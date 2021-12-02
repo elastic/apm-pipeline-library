@@ -9,3 +9,6 @@
 
 # Beats
 /resources/approval-list/beats.yml @andresrc
+
+# Auto assign reviews
+* @elastic/observablt-robots @elastic/observablt-robots-contractors

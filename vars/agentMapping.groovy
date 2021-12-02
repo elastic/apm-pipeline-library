@@ -27,7 +27,7 @@
 import groovy.transform.Field
 
 /**
-  Enviroment variable to put the agent version before run tests.
+  Environment variable to put the agent version before run tests.
 */
 @Field Map mapAgentEnvVar = [
   'dotnet': 'APM_AGENT_DOTNET_VERSION',

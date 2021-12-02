@@ -60,7 +60,7 @@ def analyzeFlakey(Map args = [:]) {
 
     // 1. Only if there are test failures to analyse
     // 2. Only continue if we have a jobName passed in. This does not raise an error to preserve
-    // backward compatability.
+    // backward compatibility.
     if(testsErrors.size() > 0 && jobName?.trim()) {
 
       def query = "/flaky-tests/_search?filter_path=aggregations.test_name.buckets"
@@ -202,8 +202,8 @@ def notifyEmail(Map params = [:]) {
       def statusSuccess = true
 
       if(buildStatus != "SUCCESS") {
-          icon = "❌"
-          statusSuccess = false
+        icon = "❌"
+        statusSuccess = false
       }
 
       def boURL = getBlueoceanDisplayURL()
@@ -366,11 +366,13 @@ def generateBuildReport(Map args = [:]) {
     def output = ''
     catchError(buildResult: 'SUCCESS', message: 'generateBuildReport: Error generating build report') {
       def statusSuccess = (buildStatus == "SUCCESS")
+      def abortedBuild = (buildStatus == 'NOT_BUILT' && isCancelledCausedFromADisableConcurrentBuilds())
       def boURL = getBlueoceanDisplayURL()
       output = buildTemplate([
         "template": 'github-comment-markdown.template',
         "build": build,
         "buildStatus": buildStatus,
+        "abortedBuild": abortedBuild,
         "changeSet": changeSet,
         "docsUrl": docsUrl,
         "env": env,
@@ -495,22 +497,54 @@ def getSupportedGithubCommands() {
   }
 
   // Support for the Beats specific GitHub commands
-  if (env.REPO?.equals('beats') || env.REPO_NAME?.equals('beats')) {
+  if (isProjectSupported('beats')) {
     comments['/package'] = 'Generate the packages and run the E2E tests.'
     comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
   }
 
   // Support for the Obs11 test environments specific GitHub commands
-  if (env.REPO?.equals('observability-test-environments') || env.REPO_NAME?.equals('observability-test-environments')) {
+  if (isProjectSupported('observability-test-environments')) {
     comments['/test ansible'] = 'Run the ansible tests.'
     comments['/test cypress'] = 'Run the cypress tests.'
     comments['/test tools'] = 'Build and test the CLI tools.'
   }
 
+  if (isProjectSupported('apm-agent-python')) {
+    comments['/test linters'] = 'Run the Python linters only.'
+    comments['/test full'] = 'Run the full matrix of tests.'
+    comments['/test benchmark'] = 'Run the APM Agent Python benchmarks tests.'
+  }
+
+  // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
+  if (isElasticsearchDocsSupported()) {
+    // `run` is needed to avoid the comment to trigger a build itself!
+    comments['`run` `elasticsearch-ci/docs`'] = 'Re-trigger the docs validation. (use unformatted text in the comment!)'
+  }
+
   return comments
+}
+
+private isProjectSupported(String value) {
+  return env.REPO?.equals(value) || env.REPO_NAME?.equals(value)
+}
+
+private isElasticsearchDocsSupported() {
+  return isElasticsearchDocsSupported(env.REPO) || isElasticsearchDocsSupported(env.REPO_NAME)
+}
+
+private isElasticsearchDocsSupported(String value) {
+  return value?.startsWith('apm') ||
+         value?.startsWith('ecs') ||
+         value?.equals('beats') ||
+         value?.equals('observability-docs')
 }
 
 @NonCPS
 def findIssueCommentTrigger() {
   return currentBuild.rawBuild.getParent().getTriggers().collect { it.value }.find { it instanceof IssueCommentTrigger }
+}
+
+@NonCPS
+def isCancelledCausedFromADisableConcurrentBuilds() {
+  return currentBuild.rawBuild.getAction(org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty.CancelledCause.class)
 }

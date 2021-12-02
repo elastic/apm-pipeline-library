@@ -67,4 +67,52 @@ class IsInstalledStepTests extends ApmBasePipelineTest {
     assertTrue(ret)
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_tool_with_version_unmatched() throws Exception {
+    helper.registerAllowedMethod('cmd', [Map.class], { m ->
+      if (m.containsKey('returnStatus')) {
+        return 0
+      }
+      return """gh version 2.2.0 (2021-10-25)
+https://github.com/cli/cli/releases/tag/v2.2.0"""
+    })
+    def ret = script.call(tool: 'docker', flag: '--version', version: '1.2.3')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker --version'))
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_tool_with_version_matched() throws Exception {
+    helper.registerAllowedMethod('cmd', [Map.class], { m ->
+      if (m.containsKey('returnStatus')) {
+        return 0
+      }
+      return """gh version 2.2.0 (2021-10-25)
+https://github.com/cli/cli/releases/tag/v2.2.0"""
+    })
+    def ret = script.call(tool: 'docker', flag: '--version', version: '2.2.0')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker --version'))
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_tool_without_installed_the_tool_and_with_version() throws Exception {
+    helper.registerAllowedMethod('cmd', [Map.class], { m ->
+      if (m.containsKey('returnStatus')) {
+        return 1
+      }
+      return """gh version 2.2.0 (2021-10-25)
+https://github.com/cli/cli/releases/tag/v2.2.0"""
+    })
+    def ret = script.call(tool: 'docker', flag: '--version', version: '1.2.3')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('cmd', 'docker --version'))
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
 }

@@ -8,13 +8,15 @@ module.exports = {
     "ignoreLabels": ["closed", "automation", "enhancement", "bug", "fix",
       "internal", "feature", "feat", "docs", "chore", "refactor", "ci",
       "perf", "test", "tests", "style", "groovy", "linux", "master", "mac", "windows",
-      "team:automation", "ready-to-merge", "backport-to-7.x"],
+      "team:automation", "ready-to-merge", "backport-to-7.x",
+      "backport-skip","dependencies", "java", "bump"],
     "groupBy": {
         "Enhancements": ["enhancement", "internal", "feature", "feat"],
         "Bug Fixes": ["bug", "fix"],
         "Documentation": ["docs", "question"],
         "No user affected": ["chore", "refactor", "perf", "test", "style"],
-        "CI": ["ci"]
+        "CI": ["ci"],
+        "Dependency updates": ["dependency", "dependencies"]
     },
     "changelogFilename": "CHANGELOG.md",
     "template": {
@@ -37,6 +39,8 @@ module.exports = {
             icon = "🙈"
           } else if(placeholders.heading == 'CI'){
             icon = "⚙️"
+          } else if(placeholders.heading == 'Dependency updates'){
+            icon = "📦"
           }
           return '\n#### ' + icon + ' ' + placeholders.heading + '\n';
         }

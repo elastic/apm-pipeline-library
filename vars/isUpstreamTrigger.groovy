@@ -24,7 +24,8 @@
 def call(Map args=[:]){
   def filter = args.get('filter', 'all')
 
-  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause'}
+  def buildCause = currentBuild.getBuildCauses()?.find{ it._class == 'hudson.model.Cause$UpstreamCause' ||
+                                                        it._class == 'org.jenkinsci.plugins.workflow.support.steps.build.BuildUpstreamCause' }
   if (buildCause?.upstreamProject?.trim()) {
     log(level: 'DEBUG', text: "isUpstreamTrigger: ${buildCause?.upstreamProject?.toString()}, filter: '${filter}'")
     // evaluate filter

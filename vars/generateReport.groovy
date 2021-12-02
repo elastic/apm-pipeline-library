@@ -37,7 +37,7 @@ def call(Map args = [:]) {
   def template = args.get('template', true)
   def templateFormat = args.get('templateFormat', 'md')
   def compare = args.get('compare', true)
-  
+
   // Prepare the compare context with.
   def compareWith = getCompareWithFileIfPossible(id: id, output: output, compare: compare)
 

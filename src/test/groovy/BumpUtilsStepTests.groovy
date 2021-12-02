@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class BumpUtilsStepTests extends ApmBasePipelineTest {
@@ -42,6 +43,16 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(result == result)
     assertTrue(assertMethodCallContainsPattern('dockerImageExists', '8.0.0-SNAPSHOT'))
+  }
+
+  @Test
+  void test_areStackVersionsAvailable() throws Exception {
+    script.areStackVersionsAvailable([ current_7 : '7.15.1', current_6: '6.8.20', next_minor_7: '7.16.0', next_patch_7: '7.15.2' ])
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '6.8.20-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.15.1-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.15.2-SNAPSHOT'))
+    assertTrue(assertMethodCallContainsPattern('dockerImageExists', '7.16.0-SNAPSHOT'))
   }
 
   @Test
@@ -72,5 +83,61 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('git', 'my-org/my-repo'))
     assertTrue(assertMethodCallContainsPattern('git', 'my-creds'))
+  }
+
+  @Test
+  void test_getCurrentMinorReleaseFor7() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : 'value' ] })
+    def result = script.getCurrentMinorReleaseFor7()
+    printCallStack()
+    assertTrue(result.equals('value'))
+  }
+
+  @Test
+  void test_getCurrentMinorReleaseFor6() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_6 : 'value' ] })
+    def result = script.getCurrentMinorReleaseFor6()
+    printCallStack()
+    assertTrue(result.equals('value'))
+  }
+
+  @Test
+  void test_getNextMinorReleaseFor7() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ next_minor_7 : 'value' ] })
+    def result = script.getNextMinorReleaseFor7()
+    printCallStack()
+    assertTrue(result.equals('value'))
+  }
+
+  @Test
+  void test_getNextPatchReleaseFor7() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ next_patch_7 : 'value' ] })
+    def result = script.getNextPatchReleaseFor7()
+    printCallStack()
+    assertTrue(result.equals('value'))
+  }
+
+  @Test
+  void test_getValueForPropertyKey() throws Exception {
+    def result
+    try {
+      result = script.getValueForPropertyKey('key')
+    } catch(e) {
+      // NOOP
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
+  @Test
+  void test_parseArguments() throws Exception {
+    def result = script.parseArguments([title: "my-title", labels: "my-label"])
+    printCallStack()
+    assertTrue(result.containsKey('title'))
+    assertFalse(result.containsKey('assign'))
+    result = script.parseArguments([title: "my-title", labels: "my-label", assign: 'my-assign'])
+    printCallStack()
+    assertTrue(result.containsKey('assign'))
   }
 }

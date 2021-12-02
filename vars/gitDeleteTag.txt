@@ -11,4 +11,4 @@ gitDeleteTag(tag: 'tagName', credentialsId: 'my_credentials')
 ```
 
 * tag: name of the new tag.
-* credentialsId: tthe credentials to access the repo.
+* credentialsId: the credentials to access the repo.

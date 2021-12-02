@@ -1,0 +1,10 @@
+Install Node.js with NVM and run some command in a pre-configured environment multiplatform. For such
+it's recommended to use the `cmd` step.
+
+```
+  withNodeJSEnv(version: '14.17.5'){
+    cmd(label: 'Node version', script: 'node --version')
+  }
+```
+
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)

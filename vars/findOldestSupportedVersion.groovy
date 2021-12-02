@@ -23,10 +23,10 @@ def version = findOldestSupportedVersion(versionCondition: "^7.14.0")
 
 def call(Map args = [:]) {
   def versionCondition = args.containsKey('versionCondition') ? args.versionCondition : error('findOldestStackVersion: versionCondition parameter is required')
-  if (!versionCondition.startsWith('^')) {
-    error('findOldestStackVersion: versionCondition supports only ^[0-9].* format')
+  if (versionCondition.indexOf('||') >= 0) {
+    return handleOr(versionCondition)
   }
-  def version = versionCondition.substring(1)
+  def version = removeOperator(versionCondition)
   def response = httpRequest(url: 'https://artifacts-api.elastic.co/v1/versions?x-elastic-no-kpi=true')
   def availableVersions = readJSON(text: response)
 
@@ -86,4 +86,34 @@ def call(Map args = [:]) {
 
   // Otherwise, return it, whatever this is.
   return version
+}
+
+def removeOperator(String versionCondition) {
+  if (versionCondition.startsWith('^')) {
+    return versionCondition.substring(1)
+  }
+  if (versionCondition.startsWith('~')) {
+    return versionCondition.substring(1)
+  }
+  if (versionCondition.startsWith('>=')) {
+    return versionCondition.substring(2)
+  }
+  error('findOldestStackVersion: versionCondition supports only ^, ~ and >= operators')
+}
+
+def handleOr(String versionCondition) {
+  def versionConditions = versionCondition.split('\\s*\\|\\|\\s*')
+  if (versionConditions.size() == 0) {
+    error('no conditions found in "'+versionCondition+'"')
+  }
+
+  def result = ""
+  for (condition in versionConditions) {
+    def candidate = call(versionCondition: condition)
+    if (result == "" || candidate < result) {
+      result = candidate
+    }
+  }
+
+  return result
 }

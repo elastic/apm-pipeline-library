@@ -78,7 +78,7 @@ This notation avoids to double escape backslashes, making easier working with re
 
 Use the native syntax for data structures provided by Groovy like lists, maps, regex, or ranges of values.
 
-### Use aditional Groovy methods
+### Use additional Groovy methods
 
 Use the additional methods provided by Groovy to manipulate String, Files, Streams, Collections, and other classes.
 For a complete description of all available methods, please read the GDK API [[5]](http://groovy-lang.org/groovy-dev-kit.html).

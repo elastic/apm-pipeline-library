@@ -42,6 +42,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
     SECRET_APM('secret/observability-team/ci/jenkins-stats'),
     SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),
+    SECRET_AWS_PROVISIONER('service-account/aws-provisioner'),
     SECRET_AZURE('secret/apm-team/ci/apm-agent-dotnet-azure'),
     SECRET_AZURE_VM_EXTENSION('secret/observability-team/ci/service-account/azure-vm-extension'),
     SECRET_CLOUD_ERROR('secret/observability-team/ci/test-clusters/error/ec-deployment'),
@@ -53,7 +54,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin'), SECRET_GCP_PROVISIONER('service-account/provisioner')
 
     VaultSecret(String value) {
       this.value = value
@@ -323,6 +324,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('readJSON', [Map.class], { m ->
       return readJSON(m)
     })
+    helper.registerAllowedMethod('readProperties', [Map.class], { [:] })
     helper.registerAllowedMethod('retry', [Integer.class, Closure.class], { count, c ->
       Exception lastError = null
       while (count-- > 0) {
@@ -357,7 +359,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->
-      (new File("target/${m.file}")).withWriter('UTF-8') { writer ->
+      File f = new File("target/${m.file}")
+      f.getParentFile().mkdirs()
+      f.withWriter('UTF-8') { writer ->
         writer.write(m.text)
       }
     })
@@ -391,6 +395,18 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('dockerImageExists', [Map.class], { true })
     helper.registerAllowedMethod('dockerLogin', [Map.class], { true })
+    helper.registerAllowedMethod('download', [Map.class], { m ->
+      def script = loadScript('vars/download.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('downloadWithCurl', [Map.class], { m ->
+      def script = loadScript('vars/downloadWithCurl.groovy')
+      return script.call(m)
+    })
+    helper.registerAllowedMethod('downloadWithWget', [Map.class], { m ->
+      def script = loadScript('vars/downloadWithWget.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('echoColor', [Map.class], { m ->
       def echoColor = loadScript('vars/echoColor.groovy')
       echoColor.call(m)
@@ -583,6 +599,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withGCPEnv.groovy')
       return script.call(m, c)
     })
+    helper.registerAllowedMethod('withGhEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withGhEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withGithubNotify', [Map.class, Closure.class], null)
     helper.registerAllowedMethod('withGithubCheck', [Map.class, Closure.class], { m, body -> body() })
     helper.registerAllowedMethod('withGithubStatus', [Map.class, Closure.class], { m, body -> body() })
@@ -599,6 +619,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
       def script = loadScript('vars/withMageEnv.groovy')
       return script.call(c)
+    })
+    helper.registerAllowedMethod('withNodeJSEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withNodeJSEnv.groovy')
+      return script.call(m, c)
+    })
+    helper.registerAllowedMethod('withNodeJSEnvUnix', [Map.class, Closure.class], { m, c ->
+      return true
     })
   }
 
@@ -617,6 +644,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_APM_CUSTOMISED.equals(s)){
       return [data: [token: 'my-token-1', url: 'my-url-1']]
+    }
+    if(VaultSecret.SECRET_AWS_PROVISIONER.equals(s)){
+      return [data: [ csv: 'my_csv_credentials', user: 'user@acme.co' ]]
     }
     if(VaultSecret.SECRET_AZURE.equals(s)){
       return [data: [ client_id: 'client_id_1', client_secret: 'client_secret_1', subscription_id: 'subscription_id_1', tenant_id: 'tenant_id_1' ]]
@@ -650,6 +680,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_GCP.equals(s)){
       return [data: [ value: 'mytoken' ]]
+    }
+    if(VaultSecret.SECRET_GCP_PROVISIONER.equals(s)){
+      return [data: [ credentials: 'my_json_credentials' ]]
     }
     if(VaultSecret.SECRET_GITHUB_APP.equals(s)){
       return [data: [ key: new File('src/test/resources/github-app-private-key-tests.pem').text, installation_id: '123', app_id: '42' ]]

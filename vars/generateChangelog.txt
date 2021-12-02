@@ -1,4 +1,4 @@
-Programatically generate a CHANGELOG
+Programmatically generate a CHANGELOG
 
 ```
 generateChangelog(

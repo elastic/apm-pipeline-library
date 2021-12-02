@@ -57,7 +57,7 @@ class ApmCli:
 
     def file_for_write(self, path):
         """
-        Open a file for writting.
+        Open a file for writing.
 
         :param path: Path for the file.
         :return: An File type object for writing.
@@ -223,7 +223,7 @@ class ApmCli:
 
     def init_apm_client(self):
         """
-        Initializes tha APM client.
+        Initializes the APM client.
 
         :param args: options loaded from command line or environment variables.
         :return: the APM client object.

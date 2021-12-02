@@ -1,9 +1,9 @@
 Wrapper to interact with the gh command line. It returns the stdout output.
-It requires to be executed within the git workspace, otherwise it will use 
+It requires to be executed within the git workspace, otherwise it will use
 `REPO_NAME` and `ORG_NAME` env variables if defined (githubEnv is in charge to create them).
 
 ```
-  // List all the open issues with the label 
+  // List all the open issues with the label
   gh(command: 'issue list', flags: [ label: ['flaky-test'], state: 'open' ])
 
   // Create issue with title and body
@@ -13,5 +13,6 @@ It requires to be executed within the git workspace, otherwise it will use
 * command: The gh command to be executed title. Mandatory
 * flags: The gh flags for that particular command. Optional. Refers to https://cli.github.com/manual/
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
-
-_NOTE_: Windows is not supported yet.
+* version: The gh CLI version to be installed. Optional (1.9.2)
+* forceInstallation: Whether to install gh regardless. Optional (false)
+* forceRepo: Whether to force the repo configuration flag instead reading the ones from the env variables. Optional (false)

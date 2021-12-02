@@ -59,7 +59,6 @@ pipelineJob(NAME) {
   parameters {
     stringParam('num', '1')
   }
-  concurrentBuild(false)
   definition {
     cps {
       script(DSL.stripIndent())

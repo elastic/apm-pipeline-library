@@ -25,9 +25,9 @@ def call(Map args = [:]) {
   if(isGoVersionEnvVarSet()) {
     goDefaultVersion = "${env.GO_VERSION}"
   } else {
-    def goFileVersion = '.go-version'
-    if (fileExists(goFileVersion)){
-      goDefaultVersion = readFile(file: goFileVersion)?.trim()
+    def found = ['.go-version', "${env.BASE_DIR}/.go-version'"].find { fileExists(it) }
+    if (found) {
+      goDefaultVersion = readFile(file: found)?.trim()
     }
   }
   return goDefaultVersion

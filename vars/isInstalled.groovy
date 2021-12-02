@@ -16,7 +16,8 @@
 // under the License.
 
 /**
-  Check it the given tools is installed and available.
+  Check it the given tools is installed and available. It does also support version
+  validation.
 
   whenTrue(isInstalled(tool: 'docker', flag: '--version')) {
     // ...
@@ -28,9 +29,13 @@
 */
 def call(Map args = [:]) {
   def tool = args.containsKey('tool') ? args.tool : error('isInstalled: tool parameter is required')
+  def version = args.get('version', '')
   def flag = args.get('flag', '')
-
   def redirectStdout = isUnix() ? '>/dev/null' : '>NUL'
 
-  return cmd(returnStatus: true, script: "${tool} ${flag} ${redirectStdout}") == 0
+  def isToolInstalled = cmd(label: 'isToolInstalled', returnStatus: true, script: "${tool} ${flag} ${redirectStdout}")
+  if (version?.trim() && isToolInstalled == 0) {
+    return cmd(label: 'isToolVersionInstalled', returnStdout: true, script: "${tool} ${flag}").contains(version)
+  }
+  return isToolInstalled == 0
 }

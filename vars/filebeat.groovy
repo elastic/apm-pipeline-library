@@ -41,7 +41,7 @@ def call(Map args = [:], Closure body) {
 def start(Map args = [:]) {
   def output = args.containsKey('output') ? args.output : 'docker_logs.log'
   def config = args.containsKey('config') ? args.config : "filebeat_conf.yml"
-  def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.14.1"
+  def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/filebeat:7.15.2"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
   def archiveOnlyOnFail = args.get('archiveOnlyOnFail', false)
@@ -81,7 +81,7 @@ def stop(Map args = [:]){
   log(level: 'INFO', text: 'Stopping Filebeat Docker container')
 
   // we need to change the permission because the group others never will have permissions
-  // due to the harcoded creation mask, see https://github.com/elastic/beats/issues/20584
+  // due to the hardcoded creation mask, see https://github.com/elastic/beats/issues/20584
   sh(label: 'Stop filebeat', script: """
     docker exec -t ${stepConfig.id} chmod -R ugo+rw /output || echo "Exit code \$?"
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"

@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Parse the pre-commit log file and generates a junit report
 
@@ -29,7 +31,7 @@ def call(Map args = [:]) {
   def id, status, message = '', inprogress = false
   def data = '<?xml version="1.0" encoding="UTF-8"?><testsuite>'
   content.split('\n').each { line ->
-    def matcher = line =~ '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$'
+    def matcher = findPatternMatch(line, '(.+)(\\.Passed|\\)Skipped|\\.Skipped|\\.Failed)$')
     if (matcher.find()) {
       if (id) {
         data += toJunit(id, status, message, reportSkipped)
@@ -55,7 +57,8 @@ def toJunit(String name, String status, String message, reportSkipped=false) {
   if (status?.toLowerCase()?.contains('skipped') && reportSkipped) {
     output += "><skipped message=\"skipped\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
   } else if (status?.toLowerCase()?.contains('failed')) {
-    output += "><error message=\"error\"/><system-out><![CDATA[${normalise(message)}]]></system-out></testcase>"
+    // use error and failure to populate the errorStackTrace when using resources/scripts/generate-build-data.sh
+    output += "><error message=\"error\">![CDATA[${normaliseXml(normalise(message))}]]</error></testcase>"
   } else {
     output += " />"
   }
@@ -66,4 +69,14 @@ def toJunit(String name, String status, String message, reportSkipped=false) {
 def normalise(String message) {
   String xml10pattern = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff]"
   return message.replaceAll(xml10pattern, '')
+}
+
+def normaliseXml(String message) {
+  return message.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&', '&amp;')
+}
+
+@NonCPS
+private findPatternMatch(line, pattern) {
+  def matcher = line =~ pattern
+  return matcher
 }

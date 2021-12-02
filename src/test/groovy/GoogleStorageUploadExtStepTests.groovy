@@ -88,7 +88,7 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_shared_publically() throws Exception {
+  void test_with_shared_publicly() throws Exception {
     helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
     script.call(bucket: 'gs://foo', pattern: 'file.txt', sharedPublicly: true)
     printCallStack()

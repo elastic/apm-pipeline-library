@@ -25,6 +25,7 @@
 
 def call(Map args = [:]) {
   def maxBuildsToSearch = args.get('maxBuildsToSearch', 10)
+  log(level: 'WARN', text: "cancelPreviousRunningBuilds step is DEPRECATED; use `disableConcurrentBuilds(abortPrevious: true)`")
   log(level: 'INFO', text: "Number of builds to be searched ${maxBuildsToSearch}")
   b = currentBuild
   for (int i=0; i<maxBuildsToSearch; i++) {

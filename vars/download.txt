@@ -1,0 +1,8 @@
+Download the given URL regardless of the tool.
+
+```
+download(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the output will be written to. Mandatory.

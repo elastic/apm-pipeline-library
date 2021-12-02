@@ -48,7 +48,7 @@ def call(Map args = [:]){
   sh(label: 'Permission', script: "chmod 755 ${scriptFile}")
   sh(label: 'Docker logs', script: """./${scriptFile} "${normaliseLabel}" "${dockerCompose}" ${flag}""")
 
-  archiveArtifacts(allowEmptyArchive: true, artifacts: 'docker-info/**', defaultExcludes: false)  
+  archiveArtifacts(allowEmptyArchive: true, artifacts: 'docker-info/**', defaultExcludes: false)
 }
 
 def normalise(value) {

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><testsuite><testcase classname="pre_commit.lint" name="Check gherkin lint"><error message="error"/><system-out><![CDATA[hookid: check-gherkin-lint
+<?xml version="1.0" encoding="UTF-8"?><testsuite><testcase classname="pre_commit.lint" name="Check gherkin lint"><error message="error">![CDATA[hookid: check-gherkin-lint
 
 BadScenarioName - Prefer to rely just on Given and When steps when name your scenario to keep it stable
   features/apache.feature (3): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file
@@ -7,11 +7,11 @@ MissingTestAction - No 'When'-Step
 MissingFeatureDescription - Favor a user story as description
   features/apache.feature (1): As a Metricbeat developer I want to check that the Apache module works as expected
 InvalidStepFlow - Missing Action
-  features/apache.feature (6): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "apache-<apache_version>.metrics"
+  features/apache.feature (6): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "apache-&amp;lt;apache_version&amp;gt;.metrics"
 FileNameDiffersFeatureName - Feature name should be 'Apache'
   features/apache.feature (1): As a Metricbeat developer I want to check that the Apache module works as expected
 BeDeclarative (Warning) - no verb
-  features/apache.feature (6): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "apache-<apache_version>.metrics"
+  features/apache.feature (6): As a Metricbeat developer I want to check that the Apache module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "apache-&amp;lt;apache_version&amp;gt;.metrics"
 ERROR: gherkin-lint failed for the file 'features/apache.feature'
 BadScenarioName - Prefer to rely just on Given and When steps when name your scenario to keep it stable
   features/mysql.feature (3): As a Metricbeat developer I want to check that the MySQL module works as expected.Check module is sending metrics to a file
@@ -20,10 +20,10 @@ MissingTestAction - No 'When'-Step
 MissingFeatureDescription - Favor a user story as description
   features/mysql.feature (1): As a Metricbeat developer I want to check that the MySQL module works as expected
 InvalidStepFlow - Missing Action
-  features/mysql.feature (6): As a Metricbeat developer I want to check that the MySQL module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "mysql-<mysql_version>.metrics"
+  features/mysql.feature (6): As a Metricbeat developer I want to check that the MySQL module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "mysql-&amp;lt;mysql_version&amp;gt;.metrics"
 FileNameDiffersFeatureName - Feature name should be 'Mysql'
   features/mysql.feature (1): As a Metricbeat developer I want to check that the MySQL module works as expected
 BeDeclarative (Warning) - no verb
-  features/mysql.feature (6): As a Metricbeat developer I want to check that the MySQL module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "mysql-<mysql_version>.metrics"
+  features/mysql.feature (6): As a Metricbeat developer I want to check that the MySQL module works as expected.Check module is sending metrics to a file step: metricbeat outputs metrics to the file "mysql-&amp;lt;mysql_version&amp;gt;.metrics"
 ERROR: gherkin-lint failed for the file 'features/mysql.feature'
-]]></system-out></testcase></testsuite>
+]]</error></testcase></testsuite>

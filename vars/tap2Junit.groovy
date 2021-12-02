@@ -44,4 +44,3 @@ def call(Map args = [:]) {
     """)
   junit testResults: "*-${suffix}", allowEmptyResults: true, keepLongStdio: true
 }
-  

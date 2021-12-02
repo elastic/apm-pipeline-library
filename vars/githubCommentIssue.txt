@@ -14,6 +14,6 @@ Comment an existing GitHub issue
 * repo: The GitHub repository. Optional. Default the REPO_REPO env variable
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7
 
-_NOTE_: 
+_NOTE_:
 * Windows is not supported yet.
 * It uses hub. No supported yet by gh see https://github.com/cli/cli/issues/517
