@@ -29,12 +29,15 @@ ENV NODE_OPTIONS= --max-old-space-size=4096
 ENV FORCE_COLOR=1
 ENV BABEL_DISABLE_CACHE=true
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-RUN . "${NVM_DIR}/nvm.sh"; \
-  nvm install $(cat .node-version)
-RUN npm install -g yarn-deduplicate \
+RUN . "${NVM_DIR}/nvm.sh" \
+  && nvm install $(cat .node-version) \
+  && nvm alias default $(cat .node-version)
+RUN . "${NVM_DIR}/nvm.sh" \
+  && npm install -g yarn-deduplicate \
   && yarn-deduplicate yarn.lock \
   && npm set progress=false
-RUN yarn config set cache-folder ${HOME}/.yarn_cache \
+RUN . "${NVM_DIR}/nvm.sh" \
+  && yarn config set cache-folder ${HOME}/.yarn_cache \
   && yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
 
 EXPOSE 5601

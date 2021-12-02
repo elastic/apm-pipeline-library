@@ -57,12 +57,13 @@ def dockerImages = [
     repo: 'git@github.com:elastic/beats.git',
     folder: 'x-pack/metricbeat',
     push: true,
-    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions',
-    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+    build_script: 'eval $(gvm $(cat ../../.go-version)) && make mage && mage compose:buildSupportedVersions',
+    push_script: 'eval $(gvm $(cat ../../.go-version)) && make mage && mage compose:pushSupportedVersions'
   ],
   [
     name: 'apm-proxy',
     repo: 'git@github.com:elastic/observability-dev',
+    branch: 'main',
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
@@ -83,7 +84,6 @@ def dockerImages = [
     folder: 'tests',
     build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
     push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
-    test_script: 'make test-functional-opbeans',
     push: true
   ]
 ]
@@ -247,9 +247,9 @@ def nodejsVersion = "12"
 libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
-    repo: 'git@github.com:elastic/apm-agent-ruby.git',
+    repo: 'git@github.com:elastic/apm-agent-rum-js.git',
     tag: "${nodejsVersion}",
-    folder: '.ci/docker/node-${library}',
+    folder: ".ci/docker/node-${library}",
     build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
     push: true
   ])

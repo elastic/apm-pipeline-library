@@ -24,6 +24,7 @@ pipeline {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
     DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
+    HOME="${env.WORKSPACE}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
