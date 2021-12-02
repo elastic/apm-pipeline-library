@@ -51,6 +51,7 @@ def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
 
 
 def test_basic_plugin(pytester):
+    """test a simple test"""
     pytester.makepyfile(
         common_code
         + """
@@ -62,6 +63,7 @@ def test_basic():
 
 
 def test_success_plugin(pytester):
+    """test a success test"""
     pytester.makepyfile(
         common_code
         + """
@@ -72,6 +74,7 @@ def test_success():
 
 
 def test_failure_plugin(pytester):
+    """test a failed test"""
     pytester.makepyfile(
         common_code
         + """
@@ -82,6 +85,7 @@ def test_failure():
 
 
 def test_failure_code_plugin(pytester):
+    """test a test with a code exception"""
     pytester.makepyfile(
         common_code
         + """
@@ -93,6 +97,7 @@ def test_failure_code():
 
 
 def test_skip_plugin(pytester):
+    """test a skipped test"""
     pytester.makepyfile(
         common_code
         + """
@@ -104,6 +109,7 @@ def test_skip():
 
 
 def test_xfail_plugin(pytester):
+    """test a marked as xfail test"""
     pytester.makepyfile(
         common_code
         + """
@@ -115,6 +121,7 @@ def test_xfail():
 
 
 def test_xfail_no_run_plugin(pytester):
+    """test a marked as xfail test with run==false"""
     pytester.makepyfile(
         common_code
         + """
