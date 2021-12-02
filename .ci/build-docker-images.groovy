@@ -25,6 +25,7 @@ pipeline {
     PIPELINE_LOG_LEVEL='INFO'
     DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
     HOME="${env.WORKSPACE}"
+    PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
