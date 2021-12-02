@@ -37,7 +37,7 @@ def call(Map args = [:], Closure body) {
     if (forceInstallation || !isInstalled(tool: 'aws', flag: '--version', version: version)) {
       downloadAndInstall(awsUtilLocation, version)
     }
-    def props = getVaultSecret(secret: secret)
+    def props = getVaultSecret(args)
     if (props?.errors) {
       error("withAWSEnv: Unable to get credentials from the vault: ${props.errors.toString()}")
     }
