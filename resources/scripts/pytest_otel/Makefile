@@ -1,13 +1,12 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-PYTEST_OTEL_VERSION = 0.0.1
-PYTEST_OTEL_PKG = pytest-otel-$(PYTEST_OTEL_VERSION)
 OTEL_EXPORTER_OTLP_ENDPOINT ?= http://127.0.0.1:4317
 OTEL_SERVICE_NAME ?= "pytest_otel_test"
 OTEL_EXPORTER_OTLP_INSECURE ?= True
 OTEL_EXPORTER_OTLP_HEADERS ?=
 TRACEPARENT ?=
+REPO_URL ?= https://upload.pypi.org/legacy/
 
 VENV ?= .venv
 PYTHON ?= python3
@@ -107,13 +106,8 @@ clean:
 
 package: virtualenv
 	source $(VENV)/bin/activate;\
+	set +xe; \
 	$(PYTHON) setup.py sdist bdist_wheel
-
-release: bin/gh package
-	$(GH) release create $(PYTEST_OTEL_PKG) dist/$(PYTEST_OTEL_PKG).tar.gz \
-		--repo elastic/apm-pipeline-library \
-		--title $(PYTEST_OTEL_PKG) \
-		--notes "$(PYTEST_OTEL_PKG)"
 
 ## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
 .PHONY: run-otel-collector
@@ -134,8 +128,7 @@ run-otel-collector:
 publish: package
 	set +xe; \
 	source $(VENV)/bin/activate;\
-	python -m pip install twine;\
-	python setup.py sdist;\
+	$(PYTHON) -m pip install twine;\
 	echo "Uploading to $${REPO_URL} with user $${TWINE_USER}";\
 	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.tar.gz;\
 	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.whl
