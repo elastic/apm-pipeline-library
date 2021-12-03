@@ -65,13 +65,22 @@ install: virtualenv
 .PHONY: test
 test: virtualenv install
 	source $(VENV)/bin/activate;\
-	pytest --capture=no -p pytester --runpytest=subprocess;
+	pytest --capture=no -p pytester --runpytest=subprocess \
+		--junitxml $(CURDIR)/junit-test_pytest_otel.xml \
+		tests/test_pytest_otel.py;
 
 ## @help:test:Run the test.
 .PHONY: test
 it-test: virtualenv install
+	set -e;\
 	source $(VENV)/bin/activate;\
-	pytest --capture=no -p pytester --runpytest=subprocess tests/it_tests_pytest_otel.py;
+	for test in tests/it/test_*.py; \
+	do \
+		pytest --capture=no -p pytester --runpytest=subprocess \
+			--junitxml $(CURDIR)/junit-$$(basename $${test}).xml \
+			$${test}; \
+	done;
+	#pytest --capture=no -p pytester --runpytest=subprocess tests/it/test_*.py;
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage

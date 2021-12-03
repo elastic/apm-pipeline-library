@@ -8,8 +8,9 @@ services:
     command: ["--config=/etc/otel-collector.yaml"]
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
+      - ./:/tmp
     ports:
-      - "4317:14317"  # OTLP gRPC receiver
+      - "4317:4317"  # OTLP gRPC receiver
     networks:
       - default_net
 

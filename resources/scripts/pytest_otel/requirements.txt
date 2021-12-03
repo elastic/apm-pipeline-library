@@ -1,9 +1,9 @@
-ConfigArgParse
-coverage
+coverage==6.2
 opentelemetry-api==1.7.0
 opentelemetry-exporter-otlp==1.7.0
 opentelemetry-sdk==1.7.0
-psutil
-pytest
-pre-commit
+psutil==5.8.0
+pytest==6.2.5
+pre-commit==2.16.0
 mypy==0.902
+pytest-docker==0.10.3

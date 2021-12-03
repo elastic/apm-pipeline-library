@@ -17,9 +17,8 @@ import pytest
 def assertTestSuit(span, outcome, status):
     assert span["kind"] == "SpanKind.SERVER"
     assert span["status"]["status_code"] == status
-    "OK" or span["status"]["status_code"] == "UNSET"
     if outcome is not None:
-        assert span["attributes"]["test.outcome"] == "passed"
+        assert span["attributes"]["test.outcome"] == outcome
     assert span["parent_id"] is None
     return True
 
@@ -81,7 +80,7 @@ def test_failure_plugin(pytester):
 def test_failure():
     assert 1 < 0
 """)
-    assertTest(pytester, "test_failure", "failed", "OK", "failed", "ERROR")
+    assertTest(pytester, "test_failure", "failed", "ERROR", "failed", "ERROR")
 
 
 def test_failure_code_plugin(pytester):
@@ -93,7 +92,7 @@ def test_failure_code():
     d = 1/0
     pass
 """)
-    assertTest(pytester, "test_failure_code", "failed", "OK", "failed", "ERROR")
+    assertTest(pytester, "test_failure_code", "failed", "ERROR", "failed", "ERROR")
 
 
 def test_skip_plugin(pytester):
