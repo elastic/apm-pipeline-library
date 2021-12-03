@@ -12,6 +12,7 @@ __pycache__
 **/*.egg-info
 **/build
 **/dist
+bin
 junit-*.xml
 otel-traces-file-output.json
 temp
