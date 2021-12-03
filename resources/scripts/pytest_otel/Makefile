@@ -7,6 +7,7 @@ OTEL_EXPORTER_OTLP_INSECURE ?= True
 OTEL_EXPORTER_OTLP_HEADERS ?=
 TRACEPARENT ?=
 REPO_URL ?= https://upload.pypi.org/legacy/
+DEMO_DIR ?= docs/demos
 
 VENV ?= .venv
 PYTHON ?= python3
@@ -132,3 +133,20 @@ publish: package
 	echo "Uploading to $${REPO_URL} with user $${TWINE_USER}";\
 	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.tar.gz;\
 	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.whl
+
+## @help:demo-start-DEMO_NAME:Starts the demo from the demo folder, DEMO_NAME is the name of the demo type folder in the docs/demos folder (jaeger, elastic).
+.PHONY: demo-start-%
+demo-start-%:
+	$(MAKE) demo-stop-$*
+	mkdir -p $(DEMO_DIR)/$*/build
+	touch $(DEMO_DIR)/$*/build/tests.json
+	docker-compose -f $(DEMO_DIR)/$*/docker-compose.yml up -d
+	. $(DEMO_DIR)/$*/demo.env;\
+	env | grep OTEL;\
+	$(MAKE) test
+
+## @help:demo-stop-DEMO_NAME:Stops the demo from the demo folder, DEMO_NAME is the name of the demo type folder in the docs/demos folder (jaeger, elastic).
+.PHONY: demo-stop-%
+demo-stop-%:
+	-docker-compose -f $(DEMO_DIR)/$*/docker-compose.yml down --remove-orphans --volumes
+	-rm -fr $(DEMO_DIR)/$*/build
