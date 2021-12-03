@@ -1,3 +1,6 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+# imported from https://github.com/mdelapenya/junit2otlp
 version: '3.7'
 services:
   apm-server:
