@@ -235,7 +235,6 @@ def pytest_runtest_call(item):
 
         if hasattr(sys, "last_value") and hasattr(sys, "last_traceback") and hasattr(sys, "last_type"):
             longrepr = ""
-            outcome = ""
             if not isinstance(sys.last_value, _pytest._code.ExceptionInfo):
                 outcome = "failed"
                 longrepr = sys.last_value
@@ -252,7 +251,10 @@ def pytest_runtest_call(item):
             LOGGER.debug("test.last_value {}".format(sys.last_value))
             stack_trace = repr(traceback.format_exception(sys.last_type, sys.last_value, sys.last_traceback))
             span.set_attribute("test.stack_trace", "{}".format(stack_trace))
-            span.set_attribute("test.error", "{}".format(sys.last_value.args[0]))
+            try:
+                span.set_attribute("test.error", "{}".format(sys.last_value.args[0]))
+            except IndexError:
+                span.set_attribute("test.error", "{}".format("unknown"))
             span.set_attribute("test.last_value", "{}".format(sys.last_value))
             span.set_attribute("test.last_type", "{}".format(sys.last_type))
 
