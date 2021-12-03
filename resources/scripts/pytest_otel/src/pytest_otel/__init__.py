@@ -123,11 +123,33 @@ def convertOutcome(outcome):
     """Convert from pytest outcome to OpenTelemetry status code"""
     if outcome == "passed":
         return Status(status_code=StatusCode.OK)
-    elif outcome == "failed":
+    elif (outcome == "failed"
+            or outcome == "interrupted"
+            or outcome == "internal_error"
+            or outcome == "usage_error"
+            or outcome == "no_tests_collected"
+        ):
         return Status(status_code=StatusCode.ERROR)
     else:
         return Status(status_code=StatusCode.UNSET)
 
+
+def exitCodeToOutcome(exit_code):
+    """convert pytest ExitCode to outcome"""
+    if exit_code == 0:
+        return "passed"
+    elif exit_code == 1:
+        return "failed"
+    elif exit_code == 2:
+        return "interrupted"
+    elif exit_code == 3:
+        return "internal_error"
+    elif exit_code == 4:
+        return "usage_error"
+    elif exit_code == 4:
+        return "no_tests_collected"
+    else:
+        return "failed"
 
 def traceparent_context(traceparent):
     """Extracts the trace context from the TRACEPARENT passed"""
@@ -180,7 +202,7 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: U100
     """Ends the parent Opentelemetry span with the session outcome"""
     global session_name, outcome, in_memory_span_exporter, otel_exporter
     LOGGER.debug("Session transaction Ends")
-    end_span(session_name, outcome)
+    end_span(session_name, exitCodeToOutcome(exitstatus))
     LOGGER.debug("in_memory_span_exporter {}".format(in_memory_span_exporter))
     if in_memory_span_exporter:
         print()
