@@ -32,6 +32,7 @@ outcome = None
 
 
 def pytest_addoption(parser):
+    """Init command line arguments"""
     group = parser.getgroup("pytest-otel", "report OpenTelemetry traces for tests executed.")
 
     group.addoption(
@@ -76,6 +77,7 @@ def pytest_addoption(parser):
 
 
 def init_otel():
+    """Init the OpenTelemetry settings"""
     global tracer, session_name, service_name, insecure, otel_exporter
     LOGGER.debug("Init Otel : {}".format(service_name))
     trace.set_tracer_provider(
@@ -96,6 +98,7 @@ def init_otel():
 
 
 def start_span(span_name, context=None, kind=None):
+    """Starts a span with the name, context, and kind passed as parameters"""
     global tracer, spans
     spans[span_name] = tracer.start_span(
         span_name, context=context, record_exception=True, set_status_on_exception=True,
@@ -106,6 +109,7 @@ def start_span(span_name, context=None, kind=None):
 
 
 def end_span(span_name, outcome):
+    """Ends a span identified by its name"""
     global spans
     status = convertOutcome(outcome)
     spans[span_name].set_status(status)
@@ -116,6 +120,7 @@ def end_span(span_name, outcome):
 
 
 def convertOutcome(outcome):
+    """Convert from pytest outcome to OpenTelemetry status code"""
     if outcome == "passed":
         return Status(status_code=StatusCode.OK)
     elif outcome == "failed":
@@ -125,12 +130,14 @@ def convertOutcome(outcome):
 
 
 def traceparent_context(traceparent):
+    """Extracts the trace context from the TRACEPARENT passed"""
     carrier = {}
     carrier["traceparent"] = traceparent
     return TraceContextTextMapPropagator().extract(carrier=carrier)
 
 
 def pytest_sessionstart(session):
+    """Uses the commandline parameter to define the environment variables used by OpenTelemetry"""
     global service_name, traceparent, session_name, insecure, in_memory_span_exporter, otel_span_file_output
     LOGGER.setLevel(logging.DEBUG)
     config = session.config
@@ -158,16 +165,19 @@ def pytest_sessionstart(session):
 
 
 def pytest_runtest_setup(item):  # noqa: U100
+    """Clean the global outcome on every test"""
     global outcome
     outcome = None
 
 
 def pytest_report_teststatus(report):
+    """Set the final outcome to the reported outcome"""
     global outcome
     outcome = report.outcome
 
 
 def pytest_sessionfinish(session, exitstatus):  # noqa: U100
+    """Ends the parent Opentelemetry span with the session outcome"""
     global session_name, outcome, in_memory_span_exporter, otel_exporter
     LOGGER.debug("Session transaction Ends")
     end_span(session_name, outcome)
