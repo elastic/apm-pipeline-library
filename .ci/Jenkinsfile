@@ -52,7 +52,6 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
-        sh 'hostname'
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
           deleteDir()
@@ -68,6 +67,7 @@ pipeline {
     }
     stage('Tests') {
       parallel {
+        // This meta-stage is the one for specific Linux VM workers.
         stage('Linux') {
           agent { label 'linux && immutable' }
           options { skipDefaultCheckout() }
@@ -126,11 +126,11 @@ pipeline {
             }
           }
         }
+        // This meta-stage is the one for specific k8s workers
         stage('Functional') {
           options { skipDefaultCheckout() }
           stages {
             stage('Google Storage') {
-              agent { kubernetes { yamlFile 'resources/k8s/UbuntuPod.yml' } }
               when {
                 beforeAgent true
                 expression { return env.TEST_GOOGLE == "true" }
@@ -210,6 +210,7 @@ pipeline {
         }
         stage('UnitTest') {
           agent { kubernetes { yamlFile 'resources/k8s/JavaPod.yml' } }
+          options { skipDefaultCheckout() }
           steps {
             withGithubNotify(context: 'UTs', description: 'UTs', tab: 'tests') {
               dir("${BASE_DIR}"){
@@ -230,6 +231,7 @@ pipeline {
         }
         stage('Build') {
           agent { kubernetes { yamlFile 'resources/k8s/JavaPod.yml' } }
+          options { skipDefaultCheckout() }
           steps {
             withGithubNotify(context: 'Build', description: 'Build') {
               deleteDir()
@@ -252,6 +254,7 @@ pipeline {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
       }
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression {
