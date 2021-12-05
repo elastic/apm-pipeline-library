@@ -33,22 +33,7 @@ pipeline {
   // Otherwise, use an immutable worker rather than the master
   // worker to avoid any kind of bottlenecks or performance issues.
   // NOTE: ephemeral workers cannot be allocated when using `||` see https://github.com/elastic/infra/issues/13823
-  agent {
-    kubernetes {
-      yaml '''
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: shell
-    image: ubuntu
-    command:
-    - sleep
-    args:
-    - infinity
-  '''
-    }
-  }
+  agent { kubernetes { yamlFile 'resources/k8s/UbuntuPod.yml' } }
   environment {
     // Forced the REPO name to help with some limitations: https://issues.jenkins-ci.org/browse/JENKINS-58450
     REPO = 'apm-pipeline-library'
