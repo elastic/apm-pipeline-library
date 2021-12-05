@@ -75,8 +75,7 @@ pipeline {
             stage('Check Licenses') {
               steps {
                 withGithubNotify(context: 'Check Licenses') {
-                  deleteDir()
-                  unstash 'source'
+                  prepareWorkspace()
                   dir("${BASE_DIR}"){
                     catchError(
                         buildResult: 'SUCCESS',
@@ -92,8 +91,7 @@ pipeline {
             stage('Check pre-commit') {
               steps {
                 withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
-                  deleteDir()
-                  unstash 'source'
+                  prepareWorkspace()
                   dir("${BASE_DIR}"){
                     preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
                   }
@@ -112,6 +110,7 @@ pipeline {
               }
               steps {
                 withGithubNotify(context: 'Test infra') {
+                  prepareWorkspace()
                   dir("${BASE_DIR}"){
                     sh script: './resources/scripts/jenkins/apm-ci/test.sh'
                     sh script: './resources/scripts/jenkins/build.sh'
@@ -137,8 +136,7 @@ pipeline {
               }
               steps {
                 withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
-                  deleteDir()
-                  unstash 'source'
+                  prepareWorkspace()
                   dir("${BASE_DIR}"){
                     googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
                   }
@@ -148,8 +146,7 @@ pipeline {
             stage('Check Pipelines') {
               steps {
                 withGithubNotify(context: 'Check Pipelines') {
-                  deleteDir()
-                  unstash 'source'
+                  prepareWorkspace()
                   dir("${BASE_DIR}"){
                     validateDeclarativePipeline '.ci/Jenkinsfile'
                     validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
@@ -176,8 +173,7 @@ pipeline {
               }
               steps {
                 withGithubNotify(context: 'Check JobDSL') {
-                  deleteDir()
-                  unstash 'source'
+                  prepareWorkspace()
                   dir("${BASE_DIR}/.ci/jobDSL"){
                     sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
                   }
@@ -200,8 +196,7 @@ pipeline {
           }
           steps {
             withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
-              deleteDir()
-              unstash 'source'
+              prepareWorkspace()
               dir("${BASE_DIR}"){
                 googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
               }
@@ -213,6 +208,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             withGithubNotify(context: 'UTs', description: 'UTs', tab: 'tests') {
+              prepareWorkspace()
               dir("${BASE_DIR}"){
                 withOtelEnv() {
                   sh './mvnw clean test -V --batch-mode --no-transfer-progress'
@@ -234,8 +230,7 @@ pipeline {
           options { skipDefaultCheckout() }
           steps {
             withGithubNotify(context: 'Build', description: 'Build') {
-              deleteDir()
-              unstash 'source'
+              prepareWorkspace()
               dir("${BASE_DIR}"){
                 retryWithSleep(retries: 3, seconds: 5, backoff: true) {
                   withOtelEnv() {
@@ -262,6 +257,7 @@ pipeline {
         }
       }
       steps {
+        prepareWorkspace()
         dockerLogin(secret: "secret/apm-team/ci/docker-registry/prod",
           registry: "docker.elastic.co"
         )
@@ -287,4 +283,9 @@ pipeline {
       notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'))
     }
   }
+}
+
+def prepareWorkspace() {
+  deleteDir()
+  unstash 'source'
 }
