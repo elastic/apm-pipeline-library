@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    jenkins: k8s-test
-    some-label: some-label-value
+    jenkins: apm-ci
+    project: apm-pipeline-library
 spec:
   containers:
   - name: shell
