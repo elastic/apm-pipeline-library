@@ -69,7 +69,7 @@ pipeline {
     stage('Tests') {
       parallel {
         stage('Linux') {
-          agent { label 'ubuntu && immutable' }
+          agent { label 'linux && immutable' }
           options { skipDefaultCheckout() }
           stages {
             stage('Check Licenses') {
@@ -199,6 +199,7 @@ pipeline {
               }
             }
             stage('Test JobDSL') {
+              agent { kubernetes { yamlFile 'resources/k8s/JavaPod.yml' } }
               when {
                 beforeAgent true
                 expression { return env.TEST_JOBDSL == "true" }
@@ -238,7 +239,7 @@ pipeline {
       }
     }
     stage('Release') {
-      agent { label 'ubuntu && immutable' }
+      agent { label 'linux && immutable' }
       environment {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
