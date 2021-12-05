@@ -71,6 +71,7 @@ pipeline {
     }
     stage('Check Licenses') {
       agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check Licenses') {
           deleteDir()
@@ -89,6 +90,7 @@ pipeline {
     }
     stage('Check pre-commit') {
       agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
@@ -100,6 +102,7 @@ pipeline {
       }
     }
     stage('Build') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Build', description: 'Build') {
           deleteDir()
@@ -115,6 +118,7 @@ pipeline {
       }
     }
     stage('Test') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
           dir("${BASE_DIR}"){
@@ -134,6 +138,7 @@ pipeline {
       }
     }
     stage('Google Storage') {
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression { return env.TEST_GOOGLE == "true" }
@@ -148,6 +153,7 @@ pipeline {
     }
     stage('Google Storage Windows') {
       agent { label 'windows-2019-immutable' }
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression { return env.TEST_GOOGLE == "true" }
@@ -163,6 +169,7 @@ pipeline {
       }
     }
     stage('Check Pipelines') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check Pipelines') {
           dir("${BASE_DIR}"){
@@ -184,6 +191,7 @@ pipeline {
       }
     }
     stage('Test JobDSL') {
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression { return env.TEST_JOBDSL == "true" }
@@ -203,6 +211,7 @@ pipeline {
     }
     stage('Test infra') {
       agent { label 'ubuntu && immutable' }
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         anyOf {
@@ -231,6 +240,7 @@ pipeline {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
       }
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression {
