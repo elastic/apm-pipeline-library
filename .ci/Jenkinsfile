@@ -43,7 +43,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: isPR())
   }
   triggers {
-    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests)")
+    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests|^run storage tests|^run jobdsl tests)")
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
@@ -138,6 +138,7 @@ pipeline {
                 anyOf {
                   expression { return env.TEST_GOOGLE == "true" }
                   expression { return env.RUN_ALL == "true" }
+                  expression { return env.GITHUB_COMMENT?.contains('storage tests') }
                 }
               }
               steps {
@@ -178,6 +179,7 @@ pipeline {
                 anyOf {
                   expression { return env.TEST_JOBDSL == "true" }
                   expression { return env.RUN_ALL == "true" }
+                  expression { return env.GITHUB_COMMENT?.contains('jobdsl tests') }
                 }
               }
               steps {
@@ -204,6 +206,7 @@ pipeline {
             anyOf {
               expression { return env.TEST_GOOGLE == "true" }
               expression { return env.RUN_ALL == "true" }
+              expression { return env.GITHUB_COMMENT?.contains('storage tests') }
             }
           }
           steps {

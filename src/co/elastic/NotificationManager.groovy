@@ -492,8 +492,10 @@ def getSupportedGithubCommands() {
   }
 
   // Support for the APM pipeline library
-  if (issueCommentTrigger.getCommentPattern().contains('^run infra tests')) {
+  if (isProjectSupported('apm-pipeline-library')) {
     comments['run infra tests'] = 'Run the test-infra test.'
+    comments['run jobdsl tests'] = 'Run the jobdsl test.'
+    comments['run storage tests'] = 'Run the google storage test.'
   }
 
   // Support for the Beats specific GitHub commands
