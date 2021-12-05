@@ -49,9 +49,6 @@ pipeline {
     booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
   }
   stages {
-    /**
-     Checkout the code and stash it, to use it on other stages.
-    */
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
@@ -69,178 +66,183 @@ pipeline {
         }
       }
     }
-    stage('Check Licenses') {
-      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Check Licenses') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            catchError(
-                buildResult: 'SUCCESS',
-                stageResult: 'UNSTABLE',
-                message: 'Some files does not contain license'
-                ) {
-              checkLicenses(skip: true, junit:true, ext: '.groovy')
+    stage('Tests') {
+      parallel {
+        stage('Linux') {
+          agent { label 'ubuntu && immutable' }
+          options { skipDefaultCheckout() }
+          stages {
+            stage('Check Licenses') {
+              steps {
+                withGithubNotify(context: 'Check Licenses') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    catchError(
+                        buildResult: 'SUCCESS',
+                        stageResult: 'UNSTABLE',
+                        message: 'Some files does not contain license'
+                        ) {
+                      checkLicenses(skip: true, junit:true, ext: '.groovy')
+                    }
+                  }
+                }
+              }
+            }
+            stage('Check pre-commit') {
+              steps {
+                withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
+                  }
+                }
+              }
+            }
+            stage('Build') {
+              steps {
+                withGithubNotify(context: 'Build', description: 'Build') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+                      withOtelEnv() {
+                        sh './mvnw clean install -V --batch-mode -DskipTests'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            stage('Test') {
+              steps {
+                withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
+                  dir("${BASE_DIR}"){
+                    withOtelEnv() {
+                      sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+                    }
+                  }
+                }
+              }
+              post {
+                always {
+                  archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
+                  junit(allowEmptyResults: true,
+                    keepLongStdio: true,
+                    testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+                }
+              }
+            }
+            stage('Test infra') {
+              options { skipDefaultCheckout() }
+              when {
+                beforeAgent true
+                anyOf {
+                  expression { return env.TEST_INFRA == "true" }
+                  branch 'master'
+                  expression { return env.GITHUB_COMMENT?.contains('infra tests') }
+                }
+              }
+              steps {
+                withGithubNotify(context: 'Test infra') {
+                  dir("${BASE_DIR}"){
+                    sh script: './resources/scripts/jenkins/apm-ci/test.sh'
+                    sh script: './resources/scripts/jenkins/build.sh'
+                  }
+                }
+              }
+              post {
+                always {
+                  junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
+                }
+              }
             }
           }
         }
-      }
-    }
-    stage('Check pre-commit') {
-      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
+        stage('k8s') {
+          options { skipDefaultCheckout() }
+          stages {
+            stage('Google Storage') {
+              agent { kubernetes { yamlFile 'resources/k8s/UbuntuPod.yml' } }
+              when {
+                beforeAgent true
+                expression { return env.TEST_GOOGLE == "true" }
+              }
+              steps {
+                withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+                  dir("${BASE_DIR}"){
+                    googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
+                  }
+                }
+              }
+            }
+            stage('Check Pipelines') {
+              steps {
+                withGithubNotify(context: 'Check Pipelines') {
+                  dir("${BASE_DIR}"){
+                    validateDeclarativePipeline '.ci/Jenkinsfile'
+                    validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
+                    validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+                    validateDeclarativePipeline '.ci/chatops.groovy'
+                    validateDeclarativePipeline '.ci/buildDockerImages.groovy'
+                    validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
+                    validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
+                    validateDeclarativePipeline '.ci/licenseScan.groovy'
+                    validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
+                    validateDeclarativePipeline '.ci/schedule-daily.groovy'
+                    validateDeclarativePipeline '.ci/schedule-weekly.groovy'
+                    validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
+                    validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
+                  }
+                }
+              }
+            }
+            stage('Test JobDSL') {
+              when {
+                beforeAgent true
+                expression { return env.TEST_JOBDSL == "true" }
+              }
+              steps {
+                withGithubNotify(context: 'Check JobDSL') {
+                  dir("${BASE_DIR}/.ci/jobDSL"){
+                    sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
+                  }
+                }
+              }
+              post {
+                always {
+                  junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
+                }
+              }
+            }
           }
         }
-      }
-    }
-    stage('Build') {
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Build', description: 'Build') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-              withOtelEnv() {
-                sh './mvnw clean install -V --batch-mode -DskipTests'
+        stage('Google Storage Windows') {
+          agent { label 'windows-2019-immutable' }
+          options { skipDefaultCheckout() }
+          when {
+            beforeAgent true
+            expression { return env.TEST_GOOGLE == "true" }
+          }
+          steps {
+            withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
               }
             }
           }
         }
       }
     }
-    stage('Test') {
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          dir("${BASE_DIR}"){
-            withOtelEnv() {
-              sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-            }
-          }
-        }
-      }
-      post {
-        always {
-          archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-        }
-      }
-    }
-    stage('Google Storage') {
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
-      }
-      steps {
-        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
-          }
-        }
-      }
-    }
-    stage('Google Storage Windows') {
-      agent { label 'windows-2019-immutable' }
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
-      }
-      steps {
-        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
-          }
-        }
-      }
-    }
-    stage('Check Pipelines') {
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Check Pipelines') {
-          dir("${BASE_DIR}"){
-            validateDeclarativePipeline '.ci/Jenkinsfile'
-            validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
-            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-            validateDeclarativePipeline '.ci/chatops.groovy'
-            validateDeclarativePipeline '.ci/buildDockerImages.groovy'
-            validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
-            validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
-            validateDeclarativePipeline '.ci/licenseScan.groovy'
-            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
-            validateDeclarativePipeline '.ci/schedule-daily.groovy'
-            validateDeclarativePipeline '.ci/schedule-weekly.groovy'
-            validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
-            validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
-          }
-        }
-      }
-    }
-    stage('Test JobDSL') {
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        expression { return env.TEST_JOBDSL == "true" }
-      }
-      steps {
-        withGithubNotify(context: 'Check JobDSL') {
-          dir("${BASE_DIR}/.ci/jobDSL"){
-            sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
-          }
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
-        }
-      }
-    }
-    stage('Test infra') {
-      agent { label 'ubuntu && immutable' }
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        anyOf {
-          expression { return env.TEST_INFRA == "true" }
-          branch 'master'
-          expression { return env.GITHUB_COMMENT?.contains('infra tests') }
-        }
-      }
-      steps {
-        withGithubNotify(context: 'Test infra') {
-          dir("${BASE_DIR}"){
-            sh script: './resources/scripts/jenkins/apm-ci/test.sh'
-            sh script: './resources/scripts/jenkins/build.sh'
-          }
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
-        }
-      }
-    }
     stage('Release') {
-      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
+      agent { label 'ubuntu && immutable' }
       environment {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
       }
-      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         expression {
