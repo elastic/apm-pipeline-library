@@ -202,6 +202,7 @@ pipeline {
       }
     }
     stage('Test infra') {
+      agent { label 'ubuntu && immutable' }
       when {
         beforeAgent true
         anyOf {
@@ -225,11 +226,13 @@ pipeline {
       }
     }
     stage('Release') {
+      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
       environment {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
       }
       when {
+        beforeAgent true
         expression {
           return params.make_release
         }
