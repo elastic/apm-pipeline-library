@@ -70,6 +70,7 @@ pipeline {
       }
     }
     stage('Check Licenses') {
+      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
       steps {
         withGithubNotify(context: 'Check Licenses') {
           deleteDir()
@@ -87,6 +88,7 @@ pipeline {
       }
     }
     stage('Check pre-commit') {
+      agent { kubernetes { yamlFile 'resources/k8s/DindPod.yml' } }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
