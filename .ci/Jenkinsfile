@@ -214,7 +214,7 @@ pipeline {
             withGithubNotify(context: 'UTs', description: 'UTs', tab: 'tests') {
               dir("${BASE_DIR}"){
                 withOtelEnv() {
-                  sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+                  sh './mvnw clean test -V --batch-mode --no-transfer-progress'
                 }
               }
             }
@@ -237,7 +237,7 @@ pipeline {
               dir("${BASE_DIR}"){
                 retryWithSleep(retries: 3, seconds: 5, backoff: true) {
                   withOtelEnv() {
-                    sh './mvnw clean install -V --batch-mode -DskipTests'
+                    sh './mvnw clean install -V --batch-mode -DskipTests --no-transfer-progress'
                   }
                 }
               }
