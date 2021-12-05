@@ -126,12 +126,6 @@ pipeline {
                 }
               }
             }
-          }
-        }
-        // This meta-stage is the one for specific k8s workers
-        stage('Functional') {
-          options { skipDefaultCheckout() }
-          stages {
             stage('Google Storage') {
               when {
                 beforeAgent true
@@ -150,6 +144,12 @@ pipeline {
                 }
               }
             }
+          }
+        }
+        // This meta-stage is the one for specific k8s workers
+        stage('Functional') {
+          options { skipDefaultCheckout() }
+          stages {
             stage('Check Pipelines') {
               steps {
                 withGithubNotify(context: 'Check Pipelines') {
