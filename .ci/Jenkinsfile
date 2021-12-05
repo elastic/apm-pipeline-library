@@ -100,21 +100,6 @@ pipeline {
                 }
               }
             }
-            stage('Build') {
-              steps {
-                withGithubNotify(context: 'Build', description: 'Build') {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-                      withOtelEnv() {
-                        sh './mvnw clean install -V --batch-mode -DskipTests'
-                      }
-                    }
-                  }
-                }
-              }
-            }
             stage('Test') {
               steps {
                 withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
@@ -163,6 +148,21 @@ pipeline {
         stage('K8s') {
           options { skipDefaultCheckout() }
           stages {
+            stage('Build') {
+              steps {
+                withGithubNotify(context: 'Build', description: 'Build') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+                      withOtelEnv() {
+                        sh './mvnw clean install -V --batch-mode -DskipTests'
+                      }
+                    }
+                  }
+                }
+              }
+            }
             stage('Google Storage') {
               agent { kubernetes { yamlFile 'resources/k8s/UbuntuPod.yml' } }
               when {
@@ -171,6 +171,8 @@ pipeline {
               }
               steps {
                 withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
+                  deleteDir()
+                  unstash 'source'
                   dir("${BASE_DIR}"){
                     googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
                   }
@@ -180,6 +182,8 @@ pipeline {
             stage('Check Pipelines') {
               steps {
                 withGithubNotify(context: 'Check Pipelines') {
+                  deleteDir()
+                  unstash 'source'
                   dir("${BASE_DIR}"){
                     validateDeclarativePipeline '.ci/Jenkinsfile'
                     validateDeclarativePipeline '.ci/buildBeatsDockerImages.groovy'
@@ -206,6 +210,8 @@ pipeline {
               }
               steps {
                 withGithubNotify(context: 'Check JobDSL') {
+                  deleteDir()
+                  unstash 'source'
                   dir("${BASE_DIR}/.ci/jobDSL"){
                     sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
                   }
