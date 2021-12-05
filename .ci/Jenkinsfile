@@ -100,25 +100,6 @@ pipeline {
                 }
               }
             }
-            stage('Test') {
-              steps {
-                withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-                  dir("${BASE_DIR}"){
-                    withOtelEnv() {
-                      sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-                    }
-                  }
-                }
-              }
-              post {
-                always {
-                  archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
-                  junit(allowEmptyResults: true,
-                    keepLongStdio: true,
-                    testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-                }
-              }
-            }
             stage('Test infra') {
               options { skipDefaultCheckout() }
               when {
@@ -145,24 +126,9 @@ pipeline {
             }
           }
         }
-        stage('K8s') {
+        stage('Functional') {
           options { skipDefaultCheckout() }
           stages {
-            stage('Build') {
-              steps {
-                withGithubNotify(context: 'Build', description: 'Build') {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-                      withOtelEnv() {
-                        sh './mvnw clean install -V --batch-mode -DskipTests'
-                      }
-                    }
-                  }
-                }
-              }
-            }
             stage('Google Storage') {
               agent { kubernetes { yamlFile 'resources/k8s/UbuntuPod.yml' } }
               when {
@@ -238,6 +204,42 @@ pipeline {
               unstash 'source'
               dir("${BASE_DIR}"){
                 googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
+              }
+            }
+          }
+        }
+        stage('UnitTest') {
+          agent { kubernetes { yamlFile 'resources/k8s/JavaPod.yml' } }
+          steps {
+            withGithubNotify(context: 'UTs', description: 'UTs', tab: 'tests') {
+              dir("${BASE_DIR}"){
+                withOtelEnv() {
+                  sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+                }
+              }
+            }
+          }
+          post {
+            always {
+              archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
+              junit(allowEmptyResults: true,
+                keepLongStdio: true,
+                testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+            }
+          }
+        }
+        stage('Build') {
+          agent { kubernetes { yamlFile 'resources/k8s/JavaPod.yml' } }
+          steps {
+            withGithubNotify(context: 'Build', description: 'Build') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+                  withOtelEnv() {
+                    sh './mvnw clean install -V --batch-mode -DskipTests'
+                  }
+                }
               }
             }
           }
