@@ -23,7 +23,7 @@ pipeline {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL = 'DEBUG'
+    PIPELINE_LOG_LEVEL = 'INFO'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
