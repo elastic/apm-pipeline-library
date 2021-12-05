@@ -8,9 +8,9 @@ pytest-otel plugin for reporting APM traces of tests executed.
 Requirements
 ------------
 
-* opentelemetry-api == 1.2
-* opentelemetry-exporter-otlp == 1.2.0
-* opentelemetry-sdk == 1.2.0
+* opentelemetry-api == 1.7.0
+* opentelemetry-exporter-otlp == 1.7.0
+* opentelemetry-sdk == 1.7.0
 
 
 Installation
@@ -19,9 +19,7 @@ Installation
 You can install "pytest-otel" via `pip` or using the `setup.py` script.
 
 ```
-git checkout https://github.com/elastic/apm-pipeline-library
-cd apm-pipeline-library/resources/scripts
-pip install ./pytest_otel
+pip install pytest-otel
 ```
 
 Usage
@@ -37,7 +35,6 @@ Usage
 * --insecure: Disables TLS. Env variable: `OTEL_EXPORTER_OTLP_INSECURE`
 
 ```bash
-cd pytest_otel
 pytest --endpoint https://otelcollector.example.com:4317 \
        --headers "authorization=Bearer ASWDCcCRFfr" \
        --service-name pytest_otel \

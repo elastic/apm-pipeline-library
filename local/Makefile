@@ -1,7 +1,7 @@
 VAULT_TOKEN ?= $(shell cat $${HOME}/.vault-token)
 LOG_LEVEL ?= WARNING
 WIREMOCK_JOBS := abort cobertura connectionRefused error multiTestFailures success unstable
-WIREMOCK_BLUE_OCEAN_URLS := steps/?limit=10000 tests/?status=FAILED log changeSet artifacts tests/?limit=10000000 blueTestSummary
+WIREMOCK_BLUE_OCEAN_URLS := steps/?limit=10000 tests/?status=FAILED&limit=1000 log changeSet artifacts tests/?limit=10000000 blueTestSummary
 WIREMOCK_VERSION ?= 2.26.3
 .DEFAULT_GOAL := help
 
@@ -39,7 +39,7 @@ master:
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
 			--file docker-compose.yml \
-			up --detach --no-recreate jenkins
+			up --detach jenkins
 
 .PHONY: pull
 pull:  ## Pull required images for all Jenkins-related processes

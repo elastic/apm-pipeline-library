@@ -2,7 +2,7 @@
   "id" : "134d5192-5383-40c8-9570-5a258d73f950",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_unstable_runs_1_tests",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/tests/?status=FAILED",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/tests/?status=FAILED&limit=1000",
     "method" : "GET"
   },
   "response" : {
@@ -13,7 +13,7 @@
       "X-Content-Type-Options" : "nosniff",
       "X-Blueocean-Refresher" : "7f9ea7cf",
       "Cache-Control" : "no-cache, no-store, no-transform",
-      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/tests/?status=FAILED&start=100&limit=100>; rel=\"next\"",
+      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/unstable/runs/1/tests/?status=FAILED&limit=1000&start=100&limit=100>; rel=\"next\"",
       "X-Jenkins" : "2.230",
       "X-Jenkins-Session" : "7f9ea7cf",
       "Content-Type" : "application/json;charset=utf-8",

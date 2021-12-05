@@ -2,7 +2,7 @@
   "id" : "c1fa48c7-e337-4393-998a-7040168b6d4c",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_empty_runs_1_tests",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/empty/runs/1/tests/?status=FAILED",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/empty/runs/1/tests/?status=FAILED&limit=1000",
     "method" : "GET"
   },
   "response" : {
@@ -13,7 +13,7 @@
       "X-Content-Type-Options" : "nosniff",
       "X-Blueocean-Refresher" : "eda20a72",
       "Cache-Control" : "no-cache, no-store, no-transform",
-      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/empty/runs/1/tests/?status=FAILED&start=100&limit=100>; rel=\"next\"",
+      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/empty/runs/1/tests/?status=FAILED&limit=1000&start=100&limit=100>; rel=\"next\"",
       "X-Jenkins" : "2.230",
       "X-Jenkins-Session" : "eda20a72",
       "Content-Type" : "application/json;charset=utf-8",

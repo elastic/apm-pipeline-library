@@ -59,6 +59,7 @@ spec:
     ansiColor('xterm')
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
+    disableConcurrentBuilds(abortPrevious: isPR())
   }
   triggers {
     issueCommentTrigger("(${obltGitHubComments()}|^run infra tests)")
@@ -83,6 +84,7 @@ spec:
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
+            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '(^vars/gsutil.groovy|^vars/googleStorageUploadExt.groovy)' ], shouldMatchAll: false))
           }
         }
       }
@@ -150,6 +152,10 @@ spec:
       }
     }
     stage('Google Storage') {
+      when {
+        beforeAgent true
+        expression { return env.TEST_GOOGLE == "true" }
+      }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
           dir("${BASE_DIR}"){
@@ -161,7 +167,8 @@ spec:
     stage('Google Storage Windows') {
       agent { label 'windows-2019-immutable' }
       when {
-        branch 'master'
+        beforeAgent true
+        expression { return env.TEST_GOOGLE == "true" }
       }
       steps {
         withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {

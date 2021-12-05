@@ -239,6 +239,8 @@ Utils class for the bump automation pipelines
 * `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
 
 ## cancelPreviousRunningBuilds
+**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: isPR())`
+
 Abort any previously running builds as soon as a new build starts
 
 ```
@@ -423,6 +425,36 @@ dockerLogs(step: 'test', dockerCompose: 'test/docker-compose.yml', failNever: fa
 * *failNever*: Never fail the build, regardless of the step result. Optional. Default 'true'
 
 _NOTE_: Windows is not supported.
+
+## download
+Download the given URL regardless of the tool.
+
+```
+download(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the output will be written to. Mandatory.
+
+## downloadWithCurl
+Download the given URL using CUrl, if possible. It returns true if possible otherwise false
+
+```
+downloadWithCurl(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the CUrl output will be written to. Mandatory.
+
+## downloadWithWget
+Download the given URL using Wget, if possible. It returns true if possible otherwise false
+
+```
+downloadWithWget(url: 'https://....', output: 'gsutil.tar.gz')
+```
+
+* url: The URL to be downloaded. Mandatory
+* output: The file where the wget output will be written to. Mandatory.
 
 ## dummy
 A sample of a step implemantetion.
@@ -758,6 +790,7 @@ It requires to be executed within the git workspace, otherwise it will use
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
 * version: The gh CLI version to be installed. Optional (1.9.2)
 * forceInstallation: Whether to install gh regardless. Optional (false)
+* forceRepo: Whether to force the repo configuration flag instead reading the ones from the env variables. Optional (false)
 
 ## git
 Override the `git` step to retry the checkout up to 3 times.
@@ -1328,6 +1361,78 @@ _NOTE_: To edit the existing comment is required these environment variables:
         - `ORG_NAME`
         - `REPO_NAME`
 
+## githubWorkflowRun
+Run workflow on github actions
+
+### Run as step:
+
+```
+  def runInfo = githubWorkflowRun(repo: "owner/repository", workflow: "build.yml", ref: "main",
+    parameters: [path: "filebeat"], credentialsId: "github-workflow-token")
+```
+
+### Run asynchronous:
+
+```
+  script {
+    def args = [
+       repo: "owner/repository",
+       workflow: "build.yml",
+       ref: "main",
+       parameters: [
+           path: "filebeat",
+           runner: "ubuntu-latest"],
+       credentialsId: "github-workflow-token"]
+    def runId = githubWorkflowRun.triggerGithubActionsWorkflow(args)
+    def runInfo = githubWorkflowRun.getWorkflowRun(args + [runId: runId])
+  }
+
+```
+
+### Arguments:
+
+* workflow: workflow file name. Mandatory argument.
+* repo: repository owner and name. Optional, if it's not set then this
+  information will be taken from ORG_NAME and REPO_NAME environment variables.
+* ref: reference (branch, tag or hash). Optional, default is master.
+* parameters: map with parameters to pass to the workflow as inputs. Optional,
+  default is empty map.
+* buildTimeLimit: How long wait till the run completed. It's set in minutes,
+  default is 30 min.
+* credentialsId: github credentials id. Optional.
+* version: version of github cli. Optional, default is 2.1.0
+
+
+
+
+### Returns:
+
+runInfo : information about run
+
+### Requirements for workflows to be compatible with githubWorkflowRun.
+
+
+1. Inputs in workflow should have id parameter:
+
+```
+    inputs:
+      id:
+        description: 'Run ID'
+        required: true
+```
+
+2. The first step in workflow should be following step:
+
+```
+    - name: ${{ format('Run ID {0}', github.event.inputs.id) }}
+      run: echo Run ID ${{github.event.inputs.id}}
+```
+
+### Links:
+
+* https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#on
+* https://docs.github.com/en/rest/reference/actions#get-a-workflow-run
+
 ## goDefaultVersion
 
   Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value
@@ -1631,7 +1736,7 @@ evaluates the change list with the pattern list:
 NOTE: This particular implementation requires to checkout with the step gitCheckout
 
 ## isInstalled
-Whether the given tool is installed and available. It also supports specifying a version.
+Whether the given tool is installed and available. It does also supports specifying the version.
 validation.
 
 ```
@@ -2154,6 +2259,13 @@ Return the architecture in the current worker using the labels as the source of 
  def arch = nodeArch()
 ```
 
+## nodeJSDefaultVersion
+Return the value in the file `.nvmrc`, or a default value.
+
+```
+  nodeJSDefaultVersion()
+```
+
 ## nodeOS
  Return the name of the Operating system based on the labels of the Node [linux, windows, darwin].
 
@@ -2205,6 +2317,20 @@ emails on Failed builds that are not pull request.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/master`.
+
+## notifyStalledBeatsBumps
+Evaluate if the latest bump update was merged a few days ago and if so
+send an email if configured for such an action.
+
+```
+  notifyStalledBeatsBumps(branch: '8.0', sendEmail: true, to: 'foo@acme.com')
+```
+
+* *sendEmail*: whether to send an email. Optional. Default false
+* *to*: who should receive the email. Optional.
+* *subject*: what's the email subject. Optional. Default: `[Autogenerated]`
+* *branch*: what branch to be searched for. Mandatory.
+* *days*: search for any changes before those days. Optional. Default 7
 
 ## obltGitHubComments
 The list of GitHub comments supported to be used in conjunction with the
@@ -3276,6 +3402,28 @@ Wrap the node call for three reasons:
 * forceWorker: whether to allocate a new unique ephemeral worker. Optional. Default false
 * forceWorkspace: whether to allocate a new unique workspace. Optional. Default false
 * disableWorkers: whether to skip the run if the labels match one of the flaky workers. Default false
+
+## withNodeJSEnv
+Install Node.js with NVM and run some command in a pre-configured environment multiplatform. For such
+it's recommended to use the `cmd` step.
+
+```
+  withNodeJSEnv(version: '14.17.5'){
+    cmd(label: 'Node version', script: 'node --version')
+  }
+```
+
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)
+
+## withNodeJSEnvUnix
+Install Node.js with NVM and run some command in a pre-configured environment for Unix.
+
+```
+  withNodeJSEnvUnix(version: '14.17.5'){
+    sh(label: 'Node version', script: 'node --version')
+  }
+```
+* version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)
 
 ## withNpmrc
 Wrap the npmrc token

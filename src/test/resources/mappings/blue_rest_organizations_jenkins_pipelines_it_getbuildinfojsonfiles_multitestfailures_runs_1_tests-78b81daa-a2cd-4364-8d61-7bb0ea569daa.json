@@ -2,7 +2,7 @@
   "id" : "78b81daa-a2cd-4364-8d61-7bb0ea569daa",
   "name" : "blue_rest_organizations_jenkins_pipelines_it_getbuildinfojsonfiles_multitestfailures_runs_1_tests",
   "request" : {
-    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/tests/?status=FAILED",
+    "url" : "/blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/tests/?status=FAILED&limit=1000",
     "method" : "GET"
   },
   "response" : {
@@ -13,7 +13,7 @@
       "X-Content-Type-Options" : "nosniff",
       "X-Blueocean-Refresher" : "b5a2187c",
       "Cache-Control" : "no-cache, no-store, no-transform",
-      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/tests/?status=FAILED&start=100&limit=100>; rel=\"next\"",
+      "Link" : "</blue/rest/organizations/jenkins/pipelines/it/getBuildInfoJsonFiles/multiTestFailures/runs/1/tests/?status=FAILED&limit=1000&start=100&limit=100>; rel=\"next\"",
       "X-Jenkins" : "2.252",
       "X-Jenkins-Session" : "b5a2187c",
       "Content-Type" : "application/json;charset=utf-8",

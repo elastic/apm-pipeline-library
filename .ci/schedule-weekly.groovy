@@ -18,12 +18,13 @@
 @Library('apm@master') _
 
 pipeline {
-  agent { label 'master' }
+  agent { label 'ubuntu && immutable' }
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL='INFO'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -33,6 +34,9 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
+  parameters {
+    string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+  }
   triggers {
     cron('H H(1-4) * * 1')
   }
@@ -40,8 +44,9 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-master', subject: "[master] ${env.YYYY_MM_DD}: Top failing Beats tests in master branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
-        runWatcher(watcher: 'report-beats-top-failing-tests-weekly-7.16', subject: "[7.16] ${env.YYYY_MM_DD}: Top failing Beats tests in 7.16 branch - last 7 days", sendEmail: true, to: 'beats-contrib@elastic.co')
+        runWatcherForBranch(branch: 'master')
+        runWatcherForBranch(branch: '7.<next>')
+        runWatcherForBranch(branch: '8.<current>')
       }
     }
     stage('Sync GitHub labels') {
@@ -66,10 +71,53 @@ pipeline {
         )
       }
     }
+    stage('Stalled Beats Bumps') {
+      steps {
+        runNotifyStalledBeatsBumps(branch: 'master')
+        runNotifyStalledBeatsBumps(branch: '8.<current>')
+        runNotifyStalledBeatsBumps(branch: '7.<next>')
+      }
+    }
   }
   post {
     cleanup {
       notifyBuildResult()
     }
   }
+}
+
+def runNotifyStalledBeatsBumps(Map args = [:]){
+  def branch = getMajorMinorGivenTheBranch(args)
+  notifyStalledBeatsBumps(branch: branch,
+                          subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
+                          sendEmail: true,
+                          to: env.BEATS_MAILING_LIST)
+}
+
+def runWatcherForBranch(Map args = [:]){
+  def branch = getMajorMinorGivenTheBranch(args)
+  runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
+             subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
+             sendEmail: true,
+             to: env.BEATS_MAILING_LIST)
+}
+
+// Helper function to resolve current and next special keywords.
+def getMajorMinorGivenTheBranch(Map args = [:]) {
+  def branch = args.branch
+  if (branch.contains('8.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor8())
+  }
+  if (branch.contains('7.<current>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor7())
+  }
+  if (branch.contains('7.<next>')) {
+    branch = getMajorMinorGivenTheVersion(bumpUtils.getNextMinorReleaseFor7())
+  }
+  return branch
+}
+
+def getMajorMinorGivenTheVersion(version) {
+  def parts = version.split('\\.')
+  return "${parts[0]}.${parts[1]}"
 }

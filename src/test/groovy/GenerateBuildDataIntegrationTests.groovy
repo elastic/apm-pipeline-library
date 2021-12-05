@@ -62,8 +62,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -84,8 +84,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -107,8 +107,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully, there are no executed tests.", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -130,8 +130,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertFalse(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") > 0)
 
     obj = JSONSerializer.toJSON(new File("target/${targetFolder}/build-report.json").text)
     assertFalse(obj.isEmpty())
@@ -180,8 +180,8 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish unsuccessfully", 1, process.waitFor())
 
     // Tests were not executed
-    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
-    assertTrue(obj.isEmpty())
+    JSONObject obj = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-summary.json").text)
+    assertTrue(obj.get("total") == 0)
 
     JSONArray errors = JSONSerializer.toJSON(new File("target/${targetFolder}/steps-errors.json").text)
     assertFalse("There are steps errors", errors.isEmpty())
@@ -198,14 +198,16 @@ class GenerateBuildDataIntegrationTests {
     assertEquals("Process did finish successfully", 0, process.waitFor())
 
     // Tests were executed
-    JSONArray tests = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-info.json").text)
+    JSONArray tests = JSONSerializer.toJSON(new File("target/${targetFolder}/tests-errors.json").text)
     assertFalse("There are tests", tests.isEmpty())
+
     JSONObject obj = tests.get(0)
+    println obj
     assertNull("No _links object", obj.get("_links"))
     assertNull("No _class object", obj.get("_class"))
     assertNull("No state object", obj.get("state"))
     assertNull("No hasStdLog object", obj.get("hasStdLog"))
-    assertNull("No errorStackTrace object", obj.get("errorStackTrace"))
+    assertNotNull("There is an errorStackTrace object", obj.get("errorStackTrace"))
   }
 
   @Test

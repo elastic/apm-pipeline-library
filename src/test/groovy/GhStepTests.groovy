@@ -39,18 +39,6 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_windows() throws Exception {
-    helper.registerAllowedMethod('isUnix', [], { false })
-    script.call(command: 'issue list', flags: [ label: 'foo'])
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=2a9602aa-ab9f-4e52-baf3-b71ca88469c7, variable=GITHUB_TOKEN'))
-    assertTrue(assertMethodCallContainsPattern('cmd', "gh issue list --label='foo'"))
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertFalse(assertMethodCallContainsPattern('sh', "wget -q -O"))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_with_flags() throws Exception {
     script.call(command: 'issue list', flags: [ label: 'foo'])
     printCallStack()
@@ -83,26 +71,6 @@ class GhStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'returnStdout=true'))
     assertNull(result)
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_with_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'linux_amd64.tar.gz'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_without_gh_installed_by_default_no_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
-    script.call(command: 'issue list')
-    printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
   }
 
   @Test
@@ -150,30 +118,6 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_cache() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_cache_without_gh_installed_by_default_with_wget() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    script.call(command: 'issue list')
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GH'))
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: get the ghLocation from cache.'))
-    assertTrue(assertMethodCallContainsPattern('log', 'gh: set the ghLocation.'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_normalisation() throws Exception {
     script.call(command: 'issue list', flags: [ label: "foo-'" ])
     printCallStack()
@@ -214,23 +158,16 @@ class GhStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_in_darwin() throws Exception {
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    helper.registerAllowedMethod('nodeOS', [], { return 'darwin' })
-    script.call(command: 'issue list')
+  void test_outside_of_a_repo_with_variables_and_force_repo() throws Exception {
+    env.REPO_NAME = 'foo'
+    env.ORG_NAME = 'org'
+    helper.registerAllowedMethod('sh', [Map.class], { m ->
+      if (m?.returnStatus) { return 1 }})
+    try {
+      script.call(command: 'issue list', flags: [ repo: 'acme/bar'], forceRepo: true)
+    } catch(err) { println err}
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'macOS_amd64.tar.gz'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_in_arm() throws Exception {
-    helper.registerAllowedMethod('isArm', [], { return true })
-    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
-    helper.registerAllowedMethod('nodeOS', [], { return 'linux' })
-    script.call(command: 'issue list')
-    printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'linux_arm64.tar.gz'))
+    assertTrue(assertMethodCallContainsPattern('sh', "--repo='acme/bar'"))
     assertJobStatusSuccess()
   }
 }
