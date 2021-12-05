@@ -160,7 +160,7 @@ pipeline {
             }
           }
         }
-        stage('k8s') {
+        stage('K8s') {
           options { skipDefaultCheckout() }
           stages {
             stage('Google Storage') {
