@@ -1,4 +1,4 @@
-**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: true)`
+**DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: isPR())`
 
 Abort any previously running builds as soon as a new build starts
 

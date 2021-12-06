@@ -67,7 +67,7 @@ pipeline {
     ansiColor('xterm')
     // Option to disable concurrent builds by aborting previous ones.
     //   Only supported from https://github.com/jenkinsci/workflow-job-plugin/releases/tag/workflow-job-2.42
-    disableConcurrentBuilds(abortPrevious: true)
+    disableConcurrentBuilds(abortPrevious: isPR())
     // As long as we use ephemeral workers we cannot use the resume. The below couple of
     // options will help to speed up the performance.
     disableResume()
