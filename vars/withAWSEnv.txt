@@ -7,6 +7,8 @@ withAWSEnv(secret: 'secret/team/ci/service-account/aws-provisioner') {
 }
 ```
 
-* secret: Name of the secret on the the vault root path. (Optional).
 * version: The aws CLI version to be installed. Optional (2.4.2)
 * forceInstallation: Whether to install aws regardless. Optional (false)
+* secret: Name of the secret on the the vault root path. (Optional).
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'

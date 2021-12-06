@@ -117,6 +117,22 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_vault_arguments() throws Exception {
+    def ret = false
+    try {
+    script.call(secret: VaultSecret.SECRET_AWS_PROVISIONER.toString(), role_id: 'my-role', secret_id: 'my-secret') {
+      ret = true
+    }
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('getVaultSecret', "secret=${VaultSecret.SECRET_AWS_PROVISIONER.toString()}, role_id=my-role, secret_id=my-secret"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_awsURL_in_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     try {

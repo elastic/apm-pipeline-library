@@ -1,27 +1,12 @@
-# Licensed to Elasticsearch B.V. under one or more contributor
-# license agreements. See the NOTICE file distributed with
-# this work for additional information regarding copyright
-# ownership. Elasticsearch B.V. licenses this file to you under
-# the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http:www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
 
-PYTEST_OTEL_VERSION = 0.0.1
-PYTEST_OTEL_PKG = pytest-otel-$(PYTEST_OTEL_VERSION)
-OTEL_EXPORTER_OTLP_ENDPOINT ?= 127.0.0.1:4317
+OTEL_EXPORTER_OTLP_ENDPOINT ?= http://127.0.0.1:4317
 OTEL_SERVICE_NAME ?= "pytest_otel_test"
-OTEL_EXPORTER_OTLP_INSECURE ?= true
+OTEL_EXPORTER_OTLP_INSECURE ?= True
 OTEL_EXPORTER_OTLP_HEADERS ?=
 TRACEPARENT ?=
+REPO_URL ?= https://upload.pypi.org/legacy/
 
 VENV ?= .venv
 PYTHON ?= python3
@@ -78,13 +63,23 @@ install: virtualenv
 ## @help:test:Run the test.
 .PHONY: test
 test: virtualenv install
-	OTEL_EXPORTER_OTLP_ENDPOINT="$(OTEL_EXPORTER_OTLP_ENDPOINT)" \
-	OTEL_SERVICE_NAME="$(OTEL_SERVICE_NAME)" \
-	OTEL_EXPORTER_OTLP_INSECURE="$(OTEL_EXPORTER_OTLP_INSECURE)" \
-	OTEL_EXPORTER_OTLP_HEADERS="$(OTEL_EXPORTER_OTLP_HEADERS)" \
-	TRACEPARENT="$(TRACEPARENT)" \
 	source $(VENV)/bin/activate;\
-	pytest --capture=no;
+	pytest --capture=no -p pytester --runpytest=subprocess \
+		--junitxml $(CURDIR)/junit-test_pytest_otel.xml \
+		tests/test_pytest_otel.py;
+
+## @help:test:Run the test.
+.PHONY: test
+it-test: virtualenv install
+	set -e;\
+	source $(VENV)/bin/activate;\
+	for test in tests/it/test_*.py; \
+	do \
+		pytest --capture=no -p pytester --runpytest=subprocess \
+			--junitxml $(CURDIR)/junit-$$(basename $${test}).xml \
+			$${test}; \
+	done;
+	#pytest --capture=no -p pytester --runpytest=subprocess tests/it/test_*.py;
 
 ## @help:coverage:Report coverage.
 .PHONY: coverage
@@ -93,6 +88,13 @@ coverage: virtualenv
 	coverage run --source=otel -m pytest; \
 	coverage report -m;
 
+## @precomit:pre-commit:Run precommit hooks.
+lint: virtualenv
+	source $(VENV)/bin/activate;\
+	pre-commit run; \
+	mypy src/pytest_otel; \
+	mypy tests;
+
 ## @help:clean:Remove Python file artifacts.
 .PHONY: clean
 clean:
@@ -100,22 +102,33 @@ clean:
 	@find . -type f -name "*.py[co]" -delete
 	@find . -type d -name "__pycache__" -delete
 	@find . -name '*~' -delete
-	-@rm -fr *.egg-info build dist $(VENV) bin
+	-@rm -fr *.egg-info build dist $(VENV) bin .tox .mypy_cache .pytest_cache otel-traces-file-output.json test_spans.json temp junit-*.xml
 
 package: virtualenv
 	source $(VENV)/bin/activate;\
+	set +xe; \
 	$(PYTHON) setup.py sdist bdist_wheel
-
-release: bin/gh package
-	$(GH) release create $(PYTEST_OTEL_PKG) dist/$(PYTEST_OTEL_PKG).tar.gz \
-		--repo elastic/apm-pipeline-library \
-		--title $(PYTEST_OTEL_PKG) \
-		--notes "$(PYTEST_OTEL_PKG)"
 
 ## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
 .PHONY: run-otel-collector
 run-otel-collector:
-	docker run --rm -p 4317:4317 \
-	-v "$(CURDIR)/otel-collector.yaml":/otel-config.yaml \
+	mkdir -p "$(CURDIR)/temp"
+	docker run --rm -p 4317:4317 -u "$(id -u):$(id -g)" \
+	-v "$(CURDIR)/temp:/tmp" \
+	-v "$(CURDIR)/tests/otel-collector.yaml":/otel-config.yaml \
 	--name otelcol otel/opentelemetry-collector \
 	--config otel-config.yaml; \
+
+#https://upload.pypi.org/legacy/
+#https://test.pypi.org/legacy/
+#secret/apm-team/ci/apm-agent-python-pypi-test
+#secret/apm-team/ci/apm-agent-python-pypi-prod
+## @help:publish REPO_URL=${REPO_URL} TWINE_USER=${TWINE_USER} TWINE_PASSWORD=${TWINE_PASSWORD}:Publish the Python project in a PyPI repository.
+.PHONY: publish
+publish: package
+	set +xe; \
+	source $(VENV)/bin/activate;\
+	$(PYTHON) -m pip install twine;\
+	echo "Uploading to $${REPO_URL} with user $${TWINE_USER}";\
+	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.tar.gz;\
+	python -m twine upload --username "$${TWINE_USER}" --password "$${TWINE_PASSWORD}" --skip-existing --repository-url $${REPO_URL} dist/*.whl
