@@ -8,7 +8,7 @@
 
 #### ⚙️ CI
 
-- [**Team:Automation**] fix: use a diferent target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
+- [**Team:Automation**] fix: use a different target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
 
 ## v1.1.268 (24/11/2021)
 
@@ -18,7 +18,7 @@
 
 #### ⚙️ CI
 
-- [**Team:Automation**] fix: use a diferent target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
+- [**Team:Automation**] fix: use a different target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
 
 ## v1.1.268 (24/11/2021)
 
@@ -28,7 +28,7 @@
 
 #### ⚙️ CI
 
-- [**Team:Automation**] fix: use a diferent target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
+- [**Team:Automation**] fix: use a different target for cloud images [#1411](https://github.com/elastic/apm-pipeline-library/pull/1411)
 
 ## v1.1.267 (23/11/2021)
 *No changelog for this release.*
