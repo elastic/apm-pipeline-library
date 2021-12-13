@@ -4,6 +4,7 @@ Features
 
 pytest-otel plugin for reporting APM traces of tests executed.
 
+[OpenTelemetry](https://opentelemetry.io/docs/)
 
 Requirements
 ------------
@@ -55,6 +56,12 @@ TRACEPARENT=00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01 \
 OTEL_EXPORTER_OTLP_INSECURE=False \
 pytest --apm-session-name='My_Test_cases'
 ```
+
+Demos
+-----
+
+* [Jaeger](https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_otel/docs/demos/jaeger/README.md)
+* [Elastic Stack](https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_otel/docs/demos/elastic/README.md)
 
 License
 -------
