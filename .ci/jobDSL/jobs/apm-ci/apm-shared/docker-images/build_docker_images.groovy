@@ -63,7 +63,7 @@ def dockerImages = [
   [
     name: 'apm-proxy',
     repo: 'git@github.com:elastic/observability-dev',
-    branch: 'main',
+    branch_docker: 'main',
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
@@ -72,7 +72,7 @@ def dockerImages = [
   [
     name: 'apm-proxy-be',
     repo: 'git@github.com:elastic/observability-dev',
-    branch: 'main',
+    branch_docker: 'main',
     tag: 'latest',
     folder: 'tools/apm_proxy/backend',
     push: true
@@ -261,6 +261,7 @@ dockerImages.each{ item ->
     description("Job to build and push the ${item.name} ${item.tag ?: ''} Docker image")
     parameters {
       stringParam('branch_specifier', "${item.branch ?: 'master'}", "Branch where the Jenkinsfile is.")
+      stringParam('branch_docker', "${item.branch_docker ?: 'master'}", "Branch where the Dockerfile is.")
       stringParam('registry', "${registry}", "Docker Registry.")
       stringParam('prefix', "${prefix}", "Docker registry namespace.")
       stringParam('tag', "${item.tag ?: 'latest'}", "Docker image tag.")

@@ -28,7 +28,7 @@ pipeline {
     PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
     buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     timestamps()
     ansiColor('xterm')
