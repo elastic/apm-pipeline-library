@@ -24,6 +24,7 @@ services:
         -E apm-server.kibana.enabled=true
         -E apm-server.kibana.host=kibana:5601
         -E output.elasticsearch.hosts=["elasticsearch:9200"]
+        -E apm-server.secret_token=ToKeN123
     healthcheck:
       interval: 10s
       retries: 20
@@ -36,7 +37,7 @@ services:
       - cluster.name=docker-cluster
       - cluster.routing.allocation.disk.threshold_enabled=false
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
     ulimits:
       memlock:
         hard: -1
