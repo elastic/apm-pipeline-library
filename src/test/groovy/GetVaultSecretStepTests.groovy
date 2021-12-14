@@ -122,7 +122,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_in_internalci() throws Exception {
+  void test_in_internal_ci() throws Exception {
     helper.registerAllowedMethod('isInternalCI', { return true })
     script.call(secret: "v1/secret/apm-team/ci/secret")
     printCallStack()
