@@ -26,7 +26,7 @@ def call(Map args = [:]){
   def secret = args.containsKey('secret') ? args.secret : error("getVaultSecret: No valid secret to looking for.")
   // NOTE: isInternalCI uses a different jenkins credentials for the vault secrets.
   def role_id = args.containsKey('role_id') ? args.role_id : ( isInternalCI() ? 'apm-vault-role-id' : 'vault-role-id')
-  def secret_id = args.containsKey('secret_id') ? args.secret_id : ( isInternalCI() ? 'apm-vault-secret-id' : 'vault-role-id')
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : ( isInternalCI() ? 'apm-vault-secret-id' : 'vault-secret-id')
   return readSecret(secret, role_id, secret_id)
 }
 
