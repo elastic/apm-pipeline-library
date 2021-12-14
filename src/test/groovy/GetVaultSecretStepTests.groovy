@@ -120,4 +120,24 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('withCredentials', '[{credentialsId=vault-addr, variable=VAULT_ADDR}, {credentialsId=vault-role-id, variable=VAULT_ROLE_ID}, {credentialsId=vault-secret-id, variable=VAULT_SECRET_ID}]'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_in_internal_ci() throws Exception {
+    helper.registerAllowedMethod('isInternalCI', { return true })
+    script.call(secret: "v1/secret/apm-team/ci/secret")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=apm-vault-role-id'))
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=apm-vault-secret-id'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_in_another_ci() throws Exception {
+    helper.registerAllowedMethod('isInternalCI', { return false })
+    script.call(secret: "v1/secret/apm-team/ci/secret")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=vault-role-id'))
+    assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=vault-secret-id'))
+    assertJobStatusSuccess()
+  }
 }
