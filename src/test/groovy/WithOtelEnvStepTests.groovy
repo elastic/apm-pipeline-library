@@ -108,6 +108,8 @@ class WithOtelEnvStepTests extends ApmBasePipelineTest {
     }
     assertTrue(isOK)
     assertFalse(assertMethodCallContainsPattern('withCredentials', 'credentialsId'))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'ELASTIC_APM_SERVER_URL, password=otel-endpoint'))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'OTEL_EXPORTER_OTLP_ENDPOINT, password=otel-endpoint'))
     printCallStack()
   }
 }
