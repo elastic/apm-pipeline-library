@@ -23,11 +23,18 @@ package co.elastic.mock
 class OtelHelperMock implements Serializable {
 
   private installed = true
-  public OtelHelperMock(boolean installed) {
+  private configured = true
+  public OtelHelperMock(boolean installed, boolean configured) {
     this.installed = installed
+    this.configured = configured
   }
   public boolean isPluginInstalled() { return this.installed }
-  public calculateCrendentialsId() { return 'otel-token' }
+  public calculateCrendentialsId() {
+    if (configured) {
+      return 'otel-token'
+    }
+    return ''
+  }
   public getOtelPlugin() { return 'otel-plugin' }
   public getAuthentication() { return 'otel-authentication' }
   public getEndpoint() { return 'otel-endpoint' }

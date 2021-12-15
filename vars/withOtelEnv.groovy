@@ -36,6 +36,14 @@ def call(Map args = [:], Closure body) {
     credentialsId = otelHelper.calculateCrendentialsId()
   }
 
+  // In case the credentialsId argument was not passed and no way to gather those
+  // details from the OpenTelemetry configuration then run the body and exit
+  if (!credentialsId?.trim()) {
+    log(level: 'WARNING', text: 'withOtelEnv: opentelemetry plugin has missing credentials.')
+    body()
+    return
+  }
+
   // Then, mask and provide the environment variables.
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
     def entrypoint = otelHelper.getEndpoint()
