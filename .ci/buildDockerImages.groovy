@@ -385,6 +385,7 @@ pipeline {
             def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
             buildDockerImage(
               repo: "https://github.com/elastic/observability-robots",
+              branch: 'main',
               tag: 'obs-jenkins-heartbeat',
               version: 'latest',
               push: true,
@@ -502,6 +503,7 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-robots.git',
+          branch: 'main',
           tag: 'picklesdoc',
           buildCommand: 'make build',
           pushCommand: 'make push',
@@ -522,6 +524,7 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-robots.git',
+          branch: 'main',
           tag: 'test-plans',
           buildCommand: 'make build',
           pushCommand: 'make push',
@@ -563,6 +566,7 @@ def dockerLoginElasticRegistry(){
 
 def buildDockerImage(args){
   String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
+  String branch = args.get('branch', 'master')
   String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
   String version = args.containsKey('version') ? args.version : "latest"
   String folder = args.containsKey('folder') ? args.folder : "."
@@ -579,7 +583,7 @@ def buildDockerImage(args){
   }
   image += "/${tag}:${version}"
   dir("${tag}-${version}"){
-    git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "${repo}"
+    git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "${repo}", branch: "${branch}")
     dir("${folder}"){
       withEnv(env){
         prepareWith()
