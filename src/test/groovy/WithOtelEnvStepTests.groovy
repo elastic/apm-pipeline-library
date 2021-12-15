@@ -34,7 +34,7 @@ class WithOtelEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_plugin_not_installed() throws Exception {
-    binding.setProperty('otelHelper', new OtelHelperMock(false))
+    binding.setProperty('otelHelper', new OtelHelperMock(false, false))
     try {
       script.call(){
         //NOOP
@@ -99,4 +99,15 @@ class WithOtelEnvStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=my-foo-id, variable=OTEL_TOKEN_ID'))
   }
 
+  @Test
+  void test_plugin_not_configured() throws Exception {
+    binding.setProperty('otelHelper', new OtelHelperMock(true, false))
+    def isOK = false
+    script.call(){
+      isOK = true
+    }
+    assertTrue(isOK)
+    assertFalse(assertMethodCallContainsPattern('withCredentials', 'credentialsId'))
+    printCallStack()
+  }
 }
