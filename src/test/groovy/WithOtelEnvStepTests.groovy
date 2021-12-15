@@ -106,7 +106,8 @@ class WithOtelEnvStepTests extends ApmBasePipelineTest {
     script.call(){
       isOK = true
     }
+    assertTrue(isOK)
+    assertFalse(assertMethodCallContainsPattern('withCredentials', 'credentialsId'))
     printCallStack()
   }
-
 }

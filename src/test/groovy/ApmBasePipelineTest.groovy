@@ -96,7 +96,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     binding.setProperty('docker', new DockerMock())
     binding.setProperty('getVaultSecret', new GetVaultSecretMock())
     binding.setProperty('githubEnv', new GithubEnvMock())
-    binding.setProperty('otelHelper', new OtelHelperMock(true))
+    binding.setProperty('otelHelper', new OtelHelperMock(true, true))
     binding.setProperty('pullRequest', new PullRequestMock())
     binding.setProperty('steps', new StepsMock())
   }
