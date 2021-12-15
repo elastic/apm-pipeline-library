@@ -41,6 +41,7 @@ def call(Map args = [:], Closure body) {
       body()
     }
   } else {
+    log(level: 'WARNING', text: 'withOtelEnv: opentelemetry plugin has been configured without any authentication method.')
     // In case the credentialsId argument was not passed and no way to gather those
     // details from the OpenTelemetry configuration then run the body without credentials
     runBodyWithEndpoint() {
