@@ -36,34 +36,34 @@ def pytest_addoption(parser):
     group = parser.getgroup("pytest-otel", "report OpenTelemetry traces for tests executed.")
 
     group.addoption(
-        "--endpoint",
+        "--otel-endpoint",
         dest="endpoint",
         help="URL for the APM server.(OTEL_EXPORTER_OTLP_ENDPOINT)",
     )
     group.addoption(
-        "--headers",
+        "--otel-headers",
         dest="headers",
         help="Additional headers to send (i.e.: key1=value1,key2=value2).(OTEL_EXPORTER_OTLP_HEADERS)",  # noqa: E501
     )
     group.addoption(
-        "--service-name",
+        "--otel-service-name",
         dest="service_name",
         default="Pytest_Otel_reporter",
         help="Name of the service.(OTEL_SERVICE_NAME)",
     )
     group.addoption(
-        "--session-name",
+        "--otel-session-name",
         dest="session_name",
         default="Test Suite",
         help="Name for the Main span reported.",
     )
     group.addoption(
-        "--traceparent",
+        "--otel-traceparent",
         dest="traceparent",
         help="Trace parent.(TRACEPARENT) see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format",  # noqa: E501
     )
     group.addoption(
-        "--insecure",
+        "--otel-insecure",
         dest="insecure",
         default=False,
         help="Disables TLS.(OTEL_EXPORTER_OTLP_INSECURE)",
