@@ -256,7 +256,7 @@ def pytest_runtest_call(item):
             LOGGER.debug("test.last_value {}".format(last_value))
             stack_trace = repr(traceback.format_exception(last_type, last_value, last_traceback))
             span.set_attribute("test.stack_trace", "{}".format(stack_trace))
-            if hasattr(last_value, "args") and len(getattr(last_value, 'args')) > 0:
+            if hasattr(last_value, "args") and len(getattr(last_value, 'args', [])) > 0:
                 span.set_attribute("test.error", "{}"
                                    .format(last_value.args[0]))
 
