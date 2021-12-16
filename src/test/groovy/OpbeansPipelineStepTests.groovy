@@ -35,29 +35,31 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_when_master_branch() throws Exception {
-    env.BRANCH_NAME = 'master'
+  void test_when_main_branch() throws Exception {
+    env.BRANCH_NAME = 'main'
     script.call()
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Build'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Test'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Release'))
+    // TODO: when changing the master branch in apm-integration-testing
     assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_when_master_branch_and_empty_downstreamJobs() throws Exception {
-    env.BRANCH_NAME = 'master'
+  void test_when_main_branch_and_empty_downstreamJobs() throws Exception {
+    env.BRANCH_NAME = 'main'
     script.call(downstreamJobs: [])
     printCallStack()
+    // TODO: when changing the master branch in apm-integration-testing
     assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/master'))
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_when_master_branch_and_downstreamJobs() throws Exception {
-    env.BRANCH_NAME = 'master'
+  void test_when_main_branch_and_downstreamJobs() throws Exception {
+    env.BRANCH_NAME = 'main'
     script.call(downstreamJobs: [ 'folder/foo', 'folder/bar'])
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('stage', 'Downstream'))

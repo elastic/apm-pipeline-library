@@ -53,8 +53,8 @@ def call(Map pipelineParams) {
     }
     triggers {
       issueCommentTrigger("${obltGitHubComments()}")
-      // Only master branch will run on a timer basis
-      cron(env.BRANCH_NAME == 'master' ? '@weekly' : '')
+      // Only main branch will run on a timer basis
+      cron(env.BRANCH_NAME == 'main' ? '@weekly' : '')
     }
     stages {
       /**
@@ -137,7 +137,7 @@ def call(Map pipelineParams) {
       stage('Downstream') {
         when {
           allOf {
-            branch 'master'
+            branch 'main'
             expression { return pipelineParams?.downstreamJobs }
           }
           beforeAgent true
@@ -153,12 +153,12 @@ def call(Map pipelineParams) {
       stage('Release') {
         when {
           anyOf {
-            branch 'master'
+            branch 'main'
             tag pattern: '(v\\d+\\.\\d+|@).*', comparator: 'REGEXP'
           }
         }
         environment {
-          VERSION = "${env.BRANCH_NAME.equals('master') ? 'latest' : 'agent-' + env.BRANCH_NAME}"
+          VERSION = "${env.BRANCH_NAME.equals('main') ? 'latest' : 'agent-' + env.BRANCH_NAME}"
         }
         stages {
           stage('Publish') {

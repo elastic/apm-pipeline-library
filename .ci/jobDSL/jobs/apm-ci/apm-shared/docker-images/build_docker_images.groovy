@@ -109,6 +109,7 @@ opbeansDockerImages.each{ name ->
   dockerImages.add([
     name: "${name}",
     repo: "git@github.com:elastic/${name}.git",
+    branch_docker: 'main',
     tag: 'daily',
     folder: '.',
     push: true
