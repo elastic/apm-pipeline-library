@@ -219,6 +219,7 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: U100
             output.write(json)
         print(json)
 
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
     global outcome, session_name, spans
@@ -235,32 +236,41 @@ def pytest_runtest_call(item):
 
         if hasattr(sys, "last_value") and hasattr(sys, "last_traceback") and hasattr(sys, "last_type"):
             longrepr = ""
-            if not isinstance(sys.last_value, _pytest._code.ExceptionInfo):
+            last_value = getattr(sys, 'last_value')
+            last_traceback = getattr(sys, 'last_traceback')
+            last_type = getattr(sys, 'last_type')
+
+            if not isinstance(last_value, _pytest._code.ExceptionInfo):
                 outcome = "failed"
-                longrepr = sys.last_value
-            elif isinstance(sys.last_value, _pytest._code.skip.Exception):
+                longrepr = last_value
+            elif isinstance(last_value, _pytest._code.skip.Exception):
                 outcome = "skipped"
-                r = sys.last_value._getreprcrash()
+                r = last_value._getreprcrash()
                 longrepr = (str(r.path), r.lineno, r.message)
             else:
                 outcome = "failed"
                 style = item.config.getoption("tbstyle", "auto")
-                longrepr = item._repr_failure_py(sys.last_value, style=style)
+                longrepr = item._repr_failure_py(last_value, style=style)
             LOGGER.debug("test.outcome {}".format(outcome))
             LOGGER.debug("test.longrepr {}".format(longrepr))
-            LOGGER.debug("test.last_value {}".format(sys.last_value))
-            stack_trace = repr(traceback.format_exception(sys.last_type, sys.last_value, sys.last_traceback))
+            LOGGER.debug("test.last_value {}".format(last_value))
+            stack_trace = repr(traceback.format_exception(last_type, last_value, last_traceback))
             span.set_attribute("test.stack_trace", "{}".format(stack_trace))
-            try:
-                span.set_attribute("test.error", "{}".format(sys.last_value.args[0]))
-            except IndexError:
-                span.set_attribute("test.error", "{}".format("unknown"))
-            span.set_attribute("test.last_value", "{}".format(sys.last_value))
-            span.set_attribute("test.last_type", "{}".format(sys.last_type))
+            if hasattr(last_value, "args") and len(getattr(last_value, 'args')) > 0:
+                span.set_attribute("test.error", "{}"
+                                   .format(last_value.args[0]))
 
-            xfailed = item._store.get(_pytest.skipping.xfailed_key, None)
-            if xfailed:
-                span.set_attribute("test.xfailed", "{}".format(xfailed.reason))
+            span.set_attribute("test.last_value", "{}"
+                               .format(getattr(sys, 'last_value')))
+            span.set_attribute("test.last_type", "{}"
+                               .format(getattr(sys, 'last_type')))
+
+            if hasattr(_pytest, 'skipping'):
+                skipping = _pytest.skipping
+                xfailed = item._store.get(getattr(skipping, 'xfailed_key', None), None)
+                span.set_attribute("test.xfailed", "{}"
+                                   .format(getattr(xfailed, 'reason', None)))
+
         status = convertOutcome(outcome)
         span.set_status(status)
         span.set_attribute("test.outcome", "{}".format(outcome))
