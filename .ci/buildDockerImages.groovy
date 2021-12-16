@@ -377,14 +377,16 @@ pipeline {
       steps {
         deleteDir()
         dockerLoginElasticRegistry()
-        git credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: 'https://github.com/elastic/observability-robots'
+        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+            url: 'https://github.com/elastic/observability-robots.git',
+            branch: 'main')
         dir("apps/beats/heartbeat"){
           script{
             sh("pip3 install pyyaml")
             sh("python3 ./generate_heartbeat_configs.py")
             def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
             buildDockerImage(
-              repo: "https://github.com/elastic/observability-robots",
+              repo: "https://github.com/elastic/observability-robots.git",
               branch: 'main',
               tag: 'obs-jenkins-heartbeat',
               version: 'latest',
