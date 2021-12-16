@@ -74,7 +74,12 @@ def pytest_addoption(parser):
         default="./otel-traces-file-output.json",
         help="If the Otel endpoint is not set, the spans will be saved to a file (./otel-traces-file-output.txt)",
     )
-
+    group.addoption(
+        "--otel-debug",
+        dest="otel_debug",
+        default=False,
+        help="",
+    )
 
 def init_otel():
     """Init the OpenTelemetry settings"""
@@ -161,8 +166,9 @@ def traceparent_context(traceparent):
 def pytest_sessionstart(session):
     """Uses the commandline parameter to define the environment variables used by OpenTelemetry"""
     global service_name, traceparent, session_name, insecure, in_memory_span_exporter, otel_span_file_output
-    LOGGER.setLevel(logging.DEBUG)
     config = session.config
+    if config.getoption("otel_debug"):
+        LOGGER.setLevel(logging.DEBUG)
     service_name = config.getoption("service_name")
     session_name = config.getoption("session_name")
     traceparent = config.getoption("traceparent")
