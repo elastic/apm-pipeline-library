@@ -161,6 +161,7 @@ pipeline {
 
 def buildDockerImage(args){
   String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
+  String branch = args.get('branch', 'main')
   String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
   String version = args.containsKey('version') ? args.version : "latest"
   String folder = args.containsKey('folder') ? args.folder : "."
@@ -177,7 +178,7 @@ def buildDockerImage(args){
   }
   image += "/${tag}:${version}"
   dir("${tag}-${version}"){
-    git "${repo}"
+    git(url: "${repo}", branch: "${branch}")
     dir("${folder}"){
       withEnv(env){
         retry(3) {
