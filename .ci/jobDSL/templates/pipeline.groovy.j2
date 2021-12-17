@@ -19,7 +19,7 @@ pipelineJob("{{ JOB_NAME }}") {
   displayName('Job {{ JOB_NAME }}')
   description('Job {{ JOB_NAME }} description')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
   }
   disabled(false)
   quietPeriod(10)

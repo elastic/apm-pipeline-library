@@ -19,7 +19,7 @@ pipelineJob("apm-shared/oblt-test-env/stack-docker-images") {
   displayName('Observability-ci Elastic Stack Docker images')
   description('Job to pull the Elastic Stack Docker images and push them to Observability-ci Docker namespace.')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
   }
   disabled(false)
   quietPeriod(10)
