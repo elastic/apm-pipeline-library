@@ -47,7 +47,7 @@ pipeline {
       steps {
         deleteDir()
         pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
-        gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+        gitCheckout(basedir: "${BASE_DIR}", branch: 'main',
           repo: "git@github.com:elastic/${env.REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}",
           githubNotifyFirstTimeContributor: false,

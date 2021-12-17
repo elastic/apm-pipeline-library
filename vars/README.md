@@ -209,18 +209,18 @@ buildKibanaDockerImage(refspec: 'PR/12345')
 ## buildStatus
 Fetch the current build status for a given job
 ```
-def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']), return_bool: false)
+def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-java-mbp', 'main']), return_bool: false)
 ```
 
 * host: The Jenkins server to connect to. Defaults to `localhost`.
 * job:  The job to fetch status for. This should be a list consisting of the path to job. For example, when viewing the Jenkins
         CI, in the upper-left of the browser, one might see a path to a job with a URL as follows:
 
-            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/master/
+            https://apm-ci.elastic.co/job/apm-agent-java/job/apm-agent-java-mbp/job/main/
 
         In this case, the corresponding list would be formed as:
 
-            ['apm-agent-java', 'apm-agent-java-mbp', 'master']
+            ['apm-agent-java', 'apm-agent-java-mbp', 'main']
 
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
 * ssl: Set to `false` to disable SSL. Default is `true`.
@@ -653,7 +653,7 @@ Then put all togeder in a simple JSON file.
 Get the flaky job name in a given multibranch pipeline.
 
 ```
-getFlakyJobName(withBranch: 'master')
+getFlakyJobName(withBranch: 'main')
 ```
 
 * withBranch: the job base name to compare with. Mandatory
@@ -824,7 +824,7 @@ gitCheckout(basedir: 'sub-folder')
 ```
 
 ```
-gitCheckout(basedir: 'sub-folder', branch: 'master',
+gitCheckout(basedir: 'sub-folder', branch: 'main',
   repo: 'git@github.com:elastic/apm-pipeline-library.git',
   credentialsId: 'credentials-id',
   reference: '/var/lib/jenkins/reference-repo.git')
@@ -1015,7 +1015,7 @@ def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'somethi
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
 * draft: Create the pull request as a draft. Optional. Default: false
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
-* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "main").
 
 _NOTE_: Windows is not supported yet.
 
@@ -1203,7 +1203,7 @@ Returns a data structure representing the release, similar to the following:
   "id": 1,
   "node_id": "MDc6UmVsZWFzZTE=",
   "tag_name": "v1.0.0",
-  "target_commitish": "master",
+  "target_commitish": "main",
   "name": "v1.0.0",
   "body": "Description of the release",
   "draft": false,
@@ -1261,7 +1261,7 @@ Sample return:
   "id": 1,
   "node_id": "MDc6UmVsZWFzZTE=",
   "tag_name": "v1.0.0",
-  "target_commitish": "master",
+  "target_commitish": "main",
   "name": "v1.0.0",
   "body": "Description of the release",
   "draft": false,
@@ -2316,7 +2316,7 @@ emails on Failed builds that are not pull request.
 * flakyDisableGHIssueCreation: whether to disable the GH create issue if any flaky matches. Default false.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
-* jobName: The name of the job, e.g. `Beats/beats/master`.
+* jobName: The name of the job, e.g. `Beats/beats/main`.
 
 ## notifyStalledBeatsBumps
 Evaluate if the latest bump update was merged a few days ago and if so
@@ -3011,6 +3011,22 @@ withAPMEnv(secret: 'secrets/my-secret-apm') {
 * secret: vault secret used to interact with the APM server. Default: 'secret/observability-team/ci/jenkins-stats'
 * tokenFieldName: the field in the vault secret that contains the APM Server token. Default 'apmServerToken'
 * urlFieldName: the field in the vault secret that contains the APM Server URL. Default 'apmServerUrl'
+
+## withAWSEnv
+Configure the AWS context to run the given body closure. The AWS_PROFILE environment variable
+is also configured with the profile to be used.
+
+```
+withAWSEnv(secret: 'secret/team/ci/service-account/aws-provisioner') {
+  // block
+}
+```
+
+* version: The aws CLI version to be installed. Optional (2.4.2)
+* forceInstallation: Whether to install aws regardless. Optional (false)
+* secret: Name of the secret on the the vault root path. (Optional).
+* role_id: vault role ID (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID (Optional). Default 'vault-secret-id'
 
 ## withAzureCredentials
 Wrap the azure credentials

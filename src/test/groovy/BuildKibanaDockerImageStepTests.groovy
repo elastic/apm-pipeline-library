@@ -32,24 +32,24 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
     @Test
     void test_with_baseDir() throws Exception {
         def result = script.call(baseDir: 'foo', packageJSON: 'buildKibana/package.json')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: master'))
-        assertTrue(assertMethodCallContainsPattern('log', 'Cloning Kibana repository, refspec master, into foo'))
-        assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master"))
-        assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master were pushed"))
-        assertTrue(env.DEPLOY_NAME == 'master')
-        assertTrue(env.KIBANA_DOCKER_TAG == '8.0.0-SNAPSHOT-master')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: main'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Cloning Kibana repository, refspec main, into foo'))
+        assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:main"))
+        assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:main were pushed"))
+        assertTrue(env.DEPLOY_NAME == 'main')
+        assertTrue(env.KIBANA_DOCKER_TAG == '8.0.0-SNAPSHOT-main')
         assertJobStatusSuccess()
     }
 
     @Test
     void test_without_refspec() throws Exception {
         def result = script.call(packageJSON: 'buildKibana/package.json')
-        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: master'))
-        assertTrue(assertMethodCallContainsPattern('log', 'Cloning Kibana repository, refspec master, into base_dir/build'))
-        assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master"))
-        assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:master were pushed"))
-        assertTrue(env.DEPLOY_NAME == 'master')
-        assertTrue(env.KIBANA_DOCKER_TAG == '8.0.0-SNAPSHOT-master')
+        assertTrue(assertMethodCallContainsPattern('log', 'Kibana refspec is: main'))
+        assertTrue(assertMethodCallContainsPattern('log', 'Cloning Kibana repository, refspec main, into base_dir/build'))
+        assertTrue(assertMethodCallContainsPattern('log', "Tagging docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT to docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:main"))
+        assertTrue(assertMethodCallContainsPattern('log', "docker.elastic.co/observability-ci/kibana:${SHA} and docker.elastic.co/observability-ci/kibana:main were pushed"))
+        assertTrue(env.DEPLOY_NAME == 'main')
+        assertTrue(env.KIBANA_DOCKER_TAG == '8.0.0-SNAPSHOT-main')
         assertJobStatusSuccess()
     }
 

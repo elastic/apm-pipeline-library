@@ -39,7 +39,7 @@ def call(Map pipelineParams) {
       REGISTRY = 'docker.elastic.co'
       STAGING_IMAGE = "${env.REGISTRY}/observability-ci"
       GITHUB_CHECK_ITS_NAME = 'Integration Tests'
-      ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
+      ITS_PIPELINE = 'apm-integration-tests-selector-mbp/main'
     }
     options {
       timeout(time: 1, unit: 'HOURS')

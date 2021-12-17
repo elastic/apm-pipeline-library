@@ -17,7 +17,7 @@
 
 import groovy.transform.Field
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 // To store the next and current release versions
 @Field def releaseVersions = [:]
@@ -68,7 +68,7 @@ pipeline {
     stage('Send Pull Request'){
       steps {
         createPullRequest(repo: env.REPO,
-                          branchName: 'master',
+                          branchName: 'main',
                           labels: 'automation',
                           message: """### What \n Bump stack version with the latest one. \n ### Further details \n ${releaseVersions}""",
                           reviewer: 'elastic/observablt-robots-on-call',

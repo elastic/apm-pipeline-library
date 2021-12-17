@@ -46,26 +46,26 @@ pipeline {
     string(name: 'tag_prefix', defaultValue: "observability-ci", description: "")
     string(name: 'secret', defaultValue: "secret/apm-team/ci/docker-registry/prod", description: "")
     booleanParam(name: 'apm_integration_testing', defaultValue: "false", description: "")
-    booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/master/tools/apm-proxy]")
+    booleanParam(name: 'apm_proxy', defaultValue: "false", description: "APM proxy [https://github.com/elastic/observability-dev/tree/main/tools/apm-proxy]")
     booleanParam(name: 'apm_server', defaultValue: "false", description: "")
-    booleanParam(name: 'build_analyzer', defaultValue: "false", description: "Build analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/build-analyzer]")
+    booleanParam(name: 'build_analyzer', defaultValue: "false", description: "Build analyzer [https://github.com/elastic/observability-dev/tree/main/apps/automation/build-analyzer]")
     booleanParam(name: 'flakey', defaultValue: "false", description: "Flake detection app")
     booleanParam(name: 'flakeyv2', defaultValue: "false", description: "Flake V2 detection app")
     booleanParam(name: 'heartbeat', defaultValue: "false", description: "Heartbeat to monitor Jenkins jobs")
     booleanParam(name: 'helm_kubectl', defaultValue: "false", description: "")
-    booleanParam(name: 'integrations_reporter', defaultValue: "false", description: "Integrations reporter [https://github.com/elastic/observability-dev/tree/master/apps/automation/integrations/reporter]")
+    booleanParam(name: 'integrations_reporter', defaultValue: "false", description: "Integrations reporter [https://github.com/elastic/observability-dev/tree/main/apps/automation/integrations/reporter]")
     booleanParam(name: 'nodejs', defaultValue: 'false', description: '')
     booleanParam(name: 'opbot', defaultValue: "false", description: "")
     booleanParam(name: 'oracle_instant_client', defaultValue: "false", description: "")
     booleanParam(name: 'picklesdoc', defaultValue: "false", description: "Pickles Doc generator")
     booleanParam(name: 'python', defaultValue: "false", description: "")
-    booleanParam(name: 'rebuild_analyzer', defaultValue: "false", description: "Rebuild analyzer [https://github.com/elastic/observability-dev/tree/master/apps/automation/rebuild-analyzer]")
+    booleanParam(name: 'rebuild_analyzer', defaultValue: "false", description: "Rebuild analyzer [https://github.com/elastic/observability-dev/tree/main/apps/automation/rebuild-analyzer]")
     booleanParam(name: 'ruby', defaultValue: 'false', description: '')
     booleanParam(name: 'rum', defaultValue: 'false', description: '')
-    booleanParam(name: 'slack_apm_report', defaultValue: 'false', description: "Slack APM Bridge [https://github.com/elastic/observability-dev/tree/master/tools/report-bridge]")
+    booleanParam(name: 'slack_apm_report', defaultValue: 'false', description: "Slack APM Bridge [https://github.com/elastic/observability-dev/tree/main/tools/report-bridge]")
     booleanParam(name: 'testPlans', defaultValue: "false", description: "Test Plans app")
     booleanParam(name: 'weblogic', defaultValue: "false", description: "")
-    booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/master/apps/automation/bandstand]")
+    booleanParam(name: 'load_orch', defaultValue: "false", description: "Load testing orchestrator [https://github.com/elastic/observability-dev/tree/main/apps/automation/bandstand]")
     booleanParam(name: 'azure_vm_extension', defaultValue: "false", description: "Tools for the Azure VM extension [https://github.com/elastic/azure-vm-extension]")
   }
   stages {
@@ -92,6 +92,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-python.git',
+                    branch: 'master',
                     tag: 'apm-agent-python',
                     version: "${pythonIn}",
                     folder: "tests",
@@ -128,6 +129,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-nodejs.git',
+                    branch: 'master',
                     tag: 'apm-agent-nodejs',
                     version: "${nodejsVersion}",
                     folder: '.ci/docker/node-container',
@@ -175,6 +177,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-ruby.git',
+                    branch: 'master',
                     tag: 'apm-agent-ruby',
                     version: "${rubyVersion}",
                     folder: 'spec',
@@ -211,6 +214,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-rum-js.git',
+                    branch: 'master',
                     tag: "node-${library}",
                     version: "${nodejsVersion}",
                     folder: ".ci/docker/node-${library}",
@@ -387,7 +391,6 @@ pipeline {
             def writeClosure = {sh(script: "cp -R ${WORKSPACE}/apps/beats/heartbeat/configs configs/ && cp ${WORKSPACE}/apps/beats/heartbeat/heartbeat.yml heartbeat.yml")}
             buildDockerImage(
               repo: "https://github.com/elastic/observability-robots.git",
-              branch: 'main',
               tag: 'obs-jenkins-heartbeat',
               version: 'latest',
               push: true,
@@ -505,7 +508,6 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-robots.git',
-          branch: 'main',
           tag: 'picklesdoc',
           buildCommand: 'make build',
           pushCommand: 'make push',
@@ -526,7 +528,6 @@ pipeline {
         dockerLoginElasticRegistry()
         buildDockerImage(
           repo: 'https://github.com/elastic/observability-robots.git',
-          branch: 'main',
           tag: 'test-plans',
           buildCommand: 'make build',
           pushCommand: 'make push',
@@ -568,7 +569,7 @@ def dockerLoginElasticRegistry(){
 
 def buildDockerImage(args){
   String repo = args.containsKey('repo') ? args.repo : error("Repository not valid")
-  String branch = args.get('branch', 'master')
+  String branch = args.get('branch', 'main')
   String tag = args.containsKey('tag') ? args.tag : error("Tag not valid")
   String version = args.containsKey('version') ? args.version : "latest"
   String folder = args.containsKey('folder') ? args.folder : "."

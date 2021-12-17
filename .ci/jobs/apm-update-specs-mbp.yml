@@ -2,7 +2,7 @@
 - job:
     name: apm-shared/apm-update-specs-mbp
     display-name: APM Update Specs
-    description: Send PRs to the subscribed APM Agents if the spec files (Gherkin and JSON) are modified, triggered for the master branch for the elastic/apm project
+    description: Send PRs to the subscribed APM Agents if the spec files (Gherkin and JSON) are modified, triggered for the main branch for the elastic/apm project
     view: APM-CI
     project-type: multibranch
     script-path: .ci/Jenkinsfile

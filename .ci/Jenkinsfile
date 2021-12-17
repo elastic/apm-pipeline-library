@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -203,7 +203,7 @@ pipeline {
         beforeAgent true
         anyOf {
           expression { return env.TEST_INFRA == "true" }
-          branch 'master'
+          branch 'main'
           expression { return env.GITHUB_COMMENT?.contains('infra tests') }
         }
       }
@@ -254,7 +254,7 @@ pipeline {
   }
   post {
     cleanup {
-      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'master'))
+      notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'main'))
     }
   }
 }

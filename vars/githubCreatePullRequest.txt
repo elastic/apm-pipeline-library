@@ -18,6 +18,6 @@ def pullRequestUrl = githubCreatePullRequest(title: 'Foo', description: 'somethi
 * labels: A comma-separated list (no spaces around the comma) of labels to add to this pull request. Optional.
 * draft: Create the pull request as a draft. Optional. Default: false
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
-* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "master").
+* base: The base branch in the "[OWNER:]BRANCH" format. Optional. Defaults to the default branch of the upstream repository (usually "main").
 
 _NOTE_: Windows is not supported yet.
