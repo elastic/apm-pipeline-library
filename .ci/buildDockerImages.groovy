@@ -591,7 +591,7 @@ def buildDockerImage(args){
       withEnv(env){
         prepareWith()
         if (buildCommand.equals("")) {
-          sh(label: "build docker image", script: "docker build --force-rm ${options} -t ${image} .")
+          sh(label: "build docker image", script: "docker build --force-rm --no-cache ${options} -t ${image} .")
         } else {
           sh(label: "custom build docker image", script: "${buildCommand}")
         }

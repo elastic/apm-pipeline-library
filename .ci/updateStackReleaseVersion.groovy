@@ -54,10 +54,10 @@ pipeline {
       steps {
         echo ' TODO: calculate the versions'
         script {
-          releaseVersions[bumpUtils.current6Key()] = '6.8.21'
-          releaseVersions[bumpUtils.current7Key()] = '7.16.1'
+          releaseVersions[bumpUtils.current6Key()] = '6.8.22'
+          releaseVersions[bumpUtils.current7Key()] = '7.16.2'
           releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.0'
-          releaseVersions[bumpUtils.nextPatch7Key()] = '7.16.2'
+          releaseVersions[bumpUtils.nextPatch7Key()] = '7.16.3'
           // TODO: to support the 8.x branches
           releaseVersions[bumpUtils.current8Key()] = '8.0.0'
           releaseVersions[bumpUtils.nextMinor8Key()] = '8.1.0'

@@ -16,7 +16,7 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md)
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties)
     -   id: mixed-line-ending
     -   id: trailing-whitespace
 
