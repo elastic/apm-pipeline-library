@@ -35,7 +35,7 @@ pipeline {
     disableConcurrentBuilds()
   }
   parameters {
-    string(name: 'branch_specifier', defaultValue: 'master', description: 'the Git branch specifier to scan.')
+    string(name: 'branch_specifier', defaultValue: 'main', description: 'the Git branch specifier to scan.')
     string(name: 'repo', defaultValue: 'apm-pipeline-library', description: 'the Git repository to scan.')
   }
   stages {

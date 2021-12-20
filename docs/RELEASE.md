@@ -8,7 +8,7 @@ has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](http
 Follow the below steps:
 
 * Make sure your PRs contain the proper Github labels to group them under the proper changelog section, as defined in [Gren's configuration file, `groupBy` section](../.grenrc.js).
-* Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/master/build?delay=0sec)
+* Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/main/build?delay=0sec)
 * Choose `Build with Parameters`
 * Select the `make_release` checkbox.
 * Click `Build` and wait for ~25 minutes to complete.
@@ -30,8 +30,8 @@ to the same version we just created. The `current` tag is used to use the last s
 library version on pipelines.
 
 ```bash
-git checkout master
-git pull origin master
+git checkout main
+git pull origin main
 git fetch --all
 git tag -f current
 git push -f --tags

@@ -21,8 +21,8 @@
 #
 # curl (REST API)
 # Assuming "anonymous read access" has been enabled on your Jenkins instance.
-# JENKINS_URL=[root URL of Jenkins master]
-# JENKINS_CRUMB is needed if your Jenkins master has CRSF protection enabled as it should
+# JENKINS_URL=[root URL of Jenkins controller]
+# JENKINS_CRUMB is needed if your Jenkins controller has CRSF protection enabled as it should
 
 if [ -z "${JENKINS_URL}" ]; then
   echo "JENKINS_URL not defined"

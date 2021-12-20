@@ -60,8 +60,8 @@ pytest --otel-session-name='My_Test_cases'
 Demos
 -----
 
-* [Jaeger](https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_otel/docs/demos/jaeger/README.md)
-* [Elastic Stack](https://github.com/elastic/apm-pipeline-library/tree/master/resources/scripts/pytest_otel/docs/demos/elastic/README.md)
+* [Jaeger](https://github.com/elastic/apm-pipeline-library/tree/main/resources/scripts/pytest_otel/docs/demos/jaeger/README.md)
+* [Elastic Stack](https://github.com/elastic/apm-pipeline-library/tree/main/resources/scripts/pytest_otel/docs/demos/elastic/README.md)
 
 License
 -------

@@ -24,7 +24,7 @@
   buildKibanaDockerImage(refspec: 'PR/12345', dockerRegistry: hub.docker.com)
 */
 def call(Map args = [:]){
-  def kibanaRefspec = args?.refspec?.trim() ? args.refspec : 'master'
+  def kibanaRefspec = args?.refspec?.trim() ? args.refspec : 'main'
   def uppercaseKibanaRefspec = kibanaRefspec.toUpperCase()
 
   def refspec = kibanaRefspec

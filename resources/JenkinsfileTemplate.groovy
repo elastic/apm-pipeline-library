@@ -17,9 +17,9 @@
 
 // NOTE: Consumers should use the current tag
 // @Library('apm@current') _
-// NOTE: Master branch will contain the upcoming release changes
+// NOTE: Main branch will contain the upcoming release changes
 //       this will help us to detect any breaking changes in production.
-@Library('apm@master') _
+@Library('apm@main') _
 
 // Global variables can be only set usinig the @Field pattern
 import groovy.transform.Field
@@ -28,7 +28,7 @@ import groovy.transform.Field
 pipeline {
   // Top level agent is required to ensure the MBP does populate the environment
   // variables accordingly. Otherwise the built-in environment variables won't
-  // be available. It's worthy to use an immutable worker rather than the master
+  // be available. It's worthy to use an immutable worker rather than the built-in
   // worker to avoid any kind of bottlenecks or performance issues.
   // NOTE: ephemeral workers cannot be allocated when using `||` see https://github.com/elastic/infra/issues/13823
   agent { label 'linux && immutable' }
@@ -90,7 +90,7 @@ pipeline {
   parameters {
     // Let's use input parameters with capital cases.
     string(name: 'PARAM_WITH_DEFAULT_VALUE', defaultValue: 'defaultValue', description: 'It would not be defined on the first build, see JENKINS-41929.')
-    booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
+    booleanParam(name: 'Run_As_Main_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on main branch.')
   }
   stages {
     /**
@@ -156,7 +156,7 @@ pipeline {
           expression { return env.ONLY_DOCS == "false" }
           anyOf {
             expression { return env.TEST_INFRA == "true" }
-            branch 'master'
+            branch 'main'
           }
         }
       }
@@ -210,11 +210,11 @@ pipeline {
             when {
               beforeAgent true
               anyOf {
-                branch 'master'
+                branch 'main'
                 branch "v7*"
                 branch "v8*"
                 tag pattern: "v\\d+\\.\\d+\\.\\d+.*", comparator: 'REGEXP'
-                expression { return params.Run_As_Master_Branch }
+                expression { return params.Run_As_Main_Branch }
               }
             }
             steps {
@@ -236,7 +236,7 @@ pipeline {
           expression { return env.ONLY_DOCS == "false" }
           anyOf {
             expression { return env.TEST_INFRA == "true" }
-            branch 'master'
+            branch 'main'
           }
         }
       }
@@ -288,7 +288,7 @@ pipeline {
           expression { return env.ONLY_DOCS == "false" }
           anyOf {
             expression { return env.TEST_INFRA == "true" }
-            branch 'master'
+            branch 'main'
           }
         }
       }
