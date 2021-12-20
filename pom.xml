@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.277-SNAPSHOT</version>
+  <version>1.1.278-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -100,7 +100,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
       <scope>test</scope>
     </dependency>
     <!-- BEGIN Support for the withOtelEnv step -->
@@ -250,7 +250,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.4</version>
+            <version>1.5.1</version>
           </dependency>
         </dependencies>
       </plugin>

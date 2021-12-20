@@ -68,7 +68,7 @@ def assertSpan(span, name, outcome, status):
 
 def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
     """check a test results are correct"""
-    pytester.runpytest("--endpoint=http://127.0.0.1:4317", "--service-name=pytest_otel")
+    pytester.runpytest("--otel-endpoint=http://127.0.0.1:4317", "--otel-service-name=pytest_otel")
     filename = "./tests.json"
     waitForFileContent(filename)
     foundTest = False
