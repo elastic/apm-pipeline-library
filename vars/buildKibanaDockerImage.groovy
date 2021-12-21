@@ -19,7 +19,7 @@
 
   Builds the Docker image for Kibana, from a branch or a pull Request.
 
-  buildKibanaDockerImage(refspec: 'master')
+  buildKibanaDockerImage(refspec: 'main')
   buildKibanaDockerImage(refspec: 'PR/12345')
   buildKibanaDockerImage(refspec: 'PR/12345', dockerRegistry: hub.docker.com)
 */
