@@ -192,11 +192,11 @@ See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
 Builds the Docker image for Kibana, from a branch or a pull Request.
 
 ```
-buildKibanaDockerImage(refspec: 'master')
+buildKibanaDockerImage(refspec: 'main')
 buildKibanaDockerImage(refspec: 'PR/12345')
 ```
 
-* refspec: A branch (i.e. master), or a pull request identified by the "pr/" prefix and the pull request ID.
+* refspec: A branch (i.e. main), or a pull request identified by the "pr/" prefix and the pull request ID.
 * packageJSON: Full name of the package.json file. Defaults to 'package.json'
 * baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.
@@ -2554,7 +2554,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 
 **NOTE**: It works only in the `beats-ci` controller.
 
-Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/main/.ci/Jenkinsfile
 
 ## runWatcher
 Run the given watcher and send an email if configured for such an action.
