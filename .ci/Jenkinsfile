@@ -25,6 +25,8 @@ pipeline {
         apiVersion: v1
         kind: Pod
         spec:
+          securityContext:
+            runAsUser: 1000 # default UID of jenkins user in agent image
           containers:
           - name: golang
             image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
@@ -66,6 +68,7 @@ pipeline {
           id
           ls -la
           pwd
+          uname -a
           ''')
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
@@ -80,6 +83,7 @@ pipeline {
           id
           ls -la
           pwd
+          uname -a
           ''')
           deleteDir()
           unstash 'source'
