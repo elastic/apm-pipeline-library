@@ -51,7 +51,7 @@ pipeline {
     GITHUB_CHECK = 'true'
     HOME="${env.WORKSPACE}"
     GOPATH="${env.WORKSPACE}"
-    PATH="${env.PATH}:${env.HOME}/bin"
+    PATH="${env.HOME}/bin:/usr/osxcross/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
