@@ -18,7 +18,21 @@
 @Library('apm@main') _
 
 pipeline {
-  agent { kubernetes golangPod() }
+  agent {
+    kubernetes {
+      yaml """apiVersion: v1
+  kind: Pod
+  spec:
+  containers:
+  - name: golang
+    image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
+    command:
+    - sleep
+    args:
+    - infinity
+"""
+      }
+   }
   environment {
     REPO = 'beats'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
@@ -95,22 +109,5 @@ pipeline {
         }
       }
     }
-  }
-}
-
-def golangPod(){
-  return {
-    yaml """---
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: golang
-    image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
-    command:
-    - sleep
-    args:
-    - infinity
-"""
   }
 }
