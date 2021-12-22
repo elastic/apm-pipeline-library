@@ -20,25 +20,25 @@
 pipeline {
   agent {
     kubernetes {
-      yaml """
+      yaml '''
         apiVersion: v1
         kind: Pod
         spec:
-        containers:
-        - name: golang
-          image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
-          command:
-            - sleep
-          args:
-            - infinity
-      """
+          containers:
+          - name: golang
+            image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
+            command:
+              - sleep
+            args:
+              - infinity
+      '''
       }
    }
   environment {
     REPO = 'beats'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL = 'DEBUG'
+    PIPELINE_LOG_LEVEL = 'INFO'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
