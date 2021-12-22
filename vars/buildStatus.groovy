@@ -20,7 +20,7 @@ Get the build status of a job from a local or remote Jenkins instanve
 
 buildStatus(
     host: 'localhost',
-    job: ['apm-agent-java', 'apm-agent-java-mbp', 'master']),
+    job: ['apm-agent-java', 'apm-agent-java-mbp', 'main']),
     return_boolean: false
 **/
 

@@ -51,7 +51,7 @@ Once your changes are ready to submit for review:
 4. Rebase your changes
 
    Update your local repository with the most recent code from the main repo,
-   and rebase your branch on top of the latest master branch.
+   and rebase your branch on top of the latest main branch.
    We prefer your initial changes to be squashed into a single commit.
    Later,
    if we ask you to make changes,

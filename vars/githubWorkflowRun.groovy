@@ -55,7 +55,7 @@ def call(Map args = [:]) {
 
 def triggerGithubActionsWorkflow(Map args = [:]) {
     if (!args.workflow) error('triggerGithubActionsWorkflow: workflow parameter is required.')
-    def ref = args.get("ref", "master")
+    def ref = args.get("ref", "main")
     def lookupId = args.get("lookupId", "${ref}-${new Date().getTime()}-${env.BUILD_ID}")
     def repo = args.get("repo", "${env.ORG_NAME}/${env.REPO_NAME}")
     def parameters = args.get("parameters", [:])

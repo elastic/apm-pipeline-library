@@ -39,9 +39,9 @@ pipeline {
   stages {
     stage('Run Tasks'){
       steps {
-        build(job: 'apm-shared/apm-test-pipeline-mbp/master',
+        build(job: 'apm-shared/apm-test-pipeline-mbp/main',
           parameters: [
-            booleanParam(name: 'Run_As_Master_Branch', value: true),
+            booleanParam(name: 'Run_As_Main_Branch', value: true),
           ],
           propagate: false,
           wait: false
@@ -62,7 +62,7 @@ pipeline {
             booleanParam(name: 'ruby', value: true),
             booleanParam(name: 'rum', value: true),
             booleanParam(name: 'weblogic', value: true),
-            string(name: 'branch_specifier', value: 'master')
+            string(name: 'branch_specifier', value: 'main')
           ],
           propagate: false,
           wait: false
@@ -75,7 +75,7 @@ pipeline {
             string(name: 'version', value: 'daily'),
             string(name: 'secret', value: "${DOCKERELASTIC_SECRET}"),
             booleanParam(name: 'opbeans', value: true),
-            string(name: 'branch_specifier', value: 'master')
+            string(name: 'branch_specifier', value: 'main')
           ],
           propagate: false,
           wait: false

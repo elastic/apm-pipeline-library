@@ -55,11 +55,11 @@ pipeline {
      printPostContent: false,
      silentResponse: true,
      regexpFilterText: '$ref-$x_github_event',
-     regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+)-comment$'
+     regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+|refs/heads/main/.+)-comment$'
     )
   }
   parameters {
-    string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
+    string(name: 'branch_specifier', defaultValue: "main", description: "the Git branch specifier to build")
   }
   stages {
     stage('Process GitHub Event') {

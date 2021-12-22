@@ -16,14 +16,14 @@ projects:
   - repo: apm-pipeline-library
     script: .ci/bump-go-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-robots-on-call
   - repo: apm-integration-testing
     script: .ci/bump-go-release-version.sh
     branches:
-      - master
+      - main
       - 7.x
     enabled: true
     labels: dependency
@@ -43,6 +43,6 @@ projects:
   - repo: golang-crossbuild
     script: .ci/bump-go-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency

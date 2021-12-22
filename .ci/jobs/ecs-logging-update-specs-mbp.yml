@@ -2,7 +2,7 @@
 - job:
     name: apm-shared/ecs-logging-update-specs-mbp
     display-name: ecs-logging Update Specs
-    description: Send PRs to the subscribed ECS Agents if the spec files (JSON) are modified, triggered for the master branch for the elastic/ecs-logging project
+    description: Send PRs to the subscribed ECS Agents if the spec files (JSON) are modified, triggered for the main branch for the elastic/ecs-logging project
     view: APM-CI
     project-type: multibranch
     script-path: .ci/Jenkinsfile

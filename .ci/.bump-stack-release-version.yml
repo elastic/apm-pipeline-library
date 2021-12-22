@@ -16,14 +16,14 @@ projects:
   - repo: apm-pipeline-library
     script: .ci/bump-stack-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-robots-on-call
   - repo: apm-integration-testing
     script: .ci/bump-stack-release-version.sh
     branches:
-      - master
+      - main
       - 7.x
     enabled: true
     labels: dependency
@@ -31,14 +31,14 @@ projects:
   - repo: observability-test-environments
     script: .ci/bump-stack-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-robots-on-call
   - repo: azure-vm-extension
     script: .ci/bump-stack-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency
     reviewer: elastic/integrations-platforms

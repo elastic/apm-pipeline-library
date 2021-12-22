@@ -52,7 +52,9 @@ pipeline {
     stage('Checkout') {
       steps {
         dir("${BASE_DIR}"){
-          git("https://github.com/elastic/${REPO}.git")
+          // TODO: when renaming Beats@main then replace the branch here.
+          git(url: "https://github.com/elastic/${REPO}.git",
+              branch: 'master')
         }
         script {
           dir("${BASE_DIR}"){
