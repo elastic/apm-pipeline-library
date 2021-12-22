@@ -62,6 +62,11 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Checkout') {
+          sh('''
+          id
+          ls -la
+          pwd
+          ''')
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
@@ -71,6 +76,11 @@ pipeline {
     stage('lint') {
       steps {
         withGithubNotify(context: 'lint') {
+          sh('''
+          id
+          ls -la
+          pwd
+          ''')
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
