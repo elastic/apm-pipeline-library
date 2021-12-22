@@ -20,17 +20,18 @@
 pipeline {
   agent {
     kubernetes {
-      yaml """apiVersion: v1
-  kind: Pod
-  spec:
-  containers:
-  - name: golang
-    image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
-    command:
-    - sleep
-    args:
-    - infinity
-"""
+      yaml """
+        apiVersion: v1
+        kind: Pod
+        spec:
+        containers:
+        - name: golang
+          image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-darwin-arm64-debian10
+          command:
+            - sleep
+          args:
+            - infinity
+      """
       }
    }
   environment {
