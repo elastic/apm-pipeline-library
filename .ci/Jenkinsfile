@@ -20,6 +20,7 @@
 pipeline {
   agent {
     kubernetes {
+      defaultContainer 'golang'
       yaml '''
         apiVersion: v1
         kind: Pod
