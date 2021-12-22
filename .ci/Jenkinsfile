@@ -52,6 +52,7 @@ pipeline {
     HOME="${env.WORKSPACE}"
     GOPATH="${env.WORKSPACE}"
     PATH="${env.HOME}/bin:/usr/osxcross/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    CGO_LDFLAGS="-L/libpcap/libpcap-1.8.1-amd64 -lpcap"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
