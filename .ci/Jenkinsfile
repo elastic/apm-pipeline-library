@@ -29,7 +29,7 @@ pipeline {
             runAsUser: 1000 # default UID of jenkins user in agent image
           containers:
           - name: golang
-            image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-main
+            image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-main-debian10
             command:
               - sleep
             args:
