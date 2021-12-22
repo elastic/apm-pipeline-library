@@ -101,7 +101,7 @@ pipeline {
 
 def golangPod(){
   return {
-    """---
+    return """---
 apiVersion: v1
 kind: Pod
 spec:
