@@ -49,6 +49,8 @@ pipeline {
     JOB_GCS_BUCKET = 'apm-ci-temp'
     JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
     GITHUB_CHECK = 'true'
+    HOME="${env.WORKSPACE}"
+    GOPATH="${env.WORKSPACE}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -78,12 +80,6 @@ pipeline {
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
-            sh('''
-            id
-            ls -la
-            pwd
-            uname -a
-            ''')
             sh(script:'''
               make -C filebeat check;
               make -C filebeat update;
