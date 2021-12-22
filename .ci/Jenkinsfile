@@ -64,12 +64,6 @@ pipeline {
       options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Checkout') {
-          sh('''
-          id
-          ls -la
-          pwd
-          uname -a
-          ''')
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}")
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
@@ -79,15 +73,15 @@ pipeline {
     stage('lint') {
       steps {
         withGithubNotify(context: 'lint') {
-          sh('''
-          id
-          ls -la
-          pwd
-          uname -a
-          ''')
           deleteDir()
           unstash 'source'
           dir("${BASE_DIR}"){
+            sh('''
+            id
+            ls -la
+            pwd
+            uname -a
+            ''')
             sh(script:'''
               make -C filebeat check;
               make -C filebeat update;
