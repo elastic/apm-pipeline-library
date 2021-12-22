@@ -71,7 +71,6 @@ pipeline {
           gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
             repo: "git@github.com:elastic/${REPO}.git",
             credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
-          stash allowEmpty: true, name: 'source', useDefaultExcludes: false
         }
       }
     }
@@ -79,7 +78,9 @@ pipeline {
       steps {
         withGithubNotify(context: 'lint') {
           deleteDir()
-          unstash 'source'
+          gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           dir("${BASE_DIR}"){
             sh(script:'''
               make -C filebeat check;
@@ -96,9 +97,12 @@ pipeline {
       steps {
         withGithubNotify(context: 'Build') {
           deleteDir()
-          unstash 'source'
+          gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           dir("${BASE_DIR}/filebeat"){
             sh(script:'''
+              make mage;
               mage build;
             ''')
           }
@@ -109,9 +113,12 @@ pipeline {
       steps {
         withGithubNotify(context: 'test') {
           deleteDir()
-          unstash 'source'
+          gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           dir("${BASE_DIR}/filebeat"){
             sh(script:'''
+              make mage;
               mage unitTest;
             ''')
           }
