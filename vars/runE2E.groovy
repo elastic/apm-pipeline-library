@@ -28,10 +28,10 @@ def call(Map args = [:]) {
 
   // As long as elastic/beats and elastic/e2e-testing don't match each other with
   // main then it's required to do this trick
-  def branch = env.CHANGE_TARGET.equals('master') ? 'main' : env.CHANGE_TARGET
+  def targetBranch = env.CHANGE_TARGET.equals('master') ? 'main' : env.CHANGE_TARGET
 
   def jobFolderPath = 'e2e-tests/e2e-testing-mbp'
-  def jobName = args.get('jobName', isPR() ? "${branch}" : "${env.JOB_BASE_NAME}")
+  def jobName = args.get('jobName', isPR() ? "${targetBranch}" : "${env.JOB_BASE_NAME}")
   def gitHubCheckName = args.get('gitHubCheckName', '')
   def disableGitHubCheck =  args.get('disableGitHubCheck', false)
   def propagate = args.get('propagate', false)
