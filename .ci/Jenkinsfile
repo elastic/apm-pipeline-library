@@ -96,6 +96,10 @@ pipeline {
               apiVersion: v1
               kind: Pod
               spec:
+                hostAliases:
+                  - ip: "127.0.0.1"
+                    hostnames:
+                      - "mysql"
                 securityContext:
                   runAsUser: 1000 # default UID of jenkins user in agent image
                 containers:
@@ -105,10 +109,6 @@ pipeline {
                     - sleep
                   args:
                     - infinity
-                  hostAliases:
-                    - ip: "127.0.0.1"
-                      hostnames:
-                        - "mysql"
                 - name: mysql
                   image: mysql
                   args:
