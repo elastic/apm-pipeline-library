@@ -105,6 +105,20 @@ pipeline {
                     - sleep
                   args:
                     - infinity
+                - name: mysql
+                  image: mysql
+                  args:
+                    - --default-authentication-plugin=mysql_native_password
+                    - --log_error_verbosity=3
+                  env:
+                    - name: MYSQL_DATABASE
+                      vale: eapm_tests
+                    - name: MYSQL_USER
+                      vale: eapm
+                    - name: MYSQL_PASSWORD
+                      vale: Very(!)Secure
+                    - name: MYSQL_RANDOM_ROOT_PASSWORD
+                      vale: yes
             """
             }
         }
@@ -115,7 +129,7 @@ pipeline {
           }
           axis {
             name "FRAMEWORK"
-            values "django-4.0", "django-3.2", "django-2.0", "django-1.11"
+            values "mysql_connector-newest", "pymysql-newest", "mysqlclient-newest"
           }
         }
         stages {
