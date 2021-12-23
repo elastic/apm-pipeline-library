@@ -105,6 +105,10 @@ pipeline {
                     - sleep
                   args:
                     - infinity
+                  hostAliases:
+                    - ip: "127.0.0.1"
+                      hostnames:
+                        - "mysql"
                 - name: mysql
                   image: mysql
                   args:
@@ -119,6 +123,7 @@ pipeline {
                       value: Very(!)Secure
                     - name: MYSQL_RANDOM_ROOT_PASSWORD
                       value: yes
+
             """
             }
         }
@@ -152,7 +157,6 @@ pipeline {
                       sh(script:'''
                         # workaround to ignore netcat commands
                         sed -i -E -e "s#WAIT_FOR_#IGNORE_ME_#g" ./tests/scripts/envs/*
-                        sed -i -E -e 's#MYSQL_HOST="mysql"#MYSQL_HOST="localhost"#g' ./tests/scripts/envs/*
                         timeout 5m /bin/bash ./tests/scripts/run_tests.sh
                       ''')
                   }
