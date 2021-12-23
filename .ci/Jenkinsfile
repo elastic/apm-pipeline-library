@@ -151,7 +151,7 @@ pipeline {
                       sh(script: "mkdir -p ${env.PIP_CACHE}")
                       sh(script:'''
                         # workaround to ignore netcat commands
-                        sed -i .bck -E -e "s#WAIT_FOR_#IGNORE_ME_#g" ./tests/scripts/envs/*
+                        sed -i -E -e "s#WAIT_FOR_#IGNORE_ME_#g" ./tests/scripts/envs/*
                         timeout 5m /bin/bash ./tests/scripts/run_tests.sh
                       ''')
                   }
