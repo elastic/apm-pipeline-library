@@ -50,7 +50,7 @@ def edge(Map args = [:]){
 
 def dev(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def devVersion = "7.16.2"
+  def devVersion = "7.17.0"
   // TODO: this should not use a hardcoded string but bmptUtils.getNextMinorReleaseFor7()
   return version(devVersion, args)
 }
