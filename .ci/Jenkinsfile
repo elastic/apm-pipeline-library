@@ -68,6 +68,7 @@ pipeline {
     stage('Checkout') {
       options { skipDefaultCheckout() }
       steps {
+        sh(script:'df -h')
         withGithubNotify(context: 'Checkout') {
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}", branch: 'master',
