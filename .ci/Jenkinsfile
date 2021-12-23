@@ -112,13 +112,13 @@ pipeline {
                     - --log_error_verbosity=3
                   env:
                     - name: MYSQL_DATABASE
-                      vale: eapm_tests
+                      value: eapm_tests
                     - name: MYSQL_USER
-                      vale: eapm
+                      value: eapm
                     - name: MYSQL_PASSWORD
-                      vale: Very(!)Secure
+                      value: Very(!)Secure
                     - name: MYSQL_RANDOM_ROOT_PASSWORD
-                      vale: yes
+                      value: yes
             """
             }
         }
