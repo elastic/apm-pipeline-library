@@ -100,7 +100,7 @@ pipeline {
                   runAsUser: 1000 # default UID of jenkins user in agent image
                 containers:
                 - name: python
-                  image: python:${PYTHON_VERSION}-stretch
+                  image: python:${PYTHON_VERSION}
                   command:
                     - sleep
                   args:
@@ -115,7 +115,7 @@ pipeline {
           }
           axis {
             name "FRAMEWORK"
-            values "django-4.0", "django-3.2"
+            values "django-4.0", "django-3.2", "django-2.0", "django-1.11"
           }
         }
         stages {
