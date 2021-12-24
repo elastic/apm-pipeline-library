@@ -120,6 +120,12 @@ pipeline {
                   - sleep
                 args:
                   - infinity
+                env:
+                  - name: DOCKER_HOST
+                    value: tcp://localhost:2375
+                volumeMounts:
+                  - name: shared-data
+                    mountPath: /usr/share/shared-data
               - name: docker-client
                 image: docker:19.03.1
                 securityContext:
@@ -130,7 +136,13 @@ pipeline {
                 env:
                   - name: DOCKER_HOST
                     value: tcp://localhost:2375
-          '''
+                volumeMounts:
+                  - name: shared-data
+                    mountPath: /usr/share/shared-data
+            volumes:
+              - name: shared-data
+                emptyDir: {}
+                '''
         }
       }
       options { skipDefaultCheckout() }
@@ -141,7 +153,10 @@ pipeline {
       steps {
         withGithubNotify(context: 'Build Containers') {
           deleteDir()
+          sh 'docker version'
+          sh(script: 'cp $(command -v docker) /usr/share/shared-data')
           container('python') {
+            sh '/usr/share/shared-data/docker version'
             sh 'git --version'
             gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
               repo: "git@github.com:elastic/${REPO}.git",
@@ -149,6 +164,7 @@ pipeline {
             sh 'echo checkout completed'
             sh 'pwd;ls -la;id'
           }
+
           dir("${BASE_DIR}"){
             sh 'echo before docker login'
             dockerLogin(secret: "${DOCKER_SECRET}", registry: "${DOCKER_REGISTRY}")
