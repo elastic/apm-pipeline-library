@@ -115,6 +115,10 @@ pipeline {
         }
       }
       options { skipDefaultCheckout() }
+      environment {
+        HOME = "${env.WORKSPACE}"
+        PATH = "${env.HOME}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      }
       steps {
         withGithubNotify(context: 'Build Containers') {
           deleteDir()
@@ -334,6 +338,10 @@ pipeline {
                     hostIP: 127.0.0.1
           """
           }
+       }
+       environment {
+         HOME = "${env.WORKSPACE}"
+         PATH = "${env.HOME}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
        }
       steps {
         withGithubNotify(context: 'APM Go ITs') {
