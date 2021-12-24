@@ -105,6 +105,8 @@ pipeline {
           kind: Pod
           spec:
             containers:
+              securityContext:
+                runAsUser: 1000 # default UID of jenkins user in agent image
               - name: dind
                 image: docker:19.03.1-dind
                 securityContext:
