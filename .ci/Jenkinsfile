@@ -202,23 +202,23 @@ pipeline {
                   - infinity
                 env:
                   - name: APM_SERVER_URL
-                  - value: http://apm-server:8200
+                    value: http://apm-server:8200
                   - name: ES_URL
-                  - value: http://elasticsearch:9200
+                    value: http://elasticsearch:9200
                   - name: KIBANA_URL
-                  - value: http://kibana:5601
+                    value: http://kibana:5601
                   - name: GO_NETHTTP_URL
-                  - value: http://gonethttpapp:8080
+                    value: http://gonethttpapp:8080
                   - name: PYTHONDONTWRITEBYTECODE
-                  - value: 1
+                    value: 1
                   - name: PYTHONHTTPSVERIFY
-                  - value: 1
+                    value: 1
                   - name: ES_USER
-                  - value: elastic
+                    value: elastic
                   - name: ES_PASS
-                  - value: changeme
+                    value: changeme
                   - name: ELASTIC_APM_SECRET_TOKEN
-                  - value: SuPeRsEcReT
+                    value: SuPeRsEcReT
               - image: ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing_agent-go-net-http:latest
                 name: gonethttpapp
                 env:
