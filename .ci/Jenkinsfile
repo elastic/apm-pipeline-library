@@ -121,6 +121,7 @@ pipeline {
       }
       steps {
         withGithubNotify(context: 'Build Containers') {
+          sh 'pwd;ls -la;id'
           deleteDir()
           gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
             repo: "git@github.com:elastic/${REPO}.git",
