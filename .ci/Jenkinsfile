@@ -113,7 +113,7 @@ pipeline {
                   - name: DOCKER_TLS_CERTDIR
                     value: ""
                 ports:
-                  - containerPort: 2376
+                  - containerPort: 2375
                     hostIP: 127.0.0.1
               - name: python
                 image: python:3.9
@@ -125,12 +125,12 @@ pipeline {
                   - infinity
                 env:
                   - name: DOCKER_HOST
-                    value: tcp://localhost:2376
+                    value: tcp://localhost:2375
                 volumeMounts:
                   - name: shared-data
                     mountPath: /usr/share/shared-data
               - name: docker-client
-                image: docker:19.03.1
+                image: docker:20.10.12
                 securityContext:
                   runAsUser: 1000 # default UID of jenkins user in agent image
                 command:
@@ -138,7 +138,7 @@ pipeline {
                 tty: true
                 env:
                   - name: DOCKER_HOST
-                    value: tcp://localhost:2376
+                    value: tcp://localhost:2375
                 volumeMounts:
                   - name: shared-data
                     mountPath: /usr/share/shared-data
