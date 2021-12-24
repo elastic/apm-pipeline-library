@@ -53,6 +53,7 @@ pipeline {
     REPO_BRANCH = "main"
     DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
     DOCKER_REGISTRY = 'docker.elastic.co'
+    DOCKER_PREFIX = "observability-ci"
     VENV="./venv"
   }
   options {
@@ -166,10 +167,10 @@ pipeline {
             ''')
             sh(script: """
               docker build --pull -t apm-integration-testing .
-              docker tag apm-integration-testing:latest ${DOCKER_REGISTRY}/apm-integration-testing:latest
-              docker push ${DOCKER_REGISTRY}/apm-integration-testing:latest
-              docker tag apm-integration-testing_agent-go-net-http:latest ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
-              docker push ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
+              docker tag apm-integration-testing:latest ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing:latest
+              docker push ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing:latest
+              docker tag apm-integration-testing_agent-go-net-http:latest ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing_agent-go-net-http:latest
+              docker push ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing_agent-go-net-http:latest
             """)
           }
         }
