@@ -166,8 +166,8 @@ pipeline {
             ''')
             sh(script: """
               docker build --pull -t apm-integration-testing .
-              docker tag apm-integration-testin:latest ${DOCKER_REGISTRY}/apm-integration-testin:latest
-              docker push apm-integration-testin:latest
+              docker tag apm-integration-testing:latest ${DOCKER_REGISTRY}/apm-integration-testing:latest
+              docker push apm-integration-testing:latest
               docker tag apm-integration-testing_agent-go-net-http:latest ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
               docker push ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
             """)
