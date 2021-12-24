@@ -112,6 +112,9 @@ pipeline {
                 env:
                   - name: DOCKER_TLS_CERTDIR
                     value: ""
+                ports:
+                  - containerPort: 2376
+                    hostIP: 127.0.0.1
               - name: python
                 image: python:3.9
                 securityContext:
@@ -122,7 +125,7 @@ pipeline {
                   - infinity
                 env:
                   - name: DOCKER_HOST
-                    value: tcp://localhost:2375
+                    value: tcp://localhost:2376
                 volumeMounts:
                   - name: shared-data
                     mountPath: /usr/share/shared-data
@@ -135,7 +138,7 @@ pipeline {
                 tty: true
                 env:
                   - name: DOCKER_HOST
-                    value: tcp://localhost:2375
+                    value: tcp://localhost:2376
                 volumeMounts:
                   - name: shared-data
                     mountPath: /usr/share/shared-data
