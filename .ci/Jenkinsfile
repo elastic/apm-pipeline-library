@@ -112,19 +112,17 @@ pipeline {
                 env:
                   - name: DOCKER_TLS_CERTDIR
                     value: ""
-                  - name: DOCKER_HOST
-                    value: tcp://localhost:2375
                 command:
                   - dockerd
                 args:
                   - -H tcp://localhost:2375
-                  - -H unix:///usr/share/shared-data/docker.sock
+                  - -H unix:///var/run/docker.sock
                 ports:
                   - containerPort: 2375
                     hostIP: 127.0.0.1
                 volumeMounts:
-                  - name: shared-data
-                    mountPath: /usr/share/shared-data
+                  - name: docker-cache
+                    mountPath: /var/lib/docker
               - name: python
                 image: python:3.9
                 securityContext:
@@ -136,13 +134,10 @@ pipeline {
                 env:
                   - name: DOCKER_HOST
                     value: tcp://localhost:2375
-                volumeMounts:
-                  - name: shared-data
-                    mountPath: /usr/share/shared-data
             volumes:
-              - name: shared-data
+              - name: docker-cache
                 emptyDir: {}
-                '''
+            '''
         }
       }
       options { skipDefaultCheckout() }
@@ -155,20 +150,14 @@ pipeline {
           deleteDir()
           container('dind') {
             sh 'docker version'
-            sh(script: 'cp $(command -v docker) /usr/share/shared-data')
+            sh(script: "mkdir -p ${env.WORKSPACE}/bin && cp \$(command -v docker) ${env.WORKSPACE}/bin")
           }
-          sh '/usr/share/shared-data/docker version'
-          sh 'git --version'
+          sh 'docker version'
           gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
             repo: "git@github.com:elastic/${REPO}.git",
             credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
-          sh 'echo checkout completed'
-          sh 'pwd;ls -la;id'
-
           dir("${BASE_DIR}"){
-            sh 'echo before docker login'
             dockerLogin(secret: "${DOCKER_SECRET}", registry: "${DOCKER_REGISTRY}")
-            sh 'echo after docker login'
             sh(script: './scripts/compose.py build 7.16.2 --release --output-format yaml --no-apm-server-self-instrument --with-agent-go-net-http --force-build --apm-log-level=debug  --go-agent-version=master')
             sh(script: """
               docker build --pull -t apm-integration-testing .
