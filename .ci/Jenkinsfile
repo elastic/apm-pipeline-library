@@ -29,7 +29,7 @@ pipeline {
             runAsUser: 1000 # default UID of jenkins user in agent image
           containers:
           - name: python
-            image: python:3.7
+            image: python:3.9
             command:
               - sleep
             args:
@@ -38,7 +38,7 @@ pipeline {
       }
    }
   environment {
-    REPO = 'apm-agent-python'
+    REPO = 'apm-integration-testing'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'INFO'
@@ -50,7 +50,9 @@ pipeline {
     GITHUB_CHECK = 'true'
     HOME = "${env.WORKSPACE}"
     PATH = "${env.HOME}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    REPO_BRANCH = "master"
+    REPO_BRANCH = "main"
+    DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
+    DOCKER_REGISTRY = 'docker.elastic.co'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -83,86 +85,243 @@ pipeline {
             credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           dir("${BASE_DIR}"){
             preCommit(commit: "${GIT_BASE_COMMIT}", junit: true, registry: '')
+            sh(script: 'make test-compose')
           }
         }
       }
     }
-    stage('matrix') {
-      matrix {
-        agent {
-          kubernetes {
-            defaultContainer 'python'
-            yaml """
-              apiVersion: v1
-              kind: Pod
-              spec:
-                hostAliases:
-                  - ip: "127.0.0.1"
-                    hostnames:
-                      - "mysql"
+    stage('Build Containers') {
+      agent { label 'ubuntu-20 && immutable'}
+      steps {
+        withGithubNotify(context: 'Build Containers') {
+          deleteDir()
+          gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+          dir("${BASE_DIR}"){
+            dockerLogin(secret: "${DOCKER_SECRET}", registry: "${DOCKER_REGISTRY}")
+            sh(script: './scripts/compose.py build 7.16.2 --release --output-format yaml --no-apm-server-self-instrument --with-agent-go-net-http --force-build --apm-log-level=debug  --go-agent-version=master')
+            sh(script: """
+              docker build --pull -t apm-integration-testing .
+              docker tag apm-integration-testin:latest ${DOCKER_REGISTRY}/apm-integration-testin:latest
+              docker push apm-integration-testin:latest
+              docker tag apm-integration-testing_agent-go-net-http:latest ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
+              docker push ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
+            """)
+          }
+        }
+      }
+    }
+    stage('APM Go ITs') {
+      agent {
+        kubernetes {
+          defaultContainer 'python'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            spec:
+              hostAliases:
+                - ip: "127.0.0.1"
+                  hostnames:
+                    - "gonethttpapp"
+                    - "apm-server"
+                    - "elasticsearch"
+                    - "kibana"
+              securityContext:
+                runAsUser: 1000 # default UID of jenkins user in agent image
+              containers:
+              - name: python
+                image: ${DOCKER_REGISTRY}/apm-integration-testin:latest
+                command:
+                  - sleep
+                args:
+                  - infinity
+                env:
+                  - name: APM_SERVER_URL
+                  - value: http://apm-server:8200
+                  - name: ES_URL
+                  - value: http://elasticsearch:9200
+                  - name: KIBANA_URL
+                  - value: http://kibana:5601
+                  - name: GO_NETHTTP_URL
+                  - value: http://gonethttpapp:8080
+                  - name: PYTHONDONTWRITEBYTECODE
+                  - value: 1
+                  - name: PYTHONHTTPSVERIFY
+                  - value: 1
+                  - name: ES_USER
+                  - value: elastic
+                  - name: ES_PASS
+                  - value: changeme
+                  - name: ELASTIC_APM_SECRET_TOKEN
+                  - value: SuPeRsEcReT
+                  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                  - value: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+                  - name: OTEL_EXPORTER_OTLP_HEADERS
+                  - value: ${OTEL_EXPORTER_OTLP_HEADERS}
+                  - name: OTEL_SERVICE_NAME
+                  - value: apm-integration-testing
+                  - name: TRACEPARENT
+                  - value: ${TRACEPARENT}
+                  - name: OTEL_EXPORTER_OTLP_INSECURE
+                  - value: ${OTEL_EXPORTER_OTLP_INSECURE}
+              - image: ${DOCKER_REGISTRY}/apm-integration-testing_agent-go-net-http:latest
+                name: gonethttpapp
+                env:
+                  - name: ELASTIC_APM_API_REQUEST_TIME
+                    value: 3s
+                  - name: ELASTIC_APM_FLUSH_INTERVAL
+                    value: 500ms
+                  - name: ELASTIC_APM_LOG_LEVEL
+                    value: debug
+                  - name: ELASTIC_APM_SERVER_URL
+                    value: http://apm-server:8200
+                  - name: ELASTIC_APM_SERVICE_NAME
+                    value: gonethttpapp
+                  - name: ELASTIC_APM_TRANSACTION_IGNORE_NAMES
+                    value: healthcheck
+                  - name: ELASTIC_APM_VERIFY_SERVER_CERT
+                    value: "false"
+                ports:
+                  - containerPort: 8080
+                    hostIP: 127.0.0.1
+              - image: docker.elastic.co/apm/apm-server:7.16.2
+                name: localtesting-7-16-2-apm-server
+                args:
+                  - apm-server
+                  - -e
+                  - --httpprof
+                  - :6060
+                  - -E
+                  - apm-server.rum.enabled=true
+                  - -E
+                  - apm-server.rum.event_rate.limit=1000
+                  - -E
+                  - apm-server.host=0.0.0.0:8200
+                  - -E
+                  - apm-server.read_timeout=1m
+                  - -E
+                  - apm-server.shutdown_timeout=2m
+                  - -E
+                  - apm-server.write_timeout=1m
+                  - -E
+                  - logging.json=true
+                  - -E
+                  - logging.metrics.enabled=false
+                  - -E
+                  - monitoring.elasticsearch=true
+                  - -E
+                  - monitoring.enabled=true
+                  - -E
+                  - apm-server.rum.allow_headers=["x-custom-header"]
+                  - -E
+                  - apm-server.kibana.enabled=true
+                  - -E
+                  - apm-server.kibana.host=kibana:5601
+                  - -E
+                  - apm-server.agent.config.cache.expiration=30s
+                  - -E
+                  - apm-server.kibana.username=apm_server_user
+                  - -E
+                  - apm-server.kibana.password=changeme
+                  - -E
+                  - output.elasticsearch.hosts=["http://elasticsearch:9200"]
+                  - -E
+                  - output.elasticsearch.username=apm_server_user
+                  - -E
+                  - output.elasticsearch.password=changeme
+                  - -E
+                  - output.elasticsearch.enabled=true
+                env:
+                  - name: BEAT_STRICT_PERMS
+                    value: "false"
+                ports:
+                  - containerPort: 8200
+                    hostIP: 127.0.0.1
+                  - containerPort: 6060
+                    hostIP: 127.0.0.1
                 securityContext:
-                  runAsUser: 1000 # default UID of jenkins user in agent image
-                containers:
-                - name: python
-                  image: python:${PYTHON_VERSION}
-                  command:
-                    - sleep
-                  args:
-                    - infinity
-                - name: mysql
-                  image: mysql
-                  args:
-                    - --default-authentication-plugin=mysql_native_password
-                    - --log_error_verbosity=3
-                  env:
-                    - name: MYSQL_DATABASE
-                      value: eapm_tests
-                    - name: MYSQL_USER
-                      value: eapm
-                    - name: MYSQL_PASSWORD
-                      value: Very(!)Secure
-                    - name: MYSQL_RANDOM_ROOT_PASSWORD
-                      value: yes
-
-            """
-            }
-        }
-        axes {
-          axis {
-            name "PYTHON_VERSION"
-            values "3.7", "3.8", "3.9", "3.10"
+                  capabilities:
+                    add:
+                      - CHOWN
+                      - DAC_OVERRIDE
+                      - SETGID
+                      - SETUID
+                    drop:
+                      - ALL
+              - image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+                name: localtesting-7-16-2-elasticsearch
+                env:
+                  - name: ES_JAVA_OPTS
+                    value: -XX:UseAVX=2 -Xms1g -Xmx1g
+                  - name: bootstrap.memory_lock
+                    value: "true"
+                  - name: cluster.name
+                    value: docker-cluster
+                  - name: cluster.routing.allocation.disk.threshold_enabled
+                    value: "false"
+                  - name: discovery.type
+                    value: single-node
+                  - name: xpack.license.self_generated.type
+                    value: trial
+                  - name: xpack.security.authc.api_key.enabled
+                    value: "true"
+                  - name: xpack.security.authc.token.enabled
+                    value: "true"
+                  - name: xpack.security.enabled
+                    value: "true"
+                ports:
+                  - containerPort: 9200
+                    hostIP: 127.0.0.1
+              - image: docker.elastic.co/kibana/kibana:7.16.2
+                name: localtesting-7-16-2-kibana
+                env:
+                  - name: ELASTICSEARCH_HOSTS
+                    value: http://elasticsearch:9200
+                  - name: ELASTICSEARCH_PASSWORD
+                    value: changeme
+                  - name: ELASTICSEARCH_USERNAME
+                    value: kibana_system_user
+                  - name: SERVER_HOST
+                    value: 0.0.0.0
+                  - name: SERVER_NAME
+                    value: kibana.example.org
+                  - name: STATUS_ALLOWANONYMOUS
+                    value: "true"
+                  - name: TELEMETRY_ENABLED
+                    value: "false"
+                  - name: XPACK_APM_SERVICEMAPENABLED
+                    value: "true"
+                  - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+                    value: fhjskloppd678ehkdfdlliverpoolfcr
+                  - name: XPACK_FLEET_AGENTS_ELASTICSEARCH_HOST
+                    value: http://elasticsearch:9200
+                  - name: XPACK_FLEET_AGENTS_KIBANA_HOST
+                    value: http://kibana:5601
+                  - name: XPACK_MONITORING_ENABLED
+                    value: "true"
+                  - name: XPACK_SECURITY_ENCRYPTIONKEY
+                    value: fhjskloppd678ehkdfdlliverpoolfcr
+                  - name: XPACK_SECURITY_LOGINASSISTANCEMESSAGE
+                    value: Login&#32;details:&#32;`admin/changeme`.&#32;Further&#32;details&#32;[here](https://github.com/elastic/apm-integration-testing#logging-in).
+                  - name: XPACK_XPACK_MAIN_TELEMETRY_ENABLED
+                    value: "false"
+                ports:
+                  - containerPort: 5601
+                    hostIP: 127.0.0.1
+          """
           }
-          axis {
-            name "FRAMEWORK"
-            values "mysql_connector-newest", "pymysql-newest", "mysqlclient-newest"
-          }
-        }
-        stages {
-          stage('tests'){
-            steps {
-              withGithubNotify(context: 'test') {
-                deleteDir()
-                gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
-                  repo: "git@github.com:elastic/${REPO}.git",
-                  credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
-                dir("${BASE_DIR}"){
-                  withEnv([
-                    "PYTHONDONTWRITEBYTECODE=1",
-                    "WEBFRAMEWORK=${FRAMEWORK}",
-                    "PIP_CACHE=/tmp/cache/pip",
-                    "WITH_COVERAGE=true"
-                    ]
-                    ){
-                      sh(script: "mkdir -p ${env.PIP_CACHE}")
-                      sh(script:'''
-                        # workaround to ignore netcat commands
-                        sed -i -E -e "s#WAIT_FOR_#IGNORE_ME_#g" ./tests/scripts/envs/*
-                        timeout 5m /bin/bash ./tests/scripts/run_tests.sh
-                      ''')
-                  }
-                }
-              }
-            }
+       }
+      steps {
+        withGithubNotify(context: 'APM Go ITs') {
+          deleteDir()
+          gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+          dir("${BASE_DIR}"){
+            sh(script: """
+              make test-agent-go
+            """)
           }
         }
       }
