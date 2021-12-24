@@ -53,6 +53,7 @@ pipeline {
     REPO_BRANCH = "main"
     DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
     DOCKER_REGISTRY = 'docker.elastic.co'
+    VENV="./venv"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -85,6 +86,11 @@ pipeline {
             credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
           dir("${BASE_DIR}"){
             preCommit(commit: "${GIT_BASE_COMMIT}", junit: true, registry: '')
+            sh(script: '''
+              python -m venv ${VENV}
+              . ${VENV}/bin/activate
+              pip install -q -r requirements.txt
+            ''')
             sh(script: 'make test-compose')
           }
         }
