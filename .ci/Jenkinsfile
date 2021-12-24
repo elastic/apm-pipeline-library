@@ -99,7 +99,7 @@ pipeline {
     stage('Build Containers') {
       agent {
         kubernetes {
-          defaultContainer 'docker-client'
+          defaultContainer 'python'
           yaml '''
           apiVersion: v1
           kind: Pod
@@ -112,9 +112,19 @@ pipeline {
                 env:
                   - name: DOCKER_TLS_CERTDIR
                     value: ""
+                  - name: DOCKER_HOST
+                    value: tcp://localhost:2375
+                command:
+                  - dockerd
+                args:
+                  - -H tcp://localhost:2375
+                  - -H unix:///usr/share/shared-data/docker.sock
                 ports:
                   - containerPort: 2375
                     hostIP: 127.0.0.1
+                volumeMounts:
+                  - name: shared-data
+                    mountPath: /usr/share/shared-data
               - name: python
                 image: python:3.9
                 securityContext:
@@ -123,19 +133,6 @@ pipeline {
                   - sleep
                 args:
                   - infinity
-                env:
-                  - name: DOCKER_HOST
-                    value: tcp://localhost:2375
-                volumeMounts:
-                  - name: shared-data
-                    mountPath: /usr/share/shared-data
-              - name: docker-client
-                image: docker:20.10.12
-                securityContext:
-                  runAsUser: 1000 # default UID of jenkins user in agent image
-                command:
-                  - cat
-                tty: true
                 env:
                   - name: DOCKER_HOST
                     value: tcp://localhost:2375
@@ -156,17 +153,17 @@ pipeline {
       steps {
         withGithubNotify(context: 'Build Containers') {
           deleteDir()
-          sh 'docker version'
-          sh(script: 'cp $(command -v docker) /usr/share/shared-data')
-          container('python') {
-            sh '/usr/share/shared-data/docker version'
-            sh 'git --version'
-            gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
-              repo: "git@github.com:elastic/${REPO}.git",
-              credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
-            sh 'echo checkout completed'
-            sh 'pwd;ls -la;id'
+          container('dind') {
+            sh 'docker version'
+            sh(script: 'cp $(command -v docker) /usr/share/shared-data')
           }
+          sh '/usr/share/shared-data/docker version'
+          sh 'git --version'
+          gitCheckout(basedir: "${BASE_DIR}", branch: "${REPO_BRANCH}",
+            repo: "git@github.com:elastic/${REPO}.git",
+            credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+          sh 'echo checkout completed'
+          sh 'pwd;ls -la;id'
 
           dir("${BASE_DIR}"){
             sh 'echo before docker login'
