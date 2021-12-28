@@ -58,7 +58,7 @@ def dev(Map args = [:]){
 def release(Map args = [:]){
   // IMPORTANT: this variable is needed to automate the elastic stack bump
   // TODO: this should not use a hardcoded string but bmptUtils.getCurrentMinorReleaseFor7()
-  def releaseVersion = "7.16.1"
+  def releaseVersion = "7.16.2"
   return version(releaseVersion, args)
 }
 
