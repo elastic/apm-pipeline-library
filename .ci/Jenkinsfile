@@ -385,9 +385,10 @@ pipeline {
           }
         }
       }
-    } post {
-      cleanup {
-        junit(testResults: "${BASE_DIR}/tests/results/*-junit*.xml", allowEmptyResults: true, keepLongStdio: true)
+      post {
+        cleanup {
+          junit(testResults: "${BASE_DIR}/tests/results/*-junit*.xml", allowEmptyResults: true, keepLongStdio: true)
+        }
       }
     }
   }
