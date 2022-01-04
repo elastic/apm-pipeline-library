@@ -184,6 +184,8 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
+              imagePullSecrets:
+                - name: 'elastic-prod-registry'
               hostAliases:
                 - ip: "127.0.0.1"
                   hostnames:
