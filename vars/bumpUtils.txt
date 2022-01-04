@@ -9,3 +9,5 @@ Utils class for the bump automation pipelines
 * `getCurrentMinorReleaseFor6` -> retrieve the LATEST known minor release for the 6 major version of the Elastic Stack.
 * `getNextMinorReleaseFor7` -> retrieve the NEXT minor release for the 7 major version of the Elastic Stack. It might not be public available yet.
 * `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
+* `getMajorMinor` -> retrieve the given version in Major.Minor format, f.e: given `7.16.2` it returns `7.16.
+* `getMajor` -> retrieve the given version in Major format, f.e: given `7.16.2` it returns `7`.

@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertEquals
 
 class BumpUtilsStepTests extends ApmBasePipelineTest {
 
@@ -140,4 +141,35 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(result.containsKey('assign'))
   }
+
+  @Test
+  void test_getMajorMinorFor7() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15.0' ] })
+    def result = script.getMajorMinor('current_7')
+    printCallStack()
+    println result
+    assertEquals(result, "7.15")
+  }
+
+  @Test
+  void test_getMajorFor7() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15.0' ] })
+    def result = script.getMajor('current_7')
+    printCallStack()
+    assertEquals(result, "7")
+  }
+
+  @Test
+  void test_getMajorMinorFor7_with_wrong_format() throws Exception {
+    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15' ] })
+    try {
+      result = script.getMajorMinor('current_7')
+    } catch(e) {
+      // NOOP
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
 }
