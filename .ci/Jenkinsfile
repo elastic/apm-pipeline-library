@@ -197,7 +197,7 @@ pipeline {
                 runAsUser: 1000 # default UID of jenkins user in agent image
               containers:
               - name: python
-                image: ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testin:latest
+                image: ${DOCKER_REGISTRY}/${DOCKER_PREFIX}/apm-integration-testing:latest
                 command:
                   - sleep
                 args:
