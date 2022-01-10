@@ -54,6 +54,24 @@ def parseArguments(Map args = [:]) {
   return arguments
 }
 
+def getMajor(String key) {
+  def value = getValueForPropertyKey(key)
+  def parts = value.split('\\.')
+  if (parts.size() == 3) {
+    return parts[0]
+  }
+  error('getMajor: version is not major.minor.patch formatted')
+}
+
+def getMajorMinor(String key) {
+  def value = getValueForPropertyKey(key)
+  def parts = value.split('\\.')
+  if (parts.size() == 3) {
+    return parts[0] + "." + parts[1]
+  }
+  error('getMajorMinor: version is not major.minor.patch formatted')
+}
+
 def getCurrentMinorReleaseFor8() {
   return getValueForPropertyKey(current8Key())
 }
