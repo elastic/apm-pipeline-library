@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.279 (10/01/2022)
+*No changelog for this release.*
+
 ## v1.1.277 (20/12/2021)
 *No changelog for this release.*
 
