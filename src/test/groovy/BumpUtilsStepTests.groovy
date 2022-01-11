@@ -144,8 +144,7 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getMajorMinorFor7() throws Exception {
-    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15.0' ] })
-    def result = script.getMajorMinor('current_7')
+    def result = script.getMajorMinor('7.15.0')
     printCallStack()
     println result
     assertEquals(result, "7.15")
@@ -153,17 +152,27 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_getMajorFor7() throws Exception {
-    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15.0' ] })
-    def result = script.getMajor('current_7')
+    def result = script.getMajor('7.15.0')
     printCallStack()
     assertEquals(result, "7")
   }
 
   @Test
   void test_getMajorMinorFor7_with_wrong_format() throws Exception {
-    helper.registerAllowedMethod('readProperties', [Map.class], { [ current_7 : '7.15' ] })
     try {
-      result = script.getMajorMinor('current_7')
+      result = script.getMajorMinor('7.15')
+    } catch(e) {
+      // NOOP
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
+  @Test
+  void test_getMajorMinor_with_empty_value() throws Exception {
+    try {
+      result = script.getMajorMinor('')
     } catch(e) {
       // NOOP
       println e
