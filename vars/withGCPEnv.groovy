@@ -41,7 +41,7 @@ def call(Map args = [:], Closure body) {
     }
 
     if (secret) {
-      def props = getVaultSecret(secret: secret)
+      def props = getVaultSecret(args)
       if (props?.errors) {
         error "withGCPEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
       }

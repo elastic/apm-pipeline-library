@@ -76,6 +76,22 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_vault_arguments() throws Exception {
+    def ret = false
+    try {
+    script.call(secret: VaultSecret.SECRET_GCP_PROVISIONER.toString(), role_id: 'my-role', secret_id: 'my-secret') {
+      ret = true
+    }
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('getVaultSecret', "secret=${VaultSecret.SECRET_GCP_PROVISIONER.toString()}, role_id=my-role, secret_id=my-secret"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_failed() throws Exception {
     helper.registerAllowedMethod('cmd', [Map.class], { m -> throw new Exception('force a failure') })
     def result = false
