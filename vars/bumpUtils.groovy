@@ -54,18 +54,22 @@ def parseArguments(Map args = [:]) {
   return arguments
 }
 
-def getMajor(String key) {
-  def value = getValueForPropertyKey(key)
-  def parts = value.split('\\.')
+def getMajor(String version) {
+  if (!version?.trim()) {
+    error('getMajor: version cannot be empty, please use the format major.minor.patch')
+  }
+  def parts = version?.split('\\.')
   if (parts.size() == 3) {
     return parts[0]
   }
   error('getMajor: version is not major.minor.patch formatted')
 }
 
-def getMajorMinor(String key) {
-  def value = getValueForPropertyKey(key)
-  def parts = value.split('\\.')
+def getMajorMinor(String version) {
+  if (!version?.trim()) {
+    error('getMajorMinor: version cannot be empty, please use the format major.minor.patch')
+  }
+  def parts = version?.split('\\.')
   if (parts.size() == 3) {
     return parts[0] + "." + parts[1]
   }
