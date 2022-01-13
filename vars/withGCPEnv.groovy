@@ -86,10 +86,12 @@ def call(Map args = [:], Closure body) {
 def readCredentialsContent(Map vaultSecretContent) {
   def credentialsContent = vaultSecretContent?.credentials
   if (credentialsContent?.trim()) {
+    log(level: 'INFO', text: "readCredentialsContent: reading the 'credentials' field.")
     return credentialsContent
   }
   credentialsContent = vaultSecretContent?.value
   if (credentialsContent?.trim()) {
+    log(level: 'INFO', text: "readCredentialsContent: reading the 'value' field.")
     return credentialsContent
   }
   error "withGCPEnv: Unable to read the credentials and value fields"
