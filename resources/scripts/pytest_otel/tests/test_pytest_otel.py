@@ -18,7 +18,7 @@ def assertTestSuit(span, outcome, status):
     assert span["kind"] == "SpanKind.SERVER"
     assert span["status"]["status_code"] == status
     if outcome is not None:
-        assert span["attributes"]["test.outcome"] == outcome
+        assert span["attributes"]["tests.status"] == outcome
     assert span["parent_id"] is None
     return True
 
@@ -26,15 +26,15 @@ def assertTestSuit(span, outcome, status):
 def assertSpan(span, name, outcome, status):
     assert span["kind"] == "SpanKind.INTERNAL"
     assert span["status"]["status_code"] == status
-    assert span["attributes"]["test.name"] == name
+    assert span["attributes"]["tests.name"] == name
     if outcome is not None:
-        assert span["attributes"]["test.outcome"] == outcome
+        assert span["attributes"]["tests.status"] == outcome
     assert len(span["parent_id"]) > 0
     return True
 
 
 def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
-    pytester.runpytest("--otel-span-file-output=./test_spans.json")
+    pytester.runpytest("--otel-span-file-output=./test_spans.json", "--otel-debug=True", "-rsx")
     span_list = None
     with open("test_spans.json", encoding='utf-8') as input:
         span_list = json.loads(input.read())
@@ -112,7 +112,7 @@ def test_xfail_plugin(pytester):
     pytester.makepyfile(
         common_code
         + """
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="foo bug")
 def test_xfail():
     assert False
 """)
