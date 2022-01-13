@@ -134,7 +134,7 @@ class WithAWSEnvStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_awsURL_in_arm() throws Exception {
-    helper.registerAllowedMethod('isArm', [], { false })
+    helper.registerAllowedMethod('isArm', [], { true })
     def ret = script.awsURL('2.2.2')
     printCallStack()
     assertTrue(ret.contains("linux-aarch64-2.2.2.zip"))
