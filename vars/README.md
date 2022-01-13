@@ -3183,7 +3183,7 @@ withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
 ```
 
 * credentialsId: The credentials to login to GCP. (Optional).
-* secret: Name of the secret on the the vault root path. (Optional).
+* secret: Name of the secret on the the vault root path (supported fields: credentials and value). (Optional).
 * role_id: vault role ID if using the secret argument (Optional). Default 'vault-role-id'
 * secret_id: vault secret ID if using the secret argument (Optional). Default 'vault-secret-id'
 

@@ -156,4 +156,49 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     assertTrue(ret.contains("linux-x86.tar.gz"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_readCredentialsContent_with_empty_values() throws Exception {
+    def ret
+    try {
+      ret = script.readCredentialsContent([credentials: '', value: ''])
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Unable to read the credentials'))
+  }
+
+  @Test
+  void test_readCredentialsContent_without_values() throws Exception {
+    def ret
+    try {
+      ret = script.readCredentialsContent([:])
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Unable to read the credentials'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_credentials() throws Exception {
+    def ret = script.readCredentialsContent([credentials: 'foo'])
+    printCallStack()
+    assertTrue(ret.contains('foo'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_fallback() throws Exception {
+    def ret = script.readCredentialsContent([credentials: '', value: 'bar1'])
+    printCallStack()
+    assertTrue(ret.contains('bar1'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_fallback_while_missing_credentials() throws Exception {
+    def ret = script.readCredentialsContent([value: 'bar'])
+    printCallStack()
+    assertTrue(ret.contains('bar'))
+  }
 }
