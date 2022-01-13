@@ -10,6 +10,16 @@
 
 -  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
 
+## v1.1.282 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support for value default field in the vault secret [#1497](https://github.com/elastic/apm-pipeline-library/pull/1497)
+
+#### ⚙️ CI
+
+-  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
+
 ## v1.1.279 (10/01/2022)
 *No changelog for this release.*
 
