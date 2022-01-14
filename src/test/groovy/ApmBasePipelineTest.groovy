@@ -357,6 +357,18 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
         binding.setVariable("${v}", 'defined')
       }
     })
+    helper.registerAllowedMethod('waitUntil', [Closure.class], { c ->
+      // try at least twice to help with
+      if (!c.call()) {
+        c.call()
+      }
+    })
+    helper.registerAllowedMethod('waitUntil', [Map.class, Closure.class], { m, c ->
+      // try at least twice to help with
+      if (!c.call()) {
+        c.call()
+      }
+    })
     helper.registerAllowedMethod('withEnv', [List.class, Closure.class], TestUtils.withEnvInterceptor)
     helper.registerAllowedMethod('wrap', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('writeFile', [Map.class], { m ->

@@ -45,6 +45,7 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
   void test_with_wait() throws Exception {
     script.call(wait: true)
     printCallStack()
+    assertTrue(assertMethodCallOccurrences('waitUntil', 1))
     assertTrue(assertMethodCallContainsPattern('echo', "TBD"))
     assertJobStatusSuccess()
   }
@@ -53,6 +54,7 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
   void test_with_propagate() throws Exception {
     script.call(propagate: true)
     printCallStack()
+    assertTrue(assertMethodCallOccurrences('waitUntil', 1))
     assertTrue(assertMethodCallContainsPattern('echo', "TBD"))
     assertJobStatusSuccess()
   }

@@ -29,14 +29,32 @@ buildTokenTriggerExt(credentialsId: 'sign-artifacts-job',
 def call(Map args = [:]){
   def wait = args.get('wait', false)
   def propagate = args.get('propagate', false)
-  String credentialsId = args.get('credentialsId', '')
   if (!isPluginInstalled(pluginName: 'build-token-trigger')) {
     error('buildTokenTriggerExt: build-token-trigger plugin is not available')
   }
 
   if (wait || propagate) {
-    echo 'TBD'
+    waitUntil(initialRecurrencePeriod: 15000) {
+      propagateError(args) {
+        waitFor(args)
+      }
+    }
   } else {
     buildTokenTrigger(args)
   }
+}
+
+def propagateError(Map args = [:], Closure body) {
+  try {
+    body()
+  } catch(err) {
+    if (args.get('propagate', false)) {
+      error("buildTokenTriggerExt: ${err.toString()}")
+    }
+  }
+}
+
+def waitFor(Map args = [:]) {
+  echo 'TBD'
+  return false
 }
