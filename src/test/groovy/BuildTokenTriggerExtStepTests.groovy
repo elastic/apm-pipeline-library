@@ -72,4 +72,30 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
     assertJobStatusFailure()
   }
 
+  @Test
+  void test_with_propagate_error() throws Exception {
+    try {
+      script.call(propagate: true, job: 'mock-test-error-for-unit-testing')
+    } catch(e){
+      //NOOP
+      println e
+    }
+    printCallStack()
+    // then the propagate will report an error
+    assertTrue(assertMethodCallContainsPattern('error', 'buildTokenTriggerExt'))
+  }
+
+  @Test
+  void test_with_wait_error() throws Exception {
+    try {
+      script.call(wait: true, job: 'mock-test-error-for-unit-testing')
+    } catch(e){
+      //NOOP
+      println e
+    }
+    printCallStack()
+    // then the propagate won't report an error
+    assertFalse(assertMethodCallContainsPattern('error', 'buildTokenTriggerExt'))
+  }
+
 }
