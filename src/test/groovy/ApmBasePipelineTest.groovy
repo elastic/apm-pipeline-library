@@ -244,6 +244,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('brokenTestsSuspects', { "OK (mocked)" })
     helper.registerAllowedMethod('brokenBuildSuspects', { "OK (mocked)" })
     helper.registerAllowedMethod('build', [Map.class], null)
+    helper.registerAllowedMethod('buildTokenTrigger', [Map.class], null)
     helper.registerAllowedMethod('catchError', [Closure.class], { body ->
       try{
         body()

@@ -1,9 +1,0 @@
-Build in the given CI controller the given Job with some parameters.
-
-Interface similar to the `build`
-
-```
-buildInController(job: 'foo',
-                  parameters: [string(name: "my param", value: some_value)]
-                  controller: 'my-new-controller')
-```

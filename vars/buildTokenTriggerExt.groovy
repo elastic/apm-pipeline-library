@@ -17,22 +17,26 @@
 
 /**
 
-Helper function that implements https://wiki.jenkins-ci.org/display/JENKINS/Remote+access+API
+Extends the step buildTokenTrigger to wait for and report the status
+when running a job in a remote CI controller
 
-  buildInController(job: 'foo',
-                    parameters: [string(name: "my param", value: some_value)]
-                    controller: 'my-new-controller')
+buildTokenTriggerExt(credentialsId: 'sign-artifacts-job',
+                     jenkinsUrl: 'https://foo-ci.acme.co',
+                     job: 'sign-artifacts',
+                     propagate: true,
+                     wait: true)
 */
 def call(Map args = [:]){
-  def job = args.job
-  def parameters = args.parameters
-  def wait = args.get('wait', true)
-  def propagate = args.get('propagate', true)
-  def quietPeriod = args.get('quietPeriod', 1)
-  def controller = args.containsKey('controller') ? args.controller : error('')
+  def wait = args.get('wait', false)
+  def propagate = args.get('propagate', false)
+  String credentialsId = args.get('credentialsId', '')
+  if (!isPluginInstalled(pluginName: 'build-token-trigger')) {
+    error('buildTokenTriggerExt: build-token-trigger plugin is not available')
+  }
 
-  // Do we want to validate the Job is in the approval list of jobs?
-  // Do we want to validate the controller is in the approval list of controllers?
-
-  // Given the controller then the credentials in Vault can match the secret name
+  if (wait || propagate) {
+    echo 'TBD'
+  } else {
+    buildTokenTrigger(args)
+  }
 }
