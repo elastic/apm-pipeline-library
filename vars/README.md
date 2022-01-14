@@ -225,6 +225,31 @@ def status = buildStatus(host: 'localhost', job: ['apm-agent-java', 'apm-agent-j
 * as_bool: Returns `true` if the job status is `Success`. Any other job status returns `false`.
 * ssl: Set to `false` to disable SSL. Default is `true`.
 
+## buildTokenTriggerExt
+Extends the step buildTokenTrigger to wait for and report the status
+when running a job in a remote CI controller.
+
+```
+buildTokenTriggerExt(credentialsId: 'sign-artifacts-job',
+                     delay: 30,
+                     jenkinsUrl: 'https://foo-ci.acme.co',
+                     job: 'sign-artifacts',
+                     parameters: [key: 'value'],
+                     propagate: true,
+                     wait: true)
+```
+
+`buildTokenTrigger` provides some parameters, see [this docs](
+https://github.com/jenkinsci/build-token-trigger-plugin/blob/master/docs/README.md)
+
+
+`buildTokenTriggerExt` provides a couple of new arguments:
+
+* `wait`: if enabled, then it waits for completion of the downstream build. Optional (default `false`)
+* `propagate`: if enabled, then the result of this step is that of the downstream build. Optional (default `false`)
+
+**NOTE**: It requires the [Build Token Trigger plugin](https://plugins.jenkins.io/build-token-trigger/)
+
 ## bumpUtils
 Utils class for the bump automation pipelines
 
