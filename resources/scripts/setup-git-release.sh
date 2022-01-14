@@ -46,6 +46,11 @@ if git show-ref --verify --quiet "refs/heads/master" ; then
     git checkout master
 fi
 
+# Ruby agent requires the main branch to rebase the *.x branch
+if git show-ref --verify --quiet "refs/heads/main" ; then
+    git checkout main
+fi
+
 # Enable upstream with git+https.
 git remote add upstream "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${ORG_NAME}/${REPO_NAME}.git"
 git fetch --all

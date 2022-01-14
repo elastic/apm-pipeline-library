@@ -1,7 +1,7 @@
 Get the flaky job name in a given multibranch pipeline.
 
 ```
-getFlakyJobName(withBranch: 'master')
+getFlakyJobName(withBranch: 'main')
 ```
 
 * withBranch: the job base name to compare with. Mandatory

@@ -15,7 +15,7 @@ DSL = '''pipeline {
         }
         sh(label: 'Env vars before', script: 'export|grep GIT_')
         gitCheckout(basedir: "${BASE_DIR}",
-          branch: "master",
+          branch: "main",
           repo: "git@github.com:elastic/${REPO}.git",
           credentialsId: "${JOB_GIT_CREDENTIALS}"
         )

@@ -76,6 +76,22 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_vault_arguments() throws Exception {
+    def ret = false
+    try {
+    script.call(secret: VaultSecret.SECRET_GCP_PROVISIONER.toString(), role_id: 'my-role', secret_id: 'my-secret') {
+      ret = true
+    }
+    } catch (e) {
+      println e
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('getVaultSecret', "secret=${VaultSecret.SECRET_GCP_PROVISIONER.toString()}, role_id=my-role, secret_id=my-secret"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_failed() throws Exception {
     helper.registerAllowedMethod('cmd', [Map.class], { m -> throw new Exception('force a failure') })
     def result = false
@@ -139,5 +155,50 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret.contains("linux-x86.tar.gz"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_readCredentialsContent_with_empty_values() throws Exception {
+    def ret
+    try {
+      ret = script.readCredentialsContent([credentials: '', value: ''])
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Unable to read the credentials'))
+  }
+
+  @Test
+  void test_readCredentialsContent_without_values() throws Exception {
+    def ret
+    try {
+      ret = script.readCredentialsContent([:])
+    } catch(err) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'Unable to read the credentials'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_credentials() throws Exception {
+    def ret = script.readCredentialsContent([credentials: 'foo'])
+    printCallStack()
+    assertTrue(ret.contains('foo'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_fallback() throws Exception {
+    def ret = script.readCredentialsContent([credentials: '', value: 'bar1'])
+    printCallStack()
+    assertTrue(ret.contains('bar1'))
+  }
+
+  @Test
+  void test_readCredentialsContent_with_fallback_while_missing_credentials() throws Exception {
+    def ret = script.readCredentialsContent([value: 'bar'])
+    printCallStack()
+    assertTrue(ret.contains('bar'))
   }
 }

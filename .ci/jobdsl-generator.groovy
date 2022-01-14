@@ -37,7 +37,7 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
   parameters {
-    string(name: 'branch_specifier', defaultValue: 'master', description: 'the Git branch specifier to scan.')
+    string(name: 'branch_specifier', defaultValue: 'main', description: 'the Git branch specifier to scan.')
   }
   stages {
     stage('Checkout jobs'){

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 pipeline {
   agent { label 'linux && immutable' }
@@ -42,7 +42,9 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/${ORG_NAME}/${REPO}.git")
+        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+            url: "https://github.com/${ORG_NAME}/${REPO}.git",
+            branch: 'main')
       }
     }
     stage('Send Pull Request'){

@@ -11,7 +11,7 @@
     script-path: resources/JenkinsfileTemplate.groovy
     scm:
       ## https://docs.openstack.org/infra/jenkins-job-builder/project_workflow_multibranch.html
-      ## NOTE: the above docs might refere to the latest version of the JJB, but it doesn't
+      ## NOTE: the above docs might refer to the latest version of the JJB, but it doesn't
       ##       mean the one used in the infra side matches with that particular version
       - github:
           ## no-pr skips all the branches in the origin that match with a PR.
@@ -21,7 +21,7 @@
           discover-pr-origin: merge-current
           discover-tags: true
           ## Look for specific branches, tags and PRs that match the given regex.
-          head-filter-regex: '(master|current|PR-.*)'
+          head-filter-regex: '(main|current|PR-.*)'
           ## Disable default github status notifications on pull requests
           disable-pr-notifications: true
           ## Change the default GitHub check notification context from

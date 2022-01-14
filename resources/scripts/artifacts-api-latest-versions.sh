@@ -54,4 +54,8 @@ for version in ${QUERY_OUTPUT}; do
 done
 echo "}" >> "${TEMP_FILE}"
 
-jq . "${TEMP_FILE}" | tee ${OUTPUT}
+## As long as we need to support main, then let's
+## artificially duplicate the master document
+jq 'with_entries(select(.value.branch=="master")) | with_entries(.key = "main")' "${TEMP_FILE}" > "${TEMP_FILE}.main"
+
+jq -s '.[0] * .[1]' "${TEMP_FILE}" "${TEMP_FILE}.main"| tee ${OUTPUT}
