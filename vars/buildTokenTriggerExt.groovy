@@ -33,28 +33,52 @@ def call(Map args = [:]){
     error('buildTokenTriggerExt: build-token-trigger plugin is not available')
   }
 
+  buildTokenTrigger(args)
+
   if (wait || propagate) {
+    def ret = [ finished: false ]
     waitUntil(initialRecurrencePeriod: 15000) {
       propagateError(args) {
-        waitFor(args)
+        ret = waitFor(args)
       }
     }
-  } else {
-    buildTokenTrigger(args)
+    return ret
   }
 }
 
 def propagateError(Map args = [:], Closure body) {
+  def ret = [ finished: false ]
   try {
-    body()
+    ret = body()
   } catch(err) {
     if (args.get('propagate', false)) {
       error("buildTokenTriggerExt: ${err.toString()}")
     }
+  } finally {
+    if (ret.finished) {
+      if (args.get('propagate', false) && ret.failed) {
+        error("buildTokenTriggerExt: ${err.toString()}")
+      }
+      return true
+    }
+    return ret
   }
 }
 
 def waitFor(Map args = [:]) {
-  echo 'TBD'
-  return false
+  // for testing purposes, let's mock an error
+  if (args.get('job', '').equals('mock-test-error-for-unit-testing')) {
+    error("waitFor: mock an error for the UTs.")
+  }
+  def to_url = args.jenkinsUrl + "/job/" + args.job
+  return processedJob(httpRequest(url: to_url))
+}
+
+// TODO: to be implemented
+def processedJob(request) {
+  // Data structure:
+  //  - finished if the job is still running
+  //  - failed if the job finished and failed
+  //  - status, SUCCESS, FAILURE, UNSTABLE, ABORTED, NOT_BUILT
+  return [ finished: false, failed: false, status: 'NOT_BUILT' ]
 }

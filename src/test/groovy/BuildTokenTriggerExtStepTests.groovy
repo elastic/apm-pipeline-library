@@ -43,19 +43,19 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_with_wait() throws Exception {
-    script.call(wait: true)
+    script.call(job: 'foo', wait: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('buildTokenTrigger', "job"))
     assertTrue(assertMethodCallOccurrences('waitUntil', 1))
-    assertTrue(assertMethodCallContainsPattern('echo', "TBD"))
     assertJobStatusSuccess()
   }
 
   @Test
   void test_with_propagate() throws Exception {
-    script.call(propagate: true)
+    script.call(job: 'foo', propagate: true)
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('buildTokenTrigger', "job"))
     assertTrue(assertMethodCallOccurrences('waitUntil', 1))
-    assertTrue(assertMethodCallContainsPattern('echo', "TBD"))
     assertJobStatusSuccess()
   }
 
@@ -81,6 +81,7 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
       println e
     }
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('buildTokenTrigger', "job"))
     // then the propagate will report an error
     assertTrue(assertMethodCallContainsPattern('error', 'buildTokenTriggerExt'))
   }
@@ -94,6 +95,7 @@ public class BuildTokenTriggerExtStepTests extends ApmBasePipelineTest {
       println e
     }
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('buildTokenTrigger', "job"))
     // then the propagate won't report an error
     assertFalse(assertMethodCallContainsPattern('error', 'buildTokenTriggerExt'))
   }
