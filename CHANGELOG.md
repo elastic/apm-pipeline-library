@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.283 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withAWSEnv: add support for ARM [#1499](https://github.com/elastic/apm-pipeline-library/pull/1499)
+
 ## v1.1.282 (13/01/2022)
 
 #### 🚀 Enhancements
