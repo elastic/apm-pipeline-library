@@ -7,7 +7,6 @@ monitoring
 opentelemetry
 plot
 ssh-agent
-
 blueocean
 blueocean-jira
 configuration-as-code
@@ -16,3 +15,5 @@ git-client
 github-branch-source
 pipeline-model-definition
 workflow-cps-global-lib
+build-token-root
+Parameterized-Remote-Trigger

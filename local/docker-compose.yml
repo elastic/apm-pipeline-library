@@ -32,6 +32,10 @@ services:
         target: /var/jenkins_home/casc_configs/google.yaml
         read_only: true
       - type: bind
+        source: ./configs/remote.yaml
+        target: /var/jenkins_home/casc_configs/remote.yaml
+        read_only: true
+      - type: bind
         source: ../.
         target: /var/pipeline-library
         read_only: true

@@ -1,0 +1,17 @@
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+
+unclassified:
+  remoteBuildConfiguration:
+    remoteSites:
+    - address: "http://localhost:8080/"
+      displayName: "localhost"
+      hasBuildTokenRootSupport: true
+      trustAllCertificates: true
+
+jobs:
+  - file: "/var/pipeline-library/src/test/resources/jobs/origin.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/target.dsl"
