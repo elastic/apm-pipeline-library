@@ -25,7 +25,7 @@ import groovy.transform.Field
 pipeline {
   agent { label 'linux && immutable' }
   environment {
-    REPO = 'observability-dev'
+    REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
     HOME = "${env.WORKSPACE}"
     NOTIFY_TO = credentials('notify-to')
