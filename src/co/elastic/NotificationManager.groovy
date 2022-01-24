@@ -485,7 +485,7 @@ def getSupportedGithubCommands() {
   }
 
   // Support for the java APM agent
-  if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration|end-to-end) tests)')) {
+  if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration|end-to-end)')) {
     comments['run benchmark tests'] = 'Run the benchmark tests.'
     comments['run jdk compatibility tests'] = 'Run the JDK Compatibility tests.'
     comments['run integration tests'] = 'Run the Agent Integration tests.'
