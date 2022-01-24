@@ -21,6 +21,7 @@ projects:
       - master
       - 8.<minor>
       - 7.<minor>
+      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
@@ -30,6 +31,7 @@ projects:
       - master
       - 8.<minor>
       - 7.<minor>
+      - 7.<minor-1>
       - "6.8"
     enabled: true
     reusePullRequest: false
@@ -51,6 +53,7 @@ projects:
       - master
       - 8.<minor>
       - 7.<minor>
+      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
