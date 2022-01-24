@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>1145.v7f2433caa07f</version>
+      <version>1156.v7539182e7b_d5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
