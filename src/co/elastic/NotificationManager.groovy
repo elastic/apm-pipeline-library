@@ -486,9 +486,10 @@ def getSupportedGithubCommands() {
 
   // Support for the java APM agent
   if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration)')) {
-    comments['run benchmark tests'] = 'Run the benchmark test.'
-    comments['run compatibility tests'] = 'Run the JDK Compatibility test.'
-    comments['run integration tests'] = 'Run the APM-ITs.'
+    comments['run benchmark tests'] = 'Run the benchmark tests.'
+    comments['run jdk compatibility tests'] = 'Run the JDK Compatibility tests.'
+    comments['run integration tests'] = 'Run the Agent Integration tests.'
+    comments['run end-to-end tests'] = 'Run the APM-ITs.'
   }
 
   // Support for the APM pipeline library
