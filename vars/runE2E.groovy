@@ -26,8 +26,12 @@ def call(Map args = [:]) {
     error('runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/')
   }
 
+  // As long as elastic/beats and elastic/e2e-testing don't match each other with
+  // main then it's required to do this trick
+  def targetBranch = env.CHANGE_TARGET.equals('master') ? 'main' : env.CHANGE_TARGET
+
   def jobFolderPath = 'e2e-tests/e2e-testing-mbp'
-  def jobName = args.get('jobName', isPR() ? "${env.CHANGE_TARGET}" : "${env.JOB_BASE_NAME}")
+  def jobName = args.get('jobName', isPR() ? "${targetBranch}" : "${env.JOB_BASE_NAME}")
   def gitHubCheckName = args.get('gitHubCheckName', '')
   def disableGitHubCheck =  args.get('disableGitHubCheck', false)
   def propagate = args.get('propagate', false)

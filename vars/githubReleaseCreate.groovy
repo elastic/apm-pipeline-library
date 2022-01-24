@@ -52,14 +52,14 @@ def call(Map args = [:]){
   // Construct GitHub API URL
   def apiURL = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/releases"
 
-  /* Construct the paramaters for the GitHub API call
+  /* Construct the parameters for the GitHub API call
 
-  Examnple from documentation:
+  Example from documentation:
   https://developer.github.com/v3/repos/releases/#create-a-release
 
         {
         "tag_name": "v1.0.0",
-        "target_commitish": "master",
+        "target_commitish": "main",
         "name": "v1.0.0",
         "body": "Description of the release",
         "draft": false,

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 pipeline {
   agent { label 'ubuntu && immutable' }
@@ -45,8 +45,9 @@ pipeline {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
         runWatcherForBranch(branch: 'master')
-        runWatcherForBranch(branch: '7.<next>')
         runWatcherForBranch(branch: '8.<current>')
+        runWatcherForBranch(branch: '7.<next>')
+        runWatcherForBranch(branch: '7.<current>')
       }
     }
     stage('Sync GitHub labels') {
@@ -76,6 +77,7 @@ pipeline {
         runNotifyStalledBeatsBumps(branch: 'master')
         runNotifyStalledBeatsBumps(branch: '8.<current>')
         runNotifyStalledBeatsBumps(branch: '7.<next>')
+        runNotifyStalledBeatsBumps(branch: '7.<current>')
       }
     }
   }

@@ -1,0 +1,17 @@
+Find the branch name for a stack version in the Artifacts API given the conditions to compare with.
+
+The step supports passing a minor version, returning the branch name including that minor (i.e. 7.15), or passing a version token in the
+'<minor>' format. This format supports passing an index, separated by the minus operator: '<minor-1>', which will retrieve the previous
+version for the last minor. If the index overflows the number of the total existing minors, the first minor will be retrieved (i.e.
+'<minor-1999>').
+
+The more common use case is when there are two minor versions in development at the same time: 7.16 and 7.17
+
+```
+  getBranchNameFromArtifactsAPI(branch: '7.0')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor>')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor-1>')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor-2>')
+```
+
+* branch: the branch name or supported pattern. Mandatory

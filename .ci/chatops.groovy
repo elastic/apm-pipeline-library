@@ -39,7 +39,7 @@ pipeline {
     issueCommentTrigger('(?i)^\\/(run|test|lgtm|cc|assign|approve|meow|woof|bark|this-is-|lint|help|hold|label|close|reopen|skip|ok-to-test|package|build|deploy)(-\\w+)?(\\s+.*)?$')
   }
   parameters {
-    string(name: 'branch_specifier', defaultValue: "master", description: "the Git branch specifier to build")
+    string(name: 'branch_specifier', defaultValue: "main", description: "the Git branch specifier to build")
   }
   stages {
     /**
@@ -169,7 +169,7 @@ def assign(){
 
 def build(){
   echo "${env.GITHUB_COMMENT}"
-  build(job: 'apm-shared/apm-pipeline-library-mbp/master',
+  build(job: 'apm-shared/apm-pipeline-library-mbp/main',
     parameters: [
       string(name: 'MAVEN_CONFIG', value: ''),
       booleanParam(name: 'make_release', value: false)

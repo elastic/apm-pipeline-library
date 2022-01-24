@@ -15,7 +15,7 @@ gitCheckout(basedir: 'sub-folder')
 ```
 
 ```
-gitCheckout(basedir: 'sub-folder', branch: 'master',
+gitCheckout(basedir: 'sub-folder', branch: 'main',
   repo: 'git@github.com:elastic/apm-pipeline-library.git',
   credentialsId: 'credentials-id',
   reference: '/var/lib/jenkins/reference-repo.git')

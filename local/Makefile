@@ -31,9 +31,9 @@ logs:  ## Follow the log output for all Jenkins-related processes
 			--file docker-compose.yml \
 			logs --follow $${SERVICE}
 
-# Start the local Jenkins master (used as dependency target)
-.PHONY: master
-master:
+# Start the local Jenkins controller (used as dependency target)
+.PHONY: controller
+controller:
 	@env \
 		VAULT_TOKEN=${VAULT_TOKEN} \
 		docker-compose \
@@ -50,7 +50,7 @@ pull:  ## Pull required images for all Jenkins-related processes
 			pull $${SERVICE}
 
 .PHONY: restart
-restart:  ## Restart the local Jenkins master and related processes
+restart:  ## Restart the local Jenkins controller and related processes
 	@env \
 		VAULT_TOKEN=${VAULT_TOKEN} \
 		docker-compose \
@@ -59,7 +59,7 @@ restart:  ## Restart the local Jenkins master and related processes
 			restart $${SERVICE}
 
 .PHONY: shell
-shell:  ## Open a Bash shell on the local Jenkins master
+shell:  ## Open a Bash shell on the local Jenkins controller
 	@env \
 		docker-compose \
 			--log-level ${LOG_LEVEL} \
@@ -71,10 +71,10 @@ shell-worker:  ## Open a Bash shell on the local Jenkins worker
 	VAGRANT_CWD=workers/linux/ vagrant ssh
 
 .PHONY: start
-start:  ## Start the local Jenkins master
-start: master
+start:  ## Start the local Jenkins controller
+start: controller
 	@>&2 printf '\n'
-	@>&2 printf 'Jenkins master now running at http://localhost:18080\n'
+	@>&2 printf 'Jenkins controller now running at http://localhost:18080\n'
 
 .PHONY: start-linux-worker
 start-linux-worker:  ## Start the local linux worker
@@ -102,7 +102,7 @@ status:  ## Display the current status of Jenkins-related processes
 			ps $${SERVICE}
 
 .PHONY: stop
-stop:  ## Stop the local Jenkins master and related processes
+stop:  ## Stop the local Jenkins controller and related processes
 	@env \
 		VAULT_TOKEN=${VAULT_TOKEN} \
 		docker-compose \
