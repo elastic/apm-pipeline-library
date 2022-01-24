@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.284 (17/01/2022)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.16.3 7.17.0 [#1501](https://github.com/elastic/apm-pipeline-library/pull/1501)
+
 ## v1.1.283 (13/01/2022)
 
 #### 🚀 Enhancements
