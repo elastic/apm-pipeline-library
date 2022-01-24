@@ -41,14 +41,14 @@ def call(Map args = [:]) {
   def parts = branch.split('\\.')
   def major = parts[0]
   def minor
-  if (parts.size() > 0) {
+  if (parts.size() > 1) {
     minor = parts[1]
     minor = minor.replaceAll("<", "")
     minor = minor.replaceAll(">", "")
   }
 
     // special macro to look for the latest minor version
-  if (minor.contains('-')) {
+  if (minor?.contains('-')) {
     def minorParts = minor.split('-')
     minor = minorParts[0]
 
