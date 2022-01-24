@@ -27,12 +27,13 @@ class GetBranchNameFromArtifactsAPIStepTests extends ApmBasePipelineTest {
     script = loadScript('vars/getBranchNameFromArtifactsAPI.groovy')
     helper.registerAllowedMethod('artifactsApi', [Map.class], { f ->
       return [
-        "7.14": ["version": "7.16.3-SNAPSHOT"],
-        "7.15": ["version": "7.16.3-SNAPSHOT"],
+        "7.14": ["version": "7.14.3-SNAPSHOT"],
+        "7.15": ["version": "7.15.3-SNAPSHOT"],
         "7.16": ["version": "7.16.3-SNAPSHOT"],
-        "7.17": ["version": "7.16.3-SNAPSHOT"],
-        "7.18": ["version": "7.16.3-SNAPSHOT"],
-        "8.0": ["version": "7.16.3-SNAPSHOT"]
+        "7.17": ["version": "7.17.3-SNAPSHOT"],
+        "7.18": ["version": "7.18.3-SNAPSHOT"],
+        "8.0": ["version": "8.0.0-SNAPSHOT"],
+        "main": ["version": "8.1.0-SNAPSHOT"]
       ]
     })
   }
@@ -98,5 +99,13 @@ class GetBranchNameFromArtifactsAPIStepTests extends ApmBasePipelineTest {
 
     printCallStack()
     assert ret.equals('7.14')
+  }
+
+  @Test
+  void test_main() throws Exception {
+    def ret = script.call(branch: "main")
+
+    printCallStack()
+    assert ret.equals("main")
   }
 }
