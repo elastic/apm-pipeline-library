@@ -11,8 +11,9 @@
 ##  labels: list of GitHub labels to be added to the Pull Request (comma separated).
 ##
 ##  NOTE:
-##  <minor> is a special token that refers to the latest minor branch. The automation
-##          will resolve the correct version at runtime, so you don't need to change it.
+##  <minor> is a special token that refers to the latest minor branch.
+##  <minor-1> is a special token that refers to the previous latest minor branch.
+##  The automation will resolve the correct version at runtime, so you don't need to change it.
 ##
 projects:
   - repo: apm-server
