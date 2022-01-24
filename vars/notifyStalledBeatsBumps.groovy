@@ -47,14 +47,24 @@ def call(Map args = [:]) {
       ./${scriptFile} 'https://github.com/elastic/beats.git' ${branch} ${days}""")
   }
 
-  if (fileExists("email.txt")) {
+  def fileNotifyTeam = "email.txt"
+  if (fileExists(fileNotifyTeam)) {
     if (sendEmail && to?.trim()) {
       mail(to: to,
         subject: subject,
-        body: readFile("email.txt")
+        body: readFile(fileNotifyTeam)
       )
     }
   } else {
+    def fileNotifyRobotsTeam = "email-robots.txt"
+    if (fileExists(fileNotifyRobotsTeam)) {
+      if (sendEmail) {
+        mail(to: 'observability-robots-internal@elastic.co',
+          subject: subject,
+          body: readFile(fileNotifyRobotsTeam)
+        )
+      }
+    }
     log(level: 'WARN', text: "notifyStalledBeatsBumps: there are no changes to be reported")
   }
 }
