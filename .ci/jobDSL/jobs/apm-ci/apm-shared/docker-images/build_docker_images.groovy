@@ -135,6 +135,7 @@ apmPipelineLibraryDockerImages.each{ name ->
   dockerImages.add([
     name: "${name}",
     repo: 'git@github.com:elastic/apm-pipeline-library.git',
+    branch_docker: 'main',
     tag: "${tag}",
     folder: '.ci/docker',
     build_script: "docker build --force-rm -t ${dockerImage} ${name}",
@@ -161,6 +162,7 @@ pythonVersions.each{ version ->
     job: "apm-agent-python-${version}",
     name: "apm-agent-python",
     repo: 'git@github.com:elastic/apm-agent-python.git',
+    branch_docker: 'main',
     tag: "${version}",
     folder: 'tests',
     build_opts: "--build-arg PYTHON_IMAGE=${pythonVersion}",
@@ -190,6 +192,7 @@ nodeVersions.each{ version ->
     job: "apm-agent-nodejs-${version}",
     name: "apm-agent-nodejs",
     repo: 'git@github.com:elastic/apm-agent-nodejs.git',
+    branch_docker: 'main',
     tag: "${version}",
     folder: '.ci/docker/node-container',
     build_opts: "--build-arg NODE_VERSION=${nodejsVersion}",
@@ -230,6 +233,7 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
     job: "apm-agent-ruby-${rubyVersion}",
     name: "apm-agent-ruby",
     repo: 'git@github.com:elastic/apm-agent-ruby.git',
+    branch_docker: 'main',
     tag: "${rubyVersion}",
     folder: 'spec',
     build_opts: "--build-arg RUBY_IMAGE='${version}'",
@@ -249,6 +253,7 @@ libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
     repo: 'git@github.com:elastic/apm-agent-rum-js.git',
+    branch_docker: 'main',
     tag: "${nodejsVersion}",
     folder: ".ci/docker/node-${library}",
     build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
@@ -261,7 +266,7 @@ dockerImages.each{ item ->
     displayName("${item.name} ${item.tag ?: ''} - Docker image")
     description("Job to build and push the ${item.name} ${item.tag ?: ''} Docker image")
     parameters {
-      stringParam('branch_specifier', "${item.branch ?: 'master'}", "Branch where the Jenkinsfile is.")
+      stringParam('branch_specifier', "${item.branch ?: 'main'}", "Branch where the Jenkinsfile is.")
       stringParam('branch_docker', "${item.branch_docker ?: 'master'}", "Branch where the Dockerfile is.")
       stringParam('registry', "${registry}", "Docker Registry.")
       stringParam('prefix', "${prefix}", "Docker registry namespace.")
