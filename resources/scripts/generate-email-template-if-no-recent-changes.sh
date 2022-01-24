@@ -33,6 +33,21 @@ BRANCH=${2:?'Missing the branch'}
 DAYS=${3:?'Missing the days since the file has not changed result'}
 tmpfile=$(mktemp)
 
+
+## Functions
+
+function searchPullRequests() {
+  FILTER=$1
+  OUTPUT=$2
+
+  gh pr list \
+    --search "${FILTER} is:pr author:apmmachine base:$BRANCH" \
+    --json url,createdAt \
+    --template '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}' >> "${OUTPUT}"
+}
+
+## Main
+
 EMAIL_FILE=email.txt
 if [ -e ${EMAIL_FILE} ] ; then
   rm ${EMAIL_FILE}
@@ -53,10 +68,9 @@ else
   ABSOLUTE_DATE=$(date --date="${DAYS} days ago" +"%Y-%m-%d")
 fi
 
-gh pr list \
-  --search "is:pr author:apmmachine base:$BRANCH created:>${ABSOLUTE_DATE}" \
-  --json url,createdAt \
-  --template '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}' > "$tmpfile"
+# For some reason GH CLI uses `is:open` implicilty, so let's run the same query twice
+searchPullRequests "is:open created:>${ABSOLUTE_DATE}" "$tmpfile"
+searchPullRequests "is:closed created:>${ABSOLUTE_DATE}" "$tmpfile"
 
 # If none then there is no need to filter
 if [ ! -s "${tmpfile}" ] ; then
@@ -84,11 +98,7 @@ Integrations Tests.
 EOT
 
   echo "4. List the open Pull Requests targeting $BRANCH"
-
-  gh pr list \
-    --search "is:open is:pr author:apmmachine base:$BRANCH" \
-    --json url,createdAt \
-    --template '{{range .}}{{tablerow .url (.createdAt | timeago)}}{{end}}' >> ../${EMAIL_FILE}
+  searchPullRequests "is:open" "../${EMAIL_FILE}"
 
 cat <<EOT >> ../${EMAIL_FILE}
 
