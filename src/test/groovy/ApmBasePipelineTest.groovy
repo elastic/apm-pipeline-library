@@ -628,6 +628,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withNodeJSEnvUnix', [Map.class, Closure.class], { m, c ->
       return true
     })
+    helper.registerAllowedMethod('withOtelEnv', [Closure.class], { m, c ->
+      return true
+    })
   }
 
   def getVaultSecret(String s) {
