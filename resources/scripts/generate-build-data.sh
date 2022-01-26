@@ -40,8 +40,10 @@ PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
 STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
+TESTS_INFO="tests-info.json"
 TESTS_SUMMARY="tests-summary.json"
 TESTS_COVERAGE="tests-coverage.json"
+CUSTOM_BUILD_REPORT="custom-build-report.json"
 UTILS_LIB='/usr/local/bin/bash_standard_lib.sh'
 
 DEFAULT_HASH="{ }"
@@ -148,6 +150,7 @@ function fetchAndPrepareTestsInfo() {
     url=$2
     key=$3
     default=$4
+    report_file=$5
 
     echo "INFO: fetchAndPrepareTestsInfo (see ${file})"
     fetchAndDefault "${file}" "${url}" "${default}"
@@ -161,7 +164,7 @@ function fetchAndPrepareTestsInfo() {
         normaliseTestsWithoutStacktrace "${file}"
     fi
 
-    echo "\"${key}\": $(cat "${file}")," >> "${BUILD_REPORT}"
+    echo "\"${key}\": $(cat "${file}")," >> "${report_file}"
 }
 
 function fetchAndPrepareTestCoverageReport() {
@@ -491,7 +494,6 @@ fetchAndPrepareBuildReport "${JOB_INFO}" "${BO_JOB_URL}/" "job" "${DEFAULT_HASH}
 fetchAndPrepareBuildReport "${CHANGESET_INFO}" "${BO_BUILD_URL}/changeSet/" "changeSet" "${DEFAULT_LIST}"
 fetchAndPrepareArtifactsInfo "${ARTIFACTS_INFO}" "${BO_BUILD_URL}/artifacts/" "artifacts" "${DEFAULT_LIST}"
 echo "\"test\": $(cat "${TESTS_ERRORS}")," >> "${BUILD_REPORT}"
-### fetchAndPrepareTestSummaryReport should run after fetchAndPrepareTestsInfo
 fetchAndPrepareTestSummaryReport "${TESTS_SUMMARY}" "${BO_BUILD_URL}/blueTestSummary/" "test_summary" "${DEFAULT_LIST}" "${TESTS_ERRORS}"
 fetchAndPrepareTestCoverageReport "${TESTS_COVERAGE}" "${BUILD_URL}" "test_coverage" "${DEFAULT_HASH}"
 fetchAndPrepareBuildInfo "${BUILD_INFO}" "${BO_BUILD_URL}/" "build" "${DEFAULT_HASH}"
@@ -499,6 +501,25 @@ prepareErrorMetrics "errorMetrics"
 ### prepareEnvInfo should run the last one since it's the last field to be added
 prepareEnvInfo "${ENV_INFO}" "env"
 echo '}' >> "${BUILD_REPORT}"
+
+### Support temporarily the email notifications with the test summary
+### See https://github.com/elastic/apm-pipeline-library/pull/1514 as a potential
+### replacement
+if [ -n "${REPO_NAME}" ] && [ "${REPO_NAME}" == "integrations" ] ; then
+  echo 'INFO: prepare data with the test results'
+  {
+    echo "{"
+    echo "\"build\": $(cat "${BUILD_INFO}"),"
+    echo "\"job\": $(cat "${JOB_INFO}"),"
+    echo "\"test_summary\": $(cat "${TESTS_SUMMARY}"),"
+    echo "\"test_coverage\": $(cat "${TESTS_COVERAGE}"),"
+  } > "${CUSTOM_BUILD_REPORT}"
+  fetchAndPrepareTestsInfo "${TESTS_INFO}" "${BO_BUILD_URL}/tests/?limit=10000000" "test" "${DEFAULT_LIST}" "${CUSTOM_BUILD_REPORT}"
+  {
+    echo "\"env\": $(cat "${ENV_INFO}")"
+    echo '}'
+  } >> "${CUSTOM_BUILD_REPORT}"
+fi
 
 ## Create specific files to store the failed tests in individual
 ## docs and overal build data. Excluded passed and skipped tests
