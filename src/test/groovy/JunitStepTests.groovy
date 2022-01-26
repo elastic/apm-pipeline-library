@@ -76,6 +76,19 @@ class JunitStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_results_without_feature_flag() throws Exception {
+    env.JUNIT_2_OTLP = ""
+
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-0.0.0-junit2otlp'"))
+    assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_service_name() throws Exception {
     script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice')
 
