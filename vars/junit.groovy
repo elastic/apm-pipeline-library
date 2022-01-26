@@ -50,8 +50,6 @@ def call(Map args = [:]) {
     def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : '0.0.0'
     def traceName = args.containsKey('traceName') ? args.traceName : 'junit2otlp'
 
-    log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
-
     withEnv([
       "SERVICE_NAME=${serviceName}",
       "SERVICE_VERSION=${serviceVersion}",
@@ -59,6 +57,7 @@ def call(Map args = [:]) {
       "TRACE_NAME=${traceName}"
     ]){
       withOtelEnv() {
+        log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
         sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
       }
     }
