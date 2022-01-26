@@ -1,0 +1,33 @@
+Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
+populated later on, using the https://github.com/mdelapenya/junit2otel library.
+
+```
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with OPenTelemetry traces
+                        junit(testResults: 'TEST-*.xml')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3', traceName: 'my-trace')
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *serviceName*: name of the service used in the OpenTelemetry traces. Optional
+* *serviceVersion*: version of the service used in the OpenTelemetry traces. Optional
+* *traceName*: name of the trace used in the OpenTelemetry traces. Optional
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments

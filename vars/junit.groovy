@@ -16,12 +16,26 @@
 // under the License.
 
 /**
-  Use the https://github.com/mdelapenya/junit2otel library to send traces and spands for a set of JUnit test reports
+Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
+populated later on, using the https://github.com/mdelapenya/junit2otel library.
 
-  junit(testResults: 'TEST-*.xml')
-  junit(testResults: 'TEST-*.xml', serviceName: 'my-service')
-  junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3')
-  junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3', traceName: 'my-trace')
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with OPenTelemetry traces
+                        junit(testResults: 'TEST-*.xml')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3')
+                        junit(testResults: 'TEST-*.xml', serviceName: 'my-service', serviceVersion: '1.2.3', traceName: 'my-trace')
+                    }
+                }
+            }
+        }
+        ...
+    }
 
 */
 def call(Map args = [:]) {
