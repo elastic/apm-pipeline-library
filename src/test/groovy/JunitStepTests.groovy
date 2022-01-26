@@ -27,6 +27,8 @@ class JunitStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
+    env.JUNIT_2_OTLP = "true"
+
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
@@ -35,7 +37,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_missing_testResults() throws Exception {
-    env.JUNIT_2_OTLP = "true"
     testMissingArgument('testResults') {
       script.call()
     }
@@ -43,7 +44,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_docker_not_installed() throws Exception {
-    env.JUNIT_2_OTLP = "true"
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
 
     try {
@@ -59,7 +59,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void testWindows() throws Exception {
-    env.JUNIT_2_OTLP = "true"
     testWindows() {
       script.call()
     }
@@ -67,8 +66,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results() throws Exception {
-    env.JUNIT_2_OTLP = "true"
-
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
@@ -80,8 +77,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_name() throws Exception {
-    env.JUNIT_2_OTLP = "true"
-
     script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice')
 
     printCallStack()
@@ -102,8 +97,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_trace_name() throws Exception {
-    env.JUNIT_2_OTLP = "true"
-
     script.call(testResults: 'test-results/TEST-*.xml', traceName: 'mytrace')
 
     printCallStack()
