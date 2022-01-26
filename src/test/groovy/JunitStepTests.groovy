@@ -27,6 +27,7 @@ class JunitStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
     script = loadScript('vars/junit.groovy')
@@ -38,6 +39,22 @@ class JunitStepTests extends ApmBasePipelineTest {
     testMissingArgument('testResults') {
       script.call()
     }
+  }
+
+  @Test
+  void test_docker_not_installed() throws Exception {
+    env.JUNIT_2_OTLP = "true"
+    helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
+
+    try {
+      script.call()
+    } catch(e){
+      //NOOP
+    }
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'docker is not installed but required.'))
+    assertJobStatusFailure()
   }
 
   @Test

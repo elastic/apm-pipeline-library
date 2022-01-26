@@ -34,6 +34,10 @@ def call(Map args = [:]) {
       error('junit: windows is not supported yet.')
     }
 
+    if(!isInstalled(tool: 'docker', flag: '--version')) {
+      error('junit: docker is not installed but required.')
+    }
+
     def testResults = args.containsKey('testResults') ? args.testResults : error("junit: testResults parameter is required.")
     def serviceName = args.containsKey('serviceName') ? args.serviceName : 'junit2otlp'
     def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : '0.0.0'
