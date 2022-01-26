@@ -30,7 +30,12 @@ def call(Map args = [:]) {
   if (sendTraces) {
     log(level: 'INFO', text: 'Override default junit')
 
-    def junitArgs = args
+    def junitArgs = args.clone()
+
+    // always remove the junit args
+    junitArgs.remove('serviceName')
+    junitArgs.remove('serviceVersion')
+    junitArgs.remove('traceName')
 
     if(!isUnix()){
       error('junit: windows is not supported yet.')
@@ -40,10 +45,10 @@ def call(Map args = [:]) {
       error('junit: docker is not installed but required.')
     }
 
-    def testResults = junitArgs.containsKey('testResults') ? junitArgs.testResults : error("junit: testResults parameter is required.")
-    def serviceName = junitArgs.containsKey('serviceName') ? junitArgs.serviceName : 'junit2otlp'
-    def serviceVersion = junitArgs.containsKey('serviceVersion') ? junitArgs.serviceVersion : '0.0.0'
-    def traceName = junitArgs.containsKey('traceName') ? junitArgs.traceName : 'junit2otlp'
+    def testResults = args.containsKey('testResults') ? args.testResults : error("junit: testResults parameter is required.")
+    def serviceName = args.containsKey('serviceName') ? args.serviceName : 'junit2otlp'
+    def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : '0.0.0'
+    def traceName = args.containsKey('traceName') ? args.traceName : 'junit2otlp'
 
     log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
 
@@ -54,14 +59,7 @@ def call(Map args = [:]) {
       "TRACE_NAME=${traceName}"
     ]){
       withOtelEnv() {
-        try {
-          sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
-        }
-        finally {
-          junitArgs.remove('serviceName')
-          junitArgs.remove('serviceVersion')
-          junitArgs.remove('traceName')
-        }
+        sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
       }
     }
   }
