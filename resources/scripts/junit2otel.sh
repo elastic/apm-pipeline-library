@@ -31,7 +31,8 @@ do
   do
     echo "Sending traces for $f file..."
     # bind directly to the Docker host's network, with no network isolation
-    cmd < "$f" | docker run \
+    # shellcheck disable=SC2002
+    cat "$f" | docker run \
       --rm -i \
       --network host \
       --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
