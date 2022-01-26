@@ -86,8 +86,6 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_version() throws Exception {
-    env.JUNIT_2_OTLP = "true"
-
     script.call(testResults: 'test-results/TEST-*.xml', serviceVersion: '1.2.3')
 
     printCallStack()
