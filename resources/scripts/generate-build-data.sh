@@ -40,6 +40,7 @@ PIPELINE_LOG="pipeline-log.txt"
 STEPS_ERRORS="steps-errors.json"
 STEPS_INFO="steps-info.json"
 TESTS_ERRORS="tests-errors.json"
+TESTS_INFO="tests-info.json"
 TESTS_SUMMARY="tests-summary.json"
 TESTS_COVERAGE="tests-coverage.json"
 CUSTOM_BUILD_REPORT="custom-build-report.json"
@@ -505,6 +506,7 @@ echo '}' >> "${BUILD_REPORT}"
 ### See https://github.com/elastic/apm-pipeline-library/pull/1514 as a potential
 ### replacement
 if [ -n "${REPO_NAME}" ] && [ "${REPO_NAME}" == "integrations" ] ; then
+  echo 'INFO: prepare data with the test results'
   {
     echo "{"
     echo "\"build\": $(cat "${BUILD_INFO}"),"
