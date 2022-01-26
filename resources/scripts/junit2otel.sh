@@ -29,5 +29,13 @@ for f in ${TEST_RESULTS_GLOB}
 do
   echo "Sending traces for $f file..."
   # bind directly to the Docker host's network, with no network isolation
-  cmd < "$f" | docker run --rm -i --network host --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" ${DOCKER_IMAGE} --service-name "${SERVICE_NAME}" --service-version "${SERVICE_VERSION}" --trace-name "${TRACE_NAME}"
+  cmd < "$f" | docker run \
+    --rm -i \
+    --network host \
+    --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
+    --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" \
+    ${DOCKER_IMAGE} \
+    --service-name "${SERVICE_NAME}" \
+    --service-version "${SERVICE_VERSION}" \
+    --trace-name "${TRACE_NAME}"
 done
