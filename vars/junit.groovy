@@ -30,13 +30,6 @@ def call(Map args = [:]) {
   if (sendTraces) {
     log(level: 'INFO', text: 'Override default junit')
 
-    def junitArgs = args.clone()
-
-    // always remove the junit args
-    junitArgs.remove('serviceName')
-    junitArgs.remove('serviceVersion')
-    junitArgs.remove('traceName')
-
     if(!isUnix()){
       error('junit: windows is not supported yet.')
     }
@@ -63,5 +56,10 @@ def call(Map args = [:]) {
     }
   }
 
-  return steps.junit(junitArgs)
+  // always remove the junit args
+  args.remove('serviceName')
+  args.remove('serviceVersion')
+  args.remove('traceName')
+
+  return steps.junit(args)
 }
