@@ -35,7 +35,6 @@ do
     cat "$f" | docker run \
       --rm -i \
       --network host \
-      --env "USER=junit2otlp" \
       --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
       --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" \
       ${DOCKER_IMAGE} \
