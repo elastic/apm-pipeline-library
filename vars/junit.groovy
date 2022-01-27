@@ -25,7 +25,7 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
             stage(...) {
                 post {
                     always {
-                        // JUnit with OPenTelemetry traces
+                        // JUnit with OpenTelemetry traces
                         withEnv([
                           "JUNIT_2_OTLP=true",
                           "OTEL_SERVICE_NAME=apm-pipeline-library",
