@@ -127,7 +127,7 @@ pipeline {
           withEnv([
             "JUNIT_2_OTLP=true",
             "OTEL_SERVICE_NAME=apm-pipeline-library",
-            "JUNIT_OTEL_SERVICE_VERSION=master",
+            "JUNIT_OTEL_SERVICE_VERSION=main",
             "JUNIT_OTEL_TRACE_NAME=junit-tests"
           ]){
             junit(allowEmptyResults: true,
