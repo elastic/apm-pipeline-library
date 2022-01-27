@@ -90,7 +90,8 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_name() throws Exception {
-    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice')
+    env.OTEL_SERVICE_NAME = "myservice"
+    script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-0.0.0-junit2otlp'"))
@@ -99,7 +100,8 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_version() throws Exception {
-    script.call(testResults: 'test-results/TEST-*.xml', serviceVersion: '1.2.3')
+    env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
+    script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-1.2.3-junit2otlp'"))
@@ -108,7 +110,8 @@ class JunitStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_trace_name() throws Exception {
-    script.call(testResults: 'test-results/TEST-*.xml', traceName: 'mytrace')
+    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
+    script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-0.0.0-mytrace'"))

@@ -53,9 +53,9 @@ def call(Map args = [:]) {
     }
 
     def testResults = args.containsKey('testResults') ? args.testResults : error("junit: testResults parameter is required.")
-    def serviceName = args.containsKey('serviceName') ? args.serviceName : 'junit2otlp'
-    def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : '0.0.0'
-    def traceName = args.containsKey('traceName') ? args.traceName : 'junit2otlp'
+    def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : 'junit2otlp'
+    def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : '0.0.0'
+    def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : 'junit2otlp'
 
     withEnv([
       "SERVICE_NAME=${serviceName}",
@@ -69,11 +69,6 @@ def call(Map args = [:]) {
       }
     }
   }
-
-  // always remove the junit args
-  args.remove('serviceName')
-  args.remove('serviceVersion')
-  args.remove('traceName')
 
   return steps.junit(args)
 }
