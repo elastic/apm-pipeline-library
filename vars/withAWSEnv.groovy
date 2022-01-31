@@ -90,6 +90,9 @@ def downloadAndInstall(where, version) {
 def awsURL(version) {
   def url = 'https://awscli.amazonaws.com/awscli-exe'
   def arch = is64() ? 'x86_64' : 'x86'
+  if (isArm()) {
+    arch = 'aarch64'
+  }
   if (isUnix()) {
     return "${url}-linux-${arch}-${version}.zip"
   }

@@ -8,6 +8,7 @@ import traceback
 
 import _pytest._code
 import _pytest.skipping
+from _pytest import timing
 import pytest
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter

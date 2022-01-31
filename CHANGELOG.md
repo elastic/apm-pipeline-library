@@ -1,5 +1,61 @@
 # Changelog
 
+## v1.1.285 (25/01/2022)
+
+#### 🚀 Enhancements
+
+-  automation: notify the robots team if no bump recently [#1509](https://github.com/elastic/apm-pipeline-library/pull/1509)
+-  github: filter by the repo env variable [#1511](https://github.com/elastic/apm-pipeline-library/pull/1511)
+-  apm-agent-java: github commands [#1504](https://github.com/elastic/apm-pipeline-library/pull/1504)
+-  automation: filter branches that don't have any PRs in the last x days [#1508](https://github.com/elastic/apm-pipeline-library/pull/1508)
+-  automation: enable 7.<minor-1> alias for the beats, fleet-server and apm-server projects [#1505](https://github.com/elastic/apm-pipeline-library/pull/1505)
+-  Minor index [#1503](https://github.com/elastic/apm-pipeline-library/pull/1503)
+
+#### 🐛 Bug Fixes
+
+-  fix: skip branch parsing when format is not major.minor.patch based [#1510](https://github.com/elastic/apm-pipeline-library/pull/1510)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: change to use the main branch [#1513](https://github.com/elastic/apm-pipeline-library/pull/1513)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1145.v7f2433caa07f to 1156.v7539182e7b_d5 [#1507](https://github.com/elastic/apm-pipeline-library/pull/1507)
+-  chore(deps): bump opentelemetry from 1.2.0 to 1.2.1 [#1506](https://github.com/elastic/apm-pipeline-library/pull/1506)
+
+## v1.1.284 (17/01/2022)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.16.3 7.17.0 [#1501](https://github.com/elastic/apm-pipeline-library/pull/1501)
+
+## v1.1.283 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withAWSEnv: add support for ARM [#1499](https://github.com/elastic/apm-pipeline-library/pull/1499)
+
+## v1.1.282 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support for value default field in the vault secret [#1497](https://github.com/elastic/apm-pipeline-library/pull/1497)
+
+#### ⚙️ CI
+
+-  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
+
+## v1.1.282 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support for value default field in the vault secret [#1497](https://github.com/elastic/apm-pipeline-library/pull/1497)
+
+#### ⚙️ CI
+
+-  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
+
 ## v1.1.279 (10/01/2022)
 *No changelog for this release.*
 

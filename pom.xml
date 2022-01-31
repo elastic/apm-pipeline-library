@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.282-SNAPSHOT</version>
+  <version>1.1.287-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>1145.v7f2433caa07f</version>
+      <version>1156.v7539182e7b_d5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -107,7 +107,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>opentelemetry</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
     <!-- END Support for the withOtelEnv step -->
   </dependencies>
