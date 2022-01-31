@@ -487,6 +487,7 @@ def getSupportedGithubCommands() {
     comments['run jdk compatibility tests'] = 'Run the JDK Compatibility tests.'
     comments['run integration tests'] = 'Run the Agent Integration tests.'
     comments['run end-to-end tests'] = 'Run the APM-ITs.'
+    comments['run windows tests'] = 'Build & tests on windows.'
   }
 
   if (isProjectSupported('apm-pipeline-library')) {
