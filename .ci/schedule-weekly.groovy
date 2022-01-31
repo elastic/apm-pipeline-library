@@ -101,7 +101,8 @@ def runWatcherForBranch(Map args = [:]){
   runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
              subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
              sendEmail: true,
-             to: env.BEATS_MAILING_LIST)
+             to: env.BEATS_MAILING_LIST,
+             debugFileName: "${branch}.txt")
 }
 
 // Helper function to resolve current and next special keywords.
