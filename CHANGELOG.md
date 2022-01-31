@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.286 (26/01/2022)
+
+#### 🚀 Enhancements
+
+-  report: enable a new index for reporting tests in the integrations [#1515](https://github.com/elastic/apm-pipeline-library/pull/1515)
+
 ## v1.1.285 (25/01/2022)
 
 #### 🚀 Enhancements
