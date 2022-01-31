@@ -4,9 +4,9 @@
   > There is a new build on-going so the previous on-going builds have been aborted.
 <%} else if (buildStatus?.equals('ABORTED')) {%>
 ## :grey_exclamation: Build Aborted
-  <%if (!build?.description != null && build?.description.toString().toLowerCase().contains('aborted')) {%>
+  <%if (!build?.description instanceof net.sf.json.JSONNull && !build?.description != null && build?.description.toString().toLowerCase().contains('aborted')) {%>
   > There is a new build on-going so the previous on-going builds have been aborted.
-  <%} else if (!build?.description != null && build?.description.toString().toLowerCase().contains('allowed')) {%>
+  <%} else if (!build?.description instanceof net.sf.json.JSONNull && !build?.description != null && build?.description.toString().toLowerCase().contains('allowed')) {%>
   > ${build.description}
   <%} else {%>
   > Either there was a build timeout or someone aborted the build.
@@ -28,7 +28,7 @@
 <% if(!build?.causes instanceof net.sf.json.JSONNull && build?.causes?.shortDescription != null && ! build?.causes?.shortDescription?.isEmpty() && !build?.causes?.shortDescription.equals('null')) {%>
 * Build Cause: `${build.causes.shortDescription}`
 <%}%>
-<% if(build?.description != null && !build?.description.equals('null')) {%>
+<% if(!build?.description instanceof net.sf.json.JSONNull && build?.description != null && !build?.description.equals('null')) {%>
 * Reason: `${build.description}`
 <%}%>
 <% if(build?.startTime != null && !build?.startTime.equals('null')) {%>
