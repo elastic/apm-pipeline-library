@@ -94,13 +94,13 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>1156.v7539182e7b_d5</version>
+      <version>1167.v8fe861b_09ef9</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.2.0</version>
+      <version>4.3.1</version>
       <scope>test</scope>
     </dependency>
     <!-- BEGIN Support for the withOtelEnv step -->
