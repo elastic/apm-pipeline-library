@@ -57,18 +57,14 @@ def call(Map args = [:]) {
     }
 
     def testResults = args.containsKey('testResults') ? args.testResults : error("junit: testResults parameter is required.")
-    def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : 'junit2otlp'
-    def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : '0.0.0'
-    def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : 'junit2otlp'
-
     withEnv([
-      "SERVICE_NAME=${serviceName}",
-      "SERVICE_VERSION=${serviceVersion}",
+      "SERVICE_NAME=${env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : 'junit2otlp'}",
+      "SERVICE_VERSION=${env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : '0.0.0'}",
       "TEST_RESULTS_GLOB=${testResults}",
-      "TRACE_NAME=${traceName}"
+      "TRACE_NAME=${env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : 'junit2otlp'}"
     ]){
       withOtelEnv() {
-        log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
+        log(level: 'INFO', text: "Sending traces for '${env.SERVICE_NAME}-${env.SERVICE_VERSION}-${env.TRACE_NAME}'")
         sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
       }
     }
