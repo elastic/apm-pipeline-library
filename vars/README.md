@@ -1921,9 +1921,6 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
     }
 ```
 
-* *serviceName*: name of the service used in the OpenTelemetry traces. Optional
-* *serviceVersion*: version of the service used in the OpenTelemetry traces. Optional
-* *traceName*: name of the trace used in the OpenTelemetry traces. Optional
 * *testResults*: from the `junit` step. Mandatory
 * *allowEmptyResults*: from the `junit` step. Optional
 * *keepLongStdio*: from the `junit` step. Optional
