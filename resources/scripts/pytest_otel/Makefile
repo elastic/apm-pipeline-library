@@ -136,14 +136,15 @@ publish: package
 
 ## @help:demo-start-DEMO_NAME:Starts the demo from the demo folder, DEMO_NAME is the name of the demo type folder in the docs/demos folder (jaeger, elastic).
 .PHONY: demo-start-%
-demo-start-%:
+demo-start-%: virtualenv install
 	$(MAKE) demo-stop-$*
 	mkdir -p $(DEMO_DIR)/$*/build
 	touch $(DEMO_DIR)/$*/build/tests.json
 	docker-compose -f $(DEMO_DIR)/$*/docker-compose.yml up -d
 	. $(DEMO_DIR)/$*/demo.env;\
 	env | grep OTEL;\
-	$(MAKE) test
+	source $(VENV)/bin/activate;\
+	pytest --capture=no docs/demos/test/test_demo.py || echo "Demo execution finished you can access to http://localhost:5601 to check the traces";
 
 ## @help:demo-stop-DEMO_NAME:Stops the demo from the demo folder, DEMO_NAME is the name of the demo type folder in the docs/demos folder (jaeger, elastic).
 .PHONY: demo-stop-%
