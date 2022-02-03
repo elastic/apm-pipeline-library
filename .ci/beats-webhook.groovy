@@ -51,7 +51,7 @@ pipeline {
      printPostContent: false,
      silentResponse: true,
      regexpFilterText: '$ref-$x_github_event',
-     regexpFilterExpression: '^(refs/tags/current|refs/heads/master/.+|refs/heads/main/.+)-comment$'
+     regexpFilterExpression: '^(refs/tags/current|refs/heads/main/.+|refs/heads/main/.+)-comment$'
     )
   }
   stages {

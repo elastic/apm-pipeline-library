@@ -32,11 +32,11 @@ class YamlParser {
   }
 }
 
-def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
-def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
-def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
-def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
-def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
+def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/main/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
+def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/main/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
+def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/main/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
+def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
+def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/dev-utils/.node-version')
 
 */
 

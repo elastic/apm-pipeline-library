@@ -92,7 +92,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-python.git',
-                    branch: 'master',
+                    branch: 'main',
                     tag: 'apm-agent-python',
                     version: "${pythonIn}",
                     folder: "tests",
@@ -129,7 +129,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-nodejs.git',
-                    branch: 'master',
+                    branch: 'main',
                     tag: 'apm-agent-nodejs',
                     version: "${nodejsVersion}",
                     folder: '.ci/docker/node-container',
@@ -177,7 +177,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-ruby.git',
-                    branch: 'master',
+                    branch: 'main',
                     tag: 'apm-agent-ruby',
                     version: "${rubyVersion}",
                     folder: 'spec',
@@ -214,7 +214,7 @@ pipeline {
                   dockerLoginElasticRegistry()
                   buildDockerImage(
                     repo: 'https://github.com/elastic/apm-agent-rum-js.git',
-                    branch: 'master',
+                    branch: 'main',
                     tag: "node-${library}",
                     version: "${nodejsVersion}",
                     folder: ".ci/docker/node-${library}",

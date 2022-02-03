@@ -39,7 +39,7 @@
                                   "should": [
                                     {
                                       "match_phrase": {
-                                        "env.BRANCH_NAME": "master"
+                                        "env.BRANCH_NAME": "main"
                                       }
                                     }
                                   ]

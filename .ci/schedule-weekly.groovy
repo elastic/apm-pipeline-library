@@ -44,7 +44,7 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(branch: 'master')
+        runWatcherForBranch(branch: 'main')
         runWatcherForBranch(branch: '8.<current>')
         runWatcherForBranch(branch: '7.<next>')
         runWatcherForBranch(branch: '7.<current>')
@@ -74,7 +74,7 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        runNotifyStalledBeatsBumps(branch: 'master')
+        runNotifyStalledBeatsBumps(branch: 'main')
         runNotifyStalledBeatsBumps(branch: '8.<current>')
         runNotifyStalledBeatsBumps(branch: '7.<next>')
         runNotifyStalledBeatsBumps(branch: '7.<current>')
