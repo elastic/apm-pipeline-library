@@ -31,13 +31,13 @@ projects:
   - repo: beats
     script: .ci/bump-go-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency,backport-skip
   - repo: fleet-server
     script: .ci/bump-go-release-version.sh
     branches:
-      - master
+      - main
     enabled: true
     labels: dependency,backport-skip
   - repo: golang-crossbuild
