@@ -17,7 +17,7 @@
 
 import groovy.transform.Field
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 // To store all the latest snapshot versions
 @Field def latestVersions
@@ -25,7 +25,7 @@ import groovy.transform.Field
 pipeline {
   agent { label 'linux && immutable' }
   environment {
-    REPO = 'observability-dev'
+    REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
     HOME = "${env.WORKSPACE}"
     NOTIFY_TO = credentials('notify-to')
@@ -117,7 +117,7 @@ def prepareArguments(Map args = [:]){
   def reviewer = args.get('reviewer', '')
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, reusePullRequest: ${reusePullRequest}, labels: '${labels}')")
   def title = '[automation] update elastic stack version for testing'
-  def branchName = findBranchName(branch: branch, versions: latestVersions)
+  def branchName = getBranchNameFromArtifactsAPI(branch: branch)
   def versionEntry = latestVersions.get(branchName)
   def message = """### What \n Bump stack version with the latest one. \n ### Further details \n ${versionEntry}"""
   def stackVersion = versionEntry?.build_id
@@ -193,15 +193,4 @@ def reusePullRequestIfPossible(Map args = [:]){
   }
   log(level: 'INFO', text: 'Could not find a GitHub Pull Request. So fallback to create a new one instead.')
   return false
-}
-
-def findBranchName(Map args = [:]){
-  def branch = args.branch
-  // special macro to look for the latest minor version
-  if (branch.contains('<minor>')) {
-    def parts = branch.split('\\.')
-    def major = parts[0]
-    branch = args.versions.collect{ k,v -> k }.findAll { it ==~ /${major}\.\d+/ }.sort().last()
-  }
-  return branch
 }

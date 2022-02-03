@@ -50,7 +50,7 @@ def assertTestSuit(span, outcome, status):
     assert span["kind"] == "SPAN_KIND_SERVER"
     assert span["status"]["code"] == status
     if outcome is not None:
-        assertAttrKeyValue(span["attributes"], 'test.outcome', outcome)
+        assertAttrKeyValue(span["attributes"], 'tests.status', outcome)
     assert len(span["parentSpanId"]) == 0
     return True
 
@@ -59,16 +59,16 @@ def assertSpan(span, name, outcome, status):
     """check attributes of a span"""
     assert span["kind"] == "SPAN_KIND_INTERNAL"
     assert span["status"]["code"] == status
-    assertAttrKeyValue(span["attributes"], 'test.name', name)
+    assertAttrKeyValue(span["attributes"], 'tests.name', name)
     if outcome is not None:
-        assertAttrKeyValue(span["attributes"], 'test.outcome', outcome)
+        assertAttrKeyValue(span["attributes"], 'tests.status', outcome)
     assert len(span["parentSpanId"]) > 0
     return True
 
 
 def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
     """check a test results are correct"""
-    pytester.runpytest("--endpoint=http://127.0.0.1:4317", "--service-name=pytest_otel")
+    pytester.runpytest("--otel-endpoint=http://127.0.0.1:4317", "--otel-service-name=pytest_otel", "--otel-debug=True", "-rsx")
     filename = "./tests.json"
     waitForFileContent(filename)
     foundTest = False

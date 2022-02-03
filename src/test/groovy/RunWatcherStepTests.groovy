@@ -77,6 +77,16 @@ class RunWatcherStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertNull(output)
     assertTrue(assertMethodCallContainsPattern('log', 'log action could not be found in the response'))
+    assertTrue(assertMethodCallOccurrences('writeFile', 0))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_email_and_debugFileName() throws Exception {
+    def output = script.call(watcher: 'foo', sendEmail: true, to: 'me@acme.com', debugFileName: 'foo.txt')
+    printCallStack()
+    assertNotNull(output)
+    assertTrue(assertMethodCallOccurrences('writeFile', 1))
     assertJobStatusSuccess()
   }
 }

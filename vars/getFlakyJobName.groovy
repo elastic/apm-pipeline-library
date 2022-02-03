@@ -21,7 +21,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 /**
   Get the flaky job name in a given multibranch pipeline.
 
-  def flakyJobName = getFlakyJobName(withBranch: 'master')
+  def flakyJobName = getFlakyJobName(withBranch: 'main')
 */
 
 def call(Map args=[:]) {

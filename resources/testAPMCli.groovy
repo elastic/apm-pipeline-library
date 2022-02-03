@@ -17,9 +17,9 @@
 
 // NOTE: Consumers should use the current tag
 // @Library('apm@current') _
-// NOTE: Master branch will contain the upcoming release changes
+// NOTE: main branch will contain the upcoming release changes
 //       this will help us to detect any breaking changes in production.
-@Library('apm@master') _
+@Library('apm@main') _
 
 pipeline {
 

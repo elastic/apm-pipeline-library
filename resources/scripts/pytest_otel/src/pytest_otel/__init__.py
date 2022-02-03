@@ -8,6 +8,7 @@ import traceback
 
 import _pytest._code
 import _pytest.skipping
+from _pytest import timing
 import pytest
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -17,6 +18,12 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcess
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 from opentelemetry.trace.status import Status, StatusCode
+
+# from opentelemetry import metrics
+# from opentelemetry.sdk.metrics.export import ConsoleMetricsExporter
+# from opentelemetry.sdk.metrics.export.controller import PushController
+# from opentelemetry.ext.otcollector.metrics_exporter import CollectorMetricsExporter
+# from opentelemetry.sdk.metrics import Counter, MeterProvider
 
 LOGGER = logging.getLogger("pytest_otel")
 service_name = None
@@ -29,41 +36,45 @@ otel_span_file_output = None
 otel_exporter = None
 spans = {}
 outcome = None
-
+# errors_counter = None
+# failed_counter = None
+# skipped_counter = None
+# total_counter = None
+# controller = None
 
 def pytest_addoption(parser):
     """Init command line arguments"""
     group = parser.getgroup("pytest-otel", "report OpenTelemetry traces for tests executed.")
 
     group.addoption(
-        "--endpoint",
+        "--otel-endpoint",
         dest="endpoint",
         help="URL for the APM server.(OTEL_EXPORTER_OTLP_ENDPOINT)",
     )
     group.addoption(
-        "--headers",
+        "--otel-headers",
         dest="headers",
         help="Additional headers to send (i.e.: key1=value1,key2=value2).(OTEL_EXPORTER_OTLP_HEADERS)",  # noqa: E501
     )
     group.addoption(
-        "--service-name",
+        "--otel-service-name",
         dest="service_name",
         default="Pytest_Otel_reporter",
         help="Name of the service.(OTEL_SERVICE_NAME)",
     )
     group.addoption(
-        "--session-name",
+        "--otel-session-name",
         dest="session_name",
         default="Test Suite",
         help="Name for the Main span reported.",
     )
     group.addoption(
-        "--traceparent",
+        "--otel-traceparent",
         dest="traceparent",
         help="Trace parent.(TRACEPARENT) see https://www.w3.org/TR/trace-context-1/#trace-context-http-headers-format",  # noqa: E501
     )
     group.addoption(
-        "--insecure",
+        "--otel-insecure",
         dest="insecure",
         default=False,
         help="Disables TLS.(OTEL_EXPORTER_OTLP_INSECURE)",
@@ -74,11 +85,16 @@ def pytest_addoption(parser):
         default="./otel-traces-file-output.json",
         help="If the Otel endpoint is not set, the spans will be saved to a file (./otel-traces-file-output.txt)",
     )
-
+    group.addoption(
+        "--otel-debug",
+        dest="otel_debug",
+        default=False,
+        help="",
+    )
 
 def init_otel():
     """Init the OpenTelemetry settings"""
-    global tracer, session_name, service_name, insecure, otel_exporter
+    global tracer, session_name, service_name, insecure, otel_exporter, errors_counter, failed_counter, skipped_counter, total_counter, controller  # noqa: E501
     LOGGER.debug("Init Otel : {}".format(service_name))
     trace.set_tracer_provider(
         TracerProvider(
@@ -89,12 +105,42 @@ def init_otel():
     if in_memory_span_exporter:
         otel_exporter = InMemorySpanExporter()
         trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(otel_exporter))
-        otel_exporter.clear()
+        # metrics_exporter = ConsoleMetricsExporter()
     else:
         otel_exporter = OTLPSpanExporter()
         trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(otel_exporter))
+        # metrics_exporter = CollectorMetricsExporter()
 
     tracer = trace.get_tracer(session_name)
+
+    # metrics.set_meter_provider(MeterProvider())
+    # meter = metrics.get_meter(session_name, True)
+    # controller = PushController(meter, metrics_exporter, 5)
+    #
+    # errors_counter = meter.create_counter(
+    #     name="tests.error",
+    #     description="number of error tests",
+    #     unit="1",
+    #     value_type=int
+    # )
+    # failed_counter = meter.create_counter(
+    #     name="tests.failed",
+    #     description="number of failed tests",
+    #     unit="1",
+    #     value_type=int
+    # )
+    # skipped_counter = meter.create_counter(
+    #     name="tests.skipped",
+    #     description="number of skipped tests",
+    #     unit="1",
+    #     value_type=int
+    # )
+    # total_counter = meter.create_counter(
+    #     name="tests.total",
+    #     description="total number of tests",
+    #     unit="1",
+    #     value_type=int
+    # )
 
 
 def start_span(span_name, context=None, kind=None):
@@ -113,7 +159,7 @@ def end_span(span_name, outcome):
     global spans
     status = convertOutcome(outcome)
     spans[span_name].set_status(status)
-    spans[span_name].set_attribute("test.outcome", outcome)
+    spans[span_name].set_attribute("tests.status", outcome)
     spans[span_name].end()
     LOGGER.debug("The {} transaction ends. -> {}".format(span_name, status))
     return spans[span_name]
@@ -132,6 +178,19 @@ def convertOutcome(outcome):
         return Status(status_code=StatusCode.ERROR)
     else:
         return Status(status_code=StatusCode.UNSET)
+
+# def update_metrics(outcome):
+#     """Update the metrics with the test result"""
+#     if (outcome == "interrupted"
+#             or outcome == "internal_error"
+#             or outcome == "usage_error"
+#             or outcome == "no_tests_collected"
+#         ):
+#         errors_counter.add(1)
+#     elif (outcome == "failed"):
+#         failed_counter.add(1)
+#     elif (outcome == "skipped"):
+#         skipped_counter.add(1)
 
 
 def exitCodeToOutcome(exit_code):
@@ -161,8 +220,9 @@ def traceparent_context(traceparent):
 def pytest_sessionstart(session):
     """Uses the commandline parameter to define the environment variables used by OpenTelemetry"""
     global service_name, traceparent, session_name, insecure, in_memory_span_exporter, otel_span_file_output
-    LOGGER.setLevel(logging.DEBUG)
     config = session.config
+    if config.getoption("otel_debug"):
+        LOGGER.setLevel(logging.DEBUG)
     service_name = config.getoption("service_name")
     session_name = config.getoption("session_name")
     traceparent = config.getoption("traceparent")
@@ -229,8 +289,9 @@ def pytest_runtest_call(item):
         record_exception=True,
         set_status_on_exception=True,
     ) as span:
+        #total_counter.add(1)
         LOGGER.debug("Test {} starts - {}".format(item.name, span.get_span_context()))
-        span.set_attribute("test.name", item.name)
+        span.set_attribute("tests.name", item.name)
         yield
         LOGGER.debug("Test {} ends - {}".format(item.name, span.get_span_context()))
 
@@ -251,26 +312,41 @@ def pytest_runtest_call(item):
                 outcome = "failed"
                 style = item.config.getoption("tbstyle", "auto")
                 longrepr = item._repr_failure_py(last_value, style=style)
-            LOGGER.debug("test.outcome {}".format(outcome))
-            LOGGER.debug("test.longrepr {}".format(longrepr))
-            LOGGER.debug("test.last_value {}".format(last_value))
+
             stack_trace = repr(traceback.format_exception(last_type, last_value, last_traceback))
-            span.set_attribute("test.stack_trace", "{}".format(stack_trace))
+            span.set_attribute("tests.error", "{}".format(stack_trace))
             if hasattr(last_value, "args") and len(getattr(last_value, 'args', [])) > 0:
-                span.set_attribute("test.error", "{}"
+                span.set_attribute("tests.message", "{}"
                                    .format(last_value.args[0]))
 
-            span.set_attribute("test.last_value", "{}"
-                               .format(getattr(sys, 'last_value')))
-            span.set_attribute("test.last_type", "{}"
-                               .format(getattr(sys, 'last_type')))
+            if longrepr:
+                span.set_attribute("tests.message", "{}".format(longrepr))
+            elif last_value:
+                span.set_attribute("tests.message", "{}".format(last_value))
+            elif last_type:
+                span.set_attribute("tests.message", "{}".format(last_type))
 
-            if hasattr(_pytest, 'skipping'):
-                skipping = _pytest.skipping
-                xfailed = item._store.get(getattr(skipping, 'xfailed_key', None), None)
-                span.set_attribute("test.xfailed", "{}"
-                                   .format(getattr(xfailed, 'reason', None)))
+            skipping = getattr(_pytest, 'skipping', None)
+            if skipping:
+                key = getattr(skipping, 'xfailed_key', None)
+                xfailed = item._store.get(key, None)
+                reason = getattr(xfailed, 'reason', None)
+                if reason :
+                    span.set_attribute("tests.message", "{}".format(reason))
 
+        #update_metrics(outcome)
         status = convertOutcome(outcome)
         span.set_status(status)
-        span.set_attribute("test.outcome", "{}".format(outcome))
+        span.set_attribute("tests.status", "{}".format(outcome))
+
+
+@pytest.hookimpl()
+def pytest_runtest_logreport(report):
+    global session_name, spans
+    test_name = report.nodeid.split("::")[0]
+
+    if report.failed and report.when == "teardown":
+        span = spans[test_name]
+        span.set_attribute("tests.systemerr", report.capstderr)
+        span.set_attribute("tests.systemout", report.capstdout)
+        span.set_attribute("tests.duration", getattr(report, "duration", 0.0))

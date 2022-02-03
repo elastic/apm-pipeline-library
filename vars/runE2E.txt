@@ -29,4 +29,4 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 
 **NOTE**: It works only in the `beats-ci` controller.
 
-Parameters are defined in https://github.com/elastic/e2e-testing/blob/master/.ci/Jenkinsfile
+Parameters are defined in https://github.com/elastic/e2e-testing/blob/main/.ci/Jenkinsfile

@@ -14,7 +14,7 @@
   - ".github/*"
   - ".mvn/*"
   - "local/*"
-- "master":
+- "main":
   - "local/Dockerfile"
   - "local/docker-compose.yml"
   - "local/Makefile"

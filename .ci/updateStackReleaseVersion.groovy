@@ -17,7 +17,7 @@
 
 import groovy.transform.Field
 
-@Library('apm@master') _
+@Library('apm@main') _
 
 // To store the next and current release versions
 @Field def releaseVersions = [:]
@@ -47,19 +47,21 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken', url: "https://github.com/${ORG_NAME}/${REPO}.git")
+        git(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken',
+            url: "https://github.com/${ORG_NAME}/${REPO}.git",
+            branch: 'main')
       }
     }
     stage('Fetch latest versions') {
       steps {
         echo ' TODO: calculate the versions'
         script {
-          releaseVersions[bumpUtils.current6Key()] = '6.8.21'
-          releaseVersions[bumpUtils.current7Key()] = '7.16.1'
-          releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.0'
-          releaseVersions[bumpUtils.nextPatch7Key()] = '7.16.2'
+          releaseVersions[bumpUtils.current6Key()] = '6.8.23'
+          releaseVersions[bumpUtils.current7Key()] = '7.17.0'
+          releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.1'
+          releaseVersions[bumpUtils.nextPatch7Key()] = '7.17.1'
           // TODO: to support the 8.x branches
-          releaseVersions[bumpUtils.current8Key()] = '8.0.0'
+          releaseVersions[bumpUtils.current8Key()] = '8.0.0-rc1'
           releaseVersions[bumpUtils.nextMinor8Key()] = '8.1.0'
           releaseVersions[bumpUtils.nextPatch8Key()] = '8.0.1'
         }
@@ -68,7 +70,7 @@ pipeline {
     stage('Send Pull Request'){
       steps {
         createPullRequest(repo: env.REPO,
-                          branchName: 'master',
+                          branchName: 'main',
                           labels: 'automation',
                           message: """### What \n Bump stack version with the latest one. \n ### Further details \n ${releaseVersions}""",
                           reviewer: 'elastic/observablt-robots-on-call',

@@ -467,8 +467,7 @@ def getSupportedGithubCommands() {
     comments['/test'] = 'Re-trigger the build.'
   }
 
-  // Support for APM server
-  if (issueCommentTrigger.getCommentPattern().contains('hey-apm|package')) {
+  if (isProjectSupported('apm-server')) {
     comments['/hey-apm'] = 'Run the hey-apm benchmark.'
     comments['/package'] = 'Generate and publish the docker images.'
   }
@@ -478,21 +477,20 @@ def getSupportedGithubCommands() {
     comments['run benchmark tests'] = 'Run the benchmark test.'
   }
 
-  // Support for the nodejs APM agent
-  if (issueCommentTrigger.getCommentPattern().contains('^run (module|benchmark) tests')) {
+  if (isProjectSupported('apm-agent-nodejs')) {
     comments['run module tests for <modules>'] = 'Run TAV tests for one or more modules, where `<modules>` can be either a comma separated list of modules (e.g. memcached,redis) or the string literal ALL to test all modules'
     comments['run benchmark tests'] = 'Run the benchmark test only.'
   }
 
-  // Support for the java APM agent
-  if (issueCommentTrigger.getCommentPattern().contains('^run (compatibility|benchmark|integration)')) {
-    comments['run benchmark tests'] = 'Run the benchmark test.'
-    comments['run compatibility tests'] = 'Run the JDK Compatibility test.'
-    comments['run integration tests'] = 'Run the APM-ITs.'
+  if (isProjectSupported('apm-agent-java')) {
+    comments['run benchmark tests'] = 'Run the benchmark tests.'
+    comments['run jdk compatibility tests'] = 'Run the JDK Compatibility tests.'
+    comments['run integration tests'] = 'Run the Agent Integration tests.'
+    comments['run end-to-end tests'] = 'Run the APM-ITs.'
+    comments['run windows tests'] = 'Build & tests on windows.'
   }
 
-  // Support for the APM pipeline library
-  if (issueCommentTrigger.getCommentPattern().contains('^run infra tests')) {
+  if (isProjectSupported('apm-pipeline-library')) {
     comments['run infra tests'] = 'Run the test-infra test.'
   }
 
