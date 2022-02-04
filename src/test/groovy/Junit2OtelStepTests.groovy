@@ -20,7 +20,7 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class JunitStepTests extends ApmBasePipelineTest {
+class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
@@ -32,7 +32,7 @@ class JunitStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
-    script = loadScript('vars/junit.groovy')
+    script = loadScript('vars/junit2Otel.groovy')
   }
 
   @Test

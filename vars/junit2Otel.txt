@@ -16,7 +16,7 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                             "JUNIT_OTEL_SERVICE_VERSION=main",
                             "JUNIT_OTEL_TRACE_NAME=junit-tests"
                         ]){
-                            junit(testResults: 'TEST-*.xml')
+                            junit2Otel(testResults: 'TEST-*.xml')
                         }
                     }
                 }

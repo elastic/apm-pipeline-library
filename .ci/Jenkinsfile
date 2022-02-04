@@ -130,7 +130,7 @@ pipeline {
             "JUNIT_OTEL_SERVICE_VERSION=main",
             "JUNIT_OTEL_TRACE_NAME=junit-tests"
           ]){
-            junit(allowEmptyResults: true,
+            junit2Otel(allowEmptyResults: true,
               keepLongStdio: true,
               testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
           }

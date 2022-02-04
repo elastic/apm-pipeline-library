@@ -32,7 +32,7 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                           "JUNIT_OTEL_SERVICE_VERSION=main",
                           "JUNIT_OTEL_TRACE_NAME=junit-tests"
                         ]){
-                          junit(testResults: 'TEST-*.xml')
+                          junit2Otel(testResults: 'TEST-*.xml')
                         }
                     }
                 }
@@ -56,7 +56,7 @@ def call(Map args = [:]) {
       error('junit: docker is not installed but required.')
     }
 
-    def testResults = args.containsKey('testResults') ? args.testResults : error("junit: testResults parameter is required.")
+    def testResults = args.containsKey('testResults') ? args.testResults : error("junit2Otel: testResults parameter is required.")
     def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : 'junit2otlp'
     def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : '0.0.0'
     def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : 'junit2otlp'
@@ -74,5 +74,5 @@ def call(Map args = [:]) {
     }
   }
 
-  return steps.junit(args)
+  return junit(args)
 }
