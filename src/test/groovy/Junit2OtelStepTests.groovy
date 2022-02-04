@@ -70,7 +70,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-0.0.0-junit2otlp'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-junit2Otel'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -97,7 +97,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'Override default junit'))
-    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-0.0.0-junit2otlp'"))
+    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-junit2Otel'"))
     assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -108,7 +108,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-0.0.0-junit2otlp'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-0.0.0-junit2Otel'"))
     assertJobStatusSuccess()
   }
 
@@ -118,7 +118,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-1.2.3-junit2otlp'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-1.2.3-junit2Otel'"))
     assertJobStatusSuccess()
   }
 
@@ -128,7 +128,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otlp-0.0.0-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-mytrace'"))
     assertJobStatusSuccess()
   }
 
