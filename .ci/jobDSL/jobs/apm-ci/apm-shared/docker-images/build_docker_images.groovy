@@ -67,7 +67,7 @@ def dockerImages = [
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
-    prepare_script: 'git clone git@github.com:haproxytech/spoa-mirror.git'
+    prepare_script: 'cd ${BASE_DIR}/${params.folder} && git clone git@github.com:haproxytech/spoa-mirror.git'
   ],
   [
     name: 'apm-proxy-be',
