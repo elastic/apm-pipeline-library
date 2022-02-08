@@ -85,6 +85,128 @@ def dockerImages = [
     build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
     push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
     push: true
+  ],
+  [
+    name: 'flakey',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/jenkins-toolbox"
+  ],
+  [
+    name: 'flakeyv2',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/flaky-test-analyzer"
+  ],
+  [
+    name: 'build-analyzer',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/build-analyzer"
+  ],
+  [
+    name: 'rebuild-analyzer',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/rebuild-analyzer"
+  ],
+  [
+    name: 'integrations-test-reporter',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/integrations/reporter"
+  ],
+  [
+    name: 'slack-bridge-hey-apm',
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "tools/report-bridge"
+  ],
+  [
+    name: 'obs-jenkins-heartbeat',
+    repo: "https://github.com/elastic/observability-robots.git",
+    tag: 'latest',
+    push: true,
+    prepare_script: '''
+      cd ${BASE_DIR}/${params.folder}
+      pip3 install pyyaml
+      python3 ./generate_heartbeat_configs.py
+    ''',
+    folder: "apps/beats/heartbeat"
+  ],
+  [
+    name: "bandstand",
+    repo: 'https://github.com/elastic/observability-dev',
+    tag: "latest",
+    folder: "apps/automation/bandstand",
+    push: true
+  ],
+  [
+    name: "azure-vm-tools",
+    repo: 'https://github.com/elastic/azure-vm-extension',
+    tag: "latest",
+    folder: ".ci/docker/azure-vm-tools",
+    push: true
+  ],
+  [
+    name: 'picklesdoc',
+    repo: 'https://github.com/elastic/observability-robots.git',
+    tag: 'latest',
+    build_script: 'make build',
+    push_script: 'make push',
+    push: true,
+    folder: "apps/pickles"
+  ],
+  [
+    name: 'test-plans',
+    repo: 'https://github.com/elastic/observability-robots.git',
+    tag: 'latest',
+    build_script: 'make build',
+    push_script: 'make push',
+    push: true,
+    folder: "apps/test-plans"
+  ],
+  /*
+    APM ITs Docker images are build daily.
+  */
+  [
+    name: "apm-integration-testing",
+    repo: 'https://github.com/elastic/apm-integration-testing.git',
+    tag: "daily",
+    push: true
+  ],
+  [
+    name: "apm-integration-testing-all",  // Compile all the APM ITs Docker images (using -all suffix to be able to use this automation)
+    repo: 'https://github.com/elastic/apm-integration-testing.git',
+    build_script: "make -C docker all-tests",
+    push_script: "make -C docker all-push",
+    push: true
+  ],
+  [
+    name: "oracle-instant-client",
+    build_script: '''
+    IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
+    TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
+    docker pull ${IMAGE_TAG}
+    docker tag ${IMAGE_TAG} ${TAG_CACHE}
+    docker push ${TAG_CACHE}
+    '''
+  ],
+  [
+    name: "weblogic",
+    build_script: '''
+    IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
+    TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
+    docker pull ${IMAGE_TAG}
+    docker tag ${IMAGE_TAG} ${TAG_CACHE}
+    docker push ${TAG_CACHE}
+    '''
   ]
 ]
 
@@ -268,13 +390,13 @@ dockerImages.each{ item ->
     parameters {
       stringParam('branch_specifier', "${item.branch ?: 'main'}", "Branch where the Jenkinsfile is.")
       stringParam('branch_docker', "${item.branch_docker ?: 'master'}", "Branch where the Dockerfile is.")
-      stringParam('registry', "${registry}", "Docker Registry.")
-      stringParam('prefix', "${prefix}", "Docker registry namespace.")
+      stringParam('registry', "${registry ?: ''}", "Docker Registry.")
+      stringParam('prefix', "${prefix ?: ''}", "Docker registry namespace.")
       stringParam('tag', "${item.tag ?: 'latest'}", "Docker image tag.")
       stringParam('name', "${item.name}", "Docker image name.")
       stringParam('folder', "${item.folder ?: '.'}", "Folder where the Dockrefile is.")
-      stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
-      booleanParam('push', item.push, "True to push the Docker image to the registry.")
+      stringParam('repo', "${item.repo ?: ''}", "Repository where the Docker file is.")
+      booleanParam('push', item.push ?: false, "True to push the Docker image to the registry.")
       stringParam('docker_build_opts', "${item.build_opts ?: ''}", "Additional flags to the default docker build command.")
       stringParam('docker_build_script', "${item.build_script ?: ''}", "Script/command to build the Docker image.")
       stringParam('docker_test_script', "${item.test_script ?: ''}", "Script/command to test the Docker image.")
