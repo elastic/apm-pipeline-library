@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.288 (04/02/2022)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: use different tests for the demos [#1523](https://github.com/elastic/apm-pipeline-library/pull/1523)
+-  notification: fix JSONNull field [#1522](https://github.com/elastic/apm-pipeline-library/pull/1522)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.17.0 7.17.1 [#1527](https://github.com/elastic/apm-pipeline-library/pull/1527)
+-  main: references in beats and other projects [#1526](https://github.com/elastic/apm-pipeline-library/pull/1526)
+-  release: 7.17.0 [#1524](https://github.com/elastic/apm-pipeline-library/pull/1524)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.2.0 to 4.3.1 [#1518](https://github.com/elastic/apm-pipeline-library/pull/1518)
+-  chore(deps-dev): bump workflow-job from 1156.v7539182e7b_d5 to 1167.v8fe861b_09ef9 [#1517](https://github.com/elastic/apm-pipeline-library/pull/1517)
+
 ## v1.1.287 (31/01/2022)
 
 #### 🚀 Enhancements
