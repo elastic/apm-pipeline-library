@@ -47,7 +47,7 @@ def edge(Map args = [:]){
   return version(bumpUtils.getNextMinorReleaseFor8(), args)
 }
 
-def dev(Map args = [:]){)
+def dev(Map args = [:]){
   return version(bumpUtils.getNextPatchReleaseFor8(), args)
 }
 
