@@ -289,8 +289,18 @@ dockerImages.each{ item ->
       artifactNumToKeep(10)
       artifactDaysToKeep(-1)
     }
-    triggers {
-      cron('H H(3-4) * * 1-5')
+    properties {
+      disableResume()
+      durabilityHint{
+        hint('PERFORMANCE_OPTIMIZED')
+      }
+      pipelineTriggers {
+        triggers {
+          cron{
+              spec('H H(3-4) * * 1-5')
+            }
+        }
+      }
     }
     definition {
       cpsScm {
