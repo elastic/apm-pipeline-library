@@ -172,6 +172,9 @@ def dockerImages = [
     push: true,
     folder: "apps/test-plans"
   ],
+  /*
+    APM ITs Docker images are build daily.
+  */
   [
     name: "apm-integration-testing",
     repo: 'https://github.com/elastic/apm-integration-testing.git',
@@ -187,7 +190,6 @@ def dockerImages = [
   ],
   [
     name: "oracle-instant-client",
-    repo: 'https://github.com/elastic/apm-integration-testing.git',
     build_script: '''
     IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
     TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
@@ -197,7 +199,6 @@ def dockerImages = [
     '''
   ],
     name: "weblogic",
-    repo: 'https://github.com/elastic/apm-integration-testing.git',
     build_script: '''
     IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
     TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
