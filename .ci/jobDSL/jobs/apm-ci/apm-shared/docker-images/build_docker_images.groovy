@@ -32,11 +32,11 @@ class YamlParser {
   }
 }
 
-def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
-def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
-def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
-def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
-def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
+def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/main/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
+def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/main/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
+def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/main/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
+def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
+def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/dev-utils/.node-version')
 
 */
 
@@ -67,7 +67,7 @@ def dockerImages = [
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
-    prepare_script: 'git clone git@github.com:haproxytech/spoa-mirror.git'
+    prepare_script: 'cd ${BASE_DIR}/${params.folder} && git clone git@github.com:haproxytech/spoa-mirror.git'
   ],
   [
     name: 'apm-proxy-be',
@@ -289,8 +289,18 @@ dockerImages.each{ item ->
       artifactNumToKeep(10)
       artifactDaysToKeep(-1)
     }
-    triggers {
-      cron('H H(3-4) * * 1-5')
+    properties {
+      disableResume()
+      durabilityHint{
+        hint('PERFORMANCE_OPTIMIZED')
+      }
+      pipelineTriggers {
+        triggers {
+          cron{
+              spec('H H(3-4) * * 1-5')
+            }
+        }
+      }
     }
     definition {
       cpsScm {

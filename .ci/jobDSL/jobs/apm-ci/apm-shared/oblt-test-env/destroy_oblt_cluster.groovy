@@ -19,7 +19,7 @@ pipelineJob("apm-shared/oblt-test-env/destroy-oblt-cluster") {
   displayName('Destroy oblt cluster')
   description('Job to destroy a oblt cluster.')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
     stringParam("CLUSTER_CONFIG", "environments/CLUSTER_NAME/config-cluster.yml", "Relative path to the cluster configuration file.")
   }
   disabled(false)

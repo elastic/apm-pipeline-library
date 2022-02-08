@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.287 (31/01/2022)
+
+#### 🚀 Enhancements
+
+-  add debug traces for the runWatcher [#1520](https://github.com/elastic/apm-pipeline-library/pull/1520)
+
+#### 🐛 Bug Fixes
+
+-  fix: Pytest update attr [#1521](https://github.com/elastic/apm-pipeline-library/pull/1521)
+
 ## v1.1.286 (26/01/2022)
 
 #### 🚀 Enhancements

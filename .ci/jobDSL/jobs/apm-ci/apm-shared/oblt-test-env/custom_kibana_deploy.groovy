@@ -19,10 +19,10 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-deploy") {
   displayName('Custom Kibana - Deploy')
   description('Job to deploy Custom Kibana deployments')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
     stringParam('environment', "edge", "Test environment branch name to make the deploy into.")
     stringParam('stack_version', "", "Force to use an stack version for Helm chart and other Elastic stack configuration related.")
-    stringParam('kibana_branch', "master", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
+    stringParam('kibana_branch', "main", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
     stringParam('target_tag', "", "Tag used for the generated Docker image.")
     stringParam('slack_channel', "#observablt-bots", "Slack channel to notify the results.")
     booleanParam('build_kibana', true, 'Allow to skip the Kibana build stages.')

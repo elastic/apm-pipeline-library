@@ -19,7 +19,7 @@ projects:
   - repo: apm-server
     script: .ci/bump-stack-version.sh
     branches:
-      - master
+      - main
       - 8.<minor>
       - 7.<minor>
       - 7.<minor-1>
@@ -29,7 +29,7 @@ projects:
   - repo: beats
     script: .ci/bump-stack-version.sh
     branches:
-      - master
+      - main
       - 8.<minor>
       - 7.<minor>
       - 7.<minor-1>
@@ -51,7 +51,7 @@ projects:
   - repo: fleet-server
     script: .ci/bump-stack-version.sh
     branches:
-      - master
+      - main
       - 8.<minor>
       - 7.<minor>
       - 7.<minor-1>

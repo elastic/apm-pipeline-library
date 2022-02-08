@@ -54,7 +54,7 @@ pipeline {
         dir("${BASE_DIR}"){
           // TODO: when renaming Beats@main then replace the branch here.
           git(url: "https://github.com/elastic/${REPO}.git",
-              branch: 'master')
+              branch: 'main')
         }
         script {
           dir("${BASE_DIR}"){

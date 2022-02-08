@@ -27,48 +27,49 @@ pipeline {
     HOME="${env.WORKSPACE}"
     PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
   }
-  options {
-    timeout(time: 2, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
-    timestamps()
-    ansiColor('xterm')
-    disableResume()
-    durabilityHint('PERFORMANCE_OPTIMIZED')
-  }
   /*
     jobDSL parameters see .ci/jobDSL/jobs/apm-ci/apm-shared/docker-images/build-docker-images.groovy
   */
   stages {
-    stage('Checkout'){
-      options { skipDefaultCheckout() }
-      steps {
-        dir("${BASE_DIR}"){
-          git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
+    stage('Build Docker image'){
+      options {
+        timeout(time: 2, unit: 'HOURS')
+        timestamps()
+        ansiColor('xterm')
+      }
+      stages {
+        stage('Checkout'){
+          options { skipDefaultCheckout() }
+          steps {
+            dir("${BASE_DIR}"){
+              git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
+            }
+            prepare()
+          }
         }
-        prepare()
-      }
-    }
-    stage('build') {
-      options { skipDefaultCheckout() }
-      steps {
-        buildDocker()
-      }
-    }
-    stage('test') {
-      options { skipDefaultCheckout() }
-      steps {
-        testDocker()
-      }
-    }
-    stage('push'){
-      options { skipDefaultCheckout() }
-      when {
-        expression {
-          return params.push
+        stage('build') {
+          options { skipDefaultCheckout() }
+          steps {
+            buildDocker()
+          }
         }
-      }
-      steps {
-        pushDocker()
+        stage('test') {
+          options { skipDefaultCheckout() }
+          steps {
+            testDocker()
+          }
+        }
+        stage('push'){
+          options { skipDefaultCheckout() }
+          when {
+            expression {
+              return params.push
+            }
+          }
+          steps {
+            pushDocker()
+          }
+        }
       }
     }
   }

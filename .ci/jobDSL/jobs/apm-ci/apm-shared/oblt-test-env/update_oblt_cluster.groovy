@@ -22,7 +22,7 @@ clusters.each{ cluster ->
     displayName("Update ${cluster}-oblt cluster")
     description("Job to create a ${cluster} oblt cluster.")
     parameters {
-      stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+      stringParam("branch_specifier", "main", "the Git branch specifier to build.")
       stringParam("CLUSTER_CONFIG", "environments/${cluster}/config-cluster.yml", "Relative path to the cluster configuration file.")
     }
     disabled(false)

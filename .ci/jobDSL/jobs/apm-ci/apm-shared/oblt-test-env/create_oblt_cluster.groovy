@@ -19,7 +19,7 @@ pipelineJob("apm-shared/oblt-test-env/create-oblt-cluster") {
   displayName('Create oblt cluster')
   description('Job to create a oblt cluster.')
   parameters {
-    stringParam("branch_specifier", "master", "the Git branch specifier to build.")
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
     stringParam("CLUSTER_CONFIG", "environments/CLUSTER_NAME/config-cluster.yml", "Relative path to the cluster configuration file.")
   }
   disabled(false)
