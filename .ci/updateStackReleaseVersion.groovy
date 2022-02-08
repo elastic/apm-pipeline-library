@@ -63,7 +63,7 @@ pipeline {
           // TODO: to support the 8.x branches
           releaseVersions[bumpUtils.current8Key()] = '8.0.0'
           releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
-          releaseVersions[bumpUtils.nextPatch8Key()] = '8.0.1'
+          releaseVersions[bumpUtils.nextPatch8Key()] = '8.1.0'
         }
       }
     }
