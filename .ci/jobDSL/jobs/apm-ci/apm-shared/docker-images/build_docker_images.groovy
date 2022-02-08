@@ -198,6 +198,7 @@ def dockerImages = [
     docker push ${TAG_CACHE}
     '''
   ],
+  [
     name: "weblogic",
     build_script: '''
     IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
