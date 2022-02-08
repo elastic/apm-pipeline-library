@@ -182,7 +182,7 @@ def dockerImages = [
     push: true
   ],
   [
-    name: "apm-integration-testing-aux",
+    name: "apm-integration-testing-all",  // Compile all the APM ITs Docker images (using -all suffix to be able to use this automation)
     repo: 'https://github.com/elastic/apm-integration-testing.git',
     build_script: "make -C docker all-tests",
     push_script: "make -C docker all-push",
