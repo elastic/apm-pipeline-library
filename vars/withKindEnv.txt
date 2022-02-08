@@ -1,0 +1,10 @@
+Install Kind, Kubectl and configure Kind to run some command within the kind/kubectl context
+
+```
+  withKindEnv(k8sVersion: 'v0.11.1', kindVersion: 'v1.23.0'){
+    ..
+  }
+```
+
+* k8sVersion: K8s version to install. Optional
+* kindVersion: Kind version to install. Optional
