@@ -23,8 +23,6 @@ else
 fi
 
 echo "Update stack with versions ${VERSION_RELEASE} and ${VERSION_DEV}"
-${SED} -E -e "s#(def releaseVersion) = \"[0-9]+\.[0-9]+\.[0-9]\"#\1 = \"${VERSION_RELEASE}\"#g" vars/stackVersions.groovy
-${SED} -E -e "s#(def devVersion) = \"[0-9]+\.[0-9]+\.[0-9]\"#\1 = \"${VERSION_DEV}\"#g" vars/stackVersions.groovy
 ${SED} -E -e "s#(docker.elastic.co/beats/.*beat:)[0-9]+\.[0-9]+\.[0-9]#\1${VERSION_RELEASE}#g" .ci/packer_cache.sh
 ${SED} -E -e "s#(docker.elastic.co/beats/.*beat:)[0-9]+\.[0-9]+\.[0-9]#\1${VERSION_RELEASE}#g" vars/filebeat.groovy
 ${SED} -E -e "s#(docker.elastic.co/beats/.*beat:)[0-9]+\.[0-9]+\.[0-9]#\1${VERSION_RELEASE}#g" vars/metricbeat.groovy

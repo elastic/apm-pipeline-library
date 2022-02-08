@@ -44,22 +44,15 @@ def version(value, args = [:]){
 }
 
 def edge(Map args = [:]){
-  // TODO: this should not use a hardcoded string but bmptUtils.getNextMinorReleaseFor8()
-  return version("8.1.0", args)
+  return version(bumpUtils.getNextMinorReleaseFor8(), args)
 }
 
-def dev(Map args = [:]){
-  // IMPORTANT: this variable is needed to automate the elastic stack bump
-  def devVersion = "7.17.1"
-  // TODO: this should not use a hardcoded string but bmptUtils.getNextMinorReleaseFor7()
-  return version(devVersion, args)
+def dev(Map args = [:]){)
+  return version(bumpUtils.getNextPatchReleaseFor8(), args)
 }
 
 def release(Map args = [:]){
-  // IMPORTANT: this variable is needed to automate the elastic stack bump
-  // TODO: this should not use a hardcoded string but bmptUtils.getCurrentMinorReleaseFor7()
-  def releaseVersion = "7.17.0"
-  return version(releaseVersion, args)
+  return version(bumpUtils.getCurrentMinorReleaseFor7(), args)
 }
 
 def isSnapshot(args){
