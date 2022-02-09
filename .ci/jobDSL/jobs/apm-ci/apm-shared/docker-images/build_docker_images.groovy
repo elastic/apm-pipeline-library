@@ -67,7 +67,7 @@ def dockerImages = [
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
-    prepare_script: 'cd ${BASE_DIR}/${params.folder} && git clone git@github.com:haproxytech/spoa-mirror.git'
+    prepare_script: 'cd tools/apm_proxy/frontend && git clone git@github.com:haproxytech/spoa-mirror.git'
   ],
   [
     name: 'apm-proxy-be',
@@ -134,7 +134,7 @@ def dockerImages = [
     tag: 'latest',
     push: true,
     prepare_script: '''
-      cd ${BASE_DIR}/${params.folder}
+      cd apps/beats/heartbeat
       pip3 install pyyaml
       python3 ./generate_heartbeat_configs.py
     ''',
@@ -190,23 +190,23 @@ def dockerImages = [
   ],
   [
     name: "oracle-instant-client",
-    build_script: '''
+    build_script: """
     IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
-    TAG_CACHE = "${params.registry}/${params.tag_prefix}/database-instantclient:12.2.0.1"
-    docker pull ${IMAGE_TAG}
-    docker tag ${IMAGE_TAG} ${TAG_CACHE}
-    docker push ${TAG_CACHE}
-    '''
+    TAG_CACHE = "${registry}/${prefix}/database-instantclient:12.2.0.1"
+    docker pull $IMAGE_TAG
+    docker tag $IMAGE_TAG $TAG_CACHE
+    docker push $TAG_CACHE
+    """
   ],
   [
     name: "weblogic",
-    build_script: '''
+    build_script: """
     IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
-    TAG_CACHE = "${params.registry}/${params.tag_prefix}/weblogic:12.2.1.3-dev"
-    docker pull ${IMAGE_TAG}
-    docker tag ${IMAGE_TAG} ${TAG_CACHE}
-    docker push ${TAG_CACHE}
-    '''
+    TAG_CACHE = "${registry}/${prefix}/weblogic:12.2.1.3-dev"
+    docker pull $IMAGE_TAG
+    docker tag $IMAGE_TAG $TAG_CACHE
+    docker push $TAG_CACHE
+    """
   ]
 ]
 

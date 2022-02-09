@@ -19,19 +19,19 @@
 
 pipeline {
   agent { label "ubuntu-20"}
-  environment {
-    BASE_DIR="${params.name}-${params.tag}"
-    NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL='INFO'
-    DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
-    HOME="${env.WORKSPACE}"
-    PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
-  }
   /*
     jobDSL parameters see .ci/jobDSL/jobs/apm-ci/apm-shared/docker-images/build-docker-images.groovy
   */
   stages {
     stage('Build Docker image'){
+      environment {
+        BASE_DIR="${params.name}-${params.tag}"
+        NOTIFY_TO = credentials('notify-to')
+        PIPELINE_LOG_LEVEL='INFO'
+        DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
+        HOME="${env.WORKSPACE}"
+        PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
+      }
       options {
         timeout(time: 2, unit: 'HOURS')
         timestamps()
