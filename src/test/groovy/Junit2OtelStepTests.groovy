@@ -71,7 +71,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = ''
 
     String version = script.calculateFallbackServiceVersion()
-    assertEquals(version, '0.0.0')
+    assertEquals(version, 'unknown')
 
     env.TAG_NAME = 'v7.8.9'
     version = script.calculateFallbackServiceVersion()
@@ -216,7 +216,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('log', 'Override default junit'))
-    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-junit2Otel'"))
+    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-unknown-junit2Otel'"))
     assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
