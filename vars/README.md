@@ -1896,6 +1896,10 @@ Whether the architecture is a x86 based using the `nodeArch` step
 Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
 populated later on, using the https://github.com/mdelapenya/junit2otel library.
 
+1. If the REPO variable is set, but the OTEL_SERVICE_NAME is not, then REPO will be used as service name.
+2. If the REPO variable is set, but the JUNIT_OTEL_TRACE_NAME is not, then REPO will be used as trace name.
+3. If the JUNIT_OTEL_SERVICE_VERSION is not set, then it will use, in this particular order: pull-request ID, tag name and branch name.
+
 ```
 
     pipeline {
