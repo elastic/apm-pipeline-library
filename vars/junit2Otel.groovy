@@ -58,7 +58,7 @@ def call(Map args = [:]) {
 
     def testResults = args.containsKey('testResults') ? args.testResults : error("junit2Otel: testResults parameter is required.")
     def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2Otel')
-    def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : '0.0.0'
+    def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : calculateFallbackServiceVersion()
     def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2Otel')
 
     withEnv([
@@ -75,4 +75,20 @@ def call(Map args = [:]) {
   }
 
   return junit(args)
+}
+
+def calculateFallbackServiceVersion() {
+  if (isPR()) {
+    return env.CHANGE_ID;
+  }
+
+  if (isTag()) {
+    return env.TAG_NAME;
+  }
+
+  if (isBranch()) {
+    return env.BRANCH_NAME;
+  }
+
+  return '0.0.0'
 }

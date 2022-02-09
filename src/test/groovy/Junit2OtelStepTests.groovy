@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
@@ -65,12 +66,36 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_calculateFallbackServiceVersion() throws Exception {
+    // reset branch name first
+    env.BRANCH_NAME = ''
+
+    String version = script.calculateFallbackServiceVersion()
+    assertEquals(version, '0.0.0')
+
+    env.TAG_NAME = 'v7.8.9'
+    version = script.calculateFallbackServiceVersion()
+    assertEquals(version, 'v7.8.9')
+    env.TAG_NAME = ''
+
+    env.CHANGE_ID = 'PR-23'
+    version = script.calculateFallbackServiceVersion()
+    assertEquals(version, 'PR-23')
+    env.CHANGE_ID = ''
+
+    env.BRANCH_NAME = 'feature/foo'
+    version = script.calculateFallbackServiceVersion()
+    assertEquals(version, 'feature/foo')
+    env.BRANCH_NAME = ''
+  }
+
+  @Test
   void test_results() throws Exception {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-junit2Otel'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-master-junit2Otel'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -90,6 +115,48 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_results_with_otel_and_branch_version() throws Exception {
+    env.OTEL_SERVICE_NAME = "myservice"
+    env.BRANCH_NAME = "feature/foo"
+    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-feature/foo-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_results_with_otel_and_pr_version() throws Exception {
+    env.OTEL_SERVICE_NAME = "myservice"
+    env.CHANGE_ID = "PR-123"
+    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-PR-123-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_results_with_otel_and_tag_version() throws Exception {
+    env.OTEL_SERVICE_NAME = "myservice"
+    env.TAG_NAME = "v1.2.3"
+    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-v1.2.3-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_results_with_repo_variables() throws Exception {
     env.REPO = "myrepo"
     env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
@@ -98,6 +165,45 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-1.2.3-myrepo'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_results_with_repo_and_branch_version() throws Exception {
+    env.REPO = "myrepo"
+    env.BRANCH_NAME = "feature/foo"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-feature/foo-myrepo'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_results_with_repo_and_pr_version() throws Exception {
+    env.REPO = "myrepo"
+    env.CHANGE_ID = "PR-123"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-PR-123-myrepo'"))
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_results_with_repo_and_tag_version() throws Exception {
+    env.REPO = "myrepo"
+    env.TAG_NAME = "v1.2.3"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-v1.2.3-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -121,7 +227,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-0.0.0-junit2Otel'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-master-junit2Otel'"))
     assertJobStatusSuccess()
   }
 
@@ -141,7 +247,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-0.0.0-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-master-mytrace'"))
     assertJobStatusSuccess()
   }
 
