@@ -170,8 +170,6 @@ pipeline {
             validateDeclarativePipeline '.ci/buildDockerImages.groovy'
             validateDeclarativePipeline '.ci/dockerImagesOpbeans.groovy'
             validateDeclarativePipeline '.ci/jobdsl-generator.groovy'
-            validateDeclarativePipeline '.ci/licenseScan.groovy'
-            validateDeclarativePipeline '.ci/licenseScanGeneral.groovy'
             validateDeclarativePipeline '.ci/schedule-daily.groovy'
             validateDeclarativePipeline '.ci/schedule-weekly.groovy'
             validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
