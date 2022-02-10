@@ -29,6 +29,7 @@ pipeline {
         NOTIFY_TO = credentials('notify-to')
         PIPELINE_LOG_LEVEL='INFO'
         DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
+        DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
         HOME="${env.WORKSPACE}"
         PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
       }
@@ -97,6 +98,7 @@ def generateImageName(){
 def buildDocker(){
   def script = isNotBlank(params.docker_build_script) ? params.docker_build_script : "docker build --force-rm ${params.docker_build_opts} -t ${generateImageName()} ."
   dir("${BASE_DIR}"){
+    dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
     dockerLogin(secret: "${DOCKER_SECRET}", registry: "${params.registry}")
     dir("${params.folder}"){
       retry(3) {
