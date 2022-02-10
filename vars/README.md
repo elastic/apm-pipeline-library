@@ -1927,6 +1927,8 @@ populated later on with the runbld post build step.
 **NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
 
 ## licenseScan
+**UNSUPPORTED**
+
 Scan the repository for third-party dependencies and report the results.
 
 ```
@@ -3393,6 +3395,18 @@ Configure the hub app to run the body closure.
 
 _NOTE:_
 * Windows agents are not supported.
+
+## withKindEnv
+Install Kind, Kubectl and configure Kind to run some command within the kind/kubectl context
+
+```
+  withKindEnv(k8sVersion: 'v0.11.1', kindVersion: 'v1.23.0'){
+    ..
+  }
+```
+
+* k8sVersion: K8s version to install. Optional
+* kindVersion: Kind version to install. Optional
 
 ## withMageEnv
 
