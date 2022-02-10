@@ -94,7 +94,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-master-junit2Otel'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -108,7 +107,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-1.2.3-mytrace'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -122,7 +120,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-feature/foo-mytrace'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -136,7 +133,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-PR-123-mytrace'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -150,7 +146,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-v1.2.3-mytrace'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -163,7 +158,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-1.2.3-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -176,7 +170,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-feature/foo-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -189,7 +182,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-PR-123-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -202,7 +194,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-v1.2.3-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
@@ -215,7 +206,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', 'Override default junit'))
     assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-unknown-junit2Otel'"))
     assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()

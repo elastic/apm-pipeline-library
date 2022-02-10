@@ -50,8 +50,6 @@ def call(Map args = [:]) {
   def sendTraces = env.JUNIT_2_OTLP?.trim() ? true : false
 
   if (sendTraces) {
-    log(level: 'INFO', text: 'Override default junit')
-
     if(!isUnix()){
       error('junit: windows is not supported yet.')
     }
