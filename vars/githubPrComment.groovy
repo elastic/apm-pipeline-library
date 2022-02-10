@@ -110,7 +110,7 @@ def getCommentFromFile(Map args = [:]) {
   def commentFile = args.commentFile
   try {
     copyArtifacts(filter: commentFile, flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
-  } catch(e) {
+  } catch(err) {
     // Some CI controllers don't grant access to copy artifacts between jobs.
     log(level: 'INFO', text: "Could not copy artifacts from the build. ${err.toString()}")
     return ''
