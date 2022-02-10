@@ -88,49 +88,49 @@ def dockerImages = [
   ],
   [
     name: 'flakey',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "apps/automation/jenkins-toolbox"
   ],
   [
     name: 'flakeyv2',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "apps/automation/flaky-test-analyzer"
   ],
   [
     name: 'build-analyzer',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "apps/automation/build-analyzer"
   ],
   [
     name: 'rebuild-analyzer',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "apps/automation/rebuild-analyzer"
   ],
   [
     name: 'integrations-test-reporter',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "apps/automation/integrations/reporter"
   ],
   [
     name: 'slack-bridge-hey-apm',
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: 'latest',
     push: true,
     folder: "tools/report-bridge"
   ],
   [
     name: 'obs-jenkins-heartbeat',
-    repo: "https://github.com/elastic/observability-robots.git",
+    repo: "git@github.com:elastic/observability-robots.git",
     tag: 'latest',
     push: true,
     prepare_script: '''
@@ -142,21 +142,21 @@ def dockerImages = [
   ],
   [
     name: "bandstand",
-    repo: 'https://github.com/elastic/observability-dev',
+    repo: 'git@github.com:elastic/observability-dev',
     tag: "latest",
     folder: "apps/automation/bandstand",
     push: true
   ],
   [
     name: "azure-vm-tools",
-    repo: 'https://github.com/elastic/azure-vm-extension',
+    repo: 'git@github.com:elastic/azure-vm-extension',
     tag: "latest",
     folder: ".ci/docker/azure-vm-tools",
     push: true
   ],
   [
     name: 'picklesdoc',
-    repo: 'https://github.com/elastic/observability-robots.git',
+    repo: 'git@github.com:elastic/observability-robots.git',
     tag: 'latest',
     build_script: 'make build',
     push_script: 'make push',
@@ -165,7 +165,7 @@ def dockerImages = [
   ],
   [
     name: 'test-plans',
-    repo: 'https://github.com/elastic/observability-robots.git',
+    repo: 'git@github.com:elastic/observability-robots.git',
     tag: 'latest',
     build_script: 'make build',
     push_script: 'make push',
@@ -177,13 +177,13 @@ def dockerImages = [
   */
   [
     name: "apm-integration-testing",
-    repo: 'https://github.com/elastic/apm-integration-testing.git',
+    repo: 'git@github.com:elastic/apm-integration-testing.git',
     tag: "daily",
     push: true
   ],
   [
     name: "apm-integration-testing-all",  // Compile all the APM ITs Docker images (using -all suffix to be able to use this automation)
-    repo: 'https://github.com/elastic/apm-integration-testing.git',
+    repo: 'git@github.com:elastic/apm-integration-testing.git',
     build_script: "make -C docker all-tests",
     push_script: "make -C docker all-push",
     push: true
