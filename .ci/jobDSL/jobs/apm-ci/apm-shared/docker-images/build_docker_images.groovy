@@ -191,21 +191,17 @@ def dockerImages = [
   [
     name: "oracle-instant-client",
     build_script: """
-    IMAGE_TAG = "store/oracle/database-instantclient:12.2.0.1"
-    TAG_CACHE = "${registry}/${prefix}/database-instantclient:12.2.0.1"
-    docker pull \${IMAGE_TAG}
-    docker tag \${IMAGE_TAG} \${TAG_CACHE}
-    docker push \${TAG_CACHE}
+    docker pull store/oracle/database-instantclient:12.2.0.1;
+    docker tag store/oracle/database-instantclient:12.2.0.1 ${registry}/${prefix}/database-instantclient:12.2.0.1;
+    docker push ${registry}/${prefix}/database-instantclient:12.2.0.1;
     """
   ],
   [
     name: "weblogic",
     build_script: """
-    IMAGE_TAG = "store/oracle/weblogic:12.2.1.3-dev"
-    TAG_CACHE = "${registry}/${prefix}/weblogic:12.2.1.3-dev"
-    docker pull \${IMAGE_TAG}
-    docker tag \${IMAGE_TAG} \${TAG_CACHE}
-    docker push \${TAG_CACHE}
+    docker pull store/oracle/weblogic:12.2.1.3-dev;
+    docker tag store/oracle/weblogic:12.2.1.3-dev ${registry}/${prefix}/weblogic:12.2.1.3-dev;
+    docker push ${registry}/${prefix}/weblogic:12.2.1.3-dev;
     """
   ]
 ]
