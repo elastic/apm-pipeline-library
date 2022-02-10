@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.289 (08/02/2022)
+
+#### 🚀 Enhancements
+
+-  Support step to install kind/kubectl and configure kind [#1530](https://github.com/elastic/apm-pipeline-library/pull/1530)
+- [**Team:Automation**] test: refactor options and properties to avoid modify the jobDSL job on builds [#1529](https://github.com/elastic/apm-pipeline-library/pull/1529)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: apm proxy Docker image build [#1528](https://github.com/elastic/apm-pipeline-library/pull/1528)
+
+#### 🙈 No user affected
+
+-  chore: bump versions manually [#1531](https://github.com/elastic/apm-pipeline-library/pull/1531)
+
+#### ⚙️ CI
+
+- [**Team:Automation**] feat: move stackVersions to use bumpUtils [#1533](https://github.com/elastic/apm-pipeline-library/pull/1533)
+
 ## v1.1.288 (04/02/2022)
 
 #### 🐛 Bug Fixes
