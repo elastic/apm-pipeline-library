@@ -108,7 +108,12 @@ def editComment(id, details) {
 
 def getCommentFromFile(Map args = [:]) {
   def commentFile = args.commentFile
-  copyArtifacts(filter: commentFile, flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
+  try {
+    copyArtifacts(filter: commentFile, flatten: true, optional: true, projectName: env.JOB_NAME, selector: lastWithArtifacts())
+  } catch(e) {
+    // Some CI controllers don't grant access to copy artifacts between jobs.
+    return ''
+  }
   if (fileExists(commentFile)) {
     return readFile(commentFile)?.trim()
   } else {
