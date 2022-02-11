@@ -1892,6 +1892,54 @@ Whether the architecture is a x86 based using the `nodeArch` step
     }
 ```
 
+## junit2otel
+Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
+populated later on, using the https://github.com/mdelapenya/junit2otel library.
+
+1. If the REPO variable is set, but the OTEL_SERVICE_NAME is not, then REPO will be used as service name.
+2. If the REPO variable is set, but the JUNIT_OTEL_TRACE_NAME is not, then REPO will be used as trace name.
+3. If the JUNIT_OTEL_SERVICE_VERSION is not set, then it will use, in this particular order: pull-request ID, tag name and branch name. Else, it will use 'unknown'.
+
+```
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with OpenTelemetry traces
+                        withEnv([
+                            "JUNIT_2_OTLP=true",
+                            "OTEL_SERVICE_NAME=apm-pipeline-library",
+                            "JUNIT_OTEL_SERVICE_VERSION=main",
+                            "JUNIT_OTEL_TRACE_NAME=junit-tests"
+                        ]){
+                            junit2otel(testResults: 'TEST-*.xml')
+                        }
+
+                        // JUnit with attributes inferred from Repository
+                        withEnv([
+                            "JUNIT_2_OTLP=true",
+                            "REPO=apm-pipeline-library",
+                        ]){
+                            junit2otel(testResults: 'TEST-*.xml')
+                        }
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
+
 ## junitAndStore
 Wrap the junit built-in step to archive the test reports that are going to be
 populated later on with the runbld post build step.

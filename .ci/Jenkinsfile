@@ -124,9 +124,16 @@ pipeline {
       post {
         always {
           archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
-          junit(allowEmptyResults: true,
-            keepLongStdio: true,
-            testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+          withEnv([
+            "JUNIT_2_OTLP=true",
+            "OTEL_SERVICE_NAME=apm-pipeline-library",
+            "JUNIT_OTEL_SERVICE_VERSION=main",
+            "JUNIT_OTEL_TRACE_NAME=junit-tests"
+          ]){
+            junit(allowEmptyResults: true,
+              keepLongStdio: true,
+              testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
+          }
         }
       }
     }
