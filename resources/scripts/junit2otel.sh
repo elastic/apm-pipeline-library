@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eu
+set -e
 
 readonly DOCKER_IMAGE="mdelapenya/junit2otlp:latest"
 
