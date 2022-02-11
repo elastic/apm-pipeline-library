@@ -1892,7 +1892,7 @@ Whether the architecture is a x86 based using the `nodeArch` step
     }
 ```
 
-## junit2Otel
+## junit2otel
 Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
 populated later on, using the https://github.com/mdelapenya/junit2otel library.
 
@@ -1915,7 +1915,7 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                             "JUNIT_OTEL_SERVICE_VERSION=main",
                             "JUNIT_OTEL_TRACE_NAME=junit-tests"
                         ]){
-                            junit2Otel(testResults: 'TEST-*.xml')
+                            junit2otel(testResults: 'TEST-*.xml')
                         }
                     }
                 }

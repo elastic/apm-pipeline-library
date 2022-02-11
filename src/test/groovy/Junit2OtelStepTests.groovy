@@ -33,7 +33,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
-    script = loadScript('vars/junit2Otel.groovy')
+    script = loadScript('vars/junit2otel.groovy')
   }
 
   @Test
@@ -94,7 +94,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-master-junit2Otel'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-master-junit2otel'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -206,7 +206,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-unknown-junit2Otel'"))
+    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-unknown-junit2otel'"))
     assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
@@ -217,7 +217,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-master-junit2Otel'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-master-junit2otel'"))
     assertJobStatusSuccess()
   }
 
@@ -227,7 +227,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-1.2.3-junit2Otel'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-1.2.3-junit2otel'"))
     assertJobStatusSuccess()
   }
 
@@ -237,7 +237,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2Otel-master-mytrace'"))
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-master-mytrace'"))
     assertJobStatusSuccess()
   }
 

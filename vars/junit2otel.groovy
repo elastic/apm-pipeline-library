@@ -36,7 +36,7 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                           "JUNIT_OTEL_SERVICE_VERSION=main",
                           "JUNIT_OTEL_TRACE_NAME=junit-tests"
                         ]){
-                          junit2Otel(testResults: 'TEST-*.xml')
+                          junit2otel(testResults: 'TEST-*.xml')
                         }
                     }
                 }
@@ -58,10 +58,10 @@ def call(Map args = [:]) {
       error('junit: docker is not installed but required.')
     }
 
-    def testResults = args.containsKey('testResults') ? args.testResults : error("junit2Otel: testResults parameter is required.")
-    def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2Otel')
+    def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
+    def serviceName = env.OTEL_SERVICE_NAME?.trim() ? env.OTEL_SERVICE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
     def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : calculateFallbackServiceVersion()
-    def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2Otel')
+    def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
 
     withEnv([
       "SERVICE_NAME=${serviceName}",
