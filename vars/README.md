@@ -1917,6 +1917,14 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                         ]){
                             junit2otel(testResults: 'TEST-*.xml')
                         }
+
+                        // JUnit with attributes inferred from Repository
+                        withEnv([
+                            "JUNIT_2_OTLP=true",
+                            "REPO=apm-pipeline-library",
+                        ]){
+                            junit2otel(testResults: 'TEST-*.xml')
+                        }
                     }
                 }
             }
