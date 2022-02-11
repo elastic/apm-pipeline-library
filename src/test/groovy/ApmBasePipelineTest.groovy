@@ -542,6 +542,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('junit2otel', [Map.class], { m ->
+      def script = loadScript('vars/junit2otel.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
     helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
