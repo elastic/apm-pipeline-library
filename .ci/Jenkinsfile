@@ -22,6 +22,7 @@ pipeline {
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
+    JUNIT_2_OTLP = 'true'
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'DEBUG'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
@@ -124,16 +125,9 @@ pipeline {
       post {
         always {
           archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html')
-          withEnv([
-            "JUNIT_2_OTLP=true",
-            "OTEL_SERVICE_NAME=apm-pipeline-library",
-            "JUNIT_OTEL_SERVICE_VERSION=main",
-            "JUNIT_OTEL_TRACE_NAME=junit-tests"
-          ]){
-            junit(allowEmptyResults: true,
-              keepLongStdio: true,
-              testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
-          }
+          junit2otel(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
         }
       }
     }
@@ -199,7 +193,7 @@ pipeline {
       }
       post {
         always {
-          junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
+          junit2otel(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
         }
       }
     }
@@ -222,7 +216,7 @@ pipeline {
       }
       post {
         always {
-          junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
+          junit2otel(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
         }
       }
     }
