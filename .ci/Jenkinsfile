@@ -128,7 +128,7 @@ pipeline {
             archiveArtifacts(allowEmptyArchive: true, artifacts: '**/mail-out-test*.html')
             junit2otel(allowEmptyResults: true,
               keepLongStdio: true,
-              testResults: "target/surefire-reports/junit-*.xml,target/surefire-reports/TEST-*.xml")
+              testResults: "target/surefire-reports/TEST-*.xml")
           }
         }
       }
