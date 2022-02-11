@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@main') _
+@Library('apm@use-junit2otel-step') _
 
 pipeline {
   agent { label 'linux && immutable' }
