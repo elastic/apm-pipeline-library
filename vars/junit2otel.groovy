@@ -63,7 +63,7 @@ def call(Map args = [:]) {
     }
 
     if(!isInstalled(tool: 'docker', flag: '--version')) {
-      error('junit: docker is not installed but required.')
+      error('junit2otel: docker is not installed but required.')
     }
 
     def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
