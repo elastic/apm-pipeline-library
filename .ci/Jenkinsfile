@@ -125,7 +125,7 @@ pipeline {
       post {
         always {
           dir("${BASE_DIR}"){
-            archiveArtifacts(allowEmptyArchive: true, artifacts: '**/mail-out-test*.html')
+            archiveArtifacts(allowEmptyArchive: true, artifacts: '**/mail-out-test*.html, target/surefire-reports/TEST-*.xml')
             junit2otel(allowEmptyResults: true,
               keepLongStdio: true,
               testResults: "target/surefire-reports/TEST-*.xml")
