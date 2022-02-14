@@ -56,6 +56,7 @@ pipeline {
       steps {
         echo ' TODO: calculate the versions'
         script {
+          // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
           releaseVersions[bumpUtils.current6Key()] = '6.8.23'
           releaseVersions[bumpUtils.current7Key()] = '7.17.0'
           releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.1'
