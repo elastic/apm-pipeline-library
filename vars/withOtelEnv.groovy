@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.cloudbees.groovy.cps.NonCPS
-
 /**
   Configure the OpenTelemetry Jenkins context to run the body closure.
 
@@ -77,9 +75,9 @@ def runBodyWithEndpoint(Closure body) {
     otelEnvs = ["TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"]
   }
 
-  def serviceName = getServiceName()
+  def serviceName = otelHelper.getServiceName()
   if (serviceName?.trim()) {
-    otelEnvs << ["JENKINS_OTEL_SERVICE_NAME=${serviceName}"]
+    otelEnvs << "JENKINS_OTEL_SERVICE_NAME=${serviceName}"
   }
 
   withEnvMask(vars: [
@@ -90,10 +88,4 @@ def runBodyWithEndpoint(Closure body) {
       body()
     }
   }
-}
-
-@NonCPS
-def getServiceName() {
-  def value = getOtelPlugin().getServiceName()
-  return value
 }
