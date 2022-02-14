@@ -24,6 +24,7 @@ echo "SERVICE_NAME=${SERVICE_NAME}"
 echo "SERVICE_VERSION=${SERVICE_VERSION}"
 echo "TEST_RESULTS_GLOB=${TEST_RESULTS_GLOB}"
 echo "TRACE_NAME=${TRACE_NAME}"
+echo "TRACEPARENT=00-${TRACE_ID}-${SPAN_ID}-01"
 
 for glob in $(echo "${TEST_RESULTS_GLOB} "| sed "s/,/ /g")
 do
@@ -35,6 +36,7 @@ do
     cat "$f" | docker run \
       --rm -i \
       --network host \
+      --env "TRACEPARENT=${TRACEPARENT}" \
       --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
       --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" \
       ${DOCKER_IMAGE} \

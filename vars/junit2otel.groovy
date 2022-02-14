@@ -75,7 +75,8 @@ def call(Map args = [:]) {
       "SERVICE_NAME=${serviceName}",
       "SERVICE_VERSION=${serviceVersion}",
       "TEST_RESULTS_GLOB=${testResults}",
-      "TRACE_NAME=${traceName}"
+      "TRACE_NAME=${traceName}",
+      "TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"
     ]){
       withOtelEnv() {
         log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
