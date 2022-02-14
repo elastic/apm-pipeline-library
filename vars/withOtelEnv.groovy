@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import com.cloudbees.groovy.cps.NonCPS
+
 /**
   Configure the OpenTelemetry Jenkins context to run the body closure.
 
