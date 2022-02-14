@@ -54,9 +54,11 @@ def runBodyWithCredentials(credentialsId, Closure body) {
   // Then, mask and provide the environment variables.
   withCredentials([string(credentialsId: credentialsId, variable: 'OTEL_TOKEN_ID')]) {
     def otel_headers = env.OTEL_EXPORTER_OTLP_HEADERS ? "${env.OTEL_EXPORTER_OTLP_HEADERS} " : ''
+    def serviceName = getServiceName()
     withEnvMask(vars: [
       [var: 'ELASTIC_APM_SECRET_TOKEN', password: env.OTEL_TOKEN_ID],
-      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "${otel_headers}authorization=Bearer ${env.OTEL_TOKEN_ID}"]
+      [var: 'OTEL_EXPORTER_OTLP_HEADERS', password: "${otel_headers}authorization=Bearer ${env.OTEL_TOKEN_ID}"],
+      [var: 'OTEL_SERVICE_NAME', password: serviceName]
     ]) {
       runBodyWithEndpoint(){
         body()
@@ -82,4 +84,10 @@ def runBodyWithEndpoint(Closure body) {
       body()
     }
   }
+}
+
+@NonCPS
+def getServiceName() {
+  def value = getOtelPlugin().getServiceName()
+  return value
 }
