@@ -222,6 +222,17 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_service_name_and_repo() throws Exception {
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
+    env.REPO = "myrepo"
+    script.call(testResults: 'test-results/TEST-*.xml')
+
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-master-myrepo'"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_service_version() throws Exception {
     env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
     script.call(testResults: 'test-results/TEST-*.xml')
