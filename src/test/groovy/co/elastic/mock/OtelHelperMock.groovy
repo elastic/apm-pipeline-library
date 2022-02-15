@@ -38,4 +38,5 @@ class OtelHelperMock implements Serializable {
   public getOtelPlugin() { return 'otel-plugin' }
   public getAuthentication() { return 'otel-authentication' }
   public getEndpoint() { return 'otel-endpoint' }
+  public getServiceName() { return 'otel-service' }
 }
