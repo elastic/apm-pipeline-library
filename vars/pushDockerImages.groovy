@@ -16,67 +16,79 @@
 // under the License.
 
 /**
-  https://plugins.jenkins.io/github
-  Update the commit status on GitHub with the current status of the build.
 
-  updateGithubCommitStatus(
-    repoUrl: "${GIT_URL}",
-    commitSha: "${GIT_COMMIT}",
-    message: 'Build result.'
+Publish docker images in the given docker registry. For such, it
+retags the existing docker images and publish them in the given
+docker namespace.
+
+It also allows to transform the version and customise private docker
+namespaces/registries.
+
+  pushDockerImages(
+    secret: "my-secret",
+    registry: "my-registry",
+    arch: 'amd64',
+    version: '8.2.0',
+    snapshot: true,
+    project: [
+      name: 'filebeat',
+      variants: [
+        '' : 'beats',
+        'ubi8' : 'beats',
+        'cloud' : 'beats-ci',
+        'complete' : 'beats',
+      ]
+    ],
+    targetNamespace: 'observability-ci'
   )
 
-  updateGithubCommitStatus()
-
-  updateGithubCommitStatus(message: 'Build result.')
 */
 def call(Map args = [:]) {
-
-}
-
-/**
-* @param arch what architecture
-*/
-def pushDockerImages(Map args = [:]) {
-  def name = args.containsKey('name') ? args.name : error('foo')
+  if(!isUnix()){
+    error('publishToCDN: windows is not supported yet.')
+  }
+  def registry = args.containsKey('registry') ? args.registry : error('pushDockerImages: registry parameter is required')
+  def secret = args.containsKey('secret') ? args.secret : error('pushDockerImages: secret parameter is required')
+  def targetNamespace = args.containsKey('targetNamespace') ? args.targetNamespace : error('pushDockerImages: targetNamespace parameter is required')
+  def version = args.containsKey('version') ? args.version : error('pushDockerImages: version parameter is required')
   def arch = args.get('arch', 'amd64')
-  def variants = args.get('variants', [''])
-  dockerLogin(secret: "${env.DOCKER_ELASTIC_SECRET}", registry: "${env.DOCKER_REGISTRY}")
-  def libbetaVer = env.BEAT_VERSION
+  def project = args.get('project', [:])
+  def snapshot = args.get('snapshot', true)
+
+  if (!project.containsKey('name')) {
+    error('pushDockerImages: project.name parameter is required')
+  }
+
+  // Transform version in a snapshot.
+  def sourceTag = version
   def aliasVersion = ""
-  if("${env.SNAPSHOT}" == "true"){
-    aliasVersion = libbetaVer.substring(0, libbetaVer.lastIndexOf(".")) // remove third number in version
-
-    libbetaVer += "-SNAPSHOT"
-    aliasVersion += "-SNAPSHOT"
+  if (snapshot) {
+    // remove third number in version
+    aliasVersion = version.substring(0, version.lastIndexOf(".")) + "-SNAPSHOT"
+    sourceTag += "-SNAPSHOT"
   }
 
-  def tagName = "${libbetaVer}"
-  if (isPR()) {
-    tagName = "pr-${env.CHANGE_ID}"
-  }
+  // What docker tags are gonna be used
+  def tags = calculateTags(sourceTag, aliasVersion)
 
-  // supported tags
-  def tags = [tagName, "${env.GIT_BASE_COMMIT}"]
-  if (!isPR() && aliasVersion != "") {
-    tags << aliasVersion
-  }
-
-  variants.each { variant ->
-    // cloud docker images are stored in the private docker namespace.
-    def sourceNamespace = variant.equals('-cloud') ? 'beats-ci' : 'beats'
+  println tags
+  dockerLogin(secret: "${secret}", registry: "${registry}")
+  project.get('variants')?.each { variant, sourceNamespace ->
     tags.each { tag ->
       // TODO:
       // For backward compatibility let's ensure we tag only for amd64, then E2E can benefit from until
       // they support the versioning with the architecture
       if ("${arch}" == "amd64") {
-        doTagAndPush(name: name, variant: variant, sourceTag: libbetaVer, targetTag: "${tag}", sourceNamespace: sourceNamespace)
+        doTagAndPush(registry: registry, name: project.name, variant: variant, sourceTag: sourceTag, targetTag: "${tag}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
       }
-      doTagAndPush(name: name, variant: variant, sourceTag: libbetaVer, targetTag: "${tag}-${arch}", sourceNamespace: sourceNamespace)
+      doTagAndPush(registry: registry, name: project.name, variant: variant, sourceTag: sourceTag, targetTag: "${tag}-${arch}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
     }
   }
 }
 
 /**
+* Tag and push the source docker image. It retries to add resilience.
+*
 * @param name of the docker image
 * @param variant name of the variant used to build the docker image name
 * @param sourceNamespace namespace to be used as source for the docker tag command
@@ -91,18 +103,41 @@ def doTagAndPush(Map args = [:]) {
   def targetTag = args.targetTag
   def sourceNamespace = args.sourceNamespace
   def targetNamespace = args.targetNamespace
-  def sourceName = "${env.DOCKER_REGISTRY}/${sourceNamespace}/${name}${variant}:${sourceTag}"
-  def targetName = "${env.DOCKER_REGISTRY}/${targetNamespace}/${name}${variant}:${targetTag}"
+  def registry = args.registry
+
+  def sourceName = "${registry}/${sourceNamespace}/${name}${variant}:${sourceTag}"
+  def targetName = "${registry}/${targetNamespace}/${name}${variant}:${targetTag}"
   def iterations = 0
-  retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+
+  waitUntil {
     iterations++
     def status = sh(label: "Change tag and push ${targetName}",
-                    script: ".ci/scripts/docker-tag-push.sh ${sourceName} ${targetName}",
+                    script: """#!/bin/bash
+                      set -e
+                      if docker image inspect "${sourceName}" &> /dev/null ; then
+                        docker tag "${sourceName}" "${targetName}"
+                        docker push "${targetName}"
+                      else
+                        echo "docker image ${sourceName} does not exist"
+                      fi""",
                     returnStatus: true)
     if (status > 0 && iterations < 3) {
-      error("tag and push failed for ${name}, retry")
+      sleep 5 * iterations
+      return false
     } else if (status > 0) {
-      log(level: 'WARN', text: "${name} doesn't have ${variant} docker images. See https://github.com/elastic/beats/pull/21621")
+      return false
+    } else {
+      return true
     }
   }
+}
+
+def calculateTags(sourceTag, aliasVersion) {
+  def tags = [ env.GIT_BASE_COMMIT,
+               isPR() ? "pr-${env.CHANGE_ID}" : sourceTag ]
+
+  if (!isPR() && aliasVersion.trim()) {
+    tags << aliasVersion
+  }
+  return tags
 }

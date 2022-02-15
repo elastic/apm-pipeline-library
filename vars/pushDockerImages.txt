@@ -1,0 +1,41 @@
+Publish docker images in the given docker registry. For such, it
+retags the existing docker images and publish them in the given
+docker namespace.
+
+It also allows to transform the version and customise private docker
+namespaces/registries.
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 4 different variants
+  // then publish them to observability-ci
+  pushDockerImages(
+    secret: "my-secret",
+    registry: "my-registry",
+    arch: 'amd64',
+    version: '8.2.0',
+    snapshot: true,
+    project: [
+      name: 'filebeat',
+      variants: [
+        '' : 'beats',
+        'ubi8' : 'beats',
+        'cloud' : 'beats-ci',
+        'complete' : 'beats',
+      ]
+    ],
+    targetNamespace: 'observability-ci'
+  )
+```
+
+* secret: the docker secret
+* registry: the docker registry
+* arch: the supported arch (amd64 or arm64)
+* version: what version
+* snapshot: snapshot support
+* targetNamespace: what docker namespace to publish to.
+* project: data structure to identify the name of the docker image,
+           what variants and what docker namespace to copy from.
+
+
+__NOTE__: It requires *Nix where to run it from.
