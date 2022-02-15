@@ -68,7 +68,7 @@ def call(Map args = [:]) {
 
     withOtelEnv() {
       def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
-      def serviceName = env.JENKINS_OTEL_SERVICE_NAME?.trim() ? env.JENKINS_OTEL_SERVICE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+      def serviceName = env.JENKINS_OTEL_SERVICE_NAME?.trim() ? env.JENKINS_OTEL_SERVICE_NAME?.trim()+"-junit" : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
       def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : calculateFallbackServiceVersion()
       def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
 
