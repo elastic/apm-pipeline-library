@@ -1,0 +1,20 @@
+Upload the given pattern files to the given bucket using an opinionated folder structure:
+
+* <repo>/snapshots             -> if a branch.
+* <repo>/pull-requests/pr-<id> -> if a Pull Request.
+* <repo>/commits/<git-commit>  -> regardless of the type of a build.
+
+Snapshots and pr-<id> folders might contain files that are overridden while `commits/<git-commit>` are
+not overridden once they are created.
+
+```
+  uploadPackagesToGoogleBucket(pattern: 'file.txt', bucket: 'bucket', credentialsId: 'foo', repo: 'foo')
+```
+
+* repo: The GitHub repository name. Optional. Default to `REPO`
+* bucket: The Google Storage bucket name. Mandatory
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
+* pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
+
+NOTE: It works with the Multibranch Pipeline only, therefore it requires to use `gitCheckout` to be able to populate the
+      gitBaseCommit.
