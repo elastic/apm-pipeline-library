@@ -24,6 +24,7 @@ def call(Map args = [:]) {
   def repoName = getArgumentOrFail(args, 'repo', env.REPO)
   def bucket = getArgumentOrFail(args, 'bucket', env.JOB_GCS_BUCKET)
   def pattern = args.get('pattern', "build/distributions/**/*")
+  def folder = args.get('folder', '')
 
   def baseUri = "gs://${bucket}/${repoName}"
   def bucketUriCommit = "${baseUri}/commits/${env.GIT_BASE_COMMIT}"
@@ -34,7 +35,8 @@ def call(Map args = [:]) {
   }
 
   [bucketUriDefault, bucketUriCommit].each { bucketUri ->
-    uploadPackages(bucketUri: "${bucketUri}", pattern: pattern, credentialsId: credentialsId)
+    def bucketUriWithFolder = folder.trim() ? "${bucketUri}/${folder}" : bucketUri
+    uploadPackages(bucketUri: "${bucketUriWithFolder}", pattern: pattern, credentialsId: credentialsId)
   }
 }
 

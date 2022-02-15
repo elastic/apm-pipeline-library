@@ -15,6 +15,7 @@ not overridden once they are created.
 * bucket: The Google Storage bucket name. Mandatory
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
+* folder: The folder to be added to the calculated bucket uri folder. Optional.
 
 NOTE: It works with the Multibranch Pipeline only, therefore it requires to use `gitCheckout` to be able to populate the
       gitBaseCommit.
