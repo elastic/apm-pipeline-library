@@ -33,7 +33,6 @@ projects:
       - 8.<minor>
       - 7.<minor>
       - 7.<minor-1>
-      - "6.8"
     enabled: true
     reusePullRequest: false
     labels: dependency,build-monitoring,backport-skip,Team:Beats-On-Call
