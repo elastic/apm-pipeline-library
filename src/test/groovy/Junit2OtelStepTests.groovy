@@ -101,7 +101,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_variables() throws Exception {
-    env.OTEL_SERVICE_NAME = "myservice"
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
     env.JUNIT_OTEL_TRACE_NAME = "mytrace"
     script.call(testResults: 'test-results/TEST-*.xml')
@@ -114,7 +114,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_branch_version() throws Exception {
-    env.OTEL_SERVICE_NAME = "myservice"
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.BRANCH_NAME = "feature/foo"
     env.JUNIT_OTEL_TRACE_NAME = "mytrace"
     script.call(testResults: 'test-results/TEST-*.xml')
@@ -127,7 +127,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_pr_version() throws Exception {
-    env.OTEL_SERVICE_NAME = "myservice"
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.CHANGE_ID = "PR-123"
     env.JUNIT_OTEL_TRACE_NAME = "mytrace"
     script.call(testResults: 'test-results/TEST-*.xml')
@@ -140,7 +140,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_tag_version() throws Exception {
-    env.OTEL_SERVICE_NAME = "myservice"
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.TAG_NAME = "v1.2.3"
     env.JUNIT_OTEL_TRACE_NAME = "mytrace"
     script.call(testResults: 'test-results/TEST-*.xml')
@@ -213,7 +213,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_name() throws Exception {
-    env.OTEL_SERVICE_NAME = "myservice"
+    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     script.call(testResults: 'test-results/TEST-*.xml')
 
     printCallStack()
