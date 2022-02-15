@@ -43,7 +43,8 @@ def uploadPackages(Map args = [:]) {
     bucket: args.bucketUri,
     credentialsId: args.credentialsId,
     pattern: args.pattern,
-    sharedPublicly: true
+    sharedPublicly: true,
+    extraFlags: '-r'
   )
 }
 
