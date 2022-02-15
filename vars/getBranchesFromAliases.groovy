@@ -22,7 +22,7 @@
  This is handy to support a dynamic branch generation without the need to
  update the name of the branch when a new minor release branch is created.
 
- getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<minor-minor>'])
+ getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-minor>'])
 */
 
 def call(Map args = [:]) {
