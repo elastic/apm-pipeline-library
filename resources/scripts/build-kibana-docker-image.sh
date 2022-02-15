@@ -44,6 +44,7 @@ if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
 fi
 
 npm install -g yarn
+yarn config set cache-folder "${HOME}/.yarn_cache"
 yarn kbn clean
 yarn kbn bootstrap
 # build Linux package
