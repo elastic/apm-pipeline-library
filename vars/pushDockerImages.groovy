@@ -114,6 +114,7 @@ def doTagAndPush(Map args = [:]) {
     def status = sh(label: "Change tag and push ${targetName}",
                     script: """#!/bin/bash
                       set -e
+                      echo "source: '${sourceName}' target: '${targetName}'"
                       if docker image inspect "${sourceName}" &> /dev/null ; then
                         docker tag "${sourceName}" "${targetName}"
                         docker push "${targetName}"
