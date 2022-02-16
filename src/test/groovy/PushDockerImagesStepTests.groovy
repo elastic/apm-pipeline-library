@@ -64,8 +64,8 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_missing_project() throws Exception {
-    testMissingArgument('project.name') {
+  void test_missing_imageName() throws Exception {
+    testMissingArgument('imageName') {
       script.call(registry: 'foo', secret: 'bar', targetNamespace: 'target', version: '1.2')
     }
   }
@@ -95,7 +95,7 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
   void test_doTagAndPush() throws Exception {
     helper.registerAllowedMethod('sh', [Map.class], { return 0 })
     script.doTagAndPush(registry: 'my-registry',
-                        name: 'my-name',
+                        imageName: 'my-name',
                         variant: '-cloud',
                         sourceTag: '8.2-SNAPSHOT',
                         targetTag: 'commit',
@@ -114,12 +114,10 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
       arch: 'amd64',
       version: '8.2.0',
       snapshot: true,
-      project: [
-        name: 'filebeat',
-        variants: [
-          ''          : 'beats',
-          '-cloud'    : 'beats-ci'
-        ]
+      imageName: 'filebeat',
+      variants: [
+        ''          : 'beats',
+        '-cloud'    : 'beats-ci'
       ],
       targetNamespace: 'observability-ci'
     )
@@ -136,12 +134,10 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
       arch: 'amd64',
       version: '8.2.0',
       snapshot: false,
-      project: [
-        name: 'filebeat',
-        variants: [
-          ''          : 'beats',
-          '-cloud'    : 'beats-ci'
-        ]
+      imageName: 'filebeat',
+      variants: [
+        ''          : 'beats',
+        '-cloud'    : 'beats-ci'
       ],
       targetNamespace: 'observability-ci'
     )

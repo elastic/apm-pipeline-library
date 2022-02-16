@@ -15,14 +15,12 @@ namespaces/registries.
     arch: 'amd64',
     version: '8.2.0',
     snapshot: true,
-    project: [
-      name: 'filebeat',
-      variants: [
-        '' : 'beats',
-        'ubi8' : 'beats',
-        'cloud' : 'beats-ci',
-        'complete' : 'beats',
-      ]
+    imageName: 'filebeat',
+    variants: [
+      '' : 'beats',
+      'ubi8' : 'beats',
+      'cloud' : 'beats-ci',
+      'complete' : 'beats',
     ],
     targetNamespace: 'observability-ci'
   )
@@ -33,9 +31,8 @@ namespaces/registries.
 * arch: the supported arch (amd64 or arm64)
 * version: what version
 * snapshot: snapshot support
+* imageName: the docker image name.
+* variants: variants and docker namespace to copy from.
 * targetNamespace: what docker namespace to publish to.
-* project: data structure to identify the name of the docker image,
-           what variants and what docker namespace to copy from.
-
 
 __NOTE__: It requires *Nix where to run it from.

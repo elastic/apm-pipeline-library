@@ -30,14 +30,12 @@ namespaces/registries.
     arch: 'amd64',
     version: '8.2.0',
     snapshot: true,
-    project: [
-      name: 'filebeat',
-      variants: [
-        '' : 'beats',
-        'ubi8' : 'beats',
-        'cloud' : 'beats-ci',
-        'complete' : 'beats',
-      ]
+    imageName : 'filebeat',
+    variants: [
+      '' : 'beats',
+      'ubi8' : 'beats',
+      'cloud' : 'beats-ci',
+      'complete' : 'beats',
     ],
     targetNamespace: 'observability-ci'
   )
@@ -51,13 +49,10 @@ def call(Map args = [:]) {
   def secret = args.containsKey('secret') ? args.secret : error('pushDockerImages: secret parameter is required')
   def targetNamespace = args.containsKey('targetNamespace') ? args.targetNamespace : error('pushDockerImages: targetNamespace parameter is required')
   def version = args.containsKey('version') ? args.version : error('pushDockerImages: version parameter is required')
+  def imageName = args.containsKey('imageName') ? args.imageName : error('pushDockerImages: imageName parameter is required')
   def arch = args.get('arch', 'amd64')
-  def project = args.get('project', [:])
+  def variants = args.get('variants', [:])
   def snapshot = args.get('snapshot', true)
-
-  if (!project.containsKey('name')) {
-    error('pushDockerImages: project.name parameter is required')
-  }
 
   // Transform version in a snapshot.
   def sourceTag = version
@@ -73,15 +68,15 @@ def call(Map args = [:]) {
 
   println tags
   dockerLogin(secret: "${secret}", registry: "${registry}")
-  project.get('variants')?.each { variant, sourceNamespace ->
+  variants?.each { variant, sourceNamespace ->
     tags.each { tag ->
       // TODO:
       // For backward compatibility let's ensure we tag only for amd64, then E2E can benefit from until
       // they support the versioning with the architecture
       if ("${arch}" == "amd64") {
-        doTagAndPush(registry: registry, name: project.name, variant: variant, sourceTag: sourceTag, targetTag: "${tag}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
+        doTagAndPush(registry: registry, imageName: imageName, variant: variant, sourceTag: sourceTag, targetTag: "${tag}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
       }
-      doTagAndPush(registry: registry, name: project.name, variant: variant, sourceTag: sourceTag, targetTag: "${tag}-${arch}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
+      doTagAndPush(registry: registry, imageName: imageName, variant: variant, sourceTag: sourceTag, targetTag: "${tag}-${arch}", sourceNamespace: sourceNamespace, targetNamespace: targetNamespace)
     }
   }
 }
@@ -89,7 +84,7 @@ def call(Map args = [:]) {
 /**
 * Tag and push the source docker image. It retries to add resilience.
 *
-* @param name of the docker image
+* @param imageName of the docker image
 * @param variant name of the variant used to build the docker image name
 * @param sourceNamespace namespace to be used as source for the docker tag command
 * @param targetNamespace namespace to be used as target for the docker tag command
@@ -97,7 +92,7 @@ def call(Map args = [:]) {
 * @param targetTag tag to be used as target for the docker tag command, usually under the 'observability-ci' namespace
 */
 def doTagAndPush(Map args = [:]) {
-  def name = args.name
+  def name = args.imageName
   def variant = args.variant
   def sourceTag = args.sourceTag
   def targetTag = args.targetTag
