@@ -658,6 +658,22 @@ The more common use case is when there are two minor versions in development at 
 
 * branch: the branch name or supported pattern. Mandatory
 
+## getBranchesFromAliases
+This step parses the given list of branch aliases and return
+the branch name.
+
+This is handy to support a dynamic branch generation without the need to
+update the name of the branch when a new minor release branch is created.
+
+```
+// Return the branch name for the main, 8.minor and 8.next-minor branches
+def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<minor-minor>'])
+
+```
+
+
+* aliases: the branch aliases (supported format major.<minor>, major.<next-patch>, major.<next-minor>). Mandatory
+
 ## getBuildInfoJsonFiles
 Grab build related info from the Blueocean REST API and store it on JSON files.
 Then put all togeder in a simple JSON file.
