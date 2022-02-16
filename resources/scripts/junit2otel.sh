@@ -26,6 +26,8 @@ echo "TEST_RESULTS_GLOB=${TEST_RESULTS_GLOB}"
 echo "TRACE_NAME=${TRACE_NAME}"
 echo "TRACEPARENT=${TRACEPARENT}"
 
+readonly DOCKER_REPO_PATH="/opt/${REPO}"
+
 for glob in $(echo "${TEST_RESULTS_GLOB} "| sed "s/,/ /g")
 do
   for f in ${glob}
@@ -36,12 +38,14 @@ do
     cat "$f" | docker run \
       --rm -i \
       --network host \
+      --volume "$(pwd):${DOCKER_REPO_PATH}" \
       --env "TRACEPARENT=${TRACEPARENT}" \
       --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
       --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" \
       ${DOCKER_IMAGE} \
       --service-name "${SERVICE_NAME}" \
       --service-version "${SERVICE_VERSION}" \
-      --trace-name "${TRACE_NAME}"
+      --trace-name "${TRACE_NAME}" \
+      --repository-path "${DOCKER_REPO_PATH}"
   done
 done
