@@ -18,3 +18,4 @@ buildKibanaDockerImage(refspec: 'cf25ac3d1f8edff8f20003add707bfdc85d89fff', dept
 * dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
 * reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
 * depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
