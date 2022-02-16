@@ -44,6 +44,17 @@ if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
 fi
 
 npm install -g yarn
+yarn config set cache-folder "${HOME}/.yarn_cache"
 yarn kbn clean
 yarn kbn bootstrap
-node scripts/build --no-debug --skip-docker-ubi --docker-images
+# build Linux package
+node scripts/build
+# build docker-ubuntu and docker-cloud
+node scripts/build \
+  --skip-initialize \
+  --skip-generic-folders \
+  --skip-platform-folders \
+  --skip-archives \
+  --docker-images \
+  --skip-docker-ubi \
+  --skip-docker-contexts
