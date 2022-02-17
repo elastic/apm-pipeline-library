@@ -12,7 +12,7 @@ not overridden once they are created.
 ```
 
 * repo: The GitHub repository name. Optional. Default to `REPO`
-* bucket: The Google Storage bucket name. Mandatory
+* bucket: The Google Storage bucket name. Optional. Default to `JOB_GCS_BUCKET`
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
 * folder: The folder to be added to the calculated bucket uri folder. Optional.
