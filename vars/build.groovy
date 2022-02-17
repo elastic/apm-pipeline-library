@@ -28,7 +28,14 @@ import co.elastic.BuildException
   Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
 
   build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+
+  build 'foo'
 */
+
+def call(String jobName){
+  return call(job: jobName)
+}
+
 def call(Map args = [:]){
   def job = args.job
   def parameters = args.parameters
@@ -59,6 +66,7 @@ def call(Map args = [:]){
   }
   return buildInfo
 }
+
 
 def getBuildId(buildInfo) {
   def buildNumber = ''
