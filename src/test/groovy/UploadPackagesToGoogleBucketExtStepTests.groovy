@@ -98,7 +98,7 @@ class UploadPackagesToGoogleBucketStepTests extends ApmBasePipelineTest {
     addEnvVar('JOB_GCS_BUCKET', 'my-bucket')
     script.call(folder: 'new-folder')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('googleStorageUploadExt', 'bucket=gs://foo/my-repo/snapshots/new-folder'))
-    assertTrue(assertMethodCallContainsPattern('googleStorageUploadExt', 'bucket=gs://foo/my-repo/commits/abdefg/new-folder'))
+    assertTrue(assertMethodCallContainsPattern('googleStorageUploadExt', 'bucket=gs://my-bucket/my-repository/snapshots/new-folder'))
+    assertTrue(assertMethodCallContainsPattern('googleStorageUploadExt', 'bucket=gs://my-bucket/my-repository/commits/abdefg/new-folder'))
   }
 }
