@@ -1,0 +1,14 @@
+Builds the Docker image for Kibana, from a branch or a pull Request.
+
+```
+fastCheckout(refspec: 'main', depth: 10)
+fastCheckout(refspec: 'PR/12345')
+fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05')
+```
+
+* refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
+* depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
