@@ -92,6 +92,7 @@ class GoogleStorageUploadExtStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('gsutil', [Map.class], { return 'Operation completed over 1 objects.' })
     script.call(bucket: 'gs://foo', pattern: 'file.txt', sharedPublicly: true)
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('gsutil', '-a public-read file.txt gs://foo'))
+    assertTrue(assertMethodCallContainsPattern('gsutil', '-a public-read'))
+    assertTrue(assertMethodCallContainsPattern('gsutil', 'file.txt gs://foo'))
   }
 }
