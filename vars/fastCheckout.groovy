@@ -19,9 +19,9 @@
 
   Builds the Docker image for Kibana, from a branch or a pull Request.
 
-  fastCheckout(refspec: 'main', depth: 10)
-  fastCheckout(refspec: 'PR/12345')
-  fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05')
+  fastCheckout(refspec: 'main', depth: 10, url:"https://github.com/elastic/beats.git")
+  fastCheckout(refspec: 'PR/12345', url:"https://github.com/elastic/beats.git")
+  fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05', url:"https://github.com/elastic/beats.git")
 */
 
 def call(Map args = [:]){
@@ -30,7 +30,7 @@ def call(Map args = [:]){
   def referenceRepo = args.reference ?: ""
   def depth = args.depth as Integer ?: 1
   def shallow = args.shallow ?: true
-  def url = args.url ?: error("The Git URL is required.")
+  def url = args.url ?: error("fastCheckout: url parameter is required")
   def refspec = args?.refspec?.trim() ?: 'main'
 
   if(isCommitSha1("${refspec}")){
@@ -45,6 +45,7 @@ def call(Map args = [:]){
     efectiveRefspec = "+refs/heads/${refspec}:refs/remotes/origin/${refspec}"
   }
 
+  log(level: 'DEBUG', text: "efectiveBranch: '${efectiveBranch}', efectiveRefspec: '${efectiveRefspec}'")
   checkout([$class: 'GitSCM',
     branches: [[name: "${efectiveBranch}"]],
     extensions: [

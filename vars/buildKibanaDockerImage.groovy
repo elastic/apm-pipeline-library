@@ -51,8 +51,6 @@ def call(Map args = [:]){
 
   fastCheckout(baseDir: baseDir, reference: referenceRepo, credentialsId: credentialsId, depth: depth, shallow: true, url: 'http://github.com/elastic/kibana.git', refspec: refspec)
 
-return
-
   def kibanaVersion = ''
 
   dir("${baseDir}"){

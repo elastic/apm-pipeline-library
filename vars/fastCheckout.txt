@@ -1,11 +1,13 @@
-Builds the Docker image for Kibana, from a branch or a pull Request.
+Only make a Git checkout of the refspec passed as parameter, and not tags, this make the checkout faster.
+This checkout does not work with tags.
 
 ```
-fastCheckout(refspec: 'main', depth: 10)
-fastCheckout(refspec: 'PR/12345')
-fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05')
+fastCheckout(refspec: 'main', depth: 10, url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'PR/12345', url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05', url:"https://github.com/elastic/beats.git")
 ```
 
+* url: Git repository URL. (Required)
 * refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
 * baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.

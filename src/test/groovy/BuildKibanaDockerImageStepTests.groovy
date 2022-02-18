@@ -27,6 +27,7 @@ class BuildKibanaDockerImageStepTests extends ApmBasePipelineTest {
         super.setUp()
         script = loadScript('vars/buildKibanaDockerImage.groovy')
         env.BASE_DIR = 'base_dir'
+        helper.registerAllowedMethod('fastCheckout', [Map.class], {})
     }
 
     @Test
