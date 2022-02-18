@@ -46,6 +46,7 @@ def call(Map args = [:]){
   def dockerCloudImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana-cloud" : args.dockerImageTarget
   def referenceRepo = args.reference ?: "/var/lib/jenkins/kibana.git"
   def depth  = args.depth as Integer ?: 1
+  def shallow = args.shallow ?: true
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
