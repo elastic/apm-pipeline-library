@@ -21,7 +21,7 @@ ENV DISABLE_BOOTSTRAP_VALIDATION=true
 WORKDIR /home/node
 RUN git clone --depth 1 --branch main --single-branch --jobs 5 https://github.com/elastic/kibana.git \
   && git config --global user.email "none@example.com" \
-  && git config --global user.name "None" && echo "5"
+  && git config --global user.name "None"
 
 WORKDIR /home/node/kibana
 RUN git --version && echo 1
