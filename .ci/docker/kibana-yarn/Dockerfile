@@ -63,9 +63,10 @@ COPY --from=src ${HOME} ${HOME}
 USER root
 RUN chown node:0 /usr/local /usr/local/bin /usr/local/lib /usr/local/share
 RUN echo ". \"${NVM_DIR}/nvm.sh\"" > ${HOME}/.bashrc
+
 USER node
 WORKDIR ${HOME}
 
 EXPOSE 5601
-ENTRYPOINT ["/bin/bash"]
-CMD ["-l", "-c", ". \"${NVM_DIR}/nvm.sh\" && bash"]
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
+CMD ["/bin/bash"]
