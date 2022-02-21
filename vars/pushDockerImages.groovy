@@ -116,13 +116,8 @@ def doTagAndPush(Map args = [:]) {
                         echo "docker image ${sourceName} does not exist"
                       fi""",
                     returnStatus: true)
-    if (status > 0 && iterations < 3) {
-      return false
-    } else if (status > 0) {
-      return false
-    } else {
-      return true
-    }
+    // exit if above command run successfully or it reached the max of iterations.
+    return (status == 0 || iterations >= 3)
   }
 }
 
