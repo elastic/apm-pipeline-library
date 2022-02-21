@@ -33,9 +33,9 @@ namespaces/registries.
     imageName : 'filebeat',
     variants: [
       '' : 'beats',
-      'ubi8' : 'beats',
-      'cloud' : 'beats-ci',
-      'complete' : 'beats',
+      '-ubi8' : 'beats',
+      '-cloud' : 'beats-ci',
+      '-complete' : 'beats',
     ],
     targetNamespace: 'observability-ci'
   )
