@@ -43,6 +43,15 @@ public class BuildStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_success_with_string_signature() throws Exception {
+    def result = script.call('foo')
+    printCallStack()
+    assertTrue(result != null)
+    assertTrue(assertMethodCallContainsPattern('log', "/job/foo/1/display/redirect"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testNestedJob() throws Exception {
     def result = script.call(job: 'nested/foo')
     printCallStack()

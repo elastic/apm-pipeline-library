@@ -92,7 +92,8 @@ ${errorStackTrace}
 <% if (!buildStatus?.equals('ABORTED') && errorGithubPrCheckApproved) {%>
   <% stepsErrors = stepsErrors << errorGithubPrCheckApproved %>
 <%}%>
-<% if (stepsErrors?.size() != 0 && !statusSuccess) {%>
+<% if (!statusSuccess) {%>
+<% if (stepsErrors?.size() != 0) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
@@ -112,4 +113,11 @@ ${description}
   <%}%>
   </p>
   </details>
+<%} else {%>
+### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
+  <p>
+  This error is likely related to the pipeline itself. Please go to the traditional console output <a href=\"${env?.BUILD_URL}/console\">here</a>"
+  You will see the error (either a wrong syntax or configuration)
+  </p>
+<%}%>
 <%}%>
