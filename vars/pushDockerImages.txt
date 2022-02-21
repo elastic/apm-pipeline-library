@@ -26,6 +26,35 @@ namespaces/registries.
   )
 ```
 
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to observability-ci
+  // Source images follow the format:
+  //   - "my-registry/beats/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/beats-customise/filebeat-ubi8:8.2.0-SNAPSHOT"
+  // Generated images follow the format:
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat-ubi8:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT-amd64"
+  //   - "my-registry/observability-ci/filebeat-ubi8:8.2.0-SNAPSHOT-amd64"
+  pushDockerImages(
+    secret: "my-secret",
+    registry: "my-registry",
+    arch: 'amd64',
+    version: '8.2.0',
+    snapshot: true,
+    imageName: 'filebeat',
+    variants: [
+      '' : 'beats',
+      '-ubi8' : 'beats-ci'
+    ],
+    targetNamespace: 'observability-ci'
+  )
+
+
+```
+
 * secret: the docker secret
 * registry: the docker registry
 * arch: the supported arch (amd64 or arm64)
