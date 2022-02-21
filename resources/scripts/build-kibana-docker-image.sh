@@ -30,7 +30,7 @@ export NODE_OPTIONS=" --max-old-space-size=4096"
 export BUILD_TS_REFS_DISABLE="true"
 
 if [ -z "$(command -v nvm)" ]; then
-  curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+  curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090,SC1091
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
@@ -43,18 +43,27 @@ if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
   nvm use "${NODE_VERSION}"
 fi
 
+BUILD_DOCKER_OPTS="--skip-initialize --skip-generic-folders --skip-platform-folders --skip-archives --docker-images --skip-docker-contexts "
+
+if [ -z "${BUILD_DOCKER_UBI}" ]; then
+  BUILD_DOCKER_OPTS="${BUILD_DOCKER_OPTS} --skip-docker-ubi"
+fi
+if [ -z "${BUILD_DOCKER_UBUNTU}" ]; then
+  BUILD_DOCKER_OPTS="${BUILD_DOCKER_OPTS} --skip-docker-ubuntu"
+fi
+if [ -z "${BUILD_DOCKER_CLOUD}" ]; then
+  BUILD_DOCKER_OPTS="${BUILD_DOCKER_OPTS} --skip-docker-cloud"
+fi
+
+mkdir ~/.npm-global
+npm config set prefix "${HOME}/.npm-global"
+export PATH=${HOME}/.npm-global/bin:${PATH}
+
 npm install -g yarn
-yarn config set cache-folder "${HOME}/.yarn_cache"
 yarn kbn clean
-yarn kbn bootstrap
+yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
 # build Linux package
 node scripts/build
-# build docker-ubuntu and docker-cloud
-node scripts/build \
-  --skip-initialize \
-  --skip-generic-folders \
-  --skip-platform-folders \
-  --skip-archives \
-  --docker-images \
-  --skip-docker-ubi \
-  --skip-docker-contexts
+# build docker images
+# shellcheck disable=SC2086
+node scripts/build ${BUILD_DOCKER_OPTS}
