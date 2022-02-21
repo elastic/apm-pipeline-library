@@ -104,7 +104,7 @@ def doTagAndPush(Map args = [:]) {
   def targetName = "${registry}/${targetNamespace}/${name}${variant}:${targetTag}"
   def iterations = 0
 
-  waitUntil {
+  waitUntil(initialRecurrencePeriod: 5000) {
     iterations++
     def status = sh(label: "Change tag and push ${targetName}",
                     script: """#!/bin/bash
@@ -118,7 +118,6 @@ def doTagAndPush(Map args = [:]) {
                       fi""",
                     returnStatus: true)
     if (status > 0 && iterations < 3) {
-      sleep 5 * iterations
       return false
     } else if (status > 0) {
       return false
