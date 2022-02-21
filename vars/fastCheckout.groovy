@@ -17,7 +17,8 @@
 
 /**
 
-  Builds the Docker image for Kibana, from a branch or a pull Request.
+  Only make a Git checkout of the refspec passed as parameter, and not tags, this make the checkout faster.
+This checkout does not work with tags.
 
   fastCheckout(refspec: 'main', depth: 10, url:"https://github.com/elastic/beats.git")
   fastCheckout(refspec: 'PR/12345', url:"https://github.com/elastic/beats.git")
