@@ -44,7 +44,9 @@ def call(Map args = [:]){
   def dockerCloudImageSource = isEmptyString(args.dockerCloudImageSource) ?  "${dockerRegistry}/kibana-ci/kibana-cloud" : args.dockerCloudImageSource
   def dockerImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana" : args.dockerImageTarget
   def dockerCloudImageTarget = isEmptyString(args.dockerImageTarget) ? "${dockerRegistry}/observability-ci/kibana-cloud" : args.dockerImageTarget
-
+  def referenceRepo = args.reference ?: "/var/lib/jenkins/kibana.git"
+  def depth  = args.depth as Integer ?: 1
+  def shallow = args.shallow ?: true
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
@@ -57,10 +59,10 @@ def call(Map args = [:]){
       [$class: 'AuthorInChangelog'],
       [$class: 'IgnoreNotifyCommit'],
       [$class: 'CloneOption',
-        depth: 0,
+        depth: depth,
         noTags: false,
-        reference: "/var/lib/jenkins/kibana.git",
-        shallow: true,
+        reference: referenceRepo,
+        shallow: shallow,
         timeout: 15
       ]],
       submoduleCfg: [],
