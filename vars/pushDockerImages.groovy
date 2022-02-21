@@ -66,7 +66,6 @@ def call(Map args = [:]) {
   // What docker tags are gonna be used
   def tags = calculateTags(sourceTag, aliasVersion)
 
-  println tags
   dockerLogin(secret: "${secret}", registry: "${registry}")
   variants?.each { variant, sourceNamespace ->
     tags.each { tag ->
