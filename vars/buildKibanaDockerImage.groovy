@@ -52,28 +52,7 @@ def call(Map args = [:]){
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
-  checkout([$class: 'GitSCM',
-    branches: [[name: "*/${refspec}"]],
-    doGenerateSubmoduleConfigurations: false,
-    extensions: [
-      [$class: 'RelativeTargetDirectory', relativeTargetDir: "${baseDir}"],
-      [$class: 'CheckoutOption', timeout: 15],
-      [$class: 'AuthorInChangelog'],
-      [$class: 'IgnoreNotifyCommit'],
-      [$class: 'CloneOption',
-        depth: depth,
-        noTags: false,
-        reference: referenceRepo,
-        shallow: shallow,
-        timeout: 15
-      ]],
-      submoduleCfg: [],
-      userRemoteConfigs: [[
-        credentialsId: "${credentialsId}",
-        url: "http://github.com/elastic/kibana.git",
-        refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/head:refs/remotes/origin/PR/*',
-        ]]
-  ])
+  fastCheckout(baseDir: baseDir, reference: referenceRepo, credentialsId: credentialsId, depth: depth, shallow: true, url: 'http://github.com/elastic/kibana.git', refspec: refspec)
 
   def kibanaVersion = ''
 
