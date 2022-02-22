@@ -3034,6 +3034,28 @@ updateGithubCommitStatus(message: 'Build result.')
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
 
+## uploadPackagesToGoogleBucket
+Upload the given pattern files to the given bucket using an opinionated folder structure:
+
+* <repo>/snapshots             -> if a branch.
+* <repo>/pull-requests/pr-<id> -> if a Pull Request.
+* <repo>/commits/<git-commit>  -> regardless of the type of a build.
+
+Snapshots and pr-<id> folders might contain files that are overridden while `commits/<git-commit>` are
+not overridden once they are created.
+
+```
+  uploadPackagesToGoogleBucket(pattern: 'file.txt', bucket: 'bucket', credentialsId: 'foo', repo: 'foo')
+```
+
+* repo: The GitHub repository name. Optional. Default to `REPO`
+* bucket: The Google Storage bucket name. Mandatory
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
+* pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
+
+NOTE: It works with the Multibranch Pipeline only, therefore it requires to use `gitCheckout` to be able to populate the
+      gitBaseCommit.
+
 ## whenFalse
 This step replaces those small scripts step blocks to check some condition,
 it simplifies Declarative syntax
@@ -3565,6 +3587,7 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Configure the OpenTelemetry Jenkins context to run the body closure with the below
 environment variables:
 
+* `JENKINS_OTEL_SERVICE_NAME`
 * `OTEL_EXPORTER_OTLP_ENDPOINT`, opentelemetry 0.19 already provides this environment variable.
 * `OTEL_EXPORTER_OTLP_HEADERS`, opentelemetry 0.19 already provides this environment variable.
 * `ELASTIC_APM_SECRET_TOKEN`

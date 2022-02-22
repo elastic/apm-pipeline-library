@@ -483,6 +483,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('googleStorageUploadExt', [Map.class], { return "OK" })
     helper.registerAllowedMethod('gsutil', [Map.class], { m ->
       def script = loadScript('vars/gsutil.groovy')
       return script.call(m)

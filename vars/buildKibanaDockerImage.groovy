@@ -47,6 +47,8 @@ def call(Map args = [:]){
   def referenceRepo = args.reference ?: "/var/lib/jenkins/kibana.git"
   def depth  = args.depth as Integer ?: 1
   def shallow = args.shallow ?: true
+  def skipUbuntu = args.skipUbuntu ?: false
+  def skipCloud = args.skipCloud ?: false
 
   log(level: 'DEBUG', text: "Cloning Kibana repository, refspec ${refspec}, into ${baseDir}")
 
@@ -78,6 +80,8 @@ def call(Map args = [:]){
   dir("${baseDir}"){
     kibanaDockerTargetTag = isEmptyString(kibanaDockerTargetTag) ? getGitCommitSha() : kibanaDockerTargetTag
     setEnvVar('NODE_VERSION', readFile(file: ".node-version")?.trim())
+    setEnvVar('BUILD_DOCKER_UBUNTU', skipUbuntu ? '' : '1')
+    setEnvVar('BUILD_DOCKER_CLOUD', skipCloud ? '' : '1')
 
     kibanaVersion = readJSON(file: packageJSON).version + '-SNAPSHOT'
 
@@ -87,7 +91,6 @@ def call(Map args = [:]){
   }
 
   dockerLogin(secret: "${dockerRegistrySecret}", registry: "${dockerRegistry}")
-  log(level: 'DEBUG', text: "Tagging ${dockerImageSource}:${kibanaVersion} to ${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName}")
 
   retryWithSleep(retries: 3) {
     def tags = [
@@ -96,10 +99,17 @@ def call(Map args = [:]){
       "${kibanaVersion}-${kibanaDockerTargetTag}",
       "${kibanaVersion}-${deployName}"
     ]
-    def dockerImages = [
-      [src:"${dockerImageSource}", dst:"${dockerImageTarget}"],
-      [src:"${dockerCloudImageSource}", dst:"${dockerCloudImageTarget}"]
-    ]
+    def dockerImages = []
+
+    if(skipUbuntu == false){
+      dockerImages.add([src:"${dockerImageSource}", dst:"${dockerImageTarget}"])
+    }
+    if(skipCloud == false){
+      dockerImages.add([src:"${dockerCloudImageSource}", dst:"${dockerCloudImageTarget}"])
+    }
+    log(level: 'DEBUG', text: dockerImages.toString())
+
+
     tags.each{ tag ->
       dockerImages.each { dockerImage ->
         def src = "${dockerImage.src}:${kibanaVersion}"
@@ -108,13 +118,14 @@ def call(Map args = [:]){
           docker tag ${src} ${dst}
           docker push ${dst}
         """)
+        log(level: 'DEBUG', text: "Tagging ${src} to ${dst}")
+        log(level: 'DEBUG', text: "${dst} was pushed")
       }
     }
   }
 
   setEnvVar('DEPLOY_NAME', deployName)
   setEnvVar('KIBANA_DOCKER_TAG', "${kibanaVersion}-${deployName}")
-  log(level: 'DEBUG', text: "${dockerImageTarget}:${kibanaDockerTargetTag} and ${dockerImageTarget}:${deployName} were pushed")
 }
 
 def isEmptyString(value){
