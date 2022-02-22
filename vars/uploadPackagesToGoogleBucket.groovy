@@ -35,7 +35,7 @@ def call(Map args = [:]) {
   }
 
   [bucketUriDefault, bucketUriCommit].each { bucketUri ->
-    def bucketUriWithFolder = folder.trim() ? "${bucketUri}/${folder}" : bucketUri
+    def bucketUriWithFolder = folder?.trim() ? "${bucketUri}/${folder}" : bucketUri
     uploadPackages(bucketUri: "${bucketUriWithFolder}", pattern: pattern, credentialsId: credentialsId)
   }
 }
