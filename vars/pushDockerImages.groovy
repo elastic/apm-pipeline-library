@@ -37,7 +37,7 @@ docker namespace.
 */
 def call(Map args = [:]) {
   if(!isUnix()){
-    error('publishToCDN: windows is not supported yet.')
+    error('pushDockerImages: windows is not supported yet.')
   }
   def registry = args.containsKey('registry') ? args.registry : error('pushDockerImages: registry parameter is required')
   def secret = args.containsKey('secret') ? args.secret : error('pushDockerImages: secret parameter is required')
