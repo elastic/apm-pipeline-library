@@ -51,6 +51,17 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_null_credentials() throws Exception {
+    def ret = false
+    script.call(credentialsId: null, secret: VaultSecret.SECRET_GCP_PROVISIONER.toString()) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_with_credentials() throws Exception {
     def ret = false
     script.call(credentialsId: 'foo') {
