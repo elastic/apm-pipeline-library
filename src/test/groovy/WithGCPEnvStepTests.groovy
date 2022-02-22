@@ -42,6 +42,15 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_null_credentialsId_or_secret() throws Exception {
+    testMissingArgument('credentialsId or secret', 'parameters are required') {
+      script.call(credentialsId: null, secret: null) {
+        // NOOP
+      }
+    }
+  }
+
+  @Test
   void test_with_credentials() throws Exception {
     def ret = false
     script.call(credentialsId: 'foo') {
