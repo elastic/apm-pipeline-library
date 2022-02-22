@@ -18,7 +18,7 @@
 
 set -e
 
-readonly DOCKER_IMAGE="mdelapenya/junit2otlp:latest"
+readonly DOCKER_IMAGE="mdelapenya/junit2otlp:jenkins"
 
 echo "SERVICE_NAME=${SERVICE_NAME}"
 echo "SERVICE_VERSION=${SERVICE_VERSION}"
