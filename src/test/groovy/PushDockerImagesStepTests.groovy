@@ -49,24 +49,11 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
       script.call(registry: 'foo')
     }
   }
-  @Test
-  void test_missing_targetNamespace() throws Exception {
-    testMissingArgument('targetNamespace') {
-      script.call(registry: 'foo', secret: 'bar')
-    }
-  }
 
   @Test
   void test_missing_version() throws Exception {
     testMissingArgument('version') {
       script.call(registry: 'foo', secret: 'bar', targetNamespace: 'target')
-    }
-  }
-
-  @Test
-  void test_missing_imageName() throws Exception {
-    testMissingArgument('imageName') {
-      script.call(registry: 'foo', secret: 'bar', targetNamespace: 'target', version: '1.2')
     }
   }
 
@@ -95,12 +82,10 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
   void test_doTagAndPush() throws Exception {
     helper.registerAllowedMethod('sh', [Map.class], { return 0 })
     script.doTagAndPush(registry: 'my-registry',
-                        imageName: 'my-name',
-                        variant: '-cloud',
                         sourceTag: '8.2-SNAPSHOT',
                         targetTag: 'commit',
-                        sourceNamespace: 'beats',
-                        targetNamespace: 'beats-ci')
+                        source: 'beats/my-name-cloud',
+                        target: 'beats-ci/my-name-cloud')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', '"my-registry/beats/my-name-cloud:8.2-SNAPSHOT" "my-registry/beats-ci/my-name-cloud:commit"'))
   }
@@ -111,15 +96,12 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
     script.call(
       secret: "my-secret",
       registry: "my-registry",
-      arch: 'amd64',
       version: '8.2.0',
       snapshot: true,
-      imageName: 'filebeat',
-      variants: [
-        ''          : 'beats',
-        '-cloud'    : 'beats-ci'
-      ],
-      targetNamespace: 'observability-ci'
+      images: [
+        [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+        [ source: "beats-ci/filebeat-cloud", arch: 'amd64', target: "observability-ci/filebeat-cloud"]
+      ]
     )
     printCallStack()
     assertTrue(assertMethodCallOccurrences('sh', 12))
@@ -131,15 +113,12 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
     script.call(
       secret: "my-secret",
       registry: "my-registry",
-      arch: 'amd64',
       version: '8.2.0',
       snapshot: false,
-      imageName: 'filebeat',
-      variants: [
-        ''          : 'beats',
-        '-cloud'    : 'beats-ci'
-      ],
-      targetNamespace: 'observability-ci'
+      images: [
+        [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+        [ source: "beats-ci/filebeat-cloud", arch: 'amd64', target: "observability-ci/filebeat-cloud"]
+      ]
     )
     printCallStack()
     assertTrue(assertMethodCallOccurrences('sh', 8))
