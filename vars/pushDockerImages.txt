@@ -1,0 +1,58 @@
+Publish docker images in the given docker registry. For such, it
+retags the existing docker images and publish them in the given
+docker namespace.
+
+It uses a map of images, this map contains an entry for each docker image
+to be pushed, what architecture and the name of the docker image to be pushed.
+
+The version is required to tag the docker image accordingly and also it uses
+the snapshot if needed.
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to the observability-ci namespace. In addition
+  // tag them as default, arch=amd64 is the default tag image
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats/filebeat-ubi8", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to observability-ci
+  // Source images follow the format:
+  //   - "my-registry/beats/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/beats-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  // Generated images follow the format:
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT-amd64"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT-amd64"
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats-ci/filebeat-cloud", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+* secret: the docker secret
+* registry: the docker registry
+* version: what version
+* snapshot: snapshot support
+* images: list of the docker image to be retagged to, architecture and docker image to be pushed to.
+
+__NOTE__: It requires *Nix where to run it from.
