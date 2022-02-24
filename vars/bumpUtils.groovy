@@ -54,6 +54,28 @@ def parseArguments(Map args = [:]) {
   return arguments
 }
 
+def getMajor(String version) {
+  if (!version?.trim()) {
+    error('getMajor: version cannot be empty, please use the format major.minor.patch')
+  }
+  def parts = version?.split('\\.')
+  if (parts.size() == 3) {
+    return parts[0]
+  }
+  error('getMajor: version is not major.minor.patch formatted')
+}
+
+def getMajorMinor(String version) {
+  if (!version?.trim()) {
+    error('getMajorMinor: version cannot be empty, please use the format major.minor.patch')
+  }
+  def parts = version?.split('\\.')
+  if (parts.size() == 3) {
+    return parts[0] + "." + parts[1]
+  }
+  error('getMajorMinor: version is not major.minor.patch formatted')
+}
+
 def getCurrentMinorReleaseFor8() {
   return getValueForPropertyKey(current8Key())
 }

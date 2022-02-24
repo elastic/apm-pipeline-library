@@ -32,7 +32,7 @@ class GitChangelogStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     String ret = script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'git log origin/${CHANGE_TARGET:-"main"}...${GIT_SHA}'))
     assertTrue(ret.equals('OK'))
   }
 

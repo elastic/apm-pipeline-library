@@ -21,11 +21,18 @@ import static org.junit.Assert.assertTrue
 
 class StackVersionsStepTests extends ApmBasePipelineTest {
 
+  class BumpUtilsMock {
+    String getNextMinorReleaseFor8(){ "8.2.0" }
+    String getNextPatchReleaseFor8(){ "8.1.0" }
+    String getCurrentMinorReleaseFor7(){ "7.17.1" }
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/stackVersions.groovy')
+    binding.setProperty('bumpUtils', new BumpUtilsMock())
   }
 
   @Test

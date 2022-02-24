@@ -119,6 +119,13 @@ def call(Map args = [:]) {
           if (fileExists(datafile)) {
             sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
           }
+
+          // NOTE: Support temporarily the email notifications with the test summary
+          //       See https://github.com/elastic/apm-pipeline-library/pull/1514 as a potential replacement
+          if (env.REPO_NAME == 'integrations') {
+            datafile = readFile(file: 'custom-build-report.json')
+            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-integrations-builds/_doc/')
+          }
         }
       }
       // Ensure we don't leave any leftovers if running in the jenkins controller.

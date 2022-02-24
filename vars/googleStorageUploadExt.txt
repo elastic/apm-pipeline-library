@@ -10,3 +10,4 @@ Upload the given pattern files to the given bucket.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
 * sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
+* extraFlags: Extra flags to use with gsutil cp. Optional

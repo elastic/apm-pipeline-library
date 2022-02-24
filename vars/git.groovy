@@ -27,7 +27,7 @@ def call(args) {
   log(level: 'INFO', text: 'Override default git')
 
   def ret
-  retryWithSleep(retries: 3, seconds: 20) {
+  retryWithSleep(retries: 3, seconds: 10) {
     ret = steps.git(args)
   }
   return ret

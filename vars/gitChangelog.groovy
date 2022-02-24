@@ -26,6 +26,6 @@ def call(Map args = [:]) {
     error('gitChangelog: windows is not supported yet.')
   }
   return sh(label: 'Get changelog',
-    script: 'git log origin/${CHANGE_TARGET:-"master"}...${GIT_SHA}',
+    script: 'git log origin/${CHANGE_TARGET:-"main"}...${GIT_SHA}',
     returnStdout: true)
 }

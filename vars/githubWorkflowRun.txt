@@ -30,7 +30,7 @@ Run workflow on github actions
 * workflow: workflow file name. Mandatory argument.
 * repo: repository owner and name. Optional, if it's not set then this
   information will be taken from ORG_NAME and REPO_NAME environment variables.
-* ref: reference (branch, tag or hash). Optional, default is master.
+* ref: reference (branch, tag or hash). Optional, default is main.
 * parameters: map with parameters to pass to the workflow as inputs. Optional,
   default is empty map.
 * buildTimeLimit: How long wait till the run completed. It's set in minutes,

@@ -184,6 +184,7 @@ Override the `build` step to highlight in BO the URL to the downstream job.
 
 ```
 build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+build 'foo'
 ```
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
@@ -194,9 +195,11 @@ Builds the Docker image for Kibana, from a branch or a pull Request.
 ```
 buildKibanaDockerImage(refspec: 'main')
 buildKibanaDockerImage(refspec: 'PR/12345')
+buildKibanaDockerImage(refspec: 'cf25ac3d1f8edff8f20003add707bfdc85d89fff', depth: 10)
+
 ```
 
-* refspec: A branch (i.e. main), or a pull request identified by the "pr/" prefix and the pull request ID.
+* refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
 * packageJSON: Full name of the package.json file. Defaults to 'package.json'
 * baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.
@@ -205,6 +208,9 @@ buildKibanaDockerImage(refspec: 'PR/12345')
 * dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
 * dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
 * dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
+* reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
+* depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
 
 ## buildStatus
 Fetch the current build status for a given job
@@ -237,6 +243,8 @@ Utils class for the bump automation pipelines
 * `getCurrentMinorReleaseFor6` -> retrieve the LATEST known minor release for the 6 major version of the Elastic Stack.
 * `getNextMinorReleaseFor7` -> retrieve the NEXT minor release for the 7 major version of the Elastic Stack. It might not be public available yet.
 * `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
+* `getMajorMinor` -> retrieve the given version in Major.Minor format, f.e: given `7.16.2` it returns `7.16`.
+* `getMajor` -> retrieve the given version in Major format, f.e: given `7.16.2` it returns `7`.
 
 ## cancelPreviousRunningBuilds
 **DEPRECATED**: use `disableConcurrentBuilds(abortPrevious: isPR())`
@@ -636,6 +644,41 @@ Tab refers to the kind of available tabs in the BO view. So far:
 def testURL = getBlueoceanTabURL('test')
 def artifactURL = getBlueoceanTabURL('artifact')
 ```
+
+## getBranchNameFromArtifactsAPI
+Find the branch name for a stack version in the Artifacts API given the conditions to compare with.
+
+The step supports passing a minor version, returning the branch name including that minor (i.e. 7.15), or passing a version token in the
+'<minor>' format. This format supports passing an index, separated by the minus operator: '<minor-1>', which will retrieve the previous
+version for the last minor. If the index overflows the number of the total existing minors, the first minor will be retrieved (i.e.
+'<minor-1999>').
+
+The more common use case is when there are two minor versions in development at the same time: 7.16 and 7.17
+
+```
+  getBranchNameFromArtifactsAPI(branch: '7.0')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor>')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor-1>')
+  getBranchNameFromArtifactsAPI(branch: '7.<minor-2>')
+```
+
+* branch: the branch name or supported pattern. Mandatory
+
+## getBranchesFromAliases
+This step parses the given list of branch aliases and return
+the branch name.
+
+This is handy to support a dynamic branch generation without the need to
+update the name of the branch when a new minor release branch is created.
+
+```
+// Return the branch name for the main, 8.minor and 8.next-minor branches
+def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-minor>'])
+
+```
+
+
+* aliases: the branch aliases (supported format major.<minor>, major.<next-patch>, major.<next-minor>). Mandatory
 
 ## getBuildInfoJsonFiles
 Grab build related info from the Blueocean REST API and store it on JSON files.
@@ -1394,7 +1437,7 @@ Run workflow on github actions
 * workflow: workflow file name. Mandatory argument.
 * repo: repository owner and name. Optional, if it's not set then this
   information will be taken from ORG_NAME and REPO_NAME environment variables.
-* ref: reference (branch, tag or hash). Optional, default is master.
+* ref: reference (branch, tag or hash). Optional, default is main.
 * parameters: map with parameters to pass to the workflow as inputs. Optional,
   default is empty map.
 * buildTimeLimit: How long wait till the run completed. It's set in minutes,
@@ -1506,6 +1549,7 @@ Upload the given pattern files to the given bucket.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
 * sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
+* extraFlags: Extra flags to use with gsutil cp. Optional
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
@@ -1871,6 +1915,54 @@ Whether the architecture is a x86 based using the `nodeArch` step
     }
 ```
 
+## junit2otel
+Wrap the junit built-in step to send OpenTelemetry traces for the test reports that are going to be
+populated later on, using the https://github.com/mdelapenya/junit2otel library.
+
+1. If the REPO variable is set, but the OTEL_SERVICE_NAME is not, then REPO will be used as service name.
+2. If the REPO variable is set, but the JUNIT_OTEL_TRACE_NAME is not, then REPO will be used as trace name.
+3. If the JUNIT_OTEL_SERVICE_VERSION is not set, then it will use, in this particular order: pull-request ID, tag name and branch name. Else, it will use 'unknown'.
+
+```
+
+    pipeline {
+        ...
+        stages {
+            stage(...) {
+                post {
+                    always {
+                        // JUnit with OpenTelemetry traces
+                        withEnv([
+                            "JUNIT_2_OTLP=true",
+                            "OTEL_SERVICE_NAME=apm-pipeline-library",
+                            "JUNIT_OTEL_SERVICE_VERSION=main",
+                            "JUNIT_OTEL_TRACE_NAME=junit-tests"
+                        ]){
+                            junit2otel(testResults: 'TEST-*.xml')
+                        }
+
+                        // JUnit with attributes inferred from Repository
+                        withEnv([
+                            "JUNIT_2_OTLP=true",
+                            "REPO=apm-pipeline-library",
+                        ]){
+                            junit2otel(testResults: 'TEST-*.xml')
+                        }
+                    }
+                }
+            }
+        }
+        ...
+    }
+```
+
+* *testResults*: from the `junit` step. Mandatory
+* *allowEmptyResults*: from the `junit` step. Optional
+* *keepLongStdio*: from the `junit` step. Optional
+
+
+**NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
+
 ## junitAndStore
 Wrap the junit built-in step to archive the test reports that are going to be
 populated later on with the runbld post build step.
@@ -1906,6 +1998,8 @@ populated later on with the runbld post build step.
 **NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
 
 ## licenseScan
+**UNSUPPORTED**
+
 Scan the repository for third-party dependencies and report the results.
 
 ```
@@ -2439,6 +2533,66 @@ with the given headers.
 
 __NOTE__: It requires *Nix where to run it from.
 
+## pushDockerImages
+Publish docker images in the given docker registry. For such, it
+retags the existing docker images and publish them in the given
+docker namespace.
+
+It uses a map of images, this map contains an entry for each docker image
+to be pushed, what architecture and the name of the docker image to be pushed.
+
+The version is required to tag the docker image accordingly and also it uses
+the snapshot if needed.
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to the observability-ci namespace. In addition
+  // tag them as default, arch=amd64 is the default tag image
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats/filebeat-ubi8", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to observability-ci
+  // Source images follow the format:
+  //   - "my-registry/beats/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/beats-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  // Generated images follow the format:
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT-amd64"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT-amd64"
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats-ci/filebeat-cloud", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+* secret: the docker secret
+* registry: the docker registry
+* version: what version
+* snapshot: snapshot support
+* images: list of the docker image to be retagged to, architecture and docker image to be pushed to.
+
+__NOTE__: It requires *Nix where to run it from.
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 
@@ -2574,6 +2728,7 @@ another action then it will be required to be implemented here. See // NOTE
 * *subject*: what's the email subject. Optional. Default: `[Autogenerated]`
 * *secret*: vault secret used to access to Elasticsearch, it should have `user` and `password` fields.
 * *es*: Elasticserach URL to send the report. It can use the secret data if `url` field.
+* *debugFileName*: Name of the file that contains the email body content for debugging purposes. Optional.
 
 ## runbld
 Populate the test output using the runbld approach. It depends on the *junitAndStore* step.
@@ -2946,6 +3101,29 @@ updateGithubCommitStatus(message: 'Build result.')
 
 It requires [Github plugin](https://plugins.jenkins.io/github)
 
+## uploadPackagesToGoogleBucket
+Upload the given pattern files to the given bucket using an opinionated folder structure:
+
+* <repo>/snapshots             -> if a branch.
+* <repo>/pull-requests/pr-<id> -> if a Pull Request.
+* <repo>/commits/<git-commit>  -> regardless of the type of a build.
+
+Snapshots and pr-<id> folders might contain files that are overridden while `commits/<git-commit>` are
+not overridden once they are created.
+
+```
+  uploadPackagesToGoogleBucket(pattern: 'file.txt', bucket: 'bucket', credentialsId: 'foo', repo: 'foo')
+```
+
+* repo: The GitHub repository name. Optional. Default to `REPO`
+* bucket: The Google Storage bucket name. Optional. Default to `JOB_GCS_BUCKET`
+* credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
+* pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
+* folder: The folder to be added to the calculated bucket uri folder. Optional.
+
+NOTE: It works with the Multibranch Pipeline only, therefore it requires to use `gitCheckout` to be able to populate the
+      gitBaseCommit.
+
 ## whenFalse
 This step replaces those small scripts step blocks to check some condition,
 it simplifies Declarative syntax
@@ -3181,7 +3359,9 @@ withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
 ```
 
 * credentialsId: The credentials to login to GCP. (Optional).
-* secret: Name of the secret on the the vault root path. (Optional).
+* secret: Name of the secret on the the vault root path (supported fields: credentials and value). (Optional).
+* role_id: vault role ID if using the secret argument (Optional). Default 'vault-role-id'
+* secret_id: vault secret ID if using the secret argument (Optional). Default 'vault-secret-id'
 
 ## withGitRelease
 Configure the git release context to run the body closure.
@@ -3370,6 +3550,18 @@ Configure the hub app to run the body closure.
 _NOTE:_
 * Windows agents are not supported.
 
+## withKindEnv
+Install Kind, Kubectl and configure Kind to run some command within the kind/kubectl context
+
+```
+  withKindEnv(k8sVersion: 'v0.11.1', kindVersion: 'v1.23.0'){
+    ..
+  }
+```
+
+* k8sVersion: K8s version to install. Optional
+* kindVersion: Kind version to install. Optional
+
 ## withMageEnv
 
  Install Go and mage and run some command in a pre-configured environment.
@@ -3463,6 +3655,7 @@ withNpmrc(path: '/foo', npmrcFile: '.npmrc') {
 Configure the OpenTelemetry Jenkins context to run the body closure with the below
 environment variables:
 
+* `JENKINS_OTEL_SERVICE_NAME`
 * `OTEL_EXPORTER_OTLP_ENDPOINT`, opentelemetry 0.19 already provides this environment variable.
 * `OTEL_EXPORTER_OTLP_HEADERS`, opentelemetry 0.19 already provides this environment variable.
 * `ELASTIC_APM_SECRET_TOKEN`

@@ -1,5 +1,174 @@
 # Changelog
 
+## v1.1.298 (22/02/2022)
+
+#### 🚀 Enhancements
+
+-  support push docker image step [#1550](https://github.com/elastic/apm-pipeline-library/pull/1550)
+- [**Team:Automation**] feat: speed up checkouts [#1558](https://github.com/elastic/apm-pipeline-library/pull/1558)
+
+#### 🐛 Bug Fixes
+
+-  Ensure null values are captured [#1560](https://github.com/elastic/apm-pipeline-library/pull/1560)
+
+## v1.1.297 (21/02/2022)
+*No changelog for this release.*
+
+## v1.1.294 (16/02/2022)
+*No changelog for this release.*
+
+## v1.1.294 (16/02/2022)
+*No changelog for this release.*
+
+## v1.1.294 (16/02/2022)
+*No changelog for this release.*
+
+## v1.1.291 (10/02/2022)
+*No changelog for this release.*
+
+## v1.1.291 (10/02/2022)
+*No changelog for this release.*
+
+## v1.1.291 (10/02/2022)
+*No changelog for this release.*
+
+## v1.1.289 (08/02/2022)
+
+#### 🚀 Enhancements
+
+-  Support step to install kind/kubectl and configure kind [#1530](https://github.com/elastic/apm-pipeline-library/pull/1530)
+- [**Team:Automation**] test: refactor options and properties to avoid modify the jobDSL job on builds [#1529](https://github.com/elastic/apm-pipeline-library/pull/1529)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: apm proxy Docker image build [#1528](https://github.com/elastic/apm-pipeline-library/pull/1528)
+
+#### 🙈 No user affected
+
+-  chore: bump versions manually [#1531](https://github.com/elastic/apm-pipeline-library/pull/1531)
+
+#### ⚙️ CI
+
+- [**Team:Automation**] feat: move stackVersions to use bumpUtils [#1533](https://github.com/elastic/apm-pipeline-library/pull/1533)
+
+## v1.1.289 (08/02/2022)
+
+#### 🚀 Enhancements
+
+-  Support step to install kind/kubectl and configure kind [#1530](https://github.com/elastic/apm-pipeline-library/pull/1530)
+- [**Team:Automation**] test: refactor options and properties to avoid modify the jobDSL job on builds [#1529](https://github.com/elastic/apm-pipeline-library/pull/1529)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: apm proxy Docker image build [#1528](https://github.com/elastic/apm-pipeline-library/pull/1528)
+
+#### 🙈 No user affected
+
+-  chore: bump versions manually [#1531](https://github.com/elastic/apm-pipeline-library/pull/1531)
+
+#### ⚙️ CI
+
+- [**Team:Automation**] feat: move stackVersions to use bumpUtils [#1533](https://github.com/elastic/apm-pipeline-library/pull/1533)
+
+## v1.1.288 (04/02/2022)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: use different tests for the demos [#1523](https://github.com/elastic/apm-pipeline-library/pull/1523)
+-  notification: fix JSONNull field [#1522](https://github.com/elastic/apm-pipeline-library/pull/1522)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.17.0 7.17.1 [#1527](https://github.com/elastic/apm-pipeline-library/pull/1527)
+-  main: references in beats and other projects [#1526](https://github.com/elastic/apm-pipeline-library/pull/1526)
+-  release: 7.17.0 [#1524](https://github.com/elastic/apm-pipeline-library/pull/1524)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.2.0 to 4.3.1 [#1518](https://github.com/elastic/apm-pipeline-library/pull/1518)
+-  chore(deps-dev): bump workflow-job from 1156.v7539182e7b_d5 to 1167.v8fe861b_09ef9 [#1517](https://github.com/elastic/apm-pipeline-library/pull/1517)
+
+## v1.1.287 (31/01/2022)
+
+#### 🚀 Enhancements
+
+-  add debug traces for the runWatcher [#1520](https://github.com/elastic/apm-pipeline-library/pull/1520)
+
+#### 🐛 Bug Fixes
+
+-  fix: Pytest update attr [#1521](https://github.com/elastic/apm-pipeline-library/pull/1521)
+
+## v1.1.286 (26/01/2022)
+
+#### 🚀 Enhancements
+
+-  report: enable a new index for reporting tests in the integrations [#1515](https://github.com/elastic/apm-pipeline-library/pull/1515)
+
+## v1.1.285 (25/01/2022)
+
+#### 🚀 Enhancements
+
+-  automation: notify the robots team if no bump recently [#1509](https://github.com/elastic/apm-pipeline-library/pull/1509)
+-  github: filter by the repo env variable [#1511](https://github.com/elastic/apm-pipeline-library/pull/1511)
+-  apm-agent-java: github commands [#1504](https://github.com/elastic/apm-pipeline-library/pull/1504)
+-  automation: filter branches that don't have any PRs in the last x days [#1508](https://github.com/elastic/apm-pipeline-library/pull/1508)
+-  automation: enable 7.<minor-1> alias for the beats, fleet-server and apm-server projects [#1505](https://github.com/elastic/apm-pipeline-library/pull/1505)
+-  Minor index [#1503](https://github.com/elastic/apm-pipeline-library/pull/1503)
+
+#### 🐛 Bug Fixes
+
+-  fix: skip branch parsing when format is not major.minor.patch based [#1510](https://github.com/elastic/apm-pipeline-library/pull/1510)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: change to use the main branch [#1513](https://github.com/elastic/apm-pipeline-library/pull/1513)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1145.v7f2433caa07f to 1156.v7539182e7b_d5 [#1507](https://github.com/elastic/apm-pipeline-library/pull/1507)
+-  chore(deps): bump opentelemetry from 1.2.0 to 1.2.1 [#1506](https://github.com/elastic/apm-pipeline-library/pull/1506)
+
+## v1.1.284 (17/01/2022)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 7.16.3 7.17.0 [#1501](https://github.com/elastic/apm-pipeline-library/pull/1501)
+
+## v1.1.283 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withAWSEnv: add support for ARM [#1499](https://github.com/elastic/apm-pipeline-library/pull/1499)
+
+## v1.1.282 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support for value default field in the vault secret [#1497](https://github.com/elastic/apm-pipeline-library/pull/1497)
+
+#### ⚙️ CI
+
+-  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
+
+## v1.1.282 (13/01/2022)
+
+#### 🚀 Enhancements
+
+-  withGCPEnv: support for value default field in the vault secret [#1497](https://github.com/elastic/apm-pipeline-library/pull/1497)
+
+#### ⚙️ CI
+
+-  Bump releases [6.8.23, 7.16.3, 8.0.0-rc] [#1498](https://github.com/elastic/apm-pipeline-library/pull/1498)
+
+## v1.1.279 (10/01/2022)
+*No changelog for this release.*
+
+## v1.1.279 (10/01/2022)
+*No changelog for this release.*
+
+## v1.1.277 (20/12/2021)
+*No changelog for this release.*
+
 ## v1.1.277 (20/12/2021)
 *No changelog for this release.*
 

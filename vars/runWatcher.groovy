@@ -58,6 +58,11 @@ def call(Map args = [:]) {
                     body: body,
                     mimeType: 'text/html'
                 )
+                // Store email for debugging purposes
+                if (args.get('debugFileName', '')?.trim()) {
+                  writeFile(file: args.get('debugFileName'), text: "${body}")
+                  archiveArtifacts(allowEmptyArchive: true, artifacts: args.get('debugFileName'))
+                }
             }
             return body
         } else {

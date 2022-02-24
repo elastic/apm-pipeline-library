@@ -19,56 +19,63 @@
 
 pipeline {
   agent { label "ubuntu-20"}
-  environment {
-    BASE_DIR="${params.name}-${params.tag}"
-    NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL='INFO'
-    DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
-    HOME="${env.WORKSPACE}"
-    PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
-  }
-  options {
-    timeout(time: 2, unit: 'HOURS')
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
-    timestamps()
-    ansiColor('xterm')
-    disableResume()
-    durabilityHint('PERFORMANCE_OPTIMIZED')
-  }
   /*
     jobDSL parameters see .ci/jobDSL/jobs/apm-ci/apm-shared/docker-images/build-docker-images.groovy
   */
   stages {
-    stage('Checkout'){
-      options { skipDefaultCheckout() }
-      steps {
-        dir("${BASE_DIR}"){
-          git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
+    stage('Build Docker image'){
+      environment {
+        BASE_DIR="${params.name}-${params.tag}"
+        NOTIFY_TO = credentials('notify-to')
+        PIPELINE_LOG_LEVEL='INFO'
+        DOCKER_SECRET = "secret/observability-team/ci/docker-registry/prod"
+        DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
+        HOME="${env.WORKSPACE}"
+        PATH="${env.PATH}:${env.HOME}/bin:${env.HOME}/go/bin"
+      }
+      options {
+        timeout(time: 2, unit: 'HOURS')
+        timestamps()
+        ansiColor('xterm')
+      }
+      stages {
+        stage('Checkout'){
+          options { skipDefaultCheckout() }
+          when {
+            expression {
+              return params.repo != ""
+            }
+          }
+          steps {
+            dir("${BASE_DIR}"){
+              git(url:"${params.repo}",credentialsId:"f6c7695a-671e-4f4f-a331-acdce44ff9ba", branch:"${params.branch_specifier}")
+            }
+            prepare()
+          }
         }
-        prepare()
-      }
-    }
-    stage('build') {
-      options { skipDefaultCheckout() }
-      steps {
-        buildDocker()
-      }
-    }
-    stage('test') {
-      options { skipDefaultCheckout() }
-      steps {
-        testDocker()
-      }
-    }
-    stage('push'){
-      options { skipDefaultCheckout() }
-      when {
-        expression {
-          return params.push
+        stage('build') {
+          options { skipDefaultCheckout() }
+          steps {
+            buildDocker()
+          }
         }
-      }
-      steps {
-        pushDocker()
+        stage('test') {
+          options { skipDefaultCheckout() }
+          steps {
+            testDocker()
+          }
+        }
+        stage('push'){
+          options { skipDefaultCheckout() }
+          when {
+            expression {
+              return params.push
+            }
+          }
+          steps {
+            pushDocker()
+          }
+        }
       }
     }
   }
@@ -91,6 +98,7 @@ def generateImageName(){
 def buildDocker(){
   def script = isNotBlank(params.docker_build_script) ? params.docker_build_script : "docker build --force-rm ${params.docker_build_opts} -t ${generateImageName()} ."
   dir("${BASE_DIR}"){
+    dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
     dockerLogin(secret: "${DOCKER_SECRET}", registry: "${params.registry}")
     dir("${params.folder}"){
       retry(3) {

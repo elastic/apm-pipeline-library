@@ -20,7 +20,7 @@ def test_xfail_plugin(pytester, otel_service):
     pytester.makepyfile(
         common_code
         + """
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="foo bug")
 def test_xfail():
     assert False
 """)

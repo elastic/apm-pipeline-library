@@ -44,7 +44,7 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(branch: 'master')
+        runWatcherForBranch(branch: 'main')
         runWatcherForBranch(branch: '8.<current>')
         runWatcherForBranch(branch: '7.<next>')
         runWatcherForBranch(branch: '7.<current>')
@@ -74,7 +74,7 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        runNotifyStalledBeatsBumps(branch: 'master')
+        runNotifyStalledBeatsBumps(branch: 'main')
         runNotifyStalledBeatsBumps(branch: '8.<current>')
         runNotifyStalledBeatsBumps(branch: '7.<next>')
         runNotifyStalledBeatsBumps(branch: '7.<current>')
@@ -101,7 +101,8 @@ def runWatcherForBranch(Map args = [:]){
   runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
              subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
              sendEmail: true,
-             to: env.BEATS_MAILING_LIST)
+             to: env.BEATS_MAILING_LIST,
+             debugFileName: "${branch}.txt")
 }
 
 // Helper function to resolve current and next special keywords.

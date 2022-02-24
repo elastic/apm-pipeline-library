@@ -20,6 +20,7 @@ def call(Map args = [:]) {
   def bucket = args.containsKey('bucket') ? args.bucket : error('googleStorageUploadExt: bucket parameter is required')
   def pattern = args.containsKey('pattern') ? args.pattern : error('googleStorageUploadExt: pattern parameter is required')
   def sharedPublicly = args.get('sharedPublicly', false)
+  def extraFlags = args.get('extraFlags', '')
 
   def flags = ''
 
@@ -27,5 +28,5 @@ def call(Map args = [:]) {
     flags = '-a public-read'
   }
 
-  return gsutil(command: "-m -q cp ${flags} ${pattern} ${bucket}", credentialsId: credentialsId)
+  return gsutil(command: "-m -q cp ${flags} ${extraFlags} ${pattern} ${bucket}", credentialsId: credentialsId)
 }

@@ -26,7 +26,7 @@ def call(Map args = [:], Closure body) {
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : ''
   def secret = args.containsKey('secret') ? args.secret : ''
 
-  if (!credentialsId.trim() && !secret.trim()) {
+  if (!credentialsId?.trim() && !secret?.trim()) {
     error('withGCPEnv: credentialsId or secret parameters are required.')
   }
 
@@ -41,15 +41,12 @@ def call(Map args = [:], Closure body) {
     }
 
     if (secret) {
-      def props = getVaultSecret(secret: secret)
+      def props = getVaultSecret(args)
       if (props?.errors) {
         error "withGCPEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
       }
       def value = props?.data
-      def credentialsContent = value?.credentials
-      if (!credentialsContent?.trim()) {
-        error "withGCPEnv: Unable to read the credentials value"
-      }
+      def credentialsContent = readCredentialsContent(value)
       writeFile(file: secretFileLocation, text: credentialsContent)
       gcloudAuth(secretFileLocation)
     } else {
@@ -79,6 +76,25 @@ def call(Map args = [:], Closure body) {
       }
     }
   }
+}
+
+/**
+* Read the vault secret and look for the required fields.
+* * credentials field is the one initially supported and kept for backward compatibility reasons.
+* * value field is the fallback field, this is the case used
+*/
+def readCredentialsContent(Map vaultSecretContent) {
+  def credentialsContent = vaultSecretContent?.credentials
+  if (credentialsContent?.trim()) {
+    log(level: 'INFO', text: "readCredentialsContent: reading the 'credentials' field.")
+    return credentialsContent
+  }
+  credentialsContent = vaultSecretContent?.value
+  if (credentialsContent?.trim()) {
+    log(level: 'INFO', text: "readCredentialsContent: reading the 'value' field.")
+    return credentialsContent
+  }
+  error "withGCPEnv: Unable to read the credentials and value fields"
 }
 
 def gcloudAuth(keyFile) {

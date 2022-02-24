@@ -32,11 +32,11 @@ class YamlParser {
   }
 }
 
-def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/master/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
-def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/master/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
-def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/master/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
-def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
-def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/master/dev-utils/.node-version')
+def pythonVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-python/main/.ci/.jenkins_python.yml', 'PYTHON_VERSION')
+def nodeVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-nodejs/main/.ci/.jenkins_nodejs.yml', 'NODEJS_VERSION')
+def rubyVersions = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-ruby/main/.ci/.jenkins_ruby.yml', 'RUBY_VERSION')
+def libraries = YamlParser.getVersions('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/.ci/.jenkins_rum.yml', 'TEST_LIBRARIES')
+def nodejsVersion = YamlParser.getContent('https://raw.githubusercontent.com/elastic/apm-agent-rum-js/main/dev-utils/.node-version')
 
 */
 
@@ -67,7 +67,7 @@ def dockerImages = [
     tag: 'latest',
     folder: 'tools/apm_proxy/frontend',
     push: true,
-    prepare_script: 'git clone git@github.com:haproxytech/spoa-mirror.git'
+    prepare_script: 'cd tools/apm_proxy/frontend && git clone git@github.com:haproxytech/spoa-mirror.git'
   ],
   [
     name: 'apm-proxy-be',
@@ -85,6 +85,124 @@ def dockerImages = [
     build_script: "docker build --force-rm -t ${registry}/${prefix}/functional-opbeans:latest functional-opbeans",
     push_script: "docker push ${registry}/${prefix}/functional-opbeans:latest",
     push: true
+  ],
+  [
+    name: 'flakey',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/jenkins-toolbox"
+  ],
+  [
+    name: 'flakeyv2',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/flaky-test-analyzer"
+  ],
+  [
+    name: 'build-analyzer',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/build-analyzer"
+  ],
+  [
+    name: 'rebuild-analyzer',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/rebuild-analyzer"
+  ],
+  [
+    name: 'integrations-test-reporter',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "apps/automation/integrations/reporter"
+  ],
+  [
+    name: 'slack-bridge-hey-apm',
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: 'latest',
+    push: true,
+    folder: "tools/report-bridge"
+  ],
+  [
+    name: 'obs-jenkins-heartbeat',
+    repo: "git@github.com:elastic/observability-robots.git",
+    tag: 'latest',
+    push: true,
+    prepare_script: '''
+      cd apps/beats/heartbeat
+      pip3 install pyyaml
+      python3 ./generate_heartbeat_configs.py
+    ''',
+    folder: "apps/beats/heartbeat"
+  ],
+  [
+    name: "bandstand",
+    repo: 'git@github.com:elastic/observability-dev',
+    tag: "latest",
+    folder: "apps/automation/bandstand",
+    push: true
+  ],
+  [
+    name: "azure-vm-tools",
+    repo: 'git@github.com:elastic/azure-vm-extension',
+    tag: "latest",
+    folder: ".ci/docker/azure-vm-tools",
+    push: true
+  ],
+  [
+    name: 'picklesdoc',
+    repo: 'git@github.com:elastic/observability-robots.git',
+    tag: 'latest',
+    build_script: 'make build',
+    push_script: 'make push',
+    push: true,
+    folder: "apps/pickles"
+  ],
+  [
+    name: 'test-plans',
+    repo: 'git@github.com:elastic/observability-robots.git',
+    tag: 'latest',
+    build_script: 'make build',
+    push_script: 'make push',
+    push: true,
+    folder: "apps/test-plans"
+  ],
+  /*
+    APM ITs Docker images are build daily.
+  */
+  [
+    name: "apm-integration-testing",
+    repo: 'git@github.com:elastic/apm-integration-testing.git',
+    tag: "daily",
+    push: true
+  ],
+  [
+    name: "apm-integration-testing-all",  // Compile all the APM ITs Docker images (using -all suffix to be able to use this automation)
+    repo: 'git@github.com:elastic/apm-integration-testing.git',
+    build_script: "make -C docker all-tests",
+    push_script: "make -C docker all-push",
+    push: true
+  ],
+  [
+    name: "oracle-instant-client",
+    build_script: """
+    docker pull store/oracle/database-instantclient:12.2.0.1;
+    docker tag store/oracle/database-instantclient:12.2.0.1 ${registry}/${prefix}/database-instantclient:12.2.0.1;
+    docker push ${registry}/${prefix}/database-instantclient:12.2.0.1;
+    """
+  ],
+  [
+    name: "weblogic",
+    build_script: """
+    docker pull store/oracle/weblogic:12.2.1.3-dev;
+    docker tag store/oracle/weblogic:12.2.1.3-dev ${registry}/${prefix}/weblogic:12.2.1.3-dev;
+    docker push ${registry}/${prefix}/weblogic:12.2.1.3-dev;
+    """
   ]
 ]
 
@@ -135,6 +253,7 @@ apmPipelineLibraryDockerImages.each{ name ->
   dockerImages.add([
     name: "${name}",
     repo: 'git@github.com:elastic/apm-pipeline-library.git',
+    branch_docker: 'main',
     tag: "${tag}",
     folder: '.ci/docker',
     build_script: "docker build --force-rm -t ${dockerImage} ${name}",
@@ -161,6 +280,7 @@ pythonVersions.each{ version ->
     job: "apm-agent-python-${version}",
     name: "apm-agent-python",
     repo: 'git@github.com:elastic/apm-agent-python.git',
+    branch_docker: 'main',
     tag: "${version}",
     folder: 'tests',
     build_opts: "--build-arg PYTHON_IMAGE=${pythonVersion}",
@@ -190,6 +310,7 @@ nodeVersions.each{ version ->
     job: "apm-agent-nodejs-${version}",
     name: "apm-agent-nodejs",
     repo: 'git@github.com:elastic/apm-agent-nodejs.git',
+    branch_docker: 'main',
     tag: "${version}",
     folder: '.ci/docker/node-container',
     build_opts: "--build-arg NODE_VERSION=${nodejsVersion}",
@@ -230,6 +351,7 @@ rubyVersions.findAll { element -> !element.contains('observability-ci') }.each {
     job: "apm-agent-ruby-${rubyVersion}",
     name: "apm-agent-ruby",
     repo: 'git@github.com:elastic/apm-agent-ruby.git',
+    branch_docker: 'main',
     tag: "${rubyVersion}",
     folder: 'spec',
     build_opts: "--build-arg RUBY_IMAGE='${version}'",
@@ -249,6 +371,7 @@ libraries.each { library ->
   dockerImages.add([
     name: "node-${library}",
     repo: 'git@github.com:elastic/apm-agent-rum-js.git',
+    branch_docker: 'main',
     tag: "${nodejsVersion}",
     folder: ".ci/docker/node-${library}",
     build_opts: "--build-arg NODEJS_VERSION='${nodejsVersion}'",
@@ -261,15 +384,15 @@ dockerImages.each{ item ->
     displayName("${item.name} ${item.tag ?: ''} - Docker image")
     description("Job to build and push the ${item.name} ${item.tag ?: ''} Docker image")
     parameters {
-      stringParam('branch_specifier', "${item.branch ?: 'master'}", "Branch where the Jenkinsfile is.")
+      stringParam('branch_specifier', "${item.branch ?: 'main'}", "Branch where the Jenkinsfile is.")
       stringParam('branch_docker', "${item.branch_docker ?: 'master'}", "Branch where the Dockerfile is.")
-      stringParam('registry', "${registry}", "Docker Registry.")
-      stringParam('prefix', "${prefix}", "Docker registry namespace.")
+      stringParam('registry', "${registry ?: ''}", "Docker Registry.")
+      stringParam('prefix', "${prefix ?: ''}", "Docker registry namespace.")
       stringParam('tag', "${item.tag ?: 'latest'}", "Docker image tag.")
       stringParam('name', "${item.name}", "Docker image name.")
       stringParam('folder', "${item.folder ?: '.'}", "Folder where the Dockrefile is.")
-      stringParam('repo', "${item.repo}", "Repository where the Docker file is.")
-      booleanParam('push', item.push, "True to push the Docker image to the registry.")
+      stringParam('repo', "${item.repo ?: ''}", "Repository where the Docker file is.")
+      booleanParam('push', item.push ?: false, "True to push the Docker image to the registry.")
       stringParam('docker_build_opts', "${item.build_opts ?: ''}", "Additional flags to the default docker build command.")
       stringParam('docker_build_script', "${item.build_script ?: ''}", "Script/command to build the Docker image.")
       stringParam('docker_test_script', "${item.test_script ?: ''}", "Script/command to test the Docker image.")
@@ -284,8 +407,18 @@ dockerImages.each{ item ->
       artifactNumToKeep(10)
       artifactDaysToKeep(-1)
     }
-    triggers {
-      cron('H H(3-4) * * 1-5')
+    properties {
+      disableResume()
+      durabilityHint{
+        hint('PERFORMANCE_OPTIMIZED')
+      }
+      pipelineTriggers {
+        triggers {
+          cron{
+              spec('H H(3-4) * * 1-5')
+            }
+        }
+      }
     }
     definition {
       cpsScm {

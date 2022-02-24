@@ -1,0 +1,497 @@
+{
+  "mappings" : {
+    "properties" : {
+      "errorMetrics" : {
+        "properties" : {
+          "closedChannelException" : {
+            "type" : "long"
+          },
+          "interruptedException" : {
+            "type" : "long"
+          },
+          "missingContextVariableException" : {
+            "type" : "long"
+          },
+          "notSerializableException" : {
+            "type" : "long"
+          },
+          "reusedWorkers" : {
+            "type" : "long"
+          }
+        }
+      },
+      "artifacts" : {
+        "properties" : {
+          "name" : {
+            "type" : "keyword"
+          },
+          "path" : {
+            "type" : "keyword"
+          },
+          "size" : {
+            "type" : "long"
+          }
+        }
+      },
+      "build" : {
+        "properties" : {
+          "artifactsZipFile" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "causeOfBlockage" : {
+            "type" : "keyword"
+          },
+          "causes" : {
+            "properties" : {
+              "shortDescription" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "upstreamBuild" : {
+                "type" : "long"
+              },
+              "upstreamProject" : {
+                "type" : "keyword"
+              },
+              "upstreamUrl" : {
+                "type" : "keyword"
+              },
+              "userId" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "userName" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              }
+            }
+          },
+          "commitId" : {
+            "type" : "keyword"
+          },
+          "commitUrl" : {
+            "type" : "keyword"
+          },
+          "description" : {
+            "type" : "keyword"
+          },
+          "durationInMillis" : {
+            "type" : "long"
+          },
+          "enQueueTime" : {
+            "type" : "date"
+          },
+          "endTime" : {
+            "type" : "date"
+          },
+          "estimatedDurationInMillis" : {
+            "type" : "long"
+          },
+          "id" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "name" : {
+            "type" : "keyword"
+          },
+          "organization" : {
+            "type" : "keyword"
+          },
+          "pipeline" : {
+            "type" : "keyword"
+          },
+          "result" : {
+            "type" : "keyword"
+          },
+          "runSummary" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "startTime" : {
+            "type" : "date"
+          },
+          "state" : {
+            "type" : "keyword"
+          },
+          "type" : {
+            "type" : "keyword"
+          }
+        }
+      },
+      "changeSet" : {
+        "properties" : {
+          "affectedPaths" : {
+            "type" : "keyword"
+          },
+          "author" : {
+            "properties" : {
+              "fullName" : {
+                "type" : "keyword"
+              },
+              "id" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          "checkoutCount" : {
+            "type" : "long"
+          },
+          "commitId" : {
+            "type" : "keyword"
+          },
+          "issues" : {
+            "properties" : {
+              "_class" : {
+                "type" : "keyword"
+              },
+              "id" : {
+                "type" : "keyword"
+              },
+              "url" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          "msg" : {
+            "type" : "keyword"
+          },
+          "timestamp" : {
+            "type" : "date"
+          }
+        }
+      },
+      "env" : {
+        "properties" : {
+          "BRANCH_NAME" : {
+            "type" : "keyword"
+          },
+          "BUILD_DISPLAY_NAME" : {
+            "type" : "keyword"
+          },
+          "BUILD_ID" : {
+            "type" : "keyword"
+          },
+          "BUILD_NUMBER" : {
+            "type" : "keyword"
+          },
+          "BUILD_TAG" : {
+            "type" : "keyword"
+          },
+          "BUILD_URL" : {
+            "type" : "keyword"
+          },
+          "CHANGE_AUTHOR" : {
+            "type" : "keyword"
+          },
+          "CHANGE_BRANCH" : {
+            "type" : "keyword"
+          },
+          "CHANGE_FORK" : {
+            "type" : "keyword"
+          },
+          "CHANGE_ID" : {
+            "type" : "keyword"
+          },
+          "CHANGE_TARGET" : {
+            "type" : "keyword"
+          },
+          "CHANGE_URL" : {
+            "type" : "keyword"
+          },
+          "GIT_BASE_COMMIT" : {
+            "type" : "keyword"
+          },
+          "GIT_COMMIT" : {
+            "type" : "keyword"
+          },
+          "GIT_PREVIOUS_COMMIT" : {
+            "type" : "keyword"
+          },
+          "GIT_PREVIOUS_SUCCESSFUL_COMMIT" : {
+            "type" : "keyword"
+          },
+          "JOB_BASE_NAME" : {
+            "type" : "keyword"
+          },
+          "JOB_DISPLAY_URL" : {
+            "type" : "keyword"
+          },
+          "JOB_NAME" : {
+            "type" : "keyword"
+          },
+          "JOB_URL" : {
+            "type" : "keyword"
+          },
+          "ORG_NAME" : {
+            "type" : "keyword"
+          },
+          "OTEL_ELASTIC_URL" : {
+            "type" : "keyword"
+          },
+          "REPO_NAME" : {
+            "type" : "keyword"
+          }
+        }
+      },
+      "job" : {
+        "properties" : {
+          "branch" : {
+            "properties" : {
+              "isPrimary" : {
+                "type" : "boolean"
+              },
+              "url" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              }
+            }
+          },
+          "disabled" : {
+            "type" : "boolean"
+          },
+          "displayName" : {
+            "type" : "keyword"
+          },
+          "estimatedDurationInMillis" : {
+            "type" : "long"
+          },
+          "fullDisplayName" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "fullName" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "name" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "organization" : {
+            "type" : "keyword"
+          },
+          "pullRequest" : {
+            "properties" : {
+              "author" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "id" : {
+                "type" : "keyword"
+              },
+              "title" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              },
+              "url" : {
+                "type" : "keyword",
+                "fields" : {
+                  "analyzed" : {
+                    "type" : "text"
+                  }
+                }
+              }
+            }
+          },
+          "weatherScore" : {
+            "type" : "long"
+          }
+        }
+      },
+      "test_coverage" : {
+        "properties" : {
+          "Classes" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Conditionals" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Files" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Lines" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Methods" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          },
+          "Packages" : {
+            "properties" : {
+              "denominator" : {
+                "type" : "float"
+              },
+              "numerator" : {
+                "type" : "float"
+              },
+              "ratio" : {
+                "type" : "float"
+              }
+            }
+          }
+        }
+      },
+      "test_summary" : {
+        "properties" : {
+          "existingFailed" : {
+            "type" : "long"
+          },
+          "failed" : {
+            "type" : "long"
+          },
+          "fixed" : {
+            "type" : "long"
+          },
+          "passed" : {
+            "type" : "long"
+          },
+          "regressions" : {
+            "type" : "long"
+          },
+          "skipped" : {
+            "type" : "long"
+          },
+          "total" : {
+            "type" : "long"
+          }
+        }
+      },
+      "test": {
+        "type": "nested",
+        "properties" : {
+          "age" : {
+            "type" : "long"
+          },
+          "duration" : {
+            "type" : "long"
+          },
+          "id" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "errorDetails" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "name" : {
+            "type" : "keyword",
+            "fields" : {
+              "analyzed" : {
+                "type" : "text"
+              }
+            }
+          },
+          "status" : {
+            "type" : "keyword"
+          }
+        }
+      }
+    }
+  }
+}

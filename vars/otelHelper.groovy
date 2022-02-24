@@ -52,3 +52,8 @@ def getEndpoint() {
   def value = getOtelPlugin().getEndpoint()
   return value
 }
+
+def getServiceName() {
+  def value = getOtelPlugin().getServiceName()
+  return value
+}

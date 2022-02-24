@@ -28,7 +28,7 @@
 <% if(!build?.causes instanceof net.sf.json.JSONNull && build?.causes?.shortDescription != null && ! build?.causes?.shortDescription?.isEmpty() && !build?.causes?.shortDescription.equals('null')) {%>
 * Build Cause: `${build.causes.shortDescription}`
 <%}%>
-<% if(build?.description != null && !build?.description.equals('null')) {%>
+<% if(!build?.description instanceof net.sf.json.JSONNull && build?.description != null && !build?.description.equals('null')) {%>
 * Reason: `${build.description}`
 <%}%>
 <% if(build?.startTime != null && !build?.startTime.equals('null')) {%>
@@ -37,7 +37,7 @@
 <% if(build?.durationInMillis >= 0) {%>
 * Duration: ${Math.round(build.durationInMillis/1000/60)} min ${Math.round(build.durationInMillis/1000)%60} sec
 <%}%>
-<% if(build?.commitId != null && !build?.commitId.equals('null') && build?.commitId.toString().trim()) {%>
+<% if(!build?.commitId instanceof net.sf.json.JSONNull && build?.commitId != null && !build?.commitId.equals('null') && build?.commitId.toString().trim()) {%>
 * Commit: ${build?.commitId.split('\\+')[0]}
 <%}%>
 
@@ -92,7 +92,8 @@ ${errorStackTrace}
 <% if (!buildStatus?.equals('ABORTED') && errorGithubPrCheckApproved) {%>
   <% stepsErrors = stepsErrors << errorGithubPrCheckApproved %>
 <%}%>
-<% if (stepsErrors?.size() != 0 && !statusSuccess) {%>
+<% if (!statusSuccess) {%>
+<% if (stepsErrors?.size() != 0) {%>
 ### Steps errors [![${stepsErrors?.size()}](https://img.shields.io/badge/${stepsErrors?.size()}%20-red)](${jobUrl}/pipeline)
   <details><summary>Expand to view the steps failures</summary>
   <p>
@@ -112,4 +113,11 @@ ${description}
   <%}%>
   </p>
   </details>
+<%} else {%>
+### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
+  <p>
+  This error is likely related to the pipeline itself. Please go to the traditional console output <a href=\"${env?.BUILD_URL}/console\">here</a>"
+  You will see the error (either a wrong syntax or configuration)
+  </p>
+<%}%>
 <%}%>

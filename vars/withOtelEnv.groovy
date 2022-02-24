@@ -74,6 +74,12 @@ def runBodyWithEndpoint(Closure body) {
   if (!env.TRACEPARENT) {
     otelEnvs = ["TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"]
   }
+
+  def serviceName = otelHelper.getServiceName()
+  if (serviceName?.trim()) {
+    otelEnvs << "JENKINS_OTEL_SERVICE_NAME=${serviceName}"
+  }
+
   withEnvMask(vars: [
     [var: 'ELASTIC_APM_SERVER_URL', password: entrypoint],
     [var: 'OTEL_EXPORTER_OTLP_ENDPOINT', password: entrypoint],

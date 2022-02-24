@@ -8,6 +8,7 @@
 
 ## User Documentation
 
+* This library supports several integrations, see the [available integrations list](INTEGRATIONS.md)
 * [Steps Documentation](vars/README.md)
 
 ## Known Issues
