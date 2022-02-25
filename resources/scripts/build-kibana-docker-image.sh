@@ -40,7 +40,7 @@ if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${NVM_DIR}/nvm.sh"
   nvm install "${NODE_VERSION}"
-  nvm use "${NODE_VERSION}"
+  nvm use --delete-prefix "${NODE_VERSION}"
 fi
 
 BUILD_DOCKER_OPTS="--skip-initialize --skip-generic-folders --skip-platform-folders --skip-archives --docker-images --skip-docker-contexts "
