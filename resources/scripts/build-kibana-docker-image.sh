@@ -21,7 +21,8 @@
 # the proper NodeJS version for building Kibana. Finally, it will generate
 # the Docker image for Kibana for the current state of the Git repository.
 #
-set -e
+set -ex
+
 unset NVM_DIR
 
 export BABEL_DISABLE_CACHE=true
