@@ -21,7 +21,7 @@
 # the proper NodeJS version for building Kibana. Finally, it will generate
 # the Docker image for Kibana for the current state of the Git repository.
 #
-
+set -e
 unset NVM_DIR
 
 export BABEL_DISABLE_CACHE=true
@@ -55,15 +55,25 @@ if [ -z "${BUILD_DOCKER_CLOUD}" ]; then
   BUILD_DOCKER_OPTS="${BUILD_DOCKER_OPTS} --skip-docker-cloud"
 fi
 
-mkdir ~/.npm-global
+mkdir -p ~/.npm-global/lib
 npm config set prefix "${HOME}/.npm-global"
 export PATH=${HOME}/.npm-global/bin:${PATH}
 
+if [ -d "${HOME}/.cache" ] && [ -n "${CI}" ]; then
+  ln -s "${HOME}/.cache" "$(pwd)/.cache"
+fi
+if [ -d "${HOME}/.bazel-cache" ] && [ -n "${CI}" ]; then
+  ln -s "${HOME}/.bazel-cache" "$(pwd)/kibana/.bazel-cache"
+fi
+
+pwd
+ls -la
+
 npm install -g yarn
-yarn kbn clean
-yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
+time yarn kbn clean
+time yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
 # build Linux package
-node scripts/build
+time node scripts/build
 # build docker images
 # shellcheck disable=SC2086
-node scripts/build ${BUILD_DOCKER_OPTS}
+time node scripts/build ${BUILD_DOCKER_OPTS}
