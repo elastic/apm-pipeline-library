@@ -30,14 +30,13 @@ export FORCE_COLOR=1
 export NODE_OPTIONS=" --max-old-space-size=4096"
 export BUILD_TS_REFS_DISABLE="true"
 
-if [ -z "$(command -v nvm)" ]; then
+if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
   curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090,SC1091
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 fi
 
-echo "Comparing 'v${NODE_VERSION}' != '$(node --version)'"
 if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
   # shellcheck disable=SC1090,SC1091
   set +x
@@ -67,7 +66,7 @@ if [ -d "${HOME}/.cache" ] && [ -n "${CI}" ]; then
   ln -s "${HOME}/.cache" "$(pwd)/.cache"
 fi
 if [ -d "${HOME}/.bazel-cache" ] && [ -n "${CI}" ]; then
-  ln -s "${HOME}/.bazel-cache" "$(pwd)/kibana/.bazel-cache"
+  ln -s "${HOME}/.bazel-cache" "$(pwd)/.bazel-cache"
 fi
 
 pwd
