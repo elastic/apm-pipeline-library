@@ -62,12 +62,12 @@ mkdir -p ~/.npm-global/lib
 npm config set prefix "${HOME}/.npm-global"
 export PATH=${HOME}/.npm-global/bin:${PATH}
 
-if [ -d "${HOME}/.cache" ] && [ -n "${CI}" ]; then
-  ln -s "${HOME}/.cache" "$(pwd)/.cache"
-fi
-if [ -d "${HOME}/.bazel-cache" ] && [ -n "${CI}" ]; then
-  ln -s "${HOME}/.bazel-cache" "$(pwd)/.bazel-cache"
-fi
+# if [ -d "${HOME}/.cache" ] && [ -n "${CI}" ]; then
+#   ln -s "${HOME}/.cache" "$(pwd)/.cache"
+# fi
+# if [ -d "${HOME}/.bazel-cache" ] && [ -n "${CI}" ]; then
+#   ln -s "${HOME}/.bazel-cache" "$(pwd)/.bazel-cache"
+# fi
 
 pwd
 ls -la
