@@ -21,7 +21,7 @@
 # the proper NodeJS version for building Kibana. Finally, it will generate
 # the Docker image for Kibana for the current state of the Git repository.
 #
-set -ex
+set -e
 
 unset NVM_DIR
 
@@ -39,9 +39,7 @@ fi
 
 if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
   # shellcheck disable=SC1090,SC1091
-  set +x
   . "${NVM_DIR}/nvm.sh"
-  set -x
   nvm install "${NODE_VERSION}"
   nvm use --delete-prefix "v${NODE_VERSION}"
 fi
@@ -61,16 +59,6 @@ fi
 mkdir -p ~/.npm-global/lib
 npm config set prefix "${HOME}/.npm-global"
 export PATH=${HOME}/.npm-global/bin:${PATH}
-
-# if [ -d "${HOME}/.cache" ] && [ -n "${CI}" ]; then
-#   ln -s "${HOME}/.cache" "$(pwd)/.cache"
-# fi
-# if [ -d "${HOME}/.bazel-cache" ] && [ -n "${CI}" ]; then
-#   ln -s "${HOME}/.bazel-cache" "$(pwd)/.bazel-cache"
-# fi
-
-pwd
-ls -la
 
 npm install -g yarn
 time yarn kbn clean
