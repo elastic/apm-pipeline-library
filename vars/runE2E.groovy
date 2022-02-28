@@ -66,6 +66,7 @@ def createParameters(Map args = [:]) {
   ]
 
   addStringParameterIfValue(args.get('beatVersion', ''), 'BEAT_VERSION', parameters)
+  addStringParameterIfValue(args.get('elasticAgentVersion', ''), 'ELASTIC_AGENT_VERSION', parameters)
   addStringParameterIfValue(args.get('gitHubCheckSha1', ''), 'GITHUB_CHECK_SHA1', parameters)
   addStringParameterIfValue(args.get('gitHubCheckRepo', ''), 'GITHUB_CHECK_REPO', parameters)
   addStringParameterIfValue(args.get('gitHubCheckName', ''), 'GITHUB_CHECK_NAME', parameters)
