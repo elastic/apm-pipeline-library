@@ -148,6 +148,16 @@ class RunE2EStepTests extends ApmBasePipelineTest {
       // NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'runE2e: e2e pipeline is defined in https://beats-ci.elastic.co/'))
+    assertTrue(assertMethodCallContainsPattern('error', 'https://beats-ci.elastic.co/'))
+  }
+
+  @Test
+  void test_prs_with_default_fleet_ci() throws Exception {
+    addEnvVar('JENKINS_URL', 'https://fleet-ci.elastic.co/')
+    helper.registerAllowedMethod('isPR', { return true })
+    script.call()
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('githubNotify', 0))
+    assertJobStatusSuccess()
   }
 }
