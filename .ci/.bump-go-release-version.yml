@@ -34,6 +34,12 @@ projects:
       - main
     enabled: true
     labels: dependency,backport-skip
+  - repo: elastic-agent
+    script: .ci/bump-go-release-version.sh
+    branches:
+      - main
+    enabled: true
+    labels: dependency,backport-skip
   - repo: fleet-server
     script: .ci/bump-go-release-version.sh
     branches:
