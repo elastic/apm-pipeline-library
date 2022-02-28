@@ -11,6 +11,17 @@
 
 -  Ensure null values are captured [#1560](https://github.com/elastic/apm-pipeline-library/pull/1560)
 
+## v1.1.298 (22/02/2022)
+
+#### 🚀 Enhancements
+
+-  support push docker image step [#1550](https://github.com/elastic/apm-pipeline-library/pull/1550)
+- [**Team:Automation**] feat: speed up checkouts [#1558](https://github.com/elastic/apm-pipeline-library/pull/1558)
+
+#### 🐛 Bug Fixes
+
+-  Ensure null values are captured [#1560](https://github.com/elastic/apm-pipeline-library/pull/1560)
+
 ## v1.1.297 (21/02/2022)
 *No changelog for this release.*
 
