@@ -27,6 +27,6 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *propagate*: the test suites to test. Optional (default false)
 * *wait*: the test suites to test. Optional (default false)
 
-**NOTE**: It works only in the `beats-ci` controller.
+**NOTE**: It works only in the `beats-ci` and `fleet-ci` controllers.
 
 Parameters are defined in https://github.com/elastic/e2e-testing/blob/main/.ci/Jenkinsfile

@@ -488,6 +488,24 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## fastCheckout
+Only make a Git checkout of the refspec passed as parameter, and not tags, this make the checkout faster.
+This checkout does not work with tags.
+
+```
+fastCheckout(refspec: 'main', depth: 10, url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'PR/12345', url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05', url:"https://github.com/elastic/beats.git")
+```
+
+* url: Git repository URL. (Required)
+* refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
+* depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
+
 ## filebeat
 
  This step run a filebeat Docker container to grab the Docker containers logs in a single file.
@@ -2706,7 +2724,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *propagate*: the test suites to test. Optional (default false)
 * *wait*: the test suites to test. Optional (default false)
 
-**NOTE**: It works only in the `beats-ci` controller.
+**NOTE**: It works only in the `beats-ci` and `fleet-ci` controllers.
 
 Parameters are defined in https://github.com/elastic/e2e-testing/blob/main/.ci/Jenkinsfile
 
