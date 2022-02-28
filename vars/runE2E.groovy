@@ -22,7 +22,7 @@
 */
 def call(Map args = [:]) {
 
-  if (!env.JENKINS_URL?.contains('beats-ci') || !env.JENKINS_URL?.contains('fleet-ci') ) {
+  if (!env.JENKINS_URL?.contains('beats-ci') && !env.JENKINS_URL?.contains('fleet-ci')) {
     error('runE2e: e2e pipeline is defined in either https://beats-ci.elastic.co/ or https://fleet-ci.elastic.co/')
   }
 
