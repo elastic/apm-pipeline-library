@@ -233,6 +233,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('timestamps', [], null)
     helper.registerAllowedMethod('triggers', [Closure.class], null)
     helper.registerAllowedMethod('unstable', [Closure.class], { body -> body() })
+    helper.registerAllowedMethod('waitUntil', [Map.class, Closure.class], { m, body -> body() })
   }
 
   void registerScriptedMethods() {
@@ -482,6 +483,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       }
       return ret
     })
+    helper.registerAllowedMethod('googleStorageUploadExt', [Map.class], { return "OK" })
     helper.registerAllowedMethod('gsutil', [Map.class], { m ->
       def script = loadScript('vars/gsutil.groovy')
       return script.call(m)
