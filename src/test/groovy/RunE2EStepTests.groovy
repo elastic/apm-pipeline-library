@@ -153,7 +153,7 @@ class RunE2EStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_prs_with_default_fleet_ci() throws Exception {
-    addEnvVar('JENKINS_URL', 'https://beats-ci.elastic.co/')
+    addEnvVar('JENKINS_URL', 'https://fleet-ci.elastic.co/')
     helper.registerAllowedMethod('isPR', { return true })
     script.call()
     printCallStack()
