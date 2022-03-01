@@ -501,8 +501,9 @@ def getSupportedGithubCommands() {
   }
 
   if (isProjectSupported('elastic-agent')) {
+    comments['/package'] = 'Generate the packages.'
     comments['run integration tests'] = 'Run the Elastic Agent Integration tests.'
-    comments['run end-to-end tests'] = 'Run the E2E Tests.'
+    comments['run end-to-end tests'] = 'Generate the packages and run the E2E Tests.'
   }
 
   // Support for the Obs11 test environments specific GitHub commands
