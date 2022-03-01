@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.301 (01/03/2022)
+
+#### 🚀 Enhancements
+
+-  chore: pass elastic-agent version to runE2E [#1569](https://github.com/elastic/apm-pipeline-library/pull/1569)
+
 ## v1.1.300 (28/02/2022)
 *No changelog for this release.*
 
