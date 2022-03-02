@@ -49,3 +49,11 @@ projects:
     enabled: true
     labels: dependency
     title: "chore: update elastic stack release version"
+  - repo: e2e-testing
+    script: .ci/bump-stack-release-version.sh
+    branches:
+      - main
+      - "7.17"
+    enabled: true
+    labels: dependency
+    title: "chore: update elastic stack release version"
