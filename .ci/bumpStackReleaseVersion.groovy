@@ -100,9 +100,14 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update Elastic stack release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
-  // TODO: to be adapted to the 8 releases, so maybe the branch should be the one driving this dynamically.
-  def stackCurrentVersion = bumpUtils.getCurrentMinorReleaseFor7()
-  def stackNextMinorVersion = bumpUtils.getNextMinorReleaseFor7()
+
+  // IMPORTANT: branch main points to the 8 major release
+  def stackCurrentVersion = bumpUtils.getCurrentMinorReleaseFor8()
+  def stackNextMinorVersion = bumpUtils.getNextMinorReleaseFor8()
+  if (branch.startsWith('7')) {
+    stackCurrentVersion = bumpUtils.getCurrentMinorReleaseFor7()
+    stackNextMinorVersion = bumpUtils.getNextMinorReleaseFor7()
+  }
   def message = """### What \n Bump stack version with the latest release. \n ### Further details \n ${stackCurrentVersion} ${stackNextMinorVersion}"""
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   if (labels.trim() && !labels.contains('automation')) {
