@@ -1,11 +1,11 @@
-Configure the GCP context, install gsutil if needed, to run the given body closure
+Configure the GCP environment context to run the given body closure
 
 ```
-withGCPEnv(credentialsId: 'foo') {
+withGCPEnvContext(credentialsId: 'foo') {
   // block
 }
 
-withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
+withGCPEnvContext(secret: 'secret/team/ci/service-account/gcp-provisioner') {
   // block
 }
 ```

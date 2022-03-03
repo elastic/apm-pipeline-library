@@ -39,62 +39,15 @@ def call(Map args = [:], Closure body) {
     if(!isInstalled(tool: 'gsutil', flag: '--version')) {
       downloadInstaller(gsUtilLocation)
     }
-
-    if (secret) {
-      def props = getVaultSecret(args)
-      if (props?.errors) {
-        error "withGCPEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
-      }
-      def value = props?.data
-      def credentialsContent = readCredentialsContent(value)
-      writeFile(file: secretFileLocation, text: credentialsContent)
-      gcloudAuth(secretFileLocation)
-    } else {
-      withCredentials([file(credentialsId: credentialsId, variable: 'FILE_CREDENTIAL')]) {
+    withGCPEnvContext(args + [ secretFileLocation: secretFileLocation ]) {
+      if (secret) {
+        gcloudAuth(secretFileLocation)
+      } else {
         gcloudAuth(isUnix() ? '${FILE_CREDENTIAL}' : '%FILE_CREDENTIAL%')
       }
-    }
-    try {
-      if (secret) {
-        // Somehow the login works for google bucket integrations but something
-        // it's not right when using the VM creation with terraform and GCP
-        // Setting GOOGLE_APPLICATION_CREDENTIALS seems to be the workaround
-        // https://cloud.google.com/docs/authentication/getting-started
-        withEnv(["GOOGLE_APPLICATION_CREDENTIALS=${secretFileLocation}"]){
-          body()
-        }
-      } else {
-        body()
-      }
-    } finally {
-      if (fileExists("${secretFileLocation}")) {
-        if(isUnix()){
-          sh "rm ${secretFileLocation}"
-        } else {
-          bat "del ${secretFileLocation}"
-        }
-      }
+      body()
     }
   }
-}
-
-/**
-* Read the vault secret and look for the required fields.
-* * credentials field is the one initially supported and kept for backward compatibility reasons.
-* * value field is the fallback field, this is the case used
-*/
-def readCredentialsContent(Map vaultSecretContent) {
-  def credentialsContent = vaultSecretContent?.credentials
-  if (credentialsContent?.trim()) {
-    log(level: 'INFO', text: "readCredentialsContent: reading the 'credentials' field.")
-    return credentialsContent
-  }
-  credentialsContent = vaultSecretContent?.value
-  if (credentialsContent?.trim()) {
-    log(level: 'INFO', text: "readCredentialsContent: reading the 'value' field.")
-    return credentialsContent
-  }
-  error "withGCPEnv: Unable to read the credentials and value fields"
 }
 
 def gcloudAuth(keyFile) {
