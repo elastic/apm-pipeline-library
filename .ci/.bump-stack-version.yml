@@ -21,8 +21,8 @@ projects:
     branches:
       - main
       - 8.<minor>
+      - 8.<minor-1>
       - 7.<minor>
-      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
@@ -31,8 +31,8 @@ projects:
     branches:
       - main
       - 8.<minor>
+      - 8.<minor-1>
       - 7.<minor>
-      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,build-monitoring,backport-skip,Team:Beats-On-Call
@@ -41,8 +41,8 @@ projects:
     branches:
       - main
       - 8.<minor>
+      - 8.<minor-1>
       - 7.<minor>
-      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
@@ -52,8 +52,8 @@ projects:
     branches:
       - main
       - 8.<minor>
+      - 8.<minor-1>
       - 7.<minor>
-      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
@@ -62,8 +62,8 @@ projects:
     branches:
       - main
       - 8.<minor>
+      - 8.<minor-1>
       - 7.<minor>
-      - 7.<minor-1>
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
