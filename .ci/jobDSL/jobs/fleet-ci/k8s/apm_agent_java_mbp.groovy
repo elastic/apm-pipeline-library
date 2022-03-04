@@ -110,7 +110,7 @@ multibranchPipelineJob('k8s-evaluation/apm-agent-java-mbp') {
   }
   factory {
     workflowBranchProjectFactory {
-      scriptPath('.ci/Jenkinsfile')
+      scriptPath('Jenkinsfile')
     }
   }
 }
