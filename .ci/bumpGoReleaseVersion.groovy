@@ -132,7 +132,7 @@ def createPullRequest(Map args = [:]) {
   }
 
   bumpUtils.createBranch(prefix: 'update-go-version', suffix: args.branchName)
-  sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
+  sh(script: "${args.scriptFile} '${goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
   if (params.DRY_RUN_MODE) {
     log(level: 'INFO', text: "DRY-RUN: createPullRequest(repo: ${args.repo}, labels: ${args.labels}, message: '${args.message}', base: '${args.branchName}', title: '${args.title}', assign: '${args.assign}', reviewer: '${args.reviewer}')")
