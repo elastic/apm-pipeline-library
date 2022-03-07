@@ -74,11 +74,8 @@ pipeline {
           ignoreExisting: true,
           failOnMissingPlugin: true,
           failOnSeedCollision: true,
-          removedConfigFilesAction: 'DELETE',
-          removedJobAction: 'DELETE',
-          removedViewAction: 'DELETE',
           sandbox: true,
-          targets: "${BASE_DIR}/.ci/jobDSL/jobs/fleet-ci/**/folder.groovy",
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/fleet-ci/folder.groovy",
           unstableOnDeprecation: true
         )
         jobDsl(
