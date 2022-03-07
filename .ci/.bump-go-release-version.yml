@@ -50,8 +50,6 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-      - "1.19"
-      - "1.18"
       - "1.17"
       - "1.16"
     enabled: true
