@@ -19,32 +19,10 @@ multibranchPipelineJob('k8s-evaluation/apm-agent-java-mbp') {
   primaryView('All')
   displayName('Job apm-agent-java')
   description('Job apm-agent-java')
-  parameters {
-    stringParam('JAVA_VERSION', 'java11', "Java version to build & test")
-    stringParam('MAVEN_CONFIG', '-V -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttps.protocols=TLSv1.2 -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25', 'Additional maven options.')
-    booleanParam('test_ci', true, 'Enable Unit tests')
-    booleanParam('agent_integration_tests_ci', false, 'Enable Agent Integration tests')
-    booleanParam('end_to_end_tests_ci', false, 'Enable APM End-to-End tests')
-    booleanParam('bench_ci', false, 'Enable benchmarks')
-    booleanParam('jdk_compatibility_ci', true, 'Enable JDK compatibility tests')
-    booleanParam('windows_ci', false, 'Enable Windows build & tests')
-  }
   orphanedItemStrategy {
     discardOldItems {
       numToKeep(100)
       daysToKeep(30)
-    }
-  }
-  properties {
-    pipelineTriggers {
-      triggers {
-        issueCommentTrigger{
-          commentPattern('(${obltGitHubComments()}|^run (jdk compatibility|benchmark|integration|end-to-end|windows) tests)')
-        }
-        cron{
-          spec('H/10 * * * *')
-        }
-      }
     }
   }
   branchSources {
