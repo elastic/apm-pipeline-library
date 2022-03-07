@@ -26,7 +26,7 @@ def call(Map args = [:], Closure body) {
   def credentialsId = args.containsKey('credentialsId') ? args.credentialsId : ''
   def secret = args.containsKey('secret') ? args.secret : ''
 
-  if (!credentialsId.trim() && !secret.trim()) {
+  if (!credentialsId?.trim() && !secret?.trim()) {
     error('withGCPEnv: credentialsId or secret parameters are required.')
   }
 

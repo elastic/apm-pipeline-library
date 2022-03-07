@@ -500,6 +500,12 @@ def getSupportedGithubCommands() {
     comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
   }
 
+  if (isProjectSupported('elastic-agent')) {
+    comments['/package'] = 'Generate the packages.'
+    comments['run integration tests'] = 'Run the Elastic Agent Integration tests.'
+    comments['run end-to-end tests'] = 'Generate the packages and run the E2E Tests.'
+  }
+
   // Support for the Obs11 test environments specific GitHub commands
   if (isProjectSupported('observability-test-environments')) {
     comments['/test ansible'] = 'Run the ansible tests.'
@@ -534,7 +540,8 @@ private isElasticsearchDocsSupported(String value) {
   return value?.startsWith('apm') ||
          value?.startsWith('ecs') ||
          value?.equals('beats') ||
-         value?.equals('observability-docs')
+         value?.equals('observability-docs') ||
+         value?.equals('elastic-agent')
 }
 
 @NonCPS

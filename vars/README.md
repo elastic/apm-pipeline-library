@@ -184,6 +184,7 @@ Override the `build` step to highlight in BO the URL to the downstream job.
 
 ```
 build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
+build 'foo'
 ```
 
 See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
@@ -194,9 +195,11 @@ Builds the Docker image for Kibana, from a branch or a pull Request.
 ```
 buildKibanaDockerImage(refspec: 'main')
 buildKibanaDockerImage(refspec: 'PR/12345')
+buildKibanaDockerImage(refspec: 'cf25ac3d1f8edff8f20003add707bfdc85d89fff', depth: 10)
+
 ```
 
-* refspec: A branch (i.e. main), or a pull request identified by the "pr/" prefix and the pull request ID.
+* refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
 * packageJSON: Full name of the package.json file. Defaults to 'package.json'
 * baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
 * credentialsId: Credentials used access Github repositories.
@@ -205,6 +208,9 @@ buildKibanaDockerImage(refspec: 'PR/12345')
 * dockerRegistrySecret: Name of the Vault secret with the credentials for logining into the registry. Defaults to 'secret/observability-team/ci/docker-registry/prod'
 * dockerImageSource: Name of the source Docker image when tagging. Defaults to '${dockerRegistry}/kibana/kibana'
 * dockerImageTarget: Name of the target Docker image to be tagged. Defaults to '${dockerRegistry}/observability-ci/kibana'
+* reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
+* depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
 
 ## buildStatus
 Fetch the current build status for a given job
@@ -482,6 +488,24 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## fastCheckout
+Only make a Git checkout of the refspec passed as parameter, and not tags, this make the checkout faster.
+This checkout does not work with tags.
+
+```
+fastCheckout(refspec: 'main', depth: 10, url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'PR/12345', url:"https://github.com/elastic/beats.git")
+fastCheckout(refspec: 'aa3bed18072672e89a8e72aec43c96831ff2ce05', url:"https://github.com/elastic/beats.git")
+```
+
+* url: Git repository URL. (Required)
+* refspec: A branch (i.e. main), a commit SHA, a tag, or a pull request identified by the "pr/" prefix and the pull request ID.
+* baseDir: Directory where to clone the Kibana repository. Defaults to "${env.BASE_DIR}/build"
+* credentialsId: Credentials used access Github repositories.
+* reference: Path to the Git reference repo to improve checkout speed. Default to '/var/lib/jenkins/kibana.git'
+* depth: Number of commits pull down in the Git shallow clone. Default to 1
+* shallow: Enable shallow cloning. Default to true.
+
 ## filebeat
 
  This step run a filebeat Docker container to grab the Docker containers logs in a single file.
@@ -667,7 +691,7 @@ update the name of the branch when a new minor release branch is created.
 
 ```
 // Return the branch name for the main, 8.minor and 8.next-minor branches
-def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<minor-minor>'])
+def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-minor>'])
 
 ```
 
@@ -1543,6 +1567,7 @@ Upload the given pattern files to the given bucket.
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Mandatory.
 * sharedPublicly: Whether to shared those objects publicly. Optional. Default false.
+* extraFlags: Extra flags to use with gsutil cp. Optional
 
 ## gsutil
 Wrapper to interact with the gsutil command line. It returns the stdout output.
@@ -2526,6 +2551,66 @@ with the given headers.
 
 __NOTE__: It requires *Nix where to run it from.
 
+## pushDockerImages
+Publish docker images in the given docker registry. For such, it
+retags the existing docker images and publish them in the given
+docker namespace.
+
+It uses a map of images, this map contains an entry for each docker image
+to be pushed, what architecture and the name of the docker image to be pushed.
+
+The version is required to tag the docker image accordingly and also it uses
+the snapshot if needed.
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to the observability-ci namespace. In addition
+  // tag them as default, arch=amd64 is the default tag image
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats/filebeat-ubi8", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+```
+  // Given the filebeat project, and its generated docker
+  // images for the 8.2.0-SNAPSHOT and 2 different variants
+  // then publish them to observability-ci
+  // Source images follow the format:
+  //   - "my-registry/beats/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/beats-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  // Generated images follow the format:
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT"
+  //   - "my-registry/observability-ci/filebeat:8.2.0-SNAPSHOT-amd64"
+  //   - "my-registry/observability-ci/filebeat-cloud:8.2.0-SNAPSHOT-amd64"
+  pushDockerImages(
+    registry: "my-registry",
+    secret: "my-secret",
+    version: '8.2.0',
+    snapshot: true,
+    images: [
+      [ source: "beats/filebeat", arch: 'amd64', target: "observability-ci/filebeat"],
+      [ source: "beats-ci/filebeat-cloud", arch: 'amd64', target: "observability-ci/filebeat-ubi8"]
+    ]
+  )
+```
+
+* secret: the docker secret
+* registry: the docker registry
+* version: what version
+* snapshot: snapshot support
+* images: list of the docker image to be retagged to, architecture and docker image to be pushed to.
+
+__NOTE__: It requires *Nix where to run it from.
+
 ## randomNumber
 it generates a random number, by default the number is between 1 to 100.
 
@@ -2639,7 +2724,7 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *propagate*: the test suites to test. Optional (default false)
 * *wait*: the test suites to test. Optional (default false)
 
-**NOTE**: It works only in the `beats-ci` controller.
+**NOTE**: It works only in the `beats-ci` and `fleet-ci` controllers.
 
 Parameters are defined in https://github.com/elastic/e2e-testing/blob/main/.ci/Jenkinsfile
 
@@ -3049,9 +3134,10 @@ not overridden once they are created.
 ```
 
 * repo: The GitHub repository name. Optional. Default to `REPO`
-* bucket: The Google Storage bucket name. Mandatory
+* bucket: The Google Storage bucket name. Optional. Default to `JOB_GCS_BUCKET`
 * credentialsId: The credentials to access the repo (repo permissions). Optional. Default to `JOB_GCS_CREDENTIALS`
 * pattern: The file to pattern to search and copy. Optional. Default to `build/distributions/**/*`
+* folder: The folder to be added to the calculated bucket uri folder. Optional.
 
 NOTE: It works with the Multibranch Pipeline only, therefore it requires to use `gitCheckout` to be able to populate the
       gitBaseCommit.

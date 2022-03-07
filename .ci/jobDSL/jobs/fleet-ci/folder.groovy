@@ -15,20 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
+folder('fleet-shared') {
+  displayName('Fleet shared folder')
+  description('Folder for shared CI jobs')
+}
 
-  As long as we got timeout issues
-
-  Further details: https://brokenco.de/2017/08/03/overriding-builtin-steps-pipeline.html
-
-  git scm
-*/
-def call(args) {
-  log(level: 'INFO', text: 'Override default git')
-
-  def ret
-  retryWithSleep(retries: 3, seconds: 10) {
-    ret = steps.git(args)
-  }
-  return ret
+folder('k8s-evaluation') {
+  displayName('k8s evaluation')
+  description('Folder for the k8s evaluation')
 }
