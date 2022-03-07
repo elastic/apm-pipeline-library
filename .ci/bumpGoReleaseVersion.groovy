@@ -120,6 +120,17 @@ def createPullRequest(Map args = [:]) {
   if (!args?.goReleaseVersion?.trim()) {
     error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
   }
+
+  // If branch is not main the it's likely needed to search for the go version that matches the given branch
+  // ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
+  def goReleaseVersion = args?.goReleaseVersion
+  if (!args.branchName?.equals('main')) {
+    goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: args.branchName)
+    if (!goReleaseVersion?.trim()) {
+      error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
+    }
+  }
+
   bumpUtils.createBranch(prefix: 'update-go-version', suffix: args.branchName)
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 
