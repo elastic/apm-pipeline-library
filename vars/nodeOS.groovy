@@ -37,7 +37,6 @@ def call() {
     matches.add('darwin')
   }
 
-
   if(matches.size() == 0){
     error("Unhandled OS name in NODE_LABELS: " + labels)
   }
