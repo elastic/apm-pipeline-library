@@ -25,7 +25,7 @@ def call() {
   def labels = env.NODE_LABELS?.toLowerCase()
   def matches = []
 
-  if (isLinux(labels) || (isArm() && !isDarwin(labels))) {
+  if (isLinux(labels) || (isArm() && !isDarwin(labels)) || isK8s(labels)) {
     matches.add('linux')
   }
 
@@ -36,6 +36,7 @@ def call() {
   if (isDarwin(labels)) {
     matches.add('darwin')
   }
+
 
   if(matches.size() == 0){
     error("Unhandled OS name in NODE_LABELS: " + labels)
@@ -58,4 +59,8 @@ def isDarwin(labels){
 
 def isWindows(labels){
   return labels.contains('windows')
+}
+
+def isK8s() {
+  return env.POD_LABEL?.trim() ? true : false
 }

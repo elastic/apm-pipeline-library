@@ -30,7 +30,7 @@ def call() {
     matches.add('i386')
   }
 
-  if (is64bit(labels)) {
+  if (is64bit(labels) || isK8s()) {
     matches.add('x86_64')
   }
 
@@ -68,4 +68,8 @@ def isArm(labels){
 
 def isArm64(labels){
   return labels.contains('aarch64') || labels.contains('arm64')
+}
+
+def isK8s() {
+  return env.POD_LABEL?.trim() ? true : false
 }
