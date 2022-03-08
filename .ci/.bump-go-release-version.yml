@@ -52,3 +52,10 @@ projects:
       - main
     enabled: true
     labels: dependency
+  - repo: observability-robots
+    script: .ci/bump-go-release-version.sh
+    branches:
+      - main
+    enabled: true
+    labels: dependency
+    reviewer: elastic/observablt-robots-on-call
