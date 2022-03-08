@@ -61,9 +61,9 @@ pipeline {
           releaseVersions[bumpUtils.current7Key()] = '7.17.1'
           releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.2'
           releaseVersions[bumpUtils.nextPatch7Key()] = '7.17.2'
-          releaseVersions[bumpUtils.current8Key()] = '8.0.1'
+          releaseVersions[bumpUtils.current8Key()] = '8.1.0'
           releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
-          releaseVersions[bumpUtils.nextPatch8Key()] = '8.1.0'
+          releaseVersions[bumpUtils.nextPatch8Key()] = '8.1.1'
         }
       }
     }
