@@ -21,6 +21,7 @@
 # the proper NodeJS version for building Kibana. Finally, it will generate
 # the Docker image for Kibana for the current state of the Git repository.
 #
+set -e
 
 unset NVM_DIR
 
@@ -29,7 +30,7 @@ export FORCE_COLOR=1
 export NODE_OPTIONS=" --max-old-space-size=4096"
 export BUILD_TS_REFS_DISABLE="true"
 
-if [ -z "$(command -v nvm)" ]; then
+if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
   curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090,SC1091
@@ -40,7 +41,7 @@ if [ "v${NODE_VERSION}" != "$(node --version)" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${NVM_DIR}/nvm.sh"
   nvm install "${NODE_VERSION}"
-  nvm use "${NODE_VERSION}"
+  nvm use --delete-prefix "v${NODE_VERSION}"
 fi
 
 BUILD_DOCKER_OPTS="--skip-initialize --skip-generic-folders --skip-platform-folders --skip-archives --docker-images --skip-docker-contexts "
@@ -55,15 +56,15 @@ if [ -z "${BUILD_DOCKER_CLOUD}" ]; then
   BUILD_DOCKER_OPTS="${BUILD_DOCKER_OPTS} --skip-docker-cloud"
 fi
 
-mkdir ~/.npm-global
+mkdir -p ~/.npm-global/lib
 npm config set prefix "${HOME}/.npm-global"
 export PATH=${HOME}/.npm-global/bin:${PATH}
 
 npm install -g yarn
-yarn kbn clean
-yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
+time yarn kbn clean
+time yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
 # build Linux package
-node scripts/build
+time node scripts/build
 # build docker images
 # shellcheck disable=SC2086
-node scripts/build ${BUILD_DOCKER_OPTS}
+time node scripts/build ${BUILD_DOCKER_OPTS}
