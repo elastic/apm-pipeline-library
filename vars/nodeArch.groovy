@@ -69,7 +69,3 @@ def isArm(labels){
 def isArm64(labels){
   return labels.contains('aarch64') || labels.contains('arm64')
 }
-
-def isK8s() {
-  return env.POD_LABEL?.trim() ? true : false
-}

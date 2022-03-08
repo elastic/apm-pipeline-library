@@ -544,6 +544,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('isK8s', {
+      def script = loadScript('vars/isK8s.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
     helper.registerAllowedMethod('nodeOS', [], { return 'linux'})

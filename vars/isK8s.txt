@@ -1,0 +1,7 @@
+Whether the node is a k8s pod template
+
+```
+  whenTrue(isK8s()) {
+   ...
+  }
+```

@@ -16,47 +16,13 @@
 // under the License.
 
 /**
- Return the name of the Operating system based on the labels of the Node.
+ Whether the node is a k8s pod template
 
- def os = nodeOS()
+ whenTrue(isK8s()) {
+   ...
+ }
 
 */
 def call() {
-  def labels = env.NODE_LABELS?.toLowerCase()
-  def matches = []
-
-  if (isLinux(labels) || (isArm() && !isDarwin(labels)) || isK8s()) {
-    matches.add('linux')
-  }
-
-  if (isWindows(labels)) {
-    matches.add('windows')
-  }
-
-  if (isDarwin(labels)) {
-    matches.add('darwin')
-  }
-
-
-  if(matches.size() == 0){
-    error("Unhandled OS name in NODE_LABELS: " + labels)
-  }
-
-  if(matches.size() > 1){
-    error("Labels conflict OS name in NODE_LABELS: " + labels)
-  }
-
-  return matches[0]
-}
-
-def isLinux(labels){
-  return labels.contains('linux')
-}
-
-def isDarwin(labels){
-  return labels.contains('darwin') || labels.contains('macos')
-}
-
-def isWindows(labels){
-  return labels.contains('windows')
+  return env.POD_LABEL?.trim() ? true : false
 }
