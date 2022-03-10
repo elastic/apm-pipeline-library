@@ -124,12 +124,10 @@ pipeline {
       }
       post {
         always {
-          dir("${BASE_DIR}"){
-            archiveArtifacts(allowEmptyArchive: true, artifacts: '**/mail-out-test*.html, target/surefire-reports/TEST-*.xml')
-            junit2otel(allowEmptyResults: true,
-              keepLongStdio: true,
-              testResults: "target/surefire-reports/TEST-*.xml")
-          }
+          archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html, ${BASE_DIR}/target/surefire-reports/TEST-*.xml')
+          junit2otel(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
         }
       }
     }
@@ -195,9 +193,7 @@ pipeline {
       }
       post {
         always {
-          dir("${BASE_DIR}"){
-            junit2otel(allowEmptyResults: true, testResults: ".ci/jobDSL/build/test-results/test/TEST-*.xml")
-          }
+          junit2otel(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
         }
       }
     }
@@ -220,9 +216,7 @@ pipeline {
       }
       post {
         always {
-          dir("${BASE_DIR}"){
-            junit2otel(allowEmptyResults: true, keepLongStdio: true, testResults: "**/target/junit-test-infra.xml")
-          }
+          junit2otel(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
         }
       }
     }
