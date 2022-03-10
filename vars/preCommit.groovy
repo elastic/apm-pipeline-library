@@ -82,6 +82,6 @@ def call(Map args = [:]) {
   if(junitFlag) {
     preCommitToJunit(input: reportFileName, output: "${reportFileName}.xml")
     archiveArtifacts(allowEmptyArchive: true, artifacts: "${reportFileName}.xml")
-    junit2otel testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
+    junit testResults: "${reportFileName}.xml", allowEmptyResults: true, keepLongStdio: true
   }
 }
