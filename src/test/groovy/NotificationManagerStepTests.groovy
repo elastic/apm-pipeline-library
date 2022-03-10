@@ -596,7 +596,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notify_slack_with_otel() throws Exception {
-    addEnvVar('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=abc&transactionId=123')
+    addEnvVar('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=BUILD load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=abc&transactionId=123')
     script.notifySlack(
       build: readJSON(file: "build-info-manual.json"),
       buildStatus: "SUCCESS",
@@ -606,6 +606,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('slackSend', 'https://kibana.elastic.dev'))
+    assertTrue(assertMethodCallContainsPattern('slackSend', 'transactionName=BUILD+load-testing/cron_gce'))
     assertJobStatusSuccess()
   }
 
