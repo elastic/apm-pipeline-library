@@ -50,6 +50,8 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+      - "1.17"
+      - "1.16"
     enabled: true
     labels: dependency
   - repo: observability-robots
