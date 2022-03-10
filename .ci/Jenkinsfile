@@ -196,7 +196,6 @@ pipeline {
       post {
         always {
           dir("${BASE_DIR}"){
-            archiveArtifacts(allowEmptyArchive: true, artifacts: '.ci/jobDSL/build/test-results/test/TEST-*.xml')
             junit2otel(allowEmptyResults: true, testResults: ".ci/jobDSL/build/test-results/test/TEST-*.xml")
           }
         }
@@ -222,7 +221,6 @@ pipeline {
       post {
         always {
           dir("${BASE_DIR}"){
-            archiveArtifacts(allowEmptyArchive: true, artifacts: '**/target/junit-test-infra.xml')
             junit2otel(allowEmptyResults: true, keepLongStdio: true, testResults: "**/target/junit-test-infra.xml")
           }
         }
