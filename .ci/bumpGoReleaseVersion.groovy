@@ -105,9 +105,8 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update go release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
-
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n ${env.GO_RELEASE_VERSION}"""
+  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${env.GO_RELEASE_VERSION}+label%3ACherryPickApproved) for ${env.GO_RELEASE_VERSION}"""
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
