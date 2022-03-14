@@ -16,7 +16,7 @@
 // under the License.
 
 pipeline {
-  agent {label 'master'}
+  agent { label 'master' }
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
@@ -74,11 +74,8 @@ pipeline {
           ignoreExisting: true,
           failOnMissingPlugin: true,
           failOnSeedCollision: true,
-          removedConfigFilesAction: 'DELETE',
-          removedJobAction: 'DELETE',
-          removedViewAction: 'DELETE',
           sandbox: true,
-          targets: "${BASE_DIR}/.ci/jobDSL/jobs/apm-ci/folder.groovy",
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/fleet-ci/folder.groovy",
           unstableOnDeprecation: true
         )
         jobDsl(
@@ -89,7 +86,7 @@ pipeline {
           removedJobAction: 'DELETE',
           removedViewAction: 'DELETE',
           sandbox: true,
-          targets: "${BASE_DIR}/.ci/jobDSL/jobs/apm-ci/**/*.groovy",
+          targets: "${BASE_DIR}/.ci/jobDSL/jobs/fleet-ci/**/*.groovy",
           unstableOnDeprecation: true
         )
       }

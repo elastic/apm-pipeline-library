@@ -44,10 +44,7 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(branch: 'main')
-        runWatcherForBranch(branch: '8.<current>')
-        runWatcherForBranch(branch: '7.<next>')
-        runWatcherForBranch(branch: '7.<current>')
+        runWatcherForBranch(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
       }
     }
     stage('Sync GitHub labels') {
@@ -74,10 +71,7 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        runNotifyStalledBeatsBumps(branch: 'main')
-        runNotifyStalledBeatsBumps(branch: '8.<current>')
-        runNotifyStalledBeatsBumps(branch: '7.<next>')
-        runNotifyStalledBeatsBumps(branch: '7.<current>')
+        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
       }
     }
   }
@@ -88,39 +82,27 @@ pipeline {
   }
 }
 
-def runNotifyStalledBeatsBumps(Map args = [:]){
-  def branch = getMajorMinorGivenTheBranch(args)
-  notifyStalledBeatsBumps(branch: branch,
-                          subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
-                          sendEmail: true,
-                          to: env.BEATS_MAILING_LIST)
+def runNotifyStalledBeatsBumps(Map args = [:]) {
+  def branches = getBranchesFromAliases(aliases: args.branches)
+
+  def quietPeriod = 0
+  branches.each { branch ->
+    notifyStalledBeatsBumps(branch: branch,
+                            subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
+                            sendEmail: true,
+                            to: env.BEATS_MAILING_LIST)
+  }
 }
 
 def runWatcherForBranch(Map args = [:]){
-  def branch = getMajorMinorGivenTheBranch(args)
-  runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
-             subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
-             sendEmail: true,
-             to: env.BEATS_MAILING_LIST,
-             debugFileName: "${branch}.txt")
-}
+  def branches = getBranchesFromAliases(aliases: args.branches)
 
-// Helper function to resolve current and next special keywords.
-def getMajorMinorGivenTheBranch(Map args = [:]) {
-  def branch = args.branch
-  if (branch.contains('8.<current>')) {
-    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor8())
+  def quietPeriod = 0
+  branches.each { branch ->
+    runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
+               subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
+               sendEmail: true,
+               to: env.BEATS_MAILING_LIST,
+               debugFileName: "${branch}.txt")
   }
-  if (branch.contains('7.<current>')) {
-    branch = getMajorMinorGivenTheVersion(bumpUtils.getCurrentMinorReleaseFor7())
-  }
-  if (branch.contains('7.<next>')) {
-    branch = getMajorMinorGivenTheVersion(bumpUtils.getNextMinorReleaseFor7())
-  }
-  return branch
-}
-
-def getMajorMinorGivenTheVersion(version) {
-  def parts = version.split('\\.')
-  return "${parts[0]}.${parts[1]}"
 }

@@ -14,5 +14,5 @@
 *Tests*: `${(testsSummary?.failed) ?: 0}` test/s failed out of ${(testsSummary?.total) ?: 0} (click ${testsUrl} for further details)
 ${stepsMessage}
 <% if (observabilityUrl && observabilityUrl?.trim()) {%>
-:APM: Click ${obs11Url} to see the APM traces.
+:APM: Click ${obs11Url.replaceAll(' ','+')} to see the APM traces.
 <%}%>
