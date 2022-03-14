@@ -56,7 +56,6 @@ projects:
       - "8.1"
       - "8.0"
       - "7.17"
-      - "7.17"
     enabled: true
     labels: dependency
     title: "chore: update elastic stack release version"
