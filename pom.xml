@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic</groupId>
   <artifactId>jenkins-library</artifactId>
-  <version>1.1.304-SNAPSHOT</version>
+  <version>1.1.305-SNAPSHOT</version>
   <name>APM Pipeline Shared Library</name>
   <description>Pipeline Shared Library containing utility steps.</description>
   <url>https://github.com/elastic/apm-pipeline-library</url>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>1167.v8fe861b_09ef9</version>
+      <version>1174.vdcb_d054cf74a_</version>
       <scope>test</scope>
     </dependency>
     <dependency>

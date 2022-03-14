@@ -291,7 +291,7 @@ class GenerateBuildDataIntegrationTests {
     env.put('JOB_NAME', "project/${jobName}")
     env.put('JOB_URL', tradditionalUrl + "/${jobName}")
     env.put('ORG_NAME', 'acme')
-    env.put('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=38f56b69e3b7c76c8e914b2d467d0475&transactionId=b877b754e2e3a8c4')
+    env.put('OTEL_ELASTIC_URL', 'https://kibana.elastic.dev/app/apm/services/jenkins/transactions/view?rangeFrom=2021-03-06T21:41:11.403Z&rangeTo=2021-03-06T22:01:11.403Z&transactionName=BUILD load-testing/cron_gce&transactionType=unknown&latencyAggregationType=avg&traceId=38f56b69e3b7c76c8e914b2d467d0475&transactionId=b877b754e2e3a8c4')
     env.put('REPO_NAME', 'project')
     File location = new File("target/${targetFolder}")
     location.mkdirs()
