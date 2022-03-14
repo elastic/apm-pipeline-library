@@ -52,6 +52,7 @@ projects:
   - repo: e2e-testing
     script: .ci/bump-stack-release-version.sh
     branches:
+      - "main"
       - "8.1"
       - "8.0"
       - "7.17"
