@@ -59,7 +59,7 @@ class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_subtract_with_0() throws Exception {
-    def ret = script.subtractBranchIfPossible('8.0', 1)
+    def ret = script.subtractBranchIfPossible('8.1', '1')
     printCallStack()
     assert ret.equals('8.0')
     assertJobStatusSuccess()
@@ -67,17 +67,25 @@ class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_subtract() throws Exception {
-    def ret = script.subtractBranchIfPossible('8.2', 1)
+    def ret = script.subtractBranchIfPossible('8.2', '1')
     printCallStack()
-    assert ret.equals('8.2')
+    assert ret.equals('8.1')
     assertJobStatusSuccess()
   }
 
   @Test
   void test_subtract_with_major_branch() throws Exception {
-    def ret = script.subtractBranchIfPossible('8', 1)
+    def ret = script.subtractBranchIfPossible('8', '1')
     printCallStack()
     assert ret.equals('8')
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_subtract_with_major_branch_overflow() throws Exception {
+    def ret = script.subtractBranchIfPossible('8.2', '5')
+    printCallStack()
+    assert ret.equals('8.2')
     assertJobStatusSuccess()
   }
 }

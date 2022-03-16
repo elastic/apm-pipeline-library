@@ -41,13 +41,14 @@ def call(Map args = [:]) {
 }
 
 def getBranchNameFromAlias(alias) {
-  // special macro to look for the latest minor version -1
-  if (alias.contains('8.<minor-1>')) {
-   return subtractBranchIfPossible(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), 1)
+  // special macro to look for the latest minor version - subtrahend
+  if (alias.contains('8.<minor-')) {
+    def minorParts = alias.split('-')
+    return subtractBranchIfPossible(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), minorParts[1])
   }
   // special macro to look for the latest minor version
   if (alias.contains('8.<minor>')) {
-   return bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8())
+    return bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8())
   }
   if (alias.contains('8.<next-minor>')) {
     return bumpUtils.getMajorMinor(bumpUtils.getNextMinorReleaseFor8())
@@ -65,15 +66,27 @@ def getBranchNameFromAlias(alias) {
   return alias
 }
 
-def subtractBranchIfPossible(String branch, int subtrahend) {
+def subtractBranchIfPossible(String branch, String subtrahend) {
   def parts = branch.split('\\.')
   def major = parts[0]
   if (parts.size() == 1) {
     return branch
   }
-  def minor = parts[1]
-  if (minor?.equals('0')) {
+  def index = parseInt(subtrahend, 0)
+  def minor = parseInt(parts[1], 0)
+  def newMinor = (minor - index)
+  if (newMinor < 0) {
     return branch
   }
-  return major + "." + (minor  - subtrahend)
+  return major + "." + newMinor
+}
+
+def parseInt(String value, int defaultValue) {
+  def ret = defaultValue
+  try {
+    ret = Integer.parseInt(value)
+  } catch (Exception ex) {
+    echo("parseInt: index will be considered as zero: " + ex)
+  }
+  return ret
 }
