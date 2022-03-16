@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.305 (16/03/2022)
+
+#### 🚀 Enhancements
+
+-  getBranchesFromAliases : support minor index alias [#1601](https://github.com/elastic/apm-pipeline-library/pull/1601)
+-  chore: use new junit2otel step [#1543](https://github.com/elastic/apm-pipeline-library/pull/1543)
+
+#### 🐛 Bug Fixes
+
+-  Use https rather than git [#1602](https://github.com/elastic/apm-pipeline-library/pull/1602)
+-  fix golang bump with misleading go version in description [#1600](https://github.com/elastic/apm-pipeline-library/pull/1600)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump jenkins-pipeline-unit from 1.13 to 1.14 [#1566](https://github.com/elastic/apm-pipeline-library/pull/1566)
+- [**dependency**] [automation] Update go release version 1.17.8 [#1584](https://github.com/elastic/apm-pipeline-library/pull/1584)
+-  chore(deps-dev): bump mockito-core from 4.3.1 to 4.4.0 [#1599](https://github.com/elastic/apm-pipeline-library/pull/1599)
+-  chore(deps): bump opentelemetry from 2.0.1 to 2.2.2 [#1598](https://github.com/elastic/apm-pipeline-library/pull/1598)
+
 ## v1.1.304 (10/03/2022)
 
 #### 🚀 Enhancements
