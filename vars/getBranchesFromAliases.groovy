@@ -44,7 +44,7 @@ def getBranchNameFromAlias(alias) {
   // special macro to look for the latest minor version - subtrahend
   if (alias.contains('8.<minor-')) {
     def minorParts = alias.split('-')
-    return subtract(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), minorParts[1])
+    return subtract(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), minorParts[1].replaceAll('>', ''))
   }
   // special macro to look for the latest minor version
   if (alias.contains('8.<minor>')) {

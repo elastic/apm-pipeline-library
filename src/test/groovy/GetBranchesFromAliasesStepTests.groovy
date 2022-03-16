@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue
 class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
 
   class BumpUtilsMock {
-    String getCurrentMinorReleaseFor8(){ "8.0.0" }
-    String getMajorMinor(String value){ "8.0" }
+    String getCurrentMinorReleaseFor8(){ "8.3.0" }
+    String getMajorMinor(String value){ "8.3" }
   }
 
   @Override
@@ -53,7 +53,15 @@ class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
   void test_alias_with_macro() throws Exception {
     def ret = script.call(aliases:[ 'foo', '8.<minor>' ])
     printCallStack()
-    assert ret.equals(['foo', '8.0'])
+    assert ret.equals(['foo', '8.3'])
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_alias_with_macro_minor() throws Exception {
+    def ret = script.call(aliases:[ 'foo', '8.<minor>', '8.<minor-2>' ])
+    printCallStack()
+    assert ret.equals(['foo', '8.3', '8.1'])
     assertJobStatusSuccess()
   }
 
