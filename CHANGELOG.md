@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.1.304 (10/03/2022)
+
+#### 🚀 Enhancements
+
+-  Add Golang changelog in the PR [#1589](https://github.com/elastic/apm-pipeline-library/pull/1589)
+
+#### 🐛 Bug Fixes
+
+-  Fix OTEL_ELASTIC_URL with spaces [#1597](https://github.com/elastic/apm-pipeline-library/pull/1597)
+
+#### 🙈 No user affected
+
+-  Bump to the next minor release [#1562](https://github.com/elastic/apm-pipeline-library/pull/1562)
+-  ci: golang onboarding, bump version [#1592](https://github.com/elastic/apm-pipeline-library/pull/1592)
+
+#### ⚙️ CI
+
+-  jobdsl: avoid delete [#1590](https://github.com/elastic/apm-pipeline-library/pull/1590)
+-  bump automation for golang versions [#1591](https://github.com/elastic/apm-pipeline-library/pull/1591)
+- [**dependency**] [automation] Update Elastic stack release version 8.1.0 8.2.0 [#1596](https://github.com/elastic/apm-pipeline-library/pull/1596)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1167.v8fe861b_09ef9 to 1174.vdcb_d054cf74a_ [#1587](https://github.com/elastic/apm-pipeline-library/pull/1587)
+
 ## v1.1.303 (07/03/2022)
 *No changelog for this release.*
 
