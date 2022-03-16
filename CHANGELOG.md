@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.306 (16/03/2022)
+
+#### 🐛 Bug Fixes
+
+-  fix tar with 7z without extension [#1605](https://github.com/elastic/apm-pipeline-library/pull/1605)
+-  fix <minor-1> manipulation [#1604](https://github.com/elastic/apm-pipeline-library/pull/1604)
+
 ## v1.1.305 (16/03/2022)
 
 #### 🚀 Enhancements
