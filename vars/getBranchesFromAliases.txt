@@ -4,6 +4,10 @@ the branch name.
 This is handy to support a dynamic branch generation without the need to
 update the name of the branch when a new minor release branch is created.
 
+This format supports passing an index, separated by the minus operator: '<minor-1>', which will retrieve the previous
+version for the last minor. If the index overflows the number of the total existing minors, the first minor will be retrieved (i.e.
+'<minor-1999>').
+
 ```
 // Return the branch name for the main, 8.minor and 8.next-minor branches
 def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-minor>'])
@@ -11,4 +15,4 @@ def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-mi
 ```
 
 
-* aliases: the branch aliases (supported format major.<minor>, major.<next-patch>, major.<next-minor>). Mandatory
+* aliases: the branch aliases (supported format major.<minor>, major.<minor-1>, major.<next-patch>, major.<next-minor>). Mandatory
