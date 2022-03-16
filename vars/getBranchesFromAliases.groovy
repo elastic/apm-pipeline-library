@@ -44,7 +44,7 @@ def getBranchNameFromAlias(alias) {
   // special macro to look for the latest minor version - subtrahend
   if (alias.contains('8.<minor-')) {
     def minorParts = alias.split('-')
-    return subtractBranchIfPossible(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), minorParts[1])
+    return subtract(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), minorParts[1])
   }
   // special macro to look for the latest minor version
   if (alias.contains('8.<minor>')) {
@@ -66,7 +66,7 @@ def getBranchNameFromAlias(alias) {
   return alias
 }
 
-def subtractBranchIfPossible(String branch, String subtrahend) {
+def subtract(String branch, String subtrahend) {
   def parts = branch.split('\\.')
   def major = parts[0]
   if (parts.size() == 1) {
