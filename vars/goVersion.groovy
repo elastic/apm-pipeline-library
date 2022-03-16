@@ -55,7 +55,7 @@ def firstOne(String command) {
 */
 def getAllGoVersions() {
   // --sort=-version:refname is not supported in git version 2.17 yet
-  return 'git ls-remote --tags --refs git://github.com/golang/go | sed "s#.*refs/tags/##g" | grep "go*"'
+  return 'git ls-remote --tags --refs https://github.com/golang/go | sed "s#.*refs/tags/##g" | grep "go*"'
 }
 
 def getVersionsCommand(Map args = [:]) {
