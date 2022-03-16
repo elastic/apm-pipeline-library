@@ -65,7 +65,7 @@ def compressWith7z(Map args = [:]) {
     installTools([[ tool: '7zip.portable', version: '19.0', provider: 'choco']])
   }
   withEnv(["PATH+CHOCO=C:\\ProgramData\\chocolatey\\bin"]) {
-    bat(label: 'Compress', script: "7z a -ttar -so -an ${args.dir} | 7z a -si ${args.file}")
+    bat(label: 'Compress', script: "7z a -ttar -so -an ${args.dir} | 7z a -si ${args.file}.")
   }
 }
 
