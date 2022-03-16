@@ -41,6 +41,10 @@ def call(Map args = [:]) {
 }
 
 def getBranchNameFromAlias(alias) {
+  // special macro to look for the latest minor version -1
+  if (alias.contains('8.<minor-1>')) {
+   return subtractBranchIfPossible(bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8()), 1)
+  }
   // special macro to look for the latest minor version
   if (alias.contains('8.<minor>')) {
    return bumpUtils.getMajorMinor(bumpUtils.getCurrentMinorReleaseFor8())
@@ -59,4 +63,17 @@ def getBranchNameFromAlias(alias) {
     return bumpUtils.getMajorMinor(bumpUtils.getNextMinorReleaseFor7())
   }
   return alias
+}
+
+def subtractBranchIfPossible(String branch, int subtrahend) {
+  def parts = branch.split('\\.')
+  def major = parts[0]
+  if (parts.size() == 1) {
+    return branch
+  }
+  def minor = parts[1]
+  if (minor?.equals('0')) {
+    return branch
+  }
+  return major + "." + (minor  - subtrahend)
 }

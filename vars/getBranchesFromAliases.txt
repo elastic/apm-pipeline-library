@@ -11,4 +11,4 @@ def branches = getBranchesFromAliases(aliases: ['main', '8.<minor>', '8.<next-mi
 ```
 
 
-* aliases: the branch aliases (supported format major.<minor>, major.<next-patch>, major.<next-minor>). Mandatory
+* aliases: the branch aliases (supported format major.<minor>, major.<minor-1>, major.<next-patch>, major.<next-minor>). Mandatory
