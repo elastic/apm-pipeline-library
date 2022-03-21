@@ -36,6 +36,7 @@ pipeline {
   }
   parameters {
     string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+    string(name: 'ELASTIC_AGENT_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -44,7 +45,13 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
+        runWatcherForBranch(project: 'beats', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
+      }
+    }
+    stage('Top failing Elastic Agent tests - last 7 days') {
+      steps {
+        setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
+        runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
       }
     }
     stage('Sync GitHub labels') {
@@ -71,7 +78,12 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
+        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
+      }
+    }
+    stage('Stalled Elastic Agent Bumps') {
+      steps {
+        echo 'TBC'
       }
     }
   }
@@ -90,7 +102,7 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
     notifyStalledBeatsBumps(branch: branch,
                             subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
                             sendEmail: true,
-                            to: env.BEATS_MAILING_LIST)
+                            to: args.to)
   }
 }
 
@@ -99,10 +111,10 @@ def runWatcherForBranch(Map args = [:]){
 
   def quietPeriod = 0
   branches.each { branch ->
-    runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
+    runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
                subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
                sendEmail: true,
-               to: env.BEATS_MAILING_LIST,
-               debugFileName: "${branch}.txt")
+               to: args.to,
+               debugFileName: "${args.project}-${branch}.txt")
   }
 }
