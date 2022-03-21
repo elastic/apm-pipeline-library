@@ -42,7 +42,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: isPR())
   }
   triggers {
-    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests)")
+    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests|^/test full)")
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
@@ -140,7 +140,9 @@ pipeline {
     stage('Google Storage') {
       when {
         beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
+        anyOf {
+          expression { return env.TEST_GOOGLE == "true" }
+        }
       }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
@@ -154,7 +156,10 @@ pipeline {
       agent { label 'windows-2019-immutable' }
       when {
         beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
+        anyOf {
+          expression { return env.TEST_GOOGLE == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('full') }
+        }
       }
       steps {
         withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
@@ -188,7 +193,10 @@ pipeline {
     stage('Test JobDSL') {
       when {
         beforeAgent true
-        expression { return env.TEST_JOBDSL == "true" }
+        anyOf {
+          expression { return env.TEST_JOBDSL == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('full') }
+        }
       }
       steps {
         withGithubNotify(context: 'Check JobDSL') {
@@ -210,6 +218,7 @@ pipeline {
           expression { return env.TEST_INFRA == "true" }
           branch 'main'
           expression { return env.GITHUB_COMMENT?.contains('infra tests') }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
         }
       }
       steps {
