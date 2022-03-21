@@ -21,6 +21,7 @@ pipeline {
   agent {
     kubernetes {
       defaultContainer 'golang'
+      workspaceVolume dynamicPVC(requestsSize: "10Gi")
       yaml '''
         apiVersion: v1
         kind: Pod
