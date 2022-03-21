@@ -50,8 +50,9 @@ pipeline {
     }
     stage('Top failing Elastic Agent tests - last 7 days') {
       steps {
-        setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
+        // TODO: as soon as minor is 8.2 then we can use the below branches
+        // runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
+        runWatcherForBranch(project: 'elastic-agent', branches: ['main'], to: env.ELASTIC_AGENT_MAILING_LIST)
       }
     }
     stage('Sync GitHub labels') {
@@ -112,7 +113,7 @@ def runWatcherForBranch(Map args = [:]){
   def quietPeriod = 0
   branches.each { branch ->
     runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
-               subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
+               subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
                sendEmail: true,
                to: args.to,
                debugFileName: "${args.project}-${branch}.txt")
