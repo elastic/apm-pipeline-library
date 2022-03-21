@@ -68,13 +68,11 @@ def call(Map args = [:], Closure body) {
       }
     } finally {
       dir("${env.WORKSPACE}@${gsUtilLocation}") {
-        if (fileExists("${secretFileLocation}")) {
+        if (fileExists("${credentialsFileName}")) {
           if(isUnix()){
             sh(label: 'rm file', script: "rm ${credentialsFileName}")
           } else {
-            dir("${env.WORKSPACE}@${gsUtilLocation}") {
-              bat(label: 'del file', script: "del ${credentialsFileName}")
-            }
+            bat(label: 'del file', script: "del ${credentialsFileName}")
           }
         }
       }
