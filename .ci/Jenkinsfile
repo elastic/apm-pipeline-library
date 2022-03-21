@@ -42,7 +42,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: isPR())
   }
   triggers {
-    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests|^/test full)")
+    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests|^/test all)")
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
@@ -158,7 +158,7 @@ pipeline {
         beforeAgent true
         anyOf {
           expression { return env.TEST_GOOGLE == "true" }
-          expression { return env.GITHUB_COMMENT?.contains('full') }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
         }
       }
       steps {
@@ -195,7 +195,7 @@ pipeline {
         beforeAgent true
         anyOf {
           expression { return env.TEST_JOBDSL == "true" }
-          expression { return env.GITHUB_COMMENT?.contains('full') }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
         }
       }
       steps {
