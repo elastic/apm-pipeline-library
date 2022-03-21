@@ -67,8 +67,8 @@ def call(Map args = [:], Closure body) {
         body()
       }
     } finally {
-      if (fileExists("${secretFileLocation}")) {
-        dir("${env.WORKSPACE}@${gsUtilLocation}") {
+      dir("${env.WORKSPACE}@${gsUtilLocation}") {
+        if (fileExists("${secretFileLocation}")) {
           if(isUnix()){
             sh(label: 'rm file', script: "rm ${credentialsFileName}")
           } else {
