@@ -103,7 +103,7 @@ if git --no-pager \
     log --pretty=format: \
       --name-only \
       --since="${DAYS} days ago" \
-    | grep 'testing/environments/snapshot-oss.yml' ; then
+    | grep 'testing/environments/snapshot.yml' ; then
 
   echo 'There are recent changes, so nothing to be reported'
 else
