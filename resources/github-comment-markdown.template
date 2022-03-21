@@ -17,7 +17,7 @@
 
 <!-- BUILD BADGES-->
 > _the below badges are clickable and redirect to their specific view in the CI or DOCS_
-[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) <% if(docsUrl?.trim() && !buildStatus?.equals('ABORTED')) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>  <% if(env?.OTEL_ELASTIC_URL != null && !env?.OTEL_ELASTIC_URL.equals('null')) {%>[![preview](https://img.shields.io/badge/elastic-observability-blue)](${env?.OTEL_ELASTIC_URL})<%}%>
+[![Pipeline View](https://img.shields.io/badge/pipeline-pipeline%20-green)](${jobUrl}/pipeline) [![Test View](https://img.shields.io/badge/test-test-green)](${jobUrl}/tests) [![Changes](https://img.shields.io/badge/changes-changes-green)](${jobUrl}/changes) [![Artifacts](https://img.shields.io/badge/artifacts-artifacts-yellow)](${jobUrl}/artifacts) <% if(docsUrl?.trim() && !buildStatus?.equals('ABORTED')) {%>[![preview](https://img.shields.io/badge/docs-preview-yellowgreen)](${docsUrl})<%}%>  <% if(env?.OTEL_ELASTIC_URL != null && !env?.OTEL_ELASTIC_URL.equals('null')) {%>[![preview](https://img.shields.io/badge/elastic-observability-blue)](${env?.OTEL_ELASTIC_URL.replaceAll(' ','+')})<%}%>
 
 <!-- BUILD SUMMARY-->
 <details><summary>Expand to view the summary</summary>
@@ -113,11 +113,11 @@ ${description}
   <%}%>
   </p>
   </details>
-<%} else {%>
+<%} else if (!buildStatus?.equals('ABORTED')) {%>
 ### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
   <p>
-  This error is likely related to the pipeline itself. Please go to the traditional console output <a href=\"${env?.BUILD_URL}/console\">here</a>"
-  You will see the error (either a wrong syntax or configuration)
+  > This error is likely related to the pipeline itself. Click <a href="${env?.BUILD_URL}console">here</a>
+  > and then you will see the error (either incorrect syntax or an invalid configuration).
   </p>
 <%}%>
 <%}%>

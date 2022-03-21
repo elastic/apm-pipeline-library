@@ -60,7 +60,7 @@ class GoVersionStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('sh', [Map.class],{'1.17beta1'})
     def obj = script.call(action: 'latest', unstable: 'true')
     assertTrue(obj.equals('1.17beta1'))
-    assertTrue(assertMethodCallContainsPattern('sh', '--refs git://github.com/golang/go'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--refs https://github.com/golang/go'))
     assertTrue(assertMethodCallContainsPattern('sh', 'grep "go*" | sed "s#^go##g" | sort --version-sort -r | head -n1'))
     printCallStack()
   }

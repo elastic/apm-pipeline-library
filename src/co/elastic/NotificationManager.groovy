@@ -470,6 +470,7 @@ def getSupportedGithubCommands() {
   if (isProjectSupported('apm-server')) {
     comments['/hey-apm'] = 'Run the hey-apm benchmark.'
     comments['/package'] = 'Generate and publish the docker images.'
+    comments['/test windows'] = 'Build & tests on Windows.'
   }
 
   // Support for benchmark tests
@@ -498,6 +499,12 @@ def getSupportedGithubCommands() {
   if (isProjectSupported('beats')) {
     comments['/package'] = 'Generate the packages and run the E2E tests.'
     comments['/beats-tester'] = 'Run the installation tests with beats-tester.'
+  }
+
+  if (isProjectSupported('elastic-agent')) {
+    comments['/package'] = 'Generate the packages.'
+    comments['run integration tests'] = 'Run the Elastic Agent Integration tests.'
+    comments['run end-to-end tests'] = 'Generate the packages and run the E2E Tests.'
   }
 
   // Support for the Obs11 test environments specific GitHub commands
@@ -534,7 +541,8 @@ private isElasticsearchDocsSupported(String value) {
   return value?.startsWith('apm') ||
          value?.startsWith('ecs') ||
          value?.equals('beats') ||
-         value?.equals('observability-docs')
+         value?.equals('observability-docs') ||
+         value?.equals('elastic-agent')
 }
 
 @NonCPS

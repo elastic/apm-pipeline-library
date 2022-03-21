@@ -15,28 +15,36 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-  Return the value of the variable GO_VERSION, the value in the file `.go-version`, or a default value.
-
-  goDefaultVersion()
-**/
-def call(Map args = [:]) {
-  def goDefaultVersion = defaultVersion()
-  if(isGoVersionEnvVarSet()) {
-    goDefaultVersion = "${env.GO_VERSION}"
-  } else {
-    def found = ['.go-version', "${env.BASE_DIR}/.go-version'"].find { fileExists(it) }
-    if (found) {
-      goDefaultVersion = readFile(file: found)?.trim()
+pipelineJob("fleet-shared/fleet-schedule-daily") {
+  displayName('Jobs scheduled daily')
+  description('Jobs scheduled daily from Monday to Friday.')
+  disabled(false)
+  quietPeriod(10)
+  logRotator {
+    numToKeep(10)
+    daysToKeep(7)
+    artifactNumToKeep(10)
+    artifactDaysToKeep(-1)
+  }
+  parameters {
+    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
+  }
+  definition {
+    cpsScm {
+      scm {
+        git {
+          remote {
+            github("elastic/apm-pipeline-library", "ssh")
+            credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+          }
+          branch('${branch_specifier}')
+          extensions {
+            wipeOutWorkspace()
+          }
+        }
+      }
+      lightweight(false)
+      scriptPath(".ci/fleet-ci-schedule-daily.groovy")
     }
   }
-  return goDefaultVersion
-}
-
-def isGoVersionEnvVarSet(){
-  return env.GO_VERSION != null && "" != "${env.GO_VERSION}"
-}
-
-def defaultVersion(){
-  return '1.17.8'
 }

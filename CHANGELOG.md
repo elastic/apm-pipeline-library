@@ -1,5 +1,85 @@
 # Changelog
 
+## v1.1.306 (16/03/2022)
+
+#### 🐛 Bug Fixes
+
+-  fix tar with 7z without extension [#1605](https://github.com/elastic/apm-pipeline-library/pull/1605)
+-  fix <minor-1> manipulation [#1604](https://github.com/elastic/apm-pipeline-library/pull/1604)
+
+## v1.1.305 (16/03/2022)
+
+#### 🚀 Enhancements
+
+-  getBranchesFromAliases : support minor index alias [#1601](https://github.com/elastic/apm-pipeline-library/pull/1601)
+-  chore: use new junit2otel step [#1543](https://github.com/elastic/apm-pipeline-library/pull/1543)
+
+#### 🐛 Bug Fixes
+
+-  Use https rather than git [#1602](https://github.com/elastic/apm-pipeline-library/pull/1602)
+-  fix golang bump with misleading go version in description [#1600](https://github.com/elastic/apm-pipeline-library/pull/1600)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump jenkins-pipeline-unit from 1.13 to 1.14 [#1566](https://github.com/elastic/apm-pipeline-library/pull/1566)
+- [**dependency**] [automation] Update go release version 1.17.8 [#1584](https://github.com/elastic/apm-pipeline-library/pull/1584)
+-  chore(deps-dev): bump mockito-core from 4.3.1 to 4.4.0 [#1599](https://github.com/elastic/apm-pipeline-library/pull/1599)
+-  chore(deps): bump opentelemetry from 2.0.1 to 2.2.2 [#1598](https://github.com/elastic/apm-pipeline-library/pull/1598)
+
+## v1.1.304 (10/03/2022)
+
+#### 🚀 Enhancements
+
+-  Add Golang changelog in the PR [#1589](https://github.com/elastic/apm-pipeline-library/pull/1589)
+
+#### 🐛 Bug Fixes
+
+-  Fix OTEL_ELASTIC_URL with spaces [#1597](https://github.com/elastic/apm-pipeline-library/pull/1597)
+
+#### 🙈 No user affected
+
+-  Bump to the next minor release [#1562](https://github.com/elastic/apm-pipeline-library/pull/1562)
+-  ci: golang onboarding, bump version [#1592](https://github.com/elastic/apm-pipeline-library/pull/1592)
+
+#### ⚙️ CI
+
+-  jobdsl: avoid delete [#1590](https://github.com/elastic/apm-pipeline-library/pull/1590)
+-  bump automation for golang versions [#1591](https://github.com/elastic/apm-pipeline-library/pull/1591)
+- [**dependency**] [automation] Update Elastic stack release version 8.1.0 8.2.0 [#1596](https://github.com/elastic/apm-pipeline-library/pull/1596)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1167.v8fe861b_09ef9 to 1174.vdcb_d054cf74a_ [#1587](https://github.com/elastic/apm-pipeline-library/pull/1587)
+
+## v1.1.303 (07/03/2022)
+*No changelog for this release.*
+
+## v1.1.301 (01/03/2022)
+
+#### 🚀 Enhancements
+
+-  chore: pass elastic-agent version to runE2E [#1569](https://github.com/elastic/apm-pipeline-library/pull/1569)
+
+## v1.1.301 (01/03/2022)
+
+#### 🚀 Enhancements
+
+-  chore: pass elastic-agent version to runE2E [#1569](https://github.com/elastic/apm-pipeline-library/pull/1569)
+
+## v1.1.300 (28/02/2022)
+*No changelog for this release.*
+
+## v1.1.298 (22/02/2022)
+
+#### 🚀 Enhancements
+
+-  support push docker image step [#1550](https://github.com/elastic/apm-pipeline-library/pull/1550)
+- [**Team:Automation**] feat: speed up checkouts [#1558](https://github.com/elastic/apm-pipeline-library/pull/1558)
+
+#### 🐛 Bug Fixes
+
+-  Ensure null values are captured [#1560](https://github.com/elastic/apm-pipeline-library/pull/1560)
+
 ## v1.1.298 (22/02/2022)
 
 #### 🚀 Enhancements

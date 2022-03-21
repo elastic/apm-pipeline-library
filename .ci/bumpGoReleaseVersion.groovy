@@ -106,13 +106,20 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
 
+  // If branch is not main the it's likely needed to search for the go version that matches the given branch
+  // ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
+  def goReleaseVersion = env.GO_RELEASE_VERSION
+  if (!branch?.equals('main')) {
+    goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: branch)
+  }
+
   log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n ${env.GO_RELEASE_VERSION}"""
+  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}"""
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
-  return [repo: repo, branchName: branch, title: "${title} ${env.GO_RELEASE_VERSION}", labels: labels, scriptFile: scriptFile,
-          goReleaseVersion: env.GO_RELEASE_VERSION, message: message, assign: assign, reviewer: reviewer]
+  return [repo: repo, branchName: branch, title: "${title} ${goReleaseVersion}", labels: labels, scriptFile: scriptFile,
+          goReleaseVersion: goReleaseVersion, message: message, assign: assign, reviewer: reviewer]
 }
 
 def createPullRequest(Map args = [:]) {
@@ -120,6 +127,7 @@ def createPullRequest(Map args = [:]) {
   if (!args?.goReleaseVersion?.trim()) {
     error('createPullRequest: goReleaseVersion is empty. Review the goVersion for the branch ' + args.branchName)
   }
+
   bumpUtils.createBranch(prefix: 'update-go-version', suffix: args.branchName)
   sh(script: "${args.scriptFile} '${args.goReleaseVersion}'", label: "Prepare changes for ${args.repo}")
 

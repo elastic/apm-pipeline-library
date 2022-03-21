@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eu
+set -e
 
 readonly DOCKER_IMAGE="mdelapenya/junit2otlp:latest"
 
@@ -24,6 +24,9 @@ echo "SERVICE_NAME=${SERVICE_NAME}"
 echo "SERVICE_VERSION=${SERVICE_VERSION}"
 echo "TEST_RESULTS_GLOB=${TEST_RESULTS_GLOB}"
 echo "TRACE_NAME=${TRACE_NAME}"
+echo "TRACEPARENT=${TRACEPARENT}"
+
+readonly DOCKER_REPO_PATH="/opt/${REPO}"
 
 for glob in $(echo "${TEST_RESULTS_GLOB} "| sed "s/,/ /g")
 do
@@ -35,11 +38,19 @@ do
     cat "$f" | docker run \
       --rm -i \
       --network host \
+      --volume "$(pwd):${DOCKER_REPO_PATH}" \
+      --env "TRACEPARENT=${TRACEPARENT}" \
+      --env "JENKINS_URL=${JENKINS_URL}" \
+      --env "BRANCH_NAME=${BRANCH_NAME}" \
+      --env "CHANGE_ID=${CHANGE_ID}" \
+      --env "GIT_COMMIT=${GIT_COMMIT}" \
+      --env "CHANGE_TARGET=${CHANGE_TARGET}" \
       --env "OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}" \
       --env "OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}" \
       ${DOCKER_IMAGE} \
       --service-name "${SERVICE_NAME}" \
       --service-version "${SERVICE_VERSION}" \
-      --trace-name "${TRACE_NAME}"
+      --trace-name "${TRACE_NAME}" \
+      --repository-path "${DOCKER_REPO_PATH}"
   done
 done
