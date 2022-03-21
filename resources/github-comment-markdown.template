@@ -117,7 +117,7 @@ ${description}
 ### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
   <p>
   > This error is likely related to the pipeline itself. Click <a href="${env?.BUILD_URL}console">here</a>
-  > then you will see the error  (either a wrong syntax or configuration).
+  > and then you will see the error (either incorrect syntax or an invalid configuration).
   </p>
 <%}%>
 <%}%>
