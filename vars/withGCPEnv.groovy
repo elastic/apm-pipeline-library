@@ -71,7 +71,6 @@ def call(Map args = [:], Closure body) {
         dir("${env.WORKSPACE}@${gsUtilLocation}") {
           if(isUnix()){
             sh(label: 'rm file', script: "rm ${credentialsFileName}")
-            sh
           } else {
             dir("${env.WORKSPACE}@${gsUtilLocation}") {
               bat(label: 'del file', script: "del ${credentialsFileName}")
