@@ -37,6 +37,7 @@ pipeline {
   parameters {
     string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
     string(name: 'ELASTIC_AGENT_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+    string(name: 'E2E_TESTING_MAILING_LIST', defaultValue: 'observability-robots-internal@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -53,6 +54,11 @@ pipeline {
         // TODO: as soon as minor is 8.2 then we can use the below branches
         // runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
         runWatcherForBranch(project: 'elastic-agent', branches: ['main'], to: env.ELASTIC_AGENT_MAILING_LIST)
+      }
+    }
+    stage('Top failing e2e-testing tests - last 7 days') {
+      steps {
+        runWatcherForBranch(project: 'e2e-testing', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.ELASTIC_AGENT_MAILING_LIST)
       }
     }
     stage('Sync GitHub labels') {
