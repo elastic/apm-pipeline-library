@@ -63,7 +63,7 @@ pipeline {
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
-            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '(^vars/gsutil.groovy|^vars/googleStorageUploadExt.groovy)' ], shouldMatchAll: false))
+            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '^vars/(gsutil.groovy|googleStorageUploadExt|withGCPEnv).groovy' ], shouldMatchAll: false))
           }
         }
       }
