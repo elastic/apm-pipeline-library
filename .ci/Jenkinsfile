@@ -142,6 +142,7 @@ pipeline {
         beforeAgent true
         anyOf {
           expression { return env.TEST_GOOGLE == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
         }
       }
       steps {
