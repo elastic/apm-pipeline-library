@@ -34,38 +34,24 @@ pipeline {
     disableResume()
     durabilityHint('PERFORMANCE_OPTIMIZED')
   }
-  parameters {
-    string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
-    string(name: 'ELASTIC_AGENT_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
-    string(name: 'E2E_TESTING_MAILING_LIST', defaultValue: 'observability-robots-internal@elastic.co', description: 'the e2e-testing Mailing List to send the emails with the weekly reports.')
-  }
   triggers {
     cron('H H(1-4) * * 1')
   }
+  parameters {
+    booleanParam(name: 'DRY_RUN_MODE', defaultValue: false, description: 'If true, allows to execute this pipeline in dry run mode.')
+  }
   stages {
-    stage('Top failing Beats tests - last 7 days') {
+    stage('Top failing Tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(project: 'beats', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
-      }
-    }
-    stage('Top failing Elastic Agent tests - last 7 days') {
-      steps {
-        // TODO: as soon as minor is 8.2 then we can use the below branches
-        // runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
-        runWatcherForBranch(project: 'elastic-agent', branches: ['main'], to: env.ELASTIC_AGENT_MAILING_LIST)
-      }
-    }
-    stage('Top failing e2e-testing tests - last 7 days') {
-      steps {
-        runWatcherForBranch(project: 'e2e-testing', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.E2E_TESTING_MAILING_LIST)
+        generateSteps()
       }
     }
     stage('Sync GitHub labels') {
       steps {
         build(job: 'apm-shared/github-syncup-labels-obs-dev-pipeline',
           parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false),
+            booleanParam(name: 'DRY_RUN_MODE', value: params.DRY_RUN_MODE),
           ],
           propagate: false,
           wait: false
@@ -76,7 +62,7 @@ pipeline {
       steps {
         build(job: 'apm-shared/bump-go-release-version-pipeline',
           parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false)
+            booleanParam(name: 'DRY_RUN_MODE', value: params.DRY_RUN_MODE)
           ],
           propagate: false,
           wait: false
@@ -108,7 +94,7 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
   branches.each { branch ->
     notifyStalledBeatsBumps(branch: branch,
                             subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
-                            sendEmail: true,
+                            sendEmail: params.DRY_RUN_MODE,
                             to: args.to)
   }
 }
@@ -116,12 +102,29 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
 def runWatcherForBranch(Map args = [:]){
   def branches = getBranchesFromAliases(aliases: args.branches)
 
-  def quietPeriod = 0
   branches.each { branch ->
-    runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
-               subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
-               sendEmail: true,
-               to: args.to,
-               debugFileName: "${args.project}-${branch}.txt")
+    try {
+      runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
+                 subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
+                 sendEmail: params.DRY_RUN_MODE,
+                 to: args.to,
+                 debugFileName: "${args.project}-${branch}.txt")
+    } catch(err) {
+      // We don't want to fail but keep sending email for all the branches
+      log(level: 'WARN', text: "runWatcher: failed (${err.toString()}).")
+    }
+  }
+}
+
+def generateSteps(Map args = [:]) {
+  def projects = readYaml(file: '.ci/.weekly-tests-email.yml')
+  projects['projects'].each { project ->
+    if (project.get('enabled', 'true').equals('true')) {
+      runWatcherForBranch(project: project.repo,
+                          to: project.email,
+                          branches: project.branches)
+    } else {
+      echo "runWatcherForBranch: ${project.repo} is disabled"
+    }
   }
 }
