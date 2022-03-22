@@ -29,10 +29,10 @@ def call(Map args = [:], Closure body) {
   if (!credentialsId?.trim() && !secret?.trim()) {
     error('withGCPEnv: credentialsId or secret parameters are required.')
   }
-
+  def credentialsFileName = 'google-cloud-credentials.json'
   def gsUtilLocation = pwd(tmp: true)
   def gsUtilLocationWin = "${gsUtilLocation}/google-cloud-sdk"
-  def secretFileLocation = "${gsUtilLocation}/google-cloud-credentials.json"
+  def secretFileLocation = "${gsUtilLocation}/${credentialsFileName}"
 
   withEnv(["PATH+GSUTIL=${gsUtilLocation}", "PATH+GSUTIL_BIN=${gsUtilLocation}/bin",
            "PATH+GSUTILWIN=${gsUtilLocationWin}", "PATH+GSUTILWIN_BIN=${gsUtilLocationWin}/bin"]) {
@@ -67,11 +67,13 @@ def call(Map args = [:], Closure body) {
         body()
       }
     } finally {
-      if (fileExists("${secretFileLocation}")) {
-        if(isUnix()){
-          sh "rm ${secretFileLocation}"
-        } else {
-          bat "del ${secretFileLocation}"
+      dir("${env.WORKSPACE}@${gsUtilLocation}") {
+        if (fileExists("${credentialsFileName}")) {
+          if(isUnix()){
+            sh(label: 'rm file', script: "rm ${credentialsFileName}")
+          } else {
+            bat(label: 'del file', script: "del ${credentialsFileName}")
+          }
         }
       }
     }
