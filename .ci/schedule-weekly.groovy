@@ -37,7 +37,7 @@ pipeline {
   parameters {
     string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
     string(name: 'ELASTIC_AGENT_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
-    string(name: 'E2E_TESTING_MAILING_LIST', defaultValue: 'observability-robots-internal@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+    string(name: 'E2E_TESTING_MAILING_LIST', defaultValue: 'observability-robots-internal@elastic.co', description: 'the e2e-testing Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -58,7 +58,7 @@ pipeline {
     }
     stage('Top failing e2e-testing tests - last 7 days') {
       steps {
-        runWatcherForBranch(project: 'e2e-testing', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.ELASTIC_AGENT_MAILING_LIST)
+        runWatcherForBranch(project: 'e2e-testing', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.E2E_TESTING_MAILING_LIST)
       }
     }
     stage('Sync GitHub labels') {
