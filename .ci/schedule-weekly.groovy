@@ -36,6 +36,8 @@ pipeline {
   }
   parameters {
     string(name: 'BEATS_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+    string(name: 'ELASTIC_AGENT_MAILING_LIST', defaultValue: 'beats-contrib@elastic.co', description: 'the Beats Mailing List to send the emails with the weekly reports.')
+    string(name: 'E2E_TESTING_MAILING_LIST', defaultValue: 'observability-robots-internal@elastic.co', description: 'the e2e-testing Mailing List to send the emails with the weekly reports.')
   }
   triggers {
     cron('H H(1-4) * * 1')
@@ -44,7 +46,19 @@ pipeline {
     stage('Top failing Beats tests - last 7 days') {
       steps {
         setEnvVar('YYYY_MM_DD', new Date().format("yyyy-MM-dd", TimeZone.getTimeZone('UTC')))
-        runWatcherForBranch(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
+        runWatcherForBranch(project: 'beats', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
+      }
+    }
+    stage('Top failing Elastic Agent tests - last 7 days') {
+      steps {
+        // TODO: as soon as minor is 8.2 then we can use the below branches
+        // runWatcherForBranch(project: 'elastic-agent', branches: ['main', '8.<minor>', '8.<next-patch>'], to: env.ELASTIC_AGENT_MAILING_LIST)
+        runWatcherForBranch(project: 'elastic-agent', branches: ['main'], to: env.ELASTIC_AGENT_MAILING_LIST)
+      }
+    }
+    stage('Top failing e2e-testing tests - last 7 days') {
+      steps {
+        runWatcherForBranch(project: 'e2e-testing', branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.E2E_TESTING_MAILING_LIST)
       }
     }
     stage('Sync GitHub labels') {
@@ -71,7 +85,12 @@ pipeline {
     }
     stage('Stalled Beats Bumps') {
       steps {
-        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'])
+        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
+      }
+    }
+    stage('Stalled Elastic Agent Bumps') {
+      steps {
+        echo 'TBC'
       }
     }
   }
@@ -90,7 +109,7 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
     notifyStalledBeatsBumps(branch: branch,
                             subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
                             sendEmail: true,
-                            to: env.BEATS_MAILING_LIST)
+                            to: args.to)
   }
 }
 
@@ -99,10 +118,10 @@ def runWatcherForBranch(Map args = [:]){
 
   def quietPeriod = 0
   branches.each { branch ->
-    runWatcher(watcher: "report-beats-top-failing-tests-weekly-${branch}",
-               subject: "[${branch}] ${env.YYYY_MM_DD}: Top failing Beats tests in ${branch} branch - last 7 days",
+    runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
+               subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
                sendEmail: true,
-               to: env.BEATS_MAILING_LIST,
-               debugFileName: "${branch}.txt")
+               to: args.to,
+               debugFileName: "${args.project}-${branch}.txt")
   }
 }
