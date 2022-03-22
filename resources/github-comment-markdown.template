@@ -74,7 +74,7 @@ ${errorStackTrace}
 
 <!-- STEPS ERRORS IF ANY -->
 <% errorGitHub = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Notifies GitHub')}%>
-<% errorGithubPrCheckApproved = stepsErrors?.find{it?.result == "FAILURE" && it?.displayDescription?.contains('githubPrCheckApproved')}%>
+<% errorGithubPrCheckApproved = stepsErrors?.find{it?.result == "FAILURE" && !it?.get('displayDescription', '') instanceof net.sf.json.JSONNull && it?.displayDescription.contains('githubPrCheckApproved')}%>
 <% errorDeleteDir = stepsErrors?.find{it?.result == "FAILURE" && it?.displayName?.contains('Recursively delete the current directory from the workspace')}%>
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" &&
                                       !it?.displayName?.contains('Notifies GitHub') &&
