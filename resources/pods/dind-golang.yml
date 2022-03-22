@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: dind
+      image: docker:20.10.12-dind
+      securityContext:
+        privileged: true
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+      command:
+        - dockerd
+      args:
+        - -H tcp://localhost:2375
+        - -H unix:///var/run/docker.sock
+      ports:
+        - containerPort: 2375
+          hostIP: 127.0.0.1
+      volumeMounts:
+        - name: docker-cache
+          mountPath: /var/lib/docker
+    - name: golang
+      image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-main-debian10
+      command:
+        - sleep
+      args:
+        - infinity
+      env:
+        - name: DOCKER_HOST
+          value: tcp://localhost:2375
+  volumes:
+    - name: docker-cache
+      emptyDir: {}
+  resources:
+    limits:
+      cpu: 2
+      memory: 8Gi
+    requests:
+      cpu: 2
+      memory: 4Gi
