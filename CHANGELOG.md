@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.307 (16/03/2022)
+*No changelog for this release.*
+
 ## v1.1.306 (16/03/2022)
 
 #### 🐛 Bug Fixes
