@@ -156,6 +156,7 @@ class WithGCPEnvStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('bat', 'gcloud auth activate-service-account --key-file %FILE_CREDENTIAL%'))
     assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+GSUTIL'))
     assertFalse(assertMethodCallContainsPattern('download', "windows-x86_64-bundled-python.zip"))
+    assertTrue(assertMethodCallContainsPattern('bat', 'del'))
     assertJobStatusSuccess()
   }
 

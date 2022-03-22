@@ -42,7 +42,7 @@ pipeline {
     disableConcurrentBuilds(abortPrevious: isPR())
   }
   triggers {
-    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests)")
+    issueCommentTrigger("(${obltGitHubComments()}|^run infra tests|^/test all)")
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
@@ -63,7 +63,7 @@ pipeline {
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
-            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '(^vars/gsutil.groovy|^vars/googleStorageUploadExt.groovy)' ], shouldMatchAll: false))
+            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '^vars/(gsutil.groovy|googleStorageUploadExt|withGCPEnv).groovy' ], shouldMatchAll: false))
           }
         }
       }
@@ -140,7 +140,10 @@ pipeline {
     stage('Google Storage') {
       when {
         beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
+        anyOf {
+          expression { return env.TEST_GOOGLE == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
+        }
       }
       steps {
         withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
@@ -154,7 +157,10 @@ pipeline {
       agent { label 'windows-2019-immutable' }
       when {
         beforeAgent true
-        expression { return env.TEST_GOOGLE == "true" }
+        anyOf {
+          expression { return env.TEST_GOOGLE == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
+        }
       }
       steps {
         withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
@@ -188,7 +194,10 @@ pipeline {
     stage('Test JobDSL') {
       when {
         beforeAgent true
-        expression { return env.TEST_JOBDSL == "true" }
+        anyOf {
+          expression { return env.TEST_JOBDSL == "true" }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
+        }
       }
       steps {
         withGithubNotify(context: 'Check JobDSL') {
@@ -210,6 +219,7 @@ pipeline {
           expression { return env.TEST_INFRA == "true" }
           branch 'main'
           expression { return env.GITHUB_COMMENT?.contains('infra tests') }
+          expression { return env.GITHUB_COMMENT?.contains('all') }
         }
       }
       steps {
