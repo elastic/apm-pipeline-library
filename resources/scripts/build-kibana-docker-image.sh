@@ -23,8 +23,7 @@
 #
 set -e
 
-unset NVM_DIR
-
+export NVM_DIR="$HOME/.nvm"
 export BABEL_DISABLE_CACHE=true
 export FORCE_COLOR=1
 export NODE_OPTIONS=" --max-old-space-size=4096"
@@ -32,7 +31,6 @@ export BUILD_TS_REFS_DISABLE="true"
 
 if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
   curl -Sso- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090,SC1091
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 fi
