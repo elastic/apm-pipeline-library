@@ -222,4 +222,35 @@ class GithubApiCallStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'githubApiCall: something happened with the toJson'))
   }
+
+  @Test
+  void testRequestFailure_with_failNever() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], {
+      throw new Exception('Failure')
+    })
+    try{
+      script.call(token: "dummy", url: "http://error", failNever: true)
+    } catch(e) {
+      println e.toString()
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('error', 'githubApiCall'))
+  }
+
+  @Test
+  void testToJSONFailed_with_failNever() throws Exception {
+    helper.registerAllowedMethod("httpRequest", [Map.class], {
+      throw new Exception('Failure')
+    })
+    helper.registerAllowedMethod('toJSON', [String.class], { s ->
+      return null
+    })
+    try {
+      script.call(token: "dummy", url: "http://error", failNever: true)
+    } catch(e) {
+      println e.toString()
+    }
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('error', 'githubApiCall'))
+  }
 }

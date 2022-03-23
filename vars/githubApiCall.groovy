@@ -39,6 +39,7 @@ def call(Map args = [:]){
                  "User-Agent": "Elastic-Jenkins-APM"] + extraHeaders
   def dryRun = args?.data
   def noCache = args?.get('noCache', false)
+  def failNever = args?.get('failNever', false)
 
   log(level: 'INFO', text: 'githubApiCall: just been called.')
 
@@ -84,9 +85,13 @@ def call(Map args = [:]){
     if(ret instanceof List && ret.size() == 0){
       log(level: 'WARN', text: "githubApiCall: The REST API call ${url} return 0 elements")
     } else if(ret instanceof Map && ret.containsKey('message')){
-      error("githubApiCall: The REST API call ${url} return the message : ${ret.message}")
+      if (!failNever) {
+        error("githubApiCall: The REST API call ${url} return the message : ${ret.message}")
+      }
     } else if (ret == null ) {
-      error ("githubApiCall: something happened with the toJson")
+      if (!failNever) {
+        error ("githubApiCall: something happened with the toJson")
+      }
     } else {
       log(level: 'DEBUG', text: "githubApiCall: The REST API call ${url} returned ${ret}")
     }

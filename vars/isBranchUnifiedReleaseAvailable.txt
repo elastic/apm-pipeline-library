@@ -1,0 +1,7 @@
+Whether the given branch is an active branch in the unified release
+
+```
+whenTrue(isBranchUnifiedReleaseAvailable('main')) {
+  //
+}
+```
