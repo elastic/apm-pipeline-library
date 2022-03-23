@@ -521,6 +521,10 @@ def getSupportedGithubCommands() {
     comments['/test benchmark'] = 'Run the APM Agent Python benchmarks tests.'
   }
 
+  if (isProjectSupported('integrations')) {
+    comments['/test all'] = 'Re-trigger the build for all the stages.'
+  }
+
   // Support for the elasticsearch-ci/docs GitHub command in all the repositories they use it
   if (isElasticsearchDocsSupported()) {
     // `run` is needed to avoid the comment to trigger a build itself!
