@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.308 (22/03/2022)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] Fix: node version install [#1613](https://github.com/elastic/apm-pipeline-library/pull/1613)
+
+#### 🙈 No user affected
+
+-  email bump automation relies on testing/environments/snapshot.yml [#1609](https://github.com/elastic/apm-pipeline-library/pull/1609)
+
+#### ⚙️ CI
+
+-  weekly test report for elastic-agent and e2e-testing [#1611](https://github.com/elastic/apm-pipeline-library/pull/1611)
+-  withGCPEnv: solve path separator on windows [#1610](https://github.com/elastic/apm-pipeline-library/pull/1610)
+
 ## v1.1.307 (16/03/2022)
 *No changelog for this release.*
 
