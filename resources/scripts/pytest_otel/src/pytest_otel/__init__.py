@@ -36,6 +36,7 @@ otel_span_file_output = None
 otel_exporter = None
 spans = {}
 outcome = None
+otel_debug = False
 # errors_counter = None
 # failed_counter = None
 # skipped_counter = None
@@ -219,10 +220,11 @@ def traceparent_context(traceparent):
 
 def pytest_sessionstart(session):
     """Uses the commandline parameter to define the environment variables used by OpenTelemetry"""
-    global service_name, traceparent, session_name, insecure, in_memory_span_exporter, otel_span_file_output
+    global service_name, traceparent, session_name, insecure, in_memory_span_exporter, otel_span_file_output, otel_debug
     config = session.config
     if config.getoption("otel_debug"):
         LOGGER.setLevel(logging.DEBUG)
+        otel_debug = True
     service_name = config.getoption("service_name")
     session_name = config.getoption("session_name")
     traceparent = config.getoption("traceparent")
@@ -269,15 +271,16 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: U100
         print("Using on memory OpenTelemetry exporter")
         span_list = otel_exporter.get_finished_spans()
         print("Number of spans: {}".format(len(span_list)))
-        json = "[\n"
-        for i in range(len(span_list)):
-            if i > 0:
-                json += ","
-            json += span_list[i].to_json()
-        json += "\n]\n"
-        with open(otel_span_file_output, 'w', encoding='utf-8') as output:
-            output.write(json)
-        print(json)
+        if otel_debug:
+            json = "[\n"
+            for i in range(len(span_list)):
+                if i > 0:
+                    json += ","
+                json += span_list[i].to_json()
+            json += "\n]\n"
+            with open(otel_span_file_output, 'w', encoding='utf-8') as output:
+                output.write(json)
+            print(json)
 
 
 @pytest.hookimpl(hookwrapper=True)
