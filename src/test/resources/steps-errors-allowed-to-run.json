@@ -1,5 +1,17 @@
 [
   {
+    "displayDescription": null,
+    "displayName": "Force a null displayDesription",
+    "durationInMillis": 23,
+    "id": "81",
+    "input": null,
+    "result": "FAILURE",
+    "startTime": "2021-09-22T09:32:09.201+0000",
+    "state": "FINISHED",
+    "type": "STEP",
+    "url": "https://apm-ci.elastic.co//blue/rest/organizations/jenkins/pipelines/apm-agent-nodejs/pipelines/ecs-logging-nodejs-mbp/pipelines/PR-101/runs/1/steps/81/log"
+  },
+  {
     "displayDescription": "approval-list/elastic/ecs-logging-nodejs.yml",
     "displayName": "Load a resource file from a shared library",
     "durationInMillis": 23,
