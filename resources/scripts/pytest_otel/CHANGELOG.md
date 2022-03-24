@@ -1,5 +1,11 @@
 # version 1.0.2
 
+commit b3d5821fec237c441491e17c8f55e097e39b5eab (HEAD -> fix_verbose)
+Author: Ivan Fernandez Calvo <kuisathaverat@users.noreply.github.com>>
+Date:   Thu Mar 24 12:36:19 2022 +0100
+
+    chore: version 1.0.2
+
 commit cdbea9e1ec3a21fe60f44460c62e83189f6acec3
 Author: Ivan Fernandez Calvo <kuisathaverat@users.noreply.github.com>
 Date:   Thu Mar 24 12:18:28 2022 +0100
