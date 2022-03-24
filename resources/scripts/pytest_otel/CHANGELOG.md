@@ -1,4 +1,8 @@
-# version 1.0.2
+# Version 1.0.3
+
+* fix: remove pytest timing import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
+
+# Version 1.0.2
 
 * fix: show traces only on debug mode [#1621](https://github.com/elastic/apm-pipeline-library/pull/1621)
 * fix: use different tests for the demos [#1523](https://github.com/elastic/apm-pipeline-library/pull/1523)
