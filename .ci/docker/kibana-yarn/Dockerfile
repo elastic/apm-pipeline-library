@@ -51,7 +51,6 @@ RUN rm -fr kibana
 
 FROM docker:20.10.14 AS docker
 FROM docker/buildx-bin:0.8.1 AS buildx
-FROM docker/compose:1.29.2 AS compose
 FROM node:${NODE_VERSION}-bullseye
 
 USER node
