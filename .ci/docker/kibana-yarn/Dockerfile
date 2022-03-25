@@ -49,7 +49,9 @@ RUN . "${NVM_DIR}/nvm.sh" \
 WORKDIR /home/node
 RUN rm -fr kibana
 
-
+FROM docker:20.10.14 AS docker
+FROM docker/buildx-bin:0.8.1 AS buildx
+FROM docker/compose:1.29.2 AS compose
 FROM node:${NODE_VERSION}-bullseye
 
 USER node
@@ -63,6 +65,15 @@ COPY --from=src ${HOME} ${HOME}
 USER root
 RUN chown node:0 /usr/local /usr/local/bin /usr/local/lib /usr/local/share
 RUN echo ". \"${NVM_DIR}/nvm.sh\"" > ${HOME}/.bashrc
+
+# Install Docker
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=buildx /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+RUN curl -sSL "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+  && chmod +x /usr/local/bin/docker-compose
+RUN curl -sSL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o /usr/libexec/docker/cli-plugins/docker-compose \
+  && chmod +x /usr/libexec/docker/cli-plugins/docker-compose
+RUN (docker version || true) && (docker-compose version || true) && docker buildx version && docker compose version
 
 USER node
 WORKDIR ${HOME}
