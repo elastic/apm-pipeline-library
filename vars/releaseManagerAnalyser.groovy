@@ -27,6 +27,6 @@ def call(Map args = [:]) {
   def output = args.containsKey('file') ? args.file : error('releaseManagerAnalyser: file parameter is required.')
   withEnv(["RAW_OUTPUT=${output}", "REPORT=${reportFile}"]) {
     sh(label: 'Release Manager analyser', script: libraryResource('scripts/release-manager-analyser.sh'))
-    setEnvVar('DIGESTED_MESSAGE', "${readFile(file: '${reportFile}')}")
+    setEnvVar('DIGESTED_MESSAGE', readFile(file: reportFile))
   }
 }
