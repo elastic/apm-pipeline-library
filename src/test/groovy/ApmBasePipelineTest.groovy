@@ -569,6 +569,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
+    helper.registerAllowedMethod('releaseManagerAnalyser', [Map.class], { "" })
+    helper.registerAllowedMethod('releaseNotification', [Map.class], { m ->
+      def script = loadScript('vars/releaseNotification.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('retryWithSleep', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/retryWithSleep.groovy')
       return script.call(m, c)
