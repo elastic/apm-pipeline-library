@@ -16,17 +16,19 @@
 // under the License.
 
 /**
-Given the release manager output then it analyseS the failure if any, and provides
-an environment variable, DIGESTED_MESSAGE, with the digested output to the end user.
+Given the release manager output then it analyses the failure if any, and returns
+the digested output to the end user.
 */
 def call(Map args = [:]) {
   if(!isUnix()){
     error('releaseManagerAnalyser: windows is not supported yet.')
   }
+  def ret = ''
   def reportFile = 'release-manager-report.out'
   def output = args.containsKey('file') ? args.file : error('releaseManagerAnalyser: file parameter is required.')
   withEnv(["RAW_OUTPUT=${output}", "REPORT=${reportFile}"]) {
     sh(label: 'Release Manager analyser', script: libraryResource('scripts/release-manager-analyser.sh'))
-    setEnvVar('DIGESTED_MESSAGE', readFile(file: reportFile))
+    ret = readFile(file: reportFile)
   }
+  return ret
 }

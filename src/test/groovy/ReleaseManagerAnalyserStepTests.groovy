@@ -26,14 +26,18 @@ class ReleaseManagerAnalyserStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/releaseManagerAnalyser.groovy')
+    helper.registerAllowedMethod('readFile', [Map.class], { '''
+There were some errors while running the release manager, let's analyse them.
+* Environmental issue with Vault. Try again.
+'''})
   }
 
   @Test
   void test() throws Exception {
-    script.call(file: 'report.txt')
+    def ret = script.call(file: 'report.txt')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withEnv', 'RAW_OUTPUT=report.txt, REPORT=release-manager-report.out'))
-    assertTrue(assertMethodCallOccurrences('setEnvVar', 1))
+    assertTrue(ret.contains('Try again'))
     assertJobStatusSuccess()
   }
 

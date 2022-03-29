@@ -1,17 +1,9 @@
-Given the release manager output then it analyseS the failure if any, and provides
-an environment variable, `DIGESTED_MESSAGE`, with the digested output to the end user.
+Given the release manager output then it analyses the failure if any, and returns
+the digested output to the end user.
 
 ```
-
 // analyse the release manager build output
-releaseManagerAnalyser(file: 'release-manager.out')
-
-// send an email\slack with the diggested message
-releaseNotification(slackChannel: "${env.SLACK_CHANNEL}",
-                      slackColor: args.slackStatus,
-                      slackCredentialsId: 'jenkins-slack-integration-token',
-                      to: "${env.NOTIFY_TO}",
-                      body: "${DIGESTED_MESSAGE}")
+def output = releaseManagerAnalyser(file: 'release-manager.out')
 
 ```
 
