@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.309 (24/03/2022)
+
+#### 🚀 Enhancements
+
+-  isBranchUnifiedReleaseAvailable step to query the Unified Release [#1618](https://github.com/elastic/apm-pipeline-library/pull/1618)
+
+#### 🐛 Bug Fixes
+
+-  fix generateBuildReport: net.sf.json.JSONNull [#1617](https://github.com/elastic/apm-pipeline-library/pull/1617)
+
 ## v1.1.308 (22/03/2022)
 
 #### 🐛 Bug Fixes
