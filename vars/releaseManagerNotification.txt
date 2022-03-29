@@ -1,0 +1,20 @@
+Send notifications with the release manager status by email and slack
+in addition to analyse the release manager output to find any known
+errors.
+
+```
+releaseManagerNotification(slackColor: 'danger',
+                           analyse: true,
+                           file: 'release-manager-output.txt'
+                           subject: "[${env.REPO}@${env.BRANCH_NAME}] DRA failed",
+                           body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
+```
+
+* file: the file with the release manager output. Mandatory.
+* analyse: whether to analyse the release manager output to look for kwown errors. Optional.
+* body: this is the body email that will be also added to the subject when using slack notifications. Optional
+* slackChannel: the slack channel, multiple channels may be provided as a comma, semicolon, or space delimited string. Default `env.SLACK_CHANNEL`
+* slackColor: an optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0)
+* slackCredentialsId: the slack credentialsId. Default 'jenkins-slack-integration-token'
+* subject: this is subject email that will be also aggregated to the body when using slack notifications. Optional
+* to: who should receive an email. Default `env.NOTIFY_TO`

@@ -1,0 +1,10 @@
+Given the release manager output then it analyses the failure if any, and returns
+the digested output to the end user.
+
+```
+// analyse the release manager build output
+def output = releaseManagerAnalyser(file: 'release-manager.out')
+
+```
+
+* file: the file with the release manager output. Mandatory.
