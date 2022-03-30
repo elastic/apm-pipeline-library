@@ -28,8 +28,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
-    env.JUNIT_2_OTLP = "true"
-
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
@@ -196,18 +194,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-v1.2.3-myrepo'"))
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_results_without_feature_flag() throws Exception {
-    env.JUNIT_2_OTLP = ""
-
-    script.call(testResults: 'test-results/TEST-*.xml')
-
-    printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-unknown-junit2otel'"))
-    assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
     assertJobStatusSuccess()
   }
 

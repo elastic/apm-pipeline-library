@@ -15,7 +15,6 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                     always {
                         // JUnit with OpenTelemetry traces
                         withEnv([
-                            "JUNIT_2_OTLP=true",
                             "OTEL_SERVICE_NAME=apm-pipeline-library",
                             "JUNIT_OTEL_SERVICE_VERSION=main",
                             "JUNIT_OTEL_TRACE_NAME=junit-tests"
@@ -25,7 +24,6 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
 
                         // JUnit with attributes inferred from Repository
                         withEnv([
-                            "JUNIT_2_OTLP=true",
                             "REPO=apm-pipeline-library",
                         ]){
                             junit2otel(testResults: 'TEST-*.xml')
