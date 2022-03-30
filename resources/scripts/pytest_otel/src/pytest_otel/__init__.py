@@ -236,7 +236,7 @@ def pytest_sessionstart(session):
         os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = headers
     if service_name is not None:
         os.environ["OTEL_SERVICE_NAME"] = service_name
-    if insecure is not None:
+    if insecure:
         os.environ["OTEL_EXPORTER_OTLP_INSECURE"] = f'{insecure}'
     if traceparent is None:
         traceparent = os.getenv("TRACEPARENT", None)
