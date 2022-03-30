@@ -33,6 +33,8 @@ def call(Map args = [:]) {
   }
 
   withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}"]) {
-    sh(label: 'Release Manager', script: libraryResource('scripts/release-manager.sh'))
+    getVaultSecret.readSecretWrapper {
+      sh(label: 'Release Manager', script: libraryResource('scripts/release-manager.sh'))
+    }
   }
 }
