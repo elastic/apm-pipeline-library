@@ -2650,9 +2650,9 @@ def value = randomString(size: 15)
 Given the project, release type and version it runs the release manager
 
 ```
-// release a snapshot 8.2.0-SNAPSHOT for the APM Server and pick the files from build/dist
+// release a snapshot 8.2.0 for the APM Server and pick the files from build/dist
 releaseManager(project: 'apm-server',
-               version: '8.2.0-SNAPSHOT',
+               version: '8.2.0',
                type: 'snapshot',
                artifactsFolder: 'build/dist')
 
