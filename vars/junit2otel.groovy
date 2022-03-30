@@ -31,7 +31,6 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
                     always {
                         // JUnit with OpenTelemetry traces
                         withEnv([
-                          "JUNIT_2_OTLP=true",
                           "OTEL_SERVICE_NAME=apm-pipeline-library",
                           "JUNIT_OTEL_SERVICE_VERSION=main",
                           "JUNIT_OTEL_TRACE_NAME=junit-tests"
@@ -55,37 +54,40 @@ populated later on, using the https://github.com/mdelapenya/junit2otel library.
 
 */
 def call(Map args = [:]) {
-  def sendTraces = env.JUNIT_2_OTLP?.trim() ? true : false
+  if(!isUnix()){
+    error('junit: windows is not supported yet.')
+  }
 
-  if (sendTraces) {
-    if(!isUnix()){
-      error('junit: windows is not supported yet.')
-    }
+  if(!isInstalled(tool: 'docker', flag: '--version')) {
+    error('junit2otel: docker is not installed but required.')
+  }
 
-    if(!isInstalled(tool: 'docker', flag: '--version')) {
-      error('junit2otel: docker is not installed but required.')
-    }
+  def junitArgs = args.clone()
 
-    withOtelEnv() {
-      def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
-      def serviceName = env.JENKINS_OTEL_SERVICE_NAME?.trim() ? env.JENKINS_OTEL_SERVICE_NAME?.trim()+"-junit" : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
-      def serviceVersion = env.JUNIT_OTEL_SERVICE_VERSION?.trim() ? env.JUNIT_OTEL_SERVICE_VERSION?.trim() : calculateFallbackServiceVersion()
-      def traceName = env.JUNIT_OTEL_TRACE_NAME?.trim() ? env.JUNIT_OTEL_TRACE_NAME?.trim() : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+  // always remove the junit args
+  junitArgs.remove('serviceName')
+  junitArgs.remove('serviceVersion')
+  junitArgs.remove('traceName')
 
-      withEnv([
-        "SERVICE_NAME=${serviceName}",
-        "SERVICE_VERSION=${serviceVersion}",
-        "TEST_RESULTS_GLOB=${testResults}",
-        "TRACE_NAME=${traceName}",
-        "TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"
-      ]){
-        log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
-        sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
-      }
+  withOtelEnv() {
+    def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
+    def serviceName = args.containsKey('serviceName') ? args.serviceName + "-junit" : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+    def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : calculateFallbackServiceVersion()
+    def traceName = args.containsKey('traceName') ? args.traceName : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+
+    withEnv([
+      "SERVICE_NAME=${serviceName}",
+      "SERVICE_VERSION=${serviceVersion}",
+      "TEST_RESULTS_GLOB=${testResults}",
+      "TRACE_NAME=${traceName}",
+      "TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"
+    ]){
+      log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
+      sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
     }
   }
 
-  return junit(args)
+  return junit(junitArgs)
 }
 
 def calculateFallbackServiceVersion() {

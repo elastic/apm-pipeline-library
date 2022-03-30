@@ -28,8 +28,6 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
 
-    env.JUNIT_2_OTLP = "true"
-
     helper.registerAllowedMethod('isInstalled', [Map.class], { return true })
     helper.registerAllowedMethod('isUnix', [], { true })
 
@@ -101,10 +99,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_variables() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
-    env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
-    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice', serviceVersion: '1.2.3', traceName: 'mytrace')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-1.2.3-mytrace'"))
@@ -114,10 +109,8 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_branch_version() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.BRANCH_NAME = "feature/foo"
-    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice', traceName: 'mytrace')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-feature/foo-mytrace'"))
@@ -127,10 +120,8 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_pr_version() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.CHANGE_ID = "PR-123"
-    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice', traceName: 'mytrace')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-PR-123-mytrace'"))
@@ -140,10 +131,8 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_results_with_otel_and_tag_version() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.TAG_NAME = "v1.2.3"
-    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice', traceName: 'mytrace')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-v1.2.3-mytrace'"))
@@ -154,8 +143,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   @Test
   void test_results_with_repo_variables() throws Exception {
     env.REPO = "myrepo"
-    env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceVersion: '1.2.3')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myrepo-1.2.3-myrepo'"))
@@ -200,21 +188,8 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_results_without_feature_flag() throws Exception {
-    env.JUNIT_2_OTLP = ""
-
-    script.call(testResults: 'test-results/TEST-*.xml')
-
-    printCallStack()
-    assertFalse(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-unknown-junit2otel'"))
-    assertFalse(assertMethodCallContainsPattern('libraryResource', 'scripts/junit2otel.sh'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
   void test_service_name() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-master-junit2otel'"))
@@ -223,9 +198,8 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_name_and_repo() throws Exception {
-    env.JENKINS_OTEL_SERVICE_NAME = "myservice"
     env.REPO = "myrepo"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceName: 'myservice')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'myservice-junit-master-myrepo'"))
@@ -234,8 +208,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_service_version() throws Exception {
-    env.JUNIT_OTEL_SERVICE_VERSION = "1.2.3"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', serviceVersion: '1.2.3')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-1.2.3-junit2otel'"))
@@ -244,8 +217,7 @@ class Junit2OtelStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_trace_name() throws Exception {
-    env.JUNIT_OTEL_TRACE_NAME = "mytrace"
-    script.call(testResults: 'test-results/TEST-*.xml')
+    script.call(testResults: 'test-results/TEST-*.xml', traceName: 'mytrace')
 
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('log', "Sending traces for 'junit2otel-master-mytrace'"))
