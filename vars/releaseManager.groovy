@@ -31,7 +31,6 @@ def call(Map args = [:]) {
   if (version.contains('-SNAPSHOT')) {
     error('releaseManager: version parameter cannot contain the suffix -SNAPSHOT.')
   }
-
   withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}"]) {
     getVaultSecret.readSecretWrapper {
       sh(label: 'Release Manager', script: libraryResource('scripts/release-manager.sh'))

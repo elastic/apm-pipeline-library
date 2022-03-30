@@ -24,8 +24,8 @@ def call(Map args = [:]) {
     error('releaseManagerAnalyser: windows is not supported yet.')
   }
   def ret = ''
-  def reportFile = 'release-manager-report.out'
   def output = args.containsKey('file') ? args.file : error('releaseManagerAnalyser: file parameter is required.')
+  def reportFile = "${pwd(tmp: true)}/release-manager-report.out"
   withEnv(["RAW_OUTPUT=${output}", "REPORT=${reportFile}"]) {
     sh(label: 'Release Manager analyser', script: libraryResource('scripts/release-manager-analyser.sh'))
     ret = readFile(file: reportFile)
