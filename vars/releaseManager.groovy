@@ -28,8 +28,8 @@ def call(Map args = [:]) {
   def artifactsFolder = args.get('artifactsFolder', 'build/distribution')
   def outputFile = args.get('outputFile', 'release-manager-report.out')
 
-  if (type.equals('snapshot')) {
-    version = version + '-SNAPSHOT'
+  if (version.contains('-SNAPSHOT')) {
+    error('releaseManager: version parameter cannot contain the suffix -SNAPSHOT.')
   }
 
   withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}"]) {
