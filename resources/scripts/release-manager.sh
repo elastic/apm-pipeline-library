@@ -7,6 +7,7 @@
 # - TYPE, the type of release (snapshot or staging)
 # - VERSION, the version (either a release or a snapshot)
 # - FOLDER, the relative folder where the binaries are stored
+# - OUTPUT_FILE, the file where the logs are stored.
 # - VAULT_ADDR
 # - VAULT_ROLE_ID
 # - VAULT_SECRET_ID
@@ -17,6 +18,8 @@
 set -uexo pipefail
 
 readonly TYPE=${TYPE:-snapshot}
+readonly OUTPUT_FILE=${OUTPUT_FILE:-release-manager-report.out}
+
 # shellcheck source=/dev/null
 source /usr/local/bin/bash_standard_lib.sh
 
@@ -43,4 +46,4 @@ docker run --rm \
       --commit "$(git rev-parse HEAD)" \
       --workflow "${TYPE}" \
       --artifact-set main \
-      --version "${VERSION}"
+      --version "${VERSION}" | tee "$OUTPUT_FILE"

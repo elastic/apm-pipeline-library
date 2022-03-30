@@ -26,8 +26,13 @@ def call(Map args = [:]) {
   def version = args.containsKey('version') ? args.version : error('releaseManager: version parameter is required.')
   def type = args.get('type', 'snapshot')
   def artifactsFolder = args.get('artifactsFolder', 'build/distribution')
+  def outputFile = args.get('outputFile', 'release-manager-report.out')
 
-  withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}"]) {
+  if (type.equals('snapshot')) {
+    version = version + '-SNAPSHOT'
+  }
+
+  withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}"]) {
     sh(label: 'Release Manager', script: libraryResource('scripts/release-manager.sh'))
   }
 }

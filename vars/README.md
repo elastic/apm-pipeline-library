@@ -2666,6 +2666,7 @@ releaseManager(project: 'apm-server',
 * version:  the version (either a release or a snapshot). Mandatory.
 * type: the type of release (snapshot or staging). Default 'snapshot'. Optional.
 * artifactsFolder: the relative folder where the binaries are stored. Default 'build/distribution'. Optional
+* outputFile: the file where the log output is stored to. Default 'release-manager-report.out'. Optional
 
 ## releaseManagerAnalyser
 Given the release manager output then it analyses the failure if any, and returns

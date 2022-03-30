@@ -32,16 +32,16 @@ class ReleaseManagerStepTests extends ApmBasePipelineTest {
   void test_defaults() throws Exception {
     script.call(project: 'apm-server', version: '1.2.3-SNAPSHOT')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=apm-server, TYPE=snapshot, VERSION=1.2.3-SNAPSHOT, FOLDER=build/distribution'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=apm-server, TYPE=snapshot, VERSION=1.2.3-SNAPSHOT-SNAPSHOT, FOLDER=build/distribution, OUTPUT_FILE=release-manager-report.out'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Release Manager'))
     assertJobStatusSuccess()
   }
 
   @Test
   void test_with_all_values() throws Exception {
-    script.call(project: 'beats', version: '1.2.3', type: 'staging', artifactsFolder: 'build/dist')
+    script.call(project: 'beats', version: '1.2.3', type: 'staging', artifactsFolder: 'build/dist', outputFile: 'foo.txt')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=beats, TYPE=staging, VERSION=1.2.3, FOLDER=build/dist'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=beats, TYPE=staging, VERSION=1.2.3, FOLDER=build/dist, OUTPUT_FILE=foo.txt'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Release Manager'))
     assertJobStatusSuccess()
   }
