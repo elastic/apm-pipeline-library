@@ -28,7 +28,9 @@ def call(Map args = [:]) {
   def reportFile = "${pwd(tmp: true)}/release-manager-report.out"
   withEnv(["RAW_OUTPUT=${output}", "REPORT=${reportFile}"]) {
     sh(label: 'Release Manager analyser', script: libraryResource('scripts/release-manager-analyser.sh'))
-    ret = readFile(file: reportFile)
+    if (fileExists("${reportFile}")) {
+      ret = readFile(file: reportFile)
+    }
   }
   return ret
 }
