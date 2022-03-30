@@ -62,29 +62,28 @@ def call(Map args = [:]) {
     error('junit2otel: docker is not installed but required.')
   }
 
-  def junitArgs = args
+  def junitArgs = args.clone()
+
+  // always remove the junit args
+  junitArgs.remove('serviceName')
+  junitArgs.remove('serviceVersion')
+  junitArgs.remove('traceName')
 
   withOtelEnv() {
-    try {
-      def testResults = junitArgs.containsKey('testResults') ? junitArgs.testResults : error("junit2otel: testResults parameter is required.")
-      def serviceName = junitArgs.containsKey('serviceName') ? junitArgs.serviceName + "-junit" : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
-      def serviceVersion = junitArgs.containsKey('serviceVersion') ? junitArgs.serviceVersion : calculateFallbackServiceVersion()
-      def traceName = junitArgs.containsKey('traceName') ? junitArgs.traceName : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+    def testResults = args.containsKey('testResults') ? args.testResults : error("junit2otel: testResults parameter is required.")
+    def serviceName = args.containsKey('serviceName') ? args.serviceName + "-junit" : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
+    def serviceVersion = args.containsKey('serviceVersion') ? args.serviceVersion : calculateFallbackServiceVersion()
+    def traceName = args.containsKey('traceName') ? args.traceName : (env.REPO?.trim() ? env.REPO?.trim() : 'junit2otel')
 
-      withEnv([
-        "SERVICE_NAME=${serviceName}",
-        "SERVICE_VERSION=${serviceVersion}",
-        "TEST_RESULTS_GLOB=${testResults}",
-        "TRACE_NAME=${traceName}",
-        "TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"
-      ]){
-        log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
-        sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
-      }
-    } finally {
-      junitArgs.remove('serviceName')
-      junitArgs.remove('serviceVersion')
-      junitArgs.remove('traceName')
+    withEnv([
+      "SERVICE_NAME=${serviceName}",
+      "SERVICE_VERSION=${serviceVersion}",
+      "TEST_RESULTS_GLOB=${testResults}",
+      "TRACE_NAME=${traceName}",
+      "TRACEPARENT=00-${env.TRACE_ID}-${env.SPAN_ID}-01"
+    ]){
+      log(level: 'INFO', text: "Sending traces for '${serviceName}-${serviceVersion}-${traceName}'")
+      sh(label: 'Run junit2otlp to send traces and metrics', script: libraryResource("scripts/junit2otel.sh"))
     }
   }
 
