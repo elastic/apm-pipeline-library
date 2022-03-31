@@ -82,7 +82,7 @@ def fetchVersions() {
   // To store all the latest release versions
   def latestVersions = artifactsApi(action: 'latest-versions')
   def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
-  def current8 = latestVelatestReleaseVersionsrsions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
+  def current8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
   // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
   releaseVersions[bumpUtils.current6Key()] = '6.8.23'
   releaseVersions[bumpUtils.current7Key()] = current7
