@@ -54,7 +54,7 @@ pipeline {
     }
     stage('Fetch latest versions') {
       steps {
-        fetchVersion()
+        fetchVersions()
       }
     }
     stage('Send Pull Request'){
