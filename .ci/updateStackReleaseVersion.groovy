@@ -78,19 +78,19 @@ pipeline {
 
 def fetchVersions() {
   // To store all the latest release versions
-  def latestVersions = artifactsApi(action: 'latest-release-versions')
-
-  def current7 = latestVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
-  def last8 = latestVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
-
+  def latestReleaseVersions = artifactsApi(action: 'latest-release-versions')
+  // To store all the latest release versions
+  def latestVersions = artifactsApi(action: 'latest-versions')
+  def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
+  def current8 = latestVelatestReleaseVersionsrsions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
   // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
   releaseVersions[bumpUtils.current6Key()] = '6.8.23'
   releaseVersions[bumpUtils.current7Key()] = current7
   releaseVersions[bumpUtils.nextMinor7Key()] = increaseVersion(current7, 1)
   releaseVersions[bumpUtils.nextPatch7Key()] = increaseVersion(current7, 1)
-  releaseVersions[bumpUtils.current8Key()] = '8.1.0'
-  releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
-  releaseVersions[bumpUtils.nextPatch8Key()] = last8
+  releaseVersions[bumpUtils.current8Key()] = current8
+  releaseVersions[bumpUtils.nextMinor8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
+  releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
 }
 
 def increaseVersion(version, i) {
