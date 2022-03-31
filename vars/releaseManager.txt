@@ -1,0 +1,20 @@
+Given the project, release type and version it runs the release manager
+
+```
+// release a snapshot 8.2.0 for the APM Server and pick the files from build/dist
+releaseManager(project: 'apm-server',
+               version: '8.2.0',
+               type: 'snapshot',
+               artifactsFolder: 'build/dist')
+
+// release a staging 8.2.0 for the APM Server
+releaseManager(project: 'apm-server',
+               version: '8.2.0',
+               type: 'staging')
+```
+
+* project: the release manager project. Mandatory.
+* version:  the version (either a release or a snapshot). Mandatory.
+* type: the type of release (snapshot or staging). Default 'snapshot'. Optional.
+* artifactsFolder: the relative folder where the binaries are stored. Default 'build/distribution'. Optional
+* outputFile: the file where the log output is stored to. Default 'release-manager-report.out'. Optional

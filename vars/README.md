@@ -981,6 +981,7 @@ Make a REST API call to Github. It manage to hide the call and the token in the 
 * method: what kind of request. Default 'POST' when using the data parameter. Optional.
 * data: Data to post to the API. Pass as a Map.
 * noCache: whether to force the API call without the already cached data if any. Default false.
+* failNever: NEVER fail the step, regardless of step result
 
 [Github REST API](https://developer.github.com/v3/)
 
@@ -1737,6 +1738,15 @@ Check if the build was triggered by a Branch index.
 
 ```
 def branchIndexTrigger = isBranchIndexTrigger()
+```
+
+## isBranchUnifiedReleaseAvailable
+Whether the given branch is an active branch in the unified release
+
+```
+whenTrue(isBranchUnifiedReleaseAvailable('main')) {
+  //
+}
 ```
 
 ## isBuildFailure
@@ -2630,6 +2640,62 @@ def value = randomString(size: 15)
 ```
 
 * size: the random string size.
+
+## releaseManager
+Given the project, release type and version it runs the release manager
+
+```
+// release a snapshot 8.2.0 for the APM Server and pick the files from build/dist
+releaseManager(project: 'apm-server',
+               version: '8.2.0',
+               type: 'snapshot',
+               artifactsFolder: 'build/dist')
+
+// release a staging 8.2.0 for the APM Server
+releaseManager(project: 'apm-server',
+               version: '8.2.0',
+               type: 'staging')
+```
+
+* project: the release manager project. Mandatory.
+* version:  the version (either a release or a snapshot). Mandatory.
+* type: the type of release (snapshot or staging). Default 'snapshot'. Optional.
+* artifactsFolder: the relative folder where the binaries are stored. Default 'build/distribution'. Optional
+* outputFile: the file where the log output is stored to. Default 'release-manager-report.out'. Optional
+
+## releaseManagerAnalyser
+Given the release manager output then it analyses the failure if any, and returns
+the digested output to the end user.
+
+```
+// analyse the release manager build output
+def output = releaseManagerAnalyser(file: 'release-manager.out')
+
+```
+
+* file: the file with the release manager output. Mandatory.
+
+## releaseManagerNotification
+Send notifications with the release manager status by email and slack
+in addition to analyse the release manager output to find any known
+errors.
+
+```
+releaseManagerNotification(slackColor: 'danger',
+                           analyse: true,
+                           file: 'release-manager-output.txt'
+                           subject: "[${env.REPO}@${env.BRANCH_NAME}] DRA failed",
+                           body: "Build: (<${env.RUN_DISPLAY_URL}|here>) for further details.")
+```
+
+* file: the file with the release manager output. Mandatory.
+* analyse: whether to analyse the release manager output to look for kwown errors. Optional.
+* body: this is the body email that will be also added to the subject when using slack notifications. Optional
+* slackChannel: the slack channel, multiple channels may be provided as a comma, semicolon, or space delimited string. Default `env.SLACK_CHANNEL`
+* slackColor: an optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0)
+* slackCredentialsId: the slack credentialsId. Default 'jenkins-slack-integration-token'
+* subject: this is subject email that will be also aggregated to the body when using slack notifications. Optional
+* to: who should receive an email. Default `env.NOTIFY_TO`
 
 ## releaseNotification
 Send notifications with the release status by email and slack.

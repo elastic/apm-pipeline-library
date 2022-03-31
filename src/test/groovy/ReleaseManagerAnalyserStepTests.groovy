@@ -36,7 +36,7 @@ There were some errors while running the release manager, let's analyse them.
   void test() throws Exception {
     def ret = script.call(file: 'report.txt')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'RAW_OUTPUT=report.txt, REPORT=release-manager-report.out'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'RAW_OUTPUT=report.txt, REPORT=folder/release-manager-report.out'))
     assertTrue(ret.contains('Try again'))
     assertJobStatusSuccess()
   }
