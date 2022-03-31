@@ -54,17 +54,7 @@ pipeline {
     }
     stage('Fetch latest versions') {
       steps {
-        echo ' TODO: calculate the versions'
-        script {
-          // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
-          releaseVersions[bumpUtils.current6Key()] = '6.8.23'
-          releaseVersions[bumpUtils.current7Key()] = '7.17.1'
-          releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.2'
-          releaseVersions[bumpUtils.nextPatch7Key()] = '7.17.2'
-          releaseVersions[bumpUtils.current8Key()] = '8.1.0'
-          releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
-          releaseVersions[bumpUtils.nextPatch8Key()] = '8.1.1'
-        }
+        fetchVersion()
       }
     }
     stage('Send Pull Request'){
@@ -84,6 +74,29 @@ pipeline {
       notifyBuildResult()
     }
   }
+}
+
+def fetchVersions() {
+  // To store all the latest release versions
+  def latestVersions = artifactsApi(action: 'latest-release-versions')
+
+  def current7 = latestVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
+  def last8 = latestVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
+
+  // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
+  releaseVersions[bumpUtils.current6Key()] = '6.8.23'
+  releaseVersions[bumpUtils.current7Key()] = current7
+  releaseVersions[bumpUtils.nextMinor7Key()] = increaseVersion(current7, 1)
+  releaseVersions[bumpUtils.nextPatch7Key()] = increaseVersion(current7, 1)
+  releaseVersions[bumpUtils.current8Key()] = '8.1.0'
+  releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
+  releaseVersions[bumpUtils.nextPatch8Key()] = last8
+}
+
+def increaseVersion(version, i) {
+  def minor = version.substring(version.lastIndexOf('.')+1)
+  def m = (minor.toInteger() + i).toString()
+  return version.substring(0,version.length()-1) + m
 }
 
 def createPullRequest(Map args = [:]) {
