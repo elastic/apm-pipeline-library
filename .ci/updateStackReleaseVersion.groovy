@@ -43,6 +43,7 @@ pipeline {
   }
   parameters {
     booleanParam(name: 'DRY_RUN_MODE', defaultValue: false, description: 'If true, allows to execute this pipeline in dry run mode, without sending a PR.')
+    booleanParam(name: 'FORCE', defaultValue: false, description: 'If true, skips the release version validation.')
   }
   stages {
     stage('Checkout') {
@@ -54,17 +55,7 @@ pipeline {
     }
     stage('Fetch latest versions') {
       steps {
-        echo ' TODO: calculate the versions'
-        script {
-          // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
-          releaseVersions[bumpUtils.current6Key()] = '6.8.23'
-          releaseVersions[bumpUtils.current7Key()] = '7.17.1'
-          releaseVersions[bumpUtils.nextMinor7Key()] = '7.17.2'
-          releaseVersions[bumpUtils.nextPatch7Key()] = '7.17.2'
-          releaseVersions[bumpUtils.current8Key()] = '8.1.0'
-          releaseVersions[bumpUtils.nextMinor8Key()] = '8.2.0'
-          releaseVersions[bumpUtils.nextPatch8Key()] = '8.1.1'
-        }
+        fetchVersions()
       }
     }
     stage('Send Pull Request'){
@@ -86,6 +77,29 @@ pipeline {
   }
 }
 
+def fetchVersions() {
+  // To store all the latest release versions
+  def latestReleaseVersions = artifactsApi(action: 'latest-release-versions')
+  // To store all the latest release versions
+  def latestVersions = artifactsApi(action: 'latest-versions')
+  def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
+  def current8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
+  // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
+  releaseVersions[bumpUtils.current6Key()] = '6.8.23'
+  releaseVersions[bumpUtils.current7Key()] = current7
+  releaseVersions[bumpUtils.nextMinor7Key()] = increaseVersion(current7, 1)
+  releaseVersions[bumpUtils.nextPatch7Key()] = increaseVersion(current7, 1)
+  releaseVersions[bumpUtils.current8Key()] = current8
+  releaseVersions[bumpUtils.nextMinor8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
+  releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
+}
+
+def increaseVersion(version, i) {
+  def minor = version.substring(version.lastIndexOf('.')+1)
+  def m = (minor.toInteger() + i).toString()
+  return version.substring(0,version.length()-1) + m
+}
+
 def createPullRequest(Map args = [:]) {
   bumpUtils.prepareContext(org: env.ORG_NAME, repo: args.repo, branchName: args.branchName)
 
@@ -103,10 +117,14 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  // In case docker images are not available yet, let's skip the PR automation.
-  if (!bumpUtils.areStackVersionsAvailable(args.stackVersions)) {
-    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
-    return
+  if (params.FORCE) {
+    log(level: 'INFO', text: "Skip version validation.")
+  } else {
+    // In case docker images are not available yet, let's skip the PR automation.
+    if (!bumpUtils.areStackVersionsAvailable(args.stackVersions)) {
+      log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+      return
+    }
   }
 
   if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
