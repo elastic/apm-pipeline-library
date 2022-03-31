@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.310 (29/03/2022)
+
+#### 🚀 Enhancements
+
+-  releaseManagerAnalyser and releaseManagerNotification step [#1627](https://github.com/elastic/apm-pipeline-library/pull/1627)
+-  refactor: weekly email based on yaml file [#1615](https://github.com/elastic/apm-pipeline-library/pull/1615)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: add Docker, buildx, and Docker compose to the Docker image [#1625](https://github.com/elastic/apm-pipeline-library/pull/1625)
+- [**Team:Automation**] fix: remove pytest timming import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
+- [**Team:Automation**] fix: show traces only on debug mode [#1621](https://github.com/elastic/apm-pipeline-library/pull/1621)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: Pytest otel release [#1624](https://github.com/elastic/apm-pipeline-library/pull/1624)
+
 ## v1.1.309 (24/03/2022)
 
 #### 🚀 Enhancements
