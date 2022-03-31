@@ -43,6 +43,7 @@ pipeline {
   }
   parameters {
     booleanParam(name: 'DRY_RUN_MODE', defaultValue: false, description: 'If true, allows to execute this pipeline in dry run mode, without sending a PR.')
+    booleanParam(name: 'FORCE', defaultValue: false, description: 'If true, skips the release version validation.')
   }
   stages {
     stage('Checkout') {
@@ -116,10 +117,14 @@ def createPullRequest(Map args = [:]) {
     return
   }
 
-  // In case docker images are not available yet, let's skip the PR automation.
-  if (!bumpUtils.areStackVersionsAvailable(args.stackVersions)) {
-    log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
-    return
+  if (params.FORCE) {
+    log(level: 'INFO', text: "Skip version validation.")
+  } else {
+    // In case docker images are not available yet, let's skip the PR automation.
+    if (!bumpUtils.areStackVersionsAvailable(args.stackVersions)) {
+      log(level: 'INFO', text: "Versions '${args.stackVersions}' are not available yet.")
+      return
+    }
   }
 
   if (bumpUtils.areChangesToBePushed("${args.branchName}")) {
