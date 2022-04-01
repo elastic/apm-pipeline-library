@@ -29,8 +29,10 @@ def call(Map args = [:]) {
   withEnv(["RAW_OUTPUT=${output}", "REPORT=${reportFile}"]) {
     sh(label: 'Release Manager analyser', script: libraryResource('scripts/release-manager-analyser.sh'))
     if (fileExists("${reportFile}")) {
+      archiveArtifacts(allowEmptyArchive: true, artifacts: reportFile)
       ret = readFile(file: reportFile)
     }
   }
+  archiveArtifacts(allowEmptyArchive: true, artifacts: output)
   return ret
 }
