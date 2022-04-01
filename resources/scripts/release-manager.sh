@@ -2,7 +2,7 @@
 #
 # This script is executed by the DRA stage.
 # It requires the below environment variables:
-# - BRANCH_NAME, the project branch
+# - BRANCH, the project branch
 # - PROJECT, the release manager project
 # - TYPE, the type of release (snapshot or staging)
 # - VERSION, the version (either a release or a snapshot)
@@ -42,7 +42,7 @@ docker run --rm \
   "$IMAGE" \
     cli collect \
       --project "${PROJECT}" \
-      --branch "${BRANCH_NAME}" \
+      --branch "${BRANCH}" \
       --commit "$(git rev-parse HEAD)" \
       --workflow "${TYPE}" \
       --artifact-set main \

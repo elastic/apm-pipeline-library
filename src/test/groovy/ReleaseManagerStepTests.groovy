@@ -26,22 +26,23 @@ class ReleaseManagerStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/releaseManager.groovy')
+    addEnvVar('BRANCH_NAME', 'main')
   }
 
   @Test
   void test_defaults() throws Exception {
     script.call(project: 'apm-server', version: '1.2.3')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=apm-server, TYPE=snapshot, VERSION=1.2.3, FOLDER=build/distribution, OUTPUT_FILE=release-manager-report.out'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=apm-server, TYPE=snapshot, VERSION=1.2.3, FOLDER=build/distribution, OUTPUT_FILE=release-manager-report.out, BRANCH=main'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Release Manager'))
     assertJobStatusSuccess()
   }
 
   @Test
   void test_with_all_values() throws Exception {
-    script.call(project: 'beats', version: '1.2.3', type: 'staging', artifactsFolder: 'build/dist', outputFile: 'foo.txt')
+    script.call(project: 'beats', version: '1.2.3', type: 'staging', artifactsFolder: 'build/dist', outputFile: 'foo.txt', branch: '8.2')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=beats, TYPE=staging, VERSION=1.2.3, FOLDER=build/dist, OUTPUT_FILE=foo.txt'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PROJECT=beats, TYPE=staging, VERSION=1.2.3, FOLDER=build/dist, OUTPUT_FILE=foo.txt, BRANCH=8.2'))
     assertTrue(assertMethodCallContainsPattern('sh', 'Release Manager'))
     assertJobStatusSuccess()
   }
