@@ -109,8 +109,9 @@ private Boolean changeset(Map args = [:]) {
     }
   }
 
-  if (anyMatchInChangeSet(patterns, partialMatch)) {
-    markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the pattern.")
+  def match = anyMatchInChangeSet(patterns, partialMatch)
+  if (match) {
+    markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the patterns `${match}`.")
     return true
   } else {
     markdownReason(project: args.project, reason: "* ${name} is `enabled` and does **NOT** match with the pattern `${fileContent}`.")
