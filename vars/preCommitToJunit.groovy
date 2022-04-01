@@ -39,6 +39,8 @@ def call(Map args = [:]) {
       id = matcher.group(1).replaceAll(/[\W_&&[^\s]]/, '').replaceAll('\\.\\.\\.','').trim()
       status = matcher.group(2)
       message = ''
+      // set the local matcher-object to null after extracting the parts to avoid serialisation
+      matcher = null
     } else {
       message += line + '\n'
       inprogress = true

@@ -53,5 +53,7 @@ private getPatterns(line, pattern, delimiter) {
       result << it
     }
   }
+  // set the local matcher-object to null after extracting the parts to avoid serialisation
+  matcher = null
   return result
 }

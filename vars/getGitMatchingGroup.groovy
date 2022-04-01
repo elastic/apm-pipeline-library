@@ -88,7 +88,9 @@ def isExcluded(line, exclude) {
 
 @NonCPS
 def findPatternMatch(line, pattern) {
-  def matches = line =~ pattern
-  def auxModule = matches.collect { it[1] }[0] ?: ''
+  def matcher = line =~ pattern
+  def auxModule = matcher.collect { it[1] }[0] ?: ''
+  // set the local matcher-object to null after extracting the parts to avoid serialisation
+  matcher = null
   return auxModule
 }
