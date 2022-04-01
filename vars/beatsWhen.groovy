@@ -109,28 +109,7 @@ private Boolean changeset(Map args = [:]) {
     }
   }
 
-  // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
-
-  // Gather the diff between the target branch and the current commit.
-  def gitDiffFile = 'git-diff.txt'
-  // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
-  def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
-  sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
-
-  // Search for any pattern that matches that particular if partialMatch or fullMatch
-  def fileContent = readFile(gitDiffFile)
-
-  def match = false
-  if (partialMatch) {
-    match = patterns?.find { pattern ->
-      fileContent?.split('\n').any { isMatch(it, pattern) }
-    }
-  } else {
-    match = patterns?.every { pattern ->
-      fileContent?.split('\n').every { isMatch(it, pattern) }
-    }
-  }
-  if (match) {
+  if (anyMatchInChangeSet(patterns, partialMatch)) {
     markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the pattern `${match}`.")
     return true
   } else {
@@ -258,4 +237,30 @@ private void flushBuildReason() {
 def isMatch(line, pattern) {
   def value = (line ==~ pattern)
   return value
+}
+
+@NonCPS
+private boolean anyMatchInChangeSet(patterns, partialMatch) {
+  // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
+
+  // Gather the diff between the target branch and the current commit.
+  def gitDiffFile = 'git-diff.txt'
+  // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
+  def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
+  sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
+
+  // Search for any pattern that matches that particular if partialMatch or fullMatch
+  def fileContent = readFile(gitDiffFile)
+
+  def match = false
+  if (partialMatch) {
+    match = patterns?.find { pattern ->
+      fileContent?.split('\n').any { isMatch(it, pattern) }
+    }
+  } else {
+    match = patterns?.every { pattern ->
+      fileContent?.split('\n').every { isMatch(it, pattern) }
+    }
+  }
+  return match
 }
