@@ -46,4 +46,4 @@ docker run --rm \
       --commit "$(git rev-parse HEAD)" \
       --workflow "${TYPE}" \
       --artifact-set main \
-      --version "${VERSION}" | tee "$OUTPUT_FILE"
+      --version "${VERSION}" 2>&1 | tee "$OUTPUT_FILE"
