@@ -114,7 +114,7 @@ private Boolean changeset(Map args = [:]) {
     markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the patterns `${match}`.")
     return true
   } else {
-    markdownReason(project: args.project, reason: "* ${name} is `enabled` and does **NOT** match with the pattern `${fileContent}`.")
+    markdownReason(project: args.project, reason: "* ${name} is `enabled` and does **NOT** match with the pattern.")
   }
   return false
 }
@@ -252,6 +252,7 @@ private boolean anyMatchInChangeSet(patterns, partialMatch) {
 
   // Search for any pattern that matches that particular if partialMatch or fullMatch
   def fileContent = readFile(gitDiffFile)
+  log(level: 'DEBUG', text: "anyMatchInChangeSet: file content ${fileContent}")
 
   def match = false
   if (partialMatch) {
