@@ -41,10 +41,8 @@ the flakey test analyser.
 
 **/
 
-import co.elastic.BuildException
 import co.elastic.NotificationManager
 import hudson.tasks.test.AbstractTestResultAction
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {

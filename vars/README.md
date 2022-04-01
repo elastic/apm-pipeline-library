@@ -179,16 +179,6 @@ base64encode(text: "text to encode", encoding: "UTF-8")
     }
 </pre>
 
-## build
-Override the `build` step to highlight in BO the URL to the downstream job.
-
-```
-build(job: 'foo', parameters: [string(name: "my param", value: some_value)])
-build 'foo'
-```
-
-See https://jenkins.io/doc/pipeline/steps/pipeline-build-step/#build-build-a-job
-
 ## buildKibanaDockerImage
 Builds the Docker image for Kibana, from a branch or a pull Request.
 
