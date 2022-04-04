@@ -116,8 +116,9 @@ private Boolean changeset(Map args = [:]) {
   // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
   def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
   sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
-
-  def match = anyMatchInChangeSet(gitDiffFile, patterns, partialMatch)
+  // Search for any pattern that matches that particular if partialMatch or fullMatch
+  def fileContent = readFile(gitDiffFile)
+  def match = anyMatchInChangeSet(fileContent, patterns, partialMatch)
   if (match) {
     markdownReason(project: args.project, reason: "* ✅ ${name} is `enabled` and matches with the patterns `${match}`.")
     return true
@@ -249,9 +250,7 @@ def isMatch(line, pattern) {
 }
 
 @NonCPS
-def anyMatchInChangeSet(gitDiffFile, patterns, partialMatch) {
-  // Search for any pattern that matches that particular if partialMatch or fullMatch
-  def fileContent = readFile(gitDiffFile)
+def anyMatchInChangeSet(fileContent, patterns, partialMatch) {
   log(level: 'DEBUG', text: "anyMatchInChangeSet: file content ${fileContent}")
 
   def match = false
