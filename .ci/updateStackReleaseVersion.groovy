@@ -167,19 +167,25 @@ def updateReleasesPropertiesFile(Map args = [:]) {
   if (args?.stackVersions?.size() == 0) {
     error('updateReleasesPropertiesFile: stackVersions is empty. Review the artifacts-api for the branch ' + args.branchName)
   }
+  def current7 = args.stackVersions.get(bumpUtils.current7Key())
+  def nextPatch7Key = args.stackVersions.get(bumpUtils.nextPatch7Key())
+  def nextMinor7Key = args.stackVersions.get(bumpUtils.nextMinor7Key())
+  def current8Key = args.stackVersions.get(bumpUtils.current8Key())
+  def nextMinor8Key = args.stackVersions.get(bumpUtils.nextMinor8Key())
+  def nextPatch8Key = args.stackVersions.get(bumpUtils.nextPatch8Key())
   // Update the properties file with the new releases
   writeFile file: 'resources/versions/releases.properties', text: """${bumpUtils.current6Key()}=${args.stackVersions.get(bumpUtils.current6Key())}
-${bumpUtils.current7Key()}=${args.stackVersions.get(bumpUtils.current7Key())}
-${bumpUtils.nextMinor7Key()}=${args.stackVersions.get(bumpUtils.nextMinor7Key())}
-${bumpUtils.nextPatch7Key()}=${args.stackVersions.get(bumpUtils.nextPatch7Key())}
-${bumpUtils.current8Key()}=${args.stackVersions.get(bumpUtils.current8Key())}
-${bumpUtils.nextMinor8Key()}=${args.stackVersions.get(bumpUtils.nextMinor8Key())}
-${bumpUtils.nextPatch8Key()}=${args.stackVersions.get(bumpUtils.nextPatch8Key())}"""
+${bumpUtils.current7Key()}=${current7}
+${bumpUtils.nextMinor7Key()}=${nextMinor7Key}
+${bumpUtils.nextPatch7Key()}=${nextPatch7Key}
+${bumpUtils.current8Key()}=${current8Key}
+${bumpUtils.nextMinor8Key()}=${nextMinor8Key}
+${bumpUtils.nextPatch8Key()}=${nextPatch8Key}"""
 
   // Prepare the changeset in git.
   sh(script: """
     git checkout -b "update-stack-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
     git add resources/versions/releases.properties
-    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions to ${args.stackVersions.get(bumpUtils.current7Key())} and ${args.stackVersions.get(bumpUtils.nextMinor7Key())}"
+    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions (${current8Key}, ${nextMinor8Key}, ${nextPatch8Key}, ${current7}, ${nextPatch7Key})"
     git --no-pager log -1""", label: "Git changes")
 }
