@@ -1,0 +1,6 @@
+Download the properties file for the given branch in the unified release
+
+```
+  // Download the properties file for the main branch
+  getBranchUnifiedRelease('8.1'))
+```
