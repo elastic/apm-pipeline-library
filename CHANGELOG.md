@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.311 (31/03/2022)
+
+#### 🚀 Enhancements
+
+-  Add releaseManager step [#1628](https://github.com/elastic/apm-pipeline-library/pull/1628)
+
+#### 🙈 No user affected
+
+-  Update junit2otel step [#1629](https://github.com/elastic/apm-pipeline-library/pull/1629)
+
 ## v1.1.310 (29/03/2022)
 
 #### 🚀 Enhancements
