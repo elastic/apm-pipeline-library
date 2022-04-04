@@ -15,13 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import co.elastic.BuildException
 import co.elastic.NotificationManager
 import co.elastic.mock.RunWrapperMock
 import co.elastic.mock.StepsMock
 import hudson.model.Result
 import hudson.tasks.test.AbstractTestResultAction
-import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
