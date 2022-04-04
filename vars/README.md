@@ -682,6 +682,14 @@ The more common use case is when there are two minor versions in development at 
 
 * branch: the branch name or supported pattern. Mandatory
 
+## getBranchUnifiedRelease
+Download the properties file for the given branch in the unified release
+
+```
+  // Download the properties file for the main branch
+  getBranchUnifiedRelease('8.1'))
+```
+
 ## getBranchesFromAliases
 This step parses the given list of branch aliases and return
 the branch name.
