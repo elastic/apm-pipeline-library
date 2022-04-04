@@ -249,7 +249,7 @@ def isMatch(line, pattern) {
 }
 
 @NonCPS
-private boolean anyMatchInChangeSet(gitDiffFile, patterns, partialMatch) {
+def anyMatchInChangeSet(gitDiffFile, patterns, partialMatch) {
   // Search for any pattern that matches that particular if partialMatch or fullMatch
   def fileContent = readFile(gitDiffFile)
   log(level: 'DEBUG', text: "anyMatchInChangeSet: file content ${fileContent}")
