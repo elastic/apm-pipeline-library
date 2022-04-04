@@ -10,13 +10,13 @@ REPORT=${REPORT:?'Missing the release manager report file'}
 if [ -f "$RAW_OUTPUT" ] ; then
     echo "There were some errors while running the release manager, let's analyse them." > "$REPORT"
     if grep -q -i 'Vault responded with HTTP status code' "$RAW_OUTPUT" ; then
-        echo '* Environmental issue with Vault. Try again' >> "$REPORT"
+        echo '* Environmental issue with Vault. Action: try again or contact the release platform team' >> "$REPORT"
     fi
     if grep -q -i 'Cannot write to file' "$RAW_OUTPUT" ; then
-        echo '* Artifacts were not generated. Likely a genuine issue' >> "$REPORT"
+        echo '* Artifacts were not generated. Likely a genuine issue. Action: contact the release platform team' >> "$REPORT"
     fi
     if grep -q -i 'does not exist' "$RAW_OUTPUT" ; then
-        echo '* Build file does not exist in the unified release. Likely the branch is not supported yet. Contact the release platform team' >> "$REPORT"
+        echo '* Build file does not exist in the unified release. Likely the branch is not supported yet. Action: contact the release platform team' >> "$REPORT"
     fi
 else
     echo "WARN: $RAW_OUTPUT does not exist"
