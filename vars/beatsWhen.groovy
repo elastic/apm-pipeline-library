@@ -249,7 +249,6 @@ def isMatch(line, pattern) {
   return value
 }
 
-@NonCPS
 def anyMatchInChangeSet(fileContent, patterns, partialMatch) {
   log(level: 'DEBUG', text: "anyMatchInChangeSet: file content ${fileContent}")
 
