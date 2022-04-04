@@ -15,6 +15,7 @@ releaseManager(project: 'apm-server',
 
 * project: the release manager project. Mandatory.
 * version:  the version (either a release or a snapshot). Mandatory.
+* branch: the branch. Default `env.BRANCH_NAME`. Optional.
 * type: the type of release (snapshot or staging). Default 'snapshot'. Optional.
 * artifactsFolder: the relative folder where the binaries are stored. Default 'build/distribution'. Optional
 * outputFile: the file where the log output is stored to. Default 'release-manager-report.out'. Optional

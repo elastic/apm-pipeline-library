@@ -24,6 +24,7 @@ def call(Map args = [:]) {
   }
   def project = args.containsKey('project') ? args.project : error('releaseManager: project parameter is required.')
   def version = args.containsKey('version') ? args.version : error('releaseManager: version parameter is required.')
+  def branch = args.get('branch', env.BRANCH_NAME)
   def type = args.get('type', 'snapshot')
   def artifactsFolder = args.get('artifactsFolder', 'build/distribution')
   def outputFile = args.get('outputFile', 'release-manager-report.out')
@@ -31,9 +32,9 @@ def call(Map args = [:]) {
   if (version.contains('-SNAPSHOT')) {
     error('releaseManager: version parameter cannot contain the suffix -SNAPSHOT.')
   }
-  withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}"]) {
+  withEnv(["PROJECT=${project}", "TYPE=${type}", "VERSION=${version}", "FOLDER=${artifactsFolder}", "OUTPUT_FILE=${outputFile}", "BRANCH=${branch}"]) {
     getVaultSecret.readSecretWrapper {
-      sh(label: 'Release Manager', script: libraryResource('scripts/release-manager.sh'))
+      sh(label: "Release Manager ${type}", script: libraryResource('scripts/release-manager.sh'))
     }
   }
 }
