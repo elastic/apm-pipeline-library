@@ -83,7 +83,7 @@ def fetchVersions() {
   // To store all the latest release versions
   def latestVersions = artifactsApi(action: 'latest-versions')
   def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
-  def current8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
+  def current8 = getCurrent8(latestReleaseVersions)
   // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
   releaseVersions[bumpUtils.current6Key()] = '6.8.23'
   releaseVersions[bumpUtils.current7Key()] = current7
@@ -92,6 +92,35 @@ def fetchVersions() {
   releaseVersions[bumpUtils.current8Key()] = current8
   releaseVersions[bumpUtils.nextMinor8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
   releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
+}
+
+def getCurrent8(latestReleaseVersions) {
+  def latestReleaseVersionsFor8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort()
+  def current = latestReleaseVersionsFor8.last()
+
+  // If a new minor release (major.minor.0)
+  // then we need to query the unified release to
+  // know if the release is already available or no
+  if (bumpUtils.getPatch(current) == '0') {
+    def content = getBranchUnifiedRelease(bumpUtils.getMajorMinor(current))
+    if (content.version == current) {
+      // validate the releaseDate matches the current date in format
+      // YYYY-mm-DD
+      def currentDate = new Date()
+      java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+      Date releaseDate = formatter.parse(content.releaseDate)
+      if (currentDate.compareTo(releaseDate) > 0) {
+        log(level: 'INFO', text: "getCurrent8: ${current} already released")
+      } else {
+        log(level: 'WARN', text: "getCurrent8: ${current} has not been released yet. Let's fallback to the previous last one.")
+        // Get previous last one
+        latestReleaseVersionsFor8.remove(latestReleaseVersionsFor8.size() - 1)
+        current = latestReleaseVersionsFor8.last()
+      }
+    }
+  }
+
+  return current
 }
 
 def increaseVersion(version, i) {

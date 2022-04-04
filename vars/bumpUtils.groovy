@@ -76,6 +76,18 @@ def getMajorMinor(String version) {
   error('getMajorMinor: version is not major.minor.patch formatted')
 }
 
+def getPatch(String version) {
+  if (!version?.trim()) {
+    error('getPatch: version cannot be empty, please use the format major.minor.patch')
+  }
+  def parts = version?.split('\\.')
+  if (parts.size() == 3) {
+    return parts[2]
+  }
+  error('getPatch: version is not major.minor.patch formatted')
+}
+
+
 def getCurrentMinorReleaseFor8() {
   return getValueForPropertyKey(current8Key())
 }

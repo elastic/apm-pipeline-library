@@ -158,6 +158,13 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_getPatchFor7() throws Exception {
+    def result = script.getPatch('7.15.0')
+    printCallStack()
+    assertEquals(result, "0")
+  }
+
+  @Test
   void test_getMajorMinorFor7_with_wrong_format() throws Exception {
     try {
       result = script.getMajorMinor('7.15')
@@ -173,6 +180,30 @@ class BumpUtilsStepTests extends ApmBasePipelineTest {
   void test_getMajorMinor_with_empty_value() throws Exception {
     try {
       result = script.getMajorMinor('')
+    } catch(e) {
+      // NOOP
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
+  @Test
+  void test_getPatch_with_empty_value() throws Exception {
+    try {
+      result = script.getPatch('')
+    } catch(e) {
+      // NOOP
+      println e
+    }
+    printCallStack()
+    assertTrue(assertMethodCallOccurrences('error', 1))
+  }
+
+  @Test
+  void test_getPatchFor7_with_wrong_format() throws Exception {
+    try {
+      result = script.getPatch('7.15')
     } catch(e) {
       // NOOP
       println e
