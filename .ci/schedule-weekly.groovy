@@ -119,7 +119,7 @@ def runWatcherForBranch(Map args = [:]){
 def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.weekly-tests-email.yml')
   projects['projects'].each { project ->
-    if (project.get('enabled', 'true').equals('true')) {
+    if (project.get('enabled', true)) {
       runWatcherForBranch(project: project.repo,
                           to: project.email,
                           branches: project.branches)
