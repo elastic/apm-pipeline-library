@@ -53,6 +53,7 @@ def call(Map args = [:]) {
             def body = logAction.logging?.logged_text
             log(level: 'DEBUG', text: "runWatcher: The REST API call returned ${body}")
             if (sendEmail && to?.trim()) {
+                log(level: 'INFO', text: "runWatcher: email has been enabled (${to}).")
                 mail(to: to,
                     subject: subject,
                     body: body,
@@ -63,6 +64,8 @@ def call(Map args = [:]) {
                   writeFile(file: args.get('debugFileName'), text: "${body}")
                   archiveArtifacts(allowEmptyArchive: true, artifacts: args.get('debugFileName'))
                 }
+            } else {
+              log(level: 'INFO', text: "runWatcher: email has been explicitly disabled.")
             }
             return body
         } else {
