@@ -104,8 +104,11 @@ def runWatcherForBranch(Map args = [:]){
 
   branches.each { branch ->
     try {
-      runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
-                 subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
+      def watcherName = "report-${args.project}-top-failing-tests-weekly-${branch}"
+      def subject = "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days"
+      log(level: 'INFO', text: "runWatcherForBranch: ${watcherName} - ${subject}")
+      runWatcher(watcher: "${watcherName}",
+                 subject: "${subject}",
                  sendEmail: params.DRY_RUN_MODE,
                  to: args.to,
                  debugFileName: "${args.project}-${branch}.txt")
