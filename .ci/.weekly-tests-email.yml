@@ -17,6 +17,7 @@ projects:
   - repo: beats
     branches:
       - main
+      - 8.<next-minor>
       - 8.<minor>
       - 8.<minor-1>
       - 7.<minor>
@@ -25,6 +26,7 @@ projects:
   - repo: elastic-agent
     branches:
       - main
+      - 8.<next-minor>
       - 8.<minor>
       - 8.<minor-1>
     enabled: true
@@ -32,6 +34,7 @@ projects:
   - repo: e2e-testing
     branches:
       - main
+      - 8.<next-minor>
       - 8.<minor>
       - 8.<minor-1>
       - 7.<minor>
