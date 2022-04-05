@@ -25,6 +25,9 @@ class CoverageReportStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/coverageReport.groovy')
+    // mock nested structure in the publishCoverage
+    helper.registerAllowedMethod('coberturaAdapter', [String.class], null)
+    helper.registerAllowedMethod('sourceFiles', [String.class], null)
   }
 
   @Test

@@ -568,6 +568,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('preCommitToJunit', [Map.class], null)
     helper.registerAllowedMethod('publishHTML', [Map.class],  null)
+    helper.registerAllowedMethod('publishCoverage', [Map.class],  null)
     helper.registerAllowedMethod('randomNumber', [Map.class], { m -> return m.min })
     helper.registerAllowedMethod('releaseManagerAnalyser', [Map.class], { "" })
     helper.registerAllowedMethod('releaseNotification', [Map.class], { m ->
