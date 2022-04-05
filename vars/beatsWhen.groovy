@@ -240,8 +240,7 @@ def isMatch(line, pattern) {
   return value
 }
 
-@NonCPS
-private boolean anyMatchInChangeSet(patterns, partialMatch) {
+def anyMatchInChangeSet(patterns, partialMatch) {
   // TODO: to be refactored  with isGitRegionMatch.isPartialPatternMatch()
 
   // Gather the diff between the target branch and the current commit.
@@ -249,9 +248,9 @@ private boolean anyMatchInChangeSet(patterns, partialMatch) {
   // On branches with a very first build then GIT_PREVIOUS_COMMIT is empty, let's fallback to the GIT_BASE_COMMIT
   def from = env.CHANGE_TARGET?.trim() ? "origin/${env.CHANGE_TARGET}" : "${env.GIT_PREVIOUS_COMMIT?.trim() ? env.GIT_PREVIOUS_COMMIT : env.GIT_BASE_COMMIT}"
   sh(script: "git diff --name-only ${from}...${env.GIT_BASE_COMMIT} > ${gitDiffFile}", returnStdout: true)
-
   // Search for any pattern that matches that particular if partialMatch or fullMatch
   def fileContent = readFile(gitDiffFile)
+
   log(level: 'DEBUG', text: "anyMatchInChangeSet: file content ${fileContent}")
 
   def match = false
