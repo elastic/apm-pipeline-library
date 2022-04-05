@@ -94,7 +94,7 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
   branches.each { branch ->
     notifyStalledBeatsBumps(branch: branch,
                             subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
-                            sendEmail: params.DRY_RUN_MODE,
+                            sendEmail: !params.DRY_RUN_MODE,
                             to: args.to)
   }
 }
@@ -109,7 +109,7 @@ def runWatcherForBranch(Map args = [:]){
       log(level: 'INFO', text: "runWatcherForBranch: ${watcherName} - ${subject}")
       runWatcher(watcher: "${watcherName}",
                  subject: "${subject}",
-                 sendEmail: params.DRY_RUN_MODE,
+                 sendEmail: !params.DRY_RUN_MODE,
                  to: args.to,
                  debugFileName: "${args.project}-${branch}.txt")
     } catch(err) {
