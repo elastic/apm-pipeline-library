@@ -21,7 +21,7 @@ pipeline {
   agent { label 'ubuntu && immutable' }
   environment {
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL='INFO'
+    PIPELINE_LOG_LEVEL = 'INFO'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
     BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
@@ -94,7 +94,7 @@ def runNotifyStalledBeatsBumps(Map args = [:]) {
   branches.each { branch ->
     notifyStalledBeatsBumps(branch: branch,
                             subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
-                            sendEmail: params.DRY_RUN_MODE,
+                            sendEmail: !params.DRY_RUN_MODE,
                             to: args.to)
   }
 }
@@ -104,9 +104,12 @@ def runWatcherForBranch(Map args = [:]){
 
   branches.each { branch ->
     try {
-      runWatcher(watcher: "report-${args.project}-top-failing-tests-weekly-${branch}",
-                 subject: "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days",
-                 sendEmail: params.DRY_RUN_MODE,
+      def watcherName = "report-${args.project}-top-failing-tests-weekly-${branch}"
+      def subject = "[${args.project}@${branch}] ${env.YYYY_MM_DD}: Top failing ${args.project} tests in ${branch} branch - last 7 days"
+      log(level: 'INFO', text: "runWatcherForBranch: ${watcherName} - ${subject}")
+      runWatcher(watcher: "${watcherName}",
+                 subject: "${subject}",
+                 sendEmail: !params.DRY_RUN_MODE,
                  to: args.to,
                  debugFileName: "${args.project}-${branch}.txt")
     } catch(err) {
@@ -119,7 +122,7 @@ def runWatcherForBranch(Map args = [:]){
 def generateSteps(Map args = [:]) {
   def projects = readYaml(file: '.ci/.weekly-tests-email.yml')
   projects['projects'].each { project ->
-    if (project.get('enabled', 'true').equals('true')) {
+    if (project.get('enabled', true)) {
       runWatcherForBranch(project: project.repo,
                           to: project.email,
                           branches: project.branches)
