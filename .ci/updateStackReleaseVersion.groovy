@@ -83,6 +83,7 @@ def fetchVersions() {
   // To store all the latest release versions
   def latestVersions = artifactsApi(action: 'latest-versions')
   def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
+  def latest8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
   def current8 = getCurrent8(latestReleaseVersions)
   // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
   releaseVersions[bumpUtils.current6Key()] = '6.8.23'
@@ -90,8 +91,9 @@ def fetchVersions() {
   releaseVersions[bumpUtils.nextMinor7Key()] = increaseVersion(current7, 1)
   releaseVersions[bumpUtils.nextPatch7Key()] = increaseVersion(current7, 1)
   releaseVersions[bumpUtils.current8Key()] = current8
-  releaseVersions[bumpUtils.nextMinor8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
+  releaseVersions[bumpUtils.nextMinor8Key()] = latest8
   releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
+  releaseVersions[bumpUtils.edge8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
 }
 
 def getCurrent8(latestReleaseVersions) {
@@ -173,6 +175,7 @@ def updateReleasesPropertiesFile(Map args = [:]) {
   def current8Key = args.stackVersions.get(bumpUtils.current8Key())
   def nextMinor8Key = args.stackVersions.get(bumpUtils.nextMinor8Key())
   def nextPatch8Key = args.stackVersions.get(bumpUtils.nextPatch8Key())
+  def edge8Key = args.stackVersions.get(bumpUtils.edge8Key())
   // Update the properties file with the new releases
   writeFile file: 'resources/versions/releases.properties', text: """${bumpUtils.current6Key()}=${args.stackVersions.get(bumpUtils.current6Key())}
 ${bumpUtils.current7Key()}=${current7}
@@ -180,12 +183,13 @@ ${bumpUtils.nextMinor7Key()}=${nextMinor7Key}
 ${bumpUtils.nextPatch7Key()}=${nextPatch7Key}
 ${bumpUtils.current8Key()}=${current8Key}
 ${bumpUtils.nextMinor8Key()}=${nextMinor8Key}
-${bumpUtils.nextPatch8Key()}=${nextPatch8Key}"""
+${bumpUtils.nextPatch8Key()}=${nextPatch8Key}
+${bumpUtils.edge8Key()}=${edge8Key}"""
 
   // Prepare the changeset in git.
   sh(script: """
     git checkout -b "update-stack-release-version-\$(date "+%Y%m%d%H%M%S")-${args.branchName}"
     git add resources/versions/releases.properties
-    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions (${current8Key}, ${nextMinor8Key}, ${nextPatch8Key}, ${current7}, ${nextPatch7Key})"
+    git diff --staged --quiet || git commit -m "[automation] update elastic stack release versions (${edge8Key}, ${current8Key}, ${nextMinor8Key}, ${nextPatch8Key}, ${current7}, ${nextPatch7Key})"
     git --no-pager log -1""", label: "Git changes")
 }

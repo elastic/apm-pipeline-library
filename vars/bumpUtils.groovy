@@ -76,6 +76,10 @@ def getMajorMinor(String version) {
   error('getMajorMinor: version is not major.minor.patch formatted')
 }
 
+def getEdgeReleaseFor8() {
+  return getValueForPropertyKey(edge8Key())
+}
+
 def getPatch(String version) {
   if (!version?.trim()) {
     error('getPatch: version cannot be empty, please use the format major.minor.patch')
@@ -86,7 +90,6 @@ def getPatch(String version) {
   }
   error('getPatch: version is not major.minor.patch formatted')
 }
-
 
 def getCurrentMinorReleaseFor8() {
   return getValueForPropertyKey(current8Key())
@@ -126,6 +129,10 @@ def getValueForPropertyKey(String key) {
   return version
 }
 
+def edge8Key() {
+  return 'edge_8'
+}
+
 def current8Key() {
   return 'current_8'
 }
@@ -159,5 +166,6 @@ def areStackVersionsAvailable(stackVersions) {
   return isVersionAvailable(stackVersions.get(current6Key())) &&
     isVersionAvailable(stackVersions.get(current7Key())) &&
     isVersionAvailable(stackVersions.get(nextMinor7Key())) &&
-    isVersionAvailable(stackVersions.get(nextPatch7Key()))
+    isVersionAvailable(stackVersions.get(nextPatch7Key())) &&
+    isVersionAvailable(stackVersions.get(edge8Key()))
 }

@@ -229,8 +229,12 @@ Utils class for the bump automation pipelines
 * `isVersionAvailable` -> if the given elastic stack version is available.
 * `parseArguments` -> parse the given arguments.
 * `prepareContext` -> prepare the git context, checkout and git config user.name.
+* `getEdgeReleaseFor8` -> retrieve the EDGE minor version for the 8 major version of the Elastic Stack.
+* `getCurrentMinorReleaseFor8` -> retrieve the LATEST known minor release for the 8 major version of the Elastic Stack.
 * `getCurrentMinorReleaseFor7` -> retrieve the LATEST known minor release for the 7 major version of the Elastic Stack.
 * `getCurrentMinorReleaseFor6` -> retrieve the LATEST known minor release for the 6 major version of the Elastic Stack.
+* `getNextMinorReleaseFor8` -> retrieve the NEXT minor release for the 8 major version of the Elastic Stack. It might not be public available yet.
+* `getNextPatchReleaseFor8` -> retrieve the NEXT patch release for the 8 major version of the Elastic Stack. It might not be public available yet.
 * `getNextMinorReleaseFor7` -> retrieve the NEXT minor release for the 7 major version of the Elastic Stack. It might not be public available yet.
 * `getNextPatchReleaseFor7` -> retrieve the NEXT patch release for the 7 major version of the Elastic Stack. It might not be public available yet.
 * `getMajorMinor` -> retrieve the given version in Major.Minor format, f.e: given `7.16.2` it returns `7.16`.
@@ -2657,6 +2661,7 @@ releaseManager(project: 'apm-server',
 
 * project: the release manager project. Mandatory.
 * version:  the version (either a release or a snapshot). Mandatory.
+* branch: the branch. Default `env.BRANCH_NAME`. Optional.
 * type: the type of release (snapshot or staging). Default 'snapshot'. Optional.
 * artifactsFolder: the relative folder where the binaries are stored. Default 'build/distribution'. Optional
 * outputFile: the file where the log output is stored to. Default 'release-manager-report.out'. Optional
