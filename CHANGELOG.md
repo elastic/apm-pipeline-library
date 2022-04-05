@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.312 (04/04/2022)
+
+#### 🚀 Enhancements
+
+-  cosmetic changes in the release manager  [#1637](https://github.com/elastic/apm-pipeline-library/pull/1637)
+
+#### 🐛 Bug Fixes
+
+-  Fix serialisation issues [#1636](https://github.com/elastic/apm-pipeline-library/pull/1636)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.1.2 8.2.0 [#1640](https://github.com/elastic/apm-pipeline-library/pull/1640)
+-  Automate release versions for 7 and last 8 [#1633](https://github.com/elastic/apm-pipeline-library/pull/1633)
+
+#### 📦 Dependency updates
+
+-  chore(deps): bump opentelemetry from 2.2.2 to 2.3.0 [#1626](https://github.com/elastic/apm-pipeline-library/pull/1626)
+
 ## v1.1.311 (31/03/2022)
 
 #### 🚀 Enhancements
