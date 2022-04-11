@@ -105,6 +105,7 @@ def prepareArguments(Map args = [:]){
   def title = args.get('title', '').trim() ? args.title : '[automation] Update go release version'
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
+  def state = args.get('state', 'all')
 
   // If branch is not main the it's likely needed to search for the go version that matches the given branch
   // ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
@@ -119,7 +120,7 @@ def prepareArguments(Map args = [:]){
     labels = "automation,${labels}"
   }
   return [repo: repo, branchName: branch, title: "${title} ${goReleaseVersion}", labels: labels, scriptFile: scriptFile,
-          goReleaseVersion: goReleaseVersion, message: message, assign: assign, reviewer: reviewer]
+          goReleaseVersion: goReleaseVersion, message: message, assign: assign, reviewer: reviewer, state: state]
 }
 
 def createPullRequest(Map args = [:]) {

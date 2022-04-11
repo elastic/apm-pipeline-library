@@ -9,5 +9,6 @@ Pull Request details.
 
 * *labels*: Filter by labels. Optional
 * *title*: Filter by title (contains format). Mandatory
+* *state*: Filter by state {open|closed|merged|all} (default "open"). Optional
 
 NOTE: It uses `githubPullRequests`

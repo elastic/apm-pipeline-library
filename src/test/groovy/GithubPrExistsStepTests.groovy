@@ -53,6 +53,17 @@ class GithubPrExistsStepTests extends ApmBasePipelineTest {
     })
     def ret = script.call(title: 'bar')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPullRequests', 'state=open'))
     assertFalse(ret)
+  }
+
+  @Test
+  void test_with_state() throws Exception {
+    helper.registerAllowedMethod('githubPullRequests', [Map.class], {
+      return [:]
+    })
+    script.call(title: 'bar', state: 'all')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubPullRequests', 'state=all'))
   }
 }
