@@ -1,0 +1,20 @@
+Check if the given GitHub user is member of the given GitHub org.
+
+```
+whenTrue(isMemberOfOrg(user: 'my-user')) {
+    //...
+}
+
+whenTrue(isMemberOfOrg(user: 'my-user')) {
+    //...
+}
+
+// using another organisation
+whenTrue(isMemberOfOrg(user: 'my-user', org: 'acme')) {
+    //...
+}
+
+```
+
+* *user*: the GitHub user. Mandatory
+* *org*: the GitHub organisation. Optional. Default: 'elastic'

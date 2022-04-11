@@ -22,12 +22,6 @@ import static org.junit.Assert.assertFalse
 
 class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
-  def http404 = net.sf.json.JSONSerializer.toJSON( """{
-        "Code": "404",
-        "message": "Not Found",
-        "documentation_url": "https://developer.github.com/v3"
-      }""")
-
   class ClassMock {
     boolean hasWritePermission(token, repo, author){ return repo?.equals('acme') }
   }
@@ -44,7 +38,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMembership() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return net.sf.json.JSONSerializer.toJSON('{}') })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return true })
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -55,7 +49,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoMembership() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return http404 })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -64,20 +58,20 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNoMembership_with_user_with_write_access_in_repo() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return http404 })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
     def ret = script.call(repository: 'acme')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubApiCall', 0))
+    assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 0))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
 
   @Test
   void testNoMembership_with_user_with_read_access_in_repo() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return http404 })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
     def ret = script.call(repository: 'no_acme')
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubApiCall', 1))
+    assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 1))
     assertFalse(ret)
     assertJobStatusSuccess()
   }
@@ -85,22 +79,11 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoMembership_with_user_with_write_access_in_env_repo_variable() throws Exception {
     addEnvVar('REPO_NAME', 'acme')
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { return http404 })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
     def ret = script.call()
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('githubApiCall', 0))
+    assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 0))
     assertTrue(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testNoMembershipWithError() throws Exception {
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {
-      throw new Exception('Forced a failure')
-    })
-    def ret = script.call()
-    printCallStack()
-    assertFalse(ret)
     assertJobStatusSuccess()
   }
 

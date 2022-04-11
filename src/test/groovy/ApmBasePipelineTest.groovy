@@ -509,6 +509,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('isInternalCI', { return false })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { m -> return false })
     helper.registerAllowedMethod('isStaticWorker', [Map.class], { m ->
       def script = loadScript('vars/isStaticWorker.groovy')
       return script.call(m)
