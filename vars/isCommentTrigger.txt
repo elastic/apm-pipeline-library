@@ -7,3 +7,7 @@ def commentTrigger = isCommentTrigger()
 ```
 
 It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
+
+* *author:* GitHub comment author (by default GITHUB_COMMENT_AUTHOR).
+* *comment:* GitHub comment (by default GITHUB_COMMENT).
+* repository: The GitHub repository. Default: `env.REPO_NAME`
