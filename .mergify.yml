@@ -39,11 +39,13 @@ pull_request_rules:
       queue:
         method: squash
         name: default
-  - name: delete upstream branch after merging changes
-    conditions:
-      - merged
-      - label=automation
-      - base~=^update-.*-version
+  - name: delete upstream branch that has been merged or closed
+      - or:
+        - merged
+        - closed
+      - and:
+        - label=automation
+        - base~=^update-.*
     actions:
       delete_head_branch:
   - name: assign PRs
