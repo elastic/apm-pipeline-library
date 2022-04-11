@@ -34,7 +34,6 @@ def call(Map args){
   if (author && comment) {
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
-    // User with write permissions
     if (repo) {
       found = hasWritePermissions(token, repo, author)
     }
@@ -46,6 +45,7 @@ def call(Map args){
 }
 
 def hasWritePermissions(token, repo, author) {
+  log(level: 'DEBUG', text: 'isCommentTrigger.hasWritePermissions: User with write permissions?.')
   return githubPrCheckApproved.hasWritePermission(token, repo, author)
 }
 
@@ -54,7 +54,7 @@ def isElasticMember(token, author) {
   try {
     // Either a user from the org or a user with write permissions
     def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
-                                          url: "https://api.github.com/orgs/elastic/members/${author}")
+                                           url: "https://api.github.com/orgs/elastic/members/${author}")
     // githubApiCall returns either a raw output or an error message if so it means the user is not a member.
     found = membershipResponse.message?.trim() ? false : true
   } catch(err) {
