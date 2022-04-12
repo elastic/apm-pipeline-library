@@ -39,11 +39,14 @@ pull_request_rules:
       queue:
         method: squash
         name: default
-  - name: delete upstream branch after merging changes
+  - name: delete upstream branch that has been merged or closed
     conditions:
-      - merged
-      - label=automation
-      - base~=^update-.*-version
+      - or:
+        - merged
+        - closed
+      - and:
+        - label=automation
+        - base~=^update-.*
     actions:
       delete_head_branch:
   - name: assign PRs
@@ -67,7 +70,8 @@ pull_request_rules:
     actions:
       comment:
         message: |
-          UPDATED This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
+          UPDATED This pull request has not been merged yet.
+          Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
   - name: notify the backport has not been merged yet (created)
     conditions:
       - -merged
@@ -80,4 +84,5 @@ pull_request_rules:
     actions:
       comment:
         message: |
-          CREATED This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
+          CREATED This pull request has not been merged yet.
+          Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
