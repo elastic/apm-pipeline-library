@@ -20,6 +20,7 @@ metadata.txt
 
 out.html
 .vscode
+.ci/jobDSL/bin
 
 test-infra/__pycache__
 test-infra/.pytest_cache
