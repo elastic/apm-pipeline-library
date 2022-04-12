@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-def clusters = ["edge", "dev", "release", "monitoring"]
+def clusters = ["test"]
 
 clusters.each{ cluster ->
   pipelineJob("apm-shared/oblt-test-env/update-${cluster}-oblt-cluster") {
