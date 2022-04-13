@@ -44,9 +44,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNotAllow() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -70,9 +68,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsApproved() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -103,9 +99,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsRejected() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -309,7 +303,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isAuthorizedUser() throws Exception {
-    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [] })
+    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [:] })
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
       return [title: 'dummy PR', user: [login: 'v1v'], author_association: 'MEMBER']
     })
@@ -321,6 +315,31 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/org/apm-agent-go.yml'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_hasWritePermission_with_empty_value() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
+    def ret = script.hasWritePermission('token', 'repo', 'username')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_hasWritePermission_with_match() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return [
+        "permission": "admin",
+        "user": [
+          "login": "username",
+        ]
+      ]
+    })
+    def ret = script.hasWritePermission('token', 'repo', 'username')
+    printCallStack()
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 }

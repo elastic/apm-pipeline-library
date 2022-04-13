@@ -23,7 +23,7 @@ import static org.junit.Assert.assertFalse
 class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
   class ClassMock {
-    boolean hasWritePermission(token, repo, author){ return repo?.equals('acme') }
+    boolean hasWritePermission(token, repo, author){ return repo?.equals('elastic/acme') }
   }
 
   @Override

@@ -24,5 +24,8 @@ def call(Map args = [:]){
   def token =  args?.token
   def repo = args.containsKey('repo') ? args.repo : error('githubRepoGetUserPermission: no valid repository.')
   def user =  args.containsKey('user') ? args.user : error('githubRepoGetUserPermission: no valid username.')
-  return githubApiCall(token: token, url:"https://api.github.com/repos/${repo}/collaborators/${user}/permission")
+  if (repo.contains('/')) {
+    return githubApiCall(token: token, url:"https://api.github.com/repos/${repo}/collaborators/${user}/permission", failNever: false)
+  }
+  error('githubRepoGetUserPermission: invalid repository format, please use the format <org>/<repo> (elastic/beats).')
 }
