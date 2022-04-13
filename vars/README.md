@@ -1777,6 +1777,11 @@ def commentTrigger = isCommentTrigger()
 
 It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/) (>2.5)
 
+* *author:* GitHub comment author (by default `env.GITHUB_COMMENT_AUTHOR`).
+* *comment:* GitHub comment (by default `env.GITHUB_COMMENT`).
+* *repository*: The GitHub repository (by default `env.REPO_NAME`).
+* *org*: the GitHub organisation (by default `elastic`).
+
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
 evaluates the change list with the pattern list:
@@ -1864,6 +1869,28 @@ whenTrue(isMemberOf(user: 'my-user', team: 'my-team', org: 'acme')) {
 * user: the GitHub user. Mandatory
 * team: the GitHub team or list of GitHub teams. Mandatory
 * org: the GitHub organisation. Optional. Default: 'elastic'
+
+## isMemberOfOrg
+Check if the given GitHub user is member of the given GitHub org.
+
+```
+whenTrue(isMemberOfOrg(user: 'my-user')) {
+    //...
+}
+
+whenTrue(isMemberOfOrg(user: 'my-user')) {
+    //...
+}
+
+// using another organisation
+whenTrue(isMemberOfOrg(user: 'my-user', org: 'acme')) {
+    //...
+}
+
+```
+
+* *user*: the GitHub user. Mandatory
+* *org*: the GitHub organisation. Optional. Default: 'elastic'
 
 ## isPR
 Whether the build is based on a Pull Request or no

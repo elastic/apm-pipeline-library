@@ -499,6 +499,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call()
     })
     helper.registerAllowedMethod('isCommentTrigger', { return false })
+    helper.registerAllowedMethod('isCommentTrigger', [Map.class], { return false })
     helper.registerAllowedMethod('isBeforeGo1_16', [Map.class], { m ->
       def script = loadScript('vars/isBeforeGo1_16.groovy')
       return script.call(m)
@@ -508,6 +509,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m)
     })
     helper.registerAllowedMethod('isInternalCI', { return false })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { m -> return false })
     helper.registerAllowedMethod('isStaticWorker', [Map.class], { m ->
       def script = loadScript('vars/isStaticWorker.groovy')
       return script.call(m)

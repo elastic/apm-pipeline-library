@@ -15,30 +15,37 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import com.cloudbees.groovy.cps.NonCPS
 /**
   Check if the build was triggered by a comment in GitHub.
 
   def commentTrigger = isCommentTrigger()
 */
 
+// @deprecated. For backward compatibility only
 def call(){
+  return call([:])
+}
+
+def call(Map args){
+  def author = args.get('author', env.GITHUB_COMMENT_AUTHOR)
+  def comment = args.get('comment', env.GITHUB_COMMENT)
+  def repo = args.get('repository', env.REPO_NAME)
+  def org = args.get('org', 'elastic')
   def found = false
-  if (env.GITHUB_COMMENT_AUTHOR && env.GITHUB_COMMENT) {
+  if (author && comment) {
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
-
-    try {
-      def membershipResponse = githubApiCall(token: token, allowEmptyResponse: true,
-                                            url: "https://api.github.com/orgs/elastic/members/${env.GITHUB_COMMENT_AUTHOR}")
-      // githubApiCall returns either a raw output or an error message if so it means the user is not a member.
-      found = membershipResponse.message?.trim() ? false : true
-    } catch(err) {
-      log(level: 'WARN', text: "isCommentTrigger: only users under the Elastic organisation are allowed. Message: See ${err.toString()}")
-      // Then it means 404 errorcode.
-      // See https://developer.github.com/v3/orgs/members/#response-if-requester-is-an-organization-member-and-user-is-not-a-member
-      found = false
+    if (repo) {
+      found = hasWritePermissions(token, repo, author)
+    }
+    if (!found) {
+      found = isMemberOfOrg(user: author, org: org)
     }
   }
   return found
+}
+
+def hasWritePermissions(token, repo, author) {
+  log(level: 'DEBUG', text: 'isCommentTrigger.hasWritePermissions: User with write permissions?.')
+  return githubPrCheckApproved.hasWritePermission(token, repo, author)
 }
