@@ -140,6 +140,21 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_no_allowed_but_member_of_elastic() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [] })
+    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
+      return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
+      })
+    helper.registerAllowedMethod("githubPrReviews", [Map.class], { return [] })
+    helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { m -> return true })
+    env.CHANGE_ID = 1
+    def ret = script.call()
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testHasWritePermission() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
       return [
