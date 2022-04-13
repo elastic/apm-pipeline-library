@@ -22,8 +22,11 @@ clusters.each{ cluster ->
     displayName("Update ${cluster}-oblt cluster")
     description("Job to create a ${cluster} oblt cluster.")
     parameters {
-      stringParam("branch_specifier", "main", "the Git branch specifier to build.")
-      stringParam("CLUSTER_CONFIG", "environments/${cluster}/config-cluster.yml", "Relative path to the cluster configuration file.")
+      stringParam('branch_specifier', "main", "the Git branch specifier to build.")
+      stringParam('CLUSTER_NAME', "", 'Name of the cluster to update.')
+      stringParam('NEW_DOCKER_IMAGE', "", 'Tag of the Docker images to use.')
+      booleanParam('is_release', false, 'True is the Docker image is not an SNAPSHOT.')
+      booleanParam('notify', true, 'Send notifications about the build result.')
     }
     disabled(false)
     quietPeriod(10)
