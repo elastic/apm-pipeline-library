@@ -151,6 +151,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
+    assertTrue(assertMethodCallContainsPattern('isMemberOfOrg', 'user=username'))
     assertJobStatusSuccess()
   }
 
