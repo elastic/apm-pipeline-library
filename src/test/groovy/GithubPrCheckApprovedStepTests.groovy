@@ -32,6 +32,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     env.ORG_NAME = "org"
     env.REPO_NAME = "repo"
     env.PIPELINE_LOG_LEVEL = 'DEBUG'
+    helper.registerAllowedMethod("hasWritePermission", [Map.class], { return false })
   }
 
   @Test
@@ -44,7 +45,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNotAllow() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -68,7 +68,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsApproved() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -99,7 +98,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsRejected() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -135,7 +133,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_allowed_but_member_of_elastic() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -167,15 +164,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsAuthorizedBot() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return [
-        permission: "NONE",
-        user: [
-          login: "greenkeeper[bot]",
-          type: "Bot",
-        ]
-      ]
-    })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [
         title: 'dummy PR',
@@ -198,11 +186,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testAPIContractViolationOnUserObject() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return [
-        "permission": "write"
-      ]
-    })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', author_association: 'MEMBER']
       })
@@ -273,7 +256,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isAuthorizedUser() throws Exception {
-    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [:] })
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
       return [title: 'dummy PR', user: [login: 'v1v'], author_association: 'MEMBER']
     })
