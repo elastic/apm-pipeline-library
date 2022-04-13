@@ -1,0 +1,12 @@
+
+Check if the given GitHub user has admin or write permissions in the given repository.
+
+```
+if(!hasWritePermission(token: token, repo: 'org/repo', user: 'username')){
+  error("Only Elasticians can deploy Docker images")
+}
+```
+
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* user: Github username.

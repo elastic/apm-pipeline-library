@@ -36,16 +36,11 @@ def call(Map args){
     log(level: 'DEBUG', text: 'isCommentTrigger: only users under the elastic organisation are allowed.')
     def token = getGithubToken()
     if (repo) {
-      found = hasWritePermissions(token, org, repo, author)
+      found = hasWritePermission(token: token, repo: org + '/' + repo, user: author)
     }
     if (!found) {
       found = isMemberOfOrg(user: author, org: org)
     }
   }
   return found
-}
-
-def hasWritePermissions(token, org, repo, author) {
-  log(level: 'DEBUG', text: 'isCommentTrigger.hasWritePermissions: User with write permissions?.')
-  return githubPrCheckApproved.hasWritePermission(token, org + '/' + repo, author)
 }

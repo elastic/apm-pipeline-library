@@ -22,10 +22,6 @@ import static org.junit.Assert.assertFalse
 
 class IsCommentTriggerStepTests extends ApmBasePipelineTest {
 
-  class ClassMock {
-    boolean hasWritePermission(token, repo, author){ return repo?.equals('elastic/acme') }
-  }
-
   @Override
   @Before
   void setUp() throws Exception {
@@ -33,7 +29,6 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
     addEnvVar('GITHUB_COMMENT_AUTHOR', 'admin')
     addEnvVar('GITHUB_COMMENT', 'Started by a comment')
     script = loadScript('vars/isCommentTrigger.groovy')
-    binding.setProperty('githubPrCheckApproved', new ClassMock())
   }
 
   @Test
@@ -59,6 +54,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoMembership_with_user_with_write_access_in_repo() throws Exception {
     helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
+    helper.registerAllowedMethod('hasWritePermission', [Map.class], { return true })
     def ret = script.call(repository: 'acme')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 0))
@@ -69,6 +65,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   @Test
   void testNoMembership_with_user_with_read_access_in_repo() throws Exception {
     helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
+    helper.registerAllowedMethod('hasWritePermission', [Map.class], { return false })
     def ret = script.call(repository: 'no_acme')
     printCallStack()
     assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 1))
@@ -80,6 +77,7 @@ class IsCommentTriggerStepTests extends ApmBasePipelineTest {
   void testNoMembership_with_user_with_write_access_in_env_repo_variable() throws Exception {
     addEnvVar('REPO_NAME', 'acme')
     helper.registerAllowedMethod('isMemberOfOrg', [Map.class], { return false })
+    helper.registerAllowedMethod('hasWritePermission', [Map.class], { return true })
     def ret = script.call()
     printCallStack()
     assertTrue(assertMethodCallOccurrences('isMemberOfOrg', 0))

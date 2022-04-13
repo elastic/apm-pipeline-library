@@ -151,37 +151,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testHasWritePermission() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return [
-        "permission": "write",
-        "user": [
-          "login": "username",
-        ]
-      ]
-    })
-    helper.registerAllowedMethod("githubPrInfo", [Map.class], {
-      return [title: 'dummy PR', user: [login: 'username'], author_association: 'MEMBER']
-      })
-    helper.registerAllowedMethod("githubPrReviews", [Map.class], {
-      return []
-      })
-    env.CHANGE_ID = 1
-    def ret = script.call()
-    printCallStack()
-    assertTrue(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void testHasAdminPermission() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return [
-        "permission": "admin",
-        "user": [
-          "login": "username",
-        ]
-      ]
-    })
+    helper.registerAllowedMethod("hasWritePermission", [Map.class], { return true })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'MEMBER']
       })
@@ -315,31 +285,6 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/org/apm-agent-go.yml'))
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_hasWritePermission_with_empty_value() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
-    def ret = script.hasWritePermission('token', 'repo', 'username')
-    printCallStack()
-    assertFalse(ret)
-    assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_hasWritePermission_with_match() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return [
-        "permission": "admin",
-        "user": [
-          "login": "username",
-        ]
-      ]
-    })
-    def ret = script.hasWritePermission('token', 'repo', 'username')
-    printCallStack()
-    assertTrue(ret)
     assertJobStatusSuccess()
   }
 }

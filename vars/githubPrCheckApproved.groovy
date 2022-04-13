@@ -49,7 +49,7 @@ def call(Map args = [:]){
   // - A trusted user for that particular repo.
   //
   approved = user != null && (isPrApproved(reviews) ||
-                              hasWritePermission(token, repoName, user) ||
+                              hasWritePermission(token: token, repo: repoName, user: user) ||
                               isMemberOfOrg(user: user, org: 'elastic') ||
                               isAuthorizedBot(user, userType) ||
                               isAuthorizedUser(repoName, user))
@@ -87,15 +87,6 @@ def isPrApproved(reviews){
     }
   }
   return ret
-}
-
-/**
-  Check user has write or admin permissions.
-*/
-def hasWritePermission(token, repo, user){
-  def json = githubRepoGetUserPermission(token: token, repo: repo, user: user)
-  log(level: 'DEBUG', text: "githubPrCheckApproved: User: ${user}, Repo: ${repo}, Permission: ${json?.permission}")
-  return json?.permission?.trim() == 'admin' || json?.permission?.trim() == 'write'
 }
 
 /**

@@ -16,16 +16,16 @@
 // under the License.
 
 /**
-  Check if the author of a GitHub comment has admin or write permissions in the repository.
+  Check if the given github user has admin or write permissions in the given repository.
 */
 def call(Map args = [:]){
-  def repoName = args.containsKey('repoName') ? args.repoName : error('hasCommentAuthorWritePermissions: repoName params is required')
-  def commentId = args.containsKey('commentId') ? args.commentId : error('hasCommentAuthorWritePermissions: commentId params is required')
-  if (repoName.contains('/')) {
-    def token = getGithubToken()
-    def url = "https://api.github.com/repos/${repoName}/issues/comments/${commentId}"
-    def comment = githubApiCall(token: token, url: url, noCache: true)
-    return hasWritePermission(token: token, repo:repoName, user: comment?.user?.login)
+  def token =  args?.token
+  def repo = args.containsKey('repo') ? args.repo : error('hasWritePermission: no valid repository.')
+  def user =  args.containsKey('user') ? args.user : error('hasWritePermission: no valid username.')
+  if (repo.contains('/')) {
+    def json = githubRepoGetUserPermission(args)
+    log(level: 'DEBUG', text: "hasWritePermission: User: ${user}, Repo: ${repo}, Permission: ${json?.permission}")
+    return json?.permission?.trim() == 'admin' || json?.permission?.trim() == 'write'
   }
-  error('hasCommentAuthorWritePermissions: invalid repository format, please use the format <org>/<repo> (elastic/beats).')
+  error('hasWritePermission: invalid repository format, please use the format <org>/<repo> (elastic/beats).')
 }
