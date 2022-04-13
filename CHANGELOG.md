@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.313 (05/04/2022)
+
+#### 🚀 Enhancements
+
+-  Enable edge 8 alias [#1645](https://github.com/elastic/apm-pipeline-library/pull/1645)
+
+#### 🐛 Bug Fixes
+
+-  Fix Using the node  or sh  steps from this method is illegal [#1646](https://github.com/elastic/apm-pipeline-library/pull/1646)
+
+#### ⚙️ CI
+
+-  Fetch latest available release for the 8 major [#1641](https://github.com/elastic/apm-pipeline-library/pull/1641)
+
 ## v1.1.312 (04/04/2022)
 
 #### 🚀 Enhancements
