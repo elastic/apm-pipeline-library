@@ -57,4 +57,15 @@ class GithubRepoGetUserPermissionStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'githubRepoGetUserPermission: no valid username.'))
   }
+
+  @Test
+  void test_invalid_repo_format() throws Exception {
+    try {
+      script.call(token: 'token', user: 1, repo: 'repo')
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'githubRepoGetUserPermission: invalid repository format'))
+  }
 }

@@ -307,4 +307,29 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('libraryResource', 'approval-list/org/apm-agent-go.yml'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_hasWritePermission_with_empty_value() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
+    def ret = script.hasWritePermission('token', 'repo', 'username')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_hasWritePermission_with_match() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return [
+        "permission": "admin",
+        "user": [
+          "login": "username",
+        ]
+      ]
+    })
+    def ret = script.hasWritePermission('token', 'repo', 'username')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
 }
