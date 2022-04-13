@@ -21,9 +21,12 @@
 def call(Map args = [:]){
   def repoName = args.containsKey('repoName') ? args.repoName : error('hasCommentAuthorWritePermissions: repoName params is required')
   def commentId = args.containsKey('commentId') ? args.commentId : error('hasCommentAuthorWritePermissions: commentId params is required')
-  def token = getGithubToken()
-  def url = "https://api.github.com/repos/${repoName}/issues/comments/${commentId}"
-  def comment = githubApiCall(token: token, url: url, noCache: true)
-  def json = githubRepoGetUserPermission(token: token, repo: repoName, user: comment?.user?.login)
-  return json?.permission == 'admin' || json?.permission == 'write'
+  if (repoName.contains('/')) {
+    def token = getGithubToken()
+    def url = "https://api.github.com/repos/${repoName}/issues/comments/${commentId}"
+    def comment = githubApiCall(token: token, url: url, noCache: true)
+    def json = githubRepoGetUserPermission(token: token, repo: repoName, user: comment?.user?.login)
+    return json?.permission?.trim() == 'admin' || json?.permission?.trim() == 'write'
+  }
+  error('hasCommentAuthorWritePermissions: invalid repository format, please use the format <org>/<repo> (elastic/beats).')
 }

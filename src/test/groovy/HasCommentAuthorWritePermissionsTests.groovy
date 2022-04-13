@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class HasCommentAuthorWritePermissionsTests extends ApmBasePipelineTest {
@@ -53,5 +54,41 @@ class HasCommentAuthorWritePermissionsTests extends ApmBasePipelineTest {
     testError("hasCommentAuthorWritePermissions: commentId params is required"){
       script.call(repoName: "owner/repo")
     }
+  }
+
+  @Test
+  void test_with_empty_value() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
+    def ret = script.call(repoName: "elastic/repo", commentId: "1")
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_match() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
+      return [
+        "permission": "admin",
+        "user": [
+          "login": "username",
+        ]
+      ]
+    })
+    def ret = script.call(repoName: "elastic/repo", commentId: "1")
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_invalid_repo_format() throws Exception {
+    try {
+      script.call(repoName: "repo", commentId: "1")
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', 'hasCommentAuthorWritePermissions: invalid repository format'))
   }
 }
