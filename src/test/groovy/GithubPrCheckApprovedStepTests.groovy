@@ -44,9 +44,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testNotAllow() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -70,9 +68,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsApproved() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -103,9 +99,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void testIsRejected() throws Exception {
-    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], {
-      return []
-      })
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
@@ -293,7 +287,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isAuthorizedUser() throws Exception {
-    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [] })
+    helper.registerAllowedMethod('githubRepoGetUserPermission', [Map.class], { return [:] })
     helper.registerAllowedMethod('githubPrInfo', [Map.class], {
       return [title: 'dummy PR', user: [login: 'v1v'], author_association: 'MEMBER']
     })
