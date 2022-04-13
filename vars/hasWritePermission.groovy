@@ -20,8 +20,8 @@
 */
 def call(Map args = [:]){
   def token =  args?.token
-  def repo = args.containsKey('repo') ? args.repo : error('hasWritePermission: no valid repository.')
-  def user =  args.containsKey('user') ? args.user : error('hasWritePermission: no valid username.')
+  def repo = args.containsKey('repo') ? args.repo : error('hasWritePermission: repo parameter is required.')
+  def user =  args.containsKey('user') ? args.user : error('hasWritePermission: user parameter is required.')
   if (repo.contains('/')) {
     def json = githubRepoGetUserPermission(args)
     log(level: 'DEBUG', text: "hasWritePermission: User: ${user}, Repo: ${repo}, Permission: ${json?.permission}")

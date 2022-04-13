@@ -27,31 +27,34 @@ class HasWritePermissionTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/hasWritePermission.groovy')
-    helper.registerAllowedMethod('githubApiCall', [Map.class], { m -> [ user: [ login: "foo" ] ] })
   }
 
   @Test
   void test() throws Exception {
-    def ret = script.call(repoName: "owner/repo", commentId: "1")
+    def ret = script.call(repo: "owner/repo", user: "foo")
     printCallStack()
-    assertTrue(ret)
-    assertTrue(assertMethodCallContainsPattern('githubApiCall', 'url=https://api.github.com/repos/owner/repo/issues/comments/1'))
     assertTrue(assertMethodCallContainsPattern('githubRepoGetUserPermission', 'repo=owner/repo'))
     assertTrue(assertMethodCallContainsPattern('githubRepoGetUserPermission', 'user=foo'))
-    assertJobStatusSuccess()
   }
 
   @Test
-  void testNoRepo() throws Exception {
-    testError("hasWritePermission: repoName params is required"){
-      script.call(commentId: "1")
+  void test_missing_repo() throws Exception {
+    testMissingArgument('repo') {
+      script.call()
     }
   }
 
   @Test
-  void test_with_empty_value() throws Exception {
+  void test_missing_user() throws Exception {
+    testMissingArgument('user') {
+      script.call(repo: "owner/repo")
+    }
+  }
+
+  @Test
+  void test_with_no_match() throws Exception {
     helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
-    def ret = script.call(repoName: "elastic/repo", commentId: "1")
+    def ret = script.call(repo: "elastic/repo", user: "foo")
     printCallStack()
     assertFalse(ret)
     assertJobStatusSuccess()
@@ -67,7 +70,7 @@ class HasWritePermissionTests extends ApmBasePipelineTest {
         ]
       ]
     })
-    def ret = script.call(repoName: "elastic/repo", commentId: "1")
+    def ret = script.call(repo: "elastic/repo", user: "foo")
     printCallStack()
     assertTrue(ret)
     assertJobStatusSuccess()
@@ -83,7 +86,7 @@ class HasWritePermissionTests extends ApmBasePipelineTest {
         ]
       ]
     })
-    def ret = script.call(repoName: "elastic/repo", commentId: "1")
+    def ret = script.call(repo: "elastic/repo", user: "foo")
     printCallStack()
     assertTrue(ret)
     assertJobStatusSuccess()
@@ -92,11 +95,11 @@ class HasWritePermissionTests extends ApmBasePipelineTest {
   @Test
   void test_invalid_repo_format() throws Exception {
     try {
-      script.call(repoName: "repo", commentId: "1")
+      script.call(repo: "repo", user: "foo")
     } catch(e){
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'hasCommentAuthorWritePermissions: invalid repository format'))
+    assertTrue(assertMethodCallContainsPattern('error', 'hasWritePermission: invalid repository format'))
   }
 }
