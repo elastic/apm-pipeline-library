@@ -43,12 +43,14 @@ def call(Map args = [:]){
 
   // The PR is approved to be executed in the CI for the below reasons:
   // - An user with write permissions raised the PR.
+  // - IsMemberOf the Elastic Org.
   // - An authorized bot created the PR.
   // - If it has already been approved by a member or collaborator.
   // - A trusted user for that particular repo.
   //
   approved = user != null && (isPrApproved(reviews) ||
                               hasWritePermission(token, repoName, user) ||
+                              isMemberOfOrg(user: user, org: 'elastic') ||
                               isAuthorizedBot(user, userType) ||
                               isAuthorizedUser(repoName, user))
 
