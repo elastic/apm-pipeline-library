@@ -1171,6 +1171,7 @@ Pull Request details.
 
 * *labels*: Filter by labels. Optional
 * *title*: Filter by title (contains format). Mandatory
+* *state*: Filter by state {open|closed|merged|all} (default "open"). Optional
 
 NOTE: It uses `githubPullRequests`
 
@@ -1603,6 +1604,20 @@ if(!hasCommentAuthorWritePermissions(repoName: "elastic/kibana", commentId: env.
 
 * *repoName:* organization and name of the repository (Organization/Repository)
 * *commentId:* ID of the comment we want to check.
+
+## hasWritePermission
+
+Check if the given GitHub user has admin or write permissions in the given repository.
+
+```
+if(!hasWritePermission(token: token, repo: 'org/repo', user: 'username')){
+  error("Only Elasticians can deploy Docker images")
+}
+```
+
+* token: Github access token.
+* repo: String composed by the organization and the repository name ('org/repo').
+* user: Github username.
 
 ## httpRequest
 Step to make HTTP request and get the result.
