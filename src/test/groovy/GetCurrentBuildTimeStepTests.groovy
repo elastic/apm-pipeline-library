@@ -19,7 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class GetBuildTimeStepTests extends ApmBasePipelineTest {
+class GetCurrentBuildTimeStepTests extends ApmBasePipelineTest {
 
   class BuildMock {
     def getTimestampString2(){ return 'date' }
@@ -33,7 +33,7 @@ class GetBuildTimeStepTests extends ApmBasePipelineTest {
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/getBuildTime.groovy')
+    script = loadScript('vars/getCurrentBuildTime.groovy')
     binding.setProperty('currentBuild', new ClassMock())
   }
 
