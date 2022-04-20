@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.1.314 (13/04/2022)
+
+#### 🚀 Enhancements
+
+-  isCommentTrigger: support for write and org member [#1654](https://github.com/elastic/apm-pipeline-library/pull/1654)
+
+#### 🐛 Bug Fixes
+
+-  hotfix: move folder.groovy to the root CI jobDSL path [#1656](https://github.com/elastic/apm-pipeline-library/pull/1656)
+
+#### 🙈 No user affected
+
+-  chore: test update cluster pipeline [#1653](https://github.com/elastic/apm-pipeline-library/pull/1653)
+
+#### ⚙️ CI
+
+-  Add state filter for the bumpGoReleaseVersion [#1651](https://github.com/elastic/apm-pipeline-library/pull/1651)
+-  Update weekly email to use the right condition and support 8.2 [#1647](https://github.com/elastic/apm-pipeline-library/pull/1647)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump wiremock-jre8 from 2.32.0 to 2.33.1 [#1652](https://github.com/elastic/apm-pipeline-library/pull/1652)
+
 ## v1.1.313 (05/04/2022)
 
 #### 🚀 Enhancements
