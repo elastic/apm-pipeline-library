@@ -716,6 +716,15 @@ Then put all togeder in a simple JSON file.
 * buildNumber: the build id. Mandatory
 * returnData: whether to return a data structure with the build details then other steps can consume them. Optional. Default false
 
+## getCurrentBuildTime
+Returns the timestamp formatted in xs:dateTime.
+
+See https://javadoc.jenkins-ci.org/hudson/model/Run.html#getTimestampString2--
+
+```
+getCurrentBuildTime()
+```
+
 ## getFlakyJobName
 Get the flaky job name in a given multibranch pipeline.
 
@@ -1171,6 +1180,7 @@ Pull Request details.
 
 * *labels*: Filter by labels. Optional
 * *title*: Filter by title (contains format). Mandatory
+* *state*: Filter by state {open|closed|merged|all} (default "open"). Optional
 
 NOTE: It uses `githubPullRequests`
 
