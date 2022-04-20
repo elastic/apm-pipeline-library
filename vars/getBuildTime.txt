@@ -1,0 +1,7 @@
+Returns the timestamp formatted in xs:dateTime.
+
+See https://javadoc.jenkins-ci.org/hudson/model/Run.html#getTimestampString2--
+
+```
+getBuildTime()
+```
