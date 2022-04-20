@@ -133,6 +133,7 @@ class GithubPrCheckApprovedStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_no_allowed_but_member_of_elastic() throws Exception {
+    helper.registerAllowedMethod("githubRepoGetUserPermission", [Map.class], { return [:] })
     helper.registerAllowedMethod("githubPrInfo", [Map.class], {
       return [title: 'dummy PR', user: [login: 'username'], author_association: 'NONE']
       })
