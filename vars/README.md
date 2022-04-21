@@ -350,7 +350,12 @@ It requires to initialise the pipeline with githubEnv() first.
 
 ```
  coverageReport("path_to_base_folder")
+ coverageReport(baseDir: "path_to_base_folder", reportFiles: 'coverage*.html', coverageFiles: 'coverage*.xml')
 ```
+
+* baseDir: The path to the report directory relative to the workspace. Mandatory
+* reportFiles: Report Files. Mandatory
+* coverageFiles: Coverage Files. Mandatory
 
 ## createFileFromTemplate
 
