@@ -3,12 +3,12 @@
 Name | Metrics | Diff
  --- | --- | ---
 {% for item in data -%}
-{%- if item.previousMetric -%}
-    {%- if item.metric - item.previousMetric > 0 -%}
+{%- if item.previousRatio -%}
+    {%- if item.ratio - item.previousRatio > 0 -%}
         {%- set status = ":warning:" -%}
     {% else %}
         {%- set status = ":green_heart:" -%}
     {%- endif -%}
 {%- endif -%}
-{{ item.label }} | {{ item.metric }} | {% if item.previousMetric %} {{ status }} {{ ( item.gzipSize - item.previousGzipSize ) }} {% endif %}
+{{ item.label }} | {{ item.ratio }} | {% if item.previousRatio %} {{ status }} {{ ( item.ratio - item.previousRatio ) }} {% endif %}
 {% endfor %}
