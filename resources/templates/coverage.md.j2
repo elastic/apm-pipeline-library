@@ -1,0 +1,14 @@
+### :globe_with_meridians: Coverage report
+
+Name | Metrics | Diff
+ --- | --- | ---
+{% for item in data -%}
+{%- if item.previousMetric -%}
+    {%- if item.metric - item.previousMetric > 0 -%}
+        {%- set status = ":warning:" -%}
+    {% else %}
+        {%- set status = ":green_heart:" -%}
+    {%- endif -%}
+{%- endif -%}
+{{ item.label }} | {{ item.metric }} | {% if item.previousMetric %} {{ status }} {{ ( item.gzipSize - item.previousGzipSize ) }} {% endif %}
+{% endfor %}
