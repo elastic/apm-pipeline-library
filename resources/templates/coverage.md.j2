@@ -2,13 +2,13 @@
 
 Name | Metrics | Diff
  --- | --- | ---
-{% for item in data -%}
-{%- if item.previousRatio -%}
-    {%- if item.ratio - item.previousRatio > 0 -%}
+{% for key, value in data.items() -%}
+{%- if value.previousRatio -%}
+    {%- if value.ratio - value.previousRatio > 0 -%}
         {%- set status = ":warning:" -%}
     {% else %}
         {%- set status = ":green_heart:" -%}
     {%- endif -%}
 {%- endif -%}
-{{ item.label }} | {{ item.ratio }} | {% if item.previousRatio %} {{ status }} {{ ( item.ratio - item.previousRatio ) }} {% endif %}
+{{ key }} | {{ value.ratio }} | {% if value.previousRatio %} {{ status }} {{ ( value.ratio - value.previousRatio ) }} {% endif %}
 {% endfor %}

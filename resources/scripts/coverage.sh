@@ -28,16 +28,17 @@ fi
 
 NAME=${1:?'Missing the name of the report'}
 REPORT_FOLDER=${2:?'Missing the output folder'}
+# shellcheck disable=SC2034
 INPUT=${3:?'Missing the input files to query for'}
 COMPARE_TO=${4:-''}
 
 # Function to add the previous metrics for the given coverage id
 # if there is something to compare with.
-function addPreviousSizeIfPossible() {
+function addPreviousValueIfPossible() {
     set -x
     label=$1
-    size=$2
-    new_size=$3
+    value=$2
+    new_value=$3
     report=$4
     compare_to=$5
 
@@ -46,10 +47,14 @@ function addPreviousSizeIfPossible() {
     fi
     tmp="$(mktemp -d)/compare.json"
     # shellcheck disable=SC2016
-    previous_size=$($JQ --arg id "${label}" --arg v "$size" '(.[] | select(.label==$id) | .[$v])' "${compare_to}")
-    if [ -n "${previous_size}" ] ; then
+    previous_value=$($JQ --arg id "$label" --arg v "$value" '.[$id] | .[$v]' "${compare_to}")
+    if [ -n "${previous_value}" ] ; then
         # shellcheck disable=SC2016
-        $JQ --arg id "${label}" --arg v "${new_size}" --argjson new "${previous_size}" '(.[] | select(.label==$id) | .[$v]) |= $new' "${report}" > "$tmp"
+        $JQ --arg id "$label" --arg v "$new_value" --argjson new "$previous_value" '(.[] | .[$id] | .[$v]) |= $new' "${report}" > "$tmp"
+
+        ## remove key
+
+        ## add new key
         mv "$tmp" "${report}"
     fi
     set +x
@@ -73,75 +78,92 @@ if [ -z "${JQ}" ]; then
     wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
     chmod 755 "${JQ}"
 else
-    echo "1..5 install jq is not required"
+    echo "1..3 install jq is not required"
 fi
 
 # Prepare temporary folder
-echo "2..5 prepare a temporary folder"
+echo "2..3 prepare a temporary folder"
 mkdir -p "${REPORT_FOLDER}"
 
+REPORT=${REPORT_FOLDER}/${NAME}.json
+
 ## Fake report
-cat <<EOT >> "${REPORT_FOLDER}/${FILENAME}.json"
-[
-  {
-    label: "Packages",
-    ratio: 100,
-    numerator: 68,
-    denominator: 68
+cat <<EOT >> "${REPORT}"
+{
+  "Packages": {
+    "ratio": 100,
+    "numerator": 68,
+    "denominator": 68
   },
-  {
-    label: "Files",
-    ratio: 100,
-    numerator: 225,
-    denominator: 225
+  "Files": {
+    "ratio": 100,
+    "numerator": 225,
+    "denominator": 225
   },
-  {
-    label: "Classes",
-    ratio: 100,
-    numerator: 225,
-    denominator: 225
+  "Classes": {
+    "ratio": 100,
+    "numerator": 225,
+    "denominator": 225
   },
-  {
-    label: "Lines",
-    ratio: 89.25393,
-    numerator: 16246,
-    denominator: 18202
+  "Lines": {
+    "ratio": 89.25393,
+    "numerator": 16246,
+    "denominator": 18202
   },
-  {
-    label: "Conditionals",
-    ratio: 76.40676,
-    numerator: 3028,
-    denominator: 3963
+  "Conditionals": {
+    "ratio": 76.40676,
+    "numerator": 3028,
+    "denominator": 3963
   }
-]
+}
 EOT
 exit 0
 
-echo "3..5 query each coverage reported file"
-for f in ${INPUT} ; do
-	  DATA=$(grep "window.chartData =" "${f}" | sed 's#window.chartData =##g' | sed 's#;$##g')
-    FILENAME=$(basename "${f}")
-    echo "${DATA}" | $JQ 'map(del(.groups))' > "${REPORT_FOLDER}/${FILENAME}.json"
-done
-
-echo "4..5 aggregate files"
-REPORT=${REPORT_FOLDER}/${NAME}.json
-$JQ -s '[.[][]]' "${REPORT_FOLDER}"/*.json > "${REPORT}"
+## Fake report
+cat <<EOT >> "${COMPARE_TO}"
+{
+  "Packages": {
+    "ratio": 99,
+    "numerator": 67,
+    "denominator": 68
+  },
+  "Files": {
+    "ratio": 100,
+    "numerator": 225,
+    "denominator": 225
+  },
+  "Classes": {
+    "ratio": 100,
+    "numerator": 225,
+    "denominator": 225
+  },
+  "Lines": {
+    "ratio": 89.25393,
+    "numerator": 16246,
+    "denominator": 18202
+  },
+  "Conditionals": {
+    "ratio": 76.40676,
+    "numerator": 3028,
+    "denominator": 3963
+  }
+}
+EOT
 
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
-        echo "5..5 compare is enabled"
+        echo "3..3 compare is enabled"
         # For each entry then add the previous sizes
-        for label in $($JQ -r 'map(.label) | .[]' "${COMPARE_TO}"); do
-            addPreviousSizeIfPossible "${label}" "parsedSize" "previousParsedSize" "${REPORT}" "${COMPARE_TO}"
-            addPreviousSizeIfPossible "${label}" "gzipSize" "previousGzipSize" "${REPORT}" "${COMPARE_TO}"
-            addPreviousSizeIfPossible "${label}" "statSize" "previousStatSize" "${REPORT}" "${COMPARE_TO}"
+        for key in $($JQ -r 'keys | .[]' "${COMPARE_TO}"); do
+            addPreviousValueIfPossible "${key}" "ratio" "previousRatio" "${REPORT}" "${COMPARE_TO}"
+            addPreviousValueIfPossible "${key}" "numerator" "previousNumerator" "${REPORT}" "${COMPARE_TO}"
+            addPreviousValueIfPossible "${key}" "denominator" "previousDenominator" "${REPORT}" "${COMPARE_TO}"
         done
     else
-        echo "5..5 compare is disabled since the provided file does not exist."
+        echo "3..3 compare is disabled since the provided file does not exist."
     fi
 else
-    echo "5..5 compare is disabled since no file to compare with has been provided"
+    echo "3..3 compare is disabled since no file to compare with has been provided"
 fi
 
 echo "Report has been generated. See ${REPORT}"
