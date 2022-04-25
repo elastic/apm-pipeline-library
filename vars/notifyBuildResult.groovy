@@ -142,12 +142,13 @@ def call(Map args = [:]) {
 def notifyCommentWithCoverageReport() {
   catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
     def coverageFile = "tests-coverage.json"
-    if (fileExists(coverageFile)) {
+    // CHORE: for testing purposes
+    //if (fileExists(coverageFile)) {
       generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
       githubPrComment(message: readFile(file: 'build/coverage.md'), commentFile: 'coverage')
-    } else {
-      log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
-    }
+    //} else {
+    //  log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
+    //}
   }
 }
 
