@@ -39,8 +39,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
       return [data: [user: "admin", password: "admin123"]]
     })
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
-    helper.registerAllowedMethod("readFile", [Map.class], { return '{"field": "value"}' })
-
+    helper.registerAllowedMethod("readFile", [Map.class], { return '{"Packages": { "ratio": "value" }}' })
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
   }
 
@@ -467,6 +466,20 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then it should run the report
     assertTrue(assertMethodCallOccurrences('generateReport', 1))
     assertTrue(assertMethodCallOccurrences('githubPrComment', 1))
+  }
+
+  @Test
+  void test_notifyCommentWithCoverageReport_if_file_and_empty() throws Exception {
+    // When there is file with coverage but empty content.
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
+    helper.registerAllowedMethod('isPR', { return true })
+    helper.registerAllowedMethod("readFile", [Map.class], { return '{ }' })
+    script.notifyCommentWithCoverageReport()
+    printCallStack()
+
+    // Then it should not run the report
+    assertTrue(assertMethodCallOccurrences('generateReport', 0))
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
   }
 
   @Test

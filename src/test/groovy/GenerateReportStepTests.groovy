@@ -90,7 +90,7 @@ class GenerateReportStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallOccurrences('copyArtifacts', 1))
     assertTrue(assertMethodCallContainsPattern('sh', 'bundlesize.sh "bundlesize" "build" "packages/rum/reports/apm-*-report.html" "build/master/bundlesize.json"'))
-    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))    
+    assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertJobStatusSuccess()
   }
 }
