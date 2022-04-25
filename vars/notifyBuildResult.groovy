@@ -42,11 +42,11 @@ the flakey test analyser.
 **/
 
 import co.elastic.NotificationManager
-import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
@@ -126,6 +126,19 @@ def call(Map args = [:]) {
           }
         }
       }
+
+      if (notifyCoverageComment) {
+        catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          def coverageFile = 'tests-coverage.json'
+          if (fileExists(coverageFile)) {
+            generateReport(id: 'coverage', input: coverageFile, template: true, compare: true)
+            githubPrComment(message: readFile(file: 'coverage.md'), commentFile: 'coverage')
+          } else {
+            log(level: 'INFO', text: "notifyBuildResult: there are no tests-coverage.json file to be compared with.")
+          }
+        }
+      }
+
       // Ensure we don't leave any leftovers if running in the jenkins controller.
       catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
