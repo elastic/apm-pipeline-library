@@ -8,9 +8,9 @@ Name | Metrics % (`covered/total`) | Diff
 {%- if value.previousRatio -%}
     {%- set previousRatio = value.previousRatio|float|round(3) -%}
     {%- if previousRatio > ratio -%}
-        {%- set diff = ":warning: {{ ( ratio - previousRatio ) }}" -%}
+        {%- set diff = ":-1: `{{ ( ratio - previousRatio ) }}`" -%}
     {% else %}
-        {%- set diff = ":green_heart: {{ ( ratio - previousRatio ) }}" -%}
+        {%- set diff = ":+1: `{{ ( ratio - previousRatio ) }}`" -%}
     {%- endif -%}
 {% else %}
   {%- if ratio == 100 -%}
