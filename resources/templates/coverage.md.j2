@@ -8,16 +8,15 @@ Name | Metrics % (`covered/total`) | Diff
 {%- set ratio = value.ratio|float|round(3) -%}
 {%- if value.previousRatio -%}
   {%- set previousRatio = value.previousRatio|float|round(3) -%}
-  {%- set diff = ( ratio - previousRatio ) -%}
   {%- if previousRatio > ratio -%}
       {%- set status = ":-1:" -%}
   {% else %}
       {%- set status = ":+1:" -%}
   {%- endif -%}
 {% else %}
-  {%- if ratio == 100 -%}
+  {%- if ratio|int == 100 -%}
     {%- set status = ":green_heart:" -%}
   {%- endif -%}
 {%- endif -%}
-{{ key }} | {{ ratio }}% `({{ value.numerator }}/{{ value.denominator }})`| {{ status }} {{ diff }}
+{{ key }} | {{ ratio }}% `({{ value.numerator }}/{{ value.denominator }})` | {{ status }} {% if value.previousRatio %} {{ ( ratio - previousRatio ) }} {% endif %}
 {% endfor %}
