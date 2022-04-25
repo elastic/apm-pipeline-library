@@ -77,16 +77,11 @@ def getCompareWithFileIfPossible(Map args = [:]) {
         }
       } catch(e) {
         log(level: 'INFO', text: 'generateReport: it was not possible to copy the previous build.')
-        // CHORE: for testing purposes
-        try {
-          copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
-        } catch(er) {
-        log(level: 'INFO', text: 'generateReport: it was not possible to copy the previous build (tests-coverage.json).')
-          // NOOP
-        }
       } finally {
         compareWith = "${args.output}/${env.CHANGE_TARGET}/${args.id}.json"
         if (!fileExists("${compareWith}")) {
+          // CHORE: for testing purposes
+          copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
           compareWith = ''
         }
         // CHORE: for testing purposes

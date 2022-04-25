@@ -82,6 +82,9 @@ mkdir -p "${REPORT_FOLDER}"
 
 REPORT=${REPORT_FOLDER}/${NAME}.json
 
+# It uses the API cobertura/api/json, therefore there is only one file
+cp "${INPUT}" "${REPORT}"
+
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
         echo "3..3 compare is enabled"
