@@ -128,21 +128,25 @@ def call(Map args = [:]) {
       }
 
       if (notifyCoverageComment) {
-        catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-          def coverageFile = 'tests-coverage.json'
-          if (fileExists(coverageFile)) {
-            generateReport(id: 'coverage', input: coverageFile, template: true, compare: true)
-            githubPrComment(message: readFile(file: 'coverage.md'), commentFile: 'coverage')
-          } else {
-            log(level: 'INFO', text: "notifyBuildResult: there are no tests-coverage.json file to be compared with.")
-          }
-        }
+        notifyCommentWithCoverageReport()
       }
 
       // Ensure we don't leave any leftovers if running in the jenkins controller.
       catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
       }
+    }
+  }
+}
+
+def notifyCommentWithCoverageReport() {
+  catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    def coverageFile = 'tests-coverage.json'
+    if (fileExists(coverageFile)) {
+      generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
+      githubPrComment(message: readFile(file: 'build/coverage.md'), commentFile: 'coverage')
+    } else {
+      log(level: 'INFO', text: "notifyBuildResult: there are no tests-coverage.json file to be compared with.")
     }
   }
 }
