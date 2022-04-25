@@ -103,7 +103,8 @@ cat <<EOT >> "${REPORT}"
   "Classes": {
     "ratio": 100,
     "numerator": 225,
-    "denominator": 225
+    "denominator": 225,
+    "previousRatio": 99
   },
   "Lines": {
     "ratio": 89.25393,
