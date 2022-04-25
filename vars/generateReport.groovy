@@ -74,11 +74,15 @@ def getCompareWithFileIfPossible(Map args = [:]) {
         dir("${args.output}/${env.CHANGE_TARGET}") {
           projectName = env.JOB_NAME.replace(env.JOB_BASE_NAME, env.CHANGE_TARGET)
           copyArtifacts(filter: "${args.id}.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
-          // CHORE: for testing purposes
-          copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
         }
       } catch(e) {
         log(level: 'INFO', text: 'generateReport: it was not possible to copy the previous build.')
+        // CHORE: for testing purposes
+        try {
+          copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
+        } catch(e) {
+          // NOOP
+        }
       } finally {
         compareWith = "${args.output}/${env.CHANGE_TARGET}/${args.id}.json"
         if (!fileExists("${compareWith}")) {
