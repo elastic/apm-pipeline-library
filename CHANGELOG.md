@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.315 (20/04/2022)
+
+#### 🚀 Enhancements
+
+-  Helper step to get the current build time [#1663](https://github.com/elastic/apm-pipeline-library/pull/1663)
+-  githubPrCheckApproved with support for Elastic members [#1657](https://github.com/elastic/apm-pipeline-library/pull/1657)
+
+#### 🙈 No user affected
+
+- [**flaky-test**] fix UT for test_no_allowed_but_member_of_elastic [#1662](https://github.com/elastic/apm-pipeline-library/pull/1662)
+- [**Team:Automation**] chore: update parameters [#1658](https://github.com/elastic/apm-pipeline-library/pull/1658)
+
 ## v1.1.314 (13/04/2022)
 
 #### 🚀 Enhancements
