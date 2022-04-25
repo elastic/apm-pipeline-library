@@ -108,12 +108,14 @@ cat <<EOT >> "${REPORT}"
   "Lines": {
     "ratio": 89.25393,
     "numerator": 16246,
-    "denominator": 18202
+    "denominator": 18202,
+    "previousRatio": 90
   },
   "Conditionals": {
     "ratio": 76.40676,
     "numerator": 3028,
-    "denominator": 3963
+    "denominator": 3963,
+    "previousRatio": 85
   }
 }
 EOT
