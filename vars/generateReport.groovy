@@ -80,15 +80,6 @@ def getCompareWithFileIfPossible(Map args = [:]) {
       } finally {
         compareWith = "${args.output}/${env.CHANGE_TARGET}/${args.id}.json"
         if (!fileExists("${compareWith}")) {
-          // CHORE: for testing purposes
-          dir("${args.output}/${env.CHANGE_TARGET}") {
-            copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
-          }
-          compareWith = ''
-        }
-        // CHORE: for testing purposes
-        compareWith = "${args.output}/${env.CHANGE_TARGET}/tests-coverage.json"
-        if (!fileExists("${compareWith}")) {
           compareWith = ''
         }
       }
