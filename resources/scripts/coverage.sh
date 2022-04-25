@@ -35,7 +35,6 @@ COMPARE_TO=${4:-''}
 # Function to add the previous metrics for the given coverage id
 # if there is something to compare with.
 function addPreviousValueIfPossible() {
-    set -x
     label=$1
     value=$2
     new_value=$3
@@ -51,8 +50,6 @@ function addPreviousValueIfPossible() {
         # Append the new value to the given key hash
         sed -ibck "s#\(\"$label\".*\)#\1 \n    \"$new_value\": $previous_value, #g" "${report}"
     fi
-    ls -l build
-    set +x
 }
 
 # Install jq if required
