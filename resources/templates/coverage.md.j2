@@ -5,18 +5,16 @@ Name | Metrics % (`covered/total`) | Diff
 {% for key, value in data.items() -%}
 {%- set status = ":grey_exclamation:" -%}
 {%- set diff = "" -%}
-{%- set ratio = value.ratio|float|round(3) -%}
 {%- if value.previousRatio -%}
-  {%- set previousRatio = value.previousRatio|float|round(3) -%}
-  {%- if previousRatio > ratio -%}
+  {%- if value.previousRatio > value.ratio -%}
       {%- set status = ":-1:" -%}
   {% else %}
       {%- set status = ":+1:" -%}
   {%- endif -%}
 {% else %}
-  {%- if ratio|int == 100 -%}
+  {%- if value.ratio|int == 100 -%}
     {%- set status = ":green_heart:" -%}
   {%- endif -%}
 {%- endif -%}
-{{ key }} | {{ ratio }}% `({{ value.numerator }}/{{ value.denominator }})` | {{ status }} {% if value.previousRatio %} {{ ( ratio - previousRatio ) }} {% endif %}
+{{ key }} | {{ value.ratio|float|round(3) }}% (`{{ value.numerator }}/{{ value.denominator }}`) | {{ status }} {% if value.previousRatio %} `{{ ( value.ratio|float|round(3) - value.previousRatio|float|round(3) ) }}` {% endif %}
 {% endfor %}
