@@ -30,7 +30,7 @@ NAME=${1:?'Missing the name of the report'}
 REPORT_FOLDER=${2:?'Missing the output folder'}
 # shellcheck disable=SC2034
 INPUT=${3:?'Missing the input files to query for'}
-COMPARE_TO=${4:-'compare.json'}
+COMPARE_TO=${4:-''}
 
 # Function to add the previous metrics for the given coverage id
 # if there is something to compare with.
@@ -45,18 +45,13 @@ function addPreviousValueIfPossible() {
     if [ ! -e "${compare_to}" ] ; then
         return
     fi
-    tmp="$(mktemp -d)/compare.json"
     # shellcheck disable=SC2016
-    previous_value=$($JQ --arg id "$label" --arg v "$value" '.[$id] | .[$v]' "${compare_to}")
+    previous_value=$($JQ -r --arg id "$label" --arg v "$value" '.[$id] | .[$v]' "${compare_to}")
     if [ -n "${previous_value}" ] ; then
-        # shellcheck disable=SC2016
-        $JQ --arg id "$label" --arg v "$new_value" --argjson new "$previous_value" '(.[] | .[$id] | .[$v]) |= $new' "${report}" > "$tmp"
-
-        ## remove key
-
-        ## add new key
-        mv "$tmp" "${report}"
+        # Append the new value to the given key hash
+        sed -ibck "s#\(\"$label\".*\)#\1 \n    \"$new_value\": $previous_value, #g" "${report}"
     fi
+    ls -l build
     set +x
 }
 
@@ -86,72 +81,6 @@ echo "2..3 prepare a temporary folder"
 mkdir -p "${REPORT_FOLDER}"
 
 REPORT=${REPORT_FOLDER}/${NAME}.json
-
-## Fake report
-cat <<EOT >> "${REPORT}"
-{
-  "Packages": {
-    "ratio": 100,
-    "numerator": 68,
-    "denominator": 68
-  },
-  "Files": {
-    "ratio": 100,
-    "numerator": 225,
-    "denominator": 225
-  },
-  "Classes": {
-    "ratio": 100,
-    "numerator": 225,
-    "denominator": 225,
-    "previousRatio": 99
-  },
-  "Lines": {
-    "ratio": 89.25393,
-    "numerator": 16246,
-    "denominator": 18202,
-    "previousRatio": 90
-  },
-  "Conditionals": {
-    "ratio": 76.40676,
-    "numerator": 3028,
-    "denominator": 3963,
-    "previousRatio": 85
-  }
-}
-EOT
-
-## Fake report
-cat <<EOT >> "${COMPARE_TO}"
-{
-  "Packages": {
-    "ratio": 99,
-    "numerator": 67,
-    "denominator": 68
-  },
-  "Files": {
-    "ratio": 100,
-    "numerator": 225,
-    "denominator": 225
-  },
-  "Classes": {
-    "ratio": 100,
-    "numerator": 225,
-    "denominator": 225
-  },
-  "Lines": {
-    "ratio": 89.25393,
-    "numerator": 16246,
-    "denominator": 18202
-  },
-  "Conditionals": {
-    "ratio": 76.40676,
-    "numerator": 3028,
-    "denominator": 3963
-  }
-}
-EOT
-exit 0
 
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
