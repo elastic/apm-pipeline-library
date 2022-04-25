@@ -30,7 +30,7 @@ NAME=${1:?'Missing the name of the report'}
 REPORT_FOLDER=${2:?'Missing the output folder'}
 # shellcheck disable=SC2034
 INPUT=${3:?'Missing the input files to query for'}
-COMPARE_TO=${4:-''}
+COMPARE_TO=${4:-'compare.json'}
 
 # Function to add the previous metrics for the given coverage id
 # if there is something to compare with.
