@@ -1,15 +1,21 @@
 ### :globe_with_meridians: Coverage report
 
-Name | Metrics (% `covered/total`) | Diff
+Name | Metrics % (`covered/total`) | Diff
  --- | --- | ---
 {% for key, value in data.items() -%}
-{%- set status = ":grey_exclamation:" -%}
+{%- set diff = ":grey_exclamation:" -%}
+{%- set ratio = value.ratio|float|round(3) -%}
 {%- if value.previousRatio -%}
-    {%- if value.previousRatio|float() > value.ratio|float() -%}
-        {%- set status = ":warning:" -%}
+    {%- set previousRatio = value.previousRatio|float|round(3) -%}
+    {%- if previousRatio > ratio -%}
+        {%- set diff = ":warning: {{ ( ratio - previousRatio ) }}" -%}
     {% else %}
-        {%- set status = ":green_heart:" -%}
+        {%- set diff = ":green_heart: {{ ( ratio - previousRatio ) }}" -%}
     {%- endif -%}
+{% else %}
+  {%- if ratio == 100 -%}
+    {%- set diff = ":green_heart:" -%}
+  {%- endif -%}
 {%- endif -%}
-{{ key }} | {{ value.ratio }}% `{{ value.numerator }}/{{ value.denominator }}`| {{ status }} {% if value.previousRatio %} {{ ( value.ratio|float() - value.previousRatio|float() ) }} {% endif %}
+{{ key }} | {{ ratio }}% `({{ value.numerator }}/{{ value.denominator }})`| {{ diff }}
 {% endfor %}
