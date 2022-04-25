@@ -473,12 +473,12 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When there is file with coverage but empty content.
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod('isPR', { return true })
-    helper.registerAllowedMethod("readFile", [Map.class], { return '{ }' })
+    helper.registerAllowedMethod("readFile", [Map.class], { return '  ' })
     script.notifyCommentWithCoverageReport()
     printCallStack()
 
-    // Then it should not run the report
-    assertTrue(assertMethodCallOccurrences('generateReport', 0))
+    // Then it should not publish the github comment
+    assertTrue(assertMethodCallOccurrences('generateReport', 1))
     assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
   }
 

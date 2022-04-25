@@ -1,3 +1,4 @@
+{%- if data -%}
 ### :globe_with_meridians: Coverage report
 
 Name | Metrics % (`covered/total`) | Diff
@@ -21,3 +22,4 @@ Name | Metrics % (`covered/total`) | Diff
 {%- endif -%}
 {{ key }} | {{ value.ratio|float|round(3) }}% (`{{ value.numerator }}/{{ value.denominator }}`) | {{ status }} {{ diff }}
 {% endfor %}
+{%- endif -%}

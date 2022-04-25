@@ -143,13 +143,14 @@ def notifyCommentWithCoverageReport() {
   catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
     def coverageFile = "tests-coverage.json"
     if (fileExists(coverageFile)) {
-      // If there are some data to be reported then
-      if (!readFile(file: coverageFile)?.contains('ratio')) {
+      generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
+      def coverageContent = readFile(file: 'build/coverage.md')
+      // If no data to be reported then
+      if (!coverageContent?.trim()) {
         log(level: 'INFO', text: "notifyBuildResult: the ${coverageFile} file is empty.")
         return
       }
-      generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
-      githubPrComment(message: readFile(file: 'build/coverage.md'), commentFile: 'coverage')
+      githubPrComment(message: coverageContent, commentFile: 'coverage')
     } else {
       log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
     }
