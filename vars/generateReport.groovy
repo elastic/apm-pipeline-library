@@ -80,7 +80,7 @@ def getCompareWithFileIfPossible(Map args = [:]) {
         // CHORE: for testing purposes
         try {
           copyArtifacts(filter: "tests-coverage.json", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
-        } catch(e) {
+        } catch(er) {
           // NOOP
         }
       } finally {
