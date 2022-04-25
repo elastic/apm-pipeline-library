@@ -117,7 +117,6 @@ cat <<EOT >> "${REPORT}"
   }
 }
 EOT
-exit 0
 
 ## Fake report
 cat <<EOT >> "${COMPARE_TO}"
@@ -149,6 +148,7 @@ cat <<EOT >> "${COMPARE_TO}"
   }
 }
 EOT
+exit 0
 
 if [ -n "${COMPARE_TO}" ] ; then
     if [ -e "${COMPARE_TO}" ] ; then
