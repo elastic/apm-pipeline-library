@@ -61,7 +61,7 @@
     <dependency> <!-- https://github.com/jwtk/jjwt/issues/573 -->
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-jackson</artifactId>
-      <version>0.11.2</version>
+      <version>0.11.3</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
