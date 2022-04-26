@@ -67,7 +67,7 @@ if [ -z "${JQ}" ]; then
     else
         suffix=osx-amd64
     fi
-    wget -q -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
+    wget -q --retry-connrefused -O "${JQ}" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-${suffix}
     chmod 755 "${JQ}"
 else
     echo "1..3 install jq is not required"
