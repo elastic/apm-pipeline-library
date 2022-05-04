@@ -74,6 +74,8 @@ def call(Map args = [:]) {
           echo 'WARN: PATH has not been configured with the shell scripts that might be required!'
         fi
         set -e
+        ## Print the last two commits
+        git --no-pager log -n3 || true
         ## Print the changeset to be pre-commited
         git diff-tree --no-commit-id --name-only -r ${commit} || true
         ## Validate the pre-commit for the new changes
