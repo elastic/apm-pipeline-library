@@ -15,38 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-clusters.each{ cluster ->
-  pipelineJob("apm-shared/oblt-test-env/update-dev-clusters") {
+
+pipelineJob("apm-shared/oblt-test-env/update-dev-clusters") {
     displayName("Update developer clusters")
     description("Job to update all developer clusters.")
     parameters {
-      stringParam('branch_specifier', "main", "the Git branch specifier to build.")
+        stringParam('branch_specifier', "main", "the Git branch specifier to build.")
     }
     disabled(false)
     quietPeriod(10)
     logRotator {
-      numToKeep(10)
-      daysToKeep(7)
-      artifactNumToKeep(10)
-      artifactDaysToKeep(-1)
+        numToKeep(10)
+        daysToKeep(7)
+        artifactNumToKeep(10)
+        artifactDaysToKeep(-1)
     }
     definition {
-      cpsScm {
+        cpsScm {
         scm {
-          git {
+            git {
             remote {
-              github("elastic/observability-test-environments", "ssh")
-              credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+                github("elastic/observability-test-environments", "ssh")
+                credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
             }
             branch('${branch_specifier}')
             extensions {
-              wipeOutWorkspace()
+                wipeOutWorkspace()
             }
-          }
+            }
         }
         lightweight(false)
         scriptPath(".ci/update-dev-clusters.groovy")
-      }
+        }
     }
-  }
 }
+
