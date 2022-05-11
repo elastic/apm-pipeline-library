@@ -115,9 +115,8 @@ ${description}
   </details>
 <%} else if (!buildStatus?.equals('ABORTED')) {%>
 ### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
-  <p>
-  > This error is likely related to the pipeline itself. Click <a href="${env?.BUILD_URL}console">here</a>
-  > and then you will see the error (either incorrect syntax or an invalid configuration).
-  </p>
+
+> This error is likely related to the pipeline itself. Click <a href="${env?.BUILD_URL}console">here</a>
+> and then you will see the error (either incorrect syntax or an invalid configuration).
 <%}%>
 <%}%>
