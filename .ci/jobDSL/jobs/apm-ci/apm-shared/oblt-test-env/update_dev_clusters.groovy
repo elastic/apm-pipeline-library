@@ -49,4 +49,3 @@ pipelineJob("apm-shared/oblt-test-env/update-dev-clusters") {
         }
     }
 }
-
