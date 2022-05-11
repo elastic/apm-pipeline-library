@@ -22,8 +22,14 @@ import static org.junit.Assert.assertTrue
 class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
 
   class BumpUtilsMock {
-    String getCurrentMinorReleaseFor8(){ "8.3.0" }
-    String getMajorMinor(String value){ "8.3" }
+    String getCurrentMinorReleaseFor8(){ "8.2.0" }
+    String getNextMinorReleaseFor8(){ "8.2.0" }
+    String getNextPatchReleaseFor8(){ "8.2.1" }
+    String getCurrentMinorReleaseFor7(){ "7.17.3" }
+    String getMajorMinor(String branch){
+      def parts = branch.split('\\.')
+      return parts[0] + "." + parts[1]
+    }
   }
 
   @Override
@@ -53,17 +59,36 @@ class GetBranchesFromAliasesStepTests extends ApmBasePipelineTest {
   void test_alias_with_macro() throws Exception {
     def ret = script.call(aliases:[ 'foo', '8.<minor>' ])
     printCallStack()
-    assert ret.equals(['foo', '8.3'])
+    assert ret.equals(['foo', '8.2'])
     assertJobStatusSuccess()
   }
 
   @Test
-  void test_alias_with_macro_minor() throws Exception {
-    def ret = script.call(aliases:[ 'foo', '8.<minor>', '8.<minor-2>' ])
+  void test_alias_with_macro_minor_1() throws Exception {
+    def ret = script.call(aliases:[ '8.<minor>', '8.<minor-1>' ])
     printCallStack()
-    assert ret.equals(['foo', '8.3', '8.1'])
+    assert ret.equals(['8.2', '8.1'])
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_alias_with_macro_minor_2() throws Exception {
+    def ret = script.call(aliases:[ 'foo', '8.<minor>', '8.<minor-2>' ])
+    printCallStack()
+    assert ret.equals(['foo', '8.2', '8.0'])
+    assertJobStatusSuccess()
+  }
+
+
+
+  @Test
+  void test_alias_with_7() throws Exception {
+    def ret = script.call(aliases:[ 'main', '8.<minor>', '8.<next-patch>', '8.<next-minor>', '8.<minor-1>', '7.<minor>' ])
+    printCallStack()
+    assert ret.equals(['main', '8.2', '8.1', '7.17'])
+    assertJobStatusSuccess()
+  }
+
 
   @Test
   void test_subtract_with_0() throws Exception {
