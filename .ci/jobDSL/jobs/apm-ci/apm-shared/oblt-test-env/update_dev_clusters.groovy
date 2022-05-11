@@ -32,20 +32,20 @@ pipelineJob("apm-shared/oblt-test-env/update-dev-clusters") {
     }
     definition {
         cpsScm {
-        scm {
-            git {
-            remote {
-                github("elastic/observability-test-environments", "ssh")
-                credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+            scm {
+                git {
+                    remote {
+                        github("elastic/observability-test-environments", "ssh")
+                        credentials("f6c7695a-671e-4f4f-a331-acdce44ff9ba")
+                    }
+                    branch('${branch_specifier}')
+                    extensions {
+                        wipeOutWorkspace()
+                    }
+                }
             }
-            branch('${branch_specifier}')
-            extensions {
-                wipeOutWorkspace()
-            }
-            }
-        }
-        lightweight(false)
-        scriptPath(".ci/update-dev-clusters.groovy")
+            lightweight(false)
+            scriptPath(".ci/update-dev-clusters.groovy")
         }
     }
 }
