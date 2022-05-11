@@ -113,7 +113,7 @@ ${description}
   <%}%>
   </p>
   </details>
-<%} else if (!buildStatus?.equals('ABORTED')) {%>
+<%} else if (!buildStatus?.equals('ABORTED') && testsSummary?.failed == 0) {%>
 ### Pipeline error [![1](https://img.shields.io/badge/1%20-red)](${env?.BUILD_URL}/console)
 
 > This error is likely related to the pipeline itself. Click <a href="${env?.BUILD_URL}console">here</a>
