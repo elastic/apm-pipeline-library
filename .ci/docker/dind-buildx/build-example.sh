@@ -13,7 +13,7 @@ docker run -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$(pwd):/app" \
   -w /app \
-  docker.elastic.co/observability-ci/dind-buildx:20.10.14 """
+  docker.elastic.co/observability-ci/dind-buildx:latest """
 docker login -u ${DOCKER_USER}
 docker buildx ls
 echo 'Create builder'
