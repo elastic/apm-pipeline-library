@@ -10,7 +10,7 @@ RUN curl -sSL https://github.com/docker/compose/releases/download/v2.2.3/docker-
   && chmod +x /usr/libexec/docker/cli-plugins/docker-compose
 RUN (docker version || true) && (docker-compose version || true) && docker buildx version && docker compose version && docker buildx ls
 
-COPY config.json $HOME/.docker/config.json
+COPY config.json /root/.docker/config.json
 COPY docker-credential-env /usr/bin/docker-credential-env
 
 ENTRYPOINT ["/bin/sh", "-l", "-c"]
