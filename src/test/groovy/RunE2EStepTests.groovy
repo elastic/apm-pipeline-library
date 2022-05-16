@@ -134,9 +134,11 @@ class RunE2EStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_createParameters() throws Exception {
-    assertTrue(script.createParameters().size() == 4)
-    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml').size() == 5)
-    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml', gitHubCheckName: 'bar').size() == 6)
+    def initialSize = 3
+
+    assertTrue(script.createParameters().size() == initialSize)
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml').size() == (initialSize + 1))
+    assertTrue(script.createParameters(testMatrixFile: '.ci/test.yml', gitHubCheckName: 'bar').size() == (initialSize + 2))
   }
 
   @Test
