@@ -45,6 +45,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void test() throws Exception {
+    helper.registerAllowedMethod("readJSON", [Map.class], {return [ 'foo' ]})
     script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
@@ -460,6 +461,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When there is file with coverage.
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod('isPR', { return true })
+    helper.registerAllowedMethod("readJSON", [Map.class], {return [ 'foo' ]})
     script.notifyCommentWithCoverageReport()
     printCallStack()
 
@@ -473,6 +475,21 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When there is file with coverage but empty content.
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod('isPR', { return true })
+    helper.registerAllowedMethod("readJSON", [Map.class], {return [ ]})
+    script.notifyCommentWithCoverageReport()
+    printCallStack()
+
+    // Then it should not publish the github comment
+    assertTrue(assertMethodCallOccurrences('generateReport', 0))
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+  }
+
+  @Test
+  void test_notifyCommentWithCoverageReport_if_file_and_empty_markdown() throws Exception {
+    // When there is file with coverage but empty content.
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
+    helper.registerAllowedMethod('isPR', { return true })
+    helper.registerAllowedMethod("readJSON", [Map.class], {return [ 'foo' ]})
     helper.registerAllowedMethod("readFile", [Map.class], { return '  ' })
     script.notifyCommentWithCoverageReport()
     printCallStack()

@@ -142,12 +142,20 @@ def call(Map args = [:]) {
 def notifyCommentWithCoverageReport() {
   catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
     def coverageFile = "tests-coverage.json"
+    def coverageMarkdown = 'build/coverage.md'
     if (fileExists(coverageFile)) {
+      // If no data to be analysed then
+      def testCoverageContent = readJSON(file: coverageFile)
+      if (testCoverageContent?.isEmpty()) {
+        log(level: 'INFO', text: "notifyBuildResult: the ${coverageFile} file is empty.")
+        return
+      }
+
       generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
-      def coverageContent = readFile(file: 'build/coverage.md')
+      def coverageContent = readFile(file: coverageMarkdown)
       // If no data to be reported then
       if (!coverageContent?.trim()) {
-        log(level: 'INFO', text: "notifyBuildResult: the ${coverageFile} file is empty.")
+        log(level: 'INFO', text: "notifyBuildResult: the ${coverageMarkdown} file is empty.")
         return
       }
       githubPrComment(message: coverageContent, commentFile: 'coverage')
