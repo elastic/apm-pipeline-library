@@ -11,6 +11,7 @@
 ##  title: the PR title, empty if you'd like to use the default one.
 ##  assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
 ##  reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
+##  overrideGoVersion: The major.minor version to be used since some projects do not use the latest major.minor version but the previous one. Optional.
 ##
 projects:
   - repo: apm-pipeline-library
@@ -32,6 +33,7 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
   - repo: elastic-agent-shipper
@@ -44,6 +46,7 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
   - repo: fleet-server
