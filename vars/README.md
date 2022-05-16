@@ -2482,6 +2482,7 @@ emails on Failed builds that are not pull request.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/main`.
+* notifyCoverageComment: Whether to add a comment in the PR with the coverage summary as a comment. Default: `true`.
 
 ## notifyStalledBeatsBumps
 Evaluate if the latest bump update was merged a few days ago and if so
