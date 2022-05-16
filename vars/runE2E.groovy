@@ -62,7 +62,6 @@ def createParameters(Map args = [:]) {
     booleanParam(name: 'forceSkipGitChecks', value: args.get('forceSkipGitChecks', true)),
     booleanParam(name: 'forceSkipPresubmit', value: args.get('forceSkipPresubmit', true)),
     booleanParam(name: 'notifyOnGreenBuilds', value: args.get('notifyOnGreenBuilds', !isPR())),
-    booleanParam(name: 'NIGHTLY_SCENARIOS', value: args.get('nightlyScenarios', false)),
   ]
 
   addStringParameterIfValue(args.get('beatVersion', ''), 'BEAT_VERSION', parameters)
