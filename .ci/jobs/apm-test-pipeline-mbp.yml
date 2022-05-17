@@ -29,7 +29,14 @@
           notification-context: 'apm-ci/test-pipeline'
           repo: apm-pipeline-library
           repo-owner: elastic
-          credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+          ## Use the GitHub APP to allow higher API rate limit and
+          ## integrations with the GitHub checks:
+          ##  https://github.com/jenkinsci/checks-api-plugin#pipeline-usage
+          ##  https://github.com/jenkinsci/warnings-ng-plugin/blob/master/doc/Documentation.md#warnings-checks-for-github-projects
+          ##
+          ## Otherwise, you can use the below User and Token
+          #   credentials-id: 2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken
+          credentials-id: github-app-apm-ci
           ssh-checkout:
             credentials: f6c7695a-671e-4f4f-a331-acdce44ff9ba
           ## suppress-scm-triggering: true creates the jobs but skip the builds
