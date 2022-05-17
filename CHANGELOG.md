@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.1.317 (26/04/2022)
+
+#### 🚀 Enhancements
+
+-  Notify the coverage stats [#1673](https://github.com/elastic/apm-pipeline-library/pull/1673)
+
+#### 🙈 No user affected
+
+-  Add description regarding the releases might not be available yet [#1672](https://github.com/elastic/apm-pipeline-library/pull/1672)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.1.3 8.2.0 [#1667](https://github.com/elastic/apm-pipeline-library/pull/1667)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.4.0 to 4.5.1 [#1669](https://github.com/elastic/apm-pipeline-library/pull/1669)
+-  chore(deps): bump jjwt-jackson from 0.11.2 to 0.11.3 [#1670](https://github.com/elastic/apm-pipeline-library/pull/1670)
+-  chore(deps): bump jjwt-impl from 0.11.2 to 0.11.3 [#1668](https://github.com/elastic/apm-pipeline-library/pull/1668)
+
+## v1.1.316 (25/04/2022)
+*No changelog for this release.*
+
+## v1.1.315 (20/04/2022)
+
+#### 🚀 Enhancements
+
+-  Helper step to get the current build time [#1663](https://github.com/elastic/apm-pipeline-library/pull/1663)
+-  githubPrCheckApproved with support for Elastic members [#1657](https://github.com/elastic/apm-pipeline-library/pull/1657)
+
+#### 🙈 No user affected
+
+- [**flaky-test**] fix UT for test_no_allowed_but_member_of_elastic [#1662](https://github.com/elastic/apm-pipeline-library/pull/1662)
+- [**Team:Automation**] chore: update parameters [#1658](https://github.com/elastic/apm-pipeline-library/pull/1658)
+
 ## v1.1.314 (13/04/2022)
 
 #### 🚀 Enhancements

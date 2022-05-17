@@ -42,11 +42,11 @@ the flakey test analyser.
 **/
 
 import co.elastic.NotificationManager
-import hudson.tasks.test.AbstractTestResultAction
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
+  def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
@@ -126,10 +126,41 @@ def call(Map args = [:]) {
           }
         }
       }
+
+      if (notifyCoverageComment) {
+        notifyCommentWithCoverageReport()
+      }
+
       // Ensure we don't leave any leftovers if running in the jenkins controller.
       catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
       }
+    }
+  }
+}
+
+def notifyCommentWithCoverageReport() {
+  catchError(message: 'There were some failures when notifying the coverage report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    def coverageFile = "tests-coverage.json"
+    def coverageMarkdown = 'build/coverage.md'
+    if (fileExists(coverageFile)) {
+      // If no data to be analysed then
+      def testCoverageContent = readJSON(file: coverageFile)
+      if (testCoverageContent?.isEmpty()) {
+        log(level: 'INFO', text: "notifyBuildResult: the ${coverageFile} file is empty.")
+        return
+      }
+
+      generateReport(id: 'coverage', input: coverageFile, output: 'build', template: true, compare: true)
+      def coverageContent = readFile(file: coverageMarkdown)
+      // If no data to be reported then
+      if (!coverageContent?.trim()) {
+        log(level: 'INFO', text: "notifyBuildResult: the ${coverageMarkdown} file is empty.")
+        return
+      }
+      githubPrComment(message: coverageContent, commentFile: 'coverage')
+    } else {
+      log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
     }
   }
 }

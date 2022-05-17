@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertTrue
 
 class CoverageReportStepTests extends ApmBasePipelineTest {
 
@@ -26,14 +27,49 @@ class CoverageReportStepTests extends ApmBasePipelineTest {
     super.setUp()
     script = loadScript('vars/coverageReport.groovy')
     // mock nested structure in the publishCoverage
-    helper.registerAllowedMethod('coberturaAdapter', [String.class], null)
-    helper.registerAllowedMethod('sourceFiles', [String.class], null)
+    helper.registerAllowedMethod('coberturaAdapter', [String.class], { s -> return s })
+    helper.registerAllowedMethod('sourceFiles', [String.class], { s -> return s })
   }
 
   @Test
   void test() throws Exception {
-    script.call("folder")
+    script.call(baseDir: "foo", reportFiles: 'file.html', coverageFiles: 'file.xml')
     printCallStack()
+    assertTrue(assertMethodCallContainsPattern('publishHTML', 'reportDir=foo, reportFiles=file.html'))
+    assertTrue(assertMethodCallContainsPattern('cobertura', 'coberturaReportFile=foo/file.xml'))
+    assertTrue(assertMethodCallContainsPattern('publishCoverage', 'foo/file.xml'))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_string_signature() throws Exception {
+    script.call("bar")
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('publishHTML', 'reportDir=bar, reportFiles=coverage-*-report.html'))
+    assertTrue(assertMethodCallContainsPattern('cobertura', 'coberturaReportFile=bar/coverage-*-report.xml'))
+    assertTrue(assertMethodCallContainsPattern('publishCoverage', 'bar/coverage-*-report.xml'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_no_baseDir() throws Exception {
+    testMissingArgument('baseDir') {
+      script.call()
+    }
+  }
+
+  @Test
+  void test_no_reportFiles() throws Exception {
+    testMissingArgument('reportFiles') {
+      script.call(baseDir: 'foo')
+    }
+  }
+
+  @Test
+  void test_no_coverageFiles() throws Exception {
+    testMissingArgument('coverageFiles') {
+      script.call(baseDir: 'foo', reportFiles: 'file.html')
+    }
+  }
+
 }
