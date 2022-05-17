@@ -110,6 +110,11 @@ pipeline {
           }
         }
       }
+      post {
+        always {
+          recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
+        }
+      }
     }
     stage('Test') {
       steps {
