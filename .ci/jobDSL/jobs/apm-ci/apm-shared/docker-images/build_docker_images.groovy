@@ -239,6 +239,7 @@ opbeansDockerImages.each{ name ->
 */
 def apmPipelineLibraryDockerImages = [
   "apache-ant",
+  "dind-buildx",
   "github-label-sync",
   "gren",
   "shellcheck",

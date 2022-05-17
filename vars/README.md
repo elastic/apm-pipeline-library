@@ -2482,6 +2482,7 @@ emails on Failed builds that are not pull request.
 * newPRComment: The map of the data to be populated as a comment. Default empty.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/main`.
+* notifyCoverageComment: Whether to add a comment in the PR with the coverage summary as a comment. Default: `true`.
 
 ## notifyStalledBeatsBumps
 Evaluate if the latest bump update was merged a few days ago and if so
@@ -2826,7 +2827,6 @@ Trigger the end 2 end testing job. https://beats-ci.elastic.co/job/e2e-tests/job
 * *forceSkipGitChecks*: whether to check for Git changes to filter by modified sources. Optional (default true)
 * *forceSkipPresubmit*: whether to execute the pre-submit tests: unit and precommit. Optional (default false)
 * *kibanaVersion*: Docker tag of the kibana to be used for the tests. Optional
-* *nightlyScenarios*: whether to  include the scenarios marked as @nightly in the test execution. Optional (default false)
 * *notifyOnGreenBuilds*: whether to notify to Slack with green builds. Optional (default false for PRs)
 * *slackChannel*: the Slack channel(s) where errors will be posted. Optional.
 * *runTestsSuites*: a comma-separated list of test suites to run (default: empty to run all test suites). Optional

@@ -85,6 +85,7 @@ def generateSteps(Map args = [:]) {
                        labels: project.get('labels', ''),
                        title: project.get('title', ''),
                        assign: project.get('assign', ''),
+                       overrideGoVersion: project.get('overrideGoVersion', env.BRANCH),
                        reviewer: project.get('reviewer', ''))
     }
   }
@@ -106,6 +107,7 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
   def state = args.get('state', 'all')
+  def overrideGoVersion = args.get('overrideGoVersion', branch)
 
   // If branch is not main the it's likely needed to search for the go version that matches the given branch
   // ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
@@ -114,7 +116,13 @@ def prepareArguments(Map args = [:]){
     goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: branch)
   }
 
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
+  // There are cases where the main should not use the latest major.minor version but a different go version.
+  // overrideGoVersion is the major.minor golang version to be used as long as it does not match the branch.
+  if (!overrideGoVersion.equals(branch)) {
+    goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: overrideGoVersion)
+  }
+
+  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, overrideGoVersion: ${overrideGoVersion}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}"""
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"

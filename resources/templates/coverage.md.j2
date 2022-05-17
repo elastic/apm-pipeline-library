@@ -1,0 +1,25 @@
+{%- if data -%}
+### :globe_with_meridians: Coverage report
+
+Name | Metrics % (`covered/total`) | Diff
+ --- | --- | ---
+{% for key, value in data.items() -%}
+{%- set status = ":grey_exclamation:" -%}
+{%- set diff = "" -%}
+{%- if value.previousRatio -%}
+  {%- set diff = ( value.ratio|float - value.previousRatio|float ) |round(3) -%}
+  {%- if value.previousRatio > value.ratio -%}
+    {%- set status = ":-1:" -%}
+  {% else %}
+    {%- set status = ":+1:" -%}
+  {%- endif -%}
+{%- endif -%}
+{%- if value.ratio|int >= 100 -%}
+  {%- set status = ":green_heart:" -%}
+{%- endif -%}
+{%- if diff == 0 -%}
+  {%- set diff = "" -%}
+{%- endif -%}
+{{ key }} | {{ value.ratio|float|round(3) }}% (`{{ value.numerator }}/{{ value.denominator }}`) | {{ status }} {{ diff }}
+{% endfor %}
+{%- endif -%}
