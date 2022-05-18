@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.1.318 (12/05/2022)
+
+#### 🚀 Enhancements
+
+-  github command for synthetics-recorder [#1674](https://github.com/elastic/apm-pipeline-library/pull/1674)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.2.0 8.2.0 [#1681](https://github.com/elastic/apm-pipeline-library/pull/1681)
+
+#### 📦 Dependency updates
+
+-  chore(deps): bump opentelemetry from 2.3.0 to 2.5.1 [#1679](https://github.com/elastic/apm-pipeline-library/pull/1679)
+-  chore(deps-dev): bump wiremock-jre8 from 2.33.1 to 2.33.2 [#1677](https://github.com/elastic/apm-pipeline-library/pull/1677)
+-  chore(deps): bump jjwt-impl from 0.11.3 to 0.11.5 [#1678](https://github.com/elastic/apm-pipeline-library/pull/1678)
+-  chore(deps): bump jjwt-jackson from 0.11.3 to 0.11.5 [#1676](https://github.com/elastic/apm-pipeline-library/pull/1676)
+
 ## v1.1.317 (26/04/2022)
 
 #### 🚀 Enhancements
