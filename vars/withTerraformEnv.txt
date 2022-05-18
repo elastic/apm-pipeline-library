@@ -1,0 +1,10 @@
+Configure the Terraform context to run the given body closure
+
+```
+withTerraformEnv(version: '0.15.1') {
+  // block
+}
+```
+
+* version: The terraform CLI version to be installed. Optional (1.1.9)
+* forceInstallation: Whether to install terraform regardless. Optional (false)
