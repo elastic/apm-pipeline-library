@@ -42,6 +42,9 @@ def downloadAndInstall(where, version) {
   dir(where) {
     download(url: url, output: zipfile)
     unzip(quiet: true, zipFile: zipfile)
+    if (isUnix()) {
+      sh(label: 'chmod terraform', script: 'chmod +x terraform')
+    }
   }
 }
 
