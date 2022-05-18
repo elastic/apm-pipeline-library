@@ -150,4 +150,14 @@ class WithTerraformEnvStepTests extends ApmBasePipelineTest {
     assertTrue(ret.contains("terraform_1.1.9_linux_386.zip"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_terraformURL_in_32_bits_arm() throws Exception {
+    helper.registerAllowedMethod('is64', [], { return false })
+    helper.registerAllowedMethod('isArm', [], { return true })
+    def ret = script.terraformURL('1.1.9')
+    printCallStack()
+    assertTrue(ret.contains("terraform_1.1.9_linux_arm.zip"))
+    assertJobStatusSuccess()
+  }
 }

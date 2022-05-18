@@ -52,7 +52,7 @@ def terraformURL(version) {
   def url = 'https://releases.hashicorp.com/terraform'
   def arch = is64() ? 'amd64' : '386'
   if (isArm()) {
-    arch = 'arm64'
+    arch = is64() ? 'arm64' : 'arm'
   }
   return "${url}/${version}/terraform_${version}_${nodeOS()}_${arch}.zip"
 }
