@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.1.319 (19/05/2022)
+
+#### 🚀 Enhancements
+
+-  withTerraformEnv step [#1698](https://github.com/elastic/apm-pipeline-library/pull/1698)
+- [**Team:Automation**] feat: DinD buildx Docker image [#1689](https://github.com/elastic/apm-pipeline-library/pull/1689)
+
+#### 🙈 No user affected
+
+-  jjbb: use github-app-apm-ci credentials [#1696](https://github.com/elastic/apm-pipeline-library/pull/1696)
+
+#### ⚙️ CI
+
+-  automate the bump of beats@main with go 1.17 [#1693](https://github.com/elastic/apm-pipeline-library/pull/1693)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1174.vdcb_d054cf74a_ to 1180.v04c4e75dce43 [#1671](https://github.com/elastic/apm-pipeline-library/pull/1671)
+- [**dependency**] [automation] Update go release version 1.18.2 [#1690](https://github.com/elastic/apm-pipeline-library/pull/1690)
+-  chore(deps): bump opentelemetry from 2.5.1 to 2.6.0 [#1692](https://github.com/elastic/apm-pipeline-library/pull/1692)
+
 ## v1.1.318 (12/05/2022)
 
 #### 🚀 Enhancements
