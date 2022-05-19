@@ -3825,6 +3825,18 @@ withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: '
 }
 ```
 
+## withTerraformEnv
+Configure the Terraform context to run the given body closure
+
+```
+withTerraformEnv(version: '0.15.1') {
+  // block
+}
+```
+
+* version: The terraform CLI version to be installed. Optional (1.1.9)
+* forceInstallation: Whether to install terraform regardless. Optional (false)
+
 ## withTotpVault
 Get the [TOTP](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) code from the vault, define the environment variables which have been
 passed as parameters and mask the secrets
