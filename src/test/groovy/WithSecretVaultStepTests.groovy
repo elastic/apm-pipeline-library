@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class WithSecretVaultStepTests extends ApmBasePipelineTest {
@@ -35,10 +36,8 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
 
 @Test
 void testUserKey() throws Exception {
-
   def isOK = false
   try {
-
     script.backward(secret: VaultSecret.SECRET_ALT_USERNAME.toString(), user_key: 'alt_user_key', user_var_name: 'U1', pass_var_name: 'P1' ){
       if(binding.getVariable("U1") == "username"
         && binding.getVariable("P1") == "user_password"){
@@ -156,4 +155,15 @@ void testPassKey() throws Exception {
     assertTrue(isOK)
   }
 
+  @Test
+  void test_without_data() throws Exception {
+    def isOK = false
+    testMissingArgument('', 'Missing variables') {
+      script.call(secret: VaultSecret.SECRET.toString()) {
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertFalse(isOK)
+  }
 }

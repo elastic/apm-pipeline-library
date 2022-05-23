@@ -19,19 +19,18 @@
   Grab a secret from the vault, define the environment variables which have been
   passed as parameters and mask the secrets
 
-  withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: 'my_password_env'){
+  withSecretVault(secret: 'secret', data: [ 'api_key': 'API_KEY'] ){
     //block
   }
 */
 def call(Map args = [:], Closure body) {
   def secret = args?.secret
   def data = args?.get('data', [:])
-
   // For backward compatibility
   if (data.isEmpty()) {
     backward(args, body)
   } else {
-    def vars = [:]
+    def vars = []
     def props = readSecretFromVault(args)
     data.each{ k, v ->
       vars << readSecret(props, k, v)
