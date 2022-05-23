@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.320 (19/05/2022)
+*No changelog for this release.*
+
 ## v1.1.319 (19/05/2022)
 
 #### 🚀 Enhancements
