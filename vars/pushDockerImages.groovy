@@ -58,6 +58,9 @@ def call(Map args = [:]) {
   def tags = calculateTags(sourceTag, aliasVersion)
 
   dockerLogin(secret: "${secret}", registry: "${registry}")
+
+  // Print the existing docker images for debugging purposes
+  sh(label: "List docker images", script: 'docker images', returnStatus: true)
   images?.each { image ->
     tags.each { tag ->
       // TODO:
