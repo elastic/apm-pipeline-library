@@ -104,7 +104,7 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
       ]
     )
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('sh', 12))
+    assertTrue(assertMethodCallOccurrences('sh', 13))
   }
 
   @Test
@@ -121,6 +121,6 @@ class PushDockerImagesStepTests extends ApmBasePipelineTest {
       ]
     )
     printCallStack()
-    assertTrue(assertMethodCallOccurrences('sh', 8))
+    assertTrue(assertMethodCallOccurrences('sh', 9))
   }
 }
