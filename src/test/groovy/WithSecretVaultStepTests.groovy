@@ -141,4 +141,19 @@ void testPassKey() throws Exception {
     assertTrue(isOK)
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_data() throws Exception {
+    def isOK = false
+    script.call(secret: VaultSecret.SECRET_ALT_USERNAME.toString(), data: [ 'alt_user_key': 'U1', 'password': 'P1'] ){
+      if(binding.getVariable("U1") == "username"
+        && binding.getVariable("P1") == "user_password"){
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(isOK)
+  }
+
 }

@@ -32,8 +32,9 @@ def call(Map args = [:], Closure body) {
     backward(args, body)
   } else {
     def vars = [:]
+    def props = readSecretFromVault(args)
     data.each{ k, v ->
-      vars << readSecret(args, k, v)
+      vars << readSecret(props, k, v)
     }
     withEnvMask(vars: vars){
       body()
@@ -41,14 +42,11 @@ def call(Map args = [:], Closure body) {
   }
 }
 
-def readSecret(Map args = [:], key_id, environment_variable) {
-  if (!args.secret || !key_id || !environment_variable) {
+def readSecret(props, key_id, environment_variable) {
+  if (!props || !key_id || !environment_variable) {
     error "withSecretVault: Missing variables"
   }
-
-  def props = readSecretFromVault(args)
   def value = props?.data?.get(key_id)
-
   if(value == null){
     error('withSecretVault: was not possible to get authentication info')
   }
