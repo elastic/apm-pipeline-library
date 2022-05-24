@@ -52,10 +52,11 @@ def call(Map args = [:]) {
         if (logAction) {
             def body = logAction.logging?.logged_text
             log(level: 'DEBUG', text: "runWatcher: The REST API call returned ${body}")
+            def status = getStatusMessage(parsed)
             if (sendEmail && to?.trim()) {
                 log(level: 'INFO', text: "runWatcher: email has been enabled (${to}).")
                 mail(to: to,
-                    subject: subject,
+                    subject: "${subject} - ${status}",
                     body: body,
                     mimeType: 'text/html'
                 )
@@ -75,4 +76,9 @@ def call(Map args = [:]) {
     } else {
         log(level: 'WARN', text: "runWatcher: Didn't work")
     }
+}
+
+def getStatusMessage(parsed) {
+  def status = parsed?.watch_record.result?.input?.payload?.hits?.total > 0 ? '💔 (test failures)' : '🚀 (no failures)'
+  return status
 }
