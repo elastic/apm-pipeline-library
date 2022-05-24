@@ -79,9 +79,6 @@ def call(Map args = [:]) {
 }
 
 def getStatusMessage(parsed) {
-  def status = '🚀'
-  if (parsed?.watch_record.result?.input?.payload?.hits) {
-    status = parsed?.watch_record.result?.input?.payload?.hits.total > 0 ? '💔 (test failures)' : '🚀 (no failures)'
-  }
+  def status = parsed?.watch_record.result?.input?.payload?.hits?.total > 0 ? '💔 (test failures)' : '🚀 (no failures)'
   return status
 }
