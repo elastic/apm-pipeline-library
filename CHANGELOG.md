@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.321 (23/05/2022)
+
+#### 🙈 No user affected
+
+-  List existing docker images [#1699](https://github.com/elastic/apm-pipeline-library/pull/1699)
+
 ## v1.1.320 (19/05/2022)
 *No changelog for this release.*
 
