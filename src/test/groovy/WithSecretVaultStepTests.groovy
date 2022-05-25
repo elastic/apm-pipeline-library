@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class WithSecretVaultStepTests extends ApmBasePipelineTest {
@@ -29,17 +30,15 @@ class WithSecretVaultStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = "branch"
     env.CHANGE_ID = "29480a51"
     env.ORG_NAME = "org"
-    env.REPO_NAME = "repo" 
+    env.REPO_NAME = "repo"
     env.GITHUB_TOKEN = "TOKEN"
   }
 
 @Test
 void testUserKey() throws Exception {
-  
   def isOK = false
   try {
-    
-    script.call(secret: VaultSecret.SECRET_ALT_USERNAME.toString(), user_key: 'alt_user_key', user_var_name: 'U1', pass_var_name: 'P1' ){
+    script.backward(secret: VaultSecret.SECRET_ALT_USERNAME.toString(), user_key: 'alt_user_key', user_var_name: 'U1', pass_var_name: 'P1' ){
       if(binding.getVariable("U1") == "username"
         && binding.getVariable("P1") == "user_password"){
         isOK = true
@@ -55,11 +54,11 @@ void testUserKey() throws Exception {
 
 @Test
 void testPassKey() throws Exception {
-  
+
   def isOK = false
   try {
-    
-    script.call(secret: VaultSecret.SECRET_ALT_PASSKEY.toString(), pass_key: 'alt_pass_key', user_var_name: 'U1', pass_var_name: 'P1' ){
+
+    script.backward(secret: VaultSecret.SECRET_ALT_PASSKEY.toString(), pass_key: 'alt_pass_key', user_var_name: 'U1', pass_var_name: 'P1' ){
       if(binding.getVariable("U1") == "username"
         && binding.getVariable("P1") == "user_password"){
         isOK = true
@@ -76,10 +75,11 @@ void testPassKey() throws Exception {
   @Test
   void testMissingArguments() throws Exception {
     try {
-      script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo'){
+      script.backward(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo'){
         //NOOP
       }
     } catch(e){
+      println e
       //NOOP
     }
     printCallStack()
@@ -90,7 +90,7 @@ void testPassKey() throws Exception {
   @Test
   void testSecretError() throws Exception {
     try {
-      script.call(secret: VaultSecret.SECRET_ERROR.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
+      script.backward(secret: VaultSecret.SECRET_ERROR.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -104,7 +104,7 @@ void testPassKey() throws Exception {
   @Test
   void testSecretNotFound() throws Exception {
     try{
-      script.call(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
+      script.backward(secret: 'secretNotExists', user_var_name: 'foo', pass_var_name: 'bar'){
         //NOOP
       }
     } catch(e){
@@ -118,7 +118,7 @@ void testPassKey() throws Exception {
   @Test
   void test() throws Exception {
     def isOK = false
-    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
+    script.backward(secret: VaultSecret.SECRET.toString(), user_var_name: 'foo', pass_var_name: 'bar'){
       isOK = true
     }
 
@@ -130,7 +130,7 @@ void testPassKey() throws Exception {
   @Test
   void testParams() throws Exception {
     def isOK = false
-    script.call(secret: VaultSecret.SECRET.toString(), user_var_name: 'U1', pass_var_name: 'P1'){
+    script.backward(secret: VaultSecret.SECRET.toString(), user_var_name: 'U1', pass_var_name: 'P1'){
       if(binding.getVariable("U1") == "username"
         && binding.getVariable("P1") == "user_password"){
         isOK = true
@@ -139,5 +139,31 @@ void testPassKey() throws Exception {
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_data() throws Exception {
+    def isOK = false
+    script.call(secret: VaultSecret.SECRET_ALT_USERNAME.toString(), data: [ 'alt_user_key': 'U1', 'password': 'P1'] ){
+      if(binding.getVariable("U1") == "username"
+        && binding.getVariable("P1") == "user_password"){
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(isOK)
+  }
+
+  @Test
+  void test_without_data() throws Exception {
+    def isOK = false
+    testMissingArgument('', 'Missing variables') {
+      script.call(secret: VaultSecret.SECRET.toString()) {
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertFalse(isOK)
   }
 }

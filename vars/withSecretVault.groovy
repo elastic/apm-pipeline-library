@@ -17,36 +17,58 @@
 
 /**
   Grab a secret from the vault, define the environment variables which have been
-  passed as parammeters and mask the secrets
+  passed as parameters and mask the secrets
 
-  withSecretVault(secret: 'secret', user_var_name: 'my_user_env', pass_var_name: 'my_password_env'){
+  withSecretVault(secret: 'secret', data: [ 'api_key': 'API_KEY'] ){
     //block
   }
 */
 def call(Map args = [:], Closure body) {
+  def secret = args?.secret
+  def data = args?.get('data', [:])
+  // For backward compatibility
+  if (data.isEmpty()) {
+    backward(args, body)
+  } else {
+    def vars = []
+    def props = readSecretFromVault(args)
+    data.each{ k, v ->
+      vars << readSecret(props, k, v)
+    }
+    withEnvMask(vars: vars){
+      body()
+    }
+  }
+}
+
+def readSecret(props, key_id, environment_variable) {
+  if (!props || !key_id || !environment_variable) {
+    error "withSecretVault: Missing variables"
+  }
+  def value = props?.data?.get(key_id)
+  if(value == null){
+    error('withSecretVault: was not possible to get authentication info')
+  }
+  return [var: "${environment_variable}", password: value]
+}
+
+def backward(Map args = [:], Closure body) {
   def secret = args?.secret
   def user_variable = args?.user_var_name
   def user_key = args.containsKey('user_key') ? args.user_key : 'user'
   def pass_variable = args?.pass_var_name
   def pass_key = args.containsKey('pass_key') ? args.pass_key : 'password'
 
-  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
-  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
-
   if (!secret || !user_variable || !pass_variable) {
-    error "withSecretVault: Missing variables"
+    error('withSecretVault: Missing variables')
   }
 
-  def props = getVaultSecret(secret: secret, role_id: role_id, secret_id: secret_id)
-  if(props?.errors){
-    error "withSecretVault: Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
+  def props = readSecretFromVault(args)
   def user = props?.data?.get(user_key)
   def password = props?.data?.get(pass_key)
 
   if(user == null || password == null){
-    error "withSecretVault: was not possible to get authentication info"
+    error("withSecretVault: was not possible to get authentication info")
   }
 
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -57,4 +79,14 @@ def call(Map args = [:], Closure body) {
       body()
     }
   }
+}
+
+def readSecretFromVault(args) {
+  def role_id = args.containsKey('role_id') ? args.role_id : 'vault-role-id'
+  def secret_id = args.containsKey('secret_id') ? args.secret_id : 'vault-secret-id'
+  def props = getVaultSecret(secret: args.secret, role_id: role_id, secret_id: secret_id)
+  if(props?.errors){
+    error("withSecretVault: Unable to get credentials from the vault: " + props.errors.toString())
+  }
+  return props
 }

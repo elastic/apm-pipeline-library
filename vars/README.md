@@ -3808,7 +3808,23 @@ environment variables:
 
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
-passed as parameters and mask the secrets
+passed as parameters and mask the secrets.
+
+* secret: Name of the secret on the the vault root path. Mandatory
+* data: What's the data to be read, format [ field: environmentVariable ]. Optional
+* user_var_name: the env variable for the user id secret. Deprecated
+* pass_var_name: the env variable for the pass id secret. Deprecated
+* user_key: the user field secret. Default 'user'. Deprecated
+* pass_key: the pass field secret. Default 'password'. Deprecated
+
+```
+// Read the field api_key from the secret vault and create the
+// masked environment variable API_KEY
+withSecretVault(secret: 'secret', data: [ 'api_key': 'API_KEY'] ){
+  //block
+}
+
+#### Deprecated
 
 The secret must normally have this format
 `{ data: { user: 'username', password: 'user_password'} }`
