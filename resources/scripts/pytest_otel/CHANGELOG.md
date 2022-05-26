@@ -1,3 +1,7 @@
+# Version 1.1.1
+
+* fix: Update setup.cfg dependencies.
+
 # Version 1.1.0
 
 * feat: Update OpenTelemetry SDK to 1.11.0 [#1664](https://github.com/elastic/apm-pipeline-library/pull/1664)
