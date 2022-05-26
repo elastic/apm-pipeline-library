@@ -245,7 +245,8 @@ def apmPipelineLibraryDockerImages = [
   "shellcheck",
   "yamllint",
   "kibana-yarn",
-  "kibana-devmode"
+  "kibana-devmode",
+  "vmware-mock"
 ]
 
 apmPipelineLibraryDockerImages.each{ name ->
