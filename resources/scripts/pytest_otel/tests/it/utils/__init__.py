@@ -83,7 +83,7 @@ def assertTest(pytester, name, ts_outcome, ts_status, outcome, status):
             spans_output['resourceSpans'],
         ))
         for resourceSpan in spans_output['resourceSpans']:
-            for instrumentationLibrarySpan in resourceSpan['instrumentationLibrarySpans']:
+            for instrumentationLibrarySpan in resourceSpan['scopeSpans']:
                 for span in instrumentationLibrarySpan['spans']:
                     if span["name"] == "Running {}".format(name):
                         foundTest = assertSpan(span, name, outcome, status)
