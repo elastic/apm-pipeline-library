@@ -1,3 +1,8 @@
+# Version 1.1.0
+
+* feat: Update OpenTelemetry SDK to 1.11.0 [#1664](https://github.com/elastic/apm-pipeline-library/pull/1664)
+* fix: pytest-otel seems to be broken on Python >= 3.10.0 [#1687](https://github.com/elastic/apm-pipeline-library/issues/1687)
+
 # Version 1.0.3
 
 * fix: remove pytest timing import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
