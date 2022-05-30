@@ -79,7 +79,7 @@ ${errorStackTrace}
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" &&
                                       !it?.displayName?.contains('Notifies GitHub') &&
                                       !it?.displayName?.contains('Archive JUnit') &&
-                                      !it?.displayDescription?.contains('githubPrCheckApproved') &&
+                                      errorGithubPrCheckApproved &&
                                       !it?.displayDescription?.contains('approval-list/elastic') &&
                                       !it?.displayName?.contains('Recursively delete the current directory from the workspace')}%>
 <% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
