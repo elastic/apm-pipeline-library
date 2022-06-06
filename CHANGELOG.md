@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.322 (25/05/2022)
+
+#### 🚀 Enhancements
+
+-  withSecretVault with support for a map of keys and environment variables [#1704](https://github.com/elastic/apm-pipeline-library/pull/1704)
+
+#### 📦 Dependency updates
+
+-  chore(deps): bump opentelemetry from 2.6.0 to 2.7.0 [#1701](https://github.com/elastic/apm-pipeline-library/pull/1701)
+
 ## v1.1.321 (23/05/2022)
 
 #### 🙈 No user affected
