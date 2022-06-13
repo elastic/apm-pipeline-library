@@ -218,6 +218,7 @@ def opbeansDockerImages = [
   "opbeans-java",
   "opbeans-go",
   "opbeans-loadgen",
+  "opbeans-php",
   "opbeans-ruby"
   /** FIXME disable until it is fully implemented: git@github.com:elastic/opbeans-flask/pull/5
   "opbeans-flask",*/
