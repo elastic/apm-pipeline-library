@@ -26,7 +26,7 @@
 def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withCloudEnv')
   def cluster = args.containsKey('cluster') ? args.cluster : error('withCloudEnv: cluster parameter is required.')
-  def secret = "secret/observability-team/ci/test-clusters/${cluster}/ec-deployment"
+  def secret = "${getTestClusterSecret()}/${cluster}/ec-deployment"
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {
     error "withCloudEnv: Unable to get credentials from the vault: ${props.errors.toString()}"

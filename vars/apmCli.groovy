@@ -19,7 +19,7 @@ import groovy.transform.Field
 @Field def transactions = [:]
 
 def call(Map args = [:]) {
-  def apmCliConfig = args.containsKey('apmCliConfig') ? args.apmCliConfig : "secret/observability-team/ci/test-clusters/dev-next-oblt/k8s-apm"
+  def apmCliConfig = args.containsKey('apmCliConfig') ? args.apmCliConfig : "${getTestClusterSecret()}/dev-next-oblt/k8s-apm"
   def url = args.containsKey('url') ? args.url : ''
   def token = args.containsKey('token') ? args.token : ''
   def serviceName = args.containsKey('serviceName') ? args.serviceName : "${env.APM_CLI_SERVICE_NAME ? env.APM_CLI_SERVICE_NAME : ''}"

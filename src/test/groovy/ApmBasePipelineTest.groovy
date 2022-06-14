@@ -430,6 +430,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('getBuildInfoJsonFiles', [String.class,String.class], { "OK" })
     helper.registerAllowedMethod('getBlueoceanRestURLJob', [Map.class], null)
+    helper.registerAllowedMethod('getTestClusterSecret', {
+      def script = loadScript('vars/getTestClusterSecret.groovy')
+      return script.call()
+    })
     helper.registerAllowedMethod('getGitCommitSha', [], {return SHA})
     helper.registerAllowedMethod('getGithubToken', {return 'TOKEN'})
     helper.registerAllowedMethod('getGitRepoURL', [], {return REPO_URL})
