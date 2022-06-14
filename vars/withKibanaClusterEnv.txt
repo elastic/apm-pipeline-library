@@ -1,0 +1,11 @@
+Wrap the Kibana cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withElasticsearchClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`

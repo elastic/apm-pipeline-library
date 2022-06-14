@@ -51,6 +51,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_CLUSTER_ERROR('secret/observability-team/ci/test-clusters/error/k8s-elasticsearch'),
     SECRET_CLUSTER_FOO('secret/observability-team/ci/test-clusters/foo/k8s-elasticsearch'),
     SECRET_CLUSTER_MISSING('secret/observability-team/ci/test-clusters/missing/k8s-elasticsearch'),
+    SECRET_KIBANA_CLUSTER_ERROR('secret/observability-team/ci/test-clusters/error/k8s-kibana'),
+    SECRET_KIBANA_CLUSTER_FOO('secret/observability-team/ci/test-clusters/foo/k8s-kibana'),
+    SECRET_KIBANA_CLUSTER_MISSING('secret/observability-team/ci/test-clusters/missing/k8s-kibana'),
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
@@ -690,13 +693,13 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     if(VaultSecret.SECRET_CLOUD_MISSING.equals(s)){
       return [data: [ username: 'username-1', password: 'password-1' ]]
     }
-    if(VaultSecret.SECRET_CLUSTER_ERROR.equals(s)){
+    if(VaultSecret.SECRET_CLUSTER_ERROR.equals(s) || VaultSecret.SECRET_KIBANA_CLUSTER_ERROR.equals(s)){
       return [errors: 'Error message']
     }
-    if(VaultSecret.SECRET_CLUSTER_FOO.equals(s)){
+    if(VaultSecret.SECRET_CLUSTER_FOO.equals(s) || VaultSecret.SECRET_KIBANA_CLUSTER_FOO.equals(s)){
       return [data: [ value: [ username: 'username-1', password: 'password-1', url: 'my-url-1' ]]]
     }
-    if(VaultSecret.SECRET_CLUSTER_MISSING.equals(s)){
+    if(VaultSecret.SECRET_CLUSTER_MISSING.equals(s) || VaultSecret.SECRET_KIBANA_CLUSTER_MISSING.equals(s)){
       return [data: [ value: [ username: 'username-1', password: 'password-1' ]]]
     }
     if(VaultSecret.SECRET_CODECOV.equals(s)){
