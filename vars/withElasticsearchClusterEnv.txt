@@ -1,7 +1,7 @@
-Wrap the cluster credentials and entrypoints as environment variables that are masked
+  Wrap the Elasticsearch cluster credentials and entrypoints as environment variables that are masked
 
 ```
-  withClusterEnv(cluster: 'test-cluster-azure') {
+  withElasticsearchClusterEnv(cluster: 'test-cluster-azure') {
     // block
   }
 ```

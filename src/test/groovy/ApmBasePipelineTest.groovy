@@ -613,6 +613,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withDockerEnv.groovy')
       return script.call(m, c)
     })
+    helper.registerAllowedMethod('withElasticsearchClusterEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withElasticsearchClusterEnv.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
     helper.registerAllowedMethod('withEnvWrapper', [Closure.class], { closure -> closure.call() })
     helper.registerAllowedMethod('withGCPEnv', [Map.class, Closure.class], { m, c ->
