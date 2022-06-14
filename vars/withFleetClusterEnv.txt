@@ -1,0 +1,15 @@
+Wrap the Fleet cluster credentials and entrypoints as environment variables that are masked
+
+```
+  withFleetClusterEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+Environment variables:
+* `FLEET_URL`
+* `FLEET_TOKEN`
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
