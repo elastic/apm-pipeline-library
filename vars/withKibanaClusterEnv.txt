@@ -8,4 +8,9 @@ Wrap the Kibana cluster credentials and entrypoints as environment variables tha
 
 * cluster: Name of the cluster that was already created. Mandatory
 
+Environment variables:
+* `KIBANA_URL`
+* `KIBANA_USERNAME`
+* `KIBANA_PASSWORD`
+
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`

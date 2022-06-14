@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class WithClusterEnvStepTests extends ApmBasePipelineTest {
@@ -36,7 +37,21 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertFalse(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_kibana() throws Exception {
+    def isOK = false
+    script.call(cluster: 'foo', kibana: true) {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+    assertTrue(assertMethodCallContainsPattern('withKibanaClusterEnv', 'foo'))
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
   }
 
   @Test
