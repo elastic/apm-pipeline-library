@@ -1,7 +1,8 @@
-  Wrap the Elasticsearch cluster credentials and entrypoints as environment variables that are masked
+Wrap the Elasticsearch credentials and entrypoints as environment variables that are masked
+for the Elastic Cloud deployment
 
 ```
-  withElasticsearchClusterEnv(cluster: 'test-cluster-azure') {
+  withElasticsearchDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 ```

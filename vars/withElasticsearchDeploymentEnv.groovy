@@ -16,29 +16,30 @@
 // under the License.
 
 /**
-  Wrap the Elasticsearch cluster credentials and entrypoints as environment variables that are masked
+  Wrap the Elasticsearch credentials and entrypoints as environment variables that are masked
+  for the Elastic Cloud deployment
 
-  withElasticsearchClusterEnv(cluster: 'test-cluster-azure') {
+  withElasticsearchDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 */
 
 def call(Map args = [:], Closure body) {
-  log(level: 'INFO', text: 'withElasticsearchClusterEnv')
-  def cluster = args.containsKey('cluster') ? args.cluster : error('withElasticsearchClusterEnv: cluster parameter is required.')
+  log(level: 'INFO', text: 'withElasticsearchDeploymentEnv')
+  def cluster = args.containsKey('cluster') ? args.cluster : error('withElasticsearchDeploymentEnv: cluster parameter is required.')
   def secret = "${getTestClusterSecret()}/${cluster}/k8s-elasticsearch"
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {
-    error "withElasticsearchClusterEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
+    error "withElasticsearchDeploymentEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
   def esJson = props?.data.value
   def es = toJSON(esJson)
   def es_url = es.url
   def username = es.username
   def password = es.password
-  validateField(es_url, "withElasticsearchClusterEnv: was not possible to get the authentication info for the url field.")
-  validateField(username, "withElasticsearchClusterEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withElasticsearchClusterEnv: was not possible to get the authentication info for the password field.")
+  validateField(es_url, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the url field.")
+  validateField(username, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the username field.")
+  validateField(password, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'ES_URL', password: es_url],
     [var: 'ES_USERNAME', password: username],

@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithElasticsearchClusterEnvStepTests extends ApmBasePipelineTest {
+class WithElasticsearchDeploymentEnvStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/withElasticsearchClusterEnv.groovy')
+    script = loadScript('vars/withElasticsearchDeploymentEnv.groovy')
   }
 
   @Test
@@ -63,7 +63,7 @@ class WithElasticsearchClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchClusterEnv: Unable to get credentials from the vault: Error message'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchDeploymentEnv: Unable to get credentials from the vault: Error message'))
   }
 
   @Test
@@ -76,7 +76,7 @@ class WithElasticsearchClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchClusterEnv: was not possible to get the authentication info for the url field.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchDeploymentEnv: was not possible to get the authentication info for the url field.'))
     assertJobStatusFailure()
   }
 
