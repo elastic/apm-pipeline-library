@@ -8,4 +8,9 @@
 
 * cluster: Name of the cluster that was already created. Mandatory
 
+Environment variables:
+* `ES_URL`
+* `ES_USERNAME`
+* `ES_PASSWORD`
+
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
