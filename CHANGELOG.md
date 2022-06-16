@@ -183,7 +183,7 @@
 #### 🐛 Bug Fixes
 
 - [**Team:Automation**] fix: add Docker, buildx, and Docker compose to the Docker image [#1625](https://github.com/elastic/apm-pipeline-library/pull/1625)
-- [**Team:Automation**] fix: remove pytest timming import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
+- [**Team:Automation**] fix: remove pytest timing import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
 - [**Team:Automation**] fix: show traces only on debug mode [#1621](https://github.com/elastic/apm-pipeline-library/pull/1621)
 
 #### 🙈 No user affected
