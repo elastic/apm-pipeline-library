@@ -291,8 +291,12 @@ def notifyGitHubIssue(Map args = [:]) {
     body = generateBuildReport(arguments)
   }
   def title = "[${env.BRANCH_NAME}@${env.GIT_BASE_COMMIT}] Failed build - auto-generated"
-  def issueArgs = [ title: title, description: body, labels: 'automation,ci-reported' ]
-  if (args.containsKey('githubAssignees') && args.get('githubAssignees', '').trim()) {
+  def labels = 'automation,ci-reported'
+  if (args.containsKey('githubLabels') && args.githubLabels?.trim()) {
+    labels += ",${args.githubLabels}"
+  }
+  def issueArgs = [ title: title, description: body, labels: labels ]
+  if (args.containsKey('githubAssignees') && args.githubAssignees?.trim()) {
      issueArgs += [assignee: args.githubAssignees]
   }
   catchError(buildResult: 'SUCCESS', message: 'notifyGitHubIssue: Error creating the GitHub issue') {

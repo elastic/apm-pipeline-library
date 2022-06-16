@@ -1064,6 +1064,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.notifyGitHubIssue()
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported}'))
   }
 
   @Test
@@ -1072,6 +1073,22 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.notifyGitHubIssue(githubAssignees: 'foo')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assignee=foo'))
+  }
+
+  @Test
+  void test_notifyGitHubIssue_with_null_assignee() throws Exception {
+    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
+    script.notifyGitHubIssue(githubAssignees: null)
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+  }
+
+  @Test
+  void test_notifyGitHubIssue_with_labels() throws Exception {
+    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
+    script.notifyGitHubIssue(githubLabels: 'foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,foo}'))
   }
 
   @Test

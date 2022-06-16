@@ -42,3 +42,4 @@ emails on Failed builds that are not pull request.
 * notifyCoverageComment: Whether to add a comment in the PR with the coverage summary as a comment. Default: `true`.
 * githubIssue: Whether to create a GitHub issue with the build status. Default: `false`.
 * githubAssignees: What GitHub assignees to be added in the GitHub issue. Default value uses ``.
+* githubLabels: What GitHub labels to be added in the GitHub issue in addition to `automation,ci-reported`. Optional

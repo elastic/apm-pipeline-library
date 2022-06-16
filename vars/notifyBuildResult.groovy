@@ -52,6 +52,7 @@ def call(Map args = [:]) {
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
   def notifyGithubIssue = args.get('githubIssue', false)
   def githubAssignees = args.get('githubAssignees', '')
+  def githubLabels = args.get('githubLabels', '')
 
   node('master || metal || linux'){
     stage('Reporting build status'){
@@ -80,6 +81,7 @@ def call(Map args = [:]) {
         data['enabled'] = slackNotify
         data['jobName'] = jobName
         data['githubAssignees'] = githubAssignees
+        data['githubLabels'] = githubLabels
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
