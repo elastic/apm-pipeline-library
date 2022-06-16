@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.1.323 (06/06/2022)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: pytest-otel 1.1.0 release notes [#1709](https://github.com/elastic/apm-pipeline-library/pull/1709)
+
+#### 📚 Documentation
+
+- [**Team:Automation**] docs: update pytest-otel changelog [#1710](https://github.com/elastic/apm-pipeline-library/pull/1710)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.5.1 to 4.6.0 [#1715](https://github.com/elastic/apm-pipeline-library/pull/1715)
+-  chore(deps-dev): bump workflow-job from 1180.v04c4e75dce43 to 1182.v60a_e6279b_579 [#1708](https://github.com/elastic/apm-pipeline-library/pull/1708)
+
+## v1.1.323 (06/06/2022)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: pytest-otel 1.1.0 release notes [#1709](https://github.com/elastic/apm-pipeline-library/pull/1709)
+
+#### 📚 Documentation
+
+- [**Team:Automation**] docs: update pytest-otel changelog [#1710](https://github.com/elastic/apm-pipeline-library/pull/1710)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump mockito-core from 4.5.1 to 4.6.0 [#1715](https://github.com/elastic/apm-pipeline-library/pull/1715)
+-  chore(deps-dev): bump workflow-job from 1180.v04c4e75dce43 to 1182.v60a_e6279b_579 [#1708](https://github.com/elastic/apm-pipeline-library/pull/1708)
+
 ## v1.1.322 (25/05/2022)
 
 #### 🚀 Enhancements
@@ -168,7 +198,7 @@
 #### 🐛 Bug Fixes
 
 - [**Team:Automation**] fix: add Docker, buildx, and Docker compose to the Docker image [#1625](https://github.com/elastic/apm-pipeline-library/pull/1625)
-- [**Team:Automation**] fix: remove pytest timming import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
+- [**Team:Automation**] fix: remove pytest timing import [#1623](https://github.com/elastic/apm-pipeline-library/pull/1623)
 - [**Team:Automation**] fix: show traces only on debug mode [#1621](https://github.com/elastic/apm-pipeline-library/pull/1621)
 
 #### 🙈 No user affected
