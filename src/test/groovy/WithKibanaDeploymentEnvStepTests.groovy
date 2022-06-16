@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithKibanaClusterEnvStepTests extends ApmBasePipelineTest {
+class WithKibanaDeploymentEnvStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/withKibanaClusterEnv.groovy')
+    script = loadScript('vars/withKibanaDeploymentEnv.groovy')
   }
 
   @Test
@@ -63,7 +63,7 @@ class WithKibanaClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withKibanaClusterEnv: Unable to get credentials from the vault: Error message'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withKibanaDeploymentEnv: Unable to get credentials from the vault: Error message'))
   }
 
   @Test
@@ -76,7 +76,7 @@ class WithKibanaClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withKibanaClusterEnv: was not possible to get the authentication info for the url field.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withKibanaDeploymentEnv: was not possible to get the authentication info for the url field.'))
     assertJobStatusFailure()
   }
 

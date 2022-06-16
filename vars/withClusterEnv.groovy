@@ -38,7 +38,7 @@ def call(Map args = [:], Closure body) {
 
 def withKibana(args, enabled, body) {
   if (enabled) {
-    withKibanaClusterEnv(args) {
+    withKibanaDeploymentEnv(args) {
       body()
     }
   } else {

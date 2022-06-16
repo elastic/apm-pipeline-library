@@ -50,7 +50,7 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
-    assertTrue(assertMethodCallContainsPattern('withKibanaClusterEnv', 'foo'))
+    assertTrue(assertMethodCallContainsPattern('withKibanaDeploymentEnv', 'foo'))
     assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
   }
 
