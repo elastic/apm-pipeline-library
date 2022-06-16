@@ -50,7 +50,7 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def notifyGithubIssue = args.containsKey('githubIssue') ? args.githubIssue : false
+  def githubIssue = args.containsKey('githubIssue') ? args.githubIssue : false
   def githubAssignees = args.get('githubAssignees', '')
   def githubLabels = args.get('githubLabels', '')
 
@@ -108,7 +108,7 @@ def call(Map args = [:]) {
         // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
         aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
 
-        notifyGithubIssue(data: data, when: notifyGithubIssue)
+        notifyGithubIssue(data: data, when: githubIssue)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
