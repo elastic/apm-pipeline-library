@@ -279,7 +279,7 @@ def notifyGitHubCommandsInPR(Map args = [:]) {
 /**
  * This method creates a GitHub issue with the build result
 */
-def notifyGitHubIssue(Map args = [:]) {
+def createGitHubIssue(Map args = [:]) {
   def body = args.get('comment', '')
   // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
   if (!body?.trim()) {
@@ -296,7 +296,7 @@ def notifyGitHubIssue(Map args = [:]) {
   if (args.containsKey('githubAssignees') && args.githubAssignees?.trim()) {
      issueArgs += [assign: args.githubAssignees]
   }
-  catchError(buildResult: 'SUCCESS', message: 'notifyGitHubIssue: Error creating the GitHub issue') {
+  catchError(buildResult: 'SUCCESS', message: 'createGitHubIssue: Error creating the GitHub issue') {
     retryWithSleep(retries: 2, seconds: 5, backoff: true) {
       output = githubCreateIssue(issueArgs)
     }

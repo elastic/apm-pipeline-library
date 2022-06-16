@@ -50,7 +50,7 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def githubIssue = args.containsKey('githubIssue') ? args.githubIssue : false
+  def notifyGHIssue = args.containsKey('githubIssue') ? args.githubIssue : false
   def githubAssignees = args.get('githubAssignees', '')
   def githubLabels = args.get('githubLabels', '')
 
@@ -108,7 +108,7 @@ def call(Map args = [:]) {
         // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
         aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
 
-        notifyGithubIssue(data: data, when: githubIssue)
+        createGitHubIssue(data: data, when: notifyGHIssue)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -308,11 +308,11 @@ def notifySlack(def args=[:]) {
   }
 }
 
-def notifyGithubIssue(def args=[:]) {
+def createGitHubIssue(def args=[:]) {
   if(args.when) {
     log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in github.")
     catchError(message: "There were some failures when notifying results in github", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-      (new NotificationManager()).notifyGithubIssue(args.data)
+      (new NotificationManager()).createGitHubIssue(args.data)
     }
   }
 }

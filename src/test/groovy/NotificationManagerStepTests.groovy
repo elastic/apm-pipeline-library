@@ -1059,37 +1059,37 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_notifyGitHubIssue() throws Exception {
-    script.notifyGitHubIssue(comment: 'my build report')
+  void test_createGitHubIssue() throws Exception {
+    script.createGitHubIssue(comment: 'my build report')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported}'))
   }
 
   @Test
-  void test_notifyGitHubIssue_with_assignee() throws Exception {
-    script.notifyGitHubIssue(githubAssignees: 'foo', comment: 'my build report')
+  void test_createGitHubIssue_with_assignee() throws Exception {
+    script.createGitHubIssue(githubAssignees: 'foo', comment: 'my build report')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assignee=foo'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assign=foo'))
   }
 
   @Test
-  void test_notifyGitHubIssue_with_null_assignee() throws Exception {
-    script.notifyGitHubIssue(githubAssignees: null, comment: 'my build report')
+  void test_createGitHubIssue_with_null_assignee() throws Exception {
+    script.createGitHubIssue(githubAssignees: null, comment: 'my build report')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assign'))
   }
 
   @Test
-  void test_notifyGitHubIssue_with_labels() throws Exception {
-    script.notifyGitHubIssue(githubLabels: 'foo', comment: 'my build report')
+  void test_createGitHubIssue_with_labels() throws Exception {
+    script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,foo}'))
   }
 
   @Test
-  void test_notifyGitHubIssue_if_no_buildmd() throws Exception {
-    script.notifyGitHubIssue(
+  void test_createGitHubIssue_if_no_buildmd() throws Exception {
+    script.createGitHubIssue(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
       changeSet: readJSON(file: 'changeSet-info.json'),
