@@ -1,7 +1,8 @@
-Wrap the Kibana cluster credentials and entrypoints as environment variables that are masked
+Wrap the Kibana credentials and entrypoints as environment variables that are masked
+for the Elastic Cloud deployment
 
 ```
-  withElasticsearchClusterEnv(cluster: 'test-cluster-azure') {
+  withKibanaDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 ```

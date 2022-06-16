@@ -16,29 +16,30 @@
 // under the License.
 
 /**
-  Wrap the Kibana cluster credentials and entrypoints as environment variables that are masked
+  Wrap the Kibana credentials and entrypoints as environment variables that are masked
+  for the Elastic Cloud deployment
 
-  withKibanaClusterEnv(cluster: 'test-cluster-azure') {
+  withKibanaDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 */
 
 def call(Map args = [:], Closure body) {
-  log(level: 'INFO', text: 'withKibanaClusterEnv')
-  def cluster = args.containsKey('cluster') ? args.cluster : error('withKibanaClusterEnv: cluster parameter is required.')
+  log(level: 'INFO', text: 'withKibanaDeploymentEnv')
+  def cluster = args.containsKey('cluster') ? args.cluster : error('withKibanaDeploymentEnv: cluster parameter is required.')
   def secret = "${getTestClusterSecret()}/${cluster}/k8s-kibana"
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {
-    error "withKibanaClusterEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
+    error "withKibanaDeploymentEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
   def dataJson = props?.data.value
   def kibana = toJSON(dataJson)
   def kibana_url = kibana.url
   def username = kibana.username
   def password = kibana.password
-  validateField(kibana_url, "withKibanaClusterEnv: was not possible to get the authentication info for the url field.")
-  validateField(username, "withKibanaClusterEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withKibanaClusterEnv: was not possible to get the authentication info for the password field.")
+  validateField(kibana_url, "withKibanaDeploymentEnv: was not possible to get the authentication info for the url field.")
+  validateField(username, "withKibanaDeploymentEnv: was not possible to get the authentication info for the username field.")
+  validateField(password, "withKibanaDeploymentEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'KIBANA_URL', password: kibana_url],
     [var: 'KIBANA_USERNAME', password: username],
