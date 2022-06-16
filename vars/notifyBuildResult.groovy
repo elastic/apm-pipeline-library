@@ -82,6 +82,9 @@ def call(Map args = [:]) {
         data['jobName'] = jobName
         data['githubAssignees'] = githubAssignees
         data['githubLabels'] = githubLabels
+        if (args.containsKey('githubTitle')) {
+          data['githubTitle'] = githubTitle
+        }
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments

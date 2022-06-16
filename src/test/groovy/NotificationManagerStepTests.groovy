@@ -1088,6 +1088,13 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_createGitHubIssue_with_title() throws Exception {
+    script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report', githubTitle: 'my-title')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'title=my-title'))
+  }
+
+  @Test
   void test_createGitHubIssue_if_no_buildmd() throws Exception {
     script.createGitHubIssue(
       build: readJSON(file: 'build-info.json'),

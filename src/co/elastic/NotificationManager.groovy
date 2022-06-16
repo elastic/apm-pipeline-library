@@ -281,13 +281,14 @@ def notifyGitHubCommandsInPR(Map args = [:]) {
 */
 def createGitHubIssue(Map args = [:]) {
   def body = args.get('comment', '')
+  def buildStatus = args.get('buildStatus', 'unknown')
+  def title = args.get('githubTitle', "Build ${env.BUILD_NUMBER} for ${env.BRANCH_NAME} with status '${buildStatus}'")
   // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
   if (!body?.trim()) {
     def arguments = args
     arguments['archiveFile'] = false
     body = generateBuildReport(arguments)
   }
-  def title = "[${env.BRANCH_NAME}@${env.GIT_BASE_COMMIT}] Failed build - auto-generated"
   def labels = 'automation,ci-reported'
   if (args.containsKey('githubLabels') && args.githubLabels?.trim()) {
     labels += ",${args.githubLabels}"
