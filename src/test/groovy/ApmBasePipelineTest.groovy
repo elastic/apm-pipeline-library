@@ -608,7 +608,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/untar.groovy')
       return script.call(m)
     })
-    helper.registerAllowedMethod('validateValue', [String.class, String.class], { "OK" })
+    helper.registerAllowedMethod('validateValue', [String.class, String.class], { m, c ->
+      def script = loadScript('vars/validateValue.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)
     helper.registerAllowedMethod('withDockerEnv', [Map.class, Closure.class], { m, c ->
       def script = loadScript('vars/withDockerEnv.groovy')
