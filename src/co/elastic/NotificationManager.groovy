@@ -294,7 +294,7 @@ def notifyGitHubIssue(Map args = [:]) {
   }
   def issueArgs = [ title: title, description: body, labels: labels ]
   if (args.containsKey('githubAssignees') && args.githubAssignees?.trim()) {
-     issueArgs += [assignee: args.githubAssignees]
+     issueArgs += [assign: args.githubAssignees]
   }
   catchError(buildResult: 'SUCCESS', message: 'notifyGitHubIssue: Error creating the GitHub issue') {
     retryWithSleep(retries: 2, seconds: 5, backoff: true) {
