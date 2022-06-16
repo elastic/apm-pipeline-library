@@ -50,7 +50,7 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
-  def notifyGithubIssue = args.get('githubIssue', false)
+  def notifyGithubIssue = args.containsKey('githubIssue') ? args.githubIssue : false
   def githubAssignees = args.get('githubAssignees', '')
   def githubLabels = args.get('githubLabels', '')
 
