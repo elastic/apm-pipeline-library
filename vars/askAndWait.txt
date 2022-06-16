@@ -1,0 +1,16 @@
+Wrapper to request an input approval and wait for the outcome
+It returns true or false
+
+```
+  stage('Approve to Release') {
+    steps {
+      setEnvVar('RELEASE', askAndWait(message: "You are about to release version ${env.TAG_NAME}. Do you wish to release it?"))
+    }
+  }
+  stage('Release') {
+    when {
+      expression { return env.RELEASE == 'true' }
+    }
+    ...
+
+```
