@@ -308,7 +308,7 @@ def notifySlack(def args=[:]) {
   }
 }
 
-def notifyGithubIssue(Map args=[:]) {
+def notifyGithubIssue(def args=[:]) {
   if(args.when) {
     log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in github.")
     catchError(message: "There were some failures when notifying results in github", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
