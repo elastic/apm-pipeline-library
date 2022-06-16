@@ -50,6 +50,8 @@ def call(Map args = [:]) {
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
+  def notifyGithubIssue = args.get('githubIssue', false)
+  def githubAssignees = args.get('githubAssignees', '')
 
   node('master || metal || linux'){
     stage('Reporting build status'){
@@ -77,7 +79,7 @@ def call(Map args = [:]) {
         data['credentialId'] = slackCredentials
         data['enabled'] = slackNotify
         data['jobName'] = jobName
-
+        data['githubAssignees'] = githubAssignees
         data['disableGHIssueCreation'] = flakyDisableGHIssueCreation
         // Allow to aggregate the comments, for such it disables the default notifications.
         data['disableGHComment'] = aggregateComments
@@ -103,6 +105,8 @@ def call(Map args = [:]) {
 
         // Notify only if there are notifications and they should be aggregated and env.GITHUB_CHECK feature flag is enabled.
         aggregateGitHubCheck(when: (aggregateComments && notifications?.size() > 0 && env.GITHUB_CHECK?.equals('true')), notifications: notifications)
+
+        notifyGithubIssue(data: data, when: notifyGithubIssue)
       }
 
       catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -298,6 +302,15 @@ def notifySlack(def args=[:]) {
     log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in slack.")
     catchError(message: "There were some failures when notifying results in slack", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
       (new NotificationManager()).notifySlack(args.data)
+    }
+  }
+}
+
+def notifyGithubIssue(def args=[:]) {
+  if(args.when) {
+    log(level: 'DEBUG', text: "notifyBuildResult: Notifying results in github.")
+    catchError(message: "There were some failures when notifying results in github", buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      (new NotificationManager()).notifyGithubIssue(args.data)
     }
   }
 }

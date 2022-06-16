@@ -40,3 +40,5 @@ emails on Failed builds that are not pull request.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/main`.
 * notifyCoverageComment: Whether to add a comment in the PR with the coverage summary as a comment. Default: `true`.
+* githubIssue: Whether to create a GitHub issue with the build status. Default: `false`.
+* githubAssignees: What GitHub assignees to be added in the GitHub issue. Default value uses ``.
