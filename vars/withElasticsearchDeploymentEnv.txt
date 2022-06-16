@@ -1,0 +1,17 @@
+Wrap the Elasticsearch credentials and entrypoints as environment variables that are masked
+for the Elastic Cloud deployment
+
+```
+  withElasticsearchDeploymentEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+Environment variables:
+* `ES_URL`
+* `ES_USERNAME`
+* `ES_PASSWORD`
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
