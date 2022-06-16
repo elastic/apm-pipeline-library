@@ -280,12 +280,9 @@ def notifyGitHubCommandsInPR(Map args = [:]) {
  * This method creates a GitHub issue with the build result
 */
 def notifyGitHubIssue(Map args = [:]) {
-  // As long as the build.md file exists then there is no need to generate it again
-  def body
-  if (fileExists('build.md')) {
-    body = readFile(file: 'build.md')
-  } else {
-    // let's fallback to generate the build report again
+  def body = args.get('comment', '')
+  // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
+  if (!body?.trim()) {
     def arguments = args
     arguments['archiveFile'] = false
     body = generateBuildReport(arguments)

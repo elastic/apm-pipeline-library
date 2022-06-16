@@ -1060,8 +1060,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notifyGitHubIssue() throws Exception {
-    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
-    script.notifyGitHubIssue()
+    script.notifyGitHubIssue(comment: 'my build report')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported}'))
@@ -1069,31 +1068,27 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_notifyGitHubIssue_with_assignee() throws Exception {
-    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
-    script.notifyGitHubIssue(githubAssignees: 'foo')
+    script.notifyGitHubIssue(githubAssignees: 'foo', comment: 'my build report')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assignee=foo'))
   }
 
   @Test
   void test_notifyGitHubIssue_with_null_assignee() throws Exception {
-    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
-    script.notifyGitHubIssue(githubAssignees: null)
+    script.notifyGitHubIssue(githubAssignees: null, comment: 'my build report')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
   }
 
   @Test
   void test_notifyGitHubIssue_with_labels() throws Exception {
-    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
-    script.notifyGitHubIssue(githubLabels: 'foo')
+    script.notifyGitHubIssue(githubLabels: 'foo', comment: 'my build report')
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,foo}'))
   }
 
   @Test
   void test_notifyGitHubIssue_if_no_buildmd() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { return false })
     script.notifyGitHubIssue(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
