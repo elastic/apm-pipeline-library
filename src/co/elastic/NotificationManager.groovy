@@ -277,6 +277,32 @@ def notifyGitHubCommandsInPR(Map args = [:]) {
 }
 
 /**
+ * This method creates a GitHub issue with the build result
+*/
+def notifyGitHubIssue(Map args = [:]) {
+  // As long as the build.md file exists then there is no need to generate it again
+  def body
+  if (fileExists('build.md')) {
+    body = readFile(file: 'build.md')
+  } else {
+    // let's fallback to generate the build report again
+    def arguments = args
+    arguments['archiveFile'] = false
+    body = generateBuildReport(arguments)
+  }
+  def title = "[${env.BRANCH_NAME}@${env.GIT_BASE_COMMIT}] Failed build - auto-generated"
+  def issueArgs = [ title: title, description: body, labels: 'automation,ci-reported' ]
+  if (args.containsKey('githubAssignees') && args.get('githubAssignees', '').trim()) {
+     issueArgs += [assignee: args.githubAssignees]
+  }
+  catchError(buildResult: 'SUCCESS', message: 'notifyGitHubIssue: Error creating the GitHub issue') {
+    retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+      output = githubCreateIssue(issueArgs)
+    }
+  }
+}
+
+/**
  * This method sends a slack message with data from Jenkins
  * @param build
  * @param buildStatus String with job result

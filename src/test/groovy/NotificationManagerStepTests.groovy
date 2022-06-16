@@ -34,6 +34,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     def runBuilding = new RunMock(building: true)
     def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'SUCCESS')
     binding.setVariable('currentBuild', build)
+    addEnvVar('GIT_BASE_COMMIT', 'abcdef')
   }
 
   @Test
@@ -1055,5 +1056,38 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.notifyGitHubCommandsInPR()
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubPrComment', "GitHub comments"))
+  }
+
+  @Test
+  void test_notifyGitHubIssue() throws Exception {
+    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
+    script.notifyGitHubIssue()
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+  }
+
+  @Test
+  void test_notifyGitHubIssue_with_assignee() throws Exception {
+    helper.registerAllowedMethod('readFile', [Map.class], { 'my generated build report' })
+    script.notifyGitHubIssue(githubAssignees: 'foo')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assignee=foo'))
+  }
+
+  @Test
+  void test_notifyGitHubIssue_if_no_buildmd() throws Exception {
+    helper.registerAllowedMethod('fileExists', [String.class], { return false })
+    script.notifyGitHubIssue(
+      build: readJSON(file: 'build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'changeSet-info.json'),
+      docsUrl: 'foo',
+      statsUrl: 'https://ecs.example.com/app/kibana',
+      stepsErrors: readJSON(file: 'steps-errors.json'),
+      testsErrors: readJSON(file: 'tests-errors.json'),
+      testsSummary: readJSON(file: 'tests-summary.json')
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
   }
 }
