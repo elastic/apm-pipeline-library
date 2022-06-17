@@ -1,7 +1,7 @@
 Wrap the Fleet cluster credentials and entrypoints as environment variables that are masked
 
 ```
-  withFleetClusterEnv(cluster: 'test-cluster-azure') {
+  withFleetDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 ```

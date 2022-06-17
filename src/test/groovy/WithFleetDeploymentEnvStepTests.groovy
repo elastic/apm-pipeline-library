@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class WithFleetClusterEnvStepTests extends ApmBasePipelineTest {
+class WithFleetDeploymentEnvStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/withFleetClusterEnv.groovy')
+    script = loadScript('vars/withFleetDeploymentEnv.groovy')
   }
 
   @Test
@@ -65,7 +65,7 @@ class WithFleetClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withFleetClusterEnv: Unable to get credentials from the vault: Error message'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withFleetDeploymentEnv: Unable to get credentials from the vault: Error message'))
   }
 
   @Test
@@ -78,7 +78,7 @@ class WithFleetClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'withFleetClusterEnv: was not possible to get the authentication info for the url field.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withFleetDeploymentEnv: was not possible to get the authentication info for the url field.'))
     assertJobStatusFailure()
   }
 

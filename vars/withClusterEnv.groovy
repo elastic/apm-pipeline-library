@@ -50,7 +50,7 @@ def withKibana(args, enabled, body) {
 
 def withFleet(args, enabled, body) {
   if (enabled) {
-    withFleetClusterEnv(args) {
+    withFleetDeploymentEnv(args) {
       body()
     }
   } else {

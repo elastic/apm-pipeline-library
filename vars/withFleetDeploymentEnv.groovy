@@ -16,27 +16,28 @@
 // under the License.
 
 /**
-  Wrap the Fleet cluster credentials and entrypoints as environment variables that are masked
+  Wrap the Fleet credentials and entrypoints as environment variables that are masked
+  for the Elastic Cloud deployment
 
-  withFleetClusterEnv(cluster: 'test-cluster-azure') {
+  withFleetDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 */
 
 def call(Map args = [:], Closure body) {
-  log(level: 'INFO', text: 'withFleetClusterEnv')
-  def cluster = args.containsKey('cluster') ? args.cluster : error('withFleetClusterEnv: cluster parameter is required.')
+  log(level: 'INFO', text: 'withFleetDeploymentEnv')
+  def cluster = args.containsKey('cluster') ? args.cluster : error('withFleetDeploymentEnv: cluster parameter is required.')
   def secret = "${getTestClusterSecret()}/${cluster}/k8s-apm"
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {
-    error "withFleetClusterEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
+    error "withFleetDeploymentEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
   def dataJson = props?.data.value
   def fleet = toJSON(dataJson)
   def fleet_url = fleet.fleet_url
   def token = fleet.token
-  validateField(fleet_url, "withFleetClusterEnv: was not possible to get the authentication info for the url field.")
-  validateField(token, "withFleetClusterEnv: was not possible to get the authentication info for the username field.")
+  validateField(fleet_url, "withFleetDeploymentEnv: was not possible to get the authentication info for the url field.")
+  validateField(token, "withFleetDeploymentEnv: was not possible to get the authentication info for the username field.")
   withEnvMask(vars: [
     [var: 'FLEET_URL', password: fleet_url],
     [var: 'FLEET_TOKEN', password: token]

@@ -646,8 +646,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withGoEnvWindows', [Map.class, Closure.class], { m, c ->
       return true
     })
-    helper.registerAllowedMethod('withFleetClusterEnv', [Map.class, Closure.class], { m, c ->
-      def script = loadScript('vars/withFleetClusterEnv.groovy')
+    helper.registerAllowedMethod('withFleetDeploymentEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withFleetDeploymentEnv.groovy')
       return script.call(m, c)
     })
     helper.registerAllowedMethod('withKibanaDeploymentEnv', [Map.class, Closure.class], { m, c ->

@@ -63,7 +63,7 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertJobStatusSuccess()
-    assertTrue(assertMethodCallContainsPattern('withFleetClusterEnv', 'foo'))
+    assertTrue(assertMethodCallContainsPattern('withFleetDeploymentEnv', 'foo'))
   }
 
   @Test
