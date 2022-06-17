@@ -1,0 +1,7 @@
+If the given value is empty or null
+
+```
+whenTrue(isEmpty("")) {
+  //
+}
+```

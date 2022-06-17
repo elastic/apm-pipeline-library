@@ -37,20 +37,14 @@ def call(Map args = [:], Closure body) {
   def kibana_url = kibana.url
   def username = kibana.username
   def password = kibana.password
-  validateField(kibana_url, "withKibanaDeploymentEnv: was not possible to get the authentication info for the url field.")
-  validateField(username, "withKibanaDeploymentEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withKibanaDeploymentEnv: was not possible to get the authentication info for the password field.")
+  errorIfEmpty(kibana_url, "withKibanaDeploymentEnv: was not possible to get the authentication info for the url field.")
+  errorIfEmpty(username, "withKibanaDeploymentEnv: was not possible to get the authentication info for the username field.")
+  errorIfEmpty(password, "withKibanaDeploymentEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'KIBANA_URL', password: kibana_url],
     [var: 'KIBANA_USERNAME', password: username],
     [var: 'KIBANA_PASSWORD', password: password]
   ]){
     body()
-  }
-}
-
-def validateField(String value, String errorMessage) {
-  if(value == null || value?.trim() == ""){
-    error errorMessage
   }
 }
