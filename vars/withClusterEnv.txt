@@ -9,5 +9,6 @@ for the Cloud deployments, aka clusters.
 
 * cluster: Name of the cluster that was already created. Mandatory
 * kibana: Whether to configure the environment variables with the Kibana URL. Optional
+* fleet: Whether to configure the environment variables with the Fleet URL and secret. Optional
 
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`

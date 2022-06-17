@@ -29,9 +29,11 @@ def call(Map args = [:], Closure body) {
 
   withElasticsearchDeploymentEnv(args) {
     // For backward compatibilites, let's keep the previous behaviour,
-    // and enable the kibana env variable context explicitly.
+    // and enable the kibana or fleet env variables context explicitly.
     withKibana(args, args.get('kibana', false)) {
-      body()
+      withFleet(args, args.get('fleet', false)) {
+        body()
+      }
     }
   }
 }
@@ -39,6 +41,16 @@ def call(Map args = [:], Closure body) {
 def withKibana(args, enabled, body) {
   if (enabled) {
     withKibanaDeploymentEnv(args) {
+      body()
+    }
+  } else {
+    body()
+  }
+}
+
+def withFleet(args, enabled, body) {
+  if (enabled) {
+    withFleetDeploymentEnv(args) {
       body()
     }
   } else {
