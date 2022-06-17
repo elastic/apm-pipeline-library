@@ -817,6 +817,13 @@ Get the stage ID in the current context.
 def stage = getStageId()
 ```
 
+## getTestClusterSecret
+Get the Vault location where the test cluster secrets are stored
+
+```
+  def secret = "${getTestClusterSecret()}/my-test-cluster"
+```
+
 ## getTraditionalPageURL
 Provides the specific tradditional URL tab for the current build/run
 
@@ -2483,6 +2490,10 @@ emails on Failed builds that are not pull request.
 * aggregateComments: Whether to create only one single GitHub PR Comment with all the details. Default true.
 * jobName: The name of the job, e.g. `Beats/beats/main`.
 * notifyCoverageComment: Whether to add a comment in the PR with the coverage summary as a comment. Default: `true`.
+* githubIssue: Whether to create a GitHub issue with the build status. Default: `false`.
+* githubAssignees: What GitHub assignees to be added in the GitHub issue. Default value uses ``.
+* githubLabels: What GitHub labels to be added in the GitHub issue in addition to `automation,ci-reported`. Optional
+* githubTitle: What GitHub title to be added in the GitHub issue. Default: `Build ${env.BUILD_NUMBER} for ${env.BRANCH_NAME} with status '${buildStatus}'`.
 
 ## notifyStalledBeatsBumps
 Evaluate if the latest bump update was merged a few days ago and if so
@@ -2581,6 +2592,24 @@ preCommitToJunit(input: 'pre-commit.log', output: 'pre-commit-junit.xml')
 * input: the pre-commit output. Mandatory
 * output: the junit output. Mandatory
 * enableSkipped: whether to report skipped linting stages. Optional. Default false
+
+## prompt
+Wrapper to request an input approval and wait for the outcome
+It returns true or false
+
+```
+  stage('Approve to Release') {
+    steps {
+      setEnvVar('RELEASE', askAndWait(message: "You are about to release version ${env.TAG_NAME}. Do you wish to release it?"))
+    }
+  }
+  stage('Release') {
+    when {
+      expression { return env.RELEASE == 'true' }
+    }
+    ...
+
+```
 
 ## publishToCDN
 Publish to the [CDN](https://cloud.google.com/cdn) the given set of source files to the target bucket
@@ -3377,7 +3406,8 @@ NOTE: secrets for the test clusters are defined in the 'secret/observability-tea
       vault location
 
 ## withClusterEnv
-Wrap the cluster credentials and entrypoints as environment variables that are masked
+Wrap the credentials and entrypoints as environment variables that are masked
+for the Cloud deployments, aka clusters.
 
 ```
   withClusterEnv(cluster: 'test-cluster-azure') {
@@ -3386,9 +3416,9 @@ Wrap the cluster credentials and entrypoints as environment variables that are m
 ```
 
 * cluster: Name of the cluster that was already created. Mandatory
+* kibana: Whether to configure the environment variables with the Kibana URL. Optional
 
-NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
-      vault location
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
 
 ## withDockerEnv
 Configure the Docker context to run the body closure, logining to hub.docker.com with an
@@ -3409,6 +3439,28 @@ fields with the authentication details. with the below environment variables:
     // block
   }
 ```
+
+## withElasticsearchDeploymentEnv
+Wrap the Elasticsearch credentials and entrypoints as environment variables that are masked
+for the Elastic Cloud deployment
+
+```
+  withElasticsearchDeploymentEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+Environment variables:
+* `ELASTICSEARCH_URL`
+* `ELASTICSEARCH_USERNAME`
+* `ELASTICSEARCH_PASSWORD`
+* `ES_URL` - (deprecated)
+* `ES_USERNAME` - (deprecated)
+* `ES_PASSWORD` - (deprecated)
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
 
 ## withEnvMask
 This step will define some environment variables and mask their content in the
@@ -3677,6 +3729,25 @@ Configure the hub app to run the body closure.
 
 _NOTE:_
 * Windows agents are not supported.
+
+## withKibanaDeploymentEnv
+Wrap the Kibana credentials and entrypoints as environment variables that are masked
+for the Elastic Cloud deployment
+
+```
+  withKibanaDeploymentEnv(cluster: 'test-cluster-azure') {
+    // block
+  }
+```
+
+* cluster: Name of the cluster that was already created. Mandatory
+
+Environment variables:
+* `KIBANA_URL`
+* `KIBANA_USERNAME`
+* `KIBANA_PASSWORD`
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
 
 ## withKindEnv
 Install Kind, Kubectl and configure Kind to run some command within the kind/kubectl context
