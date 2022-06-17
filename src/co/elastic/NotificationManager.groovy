@@ -277,6 +277,34 @@ def notifyGitHubCommandsInPR(Map args = [:]) {
 }
 
 /**
+ * This method creates a GitHub issue with the build result
+*/
+def createGitHubIssue(Map args = [:]) {
+  def body = args.get('comment', '')
+  def buildStatus = args.get('buildStatus', 'unknown')
+  def title = args.get('githubTitle', "Build ${env.BUILD_NUMBER} for ${env.BRANCH_NAME} with status '${buildStatus}'")
+  // In case body is empty let's fallback to the previous behaviour for compatibility reasons.
+  if (!body?.trim()) {
+    def arguments = args
+    arguments['archiveFile'] = false
+    body = generateBuildReport(arguments)
+  }
+  def labels = 'automation,ci-reported'
+  if (args.containsKey('githubLabels') && args.githubLabels?.trim()) {
+    labels += ",${args.githubLabels}"
+  }
+  def issueArgs = [ title: title, description: body, labels: labels ]
+  if (args.containsKey('githubAssignees') && args.githubAssignees?.trim()) {
+     issueArgs += [assign: args.githubAssignees]
+  }
+  catchError(buildResult: 'SUCCESS', message: 'createGitHubIssue: Error creating the GitHub issue') {
+    retryWithSleep(retries: 2, seconds: 5, backoff: true) {
+      output = githubCreateIssue(issueArgs)
+    }
+  }
+}
+
+/**
  * This method sends a slack message with data from Jenkins
  * @param build
  * @param buildStatus String with job result
