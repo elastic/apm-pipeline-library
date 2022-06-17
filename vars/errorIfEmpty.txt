@@ -1,0 +1,5 @@
+If the given value is empty or null then it throws an error
+
+```
+errorIfEmpty(my_value, "it is not supported.")
+```

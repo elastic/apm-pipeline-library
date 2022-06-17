@@ -1,5 +1,0 @@
-Given the value it validates if it's not null or empty otherwise it reports an error
-
-```
-validateValue(my_value, "it is not supported.")
-```

@@ -554,6 +554,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/is64x86.groovy')
       return script.call()
     })
+    helper.registerAllowedMethod('isEmpty', [String.class], { m ->
+      def script = loadScript('vars/isEmpty.groovy')
+      return script.call(m, c)
+    })
     helper.registerAllowedMethod('junit2otel', [Map.class], { m ->
       def script = loadScript('vars/junit2otel.groovy')
       return script.call(m)
@@ -611,8 +615,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/untar.groovy')
       return script.call(m)
     })
-    helper.registerAllowedMethod('validateValue', [String.class, String.class], { m, c ->
-      def script = loadScript('vars/validateValue.groovy')
+    helper.registerAllowedMethod('errorIfEmpty', [String.class, String.class], { m, c ->
+      def script = loadScript('vars/errorIfEmpty.groovy')
       return script.call(m, c)
     })
     helper.registerAllowedMethod('withCredentials', [List.class, Closure.class], TestUtils.withCredentialsInterceptor)

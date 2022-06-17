@@ -16,11 +16,11 @@
 // under the License.
 
 /**
-Given the value it validates if it's not null or empty otherwise it reports an error
+If the given value is empty or null then it throws an error
 */
 
 def call(String value, String errorMessage) {
-  if (value == null || value?.trim() == "") {
+  if (isEmpty(value)) {
     error errorMessage
   }
 }
