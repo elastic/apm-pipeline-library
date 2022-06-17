@@ -19,13 +19,13 @@ import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.assertTrue
 
-class AskAndWaitStepTests extends ApmBasePipelineTest {
+class PromptStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/askAndWait.groovy')
+    script = loadScript('vars/prompt.groovy')
   }
 
 

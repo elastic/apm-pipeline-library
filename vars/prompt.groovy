@@ -23,7 +23,7 @@ It returns true or false
 */
 
 def call(Map args = [:]) {
-  def message = args.containsKey('message') ? args.message : error('askAndWait: message parameter is required.')
+  def message = args.containsKey('message') ? args.message : error('prompt: message parameter is required.')
   def okTitle = args.get('okTitle', 'Yes')
   try {
     input(message: message, ok: okTitle)
