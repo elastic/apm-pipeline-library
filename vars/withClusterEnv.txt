@@ -8,6 +8,7 @@ for the Cloud deployments, aka clusters.
 ```
 
 * cluster: Name of the cluster that was already created. Mandatory
+* elasticsearch: Whether to configure the environment variables with the Elasticsearch URL/User/Pass. Optional
 * kibana: Whether to configure the environment variables with the Kibana URL. Optional
 
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
