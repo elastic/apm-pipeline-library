@@ -556,7 +556,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('isEmpty', [String.class], { m ->
       def script = loadScript('vars/isEmpty.groovy')
-      return script.call(m, c)
+      return script.call(m)
     })
     helper.registerAllowedMethod('junit2otel', [Map.class], { m ->
       def script = loadScript('vars/junit2otel.groovy')

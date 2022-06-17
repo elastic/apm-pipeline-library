@@ -15,10 +15,35 @@
 // specific language governing permissions and limitations
 // under the License.
 
-/**
-If the given value is empty or null
-*/
+import org.junit.Before
+import org.junit.Test
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
 
-def call(String value) {
-  return (value == null || value?.trim() == "")
+class ErrorIfEmptyStepTests extends ApmBasePipelineTest {
+
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+    script = loadScript('vars/errorIfEmpty.groovy')
+  }
+
+  @Test
+  void test_error() throws Exception {
+    try {
+      script.call(null, 'my-message')
+    } catch(e) {
+      // NOOP
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('error', "my-message"))
+  }
+
+  @Test
+  void test_no_error() throws Exception {
+    script.call("bar", 'my-message')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('error', "my-message"))
+  }
 }
