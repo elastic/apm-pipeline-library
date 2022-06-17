@@ -37,20 +37,17 @@ def call(Map args = [:], Closure body) {
   def es_url = es.url
   def username = es.username
   def password = es.password
-  validateField(es_url, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the url field.")
-  validateField(username, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the password field.")
+  errorIfEmpty(es_url, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the url field.")
+  errorIfEmpty(username, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the username field.")
+  errorIfEmpty(password, "withElasticsearchDeploymentEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'ES_URL', password: es_url],
     [var: 'ES_USERNAME', password: username],
-    [var: 'ES_PASSWORD', password: password]
+    [var: 'ES_PASSWORD', password: password],
+    [var: 'ELASTICSEARCH_URL', password: es_url],
+    [var: 'ELASTICSEARCH_USERNAME', password: username],
+    [var: 'ELASTICSEARCH_PASSWORD', password: password]
   ]){
     body()
-  }
-}
-
-def validateField(String value, String errorMessage) {
-  if(value == null || value?.trim() == ""){
-    error errorMessage
   }
 }

@@ -10,8 +10,11 @@ for the Elastic Cloud deployment
 * cluster: Name of the cluster that was already created. Mandatory
 
 Environment variables:
-* `ES_URL`
-* `ES_USERNAME`
-* `ES_PASSWORD`
+* `ELASTICSEARCH_URL`
+* `ELASTICSEARCH_USERNAME`
+* `ELASTICSEARCH_PASSWORD`
+* `ES_URL` - (deprecated)
+* `ES_USERNAME` - (deprecated)
+* `ES_PASSWORD` - (deprecated)
 
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
