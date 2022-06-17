@@ -487,6 +487,13 @@ Print a text on color on a xterm.
 * *colorfg*: Foreground color.(default, red, green, yellow,...)
 * *colorbg*: Background color.(default, red, green, yellow,...)
 
+## errorIfEmpty
+If the given value is empty or null then it throws an error
+
+```
+errorIfEmpty(my_value, "it is not supported.")
+```
+
 ## fastCheckout
 Only make a Git checkout of the refspec passed as parameter, and not tags, this make the checkout faster.
 This checkout does not work with tags.
@@ -1803,6 +1810,15 @@ It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/
 * *comment:* GitHub comment (by default `env.GITHUB_COMMENT`).
 * *repository*: The GitHub repository (by default `env.REPO_NAME`).
 * *org*: the GitHub organisation (by default `elastic`).
+
+## isEmpty
+If the given value is empty or null
+
+```
+whenTrue(isEmpty("")) {
+  //
+}
+```
 
 ## isGitRegionMatch
 Given the list of patterns, the CHANGE_TARGET, GIT_BASE_COMMIT env variables and the kind of match then it
@@ -3416,6 +3432,7 @@ for the Cloud deployments, aka clusters.
 ```
 
 * cluster: Name of the cluster that was already created. Mandatory
+* elasticsearch: Whether to configure the environment variables with the Elasticsearch URL/User/Pass. Optional
 * kibana: Whether to configure the environment variables with the Kibana URL. Optional
 
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
