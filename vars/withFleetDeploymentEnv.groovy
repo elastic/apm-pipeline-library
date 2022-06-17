@@ -36,18 +36,12 @@ def call(Map args = [:], Closure body) {
   def fleet = toJSON(dataJson)
   def fleet_url = fleet.fleet_url
   def token = fleet.token
-  validateField(fleet_url, "withFleetDeploymentEnv: was not possible to get the authentication info for the url field.")
-  validateField(token, "withFleetDeploymentEnv: was not possible to get the authentication info for the username field.")
+  errorIfEmpty(fleet_url, "withFleetDeploymentEnv: was not possible to get the authentication info for the url field.")
+  errorIfEmpty(token, "withFleetDeploymentEnv: was not possible to get the authentication info for the username field.")
   withEnvMask(vars: [
     [var: 'FLEET_URL', password: fleet_url],
     [var: 'FLEET_TOKEN', password: token]
   ]){
     body()
-  }
-}
-
-def validateField(String value, String errorMessage) {
-  if(value == null || value?.trim() == ""){
-    error errorMessage
   }
 }
