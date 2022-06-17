@@ -34,6 +34,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     def runBuilding = new RunMock(building: true)
     def build = new RunWrapperMock(rawBuild: runBuilding, number: 1, result: 'SUCCESS')
     binding.setVariable('currentBuild', build)
+    addEnvVar('GIT_BASE_COMMIT', 'abcdef')
   }
 
   @Test
@@ -1055,5 +1056,57 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.notifyGitHubCommandsInPR()
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubPrComment', "GitHub comments"))
+  }
+
+  @Test
+  void test_createGitHubIssue() throws Exception {
+    script.createGitHubIssue(comment: 'my build report')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported}'))
+  }
+
+  @Test
+  void test_createGitHubIssue_with_assignee() throws Exception {
+    script.createGitHubIssue(githubAssignees: 'foo', comment: 'my build report')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'assign=foo'))
+  }
+
+  @Test
+  void test_createGitHubIssue_with_null_assignee() throws Exception {
+    script.createGitHubIssue(githubAssignees: null, comment: 'my build report')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assign'))
+  }
+
+  @Test
+  void test_createGitHubIssue_with_labels() throws Exception {
+    script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,foo}'))
+  }
+
+  @Test
+  void test_createGitHubIssue_with_title() throws Exception {
+    script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report', githubTitle: 'my-title')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'title=my-title'))
+  }
+
+  @Test
+  void test_createGitHubIssue_if_no_buildmd() throws Exception {
+    script.createGitHubIssue(
+      build: readJSON(file: 'build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'changeSet-info.json'),
+      docsUrl: 'foo',
+      statsUrl: 'https://ecs.example.com/app/kibana',
+      stepsErrors: readJSON(file: 'steps-errors.json'),
+      testsErrors: readJSON(file: 'tests-errors.json'),
+      testsSummary: readJSON(file: 'tests-summary.json')
+    )
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
   }
 }

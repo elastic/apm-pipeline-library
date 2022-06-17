@@ -17,16 +17,15 @@
 
 import org.junit.Before
 import org.junit.Test
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-class WithClusterEnvStepTests extends ApmBasePipelineTest {
+class WithElasticsearchDeploymentEnvStepTests extends ApmBasePipelineTest {
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
-    script = loadScript('vars/withClusterEnv.groovy')
+    script = loadScript('vars/withElasticsearchDeploymentEnv.groovy')
   }
 
   @Test
@@ -37,21 +36,7 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
-    assertFalse(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
     assertJobStatusSuccess()
-  }
-
-  @Test
-  void test_with_kibana() throws Exception {
-    def isOK = false
-    script.call(cluster: 'foo', kibana: true) {
-      isOK = true
-    }
-    printCallStack()
-    assertTrue(isOK)
-    assertJobStatusSuccess()
-    assertTrue(assertMethodCallContainsPattern('withKibanaDeploymentEnv', 'foo'))
-    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
   }
 
   @Test
@@ -78,7 +63,7 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'Unable to get credentials from the vault: Error message'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchDeploymentEnv: Unable to get credentials from the vault: Error message'))
   }
 
   @Test
@@ -91,7 +76,7 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
       //NOOP
     }
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('error', 'was not possible to get the authentication info for the url field.'))
+    assertTrue(assertMethodCallContainsPattern('error', 'withElasticsearchDeploymentEnv: was not possible to get the authentication info for the url field.'))
     assertJobStatusFailure()
   }
 

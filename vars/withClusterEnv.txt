@@ -1,4 +1,5 @@
-Wrap the cluster credentials and entrypoints as environment variables that are masked
+Wrap the credentials and entrypoints as environment variables that are masked
+for the Cloud deployments, aka clusters.
 
 ```
   withClusterEnv(cluster: 'test-cluster-azure') {
@@ -7,6 +8,6 @@ Wrap the cluster credentials and entrypoints as environment variables that are m
 ```
 
 * cluster: Name of the cluster that was already created. Mandatory
+* kibana: Whether to configure the environment variables with the Kibana URL. Optional
 
-NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
-      vault location
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
