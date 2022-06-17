@@ -16,7 +16,8 @@
 // under the License.
 
 /**
-  Wrap the cluster credentials and entrypoints as environment variables that are masked
+  Wrap the credentials and entrypoints as environment variables that are masked
+  for the Cloud deployments, aka clusters.
 
   withClusterEnv(cluster: 'test-cluster-azure') {
     // block
@@ -26,7 +27,7 @@
 def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withClusterEnv')
 
-  withElasticsearchClusterEnv(args) {
+  withKibanaDeploymentEnv(args) {
     // For backward compatibilites, let's keep the previous behaviour,
     // and enable the kibana or fleet env variables context explicitly.
     withKibana(args, args.get('kibana', false)) {
@@ -39,7 +40,7 @@ def call(Map args = [:], Closure body) {
 
 def withKibana(args, enabled, body) {
   if (enabled) {
-    withKibanaClusterEnv(args) {
+    withKibanaDeploymentEnv(args) {
       body()
     }
   } else {

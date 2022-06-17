@@ -1,4 +1,5 @@
-Wrap the cluster credentials and entrypoints as environment variables that are masked
+Wrap the credentials and entrypoints as environment variables that are masked
+for the Cloud deployments, aka clusters.
 
 ```
   withClusterEnv(cluster: 'test-cluster-azure') {

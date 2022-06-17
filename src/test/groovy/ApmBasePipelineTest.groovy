@@ -619,8 +619,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withDockerEnv.groovy')
       return script.call(m, c)
     })
-    helper.registerAllowedMethod('withElasticsearchClusterEnv', [Map.class, Closure.class], { m, c ->
-      def script = loadScript('vars/withElasticsearchClusterEnv.groovy')
+    helper.registerAllowedMethod('withElasticsearchDeploymentEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withElasticsearchDeploymentEnv.groovy')
       return script.call(m, c)
     })
     helper.registerAllowedMethod('withEnvMask', [Map.class, Closure.class], TestUtils.withEnvMaskInterceptor)
@@ -650,8 +650,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def script = loadScript('vars/withFleetClusterEnv.groovy')
       return script.call(m, c)
     })
-    helper.registerAllowedMethod('withKibanaClusterEnv', [Map.class, Closure.class], { m, c ->
-      def script = loadScript('vars/withKibanaClusterEnv.groovy')
+    helper.registerAllowedMethod('withKibanaDeploymentEnv', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withKibanaDeploymentEnv.groovy')
       return script.call(m, c)
     })
     helper.registerAllowedMethod('withMageEnv', [Closure.class], { c ->
