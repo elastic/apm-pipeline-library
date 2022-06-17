@@ -27,7 +27,7 @@
 def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withClusterEnv')
 
-  withKibanaDeploymentEnv(args) {
+  withElasticsearchDeploymentEnv(args) {
     // For backward compatibilites, let's keep the previous behaviour,
     // and enable the kibana or fleet env variables context explicitly.
     withKibana(args, args.get('kibana', false)) {
