@@ -36,20 +36,14 @@ def call(Map args = [:], Closure body) {
   def cloud_id = data?.cluster?.cloud_id
   def username = data?.username
   def password = data?.password
-  validateField(cloud_id, "withCloudEnv: was not possible to get the authentication info for the cloud_id field.")
-  validateField(username, "withCloudEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withCloudEnv: was not possible to get the authentication info for the password field.")
+  errorIfEmpty(cloud_id, "withCloudEnv: was not possible to get the authentication info for the cloud_id field.")
+  errorIfEmpty(username, "withCloudEnv: was not possible to get the authentication info for the username field.")
+  errorIfEmpty(password, "withCloudEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'CLOUD_USERNAME', password: username],
     [var: 'CLOUD_PASSWORD', password: password],
     [var: 'CLOUD_ID', password: cloud_id]
   ]){
     body()
-  }
-}
-
-def validateField(String value, String errorMessage) {
-  if(value == null || value?.trim() == ""){
-    error errorMessage
   }
 }
