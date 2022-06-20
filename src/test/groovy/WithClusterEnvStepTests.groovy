@@ -37,8 +37,22 @@ class WithClusterEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('withEnvMask', 'var=ELASTICSEARCH_URL'))
     assertFalse(assertMethodCallContainsPattern('withEnvMask', 'var=KIBANA_URL'))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_without_elasticsearch() throws Exception {
+    def isOK = false
+    script.call(cluster: 'foo', elasticsearch: false) {
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertJobStatusSuccess()
+    assertFalse(assertMethodCallContainsPattern('withElasticsearchDeploymentEnv', 'foo'))
+    assertFalse(assertMethodCallContainsPattern('withEnvMask', 'var=ELASTICSEARCH_URL'))
   }
 
   @Test

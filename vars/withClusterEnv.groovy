@@ -27,7 +27,9 @@
 def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withClusterEnv')
 
-  withElasticsearchDeploymentEnv(args) {
+  // For backward compatibilites, let's keep the previous behaviour,
+  // and keep Elasticsearch enable by default .
+  withElasticsearch(args, args.get('elasticsearch', true)) {
     // For backward compatibilites, let's keep the previous behaviour,
     // and enable the kibana or fleet env variables context explicitly.
     withKibana(args, args.get('kibana', false)) {
@@ -35,6 +37,16 @@ def call(Map args = [:], Closure body) {
         body()
       }
     }
+  }
+}
+
+def withElasticsearch(args, enabled, body) {
+  if (enabled) {
+    withElasticsearchDeploymentEnv(args) {
+      body()
+    }
+  } else {
+    body()
   }
 }
 
