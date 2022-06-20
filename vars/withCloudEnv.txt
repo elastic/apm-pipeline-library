@@ -8,5 +8,9 @@ Wrap the cloud credentials and entrypoints as environment variables that are mas
 
 * cluster: Name of the cluster that was already created. Mandatory
 
-NOTE: secrets for the test clusters are defined in the 'secret/observability-team/ci/test-clusters'
-      vault location
+Environment variables:
+* `CLOUD_ID`
+* `CLOUD_PASSWORD`
+* `CLOUD_USERNAME`
+
+NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`

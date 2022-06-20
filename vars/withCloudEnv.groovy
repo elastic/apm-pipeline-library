@@ -26,29 +26,24 @@
 def call(Map args = [:], Closure body) {
   log(level: 'INFO', text: 'withCloudEnv')
   def cluster = args.containsKey('cluster') ? args.cluster : error('withCloudEnv: cluster parameter is required.')
-  def secret = "${getTestClusterSecret()}/${cluster}/ec-deployment"
+  def secret = "${getTestClusterSecret()}/${cluster}/k8s-elasticsearch"
   def props = getVaultSecret(secret: secret)
   if (props?.errors) {
     error "withCloudEnv: Unable to get credentials from the vault: ${props.errors.toString()}"
   }
-  def value = props?.data
-  def cloud_id = value?.cloud_id
-  def username = value?.username
-  def password = value?.password
-  validateField(cloud_id, "withCloudEnv: was not possible to get the authentication info for the cloud_id field.")
-  validateField(username, "withCloudEnv: was not possible to get the authentication info for the username field.")
-  validateField(password, "withCloudEnv: was not possible to get the authentication info for the password field.")
+  def valueJson = props?.data?.value
+  def data = toJSON(valueJson)
+  def cloud_id = data?.cluster?.cloud_id
+  def username = data?.username
+  def password = data?.password
+  errorIfEmpty(cloud_id, "withCloudEnv: was not possible to get the authentication info for the cloud_id field.")
+  errorIfEmpty(username, "withCloudEnv: was not possible to get the authentication info for the username field.")
+  errorIfEmpty(password, "withCloudEnv: was not possible to get the authentication info for the password field.")
   withEnvMask(vars: [
     [var: 'CLOUD_USERNAME', password: username],
     [var: 'CLOUD_PASSWORD', password: password],
     [var: 'CLOUD_ID', password: cloud_id]
   ]){
     body()
-  }
-}
-
-def validateField(String value, String errorMessage) {
-  if(value == null || value?.trim() == ""){
-    error errorMessage
   }
 }
