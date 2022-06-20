@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.327 (17/06/2022)
+
+#### 🚀 Enhancements
+
+-  Add prompt [#1736](https://github.com/elastic/apm-pipeline-library/pull/1736)
+-  Support kibana in the withClusterEnv [#1729](https://github.com/elastic/apm-pipeline-library/pull/1729)
+
 ## v1.1.326 (17/06/2022)
 *No changelog for this release.*
 
