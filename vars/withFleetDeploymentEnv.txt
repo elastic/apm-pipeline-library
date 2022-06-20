@@ -1,7 +1,7 @@
-Wrap the cloud credentials and entrypoints as environment variables that are masked
+Wrap the Fleet cluster credentials and entrypoints as environment variables that are masked
 
 ```
-  withCloudEnv(cluster: 'test-cluster-azure') {
+  withFleetDeploymentEnv(cluster: 'test-cluster-azure') {
     // block
   }
 ```
@@ -9,8 +9,7 @@ Wrap the cloud credentials and entrypoints as environment variables that are mas
 * cluster: Name of the cluster that was already created. Mandatory
 
 Environment variables:
-* `CLOUD_ID`
-* `CLOUD_PASSWORD`
-* `CLOUD_USERNAME`
+* `FLEET_URL`
+* `FLEET_TOKEN`
 
 NOTE: secrets for the test clusters are located in Vault, see `getTestClusterSecret`
