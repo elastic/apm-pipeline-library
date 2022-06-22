@@ -34,19 +34,19 @@ def call(Map args = [:], Closure body) {
       dir(path) {
         writeFile file: tokenFile, text: token
       }
-      try {
-        body()
-      } catch (err) {
-        throw err
-      } finally {
-        // ensure any sensitive details are deleted
-        dir(path) {
-          if (fileExists("${tokenFile}")) {
-            if(isUnix()){
-              sh "rm ${tokenFile}"
-            } else {
-              bat "del ${tokenFile}"
-            }
+    }
+    try {
+      body()
+    } catch (err) {
+      throw err
+    } finally {
+      // ensure any sensitive details are deleted
+      dir(path) {
+        if (fileExists("${tokenFile}")) {
+          if(isUnix()){
+            sh "rm ${tokenFile}"
+          } else {
+            bat "del ${tokenFile}"
           }
         }
       }
