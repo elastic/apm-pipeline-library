@@ -49,6 +49,7 @@ class WithGoEnvWindowsStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(isOK)
     assertTrue(assertMethodCallContainsPattern('bat', 'Installing Go 1.12.2'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'GOTMPDIR='))
     assertJobStatusSuccess()
   }
 
