@@ -81,6 +81,5 @@ class WithVaultTokenStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('sh', 'rm .vault-token'))
-    assertJobStatusFailure()
   }
 }
