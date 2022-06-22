@@ -29,24 +29,25 @@ def call(Map args = [:], Closure body) {
   getVaultSecret.readSecretWrapper {
     // When running in the CI with multiple parallel stages
     // the access could be considered as a DDOS attack. Let's sleep a bit if it fails.
+    def token
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-      def token = getVaultSecret.getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+      token = getVaultSecret.getVaultToken(env.VAULT_ADDR, env.VAULT_ROLE_ID, env.VAULT_SECRET_ID)
+    }
+    dir(path) {
+      writeFile file: tokenFile, text: token
+    }
+    try {
+      body()
+    } catch (err) {
+      throw err
+    } finally {
+      // ensure any sensitive details are deleted
       dir(path) {
-        writeFile file: tokenFile, text: token
-      }
-      try {
-        body()
-      } catch (err) {
-        throw err
-      } finally {
-        // ensure any sensitive details are deleted
-        dir(path) {
-          if (fileExists("${tokenFile}")) {
-            if(isUnix()){
-              sh "rm ${tokenFile}"
-            } else {
-              bat "del ${tokenFile}"
-            }
+        if (fileExists("${tokenFile}")) {
+          if(isUnix()){
+            sh "rm ${tokenFile}"
+          } else {
+            bat "del ${tokenFile}"
           }
         }
       }
