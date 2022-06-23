@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.331 (22/06/2022)
+
+#### 🐛 Bug Fixes
+
+-  Set GOTMPDIR in withGoEnvWindows [#1742](https://github.com/elastic/apm-pipeline-library/pull/1742)
+-  Retry only for the vault access in withVaultToken [#1743](https://github.com/elastic/apm-pipeline-library/pull/1743)
+
 ## v1.1.329 (21/06/2022)
 *No changelog for this release.*
 
