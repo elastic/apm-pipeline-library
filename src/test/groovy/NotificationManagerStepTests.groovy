@@ -1109,4 +1109,20 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
   }
+
+  @Test
+  void test_notify_pr_issue_1744() throws Exception {
+    script.notifyPR(
+      build: readNetJSON(file: "1744/build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: [],
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: readNetJSON(file: "1744/steps-errors.json"),
+      testsErrors: [:],
+      testsSummary: []
+    )
+    printCallStack()
+    assertJobStatusSuccess()
+    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'message=}'))
+  }
 }

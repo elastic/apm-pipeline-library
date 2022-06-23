@@ -23,6 +23,7 @@ import co.elastic.mock.OtelHelperMock
 import co.elastic.mock.PullRequestMock
 import co.elastic.mock.StepsMock
 import co.elastic.TestUtils
+import net.sf.json.JSONSerializer
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static org.junit.Assert.assertTrue
@@ -744,6 +745,15 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       jsonText = f.getText()
     }
     return jsonSlurper.parseText(jsonText)
+  }
+
+  def readNetJSON(params){
+    def jsonText = params.text
+    if(params.file){
+      File f = new File("src/test/resources/${params.file}")
+      jsonText = f.getText()
+    }
+    return JSONSerializer.toJSON(jsonText)
   }
 
   // Asserts helpers
