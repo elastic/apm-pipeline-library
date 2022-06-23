@@ -40,7 +40,9 @@ def downloadAndInstall(where, version) {
   def url = terraformURL(version)
   def zipfile = 'terraform.zip'
   dir(where) {
-    download(url: url, output: zipfile)
+    retryWithSleep(retries: 5, seconds: 10, backoff: true) {
+      download(url: url, output: zipfile)
+    }
     unzip(quiet: true, zipFile: zipfile)
     if (isUnix()) {
       sh(label: 'chmod terraform', script: 'chmod +x terraform')
