@@ -47,7 +47,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
-  def notifyGoBenchmarkComment = args.containsKey('goBenchmarkComment') ? args.goBenchmarkComment : true
+  def notifyGoBenchmarkComment = args.containsKey('goBenchmarkComment') ? args.goBenchmarkComment : false
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
