@@ -2,7 +2,8 @@ Generate a Go benchmark report by comparing the existing benchmark with
 the `TARGET_BRANCH` variable if exists.
 
 This particular step is quite opinionated:
-- It relies the TARGET_BRANCH contains a file in the root folder and its name is the value of current
+- It relies on the `TARGET_BRANCH` to generate the diff to compare with.
+- CI builds archive their go benchmark report in the root folder.
 - It uses Golang to run the benchmark.
 - It produces a file with the name `bench.diff`
 
