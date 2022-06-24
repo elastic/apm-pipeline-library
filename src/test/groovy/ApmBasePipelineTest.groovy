@@ -747,7 +747,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     return jsonSlurper.parseText(jsonText)
   }
 
-  def readNetJSON(params){
+  def toJSON(params){
     def jsonText = params.text
     if(params.file){
       File f = new File("src/test/resources/${params.file}")
