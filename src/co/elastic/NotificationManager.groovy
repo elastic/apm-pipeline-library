@@ -289,7 +289,7 @@ def createGitHubIssue(Map args = [:]) {
     arguments['archiveFile'] = false
     body = generateBuildReport(arguments)
   }
-  def labels = 'automation,ci-reported,ci:build'
+  def labels = 'automation,ci-reported,ci-build'
   if (args.containsKey('githubLabels') && args.githubLabels?.trim()) {
     labels += ",${args.githubLabels}"
   }
