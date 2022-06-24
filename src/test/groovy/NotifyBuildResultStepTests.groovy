@@ -528,7 +528,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   void  test_notifyCommentWithGoBenchmarkReport_if_file_and_empty() throws Exception {
     // When there is file with benchmark but empty.
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
-    helper.registerAllowedMethod("readFile", [Map.class], {return [ '' ]})
+    helper.registerAllowedMethod("readFile", [Map.class], {return ''})
     script.notifyCommentWithGoBenchmarkReport()
     printCallStack()
 
