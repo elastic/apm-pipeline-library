@@ -196,18 +196,17 @@ def notifyCommentWithGoBenchmarkReport() {
       return
     }
 
-    def markdownFileName = "build/${reportFileName}.md"
-    createFileFromTemplate(data: "${rawContent}", template: "goBenchmark.md.j2", output: "${markdownFileName}", localTemplate: false)
-    def goBenchmarkContent = readFile(file: markdownFileName)
+    def markdownContent = """
+    ### :books: Go benchmark report
 
-    // If no data to be reported then
-    if (!goBenchmarkContent?.trim()) {
-      log(level: 'INFO', text: "notifyBuildResult: the ${markdownFileName} file is empty.")
-      return
-    }
+```
+${rawContent}
+```
+
+_report generated with https://pkg.go.dev/golang.org/x/perf/cmd/benchstat_"""
 
     // Report GitHub comment
-    githubPrComment(message: goBenchmarkContent, commentFile: reportFileName)
+    githubPrComment(message: markdownContent, commentFile: reportFileName)
   }
 }
 
