@@ -77,7 +77,7 @@ def runBenchmarkDiff(Map args = [:]) {
     flags = "| grep -v 'all equal' | grep -v '~'"
   }
   withGoEnv(pkgs: [ "golang.org/x/perf/cmd/..." ] ) {
-    sh(label: 'generateGoBenchmarkDiff', script: "benchstat ${args.file} ${args.compareWith} ${flags} | tee ${diffReport}")
+    sh(label: 'generateGoBenchmarkDiff', script: "benchstat ${args.compareWith} ${args.file} ${flags} | tee ${diffReport}")
   }
   archiveArtifacts(allowEmptyArchive: true, artifacts: diffReport, onlyIfSuccessful: false)
 }
