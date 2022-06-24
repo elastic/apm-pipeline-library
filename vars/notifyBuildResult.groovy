@@ -181,34 +181,33 @@ def notifyCommentWithCoverageReport() {
 
 def notifyCommentWithGoBenchmarkReport() {
   catchError(message: 'There were some failures when notifying the go benchmark report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    def goBenchmarkId = "goBenchmark"
-    // If no file to be analysed
-    def goBenchmarkFile = "${goBenchmarkId}.diff"
-    if (!fileExists(goBenchmarkFile)) {
-      log(level: 'INFO', text: "notifyBuildResult: there are no ${goBenchmarkFile} file to be compared with.")
+    def reportFileName = generateGoBenchmarkDiff.getReportFileName()
+    unstash reportFileName
+    // If no file to be reported
+    if (!fileExists(reportFileName)) {
+      log(level: 'INFO', text: "notifyBuildResult: there are no ${reportFileName} file to be reported.")
       return
     }
 
-    // If no data to be analysed then
-    def rawContent = readFile(file: goBenchmarkFile)
+    // If no data to be reported then
+    def rawContent = readFile(file: reportFileName)
     if (rawContent?.isEmpty()) {
-      log(level: 'INFO', text: "notifyBuildResult: the ${goBenchmarkFile} file is empty.")
+      log(level: 'INFO', text: "notifyBuildResult: the ${reportFileName} file is empty.")
       return
     }
 
-    // TODO: generate Markdown
-    generateReport(id: goBenchmarkId, input: goBenchmarkFile, output: 'build', template: true, compare: false)
+    def markdownFileName = "build/${reportFileName}.md"
+    createFileFromTemplate(data: "${rawContent}", template: "${goBenchmark.md}.j2", output: "${markdownFile}", localTemplate: false)
+    def goBenchmarkContent = readFile(file: markdownFileName)
 
-    def markdown = "build/${goBenchmarkId}.md"
-    def goBenchmarkContent = readFile(file: markdown)
     // If no data to be reported then
     if (!goBenchmarkContent?.trim()) {
-      log(level: 'INFO', text: "notifyBuildResult: the ${markdown} file is empty.")
+      log(level: 'INFO', text: "notifyBuildResult: the ${markdownFileName} file is empty.")
       return
     }
 
     // Report GitHub comment
-    githubPrComment(message: goBenchmarkContent, commentFile: goBenchmarkId)
+    githubPrComment(message: goBenchmarkContent, commentFile: reportFileName)
   }
 }
 

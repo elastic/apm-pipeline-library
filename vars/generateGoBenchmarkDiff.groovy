@@ -65,7 +65,7 @@ def getCompareWithFileIfPossible(Map args = [:]) {
 }
 
 def runBenchmarkDiff(Map args = [:]) {
-  def diffReport = 'bench.diff'
+  def diffReport = getReportFileName()
   def flags = ''
   if (args.filter.equals('exclude')) {
     flags = "| grep -v 'all equal' | grep -v '~'"
@@ -77,4 +77,8 @@ def runBenchmarkDiff(Map args = [:]) {
   // This is required then the pipeline can use something like
   //      notifyBuildResult(notifyGoBenchmarkComment: true)
   stash(name: "${diffReport}", includes: "${diffReport}")
+}
+
+def getReportFileName() {
+  return 'bench.diff'
 }
