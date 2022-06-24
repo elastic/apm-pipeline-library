@@ -1113,11 +1113,11 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   @Test
   void test_notify_pr_issue_1744() throws Exception {
     script.notifyPR(
-      build: toJSON(file: "1744/build-info.json"),
+      build: textOrFiletoJSON(file: "1744/build-info.json"),
       buildStatus: "FAILURE",
       changeSet: [],
       statsUrl: "https://ecs.example.com/app/kibana",
-      stepsErrors: toJSON(file: "1744/steps-errors.json"),
+      stepsErrors: textOrFiletoJSON(file: "1744/steps-errors.json"),
       testsErrors: [:],
       testsSummary: []
     )

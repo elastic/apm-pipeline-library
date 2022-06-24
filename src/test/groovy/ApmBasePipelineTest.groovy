@@ -747,10 +747,11 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     return jsonSlurper.parseText(jsonText)
   }
 
-  def toJSON(params){
-    def jsonText = params.text
-    if(params.file){
-      File f = new File("src/test/resources/${params.file}")
+  // toJSON already exists with a JSON Map signature.
+  def textOrFiletoJSON(args){
+    def jsonText = args.text
+    if(args.file){
+      File f = new File("src/test/resources/${args.file}")
       jsonText = f.getText()
     }
     return JSONSerializer.toJSON(jsonText)
