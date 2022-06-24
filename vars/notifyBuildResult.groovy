@@ -47,6 +47,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
+  def notifyGoBenchmarkComment = args.containsKey('goBenchmarkComment') ? args.goBenchmarkComment : true
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
@@ -140,6 +141,10 @@ def call(Map args = [:]) {
         notifyCommentWithCoverageReport()
       }
 
+      if (notifyGoBenchmarkComment) {
+        notifyCommentWithGoBenchmarkReport()
+      }
+
       // Ensure we don't leave any leftovers if running in the jenkins controller.
       catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
@@ -171,6 +176,39 @@ def notifyCommentWithCoverageReport() {
     } else {
       log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
     }
+  }
+}
+
+def notifyCommentWithGoBenchmarkReport() {
+  catchError(message: 'There were some failures when notifying the go benchmark report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    def goBenchmarkId = "goBenchmark"
+    // If no file to be analysed
+    def goBenchmarkFile = "${goBenchmarkId}.diff"
+    if (!fileExists(goBenchmarkFile)) {
+      log(level: 'INFO', text: "notifyBuildResult: there are no ${goBenchmarkFile} file to be compared with.")
+      return
+    }
+
+    // If no data to be analysed then
+    def rawContent = readFile(file: goBenchmarkFile)
+    if (rawContent?.isEmpty()) {
+      log(level: 'INFO', text: "notifyBuildResult: the ${goBenchmarkFile} file is empty.")
+      return
+    }
+
+    // TODO: generate Markdown
+    generateReport(id: goBenchmarkId, input: goBenchmarkFile, output: 'build', template: true, compare: false)
+
+    def markdown = "build/${goBenchmarkId}.md"
+    def goBenchmarkContent = readFile(file: markdown)
+    // If no data to be reported then
+    if (!goBenchmarkContent?.trim()) {
+      log(level: 'INFO', text: "notifyBuildResult: the ${markdown} file is empty.")
+      return
+    }
+
+    // Report GitHub comment
+    githubPrComment(message: goBenchmarkContent, commentFile: goBenchmarkId)
   }
 }
 
