@@ -18,7 +18,7 @@
 /**
 
 Generate a Go benchmark report by comparing the existing benchmark with
-the `TARGET_BRANCH` variable if exists.
+the `CHANGE_TARGET` variable if exists.
 
   generateGoBenchmarkDiff(file: 'bench.out', filter: 'exclude')
 **/
