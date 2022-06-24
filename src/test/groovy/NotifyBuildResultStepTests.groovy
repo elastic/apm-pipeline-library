@@ -538,6 +538,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
   @Test
   void  test_notifyCommentWithGoBenchmarkReport_if_file() throws Exception {
+    addEnvVar('TARGET_BRANCH', 'main')
     // When there is file with benchmark.
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod("readFile", [Map.class], {return 'foo' })

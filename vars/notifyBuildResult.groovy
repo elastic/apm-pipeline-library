@@ -199,7 +199,7 @@ def notifyCommentWithGoBenchmarkReport() {
     def markdownContent = """
 ### :books: Go benchmark report
 
-Diff with ${TARGET_BRANCH}
+Diff with the `${env.TARGET_BRANCH}` branch
 
 ```
 ${rawContent}
