@@ -73,7 +73,7 @@ class GenerateGoBenchmarkDiffStepTests extends ApmBasePipelineTest {
   void test_pull_request() throws Exception {
     script.call(file: 'bench.out')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'benchstat bench.out build/main/bench.out  | tee bench.diff'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'benchstat build/main/bench.out bench.out  | tee bench.diff'))
     assertTrue(assertMethodCallOccurrences('copyArtifacts', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertTrue(assertMethodCallContainsPattern('stash', 'name=bench.diff, includes=bench.diff'))
@@ -84,7 +84,7 @@ class GenerateGoBenchmarkDiffStepTests extends ApmBasePipelineTest {
   void test_pull_request_with_exclude() throws Exception {
     script.call(file: 'bench.out', filter: 'exclude')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', "benchstat bench.out build/main/bench.out | grep -v 'all equal' | grep -v '~' | tee bench.diff"))
+    assertTrue(assertMethodCallContainsPattern('sh', "benchstat build/main/bench.out bench.out | grep -v 'all equal' | grep -v '~' | tee bench.diff"))
     assertTrue(assertMethodCallOccurrences('copyArtifacts', 1))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 1))
     assertTrue(assertMethodCallContainsPattern('stash', 'name=bench.diff, includes=bench.diff'))
