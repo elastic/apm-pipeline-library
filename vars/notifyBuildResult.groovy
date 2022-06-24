@@ -197,7 +197,7 @@ def notifyCommentWithGoBenchmarkReport() {
     }
 
     def markdownFileName = "build/${reportFileName}.md"
-    createFileFromTemplate(data: "${rawContent}", template: "goBenchmark.md.j2", output: "${markdownFile}", localTemplate: false)
+    createFileFromTemplate(data: "${rawContent}", template: "goBenchmark.md.j2", output: "${markdownFileName}", localTemplate: false)
     def goBenchmarkContent = readFile(file: markdownFileName)
 
     // If no data to be reported then
