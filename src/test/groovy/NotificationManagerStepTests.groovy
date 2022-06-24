@@ -1063,7 +1063,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.createGitHubIssue(comment: 'my build report')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,ci-build}'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,build-failures}'))
   }
 
   @Test
@@ -1084,7 +1084,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void test_createGitHubIssue_with_labels() throws Exception {
     script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,ci-build,foo}'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,build-failures,foo}'))
   }
 
   @Test
