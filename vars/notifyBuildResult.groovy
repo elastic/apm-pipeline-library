@@ -182,7 +182,7 @@ def notifyCommentWithCoverageReport() {
 def notifyCommentWithGoBenchmarkReport() {
   catchError(message: 'There were some failures when notifying the go benchmark report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
     def reportFileName = generateGoBenchmarkDiff.getReportFileName()
-    unstash reportFileName
+    unstash(reportFileName)
     // If no file to be reported
     if (!fileExists(reportFileName)) {
       log(level: 'INFO', text: "notifyBuildResult: there are no ${reportFileName} file to be reported.")
@@ -197,7 +197,9 @@ def notifyCommentWithGoBenchmarkReport() {
     }
 
     def markdownContent = """
-    ### :books: Go benchmark report
+### :books: Go benchmark report
+
+Diff with ${TARGET_BRANCH}
 
 ```
 ${rawContent}

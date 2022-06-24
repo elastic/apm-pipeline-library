@@ -65,7 +65,7 @@ class GenerateGoBenchmarkDiffStepTests extends ApmBasePipelineTest {
     assertFalse(assertMethodCallContainsPattern('sh', 'generateGoBenchmarkDiff'))
     assertTrue(assertMethodCallOccurrences('copyArtifacts', 0))
     assertTrue(assertMethodCallOccurrences('archiveArtifacts', 0))
-    assertFalse(assertMethodCallContainsPattern('stash', 'name=bench.diff, includes=bench.diff'))
+    assertTrue(assertMethodCallContainsPattern('stash', 'name=bench.diff, includes=bench.diff'))
     assertJobStatusSuccess()
   }
 

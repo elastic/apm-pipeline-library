@@ -41,6 +41,12 @@ def call(Map args = [:]) {
   if (compareWith?.trim()) {
     runBenchmarkDiff(filter: filter, file: file, compareWith: compareWith)
   }
+
+  // This is required for vary reasons:
+  //   1) then the pipeline can use something like:
+  //      notifyBuildResult(notifyGoBenchmarkComment: true)
+  //   2) it supports empty stashes so consumers don't get affected if it was not stashed.
+  stash(name: "${getReportFileName()}", includes: "${getReportFileName()}", allowEmpty: true)
 }
 
 def getCompareWithFileIfPossible(Map args = [:]) {
@@ -74,9 +80,6 @@ def runBenchmarkDiff(Map args = [:]) {
     sh(label: 'generateGoBenchmarkDiff', script: "benchstat ${args.file} ${args.compareWith} ${flags} | tee ${diffReport}")
   }
   archiveArtifacts(allowEmptyArchive: true, artifacts: diffReport, onlyIfSuccessful: false)
-  // This is required then the pipeline can use something like
-  //      notifyBuildResult(notifyGoBenchmarkComment: true)
-  stash(name: "${diffReport}", includes: "${diffReport}")
 }
 
 def getReportFileName() {
