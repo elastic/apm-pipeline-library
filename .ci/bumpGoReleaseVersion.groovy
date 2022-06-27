@@ -122,7 +122,7 @@ def prepareArguments(Map args = [:]){
     goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: overrideGoVersion)
   }
 
-  log(level: 'INFO', text: "prepareArguments(repo: ${repo}, branch: ${branch}, overrideGoVersion: ${overrideGoVersion}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
+  log(level: 'INFO', text: "prepareArguments(goReleaseVersion: ${goReleaseVersion}, repo: ${repo}, branch: ${branch}, overrideGoVersion: ${overrideGoVersion}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}"""
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
