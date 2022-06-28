@@ -647,7 +647,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       return script.call(m, c)
     })
     helper.registerAllowedMethod('withGoEnvUnix', [Map.class, Closure.class], { m, c ->
-      return true
+      def script = loadScript('vars/withGoEnvUnix.groovy')
+      return script.call(m, c)
     })
     helper.registerAllowedMethod('withGoEnvWindows', [Map.class, Closure.class], { m, c ->
       return true
