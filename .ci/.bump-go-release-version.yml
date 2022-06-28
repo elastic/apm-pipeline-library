@@ -25,7 +25,6 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-      - 7.x
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-robots-on-call
