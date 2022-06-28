@@ -47,6 +47,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 def call(Map args = [:]) {
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
+  def notifyGoBenchmarkComment = args.containsKey('goBenchmarkComment') ? args.goBenchmarkComment : false
   def notifySlackComment = args.containsKey('slackComment') ? args.slackComment : false
   def analyzeFlakey = args.containsKey('analyzeFlakey') ? args.analyzeFlakey : false
   def newPRComment = args.containsKey('newPRComment') ? args.newPRComment : [:]
@@ -140,6 +141,10 @@ def call(Map args = [:]) {
         notifyCommentWithCoverageReport()
       }
 
+      if (notifyGoBenchmarkComment) {
+        notifyCommentWithGoBenchmarkReport()
+      }
+
       // Ensure we don't leave any leftovers if running in the jenkins controller.
       catchError(message: 'Delete dir if possible', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
         deleteDir()
@@ -171,6 +176,39 @@ def notifyCommentWithCoverageReport() {
     } else {
       log(level: 'INFO', text: "notifyBuildResult: there are no ${coverageFile} file to be compared with.")
     }
+  }
+}
+
+def notifyCommentWithGoBenchmarkReport() {
+  catchError(message: 'There were some failures when notifying the go benchmark report', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    def reportFileName = generateGoBenchmarkDiff.getReportFileName()
+    unstash(reportFileName)
+    // If no file to be reported
+    if (!fileExists(reportFileName)) {
+      log(level: 'INFO', text: "notifyBuildResult: there are no ${reportFileName} file to be reported.")
+      return
+    }
+
+    // If no data to be reported then
+    def rawContent = readFile(file: reportFileName)
+    if (rawContent?.isEmpty()) {
+      log(level: 'INFO', text: "notifyBuildResult: the ${reportFileName} file is empty.")
+      return
+    }
+
+    def markdownContent = """
+### :books: Go benchmark report
+
+Diff with the `${env.CHANGE_TARGET}` branch
+
+```
+${rawContent}
+```
+
+_report generated with https://pkg.go.dev/golang.org/x/perf/cmd/benchstat_"""
+
+    // Report GitHub comment
+    githubPrComment(message: markdownContent, commentFile: reportFileName)
   }
 }
 

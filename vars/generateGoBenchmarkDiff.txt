@@ -1,0 +1,18 @@
+Generate a Go benchmark report by comparing the existing benchmark with
+the `CHANGE_TARGET` variable if exists.
+
+This particular step is quite opinionated:
+- It relies on the `CHANGE_TARGET` to generate the diff to compare with.
+- CI builds archive their go benchmark report in the root folder.
+- It uses Golang to run the benchmark.
+- It produces a file with the name `bench.diff`
+
+```
+  // This will create a diff report with the name `bench.diff` in the build folder.
+  generateGoBenchmarkDiff(file: 'bench.out', filter: 'exclude')
+```
+
+* file: The name of the file to be compared with. Mandatory
+* filter: Whether to apply a filter in the diff. Values: `none`, `exclude`. Optional (default: `none`)
+
+_NOTE_: It only supports *nix.

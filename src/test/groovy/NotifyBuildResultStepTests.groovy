@@ -28,6 +28,10 @@ import static org.junit.Assert.assertTrue
 
 class NotifyBuildResultStepTests extends ApmBasePipelineTest {
 
+  class ClassGoBenchmarkMock {
+    def getReportFileName(){ return 'report' }
+  }
+
   @Override
   @Before
   void setUp() throws Exception {
@@ -41,6 +45,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('fileExists', [String.class], { return true })
     helper.registerAllowedMethod("readFile", [Map.class], { return '{"Packages": { "ratio": "value" }}' })
     co.elastic.NotificationManager.metaClass.notifyEmail{ Map m -> 'OK' }
+    binding.setProperty('generateGoBenchmarkDiff', new ClassGoBenchmarkMock())
   }
 
   @Test
@@ -506,5 +511,41 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // Then it should run the report
     assertTrue(assertMethodCallOccurrences('generateReport', 0))
     assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+  }
+
+  @Test
+  void test_notifyCommentWithGoBenchmarkReport_if_no_file() throws Exception {
+    // When there is no file with benchmark.
+    helper.registerAllowedMethod('fileExists', [String.class], { return false })
+    script.notifyCommentWithGoBenchmarkReport()
+    printCallStack()
+
+    // Then it should not run the report
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+  }
+
+  @Test
+  void  test_notifyCommentWithGoBenchmarkReport_if_file_and_empty() throws Exception {
+    // When there is file with benchmark but empty.
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
+    helper.registerAllowedMethod("readFile", [Map.class], {return ''})
+    script.notifyCommentWithGoBenchmarkReport()
+    printCallStack()
+
+    // Then it should run the report
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 0))
+  }
+
+  @Test
+  void  test_notifyCommentWithGoBenchmarkReport_if_file() throws Exception {
+    addEnvVar('CHANGE_TARGET', 'main')
+    // When there is file with benchmark.
+    helper.registerAllowedMethod('fileExists', [String.class], { return true })
+    helper.registerAllowedMethod("readFile", [Map.class], {return 'foo' })
+    script.notifyCommentWithGoBenchmarkReport()
+    printCallStack()
+
+    // Then it should run the report
+    assertTrue(assertMethodCallOccurrences('githubPrComment', 1))
   }
 }
