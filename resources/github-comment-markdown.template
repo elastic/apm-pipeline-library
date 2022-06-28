@@ -79,9 +79,9 @@ ${errorStackTrace}
 <% stepsErrors = stepsErrors?.findAll{it?.result == "FAILURE" &&
                                       !it?.displayName?.contains('Notifies GitHub') &&
                                       !it?.displayName?.contains('Archive JUnit') &&
-                                      !it?.displayDescription?.contains('githubPrCheckApproved') &&
-                                      !it?.displayDescription?.contains('approval-list/elastic') &&
                                       !it?.displayName?.contains('Recursively delete the current directory from the workspace')}%>
+<% stepsErrors = stepsErrors?.findAll{! (!it?.get('displayDescription', '') instanceof net.sf.json.JSONNull && it?.displayDescription.contains('githubPrCheckApproved'))}%>
+<% stepsErrors = stepsErrors?.findAll{! (!it?.get('displayDescription', '') instanceof net.sf.json.JSONNull && it?.displayDescription.contains('approval-list/elastic'))}%>
 <% errorSignal = stepsErrors?.find{it?.displayName?.contains('Error signal')}%>
 <% stepsErrors = stepsErrors?.findAll{ !it?.displayName?.contains('Error signal') } %>
 <% if (errorSignal) { stepsErrors = stepsErrors << errorSignal }%>

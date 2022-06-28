@@ -229,12 +229,12 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: "tests-summary.json")
     )
     printCallStack()
-    // Then the description contains the reason, there is no need to report the Error for the githubPrCheckApproved
-    // and load resources for the approval-list should not be reported in the GitHub comment.
+    // Then the description contains the reason, and also a report with the Error for the githubPrCheckApproved
+    // and load resources for the approval-list in the GitHub comment.
     assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Build Aborted'))
     assertTrue(assertMethodCallContainsPattern('githubPrComment', '> The PR is not allowed to run in the CI yet'))
-    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'approval-list/elastic'))
-    assertFalse(assertMethodCallContainsPattern('githubPrComment', 'githubPrCheckApproved'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'approval-list/elastic'))
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'githubPrCheckApproved'))
     assertJobStatusSuccess()
   }
 
@@ -1063,7 +1063,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     script.createGitHubIssue(comment: 'my build report')
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported}'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,build-failures}'))
   }
 
   @Test
@@ -1084,7 +1084,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
   void test_createGitHubIssue_with_labels() throws Exception {
     script.createGitHubIssue(githubLabels: 'foo', comment: 'my build report')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,foo}'))
+    assertTrue(assertMethodCallContainsPattern('githubCreateIssue', 'labels=automation,ci-reported,build-failures,foo}'))
   }
 
   @Test
@@ -1108,5 +1108,21 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     )
     printCallStack()
     assertFalse(assertMethodCallContainsPattern('githubCreateIssue', 'assignee'))
+  }
+
+  @Test
+  void test_notify_pr_issue_1744() throws Exception {
+    script.notifyPR(
+      build: textOrFiletoJSON(file: "1744/build-info.json"),
+      buildStatus: "FAILURE",
+      changeSet: [],
+      statsUrl: "https://ecs.example.com/app/kibana",
+      stepsErrors: textOrFiletoJSON(file: "1744/steps-errors.json"),
+      testsErrors: [:],
+      testsSummary: []
+    )
+    printCallStack()
+    assertJobStatusSuccess()
+    assertTrue(assertMethodCallContainsPattern('githubPrComment', 'Show only the first 10 steps failures'))
   }
 }

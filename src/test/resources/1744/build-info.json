@@ -1,0 +1,23 @@
+{
+  "artifactsZipFile": "https://beats-ci.elastic.co//job/e2e-tests/job/e2e-testing-mbp/job/PR-2688/1/artifact/*zip*/archive.zip",
+  "causeOfBlockage": null,
+  "causes": {
+    "shortDescription": "Pull request #2688 opened"
+  },
+  "description": null,
+  "durationInMillis": 6654442,
+  "enQueueTime": "2022-06-23T05:13:07.176+0000",
+  "endTime": null,
+  "estimatedDurationInMillis": -1,
+  "id": "1",
+  "name": null,
+  "organization": "jenkins",
+  "pipeline": "PR-2688",
+  "result": "FAILURE",
+  "runSummary": "?",
+  "startTime": "2022-06-23T05:13:07.185+0000",
+  "state": "FINISHED",
+  "type": "WorkflowRun",
+  "commitId": "bd80c7a45645953d2eb2915026752c2879044a55+892e951c25615c5a004bed1e0e65050e86009061 (c856b4f734455f5543c04f1fb99aef752318f710)",
+  "commitUrl": null
+}
