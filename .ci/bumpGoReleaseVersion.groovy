@@ -85,7 +85,7 @@ def generateSteps(Map args = [:]) {
                        labels: project.get('labels', ''),
                        title: project.get('title', ''),
                        assign: project.get('assign', ''),
-                       overrideGoVersion: project.get('overrideGoVersion', env.BRANCH),
+                       overrideGoVersion: project.get('overrideGoVersion'),
                        reviewer: project.get('reviewer', ''))
     }
   }
@@ -107,20 +107,15 @@ def prepareArguments(Map args = [:]){
   def assign = args.get('assign', '')
   def reviewer = args.get('reviewer', '')
   def state = args.get('state', 'all')
-  def overrideGoVersion = args.get('overrideGoVersion', branch)
+  def overrideGoVersion = args.get('overrideGoVersion', '')
 
-  // If branch is not main the it's likely needed to search for the go version that matches the given branch
-  // ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
-  def goReleaseVersion = env.GO_RELEASE_VERSION
-  if (!branch?.equals('main')) {
-    goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: branch)
+  // Default to the branch.
+  if (!overrideGoVersion?.trim()) {
+    overrideGoVersion = branch
   }
 
-  // There are cases where the main should not use the latest major.minor version but a different go version.
-  // overrideGoVersion is the major.minor golang version to be used as long as it does not match the branch.
-  if (!overrideGoVersion.equals(branch)) {
-    goReleaseVersion = goVersion(action: 'latest', unstable: false, glob: overrideGoVersion)
-  }
+  // Get the go release version
+  def goReleaseVersion = getGoReleaseVersion(branch: branch, overrideGoVersion: overrideGoVersion)
 
   log(level: 'INFO', text: "prepareArguments(goReleaseVersion: ${goReleaseVersion}, repo: ${repo}, branch: ${branch}, overrideGoVersion: ${overrideGoVersion}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
   def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}"""
@@ -157,4 +152,33 @@ def createPullRequest(Map args = [:]) {
   } else {
     log(level: 'INFO', text: "There are no changes to be submitted.")
   }
+}
+
+/**
+* This is the method in charge of discovering the latest Go release, it supports
+* three different scenarios, sorted by precedence (being the first one with the lowest
+* precedence):
+*  - Default with the GO_RELEASE_VERSION
+*  - If no `main` branch then look for the given branch (opinionated, since branches should match the go versions)
+*  - If `overrideGoVersion` differs from the given branch, then look for that particular branch.
+*/
+def getGoReleaseVersion(Map args = [:]){
+  def branch = args.branch
+  def overrideGoVersion = args.overrideGoVersion
+
+  // There are cases where the main branch should not use the latest major.minor version
+  // but a different go version. For such, the overrideGoVersion can help on, since it is
+  // the major.minor golang version to be used as long as it does not match the branch.
+  // Therefore it has got the highest precedence.
+  if (!overrideGoVersion.equals(branch)) {
+    return goVersion(action: 'latest', unstable: false, glob: overrideGoVersion)
+  }
+
+  // If branch is not main the it's likely needed to search for the go version that matches
+  // the given branch, ie. 1.16 branch should be go1.16, 1.17 branch should be go1.17 and so on
+  if (!branch?.equals('main')) {
+    return goVersion(action: 'latest', unstable: false, glob: branch)
+  }
+
+  return env.GO_RELEASE_VERSION
 }
