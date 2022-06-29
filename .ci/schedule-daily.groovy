@@ -85,7 +85,7 @@ pipeline {
       steps {
         build(job: 'apm-shared/github-syncup-labels-obs-dev-pipeline',
           parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: params.DRY_RUN_MODE),
+            booleanParam(name: 'DRY_RUN_MODE', value: false),
           ],
           propagate: false,
           wait: false
