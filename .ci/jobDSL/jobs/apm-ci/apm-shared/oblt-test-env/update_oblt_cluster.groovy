@@ -23,7 +23,7 @@ clusters.each{ cluster ->
     description("Job to create a ${cluster} oblt cluster.")
     parameters {
       stringParam('branch_specifier', "main", "the Git branch specifier to build.")
-      stringParam('CLUSTER_NAME', "", 'Name of the cluster to update.')
+      stringParam('CLUSTER_NAME', "${cluster}-oblt", 'Name of the cluster to update.')
       stringParam('NEW_DOCKER_IMAGE', "", 'Tag of the Docker images to use.')
       booleanParam('is_release', false, 'True is the Docker image is not an SNAPSHOT.')
       booleanParam('notify', true, 'Send notifications about the build result.')
@@ -35,9 +35,6 @@ clusters.each{ cluster ->
       daysToKeep(7)
       artifactNumToKeep(10)
       artifactDaysToKeep(-1)
-    }
-    triggers {
-      cron('H H(3-4) * * 1-5')
     }
     definition {
       cpsScm {
