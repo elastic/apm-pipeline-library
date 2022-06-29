@@ -46,7 +46,7 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/edge-litle.groovy")
+      scriptPath(".ci/edge-lite.groovy")
     }
   }
 }
