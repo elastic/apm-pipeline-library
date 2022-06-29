@@ -1,4 +1,4 @@
-Generate a report using the `id` script and compare the output with the `TARGET_BRANCH`
+Generate a report using the `id` script and compare the output with the `CHANGE_TARGET`
 variable if exists. Then it creates a report using the template `id`.
 
 This particular step is quite opinionated, and it relies on the id as the name of the
@@ -14,6 +14,6 @@ script, template and outputs that are generated.
 * output: The input required to be used when generating the reports. Optional. Default 'build'
 * template: Whether to generate a report with the template with id name. Optional. Default 'true'
 * templateFormat: What's the report extension generated with the template. Optional. Default 'md'
-* compare: Whether to compare the outcome with a particular TARGET_BRANCH. NOTE: only available for Pull Requests. Optional. Default 'true'
+* compare: Whether to compare the outcome with a particular `CHANGE_TARGET`. NOTE: only available for Pull Requests. Optional. Default 'true'
 
 _NOTE_: It only supports *nix.

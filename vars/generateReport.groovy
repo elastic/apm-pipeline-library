@@ -18,7 +18,7 @@
 /**
 
   Generate a report using the `id` script and compare the output
-  with the `TARGET_BRANCH` variable if exists. Then it creates a report
+  with the `CHANGE_TARGET` variable if exists. Then it creates a report
   using the template `id`.
 
   generateReport(id: 'bundlesize', input: 'packages/rum/reports/apm-*-report.html', template: true, compare: true)
