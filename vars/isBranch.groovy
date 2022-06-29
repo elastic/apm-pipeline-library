@@ -23,5 +23,9 @@
   }
 */
 def call(){
+  // It should not happen but if the BRANCH_NAME is empty then it's not a branch
+  if (!env.BRANCH_NAME?.trim()) {
+    return false
+  }
   return !(isPR() || isTag())
 }

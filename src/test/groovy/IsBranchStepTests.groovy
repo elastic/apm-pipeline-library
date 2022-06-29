@@ -41,6 +41,15 @@ class IsBranchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_isBranch_cornercase() throws Exception {
+    addEnvVar('BRANCH_NAME', '')
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_isBranch_in_pr() throws Exception {
     addEnvVar('BRANCH_NAME', 'PR-1')
     addEnvVar('CHANGE_ID', '1')
