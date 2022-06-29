@@ -16,7 +16,7 @@
 // under the License.
 
 pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
-  displayName("edge-litle-oblt cluster")
+  displayName("edge-lite-oblt cluster")
   description("Job to create a edge-lite- oblt cluster every day.")
   parameters {
     stringParam('branch_specifier', "main", "the Git branch specifier to build.")
