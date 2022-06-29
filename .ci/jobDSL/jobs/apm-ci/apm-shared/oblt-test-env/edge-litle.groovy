@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/edge-litle-oblt-cluster") {
+pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
   displayName("edge-litle-oblt cluster")
-  description("Job to create a edge-litle- oblt cluster every day.")
+  description("Job to create a edge-lite- oblt cluster every day.")
   parameters {
     stringParam('branch_specifier', "main", "the Git branch specifier to build.")
     booleanParam('notify', true, 'Send notifications about the build result.')
