@@ -42,17 +42,21 @@ def call(Map args = [:]){
   log(level: 'INFO', text: "githubPrCheckApproved: Title: ${pr?.title} - User: ${user} - Author Association: ${pr?.author_association}")
 
   // The PR is approved to be executed in the CI for the below reasons:
-  // - An user with write permissions raised the PR.
-  // - IsMemberOf the Elastic Org.
-  // - An authorized bot created the PR.
   // - If it has already been approved by a member or collaborator.
+  // - An user with write permissions raised the PR.
+  // - An authorized bot created the PR.
   // - A trusted user for that particular repo.
+  // - IsMemberOf the Elastic Org.
   //
+  // NOTE: isMemberOfOrg can throw a controlled error if it's not member of the elastic org
+  //       so the digested report with notifyBuildResult reports it. Therefore
+  //       let's validate isMemberOfOrg at the very end instead to avoid reporting those
+  //       errors.
   approved = user != null && (isPrApproved(reviews) ||
                               hasWritePermission(token, repoName, user) ||
-                              isMemberOfOrg(user: user, org: 'elastic') ||
                               isAuthorizedBot(user, userType) ||
-                              isAuthorizedUser(repoName, user))
+                              isAuthorizedUser(repoName, user) ||
+                              isMemberOfOrg(user: user, org: 'elastic'))
 
   if(!approved){
     def message = 'The PR is not allowed to run in the CI yet'
