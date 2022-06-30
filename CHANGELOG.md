@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.335 (28/06/2022)
+
+#### 🚀 Enhancements
+
+-  Generate report with the Go benchmark [#1748](https://github.com/elastic/apm-pipeline-library/pull/1748)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1186.v8def1a_5f3944 to 1189.va_d37a_e9e4eda_ [#1749](https://github.com/elastic/apm-pipeline-library/pull/1749)
+
 ## v1.1.333 (27/06/2022)
 *No changelog for this release.*
 
