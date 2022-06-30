@@ -86,7 +86,8 @@ def generateSteps(Map args = [:]) {
                        title: project.get('title', ''),
                        assign: project.get('assign', ''),
                        overrideGoVersion: project.get('overrideGoVersion'),
-                       reviewer: project.get('reviewer', ''))
+                       reviewer: project.get('reviewer', ''),
+                       extendedDescription: project.get('description', ''))
     }
   }
 }
@@ -108,6 +109,7 @@ def prepareArguments(Map args = [:]){
   def reviewer = args.get('reviewer', '')
   def state = args.get('state', 'all')
   def overrideGoVersion = args.get('overrideGoVersion', '')
+  def extendedDescription = args.get('extendedDescription', '')
 
   // Default to the branch.
   if (!overrideGoVersion?.trim()) {
@@ -118,7 +120,7 @@ def prepareArguments(Map args = [:]){
   def goReleaseVersion = getGoReleaseVersion(branch: branch, overrideGoVersion: overrideGoVersion)
 
   log(level: 'INFO', text: "prepareArguments(goReleaseVersion: ${goReleaseVersion}, repo: ${repo}, branch: ${branch}, overrideGoVersion: ${overrideGoVersion}, scriptFile: ${scriptFile}, labels: '${labels}', title: '${title}', assign: '${assign}', reviewer: '${reviewer}')")
-  def message = """### What \n Bump go release version with the latest release. \n ### Further details \n See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}"""
+  def message = getDescription(goReleaseVersion, extendedDescription)
   if (labels.trim() && !labels.contains('automation')) {
     labels = "automation,${labels}"
   }
@@ -181,4 +183,14 @@ def getGoReleaseVersion(Map args = [:]){
   }
 
   return env.GO_RELEASE_VERSION
+}
+
+def getDescription(goReleaseVersion, extendedDescription) {
+  return """### What \n
+Bump go release version with the latest release. \n
+### Further details \n
+See [changelog](https://github.com/golang/go/issues?q=milestone%3AGo${goReleaseVersion}+label%3ACherryPickApproved) for ${goReleaseVersion}\n
+${extendedDescription} \n\n
+_Automatically generated from https://apm-ci.elastic.co/job/apm-shared/job/bump-go-release-version-pipeline/_
+"""
 }

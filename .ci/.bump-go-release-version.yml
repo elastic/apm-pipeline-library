@@ -12,6 +12,7 @@
 ##  assign: A comma-separated list (no spaces around the comma) of GitHub handles to assign to this pull request. Optional.
 ##  reviewer: A comma-separated list (no spaces around the comma) of GitHub handles to request a review from. Optional.
 ##  overrideGoVersion: The major.minor version to be used since some projects do not use the latest major.minor version but the previous one. Optional.
+##  description: Extended description to be added to the existing one in the PR. Optional.
 ##
 projects:
   - repo: apm-pipeline-library
@@ -35,6 +36,7 @@ projects:
     overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
+    description: It requires the version to be bumped first in the https://github.com/elastic/golang-crossbuild. Otherwise it will fail until the docker images are available.
   - repo: elastic-agent-shipper
     script: .ci/bump-go-release-version.sh
     branches:
@@ -48,6 +50,7 @@ projects:
     overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
+    description: It requires the version to be bumped first in the https://github.com/elastic/golang-crossbuild. Otherwise it will fail until the docker images are available.
   - repo: elastic-agent-autodiscover
     script: .ci/bump-go-release-version.sh
     branches:
