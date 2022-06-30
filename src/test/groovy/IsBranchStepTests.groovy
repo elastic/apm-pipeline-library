@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse
 
 class IsBranchStepTests extends ApmBasePipelineTest {
 
-
   @Override
   @Before
   void setUp() throws Exception {
@@ -34,7 +33,7 @@ class IsBranchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isBranch() throws Exception {
-    env.BRANCH_NAME = 'master'
+    addEnvVar('BRANCH_NAME', 'my-branch')
     def ret = script.call()
     printCallStack()
     assertTrue(ret)
@@ -42,9 +41,18 @@ class IsBranchStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_isBranch_cornercase() throws Exception {
+    addEnvVar('BRANCH_NAME', '')
+    def ret = script.call()
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_isBranch_in_pr() throws Exception {
-    env.BRANCH_NAME = 'PR-1'
-    env.CHANGE_ID = '1'
+    addEnvVar('BRANCH_NAME', 'PR-1')
+    addEnvVar('CHANGE_ID', '1')
     def ret = script.call()
     printCallStack()
     assertFalse(ret)
@@ -53,8 +61,8 @@ class IsBranchStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_isBranch_in_tag() throws Exception {
-    env.TAG_NAME = 'my-tag'
-    env.remove('BRANCH_NAME')
+    addEnvVar('BRANCH_NAME', 'my-tag')
+    addEnvVar('TAG_NAME', 'my-tag')
     env.remove('CHANGE_ID')
     def ret = script.call()
     printCallStack()
