@@ -69,6 +69,7 @@ pipeline {
       }
     }
     stage('Check Licenses') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check Licenses') {
           deleteDir()
@@ -86,6 +87,7 @@ pipeline {
       }
     }
     stage('Check pre-commit') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
           deleteDir()
@@ -112,6 +114,7 @@ pipeline {
       }
     }
     stage('Test') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
           dir("${BASE_DIR}"){
@@ -138,6 +141,7 @@ pipeline {
       }
     }
     stage('Google Storage') {
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         anyOf {
@@ -154,6 +158,7 @@ pipeline {
       }
     }
     stage('Google Storage Windows') {
+      options { skipDefaultCheckout() }
       agent { label 'windows-2019-immutable' }
       when {
         beforeAgent true
@@ -173,6 +178,7 @@ pipeline {
       }
     }
     stage('Check Pipelines') {
+      options { skipDefaultCheckout() }
       steps {
         withGithubNotify(context: 'Check Pipelines') {
           dir("${BASE_DIR}"){
@@ -192,6 +198,7 @@ pipeline {
       }
     }
     stage('Test JobDSL') {
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         anyOf {
@@ -213,6 +220,7 @@ pipeline {
       }
     }
     stage('Test infra') {
+      options { skipDefaultCheckout() }
       when {
         beforeAgent true
         anyOf {
@@ -237,6 +245,7 @@ pipeline {
       }
     }
     stage('Release') {
+      options { skipDefaultCheckout() }
       environment {
         // gren and other tools are in the .ci/scripts folder.
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
