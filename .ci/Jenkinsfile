@@ -18,7 +18,7 @@
 @Library('apm@main') _
 
 pipeline {
-  agent { label 'master' }
+  agent none
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
@@ -51,7 +51,7 @@ pipeline {
   }
   stages {
     stage('Checkout') {
-      options { skipDefaultCheckout() }
+      agent { label 'master' }
       steps {
         withGithubNotify(context: 'Checkout') {
           pipelineManager([ cancelPreviousRunningBuilds: [ when: 'PR' ] ])
@@ -74,6 +74,7 @@ pipeline {
   post {
     cleanup {
       notifyBuildResult(prComment: true, slackComment: true, analyzeFlakey: true, jobName: getFlakyJobName(withBranch: 'main'))
+      deleteDir()
     }
   }
 }
