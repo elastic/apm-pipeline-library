@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.336 (30/06/2022)
+
+#### 🐛 Bug Fixes
+
+-  Fix isBranch to filter out tags [#1752](https://github.com/elastic/apm-pipeline-library/pull/1752)
+
+#### 🙈 No user affected
+
+-  update docs references [#1751](https://github.com/elastic/apm-pipeline-library/pull/1751)
+
+#### ⚙️ CI
+
+-  github label: run on a daily basis instead [#1754](https://github.com/elastic/apm-pipeline-library/pull/1754)
+-  automation: support Golang-crossbuild with the overrideGoVersion [#1750](https://github.com/elastic/apm-pipeline-library/pull/1750)
+
 ## v1.1.335 (28/06/2022)
 
 #### 🚀 Enhancements
