@@ -15,13 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/create-oblt-cluster") {
-  displayName('Create oblt cluster')
-  description('Job to create a oblt cluster.')
+pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
+  displayName("edge-lite-oblt cluster")
+  description("Job to create a edge-lite-oblt cluster every day.")
   parameters {
-    stringParam("branch_specifier", "main", "the Git branch specifier to build.")
-    stringParam("CLUSTER_CONFIG", "environments/CLUSTER_NAME/config-cluster.yml", "Relative path to the cluster configuration file.")
+    stringParam('branch_specifier', "main", "the Git branch specifier to build.")
+    booleanParam('notify', true, 'Send notifications about the build result.')
   }
+  //TODO enable schedule
   disabled(false)
   quietPeriod(10)
   logRotator {
@@ -45,7 +46,7 @@ pipelineJob("apm-shared/oblt-test-env/create-oblt-cluster") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/create.groovy")
+      scriptPath(".ci/edge-lite.groovy")
     }
   }
 }
