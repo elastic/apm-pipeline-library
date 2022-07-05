@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+spec:
+  securityContext:
+    runAsUser: 1000 # default UID of jenkins user in agent image
+  containers:
+  - name: golang
+    image: docker.elastic.co/beats-dev/golang-crossbuild:1.17.5-main-debian10
+    command:
+      - sleep
+    args:
+      - infinity
+  resources:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 4Gi
