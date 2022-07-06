@@ -24,7 +24,9 @@
 def call(Map args = [:]) {
   def url = args.containsKey('url') ? args.url : error('download: url parameter is required')
   def output = args.containsKey('output') ? args.output : error('download: output parameter is required')
-  if (!downloadWithWget(url: url, output: output)) {
-    downloadWithCurl(url: url, output: output)
+  def curlFlags = args.get('curlFlags', '')
+  def wgetFlags = args.get('wgetFlags', '')
+  if (!downloadWithWget(url: url, output: output, flags: wgetFlags)) {
+    downloadWithCurl(url: url, output: output, flags: curlFlags)
   }
 }

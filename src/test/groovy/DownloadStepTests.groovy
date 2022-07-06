@@ -73,4 +73,28 @@ class DownloadStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('downloadWithCurl', 1))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_with_wget_and_flags() throws Exception {
+    script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz', curlFlags: '--foo', wgetFlags: '--bar')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'curl'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--foo'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--bar'))
+    assertTrue(assertMethodCallOccurrences('downloadWithWget', 1))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_curl_and_flags() throws Exception {
+    helper.registerAllowedMethod('downloadWithWget', [Map.class], { return false })
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('curl') })
+    script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz', curlFlags: '--foo', wgetFlags: '--bar')
+    printCallStack()
+    assertFalse(assertMethodCallContainsPattern('sh', 'wget'))
+    assertFalse(assertMethodCallContainsPattern('sh', '--bar'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--foo'))
+    assertTrue(assertMethodCallOccurrences('downloadWithCurl', 1))
+    assertJobStatusSuccess()
+  }
 }
