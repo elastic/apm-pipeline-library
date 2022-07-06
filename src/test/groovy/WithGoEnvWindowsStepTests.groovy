@@ -120,6 +120,19 @@ void testOSArg() throws Exception {
   }
 
   @Test
+  void testPkgs_with_version() throws Exception {
+    def isOK = false
+    script.call(version: "1.16.1", pkgs: [ "P1@1", "P2@2" ]){
+      isOK = definedVariables('1.16.1', 'windows')
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('bat', 'go install P1@1'))
+    assertTrue(assertMethodCallContainsPattern('bat', 'go install P2@2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "windows" })
     def version = "1.15.1"

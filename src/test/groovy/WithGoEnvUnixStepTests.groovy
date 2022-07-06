@@ -172,6 +172,20 @@ class WithGoEnvUnixStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void testPkgs_with_version() throws Exception {
+    helper.registerAllowedMethod('nodeOS', [], { "linux" })
+    def isOK = false
+    script.call(version: "1.16.1", pkgs: [ "P1@1", "P2@2" ]){
+      isOK = true
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('sh', 'go install P1@1'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'go install P2@2'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void testDefaultGoVersion() throws Exception {
     helper.registerAllowedMethod('nodeOS', [], { "linux" })
     def version = "1.15.1"

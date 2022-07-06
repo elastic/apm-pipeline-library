@@ -63,8 +63,13 @@ def call(Map args = [:], Closure body) {
       bat(label: "Installing Go ${version}", script: content)
     }
     pkgs?.each{ p ->
+      // If the package is already with the given version then use it
+      def packageWithVersion = "${p}${atVersion}"
+      if (p.contains('@')) {
+        packageWithVersion = "${p}"
+      }
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        bat(label: "Installing ${p}", script: "go ${method} ${p}${atVersion}")
+        bat(label: "Installing ${packageWithVersion}", script: "go ${method} ${packageWithVersion}")
       }
     }
     body()
