@@ -25,23 +25,25 @@ withTerraformEnv(version: '0.15.1') {
 def call(Map args = [:], Closure body) {
   def version = args.get('version', '1.1.9')
   def forceInstallation = args.get('forceInstallation', false)
+  def noCheckCertificate = args.get('noCheckCertificate', false)
 
   def location = pwd(tmp: true)
 
   withEnv(["PATH+TERRAFORM=${location}"]) {
     if (forceInstallation || !isInstalled(tool: 'terraform', flag: '--version', version: version)) {
-      downloadAndInstall(location, version)
+      downloadAndInstall(location, version, noCheckCertificate)
     }
     body()
   }
 }
 
-def downloadAndInstall(where, version) {
+def downloadAndInstall(where, version, noCheckCertificate) {
   def url = terraformURL(version)
   def zipfile = 'terraform.zip'
+  def wgetFlags = noCheckCertificate ? '--no-check-certificate' : ''
   dir(where) {
     retryWithSleep(retries: 5, seconds: 10, backoff: true) {
-      download(url: url, output: zipfile)
+      download(url: url, output: zipfile, wgetFlags: wgetFlags)
     }
     unzip(quiet: true, zipFile: zipfile)
     if (isUnix()) {

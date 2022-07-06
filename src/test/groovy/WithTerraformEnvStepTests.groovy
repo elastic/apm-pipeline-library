@@ -46,6 +46,19 @@ class WithTerraformEnvStepTests extends ApmBasePipelineTest {
     assertJobStatusSuccess()
   }
 
+  @Test
+  void test_with_noCheckCertificate() throws Exception {
+    helper.registerAllowedMethod('isInstalled', [Map.class], { m -> return m.tool.equals('wget') })
+    def ret = false
+    script.call(version: "2.0.0", noCheckCertificate: true) {
+      ret = true
+    }
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('download', '--no-check-certificate'))
+    assertTrue(assertMethodCallContainsPattern('withEnv', 'PATH+TERRAFORM'))
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
 
   @Test
   void test_with_force_installation_and_version_already_installed() throws Exception {
@@ -56,6 +69,7 @@ class WithTerraformEnvStepTests extends ApmBasePipelineTest {
     }
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('download', '2.0.0'))
+    assertFalse(assertMethodCallContainsPattern('download', '--no-check-certificate'))
     assertTrue(ret)
     assertJobStatusSuccess()
   }
