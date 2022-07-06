@@ -37,9 +37,6 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
           cron{
               spec('H H(0-5) * * 6')
           }
-          issueCommentTrigger{
-            commentPattern('(?i)^\\/oblt-undeploy$')
-          }
         }
     }
   }
