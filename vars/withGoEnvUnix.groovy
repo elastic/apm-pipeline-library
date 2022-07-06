@@ -73,8 +73,13 @@ def installPackages(Map args = [:]) {
   def atVersion = isBeforeGo1_16(version: version) ? '' : "@latest"
   withEnv(["GOARCH=${arch}"]){
     args.pkgs?.each{ p ->
+      // If the package is already with the given version then use it
+      def packageWithVersion = "${p}${atVersion}"
+      if (p.contains('@')) {
+        packageWithVersion = "${p}"
+      }
       retryWithSleep(retries: 3, seconds: 5, backoff: true){
-        sh(label: "Installing ${p}", script: "go ${method} ${p}${atVersion}")
+        sh(label: "Installing ${packageWithVersion}", script: "go ${method} ${packageWithVersion}")
       }
     }
   }
