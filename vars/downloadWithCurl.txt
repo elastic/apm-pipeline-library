@@ -6,3 +6,4 @@ downloadWithCurl(url: 'https://....', output: 'gsutil.tar.gz')
 
 * url: The URL to be downloaded. Mandatory
 * output: The file where the CUrl output will be written to. Mandatory.
+* flags: curl flags to be used. Optional.

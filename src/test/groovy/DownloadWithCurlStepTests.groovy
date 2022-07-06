@@ -66,6 +66,17 @@ class DownloadWithCurlStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_with_flags() throws Exception {
+    def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz', flags: '--parallel')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', 'curl -sSLo gsutil.tar.gz'))
+    assertTrue(assertMethodCallContainsPattern('sh', '--parallel'))
+    assertTrue(assertMethodCallContainsPattern('sh', 'https://example.acme.org'))
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_windows() throws Exception {
     helper.registerAllowedMethod('isUnix', [], { false })
     def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz')
