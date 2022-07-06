@@ -29,7 +29,7 @@ def call(Map args = [:]) {
     cmd(label: 'download tool', script: "curl -sSLo ${output} --retry 3 --retry-delay 2 --max-time 10 ${flags} ${url}")
     return true
   } else {
-    log(level: 'WARN', text: 'withGCPEnv: downloadWithCurl is not available.')
+    log(level: 'WARN', text: 'downloadWithCurl: downloadWithCurl is not available.')
   }
   return false
 }
