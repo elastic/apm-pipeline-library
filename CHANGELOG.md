@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.337 (04/07/2022)
+
+#### 🚀 Enhancements
+
+-  automation: enable extended description for the Golang autobump [#1757](https://github.com/elastic/apm-pipeline-library/pull/1757)
+-  Less precedence for isMemberOfOrg [#1756](https://github.com/elastic/apm-pipeline-library/pull/1756)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.3.1 8.3.1 [#1759](https://github.com/elastic/apm-pipeline-library/pull/1759)
+
 ## v1.1.336 (30/06/2022)
 
 #### 🐛 Bug Fixes
