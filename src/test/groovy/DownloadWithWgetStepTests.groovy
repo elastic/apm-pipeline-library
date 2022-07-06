@@ -50,7 +50,7 @@ class DownloadWithWgetStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isInstalled', [Map.class], { return false })
     def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz')
     printCallStack()
-    assertFalse(assertMethodCallContainsPattern('sh', 'wget -q -O'))
+    assertFalse(assertMethodCallContainsPattern('sh', '-q -O'))
     assertFalse(result)
     assertJobStatusSuccess()
   }
@@ -59,7 +59,16 @@ class DownloadWithWgetStepTests extends ApmBasePipelineTest {
   void test() throws Exception {
     def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', 'wget -q -O gsutil.tar.gz https://example.acme.org'))
+    assertTrue(assertMethodCallContainsPattern('sh', '-q -O gsutil.tar.gz https://example.acme.org'))
+    assertTrue(result)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_with_flags() throws Exception {
+    def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz', flags: '--no-check-certificate')
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('sh', '--no-check-certificate -q -O gsutil.tar.gz https://example.acme.org'))
     assertTrue(result)
     assertJobStatusSuccess()
   }
@@ -69,7 +78,7 @@ class DownloadWithWgetStepTests extends ApmBasePipelineTest {
     helper.registerAllowedMethod('isUnix', [], { false })
     def result = script.call(url: 'https://example.acme.org', output: 'gsutil.tar.gz')
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('bat', 'wget -q -O gsutil.tar.gz https://example.acme.org'))
+    assertTrue(assertMethodCallContainsPattern('bat', '-q -O gsutil.tar.gz https://example.acme.org'))
     assertTrue(result)
     assertJobStatusSuccess()
   }

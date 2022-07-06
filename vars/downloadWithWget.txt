@@ -6,3 +6,4 @@ downloadWithWget(url: 'https://....', output: 'gsutil.tar.gz')
 
 * url: The URL to be downloaded. Mandatory
 * output: The file where the wget output will be written to. Mandatory.
+* flags: WGet flags to be used. Optional.

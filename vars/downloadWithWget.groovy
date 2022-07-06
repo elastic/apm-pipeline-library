@@ -24,9 +24,10 @@
 def call(Map args = [:]) {
   def url = args.containsKey('url') ? args.url : error('downloadWithWget: url parameter is required')
   def output = args.containsKey('output') ? args.output : error('downloadWithWget: output parameter is required')
+  def flags = args.get('flags', '')
   if(isInstalled(tool: 'wget', flag: '--version')) {
     retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-      cmd(label: 'download tool', script: "wget -q -O ${output} ${url}")
+      cmd(label: 'download tool', script: "wget ${flags} -q -O ${output} ${url}")
     }
     return true
   } else {
