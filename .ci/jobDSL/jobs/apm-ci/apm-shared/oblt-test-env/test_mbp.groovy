@@ -18,7 +18,7 @@
 multibranchPipelineJob('apm-shared/test-mbp') {
   primaryView('All')
   displayName('Job apm-shared/test-mbp')
-  description('Job apm-shared/test-mbp')
+  description('Job apm-shared/test-mbp description')
   orphanedItemStrategy {
     discardOldItems {
       numToKeep(20)
@@ -29,18 +29,12 @@ multibranchPipelineJob('apm-shared/test-mbp') {
     branchSource {
       source {
         github {
-          id('apm-shared/oblt-test-env/oblt-test-env-custom-kibana') // IMPORTANT: use a constant and unique identifier
+          id('apm-shared/test-mbp') // IMPORTANT: use a constant and unique identifier
           credentialsId('2a9602aa-ab9f-4e52-baf3-b71ca88469c7-UserAndToken')
           repoOwner('elastic')
           repository('apm-pipeline-library')
           repositoryUrl('https://github.com/elastic/apm-pipeline-library.git')
           configuredByUrl(true)
-          // buildForkPRHead(true)
-          // buildForkPRMerge(true)
-          // buildOriginBranch(true)
-          // buildOriginBranchWithPR(false)
-          // buildOriginPRHead(true)
-          // buildOriginPRMerge(true)
           // The behaviours control what is discovered from the GitHub repository.
           traits {
             checkoutOptionTrait {
@@ -71,19 +65,32 @@ multibranchPipelineJob('apm-shared/test-mbp') {
                 honorRefspec(false)
               }
             }
+            // Disables notifications (commit status updates) to GitHub for builds.
+            //disableStatusUpdateTrait()
+            // Discovers other specified refs on the repository.
+            //discoverOtherRefsTrait {
+              // The pattern under /refs on the remote repository to discover, can contain a wildcard.
+              //ref('')
+              // Mapping for how the ref can be named in for example the @Library.
+              //nameMapping('')
+            //}
             // Discovers branches on the repository.
             // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/BranchDiscoveryTrait.java#L55-L70
             gitHubBranchDiscovery{
               // Determines which branches are discovered.
               strategyId(1)
             }
+            // Discovers pull requests where the origin repository is the same as the target repository.
+            // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
+            //gitHubPullRequestDiscovery {
+              // Determines how pull requests are discovered: Merging the pull request with the current target branch revision Discover each pull request once with the discovered revision corresponding to the result of merging with the current revision of the target branch.
+              //strategyId(1)
+            //}
+            //originPullRequestDiscoveryTrait {
+              //strategyId(3) //build both the head and merge refs
+            //}
             // Discovers tags on the repository.
             gitHubTagDiscovery()
-            // Discovers PRs on the same repository.
-            // gitHubPullRequestDiscovery{
-            //   strategyId(1)
-            // }
-
             // filers heads
             headRegexFilter {
               // A Java regular expression to restrict the names.
@@ -94,50 +101,69 @@ multibranchPipelineJob('apm-shared/test-mbp') {
             // Defines a custom context label to be sent as part of Github Status notifications for this project.
             notificationContextTrait {
               // The text of the context label for Github status notifications.
-              contextLabel('apm-shared/oblt-test-env/oblt-test-env-custom-kibana')
+              contextLabel('apm-shared/test-mbp')
               // Appends the relevant suffix to the context label based on the build type.
               typeSuffix(true)
             }
             wipeWorkspaceTrait()
           }
         }
-        buildStrategies {
-          buildChangeRequests {
-            // If the change request / pull request is a merge, there are two reasons for a revision change: The origin of the change request may have changed The target of the change request may ha
-            ignoreTargetOnlyChanges(false)
-            // Some sources can permit change request / pull request from external entities.
-            ignoreUntrustedChanges(true)
-          }
-          // Builds regular branches whenever a change is detected.
-          buildRegularBranches()
-          // Builds tags (subject to a configurable tag age time window)
-          buildTags {
-            atLeastDays('-1')
-            // The number of days since the tag was created after which it is no longer eligible for automatic building.
-            atMostDays('7')
-          }
-          // Skip initial build on first branch indexing
-          skipInitialBuildOnFirstBranchIndexing()
+      }
+      buildStrategies {
+        buildChangeRequests {
+          // If the change request / pull request is a merge, there are two reasons for a revision change: The origin of the change request may have changed The target of the change request may ha
+          ignoreTargetOnlyChanges(false)
+          // Some sources can permit change request / pull request from external entities.
+          ignoreUntrustedChanges(true)
         }
+        // Builds regular branches whenever a change is detected.
+        buildRegularBranches()
+        // Builds branches only if none of the sub strategies match.
+        //buildNamedBranches {
+          // The rules to use when matching a branch name.
+          //filters {
+            // Matches the name verbatim.
+            //exact {
+              // The name to match.
+              //name('main')
+              // Check this box if the name should be matched case sensitively.
+              //caseSensitive(true)
+            //}
+            // Matches the name against a regular expression.
+            //regex {
+              // A Java regular expression to restrict the names.
+              //regex('.*/(main|7\.1[6789]|8\.\d+|PR-.*|v\d+\.\d+\.\d+)')
+              // Check this box if the name should be matched case sensitively.
+              //caseSensitive(true)
+            //}
+          //}
+        //}
+        // Builds tags (subject to a configurable tag age time window)
+        buildTags {
+          atLeastDays('-1')
+          // The number of days since the tag was created after which it is no longer eligible for automatic building.
+          atMostDays('7')
+        }
+        // Skip initial build on first branch indexing
+        skipInitialBuildOnFirstBranchIndexing()
       }
     }
   }
   // this configuration is broken due https://issues.jenkins.io/browse/JENKINS-63788
-  configure {
-    // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
-    // https://issues.jenkins.io/browse/JENKINS-60874
-    // Discovers pull requests where the origin repository is the same as the target repository.
-    // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
-    // def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
-    // java.lang.SecurityException: Rejecting unsandboxed property get: javaposse.jobdsl.dsl.jobs.MultibranchWorkflowJob.sources
-    // traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
-    //   strategyId 1
-    //   trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
-    // }
-    // traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
-    //   strategyId 1
-    // }
-  }
+  // configure {
+  //   // workaround for JENKINS-46202 (https://issues.jenkins-ci.org/browse/JENKINS-46202)
+  //   // https://issues.jenkins.io/browse/JENKINS-60874
+  //   // Discovers pull requests where the origin repository is the same as the target repository.
+  //   // https://github.com/jenkinsci/github-branch-source-plugin/blob/master/src/main/java/org/jenkinsci/plugins/github_branch_source/OriginPullRequestDiscoveryTrait.java#L57-L72
+  //   def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
+  //   traits << 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait' {
+  //     strategyId 1
+  //     trust(class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission')
+  //   }
+  //   traits << 'org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait' {
+  //     strategyId 1
+  //   }
+  // }
   factory {
     workflowBranchProjectFactory {
       scriptPath('.ci/Jenkinsfile')

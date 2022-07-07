@@ -108,44 +108,44 @@ multibranchPipelineJob('{{ JOB_NAME }}') {
             wipeWorkspaceTrait()
           }
         }
-        buildStrategies {
-          buildChangeRequests {
-            // If the change request / pull request is a merge, there are two reasons for a revision change: The origin of the change request may have changed The target of the change request may ha
-            ignoreTargetOnlyChanges(false)
-            // Some sources can permit change request / pull request from external entities.
-            ignoreUntrustedChanges(true)
-          }
-          // Builds regular branches whenever a change is detected.
-          buildRegularBranches()
-          // Builds branches only if none of the sub strategies match.
-          //buildNamedBranches {
-            // The rules to use when matching a branch name.
-            //filters {
-              // Matches the name verbatim.
-              //exact {
-                // The name to match.
-                //name('master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
-              // Matches the name against a regular expression.
-              //regex {
-                // A Java regular expression to restrict the names.
-                //regex('.*/master')
-                // Check this box if the name should be matched case sensitively.
-                //caseSensitive(true)
-              //}
+      }
+      buildStrategies {
+        buildChangeRequests {
+          // If the change request / pull request is a merge, there are two reasons for a revision change: The origin of the change request may have changed The target of the change request may ha
+          ignoreTargetOnlyChanges(false)
+          // Some sources can permit change request / pull request from external entities.
+          ignoreUntrustedChanges(true)
+        }
+        // Builds regular branches whenever a change is detected.
+        buildRegularBranches()
+        // Builds branches only if none of the sub strategies match.
+        //buildNamedBranches {
+          // The rules to use when matching a branch name.
+          //filters {
+            // Matches the name verbatim.
+            //exact {
+              // The name to match.
+              //name('main')
+              // Check this box if the name should be matched case sensitively.
+              //caseSensitive(true)
+            //}
+            // Matches the name against a regular expression.
+            //regex {
+              // A Java regular expression to restrict the names.
+              //regex('.*/(main|7\.1[6789]|8\.\d+|PR-.*|v\d+\.\d+\.\d+)')
+              // Check this box if the name should be matched case sensitively.
+              //caseSensitive(true)
             //}
           //}
-          // Builds tags (subject to a configurable tag age time window)
-          buildTags {
-            atLeastDays('-1')
-            // The number of days since the tag was created after which it is no longer eligible for automatic building.
-            atMostDays('7')
-          }
-          // Skip initial build on first branch indexing
-          skipInitialBuildOnFirstBranchIndexing()
+        //}
+        // Builds tags (subject to a configurable tag age time window)
+        buildTags {
+          atLeastDays('-1')
+          // The number of days since the tag was created after which it is no longer eligible for automatic building.
+          atMostDays('7')
         }
+        // Skip initial build on first branch indexing
+        skipInitialBuildOnFirstBranchIndexing()
       }
     }
   }
