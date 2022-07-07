@@ -39,7 +39,7 @@ dependencies {
   // Detached
   testPlugins 'org.jenkins-ci.plugins:jdk-tool:1.4'
   testPlugins 'org.jenkins-ci.plugins:trilead-api:1.0.11'
-  testPlugins 'org.jenkins-ci.plugins:bouncycastle-api:2.18'
+  testPlugins 'org.jenkins-ci.plugins:bouncycastle-api:2.26'
 
   // Job DSL plugin including plugin dependencies
   testCompile "org.jenkins-ci.plugins:job-dsl:${jobDslVersion}"
