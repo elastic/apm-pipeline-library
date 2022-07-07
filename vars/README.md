@@ -3603,6 +3603,14 @@ withGCPEnv(secret: 'secret/team/ci/service-account/gcp-provisioner') {
 * role_id: vault role ID if using the secret argument (Optional). Default 'vault-role-id'
 * secret_id: vault secret ID if using the secret argument (Optional). Default 'vault-secret-id'
 
+## withGhEnv
+
+Configure the Gh context to run the given body closure
+
+withGhEnv(credentialsId: 'foo') {
+  // block
+}
+
 ## withGitRelease
 Configure the git release context to run the body closure.
 

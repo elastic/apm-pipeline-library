@@ -1,0 +1,8 @@
+
+Configure the Gh context to run the given body closure
+
+withGhEnv(credentialsId: 'foo') {
+  // block
+}
+
+* credentialsId: the secret type credential ID that contains the GITHUB_TOKEN.
