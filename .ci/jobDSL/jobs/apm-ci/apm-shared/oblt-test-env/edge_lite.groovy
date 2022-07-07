@@ -35,9 +35,7 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
         }
       }
     }
-    disableConcurrentBuilds{
-      abortPrevious(false)
-    }
+    disableConcurrentBuilds()
     durabilityHint {
       hint("PERFORMANCE_OPTIMIZED")
     }
@@ -48,19 +46,19 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
           genericVariables {
             genericVariable {
               key("GT_REPO")
-              value("\$.repository.full_name")
+              value('$.repository.full_name')
             }
             genericVariable {
               key("GT_REF")
-              value("\$.ref")
+              value('$.ref')
             }
             genericVariable {
               key("GT_BEFORE")
-              value("\$.before")
+              value('$.before')
             }
             genericVariable {
               key("GT_AFTER")
-              value("\$.after")
+              value('$.after')
             }
             genericVariable {
               key("GT_FILES_ADDED")
@@ -81,7 +79,7 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
               regexpFilter("push")
             }
           }
-          regexpFilterText("$GT_REPO/$GT_REF$GT_FILES_ADDED$GT_FILES_MODIFIED$GT_FILES_REMOVED")
+          regexpFilterText('$GT_REPO/$GT_REF$GT_FILES_ADDED$GT_FILES_MODIFIED$GT_FILES_REMOVED')
           regexpFilterExpression("^elastic/observability-test-environments/refs/heads/main.*environments/edge-lite/.*")
           causeString("Triggered on Update PR")
           silentResponse(true)
@@ -89,31 +87,6 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
       }
     }
   }
-
-  /*
-  triggers {
-    GenericTrigger(
-     genericVariables: [
-      [key: 'GT_REPO', value: '$.repository.full_name'],
-      [key: 'GT_REF', value: '$.ref'],
-      [key: 'GT_BEFORE', value: '$.before'],
-      [key: 'GT_AFTER', value: '$.after'],
-      [key: 'GT_FILES_ADDED', value: "\$.commits[*].['added'][*]"],
-      [key: 'GT_FILES_MODIFIED', value: "\$.commits[*].['modified'][*]"],
-      [key: 'GT_FILES_REMOVED', value: "\$.commits[*].['removed'][*]"],
-    ],
-    genericHeaderVariables: [
-     [key: 'x-github-event', regexpFilter: 'push']
-    ],
-     causeString: 'Triggered on push',
-     printContributedVariables: false,
-     printPostContent: false,
-     silentResponse: true,
-     regexpFilterText: '$GT_REPO/$GT_REF$GT_FILES_ADDED$GT_FILES_MODIFIED$GT_FILES_REMOVED',
-     regexpFilterExpression: '^elastic/observability-test-environments/refs/heads/main.*environments/users/.*'
-    )
-  }
-  */
   definition {
     cpsScm {
       scm {
