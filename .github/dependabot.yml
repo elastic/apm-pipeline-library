@@ -20,7 +20,7 @@ updates:
     reviewers:
       - "elastic/observablt-robots-on-call"
 
-  # Enable version updates for Docker
+  # Enable version updates for Gradle
   - package-ecosystem: "gradle"
     directory: ".ci/jobDSL"
     # Check for updates once a week
