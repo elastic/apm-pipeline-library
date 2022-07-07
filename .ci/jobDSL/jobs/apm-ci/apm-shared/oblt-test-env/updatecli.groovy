@@ -15,13 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
-  displayName('Custom Kibana - Undeploy')
-  description('Job to undeploy Custom Kibana deployments')
+pipelineJob("apm-shared/oblt-test-env/updatecli") {
+  displayName('Scheduled Updates')
+  description('Job to run the updates for the Elastic Stack on clusters, tools, Docker images, and any other version we need to update.')
   parameters {
     stringParam("branch_specifier", "main", "the Git branch specifier to build.")
-    stringParam('environment', "edge", "Test environment branch name to make the deploy into.")
-    stringParam('kibana_branch', "main", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
   }
   disabled(false)
   quietPeriod(10)
@@ -31,14 +29,8 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
     artifactNumToKeep(10)
     artifactDaysToKeep(-1)
   }
-  properties {
-    pipelineTriggers {
-        triggers {
-          cron{
-              spec('H H(0-5) * * 6')
-          }
-        }
-    }
+  triggers {
+    cron('H H(3-4) * * 1-5')
   }
   definition {
     cpsScm {
@@ -55,7 +47,7 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/customKibanaUndeploy.groovy")
+      scriptPath(".ci/updatecli.groovy")
     }
   }
 }

@@ -53,10 +53,11 @@ dependencies {
   testPlugins 'org.jenkins-ci.plugins:cloudbees-folder:6.14'
   testPlugins 'org.jenkins-ci.plugins:credentials:2.3.14'
   testPlugins 'org.jenkins-ci.plugins:basic-branch-build-strategies:1.3.2'
-  testPlugins 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.22'
+  testPlugins 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.26.1'
   testPlugins 'org.jenkins-ci.plugins:git:4.4.4'
   testPlugins 'org.jenkins-ci.plugins:github-branch-source:2.9.0'
   testPlugins 'org.jenkins-ci.plugins:pipeline-github:2.7'
+  testPlugins 'org.jenkins-ci.plugins:generic-webhook-trigger:1.66'
 
   // Run the following script in the Script Console of your Jenkins instance to generate
   // the above testPlugins list. (adapted from https://git.io/fjpUs)

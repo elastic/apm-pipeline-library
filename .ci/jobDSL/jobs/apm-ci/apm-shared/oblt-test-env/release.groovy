@@ -15,30 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
-  displayName('Custom Kibana - Undeploy')
-  description('Job to undeploy Custom Kibana deployments')
+pipelineJob("apm-shared/oblt-test-env/oblt-test-env-releases") {
+  displayName('Release')
+  description('Job to Release a version of Observability test Environments.')
   parameters {
     stringParam("branch_specifier", "main", "the Git branch specifier to build.")
-    stringParam('environment', "edge", "Test environment branch name to make the deploy into.")
-    stringParam('kibana_branch', "main", "Branch/Tag/pr/commit to use to build the Docker image. (e.g PR/10000)")
   }
   disabled(false)
-  quietPeriod(10)
   logRotator {
     numToKeep(10)
     daysToKeep(7)
     artifactNumToKeep(10)
     artifactDaysToKeep(-1)
-  }
-  properties {
-    pipelineTriggers {
-        triggers {
-          cron{
-              spec('H H(0-5) * * 6')
-          }
-        }
-    }
   }
   definition {
     cpsScm {
@@ -55,7 +43,7 @@ pipelineJob("apm-shared/oblt-test-env/custom-kibana-undeploy") {
         }
       }
       lightweight(false)
-      scriptPath(".ci/customKibanaUndeploy.groovy")
+      scriptPath(".ci/release.groovy")
     }
   }
 }
