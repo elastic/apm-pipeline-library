@@ -37,7 +37,7 @@ dependencies {
   testCompile("org.jenkins-ci.main:jenkins-war:${jenkinsVersion}")
 
   // Detached
-  testPlugins 'org.jenkins-ci.plugins:jdk-tool:1.4'
+  testPlugins 'org.jenkins-ci.plugins:jdk-tool:1.5'
   testPlugins 'org.jenkins-ci.plugins:trilead-api:1.0.11'
   testPlugins 'org.jenkins-ci.plugins:bouncycastle-api:2.26'
 
