@@ -1,0 +1,7 @@
+Whether the architecture is a Darwin based using the `nodeOS` step
+
+```
+    whenTrue(isDarwin()) {
+        ...
+    }
+```
