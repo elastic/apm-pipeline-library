@@ -565,9 +565,12 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     })
     helper.registerAllowedMethod('log', [Map.class], {m -> println m.text})
     helper.registerAllowedMethod('lookForGitHubIssues', [Map.class], {[]})
-    helper.registerAllowedMethod('nodeOS', [], { return 'linux'})
     helper.registerAllowedMethod('nodeArch', [], {
       def script = loadScript('vars/nodeArch.groovy')
+      return script.call()
+    })
+    helper.registerAllowedMethod('nodeOS', [], {
+      def script = loadScript('vars/nodeOS.groovy')
       return script.call()
     })
     helper.registerAllowedMethod('githubCheck', [Map.class], { m ->
