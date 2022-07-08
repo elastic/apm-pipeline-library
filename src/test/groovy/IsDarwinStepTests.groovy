@@ -27,6 +27,10 @@ class IsDarwinStepTests extends ApmBasePipelineTest {
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/isDarwin.groovy')
+    helper.registerAllowedMethod('nodeOS', [], {
+      def script = loadScript('vars/nodeOS.groovy')
+      return script.call()
+    })
   }
 
   @Test
