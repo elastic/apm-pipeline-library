@@ -2,7 +2,7 @@ name: OpenTelemetry Export Trace
 
 on:
   workflow_run:
-    workflows: ["victor-junit check"]
+    workflows: [Java CI]
     types: [completed]
 
 jobs:
@@ -13,7 +13,8 @@ jobs:
       - name: Export Workflow Trace
         uses: v1v/otel-export-trace-action@v2
         with:
-          otlpEndpoint: "${{ secrets.APM_SERVER }}"
-          otlpHeaders: "Authorization=Bearer ${{ secrets.APM_TOKEN }}"
-          githubToken: ${{ secrets.MY_GITHUB_TOKEN }}
+          otlpEndpoint: "${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}"
+          otlpHeaders: "${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}"
+          otelServiceName: ${{ github.repository }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           runId: ${{ github.event.workflow_run.id }}
