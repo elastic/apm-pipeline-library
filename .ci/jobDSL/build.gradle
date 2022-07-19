@@ -27,37 +27,37 @@ configurations {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.14'
+  compile 'org.codehaus.groovy:groovy-all:2.5.17'
   //compile 'org.kohsuke:github-api:1.93'
 
   testCompile 'org.spockframework:spock-core:1.3-groovy-2.4'
 
   // Jenkins test harness dependencies
-  testCompile('org.jenkins-ci.main:jenkins-test-harness:2.71')
+  testCompile('org.jenkins-ci.main:jenkins-test-harness:1812.v6d4e97d91fd8')
   testCompile("org.jenkins-ci.main:jenkins-war:${jenkinsVersion}")
 
   // Detached
   testPlugins 'org.jenkins-ci.plugins:jdk-tool:1.5'
-  testPlugins 'org.jenkins-ci.plugins:trilead-api:1.0.11'
+  testPlugins 'org.jenkins-ci.plugins:trilead-api:1.57.v6e90e07157e1'
   testPlugins 'org.jenkins-ci.plugins:bouncycastle-api:2.26'
 
   // Job DSL plugin including plugin dependencies
   testCompile "org.jenkins-ci.plugins:job-dsl:${jobDslVersion}"
   testCompile "org.jenkins-ci.plugins:job-dsl:${jobDslVersion}@jar"
-  testCompile 'org.jenkins-ci.plugins:structs:1.21@jar'
-  testCompile 'io.jenkins.plugins:snakeyaml-api:1.29.1'
+  testCompile 'org.jenkins-ci.plugins:structs:1.24@jar'
+  testCompile 'io.jenkins.plugins:snakeyaml-api:1.30.2-76.vc104f7ce9870'
 
   // Plugins to install in test instance
-  testPlugins 'org.jenkins-ci.plugins:token-macro:2.12'
+  testPlugins 'org.jenkins-ci.plugins:token-macro:270.v8c2ce50dc4fc'
   testPlugins 'org.jenkins-ci.plugins:github-scm-trait-notification-context:1.1'
   testPlugins 'org.jenkins-ci.plugins:cloudbees-folder:6.14'
   testPlugins 'org.jenkins-ci.plugins:credentials:2.3.14'
   testPlugins 'org.jenkins-ci.plugins:basic-branch-build-strategies:1.3.2'
-  testPlugins 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.26.1'
+  testPlugins 'org.jenkins-ci.plugins.workflow:workflow-multibranch:711.vdfef37cda_816'
   testPlugins 'org.jenkins-ci.plugins:git:4.4.4'
-  testPlugins 'org.jenkins-ci.plugins:github-branch-source:2.9.0'
+  testPlugins 'org.jenkins-ci.plugins:github-branch-source:1628.vb_2f51293cb_78'
   testPlugins 'org.jenkins-ci.plugins:pipeline-github:2.7'
-  testPlugins 'org.jenkins-ci.plugins:generic-webhook-trigger:1.66'
+  testPlugins 'org.jenkins-ci.plugins:generic-webhook-trigger:1.84'
 
   // Run the following script in the Script Console of your Jenkins instance to generate
   // the above testPlugins list. (adapted from https://git.io/fjpUs)

@@ -38,5 +38,5 @@ def isGoVersionEnvVarSet(){
 }
 
 def defaultVersion(){
-  return '1.18.3'
+  return '1.18.4'
 }
