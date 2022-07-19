@@ -23,7 +23,7 @@ import groovy.transform.Field
 @Field def latestVersions
 
 pipeline {
-  agent { label 'k8s' }
+  agent { label 'linux && immutable' }
   environment {
     REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
