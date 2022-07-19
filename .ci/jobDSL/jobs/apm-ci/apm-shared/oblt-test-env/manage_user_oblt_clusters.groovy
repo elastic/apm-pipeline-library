@@ -22,11 +22,81 @@ pipelineJob("apm-shared/oblt-test-env/manage-user-oblt-clusters") {
     stringParam("branch_specifier", "main", "the Git branch specifier to build.")
   }
   disabled(false)
-  logRotator {
-    numToKeep(10)
-    daysToKeep(7)
-    artifactNumToKeep(10)
-    artifactDaysToKeep(-1)
+  quietPeriod(10)
+  properties {
+    buildDiscarder {
+      strategy {
+        logRotator {
+          numToKeepStr("10")
+          daysToKeepStr("7")
+          artifactNumToKeepStr("10")
+          artifactDaysToKeepStr("-1")
+        }
+      }
+    }
+    disableConcurrentBuilds()
+    durabilityHint {
+      hint("PERFORMANCE_OPTIMIZED")
+    }
+    disableResume()
+    pipelineTriggers {
+      triggers {
+        GenericTrigger {
+          genericVariables {
+            genericVariable {
+              key("GT_REPO")
+              value('$.repository.full_name')
+            }
+            genericVariable {
+              key("GT_REF")
+              value('$.ref')
+            }
+            genericVariable {
+              key("GT_BEFORE")
+              value('$.before')
+            }
+            genericVariable {
+              key("GT_AFTER")
+              value('$.after')
+            }
+            genericVariable {
+              key("GT_FILES_ADDED")
+              value("\$.commits[*].['added'][*]")
+            }
+            genericVariable {
+              key("GT_FILES_MODIFIED")
+              value("\$.commits[*].['modified'][*]")
+            }
+            genericVariable {
+              key("GT_FILES_REMOVED")
+              value("\$.commits[*].['removed'][*]")
+            }
+            genericVariable {
+              key("GT_TITLE")
+              value('$.pull_request.title')
+            }
+            genericVariable {
+              key("GT_PR_HEAD_REF")
+              value('$.pull_request.head.ref')
+            }
+            genericVariable {
+              key("GT_PR_HEAD_SHA")
+              value('$.pull_request.head.sha')
+            }
+          }
+          genericHeaderVariables {
+            genericHeaderVariable {
+              key("x-github-event")
+              regexpFilter("push")
+            }
+          }
+          regexpFilterText('$GT_REPO/$GT_REF$GT_FILES_ADDED$GT_FILES_MODIFIED$GT_FILES_REMOVED')
+          regexpFilterExpression("^elastic/observability-test-environments/refs/heads/main.*environments/users/.*")
+          causeString("Triggered on push")
+          silentResponse(true)
+        }
+      }
+    }
   }
   definition {
     cpsScm {

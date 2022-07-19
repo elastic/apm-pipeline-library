@@ -72,16 +72,32 @@ pipelineJob("apm-shared/oblt-test-env/edge-lite-oblt-cluster") {
               key("GT_FILES_REMOVED")
               value("\$.commits[*].['removed'][*]")
             }
+            genericVariable {
+              key("GT_TITLE")
+              value('$.pull_request.title')
+            }
+            genericVariable {
+              key("GT_PR_HEAD_REF")
+              value('$.pull_request.head.ref')
+            }
+            genericVariable {
+              key("GT_PR_HEAD_SHA")
+              value('$.pull_request.head.sha')
+            }
+            genericVariable {
+              key("GT_ACTION")
+              value('$.action')
+            }
           }
           genericHeaderVariables {
             genericHeaderVariable {
               key("x-github-event")
-              regexpFilter("push")
+              regexpFilter("pull_request")
             }
           }
-          regexpFilterText('$GT_REPO/$GT_REF$GT_FILES_ADDED$GT_FILES_MODIFIED$GT_FILES_REMOVED')
-          regexpFilterExpression("^elastic/observability-test-environments/refs/heads/main.*environments/edge-lite/.*")
-          causeString("Triggered on Update PR")
+          regexpFilterText('$GT_REPO/$GT_PR_HEAD_REF/$GT_TITLE/$GT_ACTION')
+          regexpFilterExpression("^elastic/observability-test-environments/updatecli_.*/\\[updatecli\\]\\[edge-lite\\] Update Elastic Stack/opened")
+          causeString("Triggered on create PR")
           silentResponse(true)
         }
       }
