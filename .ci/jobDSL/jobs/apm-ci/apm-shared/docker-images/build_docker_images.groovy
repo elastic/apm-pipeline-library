@@ -273,11 +273,11 @@ apmPipelineLibraryDockerImages.each{ name ->
   specific configuration to work (i.e: jenkins agents will require the jenkins controller
   to connect to)
 */
-def apmPipelineLibraryDockerImages = [
+def apmPipelineLibraryExtraDockerImages = [
   "jenkins-agent"
 ]
 
-apmPipelineLibraryDockerImages.each{ name ->
+apmPipelineLibraryExtraDockerImages.each{ name ->
   def tag = 'latest'
   def dockerImage = "${registry}/${prefix}/${name}:${tag}"
   dockerImages.add([
