@@ -266,6 +266,34 @@ apmPipelineLibraryDockerImages.each{ name ->
   ])
 }
 
+
+/*
+  APM Pipeline library Docker images with simple tests
+  simple tests don't run the container since the container might require some
+  specific configuration to work (i.e: jenkins agents will require the jenkins controller
+  to connect to)
+*/
+def apmPipelineLibraryDockerImages = [
+  "jenkins-agent"
+]
+
+apmPipelineLibraryDockerImages.each{ name ->
+  def tag = 'latest'
+  def dockerImage = "${registry}/${prefix}/${name}:${tag}"
+  dockerImages.add([
+    name: "${name}",
+    repo: 'git@github.com:elastic/apm-pipeline-library.git',
+    branch_docker: 'main',
+    tag: "${tag}",
+    folder: '.ci/docker',
+    build_script: "docker build --force-rm -t ${dockerImage} ${name}",
+    push_script: "docker push ${dockerImage}",
+    test_script: "make simple-test-${name}",
+    push: true
+  ])
+}
+
+
 /*
   APM Agent Python Docker images
 */
