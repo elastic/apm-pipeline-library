@@ -23,7 +23,8 @@ import groovy.transform.Field
 @Field def releaseVersions = [:]
 
 pipeline {
-  agent { label 'k8s' }
+  // let's use the gobld image that actually contains the software that we need
+  agent { label 'k8s && gobld/image:docker.elastic.co/observability-ci/jenkins-agent:latest' }
   environment {
     REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
