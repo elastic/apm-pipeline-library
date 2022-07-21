@@ -30,7 +30,7 @@ pipelineJob("apm-shared/oblt-test-env/stack-docker-images") {
     artifactDaysToKeep(-1)
   }
   triggers {
-    cron('H H * * 1-5')
+    cron('@hourly')
   }
   definition {
     cpsScm {
