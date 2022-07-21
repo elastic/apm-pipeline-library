@@ -42,7 +42,11 @@ convert-tests-results: ## convert TAP test results to JUnit
 					sh -c 'npm install tap-xunit -g && cat target/results.tap | tap-xunit --package="co.elastic.pipeline.$${APP}" > target/junit-$${APP}-results.xml'
 
 test-%: prepare-test ## Run the tests for the specific app
-	@DOCKERFILE=$* bats-core/bin/bats --tap tests | tee target/results.tap
+	@DOCKERFILE=$* bats-core/bin/bats --tap tests/tests.bats | tee target/results.tap
+	@$(MAKE) -s convert-tests-results
+
+simple-test-%: prepare-test ## Run the specific tests for the specific app
+	@DOCKERFILE=$* bats-core/bin/bats --tap tests/tests_without_run.bats | tee target/results.tap
 	@$(MAKE) -s convert-tests-results
 
 push-%: prepare-test ## Push the Docker image to the docker.elastic.co repository
