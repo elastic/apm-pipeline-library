@@ -4,7 +4,7 @@ name: Gradle CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  gradle:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
         if: always()
         continue-on-error: true
         with:
-          jobName: "build"
+          jobName: "gradle"
           stepName: "Build with Gradle"
           path: ".ci/jobDSL/build/test-results/test/TEST-*.xml"
           type: "junit"
