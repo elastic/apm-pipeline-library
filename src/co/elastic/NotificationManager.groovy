@@ -496,7 +496,6 @@ def getSupportedGithubCommands() {
   }
 
   if (isProjectSupported('apm-server')) {
-    comments['/hey-apm'] = 'Run the hey-apm benchmark.'
     comments['/package'] = 'Generate and publish the docker images.'
     comments['/test windows'] = 'Build & tests on Windows.'
   }
