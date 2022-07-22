@@ -1,7 +1,12 @@
 ---
 name: job-dsl
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    paths:
+      - .ci/jobDSL/**
+      - .github/workflows/**
 
 jobs:
   job-dsl:
