@@ -12,4 +12,4 @@ jobs:
     - name: License
       run: |
         go get -u github.com/elastic/go-licenser
-        go-licenser -d -ext .groovy
+        go run github.com/elastic/go-licenser -d -ext .groovy
