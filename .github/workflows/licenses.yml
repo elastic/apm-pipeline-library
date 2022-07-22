@@ -2,10 +2,11 @@
 name: licenses
 
 on: [push, pull_request]
+
 # limit the access of the generated GITHUB_TOKEN
 permissions:
   contents: read
-  
+
 jobs:
   licenses:
     runs-on: ubuntu-latest
