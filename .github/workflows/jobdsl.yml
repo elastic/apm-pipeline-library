@@ -6,8 +6,8 @@ on:
   pull_request:
     branches:
     paths:
-      - .ci/jobDSL/*
-      - .github/workflows/*
+      - .ci/jobDSL/**
+      - .github/workflows/**
 
 jobs:
   build:
