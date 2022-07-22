@@ -1,13 +1,7 @@
 ---
 name: Gradle CI
 
-on:
-  push:
-  pull_request:
-    branches:
-    paths:
-      - .ci/jobDSL/**
-      - .github/workflows/**
+on: [push, pull_request]
 
 jobs:
   build:
