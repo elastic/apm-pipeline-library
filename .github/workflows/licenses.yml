@@ -12,4 +12,4 @@ jobs:
     - name: License
       run: |
         go install github.com/elastic/go-licenser@latest
-        go-licenser -d -ext .groovy
+        $GOPATH/bin/go-licenser -d -ext .groovy
