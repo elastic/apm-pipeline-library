@@ -120,6 +120,7 @@ pipeline {
         PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
       }
       when {
+        beforeAgent true
         expression {
           return params.make_release
         }
