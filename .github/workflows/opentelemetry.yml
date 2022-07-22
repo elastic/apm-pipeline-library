@@ -3,7 +3,7 @@ name: OpenTelemetry Export Trace
 
 on:
   workflow_run:
-    workflows: [Java CI, Gradle CI, pre-commit]
+    workflows: [Java CI, Gradle CI, pre-commit, licenses]
     types: [completed]
 
 jobs:

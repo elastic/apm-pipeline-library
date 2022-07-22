@@ -1,0 +1,15 @@
+---
+name: licenses
+
+on: [push, pull_request]
+
+jobs:
+  licenses:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+    - name: License
+      run: |
+        go get -u github.com/elastic/go-licenser
+        go-licenser -d -ext .groovy

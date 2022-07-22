@@ -67,24 +67,6 @@ pipeline {
         }
       }
     }
-    stage('Check Licenses') {
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Check Licenses') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            catchError(
-                buildResult: 'SUCCESS',
-                stageResult: 'UNSTABLE',
-                message: 'Some files does not contain license'
-                ) {
-              checkLicenses(skip: true, junit:true, ext: '.groovy')
-            }
-          }
-        }
-      }
-    }
     stage('Google Storage') {
       options { skipDefaultCheckout() }
       when {
