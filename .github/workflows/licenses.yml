@@ -11,5 +11,5 @@ jobs:
     - uses: actions/setup-go@v3
     - name: License
       run: |
-        go get -u github.com/elastic/go-licenser
-        go run github.com/elastic/go-licenser -d -ext .groovy
+        go install github.com/elastic/go-licenser@latest
+        go-licenser -d -ext .groovy
