@@ -62,7 +62,6 @@ pipeline {
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
-            setEnvVar('TEST_JOBDSL', isGitRegionMatch(patterns: [ '^.ci/jobDSL/.*' ], shouldMatchAll: false))
             setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '^vars/(gsutil.groovy|googleStorageUploadExt|withGCPEnv).groovy' ], shouldMatchAll: false))
           }
         }
@@ -94,48 +93,6 @@ pipeline {
           unstash 'source'
           dir("${BASE_DIR}"){
             preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
-          }
-        }
-      }
-    }
-    stage('Build') {
-      steps {
-        withGithubNotify(context: 'Build', description: 'Build') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-              withOtelEnv() {
-                sh './mvnw clean install -V --batch-mode -DskipTests'
-              }
-            }
-          }
-        }
-      }
-    }
-    stage('Test') {
-      options { skipDefaultCheckout() }
-      steps {
-        withGithubNotify(context: 'Test', description: 'UTs', tab: 'tests') {
-          dir("${BASE_DIR}"){
-            withOtelEnv() {
-              sh './mvnw clean test -V --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
-            }
-          }
-        }
-      }
-      post {
-        always {
-          archiveArtifacts(allowEmptyArchive: true, artifacts: '${BASE_DIR}/**/mail-out-test*.html, ${BASE_DIR}/target/surefire-reports/TEST-*.xml')
-          withEnv([
-            "JUNIT_2_OTLP=true",
-            "OTEL_SERVICE_NAME=apm-pipeline-library",
-            "JUNIT_OTEL_SERVICE_VERSION=main",
-            "JUNIT_OTEL_TRACE_NAME=junit-tests"
-          ]){
-            junit(allowEmptyResults: true,
-              keepLongStdio: true,
-              testResults: "${BASE_DIR}/target/surefire-reports/junit-*.xml,${BASE_DIR}/target/surefire-reports/TEST-*.xml")
           }
         }
       }
@@ -194,28 +151,6 @@ pipeline {
             validateDeclarativePipeline '.ci/validateWorkersBeatsCi.groovy'
             validateDeclarativePipeline 'resources/JenkinsfileTemplate.groovy'
           }
-        }
-      }
-    }
-    stage('Test JobDSL') {
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        anyOf {
-          expression { return env.TEST_JOBDSL == "true" }
-          expression { return env.GITHUB_COMMENT?.contains('all') }
-        }
-      }
-      steps {
-        withGithubNotify(context: 'Check JobDSL') {
-          dir("${BASE_DIR}/.ci/jobDSL"){
-            sh(label: 'Run tests', script: './gradlew clean test --stacktrace')
-          }
-        }
-      }
-      post {
-        always {
-          junit(allowEmptyResults: true, testResults: "${BASE_DIR}/.ci/jobDSL/build/test-results/test/TEST-*.xml")
         }
       }
     }
