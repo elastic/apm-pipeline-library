@@ -18,7 +18,7 @@
 @Library('apm@main') _
 
 pipeline {
-  agent { label 'linux && immutable' }
+  agent { label 'k8s' }
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
@@ -62,44 +62,6 @@ pipeline {
           stash allowEmpty: true, name: 'source', useDefaultExcludes: false
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
-            setEnvVar('TEST_GOOGLE', isGitRegionMatch(patterns: [ '^vars/(gsutil.groovy|googleStorageUploadExt|withGCPEnv).groovy' ], shouldMatchAll: false))
-          }
-        }
-      }
-    }
-    stage('Google Storage') {
-      options { skipDefaultCheckout() }
-      when {
-        beforeAgent true
-        anyOf {
-          expression { return env.TEST_GOOGLE == "true" }
-          expression { return env.GITHUB_COMMENT?.contains('all') }
-        }
-      }
-      steps {
-        withGithubNotify(context: 'Google Storage', description: 'Google Storage step') {
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'src/**/*.gdsl', sharedPublicly: false)
-          }
-        }
-      }
-    }
-    stage('Google Storage Windows') {
-      options { skipDefaultCheckout() }
-      agent { label 'windows-2019-immutable' }
-      when {
-        beforeAgent true
-        anyOf {
-          expression { return env.TEST_GOOGLE == "true" }
-          expression { return env.GITHUB_COMMENT?.contains('all') }
-        }
-      }
-      steps {
-        withGithubNotify(context: 'Google Storage Windows', description: 'Google Storage step') {
-          deleteDir()
-          unstash 'source'
-          dir("${BASE_DIR}"){
-            googleStorageUploadExt(bucket: "gs://${env.JOB_GCS_BUCKET}/${env.REPO}/commits/${env.GIT_BASE_COMMIT}", pattern: 'resources/**/*.json', sharedPublicly: false)
           }
         }
       }
@@ -125,6 +87,7 @@ pipeline {
       }
     }
     stage('Test infra') {
+      agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       when {
         beforeAgent true
@@ -150,6 +113,7 @@ pipeline {
       }
     }
     stage('Release') {
+      agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
         // gren and other tools are in the .ci/scripts folder.
