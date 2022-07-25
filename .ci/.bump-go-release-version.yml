@@ -33,7 +33,6 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
     description: It requires the version to be bumped first in golang-crossbuild project, then a new release will be added to https://github.com/elastic/golang-crossbuild/releases. Otherwise it will fail until the docker images are available.
@@ -47,7 +46,6 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
     description: It requires the version to be bumped first in golang-crossbuild project, then a new release will be added to https://github.com/elastic/golang-crossbuild/releases. Otherwise it will fail until the docker images are available.
@@ -55,35 +53,30 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency
   - repo: elastic-agent-inputs
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency
   - repo: elastic-agent-libs
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency
   - repo: elastic-agent-system-metrics
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency
   - repo: fleet-server
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.17"
     enabled: true
     labels: dependency,backport-skip
   - repo: golang-crossbuild
