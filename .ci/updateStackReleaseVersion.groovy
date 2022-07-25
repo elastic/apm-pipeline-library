@@ -23,7 +23,12 @@ import groovy.transform.Field
 @Field def releaseVersions = [:]
 
 pipeline {
-  agent { label 'k8s' }
+  /*
+  As long as it requires docker we cannot use the k8s labels
+  bumpUtils.areStackVersionsAvailable uses docker to query if the given list of
+  versions are available. If push based event then we won't need this.
+  */
+  agent { label 'linux && immutable'  }
   environment {
     REPO = 'apm-pipeline-library'
     ORG_NAME = 'elastic'
