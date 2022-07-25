@@ -9,8 +9,6 @@ receivers:
 exporters:
   logging:
     loglevel: debug
-  file:
-    path: /tmp/tests.json
   jaeger:
     endpoint: jaeger-all-in-one:14250
     tls:
@@ -32,8 +30,8 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [file, logging, jaeger]
+      exporters: [logging, jaeger]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [file, logging]
+      exporters: [logging]
