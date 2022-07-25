@@ -1,15 +1,20 @@
-name: Java CI
+---
+name: job-dsl
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    paths:
+      - .ci/jobDSL/**
+      - .github/workflows/**
 
 # limit the access of the generated GITHUB_TOKEN
 permissions:
   contents: read
 
 jobs:
-  build:
+  job-dsl:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -17,14 +22,17 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Build with Gradle
+        run: ./gradlew clean test --stacktrace
+        working-directory: .ci/jobDSL
       - uses: v1v/otel-upload-test-artifact-action@v2
         if: always()
         continue-on-error: true
         with:
-          jobName: "build"
-          stepName: "Build with Maven"
-          path: "target/surefire-reports/*.xml"
+          jobName: "job-dsl"
+          stepName: "Build with Gradle"
+          path: ".ci/jobDSL/build/test-results/test/TEST-*.xml"
           type: "junit"
           githubToken: ${{ secrets.GITHUB_TOKEN }}

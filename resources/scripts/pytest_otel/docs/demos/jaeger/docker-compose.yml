@@ -13,7 +13,7 @@ services:
       - pytest_otel
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib-dev:93a9885459c9406db8ac446f77f290b02542e8d5
+    image: otel/opentelemetry-collector-contrib-dev:latest
     command: ["--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}"]
     healthcheck:
       interval: 10s
