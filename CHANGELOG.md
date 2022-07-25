@@ -15,6 +15,21 @@
 -  chore(deps): bump jdk-tool from 1.4 to 1.5 in /.ci/jobDSL [#1769](https://github.com/elastic/apm-pipeline-library/pull/1769)
 -  chore(deps): bump bouncycastle-api from 2.18 to 2.26 in /.ci/jobDSL [#1768](https://github.com/elastic/apm-pipeline-library/pull/1768)
 
+## v1.1.339 (08/07/2022)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: updatecli job [#1765](https://github.com/elastic/apm-pipeline-library/pull/1765)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.3.2 8.3.2 [#1773](https://github.com/elastic/apm-pipeline-library/pull/1773)
+
+#### 📦 Dependency updates
+
+-  chore(deps): bump jdk-tool from 1.4 to 1.5 in /.ci/jobDSL [#1769](https://github.com/elastic/apm-pipeline-library/pull/1769)
+-  chore(deps): bump bouncycastle-api from 2.18 to 2.26 in /.ci/jobDSL [#1768](https://github.com/elastic/apm-pipeline-library/pull/1768)
+
 ## v1.1.337 (04/07/2022)
 
 #### 🚀 Enhancements
