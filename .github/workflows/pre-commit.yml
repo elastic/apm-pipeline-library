@@ -1,7 +1,10 @@
 ---
 name: pre-commit
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 # limit the access of the generated GITHUB_TOKEN
 permissions:

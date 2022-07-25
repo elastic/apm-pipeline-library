@@ -3,6 +3,7 @@ name: job-dsl
 
 on:
   push:
+    branches: [main]
   pull_request:
     paths:
       - .ci/jobDSL/**
