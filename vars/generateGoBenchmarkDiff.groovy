@@ -56,7 +56,7 @@ def getCompareWithFileIfPossible(Map args = [:]) {
     try {
       dir("${args.output}/${env.CHANGE_TARGET}") {
         projectName = env.JOB_NAME.replace(env.JOB_BASE_NAME, env.CHANGE_TARGET)
-        copyArtifacts(filter: "${args.file}", flatten: true, optional: true, projectName: projectName, selector: lastWithArtifacts())
+        copyArtifacts(filter: "${args.file}", flatten: false, optional: true, projectName: projectName, selector: lastWithArtifacts())
       }
     } catch(e) {
       log(level: 'INFO', text: 'generateGoBenchmarkDiff: it was not possible to copy the previous build.')
