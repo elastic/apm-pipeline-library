@@ -100,6 +100,8 @@ pipeline {
       }
       steps {
         withGithubNotify(context: 'Test infra') {
+          deleteDir()
+          unstash 'source'
           dir("${BASE_DIR}"){
             sh script: './resources/scripts/jenkins/apm-ci/test.sh'
             sh script: './resources/scripts/jenkins/build.sh'
@@ -126,6 +128,8 @@ pipeline {
         }
       }
       steps {
+        deleteDir()
+        unstash 'source'
         dockerLogin(secret: "secret/apm-team/ci/docker-registry/prod",
           registry: "docker.elastic.co"
         )
