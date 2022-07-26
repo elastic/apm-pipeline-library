@@ -87,7 +87,7 @@ def fetchVersions() {
   def latestReleaseVersions = artifactsApi(action: 'latest-release-versions')
   // To store all the latest release versions
   def latestVersions = artifactsApi(action: 'latest-versions')
-  def current7 = latestReleaseVersions.findAll { it ==~ /7\.\d+\.\d+/ }.sort().last()
+  def current7 = getCurrent7(latestReleaseVersions)
   def latest8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
   def current8 = getCurrent8(latestReleaseVersions)
   // NOTE: 6 major branch is now EOL (we keep this for backward compatibility)
@@ -99,6 +99,18 @@ def fetchVersions() {
   releaseVersions[bumpUtils.nextMinor8Key()] = latest8
   releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
   releaseVersions[bumpUtils.edge8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
+}
+
+/*
+As long as the artifacts-api doesn't keep versions that have not built for over 30 days
+then return the previous value
+*/
+def getCurrent7(latestReleaseVersions) {
+  def latest7Versions = latestReleaseVersions?.findAll{ it ==~ /7\.\d+\.\d+/ }
+  if (latest7Versions) {
+    return latest7Versions.sort().last()
+  }
+  return bumpUtils.getCurrentMinorReleaseFor7()
 }
 
 def getCurrent8(latestReleaseVersions) {
