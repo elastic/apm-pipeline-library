@@ -27,12 +27,12 @@ def call(String branch){
   if (branch.equals('main')) {
     branchName = 'master'
   }
-  def fileName = "${branchName}.gradle"
+  def fileName = "build.gradle"
   def token = getGithubToken()
   def ret = githubApiCall(token: token,
                           method: 'GET',
                           failNever: true,
                           allowEmptyResponse: true,
-                          url:"https://api.github.com/repos/elastic/infra/contents/cd/release/release-manager/${fileName}")
+                          url:"https://api.github.com/repos/elastic/infra/contents/cd/release/release-manager/project-configs/${branchName}/${fileName}")
   return (ret?.name?.trim() == fileName) ? true : false
 }
