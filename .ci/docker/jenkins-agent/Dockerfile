@@ -19,7 +19,10 @@ RUN wget https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64
 # Install gh
 RUN dnf -qy install 'dnf-command(config-manager)' \
   && dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo \
-  && dnf install -qy gh \
+  && dnf install -qy gh
+
+# Install make
+RUN dnf install -qy make \
   && dnf -qy clean all
 
 # Install gvm
