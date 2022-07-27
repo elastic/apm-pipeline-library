@@ -22,5 +22,9 @@ RUN dnf -qy install 'dnf-command(config-manager)' \
   && dnf install -qy gh \
   && dnf -qy clean all
 
+# Install gvm
+RUN curl -L -o /usr/local/bin/gvm https://github.com/andrewkroh/gvm/releases/download/v0.3.0/gvm-linux-amd64 \
+  && chmod 755 /usr/local/bin/gvm
+
 # Switch back to the `jenkins` user before
 USER jenkins
