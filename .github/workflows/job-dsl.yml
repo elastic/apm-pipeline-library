@@ -11,7 +11,8 @@ on:
 
 # limit the access of the generated GITHUB_TOKEN
 permissions:
-  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   job-dsl:
@@ -28,6 +29,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean test --stacktrace
         working-directory: .ci/jobDSL
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@f00bb47e1d89c6d98071d1b69e16a2b63c7fbfc1
+        if: always()
+        continue-on-error: true
+        with:
+          files: ".ci/jobDSL/build/test-results/test/TEST-*.xml"
       - uses: v1v/otel-upload-test-artifact-action@v2
         if: always()
         continue-on-error: true

@@ -7,7 +7,8 @@ on:
 
 # limit the access of the generated GITHUB_TOKEN
 permissions:
-  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   build:
@@ -22,6 +23,12 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@f00bb47e1d89c6d98071d1b69e16a2b63c7fbfc1
+        if: always()
+        continue-on-error: true
+        with:
+          files: "target/surefire-reports/*.xml"
       - uses: v1v/otel-upload-test-artifact-action@v2
         if: always()
         continue-on-error: true
