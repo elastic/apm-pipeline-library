@@ -23,7 +23,7 @@ import static org.junit.Assert.assertFalse
 class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
 
   def apiInterceptor = { return toJSON([
-      "name": "master.gradle",
+      "name": "build.gradle",
       "path": "cd/release/release-manager/project-configs/master/build.gradle",
       "size": "1",
       "type": "file"
