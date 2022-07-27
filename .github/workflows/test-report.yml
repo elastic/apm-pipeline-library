@@ -1,0 +1,41 @@
+name: Unit Test Results
+
+on:
+  workflow_run:
+    workflows: [Java CI, job-dsl]
+    types:
+      - completed
+
+jobs:
+  unit-test-results:
+    name: Unit Test Results
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion != 'skipped'
+
+    steps:
+      - name: Download and Extract Artifacts
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+           mkdir -p artifacts && cd artifacts
+
+           artifacts_url=${{ github.event.workflow_run.artifacts_url }}
+
+           gh api "$artifacts_url" -q '.artifacts[] | [.name, .archive_download_url] | @tsv' | while read artifact
+           do
+             IFS=$'\t' read name url <<< "$artifact"
+             gh api $url > "$name.zip"
+             unzip -d "$name" "$name.zip"
+           done
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@f00bb47e1d89c6d98071d1b69e16a2b63c7fbfc1
+        if: always()
+        continue-on-error: true
+        with:
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/EventFile/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          files: |
+            .ci/jobDSL/build/test-results/test/TEST-*.xml
+            target/surefire-reports/*.xml
