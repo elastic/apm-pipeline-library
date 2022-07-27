@@ -24,7 +24,7 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
 
   def apiInterceptor = { return toJSON([
       "name": "master.gradle",
-      "path": "cd/release/release-manager/master.gradle",
+      "path": "cd/release/release-manager/project-configs/master/build.gradle",
       "size": "1",
       "type": "file"
     ])
