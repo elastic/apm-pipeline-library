@@ -18,7 +18,7 @@
 @Library('apm@current') _
 
 pipeline {
-  agent { label 'k8s' }
+  agent none
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'INFO'

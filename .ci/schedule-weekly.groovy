@@ -18,7 +18,7 @@
 @Library('apm@main') _
 
 pipeline {
-  agent { label 'k8s' }
+  agent { label 'ubuntu && immutable' }
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'INFO'

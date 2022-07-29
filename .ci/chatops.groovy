@@ -46,7 +46,7 @@ pipeline {
      Checkout the code and stash it, to use it on other stages.
     */
     stage('Checkout') {
-      agent { label 'k8s' }
+      agent any
       when {
         beforeAgent true
         expression {
