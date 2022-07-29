@@ -18,7 +18,7 @@
 @Library('apm@current') _
 
 pipeline {
-  agent { label 'k8s' }
+  agent { label 'linux && immutable' }
   environment {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
