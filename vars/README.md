@@ -3962,6 +3962,7 @@ passed as parameters and mask the secrets.
 withSecretVault(secret: 'secret', data: [ 'api_key': 'API_KEY'] ){
   //block
 }
+```
 
 #### Deprecated
 
