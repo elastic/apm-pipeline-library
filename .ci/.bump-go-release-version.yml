@@ -21,14 +21,14 @@ projects:
       - main
     enabled: true
     labels: dependency
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-ci
   - repo: apm-integration-testing
     script: .ci/bump-go-release-version.sh
     branches:
       - main
     enabled: true
     labels: dependency
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-ci
   - repo: beats
     script: .ci/bump-go-release-version.sh
     branches:
@@ -93,4 +93,4 @@ projects:
       - main
     enabled: true
     labels: dependency
-    reviewer: elastic/observablt-robots
+    reviewer: elastic/observablt-ci

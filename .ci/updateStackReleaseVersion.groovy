@@ -69,7 +69,7 @@ pipeline {
                           branchName: 'main',
                           labels: 'automation',
                           message: """### What \n Bump stack version with the latest one. \n ### Further details \n ${releaseVersions} \n The release might not be available yet, if the CI failed please verify if the release is public available in https://www.elastic.co/downloads/past-releases#elasticsearch.""",
-                          reviewer: 'elastic/observablt-robots',
+                          reviewer: 'elastic/observablt-ci',
                           stackVersions: releaseVersions,
                           title: '[automation] Update Elastic stack release version source of truth')
       }
