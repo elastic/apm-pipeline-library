@@ -295,32 +295,8 @@ pipeline {
       options { skipDefaultCheckout() }
       failFast false
       parallel {
-        stage('Mac OS X check - 01'){
-          agent { label 'worker-c07yx0vrjyvy' }
-          steps {
-            runBuild()
-            testMac()
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
-        stage('Mac OS X check - 02'){
-          agent { label 'worker-c07yx0vdjyvy' }
-          steps {
-            runBuild()
-            testMac()
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
-        stage('BareMetal worker-854309 check'){
-          agent { label 'worker-854309' }
+        stage('BareMetal worker-1799328 check'){
+          agent { label 'worker-1799328' }
           steps {
             runBuild()
             testBaremetal()
@@ -331,8 +307,20 @@ pipeline {
             }
           }
         }
-        stage('BareMetal worker-1095690 check'){
-          agent { label 'worker-1095690' }
+        stage('BareMetal worker-1799329 check'){
+          agent { label 'worker-1799329' }
+          steps {
+            runBuild()
+            testBaremetal()
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
+            }
+          }
+        }
+        stage('BareMetal worker-1799330 check'){
+          agent { label 'worker-1799330' }
           steps {
             runBuild()
             testBaremetal()
@@ -345,18 +333,6 @@ pipeline {
         }
         stage('BareMetal worker-1213919 check'){
           agent { label 'worker-1213919' }
-          steps {
-            runBuild()
-            testBaremetal()
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
-        stage('BareMetal worker-1225339 check'){
-          agent { label 'worker-1225339' }
           steps {
             runBuild()
             testBaremetal()
