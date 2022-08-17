@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "elastic/observablt-robots-on-call"
+      - "elastic/observablt-ci"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -18,7 +18,7 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "elastic/observablt-robots-on-call"
+      - "elastic/observablt-ci"
 
   # Enable version updates for Gradle
   - package-ecosystem: "gradle"
@@ -27,4 +27,4 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "elastic/observablt-robots-on-call"
+      - "elastic/observablt-ci"
