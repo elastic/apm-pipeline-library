@@ -321,6 +321,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       f.write(m.body)
       println f.toString()
     })
+    helper.registerAllowedMethod('maskPasswords', [Map.class, Closure.class], TestUtils.wrapInterceptor)
     helper.registerAllowedMethod('powershell', [Map.class], null)
     helper.registerAllowedMethod('powershell', [String.class], null)
     helper.registerAllowedMethod('pwd', [Map.class], { 'folder' })
