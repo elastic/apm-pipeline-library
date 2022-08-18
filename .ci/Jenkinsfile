@@ -30,7 +30,7 @@ pipeline {
     SLACK_CHANNEL = '#observablt-bots'
     JOB_GCS_BUCKET = 'apm-ci-temp'
     JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
-    GITHUB_CHECK = 'true'
+    GITHUB_CHECK = 'false'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
