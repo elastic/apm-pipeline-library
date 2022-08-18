@@ -84,7 +84,10 @@ def getRSAPrivateKey(privateKeyPEM) {
 
 def getToken(Map args=[:]) {
   try {
-    wrap([$class: 'MaskPasswordsBuildWrapper', varMaskRegexes: [[regex: 'token:[^,]*']]]) {
+    // With https://plugins.jenkins.io/mask-passwords/ version 3.2
+    maskPasswords(varMaskRegexes: [[name: null, value: [$class: 'VarMaskRegex', regex: 'token:[^,]*']]]) {
+    // With https://plugins.jenkins.io/mask-passwords/ version 3.1
+    //wrap([$class: 'MaskPasswordsBuildWrapper', varMaskRegexes: [[regex: 'token:[^,]*']]]) {
       return githubApiCall(authorizationType: 'Bearer',
                           token: args.jsonWebToken,
                           url: "https://api.github.com/app/installations/${args.installationId}/access_tokens",
