@@ -26,9 +26,9 @@ def call(Map args = [:]) {
     error('runE2e: e2e pipeline is defined in either https://beats-ci.elastic.co/ or https://fleet-ci.elastic.co/')
   }
 
-  // As long as elastic/beats and elastic/e2e-testing don't match each other with
-  // main then it's required to do this trick
-  def targetBranch = env.CHANGE_TARGET.equals('master') ? 'main' : env.CHANGE_TARGET
+  // Target Branch calculation might not be trivial, so the getTargetBranch function
+  // is the one in charge.
+  def targetBranch = getTargetBranch()
 
   def jobFolderPath = 'e2e-tests/e2e-testing-mbp'
   def jobName = args.get('jobName', isPR() ? "${targetBranch}" : "${env.JOB_BASE_NAME}")
@@ -84,4 +84,29 @@ def addStringParameterIfValue(value, name, parameters) {
   if (value?.trim()) {
     parameters << string(name: name, value: value)
   }
+}
+
+def getTargetBranch() {
+  // As long as elastic/beats and elastic/e2e-testing don't match each other with
+  // main then it's required to do this trick
+  def targetBranch = env.CHANGE_TARGET.equals('master') ? 'main' : env.CHANGE_TARGET
+
+  // e2e-testing branch strategy is similar to the Beats/ElasticAgent though, if people
+  // use feature branches in the upstream, then those branches are not reflected in the
+  // e2e-testing. If that's the case, then the target branch will be always `main`.
+  // This is a bit opinionated
+  if (!isBranchSupported(targetBranch)) {
+    targetBranch = 'main'
+  }
+  return targetBranch
+}
+
+def isBranchSupported(branchName) {
+  // main is the one supported in the e2e-testing
+  if (branchName?.equals('main')) {
+    return true
+  }
+  // 8.2 or 8.2.x are the supported release branches
+  // supported in the e2e-testing
+  return (branchName ==~ /^\d+\.\d+.*/)
 }

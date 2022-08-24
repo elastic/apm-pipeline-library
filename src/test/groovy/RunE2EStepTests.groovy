@@ -162,4 +162,44 @@ class RunE2EStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallOccurrences('githubNotify', 0))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_isBranchSupported() throws Exception {
+    assertFalse(script.isBranchSupported(null))
+    assertFalse(script.isBranchSupported(''))
+    assertTrue(script.isBranchSupported('main'))
+    assertTrue(script.isBranchSupported('8.2'))
+    assertTrue(script.isBranchSupported('8.2.x'))
+    assertFalse(script.isBranchSupported('feature-flag-branch'))
+  }
+
+  @Test
+  void test_getTargetBranch() throws Exception {
+    addEnvVar('CHANGE_TARGET', 'main')
+    def branch = script.getTargetBranch()
+    printCallStack()
+    assertTrue(branch.equals('main'))
+    addEnvVar('CHANGE_TARGET', '8.3')
+    branch = script.getTargetBranch()
+    printCallStack()
+    assertTrue(branch.equals('8.3'))
+    addEnvVar('CHANGE_TARGET', 'feature-branch')
+    branch = script.getTargetBranch()
+    printCallStack()
+    println branch
+    assertTrue(branch.equals('main'))
+  }
+
+  @Test
+  void test_with_in_a_feature_branch() throws Exception {
+    // Given a PR
+    // And a feature branch
+    helper.registerAllowedMethod('isPR', { return true })
+    addEnvVar('CHANGE_TARGET', 'feature-branch')
+    script.call()
+    printCallStack()
+    // Then the e2e-testing should run against the main branch
+    assertTrue(assertMethodCallContainsPattern('build', 'job=e2e-tests/e2e-testing-mbp/main'))
+    assertJobStatusSuccess()
+  }
 }
