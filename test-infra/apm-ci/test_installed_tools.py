@@ -41,7 +41,7 @@ def test_vault_installed(host):
   assert cmd.rc == 0, "it is required for all the APM projects"
 
 def test_java11_is_installed(host):
-  if host.system_info.type == 'darwin' :
+  if host.system_info.type == 'darwin' or host.check_output("uname -m") != "x86_64":
     pytest.skip("unsupported configuration")
   else:
     hudson_home = host.environment().get('HUDSON_HOME')
