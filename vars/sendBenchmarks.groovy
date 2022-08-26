@@ -30,7 +30,7 @@ def call(Map args = [:]) {
   }
   def benchFile = args.containsKey('file') ? args.file : 'bench.out'
   def index = args.containsKey('index') ? args.index : 'benchmark-go'
-  def secret = args.containsKey('secret') ? args.secret : 'secret/apm-team/ci/benchmark-cloud'
+  def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/benchmark-cloud'
   def archive = args.containsKey('archive') ? args.archive : true
 
   if(archive){
