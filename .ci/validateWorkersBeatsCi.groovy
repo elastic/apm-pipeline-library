@@ -64,26 +64,17 @@ pipeline {
             name 'PLATFORM'
             values (
               'arm',  // ephemeral workers
+              'immutable && windows-2022',
               'immutable && windows-2019 && docker',
               'immutable && windows-2019',
               'immutable && windows-2016',
               'immutable && windows-2012-r2',
+              'immutable && windows-11',
               'immutable && windows-10',
               'immutable && windows-8',
               'immutable && windows-2008-r2',
-              'immutable && windows-7-32-bit',
-              'immutable && windows-7',
               'ubuntu-18',
               'ubuntu-20',
-              // 'worker-c07c6107jyw0', 10.15.7 has docker desktop and it gets stalled
-              'worker-c07jc1nzdwym',
-              'worker-c07l34n6dwym',
-              'worker-c07y20b9jyvy',
-              'worker-c07y20b4jyvy',
-              'worker-c07y20bcjyvy',
-              'worker-c07mq25jdy3h',
-              'worker-c07mq1u7dy3h',
-              'worker-h2wdt2qxq6ny',
               'worker-395930',  // metal workers https://beats-ci.elastic.co/label/metal/
               'worker-1244230'
             )
