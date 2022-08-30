@@ -32,6 +32,7 @@ def call(Map args = [:]) {
   def index = args.containsKey('index') ? args.index : 'benchmark-go'
   def secret = args.containsKey('secret') ? args.secret : 'secret/observability-team/ci/benchmark-cloud'
   def archive = args.containsKey('archive') ? args.archive : true
+  def useGoBench = args.get('useGoBench', false)
 
   if(archive){
     archiveArtifacts(allowEmptyArchive: true,
@@ -55,7 +56,7 @@ def call(Map args = [:]) {
   def url = args.containsKey('url') ? args.url : data.url
 
   log(level: 'INFO', text: "Benchmarks: sending data...")
-  if(index.equals('benchmark-go') || index.equals('benchmark-server')){
+  if(index.equals('benchmark-go') || index.equals('benchmark-server') || useGoBench){
     def protocol = getProtocol(url)
     url = url - protocol
     gobench("${protocol}${user}:${password}@${url}", benchFile, index)
