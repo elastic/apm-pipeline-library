@@ -67,7 +67,7 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
         return toJSON(apiInterceptor)
       }
     })
-    helper.registerAllowedMethod('base64encode', [Map.class], { return 'main' })
+    helper.registerAllowedMethod('base64encode', [Map.class], { return '8.3' })
   }
 
   @Test
@@ -86,7 +86,7 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
       }
       return toJSON(apiErrorInterceptor)
     })
-    def ret = script.call('main')
+    def ret = script.call('8.3')
     printCallStack()
     assertTrue(ret)
     assertTrue(assertMethodCallOccurrences('githubApiCall', 3))
@@ -103,8 +103,8 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_fallback_with_main_branch() throws Exception {
-    def ret = script.fallback('current-release-branches-main.yml.inc', 'main', 'my-token')
+  void test_fallback_with_8_3_branch() throws Exception {
+    def ret = script.fallback('current-release-branches-main.yml.inc', '8.3', 'my-token')
     printCallStack()
     assertTrue(ret)
     assertJobStatusSuccess()
@@ -115,6 +115,24 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
     def ret = script.fallback('current-release-branches-main.yml.inc', 'foo', 'my-token')
     printCallStack()
     assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_master_branch() throws Exception {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return 'main' })
+    def ret = script.fallback('current-release-branches-main.yml.inc', 'master', 'my-token')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_main_branch_in_async_file() throws Exception {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return 'master' })
+    def ret = script.fallback('current-async-release-branches.yml.inc', 'main', 'my-token')
+    printCallStack()
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 }

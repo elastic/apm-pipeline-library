@@ -42,7 +42,14 @@ def call(String branch){
 }
 
 def fallback(fileName, branch, token) {
-  def branchName = branch.equals('master') ? 'main' : branch
+  def branchName = branch
+  if (fileName.contains('current-release-branches-main.yml.inc')) {
+    branchName = branch.equals('master') ? 'main' : branch
+  }
+  if (fileName.contains('current-async-release-branches.yml.inc')) {
+    branchName = branch.equals('main') ? 'master' : branch
+  }
+
   def ret = githubApiCall(token: token,
                           method: 'GET',
                           failNever: true,
