@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.1.341 (30/08/2022)
+
+#### 🙈 No user affected
+
+-  Update default vault secrets for sendBenchmarks [#1851](https://github.com/elastic/apm-pipeline-library/pull/1851)
+
+#### ⚙️ CI
+
+-  Move from observablt-robots-on-call to observablt-robots [#1833](https://github.com/elastic/apm-pipeline-library/pull/1833)
+- [**dependency**] [automation] Update Elastic stack release version 8.3.3 8.3.3 [#1826](https://github.com/elastic/apm-pipeline-library/pull/1826)
+-  Revert ci: enable k8s workers (#1775)" [#1827](https://github.com/elastic/apm-pipeline-library/pull/1827)
+-  fix empty list of 7 releases [#1821](https://github.com/elastic/apm-pipeline-library/pull/1821)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1203.v7b_7023424efe to 1232.v5a_4c994312f1 [#1818](https://github.com/elastic/apm-pipeline-library/pull/1818)
+-  chore(deps): bump opentelemetry from 2.9.1 to 2.9.2 [#1853](https://github.com/elastic/apm-pipeline-library/pull/1853)
+-  chore(deps): bump opentelemetry from 2.9.0 to 2.9.1 [#1847](https://github.com/elastic/apm-pipeline-library/pull/1847)
+-  chore(deps-dev): bump mockito-core from 4.6.1 to 4.7.0 [#1837](https://github.com/elastic/apm-pipeline-library/pull/1837)
+- [**dependency**] [automation] Update go release version 1.18.5 [#1830](https://github.com/elastic/apm-pipeline-library/pull/1830)
+-  chore(deps): bump extra-enforcer-rules from 1.6.0 to 1.6.1 [#1811](https://github.com/elastic/apm-pipeline-library/pull/1811)
+-  chore(deps): bump opentelemetry from 2.8.0 to 2.9.0 [#1810](https://github.com/elastic/apm-pipeline-library/pull/1810)
+-  chore(deps): bump jenkins-test-harness from 1812.v6d4e97d91fd8 to 1816.v8138d8056949 in /.ci/jobDSL [#1813](https://github.com/elastic/apm-pipeline-library/pull/1813)
+-  chore(deps): bump groovy-all from 2.5.17 to 2.5.18 in /.ci/jobDSL [#1814](https://github.com/elastic/apm-pipeline-library/pull/1814)
+
 ## v1.1.340 (25/07/2022)
 
 #### 🚀 Enhancements
