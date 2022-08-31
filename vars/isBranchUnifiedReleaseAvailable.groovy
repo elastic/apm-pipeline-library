@@ -33,6 +33,28 @@ def call(String branch){
                           method: 'GET',
                           failNever: true,
                           allowEmptyResponse: true,
-                          url:"https://api.github.com/repos/elastic/infra/contents/cd/release/release-manager/project-configs/${branchName}/${fileName}")
-  return (ret?.name?.trim() == fileName) ? true : false
+                          url: "${repoUrlApi()}/cd/release/release-manager/project-configs/${branchName}/${fileName}")
+  if (ret?.name?.trim() == fileName) {
+    return true
+  }
+  return fallback("ci/jjb/shared/current-release-branches-main.yml.inc", branch, token) ||
+         fallback("ci/jjb/shared/current-async-release-branches.yml.inc", branch, token)
+}
+
+def fallback(fileName, branch, token) {
+  def branchName = branch.equals('master') ? 'main' : branch
+  def ret = githubApiCall(token: token,
+                          method: 'GET',
+                          failNever: true,
+                          allowEmptyResponse: true,
+                          url: "${repoUrlApi()}/${fileName}")
+  if (ret?.content?.trim()) {
+    def content = base64encode(text: ret?.content, encoding: "UTF-8")
+    return content?.contains(branchName)
+  }
+  return false
+}
+
+def repoUrlApi() {
+  return "https://api.github.com/repos/elastic/infra/contents"
 }
