@@ -50,7 +50,7 @@
     <dependency>
       <groupId>com.lesfurets</groupId>
       <artifactId>jenkins-pipeline-unit</artifactId>
-      <version>1.14</version>
+      <version>1.16</version>
       <scope>test</scope>
     </dependency>
     <dependency>
