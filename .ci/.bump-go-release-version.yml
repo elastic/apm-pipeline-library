@@ -44,6 +44,7 @@ projects:
     enabled: true
     labels: dependency
     reviewer: elastic/cloudbeat
+    overrideGoVersion: "1.18"
   - repo: elastic-agent-shipper
     script: .ci/bump-go-release-version.sh
     branches:
