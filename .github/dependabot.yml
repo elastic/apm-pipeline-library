@@ -23,7 +23,7 @@ updates:
   # Enable version updates for Gradle
   - package-ecosystem: "gradle"
     directory: ".ci/jobDSL"
-    # Check for updates once a week
+    # Check for updates once a month
     schedule:
       interval: "monthly"
     reviewers:
