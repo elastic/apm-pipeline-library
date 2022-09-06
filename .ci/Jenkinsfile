@@ -66,6 +66,18 @@ pipeline {
         }
       }
     }
+    stage('Check pre-commit') {
+      options { skipDefaultCheckout() }
+      steps {
+        withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
+          deleteDir()
+          unstash 'source'
+          dir("${BASE_DIR}"){
+            preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
+          }
+        }
+      }
+    }
     stage('Check Pipelines') {
       options { skipDefaultCheckout() }
       steps {
