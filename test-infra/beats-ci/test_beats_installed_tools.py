@@ -72,3 +72,7 @@ def test_tar_installed(host):
 def test_vault_installed(host):
   cmd = host.run("vault --version")
   assert cmd.rc == 0, "it is required for all the Beats projects"
+
+def test_yq_is_installed(host):
+  cmd = host.run("yq --version")
+  assert cmd.rc == 0, "it is required for ingest-dev project"
