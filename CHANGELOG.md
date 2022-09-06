@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.342 (31/08/2022)
+
+#### 🚀 Enhancements
+
+-  Support for gobench transformation [#1860](https://github.com/elastic/apm-pipeline-library/pull/1860)
+
 ## v1.1.341 (30/08/2022)
 
 #### 🙈 No user affected
