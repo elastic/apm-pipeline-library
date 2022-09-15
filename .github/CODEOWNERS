@@ -10,5 +10,8 @@
 # Beats
 /resources/approval-list/beats.yml @andresrc
 
+# pytest_otel
+resources/scripts/pytest_otel @kuisathaverat
+
 # Auto assign reviews
 * @elastic/observablt-ci
