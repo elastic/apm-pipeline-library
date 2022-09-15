@@ -19,6 +19,7 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+    overrideGoVersion: "1.18"
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-ci
