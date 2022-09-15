@@ -32,8 +32,3 @@ jobs:
         run: make -C resources/scripts/pytest_otel test
       - name: it-test
         run: make -C resources/scripts/pytest_otel it-test
-      - uses: rainbow-duck-games/unity-test-publisher@82614fdbce4f519c5f75b24511d94250af6c04d9
-        if: ${{ always() }} # Avoid skipping on failed tests
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          reportPaths: resources/scripts/pytest_otel/**/junit-*.xml
