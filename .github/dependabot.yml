@@ -28,3 +28,13 @@ updates:
       interval: "monthly"
     reviewers:
       - "elastic/observablt-ci"
+
+  # Enable version updates for pytest_otel
+  - package-ecosystem: "pip"
+    directory: "resources/scripts/pytest_otel"
+    # Check for updates once a month
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+      - "kuisathaverat"
