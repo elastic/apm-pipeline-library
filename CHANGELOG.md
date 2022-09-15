@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.343 (06/09/2022)
+
+#### 🚀 Enhancements
+
+-  Fallback for isBranchUnifiedReleaseAvailable [#1862](https://github.com/elastic/apm-pipeline-library/pull/1862)
+
+#### ⚙️ CI
+
+-  test-infra: update ephemeral workers and osx static workers [#1859](https://github.com/elastic/apm-pipeline-library/pull/1859)
+- [**dependency**] [automation] Update Elastic stack release version 8.4.1 8.4.1 [#1856](https://github.com/elastic/apm-pipeline-library/pull/1856)
+
 ## v1.1.342 (31/08/2022)
 
 #### 🚀 Enhancements
