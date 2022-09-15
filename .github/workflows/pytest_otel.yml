@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'resources/scripts/pytest_otel/**'
+      - '.github/workflows/pytest_otel.yml'
   push:
     paths:
       - 'resources/scripts/pytest_otel/**'
