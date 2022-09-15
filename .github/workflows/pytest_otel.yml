@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '/resources/scripts/pytest_otel/**'
+      - 'resources/scripts/pytest_otel/**'
   push:
     paths:
-      - '/resources/scripts/pytest_otel/**'
+      - 'resources/scripts/pytest_otel/**'
 
 permissions:
   contents: read
