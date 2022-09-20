@@ -8,6 +8,7 @@ on:
       - 'resources/scripts/pytest_otel/**'
       - '.github/workflows/pytest_otel.yml'
   push:
+    branches: main
     paths:
       - 'resources/scripts/pytest_otel/**'
 
