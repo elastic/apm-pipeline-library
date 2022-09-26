@@ -1,5 +1,108 @@
 # Changelog
 
+## v1.1.344 (15/09/2022)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: add github-actions[bot] to authorized bot [#1872](https://github.com/elastic/apm-pipeline-library/pull/1872)
+- [**Team:Automation**] feat: pytest_otel workflow [#1880](https://github.com/elastic/apm-pipeline-library/pull/1880)
+- [**Team:Automation**] feat: add pytest_otel dependabot configuration [#1871](https://github.com/elastic/apm-pipeline-library/pull/1871)
+
+#### 🙈 No user affected
+
+-  cosmetic: github comment section to be collapsed [#1869](https://github.com/elastic/apm-pipeline-library/pull/1869)
+
+#### ⚙️ CI
+
+-  ci: pre-commit in Jenkins [#1866](https://github.com/elastic/apm-pipeline-library/pull/1866)
+
+#### 📦 Dependency updates
+
+- [**dependency**] [automation] Update go release version 1.19.1 [#1868](https://github.com/elastic/apm-pipeline-library/pull/1868)
+-  chore(deps): bump jenkins-test-harness from 1816.v8138d8056949 to 1837.vb_6efb_1790942 in /.ci/jobDSL [#1864](https://github.com/elastic/apm-pipeline-library/pull/1864)
+
+## v1.1.343 (06/09/2022)
+
+#### 🚀 Enhancements
+
+-  Fallback for isBranchUnifiedReleaseAvailable [#1862](https://github.com/elastic/apm-pipeline-library/pull/1862)
+
+#### ⚙️ CI
+
+-  test-infra: update ephemeral workers and osx static workers [#1859](https://github.com/elastic/apm-pipeline-library/pull/1859)
+- [**dependency**] [automation] Update Elastic stack release version 8.4.1 8.4.1 [#1856](https://github.com/elastic/apm-pipeline-library/pull/1856)
+
+## v1.1.342 (31/08/2022)
+
+#### 🚀 Enhancements
+
+-  Support for gobench transformation [#1860](https://github.com/elastic/apm-pipeline-library/pull/1860)
+
+## v1.1.341 (30/08/2022)
+
+#### 🙈 No user affected
+
+-  Update default vault secrets for sendBenchmarks [#1851](https://github.com/elastic/apm-pipeline-library/pull/1851)
+
+#### ⚙️ CI
+
+-  Move from observablt-robots-on-call to observablt-robots [#1833](https://github.com/elastic/apm-pipeline-library/pull/1833)
+- [**dependency**] [automation] Update Elastic stack release version 8.3.3 8.3.3 [#1826](https://github.com/elastic/apm-pipeline-library/pull/1826)
+-  Revert ci: enable k8s workers (#1775)" [#1827](https://github.com/elastic/apm-pipeline-library/pull/1827)
+-  fix empty list of 7 releases [#1821](https://github.com/elastic/apm-pipeline-library/pull/1821)
+
+#### 📦 Dependency updates
+
+-  chore(deps-dev): bump workflow-job from 1203.v7b_7023424efe to 1232.v5a_4c994312f1 [#1818](https://github.com/elastic/apm-pipeline-library/pull/1818)
+-  chore(deps): bump opentelemetry from 2.9.1 to 2.9.2 [#1853](https://github.com/elastic/apm-pipeline-library/pull/1853)
+-  chore(deps): bump opentelemetry from 2.9.0 to 2.9.1 [#1847](https://github.com/elastic/apm-pipeline-library/pull/1847)
+-  chore(deps-dev): bump mockito-core from 4.6.1 to 4.7.0 [#1837](https://github.com/elastic/apm-pipeline-library/pull/1837)
+- [**dependency**] [automation] Update go release version 1.18.5 [#1830](https://github.com/elastic/apm-pipeline-library/pull/1830)
+-  chore(deps): bump extra-enforcer-rules from 1.6.0 to 1.6.1 [#1811](https://github.com/elastic/apm-pipeline-library/pull/1811)
+-  chore(deps): bump opentelemetry from 2.8.0 to 2.9.0 [#1810](https://github.com/elastic/apm-pipeline-library/pull/1810)
+-  chore(deps): bump jenkins-test-harness from 1812.v6d4e97d91fd8 to 1816.v8138d8056949 in /.ci/jobDSL [#1813](https://github.com/elastic/apm-pipeline-library/pull/1813)
+-  chore(deps): bump groovy-all from 2.5.17 to 2.5.18 in /.ci/jobDSL [#1814](https://github.com/elastic/apm-pipeline-library/pull/1814)
+
+## v1.1.340 (25/07/2022)
+
+#### 🚀 Enhancements
+
+-  Prepare jenkins-agent with the required tools [#1799](https://github.com/elastic/apm-pipeline-library/pull/1799)
+- [**Team:Automation**] feat: add Generic Webhook trigger configuration [#1776](https://github.com/elastic/apm-pipeline-library/pull/1776)
+
+#### 🐛 Bug Fixes
+
+-  ci: fix the workspace setup [#1816](https://github.com/elastic/apm-pipeline-library/pull/1816)
+-  Fix copyArtifacts for generateGoBenchmarkDiff to use the folder structure [#1805](https://github.com/elastic/apm-pipeline-library/pull/1805)
+-  fix: update the pytest_otel demo [#1804](https://github.com/elastic/apm-pipeline-library/pull/1804)
+
+#### 🙈 No user affected
+
+-  action: opentelemetry exporter [#1777](https://github.com/elastic/apm-pipeline-library/pull/1777)
+
+#### ⚙️ CI
+
+-  ci: use cloud workers [#1806](https://github.com/elastic/apm-pipeline-library/pull/1806)
+-  use GitHub actions [#1803](https://github.com/elastic/apm-pipeline-library/pull/1803)
+-  ci: enable k8s workers [#1775](https://github.com/elastic/apm-pipeline-library/pull/1775)
+
+#### 📦 Dependency updates
+
+-  chore(deps): bump groovy-all from 2.4.14 to 2.5.17 in /.ci/jobDSL [#1796](https://github.com/elastic/apm-pipeline-library/pull/1796)
+-  chore(deps): bump trilead-api from 1.0.11 to 1.57.v6e90e07157e1 in /.ci/jobDSL [#1794](https://github.com/elastic/apm-pipeline-library/pull/1794)
+- [**dependency**] [automation] Update go release version 1.18.4 [#1788](https://github.com/elastic/apm-pipeline-library/pull/1788)
+-  chore(deps): bump generic-webhook-trigger from 1.66 to 1.84 in /.ci/jobDSL [#1795](https://github.com/elastic/apm-pipeline-library/pull/1795)
+-  chore(deps): bump jenkins-test-harness from 1802.v9de0d87365d2 to 1812.v6d4e97d91fd8 in /.ci/jobDSL [#1791](https://github.com/elastic/apm-pipeline-library/pull/1791)
+-  chore(deps): bump structs from 1.21 to 1.24 in /.ci/jobDSL [#1793](https://github.com/elastic/apm-pipeline-library/pull/1793)
+-  chore(deps): bump opentelemetry from 2.7.1 to 2.8.0 [#1778](https://github.com/elastic/apm-pipeline-library/pull/1778)
+-  chore(deps): bump snakeyaml-api from 1.29.1 to 1.30.2-76.vc104f7ce9870 in /.ci/jobDSL [#1782](https://github.com/elastic/apm-pipeline-library/pull/1782)
+-  chore(deps): bump workflow-multibranch from 2.26.1 to 711.vdfef37cda_816 in /.ci/jobDSL [#1784](https://github.com/elastic/apm-pipeline-library/pull/1784)
+-  chore(deps-dev): bump workflow-job from 1189.va_d37a_e9e4eda_ to 1203.v7b_7023424efe [#1780](https://github.com/elastic/apm-pipeline-library/pull/1780)
+-  chore(deps): bump jenkins-test-harness from 2.71 to 1802.v9de0d87365d2 in /.ci/jobDSL [#1786](https://github.com/elastic/apm-pipeline-library/pull/1786)
+-  chore(deps): bump token-macro from 2.12 to 270.v8c2ce50dc4fc in /.ci/jobDSL [#1781](https://github.com/elastic/apm-pipeline-library/pull/1781)
+-  chore(deps): bump extra-enforcer-rules from 1.5.1 to 1.6.0 [#1779](https://github.com/elastic/apm-pipeline-library/pull/1779)
+-  chore(deps): bump github-branch-source from 2.9.0 to 1628.vb_2f51293cb_78 in /.ci/jobDSL [#1770](https://github.com/elastic/apm-pipeline-library/pull/1770)
+
 ## v1.1.339 (08/07/2022)
 
 #### 🚀 Enhancements

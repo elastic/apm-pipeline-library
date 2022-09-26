@@ -39,7 +39,7 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
 
   enum VaultSecret{
     ALLOWED('secret/observability-team/ci/temp/allowed'),
-    BENCHMARK('secret/apm-team/ci/benchmark-cloud'),
+    BENCHMARK('secret/observability-team/ci/benchmark-cloud'),
     SECRET('secret'), SECRET_ALT_USERNAME('secret-alt-username'), SECRET_ALT_PASSKEY('secret-alt-passkey'),
     SECRET_APM('secret/observability-team/ci/jenkins-stats'),
     SECRET_APM_CUSTOMISED('secret/observability-team/ci/jenkins-stats/customised'),

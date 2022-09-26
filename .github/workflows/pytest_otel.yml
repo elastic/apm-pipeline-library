@@ -1,0 +1,40 @@
+---
+name: pytest_otel build and tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'resources/scripts/pytest_otel/**'
+      - '.github/workflows/pytest_otel.yml'
+  push:
+    branches: main
+    paths:
+      - 'resources/scripts/pytest_otel/**'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Run linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lint
+        run: make -C resources/scripts/pytest_otel lint
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: test
+        run: make -C resources/scripts/pytest_otel test
+      - name: it-test
+        run: make -C resources/scripts/pytest_otel it-test
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-results
+          path: resources/scripts/pytest_otel/**/junit-*.xml

@@ -22,27 +22,52 @@ import static org.junit.Assert.assertFalse
 
 class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
 
-  def apiInterceptor = { return toJSON([
+  def apiInterceptor = [
       "name": "build.gradle",
       "path": "cd/release/release-manager/project-configs/master/build.gradle",
       "size": "1",
-      "type": "file"
-    ])
-  }
+      "type": "file",
+      "content": ""
+    ]
 
-  def apiErrorInterceptor = { return toJSON([
+  def apiInterceptorCurrentReleases = [
+      "name": "current-release-branches-main.yml.inc",
+      "path": "ci/jjb/shared/current-release-branches-main.yml.inc",
+      "size": "1",
+      "type": "file",
+      "content": "bWFpbgo="
+    ]
+
+  def apiInterceptorAsyncReleases = [
+      "name": "current-async-release-branches.yml.inc",
+      "path": "ci/jjb/shared/current-async-release-branches.yml.inc",
+      "size": "1",
+      "type": "file",
+      "content": "bWFpbgo="
+    ]
+
+  def apiErrorInterceptor = [
       "message": "java.lang.Exception",
       "Error": "Not Found",
       "Code": "404"
-    ])
-  }
+    ]
 
   @Override
   @Before
   void setUp() throws Exception {
     super.setUp()
     script = loadScript('vars/isBranchUnifiedReleaseAvailable.groovy')
-    helper.registerAllowedMethod("githubApiCall", [Map.class], apiInterceptor)
+    helper.registerAllowedMethod("githubApiCall", [Map.class], { m  ->
+      if (m.url.contains('current-release-branches-main.yml.inc')) {
+        return toJSON(apiInterceptorCurrentReleases)
+      }
+      if (m.url.contains('current-async-release-branches.yml.inc')) {
+        return toJSON(apiInterceptorAsyncReleases)
+      } else {
+        return toJSON(apiInterceptor)
+      }
+    })
+    helper.registerAllowedMethod('base64encode', [Map.class], { return '8.3' })
   }
 
   @Test
@@ -54,11 +79,60 @@ class IsBranchUnifiedReleaseAvailableStepTests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_isMainBranch_with_fallback() throws Exception {
+    helper.registerAllowedMethod("githubApiCall", [Map.class], { m  ->
+      if (m.url.contains('current-async-release-branches.yml.inc')) {
+        return toJSON(apiInterceptorAsyncReleases)
+      }
+      return toJSON(apiErrorInterceptor)
+    })
+    def ret = script.call('8.3')
+    printCallStack()
+    assertTrue(ret)
+    assertTrue(assertMethodCallOccurrences('githubApiCall', 3))
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_isFoo_branch() throws Exception {
-    helper.registerAllowedMethod("githubApiCall", [Map.class], apiErrorInterceptor)
+    helper.registerAllowedMethod("githubApiCall", [Map.class], { return toJSON(apiErrorInterceptor)})
     def ret = script.call('foo')
     printCallStack()
     assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_8_3_branch() throws Exception {
+    def ret = script.fallback('current-release-branches-main.yml.inc', '8.3', 'my-token')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_foo_branch() throws Exception {
+    def ret = script.fallback('current-release-branches-main.yml.inc', 'foo', 'my-token')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_master_branch() throws Exception {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return 'main' })
+    def ret = script.fallback('current-release-branches-main.yml.inc', 'master', 'my-token')
+    printCallStack()
+    assertTrue(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_fallback_with_main_branch_in_async_file() throws Exception {
+    helper.registerAllowedMethod('base64encode', [Map.class], { return 'master' })
+    def ret = script.fallback('current-async-release-branches.yml.inc', 'main', 'my-token')
+    printCallStack()
+    assertTrue(ret)
     assertJobStatusSuccess()
   }
 }

@@ -52,6 +52,7 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
   void testParams() throws Exception {
     script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true)
     printCallStack()
+    assertFalse(assertMethodCallContainsPattern('withGoEnv', 'github.com/elastic/gobench'))
     assertJobStatusSuccess()
   }
 
@@ -196,5 +197,13 @@ class SendBenchmarksStepTests extends ApmBasePipelineTest {
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('error', 'Benchmarks: there was a response with an error. Review response'))
     assertJobStatusFailure()
+  }
+
+  @Test
+  void test_with_useGoBench() throws Exception {
+    script.call(file: 'bench.out', index: 'index-name', url: 'https://vault.example.com', secret: VaultSecret.SECRET.toString(), archive: true, useGoBench: true)
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('withGoEnv', 'github.com/elastic/gobench'))
+    assertJobStatusSuccess()
   }
 }

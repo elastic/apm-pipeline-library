@@ -5,9 +5,9 @@ updates:
   - package-ecosystem: "maven"
     # Look for `pom.xml` file in the `root` directory
     directory: "/"
-    # Check for updates once a week
+    # Check for updates once a month
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     reviewers:
       - "elastic/observablt-ci"
 
@@ -23,8 +23,18 @@ updates:
   # Enable version updates for Gradle
   - package-ecosystem: "gradle"
     directory: ".ci/jobDSL"
-    # Check for updates once a week
+    # Check for updates once a month
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  # Enable version updates for pytest_otel
+  - package-ecosystem: "pip"
+    directory: "resources/scripts/pytest_otel"
+    # Check for updates once a month
     schedule:
       interval: "weekly"
     reviewers:
       - "elastic/observablt-ci"
+      - "kuisathaverat"

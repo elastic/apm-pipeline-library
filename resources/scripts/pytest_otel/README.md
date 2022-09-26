@@ -12,7 +12,7 @@ Requirements
 * opentelemetry-api == 1.11.0
 * opentelemetry-exporter-otlp == 1.11.0
 * opentelemetry-sdk == 1.11.0
-
+* pytest >= 6.2.5
 
 Installation
 ------------

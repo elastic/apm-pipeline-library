@@ -86,7 +86,10 @@ function sedCommand() {
 }
 
 function curlCommand() {
-    curl --silent --max-time 600 --connect-timeout 30 -o "$1" "$2" --fail
+    local file="$1"
+    local url="$2"
+    shift 2
+    curl --silent --max-time 600 --connect-timeout 30 "${@}" -o "${file}" "${url}" --fail
 }
 
 function fetch() {
@@ -96,7 +99,7 @@ function fetch() {
     echo "INFO: curl ${url} -o ${file}"
     ## Let's support retry in the CI.
     if [[ -n "${JENKINS_URL}" && -e "${UTILS_LIB}" ]] ; then
-        (retry 3 curlCommand "${file}" "${url}") || STATUS=1
+        curlCommand "${file}" "${url}" "--retry" "3" || STATUS=1
     else
         curlCommand "${file}" "${url}" || STATUS=1
     fi
