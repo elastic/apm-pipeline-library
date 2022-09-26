@@ -294,9 +294,15 @@ def pytest_runtest_call(item):
         #total_counter.add(1)
         LOGGER.debug("Test {} starts - {}".format(item.name, span.get_span_context()))
         span.set_attribute("tests.name", item.name)
-        yield
+        info = yield
         LOGGER.debug("Test {} ends - {}".format(item.name, span.get_span_context()))
 
+        if hasattr(info, "_excinfo"):
+            if info._excinfo:
+                (info_class, info_msg, info_trace) = info._excinfo
+                if info_class.__name__ == 'Failed':
+                    outcome = "failed"
+                    span.set_attribute("tests.message", "{}".format(info_msg))
         if hasattr(sys, "last_value") and hasattr(sys, "last_traceback") and hasattr(sys, "last_type"):
             longrepr = ""
             last_value = getattr(sys, 'last_value')
