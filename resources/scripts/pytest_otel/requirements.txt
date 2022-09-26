@@ -2,8 +2,8 @@ coverage==6.2
 opentelemetry-api==1.12.0
 opentelemetry-exporter-otlp==1.12.0
 opentelemetry-sdk==1.12.0
-psutil==5.8.0
+psutil==5.9.2
 pytest==6.2.5
 pre-commit==2.16.0
 mypy==0.902
-pytest-docker==0.10.3
+pytest-docker==1.0.1
