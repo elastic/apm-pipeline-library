@@ -5,10 +5,12 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '/resources/scripts/pytest_otel/**'
+      - 'resources/scripts/pytest_otel/**'
+      - '.github/workflows/pytest_otel.yml'
   push:
+    branches: main
     paths:
-      - '/resources/scripts/pytest_otel/**'
+      - 'resources/scripts/pytest_otel/**'
 
 permissions:
   contents: read
@@ -31,3 +33,8 @@ jobs:
         run: make -C resources/scripts/pytest_otel test
       - name: it-test
         run: make -C resources/scripts/pytest_otel it-test
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-results
+          path: resources/scripts/pytest_otel/**/junit-*.xml
