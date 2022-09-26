@@ -42,3 +42,4 @@ wiremock-standalone.jar
 
 ## For the bump automation
 *.bck
+**/__pycache__
