@@ -93,8 +93,8 @@ coverage: virtualenv
 lint: virtualenv
 	source $(VENV)/bin/activate;\
 	pre-commit run; \
-	mypy src/pytest_otel; \
-	mypy tests;
+	mypy --namespace-packages src/pytest_otel; \
+	mypy --namespace-packages tests;
 
 ## @help:clean:Remove Python file artifacts.
 .PHONY: clean
