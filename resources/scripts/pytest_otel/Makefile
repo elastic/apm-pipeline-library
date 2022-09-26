@@ -33,6 +33,7 @@ endif
 GH_BINARY = gh_$(GH_VERSION)_$(OS_FLAG)_$(ARCH_FLAG)
 GH = $(CURDIR)/bin/gh
 
+SHELL = /bin/bash
 .SILENT:
 
 .PHONY: help
@@ -53,7 +54,7 @@ bin/gh: bin
 .PHONY: virtualenv
 virtualenv:
 	$(PYTHON) --version
-	test -d $(VENV) || virtualenv -q --python=$(PYTHON) $(VENV);\
+	test -d $(VENV) || $(PYTHON) -m venv $(VENV);\
 	source $(VENV)/bin/activate;\
 	$(PIP) install -q -r requirements.txt;
 
