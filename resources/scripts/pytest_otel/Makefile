@@ -14,8 +14,6 @@ PYTHON ?= python3
 PIP ?= pip3
 GH_VERSION = 1.0.0
 
-export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	OS_FLAG := linux
