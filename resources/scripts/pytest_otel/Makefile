@@ -31,6 +31,10 @@ endif
 GH_BINARY = gh_$(GH_VERSION)_$(OS_FLAG)_$(ARCH_FLAG)
 GH = $(CURDIR)/bin/gh
 
+export UID=$(shell id -u)
+export GID=$(shell id -g)
+
+SHELL = /bin/bash
 .SILENT:
 
 .PHONY: help
@@ -51,7 +55,7 @@ bin/gh: bin
 .PHONY: virtualenv
 virtualenv:
 	$(PYTHON) --version
-	test -d $(VENV) || virtualenv -q --python=$(PYTHON) $(VENV);\
+	test -d $(VENV) || $(PYTHON) -m venv $(VENV);\
 	source $(VENV)/bin/activate;\
 	$(PIP) install -q -r requirements.txt;
 
@@ -93,8 +97,8 @@ coverage: virtualenv
 lint: virtualenv
 	source $(VENV)/bin/activate;\
 	pre-commit run; \
-	mypy src/pytest_otel; \
-	mypy tests;
+	mypy --namespace-packages src/pytest_otel; \
+	mypy --namespace-packages tests;
 
 ## @help:clean:Remove Python file artifacts.
 .PHONY: clean

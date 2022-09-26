@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.1.344 (15/09/2022)
+
+#### 🚀 Enhancements
+
+- [**Team:Automation**] feat: add github-actions[bot] to authorized bot [#1872](https://github.com/elastic/apm-pipeline-library/pull/1872)
+- [**Team:Automation**] feat: pytest_otel workflow [#1880](https://github.com/elastic/apm-pipeline-library/pull/1880)
+- [**Team:Automation**] feat: add pytest_otel dependabot configuration [#1871](https://github.com/elastic/apm-pipeline-library/pull/1871)
+
+#### 🙈 No user affected
+
+-  cosmetic: github comment section to be collapsed [#1869](https://github.com/elastic/apm-pipeline-library/pull/1869)
+
+#### ⚙️ CI
+
+-  ci: pre-commit in Jenkins [#1866](https://github.com/elastic/apm-pipeline-library/pull/1866)
+
+#### 📦 Dependency updates
+
+- [**dependency**] [automation] Update go release version 1.19.1 [#1868](https://github.com/elastic/apm-pipeline-library/pull/1868)
+-  chore(deps): bump jenkins-test-harness from 1816.v8138d8056949 to 1837.vb_6efb_1790942 in /.ci/jobDSL [#1864](https://github.com/elastic/apm-pipeline-library/pull/1864)
+
 ## v1.1.343 (06/09/2022)
 
 #### 🚀 Enhancements
