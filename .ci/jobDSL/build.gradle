@@ -57,7 +57,7 @@ dependencies {
   testPlugins 'org.jenkins-ci.plugins:git:4.4.4'
   testPlugins 'org.jenkins-ci.plugins:github-branch-source:1628.vb_2f51293cb_78'
   testPlugins 'org.jenkins-ci.plugins:pipeline-github:2.7'
-  testPlugins 'org.jenkins-ci.plugins:generic-webhook-trigger:1.84'
+  testPlugins 'org.jenkins-ci.plugins:generic-webhook-trigger:1.84.2'
 
   // Run the following script in the Script Console of your Jenkins instance to generate
   // the above testPlugins list. (adapted from https://git.io/fjpUs)
