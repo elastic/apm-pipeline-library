@@ -31,6 +31,9 @@ endif
 GH_BINARY = gh_$(GH_VERSION)_$(OS_FLAG)_$(ARCH_FLAG)
 GH = $(CURDIR)/bin/gh
 
+export UID=$(shell id -u)
+export GID=$(shell id -g)
+
 SHELL = /bin/bash
 .SILENT:
 
