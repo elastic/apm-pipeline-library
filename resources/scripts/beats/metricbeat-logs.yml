@@ -25,5 +25,3 @@ output.file:
   path: "/output"
   filename: ${OUTPUT_FILE}
   permissions: 0644
-  codec.format:
-    string: '[%{[container.name]}][%{[container.image.name]}][%{[container.id]}][%{[@timestamp]}] %{[message]}'
