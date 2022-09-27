@@ -101,7 +101,7 @@ def runBeat(workdir, configPath, output, image){
     "OUTPUT_FILE=${output}"
   ]){
     sh(label: 'Run filebeat to grab host metrics', script: libraryResource("scripts/beats/run_filebeat.sh"))
-    return readFile(file: 'docker_id')?.trim()
+    return readFile(file: 'filebeat_docker_id')?.trim()
   }
 }
 

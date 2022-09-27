@@ -23,13 +23,13 @@ docker run \
     --strict.perms=false \
     -environment container \
     -E http.enabled=true \
-    -e -system.hostfs=/hostfs > docker_id
+    -e -system.hostfs=/hostfs > metricbeat_docker_id
 
 echo "docker ps"
 docker ps -a || true
 
 echo "DEBUG: print docker inspect"
-docker inspect "$(cat docker_id)"
+docker inspect "$(cat metricbeat_docker_id)"
 
 echo "DEBUG: print existing docker logs"
-docker logs -f "$(cat docker_id)"
+docker logs -f "$(cat metricbeat_docker_id)"

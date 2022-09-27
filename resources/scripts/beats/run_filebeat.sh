@@ -16,4 +16,4 @@ docker run \
   "${DOCKER_IMAGE}" \
     --strict.perms=false \
     -environment container \
-    -E http.enabled=true > docker_id
+    -E http.enabled=true > filebeat_docker_id

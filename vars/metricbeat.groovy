@@ -89,13 +89,13 @@ def runBeat(es_secret, workdir, configPath, output, image){
           [var: "ES_PASSWORD", password: secret?.password]
       ]){
         sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
-        return readFile(file: 'docker_id')?.trim()
+        return readFile(file: 'metricbeat_docker_id')?.trim()
       }
     } else {
       log(level: 'INFO', text: 'Run metricbeat and export data to a log file')
       withEnv([ "OUTPUT_DIR=${workdir}", "OUTPUT_FILE=${output}" ]){
         sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
-        return readFile(file: 'docker_id')?.trim()
+        return readFile(file: 'metricbeat_docker_id')?.trim()
       }
     }
   }
