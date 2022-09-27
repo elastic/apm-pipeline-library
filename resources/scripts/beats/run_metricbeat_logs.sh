@@ -9,7 +9,7 @@ echo "DOCKER_IMAGE=${DOCKER_IMAGE}"
 docker run \
   --detach \
   -v "${OUTPUT_DIR}:/output" \
-  -v "${CONFIG_PATH}:/usr/share/metricbeat/metricbeat-logs.yml" \
+  -v "${CONFIG_PATH}:/usr/share/metricbeat/metricbeat.yml" \
   -v /var/lib/docker/containers:/var/lib/docker/containers \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -u 0:0 \
