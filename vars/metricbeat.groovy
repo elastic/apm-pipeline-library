@@ -47,7 +47,7 @@ def start(Map args = [:]) {
   log(level: 'INFO', text: 'Running metricbeat Docker container')
   def defaultConfig = (es_secret != null) ? 'scripts/beats/metricbeat.yml' : "scripts/beats/metricbeat-logs.yml"
   configureMetricbeat(configPath, defaultConfig)
-  dockerID = runBeat(es_secret, workdir, configPath, output, image)
+  def dockerID = runBeat(es_secret, workdir, configPath, output, image)
   waitForBeat(dockerID)
 
   def json = [
