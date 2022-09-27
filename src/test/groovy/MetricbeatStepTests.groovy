@@ -98,6 +98,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
         print("OK")
       }
     }
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/beats/metricbeat-logs.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
@@ -129,7 +130,7 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
         print("OK")
       }
     }
-
+    assertTrue(assertMethodCallContainsPattern('libraryResource', 'scripts/beats/metricbeat.yml'))
     assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
     assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
     assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))

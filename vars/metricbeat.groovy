@@ -45,7 +45,8 @@ def start(Map args = [:]) {
   def configPath = "${workdir}/${config}"
 
   log(level: 'INFO', text: 'Running metricbeat Docker container')
-  configuremetricbeat(configPath)
+  def defaultConfig = (es_secret != null) ? 'scripts/beats/metricbeat.yml' : "scripts/beats/metricbeat-logs.yml"
+  configureMetricbeat(configPath, defaultConfig)
   dockerID = runBeat(es_secret, workdir, configPath, output, image)
   waitForBeat(dockerID)
 
@@ -94,7 +95,7 @@ def runBeat(es_secret, workdir, configPath, output, image){
     } else {
       log(level: 'INFO', text: 'Run metricbeat and export data to a log file')
       withEnv([ "OUTPUT_DIR=${workdir}", "OUTPUT_FILE=${output}" ]){
-        sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
+        sh(label: 'Run metricbeat to grab docker metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
         return readFile(file: 'metricbeat_docker_id')?.trim()
       }
     }
@@ -106,9 +107,9 @@ def waitForBeat(dockerID){
   sh(label: 'Wait for metricbeat', script: "chmod ugo+rx ./wait_for_beat.sh && ./wait_for_beat.sh ${dockerID}")
 }
 
-def configuremetricbeat(config){
+def configureMetricbeat(config, defaultConfig){
   if(fileExists(config)){
     return
   }
-  writeFile(file: config, text: libraryResource("scripts/beats/metricbeat.yml"))
+  writeFile(file: config, text: libraryResource(defaultConfig))
 }
