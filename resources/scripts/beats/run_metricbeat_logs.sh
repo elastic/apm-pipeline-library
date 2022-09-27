@@ -6,6 +6,7 @@ echo "OUTPUT_FILE=${OUTPUT_FILE}"
 echo "CONFIG_PATH=${CONFIG_PATH}"
 echo "DOCKER_IMAGE=${DOCKER_IMAGE}"
 
+echo "docker run"
 docker run \
   --detach \
   -v "${OUTPUT_DIR}:/output" \
@@ -23,3 +24,6 @@ docker run \
     -environment container \
     -E http.enabled=true \
     -e -system.hostfs=/hostfs > docker_id
+
+echo "docker ps"
+docker ps || true
