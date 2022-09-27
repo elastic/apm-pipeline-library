@@ -79,11 +79,10 @@ def stop(Map args = [:]){
 }
 
 def runBeat(es_secret, workdir, configPath, output, image){
-  withEnv([
-    [var: "CONFIG_PATH", password: configPath],
-    [var: "DOCKER_IMAGE", password: image]
+  withEnv(["CONFIG_PATH=${configPath}", "DOCKER_IMAGE=${image}"]
   ]){
     if (es_secret != null) {
+      log(level: 'INFO', text: 'Run metricbeat and export data to Elasticsearch')
       def secret = getVaultSecret(secret: es_secret)?.data
       withEnvMask(vars: [
           [var: "ES_URL", password: secret?.url],
@@ -94,6 +93,7 @@ def runBeat(es_secret, workdir, configPath, output, image){
         return readFile(file: 'docker_id')?.trim()
       }
     } else {
+      log(level: 'INFO', text: 'Run metricbeat and export data to a log file')
       withEnv([ "OUTPUT_DIR=${workdir}", "OUTPUT_FILE=${output}" ]){
         sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
         return readFile(file: 'docker_id')?.trim()
