@@ -75,11 +75,32 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void testNoSecret() throws Exception {
-    helper.registerAllowedMethod('fileExists', [String.class], { false })
-    testError('metricbeat: The parameter es_secret is mandatory.'){
-      script.call()
+  void testNoSecret_then_logs() throws Exception {
+    def id = "fooID"
+    def workdir = "metricbeatTest_1"
+    def config = "bar.xml"
+    def image = "foo:latest"
+
+    helper.registerAllowedMethod('fileExists', [String.class], { f ->
+      if(f == "${workdir}/${config}"){
+        return false
+      } else {
+        return true
+      }
+    })
+    printCallStack(){
+      script.call(
+        config: config,
+        image: image,
+        workdir: workdir,
+        timeout: "30",
+        ){
+        print("OK")
+      }
     }
+    assertTrue(assertMethodCallContainsPattern('writeFile', "file=${workdir}/${config}"))
+    assertTrue(assertMethodCallContainsPattern('readJSON', "file=${workdir}/${jsonConfig}"))
+    assertTrue(assertMethodCallContainsPattern('sh', "docker stop --time 30 ${id}"))
   }
 
   @Test
