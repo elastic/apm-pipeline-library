@@ -6,6 +6,9 @@ URL=${2:-"http://localhost:5066/stats?pretty"}
 echo "INFO: print existing docker context"
 docker ps -a || true
 
+echo "INFO: print docker inspect"
+docker inspect "${ID}"
+
 echo "INFO: wait for the docker container to be available"
 N=0
 until docker exec "${ID}" curl -sSfI --retry 10 --retry-delay 5 --max-time 5 "${URL}"
