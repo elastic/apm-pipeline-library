@@ -36,6 +36,7 @@ def call(Map args = [:], Closure body) {
 }
 
 def start(Map args = [:]) {
+  def output = args.containsKey('output') ? args.output : 'docker_inspect.log'
   def config = args.containsKey('config') ? args.config : "metricbeat_conf.yml"
   def es_secret = args.get('es_secret', null)
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/metricbeat:8.4.2"
@@ -45,11 +46,12 @@ def start(Map args = [:]) {
 
   log(level: 'INFO', text: 'Running metricbeat Docker container')
   configuremetricbeat(configPath)
-  dockerID = runBeat(es_secret, configPath, image)
+  dockerID = runBeat(es_secret, workdir, configPath, output, image)
   waitForBeat(dockerID)
 
   def json = [
     id: dockerID,
+    output: output,
     config: config,
     image: image,
     workdir: workdir,
@@ -73,24 +75,30 @@ def stop(Map args = [:]){
   sh(label: 'Stop metricbeat', script: """
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
+  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
 }
 
-def runBeat(es_secret, configPath, image){
-  if (es_secret != null) {
-    def secret = getVaultSecret(secret: es_secret)?.data
-    withEnvMask(vars: [
-        [var: "ES_URL", password: secret?.url],
-        [var: "ES_USERNAME", password: secret?.user],
-        [var: "ES_PASSWORD", password: secret?.password],
-        [var: "CONFIG_PATH", password: configPath],
-        [var: "DOCKER_IMAGE", password: image]
-    ]){
-      sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
-      return readFile(file: 'docker_id')?.trim()
+def runBeat(es_secret, workdir, configPath, output, image){
+  withEnv([
+    [var: "CONFIG_PATH", password: configPath],
+    [var: "DOCKER_IMAGE", password: image]
+  ]){
+    if (es_secret != null) {
+      def secret = getVaultSecret(secret: es_secret)?.data
+      withEnvMask(vars: [
+          [var: "ES_URL", password: secret?.url],
+          [var: "ES_USERNAME", password: secret?.user],
+          [var: "ES_PASSWORD", password: secret?.password]
+      ]){
+        sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
+        return readFile(file: 'docker_id')?.trim()
+      }
+    } else {
+      withEnv([ "OUTPUT_DIR=${workdir}", "OUTPUT_FILE=${output}" ]){
+        sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
+        return readFile(file: 'docker_id')?.trim()
+      }
     }
-  } else {
-    sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
-    return readFile(file: 'docker_id')?.trim()
   }
 }
 
