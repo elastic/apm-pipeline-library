@@ -37,7 +37,7 @@ def call(Map args = [:], Closure body) {
 
 def start(Map args = [:]) {
   def config = args.containsKey('config') ? args.config : "metricbeat_conf.yml"
-  def es_secret = args.containsKey('es_secret') ? args.es_secret : error("metricbeat: The parameter es_secret is mandatory.")
+  def es_secret = args.get('es_secret', null)
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/metricbeat:8.4.2"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
@@ -76,15 +76,20 @@ def stop(Map args = [:]){
 }
 
 def runBeat(es_secret, configPath, image){
-  def secret = getVaultSecret(secret: es_secret)?.data
-  withEnvMask(vars: [
-      [var: "ES_URL", password: secret?.url],
-      [var: "ES_USERNAME", password: secret?.user],
-      [var: "ES_PASSWORD", password: secret?.password],
-      [var: "CONFIG_PATH", password: configPath],
-      [var: "DOCKER_IMAGE", password: image]
-  ]){
-    sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
+  if (es_secret != null) {
+    def secret = getVaultSecret(secret: es_secret)?.data
+    withEnvMask(vars: [
+        [var: "ES_URL", password: secret?.url],
+        [var: "ES_USERNAME", password: secret?.user],
+        [var: "ES_PASSWORD", password: secret?.password],
+        [var: "CONFIG_PATH", password: configPath],
+        [var: "DOCKER_IMAGE", password: image]
+    ]){
+      sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
+      return readFile(file: 'docker_id')?.trim()
+    }
+  } else {
+    sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
     return readFile(file: 'docker_id')?.trim()
   }
 }
