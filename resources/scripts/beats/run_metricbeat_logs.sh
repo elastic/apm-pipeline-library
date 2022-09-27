@@ -26,4 +26,10 @@ docker run \
     -e -system.hostfs=/hostfs > docker_id
 
 echo "docker ps"
-docker ps || true
+docker ps -a || true
+
+echo "DEBUG: print docker inspect"
+docker inspect "$(cat docker_id)"
+
+echo "DEBUG: print existing docker logs"
+docker logs -f "$(cat docker_id)"
