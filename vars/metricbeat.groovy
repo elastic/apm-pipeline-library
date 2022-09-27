@@ -79,8 +79,7 @@ def stop(Map args = [:]){
 }
 
 def runBeat(es_secret, workdir, configPath, output, image){
-  withEnv(["CONFIG_PATH=${configPath}", "DOCKER_IMAGE=${image}"]
-  ]){
+  withEnv(["CONFIG_PATH=${configPath}", "DOCKER_IMAGE=${image}"]){
     if (es_secret != null) {
       log(level: 'INFO', text: 'Run metricbeat and export data to Elasticsearch')
       def secret = getVaultSecret(secret: es_secret)?.data
