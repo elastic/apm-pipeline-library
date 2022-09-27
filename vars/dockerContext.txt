@@ -1,0 +1,14 @@
+Fetch the docker environment in the current context using filebeat and metricbeat
+
+```
+  // Archive all the docker logs in the current context
+  dockerContext(filebeatOutput: 'logs.txt', metricbeatOutput: 'health.txt') {
+    //
+  }
+```
+
+* *filebeatOutput*: log file to save all Docker logs details (docker-filebeat.log). Optional
+* *metricbeatOutput*: log file to save all Docker metricbeat details (docker-metricbeat.log). Optional
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
+
+_NOTE_: Windows is not supported.
