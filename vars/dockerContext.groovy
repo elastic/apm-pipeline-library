@@ -34,7 +34,7 @@ def call(Map args = [:], Closure body){
   def archiveOnlyOnFail = args.get('archiveOnlyOnFail', false)
 
   filebeat(output: filebeatOutput, archiveOnlyOnFail: archiveOnlyOnFail){
-    metricbeat(output: metricbeatOutput, archiveOnlyOnFail: archiveOnlyOnFail){
+    metricbeat(output: metricbeatOutput, config: 'metricbeat-logs.yml', archiveOnlyOnFail: archiveOnlyOnFail){
       body()
     }
   }
