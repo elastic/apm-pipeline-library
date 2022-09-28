@@ -1,3 +1,14 @@
+# version 1.2.0
+
+* chore(deps): bump mypy in /resources/scripts/pytest_otel [#1893](https://github.com/elastic/apm-pipeline-library/pull/1893)
+* chore(deps): bump pytest-docker in /resources/scripts/pytest_otel [#1894](https://github.com/elastic/apm-pipeline-library/pull/1894)
+* chore(deps): bump pre-commit in /resources/scripts/pytest_otel [#1877](https://github.com/elastic/apm-pipeline-library/pull/1877)
+* chore(deps): bump coverage in /resources/scripts/pytest_otel [#1891](https://github.com/elastic/apm-pipeline-library/pull/1891)
+* chore(deps): bump psutil in /resources/scripts/pytest_otel [#1879](https://github.com/elastic/apm-pipeline-library/pull/1879)
+* chore: bump Otel 1.12.0 [#1890](https://github.com/elastic/apm-pipeline-library/pull/1890)
+* pytest_otel: add hard dependencies [#1841](https://github.com/elastic/apm-pipeline-library/pull/1841)
+* fix: update the pytest_otel demo [#1804](https://github.com/elastic/apm-pipeline-library/pull/1804)
+
 # Version 1.1.1
 
 * fix: Update setup.cfg dependencies.
