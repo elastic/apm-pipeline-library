@@ -112,6 +112,7 @@ clean:
 package: virtualenv
 	source $(VENV)/bin/activate;\
 	set +xe; \
+	pip install wheel; \
 	$(PYTHON) setup.py sdist bdist_wheel
 
 ## @help:run-otel-collector:Run OpenTelemetry collector in debug mode.
