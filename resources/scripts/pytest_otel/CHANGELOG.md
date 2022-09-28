@@ -1,4 +1,4 @@
-# version 1.2.0
+# version 1.2.1
 
 * chore(deps): bump mypy in /resources/scripts/pytest_otel [#1893](https://github.com/elastic/apm-pipeline-library/pull/1893)
 * chore(deps): bump pytest-docker in /resources/scripts/pytest_otel [#1894](https://github.com/elastic/apm-pipeline-library/pull/1894)
