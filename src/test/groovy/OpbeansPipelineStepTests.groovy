@@ -42,7 +42,6 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('stage', 'Build'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Test'))
     assertTrue(assertMethodCallContainsPattern('stage', 'Release'))
-    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/main'))
     assertJobStatusSuccess()
   }
 
@@ -51,7 +50,6 @@ class OpbeansPipelineStepTests extends ApmBasePipelineTest {
     env.BRANCH_NAME = 'main'
     script.call(downstreamJobs: [])
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('build', 'job=apm-integration-tests-selector-mbp/main'))
     assertJobStatusSuccess()
   }
 

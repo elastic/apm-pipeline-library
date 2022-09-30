@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.345 (22/09/2022)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: path filter incorrect [#1882](https://github.com/elastic/apm-pipeline-library/pull/1882)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.4.2 8.4.2 [#1885](https://github.com/elastic/apm-pipeline-library/pull/1885)
+
+#### 📦 Dependency updates
+
+- [**dependency**] [automation] Update go release version 1.18.6 [#1883](https://github.com/elastic/apm-pipeline-library/pull/1883)
+
 ## v1.1.344 (15/09/2022)
 
 #### 🚀 Enhancements

@@ -38,8 +38,6 @@ def call(Map pipelineParams) {
       DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
       REGISTRY = 'docker.elastic.co'
       STAGING_IMAGE = "${env.REGISTRY}/observability-ci"
-      GITHUB_CHECK_ITS_NAME = 'Integration Tests'
-      ITS_PIPELINE = 'apm-integration-tests-selector-mbp/main'
     }
     options {
       timeout(time: 1, unit: 'HOURS')
@@ -129,11 +127,6 @@ def call(Map pipelineParams) {
           }
         }
       }
-      stage('Integration Tests') {
-        steps {
-          runBuildITs("${env.REPO_NAME}", "${env.STAGING_IMAGE}/${env.REPO_NAME}")
-        }
-      }
       stage('Downstream') {
         when {
           allOf {
@@ -198,16 +191,6 @@ def call(Map pipelineParams) {
       }
     }
   }
-}
-
-def runBuildITs(String repo, String stagingDockerImage) {
-  build(job: env.ITS_PIPELINE, propagate: waitIfNotPR(), wait: waitIfNotPR(),
-        parameters: [string(name: 'INTEGRATION_TEST', value: 'Opbeans'),
-                     string(name: 'BUILD_OPTS', value: "${generateBuildOpts(repo, stagingDockerImage)}"),
-                     string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
-                     string(name: 'GITHUB_CHECK_REPO', value: repo),
-                     string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
-  githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
 }
 
 def generateBuildOpts(String repo, String stagingDockerImage) {
