@@ -384,6 +384,22 @@ Generate the details URL to be added to the GitHub notifications. When possible 
 * tab: What kind of details links will be used. Enum type: tests, changes, artifacts, pipeline or an `<URL>`). Default `pipeline`.
 * isBlueOcean: Whether to use the BlueOcean URLs. Default `false`.
 
+## dockerContext
+Fetch the docker environment in the current context using filebeat and metricbeat
+
+```
+  // Archive all the docker logs in the current context
+  dockerContext(filebeatOutput: 'logs.txt', metricbeatOutput: 'health.txt') {
+    //
+  }
+```
+
+* *filebeatOutput*: log file to save all Docker logs details (docker-filebeat.log). Optional
+* *metricbeatOutput*: log file to save all Docker metricbeat details (docker-metricbeat.log). Optional
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
+
+_NOTE_: Windows is not supported.
+
 ## dockerImageExists
 Checks if the given Docker image exists.
 
@@ -1831,6 +1847,15 @@ It requires [Github Pipeline plugin](https://plugins.jenkins.io/pipeline-github/
 * *repository*: The GitHub repository (by default `env.REPO_NAME`).
 * *org*: the GitHub organisation (by default `elastic`).
 
+## isDarwin
+Whether the architecture is a Darwin based using the `nodeOS` step
+
+```
+    whenTrue(isDarwin()) {
+        ...
+    }
+```
+
 ## isEmpty
 If the given value is empty or null
 
@@ -2222,7 +2247,8 @@ pipeline {
 
 ## metricbeat
 
- This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch
+ or in a log.
  `metricbeat.stop()` will stop the metricbeat Docker container.
 
 ```
@@ -2237,7 +2263,8 @@ pipeline {
   }
 ```
 
-* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is optional ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *output:* log file to save all Docker metricbeat details (docker_inspect.log). Optional
 * *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
 * *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
 * *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
@@ -2976,6 +3003,7 @@ sendBenchmarks(file: 'bench.out', index: 'index-name')
 * *index*: index name to store data.
 * *url*: ES url to store the data.
 * *secret*: Vault secret that contains the ES credentials.
+* *useGoBench*: Whether to use github.com/elastic/gobench. Default `false`.
 
 ### sendBenchmarks.prepareAndRun
 
@@ -3611,6 +3639,8 @@ withGhEnv(credentialsId: 'foo') {
   // block
 }
 
+* credentialsId: the secret type credential ID that contains the GITHUB_TOKEN.
+
 ## withGitRelease
 Configure the git release context to run the body closure.
 
@@ -3962,7 +3992,6 @@ passed as parameters and mask the secrets.
 withSecretVault(secret: 'secret', data: [ 'api_key': 'API_KEY'] ){
   //block
 }
-```
 
 #### Deprecated
 

@@ -1,5 +1,6 @@
 
- This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch.
+ This step runs a metricbeat Docker container to grab the host metrics and send them to Elasticsearch
+ or in a log.
  `metricbeat.stop()` will stop the metricbeat Docker container.
 
 ```
@@ -14,7 +15,8 @@
   }
 ```
 
-* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is mandatory ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *es_secret:* Vault secrets with the details to access to Elasticsearch, this parameter is optional ({user: 'foo', password: 'myFoo', url: 'http://foo.example.com'})
+* *output:* log file to save all Docker metricbeat details (docker_inspect.log). Optional
 * *config:* metricbeat configuration file, a default configuration is created if the file does not exists (metricbeat_conf.yml).
 * *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
 * *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.

@@ -19,4 +19,4 @@ docker run \
     --strict.perms=false \
     -environment container \
     -E http.enabled=true \
-    -e -system.hostfs=/hostfs > docker_id
+    -e -system.hostfs=/hostfs > metricbeat_docker_id

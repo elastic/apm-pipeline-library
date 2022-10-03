@@ -36,20 +36,23 @@ def call(Map args = [:], Closure body) {
 }
 
 def start(Map args = [:]) {
+  def output = args.containsKey('output') ? args.output : 'docker_inspect.log'
   def config = args.containsKey('config') ? args.config : "metricbeat_conf.yml"
-  def es_secret = args.containsKey('es_secret') ? args.es_secret : error("metricbeat: The parameter es_secret is mandatory.")
+  def es_secret = args.get('es_secret', null)
   def image = args.containsKey('image') ? args.image : "docker.elastic.co/beats/metricbeat:8.4.2"
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
   def configPath = "${workdir}/${config}"
 
   log(level: 'INFO', text: 'Running metricbeat Docker container')
-  configuremetricbeat(configPath)
-  dockerID = runBeat(es_secret, configPath, image)
+  def defaultConfig = (es_secret != null) ? 'scripts/beats/metricbeat.yml' : "scripts/beats/metricbeat-logs.yml"
+  configureMetricbeat(configPath, defaultConfig)
+  def dockerID = runBeat(es_secret, workdir, configPath, output, image)
   waitForBeat(dockerID)
 
   def json = [
     id: dockerID,
+    output: output,
     config: config,
     image: image,
     workdir: workdir,
@@ -73,19 +76,29 @@ def stop(Map args = [:]){
   sh(label: 'Stop metricbeat', script: """
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
+  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
 }
 
-def runBeat(es_secret, configPath, image){
-  def secret = getVaultSecret(secret: es_secret)?.data
-  withEnvMask(vars: [
-      [var: "ES_URL", password: secret?.url],
-      [var: "ES_USERNAME", password: secret?.user],
-      [var: "ES_PASSWORD", password: secret?.password],
-      [var: "CONFIG_PATH", password: configPath],
-      [var: "DOCKER_IMAGE", password: image]
-  ]){
-    sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
-    return readFile(file: 'docker_id')?.trim()
+def runBeat(es_secret, workdir, configPath, output, image){
+  withEnv(["CONFIG_PATH=${configPath}", "DOCKER_IMAGE=${image}"]){
+    if (es_secret != null) {
+      log(level: 'INFO', text: 'Run metricbeat and export data to Elasticsearch')
+      def secret = getVaultSecret(secret: es_secret)?.data
+      withEnvMask(vars: [
+          [var: "ES_URL", password: secret?.url],
+          [var: "ES_USERNAME", password: secret?.user],
+          [var: "ES_PASSWORD", password: secret?.password]
+      ]){
+        sh(label: 'Run metricbeat to grab host metrics', script: libraryResource("scripts/beats/run_metricbeat.sh"))
+        return readFile(file: 'metricbeat_docker_id')?.trim()
+      }
+    } else {
+      log(level: 'INFO', text: 'Run metricbeat and export data to a log file')
+      withEnv([ "OUTPUT_DIR=${workdir}", "OUTPUT_FILE=${output}" ]){
+        sh(label: 'Run metricbeat to grab docker metrics', script: libraryResource("scripts/beats/run_metricbeat_logs.sh"))
+        return readFile(file: 'metricbeat_docker_id')?.trim()
+      }
+    }
   }
 }
 
@@ -94,9 +107,9 @@ def waitForBeat(dockerID){
   sh(label: 'Wait for metricbeat', script: "chmod ugo+rx ./wait_for_beat.sh && ./wait_for_beat.sh ${dockerID}")
 }
 
-def configuremetricbeat(config){
+def configureMetricbeat(config, defaultConfig){
   if(fileExists(config)){
     return
   }
-  writeFile(file: config, text: libraryResource("scripts/beats/metricbeat.yml"))
+  writeFile(file: config, text: libraryResource(defaultConfig))
 }
