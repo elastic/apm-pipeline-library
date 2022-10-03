@@ -1,5 +1,37 @@
 # Changelog
 
+## v1.1.346 (30/09/2022)
+
+#### 🐛 Bug Fixes
+
+- [**Team:Automation**] fix: install weel before to make a package [#1901](https://github.com/elastic/apm-pipeline-library/pull/1901)
+
+#### 📚 Documentation
+
+- [**Team:Automation**] docs: update readme with the new Otel versions required [#1899](https://github.com/elastic/apm-pipeline-library/pull/1899)
+- [**Team:Automation**] docs: Pytest otel 1.2.0  release notes [#1898](https://github.com/elastic/apm-pipeline-library/pull/1898)
+
+#### 🙈 No user affected
+
+- [**Team:Automation**] chore: remove update stack [#1897](https://github.com/elastic/apm-pipeline-library/pull/1897)
+- [**Team:Automation**] fix: bump pytest_otel version to 1.2.1 [#1900](https://github.com/elastic/apm-pipeline-library/pull/1900)
+-  chore: bump Otel 1.12.0 [#1890](https://github.com/elastic/apm-pipeline-library/pull/1890)
+-  chore: delete some jobs [#1886](https://github.com/elastic/apm-pipeline-library/pull/1886)
+
+#### ⚙️ CI
+
+- [**dependency**] [automation] Update Elastic stack release version 8.4.3 8.5.0 [#1902](https://github.com/elastic/apm-pipeline-library/pull/1902)
+
+#### 📦 Dependency updates
+
+- [**python**] chore(deps): bump mypy from 0.902 to 0.981 in /resources/scripts/pytest_otel [#1893](https://github.com/elastic/apm-pipeline-library/pull/1893)
+- [**python**] chore(deps): bump pytest-docker from 0.10.3 to 1.0.1 in /resources/scripts/pytest_otel [#1894](https://github.com/elastic/apm-pipeline-library/pull/1894)
+- [**python**] chore(deps): bump pre-commit from 2.16.0 to 2.20.0 in /resources/scripts/pytest_otel [#1877](https://github.com/elastic/apm-pipeline-library/pull/1877)
+- [**python**] chore(deps): bump coverage from 6.2 to 6.4.4 in /resources/scripts/pytest_otel [#1891](https://github.com/elastic/apm-pipeline-library/pull/1891)
+- [**python**] chore(deps): bump psutil from 5.8.0 to 5.9.2 in /resources/scripts/pytest_otel [#1879](https://github.com/elastic/apm-pipeline-library/pull/1879)
+-  chore(deps): bump generic-webhook-trigger from 1.84 to 1.84.2 in /.ci/jobDSL [#1889](https://github.com/elastic/apm-pipeline-library/pull/1889)
+-  chore(deps-dev): bump mockito-core from 4.7.0 to 4.8.0 [#1874](https://github.com/elastic/apm-pipeline-library/pull/1874)
+
 ## v1.1.345 (22/09/2022)
 
 #### 🐛 Bug Fixes
