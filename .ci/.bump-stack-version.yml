@@ -46,7 +46,7 @@ projects:
     enabled: true
     reusePullRequest: false
     labels: dependency,backport-skip
-    reviewer: elastic/observablt-ci
+    reviewer: elastic/observablt-dx
   - repo: elastic-agent
     script: .ci/bump-stack-version.sh
     branches:
