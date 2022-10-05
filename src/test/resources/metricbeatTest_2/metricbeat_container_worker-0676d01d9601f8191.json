@@ -2,6 +2,7 @@
   "id": "fooID",
   "config": "bar.xml",
   "image": "foo: latest",
+  "output": "foo.log",
   "workdir": "fooDir",
   "timeout": "30",
   "archiveOnlyOnFail": "true"

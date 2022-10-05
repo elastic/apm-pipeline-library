@@ -27,10 +27,13 @@ def call(Map args = [:]) {
 }
 
 def call(Map args = [:], Closure body) {
+  def ret = false
   try{
     start(args)
     body()
+    ret = true
   } finally {
+    args.isBuildSuccess = ret
     stop(args)
   }
 }
@@ -43,6 +46,7 @@ def start(Map args = [:]) {
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def timeout = args.containsKey('timeout') ? args.timeout : "30"
   def configPath = "${workdir}/${config}"
+  def archiveOnlyOnFail = args.get('archiveOnlyOnFail', false)
 
   log(level: 'INFO', text: 'Running metricbeat Docker container')
   def defaultConfig = (es_secret != null) ? 'scripts/beats/metricbeat.yml' : "scripts/beats/metricbeat-logs.yml"
@@ -57,6 +61,7 @@ def start(Map args = [:]) {
     image: image,
     workdir: workdir,
     timeout: timeout,
+    archiveOnlyOnFail: archiveOnlyOnFail
   ]
 
   writeJSON(file: "${workdir}/metricbeat_container_${env.NODE_NAME}.json", json: json)
@@ -65,18 +70,24 @@ def start(Map args = [:]) {
 def stop(Map args = [:]){
   def workdir = args.containsKey('workdir') ? args.workdir : pwd()
   def configFile = "${workdir}/metricbeat_container_${env.NODE_NAME}.json"
+  def isBuildFailure = args.containsKey('isBuildSuccess') ? args.isBuildSuccess == false : isBuildFailure()
   if(!fileExists(configFile)){
     log(level: 'WARNING', text: 'There is no configuration file to stop metricbeat.')
     return
   }
   def stepConfig = readJSON(file: configFile)
   def timeout = args.containsKey('timeout') ? args.timeout : stepConfig.timeout
+  def archiveOnlyOnFail = stepConfig.get('archiveOnlyOnFail', false)
 
   log(level: 'INFO', text: 'Stopping metricbeat Docker container')
   sh(label: 'Stop metricbeat', script: """
     docker stop --time ${timeout} ${stepConfig.id} || echo "Exit code \$?"
   """)
-  archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
+  log(level: 'DEBUG', text: "archiveOnlyOnFail: ${archiveOnlyOnFail} - isBuildFailure: ${isBuildFailure}")
+  if(archiveOnlyOnFail == false || (archiveOnlyOnFail && isBuildFailure)){
+    log(level: 'DEBUG', text: 'metricbeat: Archiving Artifacts')
+    archiveArtifacts(artifacts: "**/${stepConfig.output}*", allowEmptyArchive: true)
+  }
 }
 
 def runBeat(es_secret, workdir, configPath, output, image){

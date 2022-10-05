@@ -210,4 +210,30 @@ class MetricbeatStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('log', "There is no configuration file to stop metricbeat."))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void testStop_ArchiveOnlyOnFailTrue_SuccessBuild() throws Exception {
+    def id = "fooID"
+    def output = "foo.log"
+    def workdir = "metricbeatTest_2"
+    helper.registerAllowedMethod('isBuildFailure', [], { false })
+    printCallStack(){
+      script.stop(workdir: workdir)
+    }
+    assertFalse(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testStop_ArchiveOnlyOnFailTrue_FailureBuild() throws Exception {
+    def id = "fooID"
+    def output = "foo.log"
+    def workdir = "metricbeatTest_2"
+    helper.registerAllowedMethod('isBuildFailure', [], { true })
+    printCallStack(){
+      script.stop(workdir: workdir)
+    }
+    assertTrue(assertMethodCallContainsPattern('archiveArtifacts', "artifacts=**/${output}*"))
+    assertJobStatusSuccess()
+  }
 }
