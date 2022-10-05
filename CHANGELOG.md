@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.347 (03/10/2022)
+
+#### ⚙️ CI
+
+-  Revert "[automation] Update Elastic stack release version 8.4.3 8.5.0" [#1905](https://github.com/elastic/apm-pipeline-library/pull/1905)
+
+#### 📦 Dependency updates
+
+- [**python**] chore(deps): bump pytest from 6.2.5 to 7.1.3 in /resources/scripts/pytest_otel [#1892](https://github.com/elastic/apm-pipeline-library/pull/1892)
+-  chore(deps-dev): bump wiremock-jre8 from 2.33.2 to 2.34.0 [#1906](https://github.com/elastic/apm-pipeline-library/pull/1906)
+
 ## v1.1.346 (30/09/2022)
 
 #### 🐛 Bug Fixes
