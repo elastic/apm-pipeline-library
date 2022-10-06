@@ -38,3 +38,8 @@ runs:
         registry: ${{ inputs.registry }}
         username: ${{ env.DOCKER_USERNAME }}
         password: ${{ env.DOCKER_PASSWORD }}
+    - name: Set environment
+      shell: bash
+      run: |
+          echo "DOCKER_USERNAME=" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=" >> $GITHUB_ENV

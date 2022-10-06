@@ -36,11 +36,12 @@ runs:
         private_key: ${{ env.PRIVATE_KEY }}
         installation_id: ${{ env.INSTALLATION_ID }}
     - name: Set environment
+      shell: bash
       run: |
           echo "APP_ID=" >> $GITHUB_ENV
           echo "PRIVATE_KEY=" >> $GITHUB_ENV
           echo "INSTALLATION_ID=" >> $GITHUB_ENV
 
-          echo "GITHUB_TOKEN=${{ needs.get-token.outputs.token }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ steps.get-token.outputs.token }}" >> $GITHUB_ENV
           echo "GIT_USER=apmmachine" >> $GITHUB_ENV
           echo "GIT_EMAIL=apmmachine@users.noreply.github.com" >> $GITHUB_ENV
