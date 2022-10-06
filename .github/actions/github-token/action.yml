@@ -35,6 +35,8 @@ runs:
         app_id: ${{ env.APP_ID }}
         private_key: ${{ env.PRIVATE_KEY }}
         installation_id: ${{ env.INSTALLATION_ID }}
+        permissions: >-
+          {"contents": "write", "metadata": "read", "packages": "write", "pull_requests": "write", "statuses": "write"}
     - name: Set environment
       shell: bash
       run: |
