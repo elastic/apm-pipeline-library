@@ -1,0 +1,40 @@
+name: 'Docker Login'
+description: 'Perform a Docker login using the credentials from a Vault secret.'
+inputs:
+  registry:
+    description: 'Docker registry'
+    required: true
+  secret:
+    description: 'Vault secret with the format {username:"foo", password:"bar"}'
+    required: true
+  url:
+    description: 'Vault URL'
+    required: true
+  roleId:
+    description: 'Vault role ID'
+    required: true
+  secretId:
+    description: 'Vault secret ID'
+    required: true
+outputs:
+  pat:
+    description: "GitHub token"
+    value: ${{ steps.get-token.outputs.pat }}
+runs:
+  using: "composite"
+  steps:
+    - uses: hashicorp/vault-action@v2.4.2
+      with:
+        url: ${{ inputs.url }}
+        roleId: ${{ inputs.roleId }}
+        secretId: ${{ inputs.secretId }}
+        method: approle
+        secrets: |
+          ${{ inputs.secret }} username | DOCKER_USERNAME ;
+          ${{ inputs.secret }} password | DOCKER_PASSWORD
+    - name: Log in to the Container registry
+      uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ env.DOCKER_USERNAME }}
+        password: ${{ env.DOCKER_PASSWORD }}
