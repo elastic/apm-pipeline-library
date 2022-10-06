@@ -31,6 +31,8 @@ jobs:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ env.PRIVATE_KEY }}
           installation_id: ${{ env.INSTALLATION_ID }}
+      - name: Export GITHUB_TOKEN
+        run: echo "GITHUB_TOKEN=${{steps.get-token.outputs.token}}" >> $GITHUB_ENV
       # - name: Mask PAT
       #   run: echo "::add-mask::${{ steps.get-token.outputs.token }}"
       #   shell: bash
