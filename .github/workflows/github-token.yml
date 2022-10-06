@@ -5,14 +5,14 @@ name: 'Get GitHub Personal Access Token'
 on:
   workflow_call:
     outputs:
-      pat:
+      token:
         description: "GitHub token"
-        value: ${{ jobs.get-token.outputs.pat }}
+        value: ${{ jobs.get-token.outputs.token }}
 jobs:
   get-token:
     runs-on: ubuntu-latest
     outputs:
-      pat: ${{ steps.get-token.outputs.pat }}
+      token: ${{ steps.get-token.outputs.token }}
     steps:
       - uses: hashicorp/vault-action@v2.4.2
         with:
@@ -31,6 +31,6 @@ jobs:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ env.PRIVATE_KEY }}
           installation_id: ${{ env.INSTALLATION_ID }}
-      - name: Mask PAT
-        run: echo "::add-mask::${{ steps.get-token.outputs.pat }}"
-        shell: bash
+      # - name: Mask PAT
+      #   run: echo "::add-mask::${{ steps.get-token.outputs.token }}"
+      #   shell: bash
