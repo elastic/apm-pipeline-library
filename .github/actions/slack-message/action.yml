@@ -1,0 +1,53 @@
+---
+name: 'Send a Slack message'
+description: 'Get the credentials from the Vault and send an Slack message.'
+inputs:
+  url:
+    description: 'Vault URL'
+    required: true
+  roleId:
+    description: 'Vault role ID'
+    required: true
+  secretId:
+    description: 'Vault secret ID'
+    required: true
+  channel:
+    description: 'Slack channel'
+    required: true
+  message:
+    description: 'Slack message on Markdown format'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: hashicorp/vault-action@v2.4.2
+      with:
+        url: ${{ inputs.url }}
+        roleId: ${{ inputs.roleId }}
+        secretId: ${{ inputs.secretId }}
+        method: approle
+        secrets: |
+          secret/observability-team/ci/stack-integartion-token integration_token | SLACK_BOT_TOKEN
+    - name: Processing message
+      uses: slackapi/slack-github-action@v1.22.0
+      with:
+        channel-id: '${{ inputs.channel }}'
+        payload: |
+          {
+            "text": "${{ inputs.message }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "${{ inputs.message }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
+    - name: Reset environment
+      shell: bash
+      run: |
+          echo "SLACK_BOT_TOKEN=" >> $GITHUB_ENV
