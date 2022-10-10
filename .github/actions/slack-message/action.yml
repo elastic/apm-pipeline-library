@@ -28,19 +28,29 @@ runs:
         method: approle
         secrets: |
           secret/observability-team/ci/stack-integartion-token integration_token | SLACK_BOT_TOKEN
+
+    - name: prepare message
+      shell: bash
+      env:
+        SLACK_MESSAGE: ${{ inputs.message }}
+      run: |
+        echo "::add-mask::${SLACK_MESSAGE}"
+        echo "SLACK_MESSAGE_JSON=$(echo '${{ env.SLACK_MESSAGE }}' | sed 's/"/\\"/g')" >> $GITHUB_ENV
+        echo "SLACK_MESSAGE_JSON=$(echo '${{ toJSON(env.SLACK_MESSAGE_JSON) }}')" >> $GITHUB_ENV
+        echo "::add-mask::${SLACK_MESSAGE_JSON}"
     - name: Processing message
       uses: slackapi/slack-github-action@v1.22.0
       with:
         channel-id: '${{ inputs.channel }}'
         payload: |
           {
-            "text": ${{ toJSON(inputs.message) }},
+            "text": ${{ env.SLACK_MESSAGE_JSON }},
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ${{ toJSON(inputs.message) }}
+                  "text": ${{ env.SLACK_MESSAGE_JSON }}
                 }
               }
             ]
