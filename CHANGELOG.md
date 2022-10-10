@@ -1,5 +1,7 @@
 # Changelog
 
+> :warning: See release notes from v1.1.349 can be found in the [GitHub Releases](https://github.com/elastic/apm-pipeline-library/releases)
+
 ## v1.1.348 (05/10/2022)
 
 #### 🚀 Enhancements
