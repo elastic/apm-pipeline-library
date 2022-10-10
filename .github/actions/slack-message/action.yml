@@ -37,7 +37,7 @@ runs:
 
         message = """${{ inputs.message }}""".replace('\n','\\n')
         json_data = {
-          "text": message
+          "text": message,
           "blocks": [
             {
               "type": "section",
