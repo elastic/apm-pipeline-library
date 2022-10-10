@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.348 (05/10/2022)
+
+#### 🚀 Enhancements
+
+-  Honour archiveOnlyOnFail in metricbeat [#1911](https://github.com/elastic/apm-pipeline-library/pull/1911)
+
 ## v1.1.347 (03/10/2022)
 
 #### ⚙️ CI
