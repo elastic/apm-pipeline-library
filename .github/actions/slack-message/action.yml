@@ -34,13 +34,13 @@ runs:
         channel-id: '${{ inputs.channel }}'
         payload: |
           {
-            "text": "${{ inputs.message }}",
+            "text": ${{ toJSON(inputs.message) }},
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "${{ inputs.message }}"
+                  "text": ${{ toJSON(inputs.message) }}
                 }
               }
             ]
