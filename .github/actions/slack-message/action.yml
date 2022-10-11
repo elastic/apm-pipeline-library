@@ -68,7 +68,7 @@ runs:
         import os
         from urllib.parse import unquote
 
-        message = s.environ.get('MESSAGE', 'No message')
+        message = os.environ.get('MESSAGE', 'No message')
         if os.environ['URL_ENCODED'] == 'true':
           message = unquote(message)
         message = '\n'.join(line.strip() for line in message.splitlines())
