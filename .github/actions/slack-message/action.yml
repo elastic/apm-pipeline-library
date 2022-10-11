@@ -24,7 +24,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: hashicorp/vault-action@v2.4.2
+    - name: Get the Slack token from Vault
+      uses: hashicorp/vault-action@v2.4.2
       with:
         url: ${{ inputs.url }}
         roleId: ${{ inputs.roleId }}
@@ -39,7 +40,8 @@ runs:
       run: |
         import json
 
-        message = """${{ inputs.message }}""".replace('\n','\\n')
+        message = """${{ inputs.message }}"""
+        message = "\\n".join(line.strip() for line in message.splitlines())
         json_data = {
           "text": message,
           "blocks": [
