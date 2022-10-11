@@ -53,7 +53,7 @@ runs:
           ]
         }
         print("::set-output name=message::{}".format(json.dumps(json_data)))
-        if ${{ inputs.mask }} == 'true':
+        if '${{ inputs.mask }}' == 'true':
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
       uses: slackapi/slack-github-action@v1.22.0
