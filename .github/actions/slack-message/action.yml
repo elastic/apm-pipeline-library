@@ -41,7 +41,7 @@ runs:
         import json
 
         message = """${{ inputs.message }}"""
-        message = "\\n".join(line.strip() for line in message.splitlines())
+        message = r'\n'.join(line.strip() for line in message.splitlines())
         json_data = {
           "text": message,
           "blocks": [
