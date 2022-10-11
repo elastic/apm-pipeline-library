@@ -33,6 +33,10 @@ inputs:
     description: 'True to mask the Slack message on the logs'
     required: false
     default: 'true'
+  urlEncoded:
+    description: 'True if the message is URL encoded'
+    required: false
+    default: 'true'
 runs:
   using: "composite"
   steps:
@@ -52,7 +56,9 @@ runs:
       env:
         MESSAGE: ${{ inputs.message }}
         MASK: ${{ inputs.mask }}
+        URL_ENCODED: ${{ inputs.urlEncoded }}
       run: |
+        # Prepare Slack API payload.
         # Documentation about the payload format.
         # https://api.slack.com/reference/messaging/payload
         # https://app.slack.com/block-kit-builder
@@ -62,8 +68,9 @@ runs:
         import os
         from urllib.parse import unquote
 
-
-        message = unquote(os.environ.get('MESSAGE', 'No message'))
+        message = s.environ.get('MESSAGE', 'No message')
+        if os.environ['URL_ENCODED'] == 'true':
+          message = unquote(message)
         message = '\n'.join(line.strip() for line in message.splitlines())
         json_data = {
           "text": message,
