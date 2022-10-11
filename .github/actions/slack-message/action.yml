@@ -38,6 +38,9 @@ runs:
       shell: python
       id: prepare
       run: |
+        # Documentation about the payload format.
+        # https://api.slack.com/reference/messaging/payload
+        # https://app.slack.com/block-kit-builder
         import json
 
         message = """${{ inputs.message }}"""
