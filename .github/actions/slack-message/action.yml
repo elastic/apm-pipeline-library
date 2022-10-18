@@ -1,0 +1,101 @@
+---
+name: 'Send a Slack message'
+description: 'Get the credentials from the Vault and send an Slack message.'
+inputs:
+  url:
+    description: 'Vault URL'
+    required: true
+  roleId:
+    description: 'Vault role ID'
+    required: true
+  secretId:
+    description: 'Vault secret ID'
+    required: true
+  channel:
+    description: 'Slack channel'
+    required: true
+  message:
+    description: |
+      Slack message on Markdown format. Multiline messages must be escaped ussing URL encoding.
+      https://github.com/orgs/community/discussions/26288
+
+      This is an example how to escape a multiline message in Python:
+      ```Python
+      from urllib.parse import quote
+
+      message = quote("""
+      Hello!!!
+      This is a multiline message
+      """) # Multiline message
+      ```
+    required: true
+  mask:
+    description: 'True to mask the Slack message on the logs'
+    required: false
+    default: 'true'
+  urlEncoded:
+    description: 'True if the message is URL encoded'
+    required: false
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - name: Get the Slack token from Vault
+      uses: hashicorp/vault-action@v2.4.2
+      with:
+        url: ${{ inputs.url }}
+        roleId: ${{ inputs.roleId }}
+        secretId: ${{ inputs.secretId }}
+        method: approle
+        secrets: |
+          secret/observability-team/ci/stack-integartion-token integration_token | SLACK_BOT_TOKEN
+
+    - name: prepare message
+      shell: python
+      id: prepare
+      env:
+        MESSAGE: ${{ inputs.message }}
+        MASK: ${{ inputs.mask }}
+        URL_ENCODED: ${{ inputs.urlEncoded }}
+      run: |
+        # Prepare Slack API payload.
+        # Documentation about the payload format.
+        # https://api.slack.com/reference/messaging/payload
+        # https://app.slack.com/block-kit-builder
+        # https://api.slack.com/reference/surfaces/formatting
+        # https://api.slack.com/reference/surfaces/formatting#escaping
+        import json
+        import os
+        from urllib.parse import unquote
+
+        message = os.environ.get('MESSAGE', 'No message')
+        if os.environ['URL_ENCODED'] == 'true':
+          message = unquote(message)
+        message = '\n'.join(line.strip() for line in message.splitlines())
+        json_data = {
+          "text": message,
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": message
+              }
+            }
+          ]
+        }
+        print("::set-output name=message::{}".format(json.dumps(json_data)))
+        if os.environ.get('MASK') == 'true':
+          print("::add-mask::{}".format(json.dumps(json_data)))
+    - name: Processing message
+      uses: slackapi/slack-github-action@v1.22.0
+      with:
+        channel-id: '${{ inputs.channel }}'
+        payload: |
+          ${{ steps.prepare.outputs.message }}
+      env:
+        SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
+    - name: Reset environment
+      shell: bash
+      run: |
+          echo "SLACK_BOT_TOKEN=" >> $GITHUB_ENV

@@ -1,0 +1,61 @@
+---
+name: 'Get GitHub Personal Access Token'
+description: 'Get a temporal GitHub Token using a GitHub App ID and a private key.'
+inputs:
+  url:
+    description: 'Vault URL'
+    required: true
+  roleId:
+    description: 'Vault role ID'
+    required: true
+  secretId:
+    description: 'Vault secret ID'
+    required: true
+outputs:
+  token:
+    description: "GitHub token"
+    value: ${{ steps.get-token.outputs.token }}
+runs:
+  using: "composite"
+  steps:
+    # FIXME we need a GitHub APP with enough permissions.
+    # - uses: hashicorp/vault-action@v2.4.2
+    #   with:
+    #     url: ${{ inputs.url }}
+    #     roleId: ${{ inputs.roleId }}
+    #     secretId: ${{ inputs.secretId }}
+    #     method: approle
+    #     secrets: |
+    #       secret/observability-team/ci/github-app-token-2 appId | APP_ID ;
+    #       secret/observability-team/ci/github-app-token-2 installationId | INSTALLATION_ID ;
+    #       secret/observability-team/ci/github-app-token-2 privateKeyContent | PRIVATE_KEY
+    # - name: Get PAT
+    #   id: get-token
+    #   uses: tibdex/github-app-token@f717b5ecd4534d3c4df4ce9b5c1c2214f0f7cd06
+    #   with:
+    #     app_id: ${{ env.APP_ID }}
+    #     private_key: ${{ env.PRIVATE_KEY }}
+    #     installation_id: ${{ env.INSTALLATION_ID }}
+    #     permissions: >-
+    #       {"contents": "write", "metadata": "read", "packages": "write", "pull_requests": "write", "statuses": "write", "checks": "write", "issues": "write"}
+    # - name: Set environment
+    #   shell: bash
+    #   run: |
+    #       echo "APP_ID=" >> $GITHUB_ENV
+    #       echo "PRIVATE_KEY=" >> $GITHUB_ENV
+    #       echo "INSTALLATION_ID=" >> $GITHUB_ENV
+
+    #       echo "GITHUB_TOKEN=${{ steps.get-token.outputs.token }}" >> $GITHUB_ENV
+    #       echo "GIT_USER=apmmachine" >> $GITHUB_ENV
+    #       echo "GIT_EMAIL=apmmachine@users.noreply.github.com" >> $GITHUB_ENV
+
+    - uses: hashicorp/vault-action@v2.4.2
+      with:
+        url: ${{ inputs.url }}
+        roleId: ${{ inputs.roleId }}
+        secretId: ${{ inputs.secretId }}
+        method: approle
+        secrets: |
+          secret/observability-team/ci/github-token username | GIT_USER ;
+          secret/observability-team/ci/github-token email | GIT_EMAIL ;
+          secret/observability-team/ci/github-token token | GITHUB_TOKEN
