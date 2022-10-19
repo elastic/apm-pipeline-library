@@ -1,3 +1,11 @@
+# version 1.3.0
+
+* Bump OpenTelemetry SDK to 1.13.0 [#1917](https://github.com/elastic/apm-pipeline-library/pull/1917)
+* Update the Demo to Elastic Stack 8.4.2 [#1917](https://github.com/elastic/apm-pipeline-library/pull/1917)
+* chore(deps): bump coverage in /resources/scripts/pytest_otel [#1916](https://github.com/elastic/apm-pipeline-library/pull/1916)
+* chore(deps): bump mypy in /resources/scripts/pytest_otel [#1915](https://github.com/elastic/apm-pipeline-library/pull/1915)
+* chore(deps): bump pytest in /resources/scripts/pytest_otel [#1892](https://github.com/elastic/apm-pipeline-library/pull/1892)
+
 # version 1.2.1
 
 * fix: pytest_otel: pytest.fail is not captured as an error [#1840](https://github.com/elastic/apm-pipeline-library/pull/1840) [#1843](https://github.com/elastic/apm-pipeline-library/pull/1843)
