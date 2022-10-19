@@ -85,7 +85,7 @@ runs:
           ]
         }
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
-            f.write("message::{}".format(json.dumps(json_data)))
+            f.write("message={}".format(json.dumps(json_data)))
         if os.environ.get('MASK') == 'true':
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
