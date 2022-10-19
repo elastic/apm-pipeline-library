@@ -149,7 +149,7 @@ demo-start-%: virtualenv install
 	. $(DEMO_DIR)/$*/demo.env;\
 	env | grep OTEL;\
 	source $(VENV)/bin/activate;\
-	pytest --capture=no docs/demos/test/test_demo.py || echo "Demo execution finished you can access to http://localhost:5601 to check the traces";
+	pytest --capture=no docs/demos/test/test_demo.py || echo "Demo execution finished you can access to http://localhost:5601 to check the traces, the user is 'admin' and the password 'changeme'";
 
 ## @help:demo-stop-DEMO_NAME:Stops the demo from the demo folder, DEMO_NAME is the name of the demo type folder in the docs/demos folder (jaeger, elastic).
 .PHONY: demo-stop-%
