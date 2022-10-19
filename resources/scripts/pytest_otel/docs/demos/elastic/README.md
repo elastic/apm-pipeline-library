@@ -10,7 +10,8 @@ To start the demo you have to execute the following command in the root of the p
 make demo-start-elastic
 ```
 
-When the execution ends you can go to the Kibana service (http://localhost:5601/) in a browser to show the spans
+When the execution ends you can go to the Kibana service (http://localhost:5601/) in a browser to show the spans,
+Kibana is secure by default, the user is `admin` and the password `changeme`.
 
 ![](images/elastic-services.png)
 
