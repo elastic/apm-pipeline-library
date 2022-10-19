@@ -19,9 +19,9 @@ runs:
   steps:
       - uses: hashicorp/vault-action@v2.4.2
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          url: ${{ inputs.url }}
+          roleId: ${{ inputs.roleId }}
+          secretId: ${{ inputs.secretId }}
           exportToken: true
           method: approle
       - name: Install Vault CLI
