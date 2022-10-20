@@ -107,7 +107,7 @@ clean:
 	@find . -type f -name "*.py[co]" -delete
 	@find . -type d -name "__pycache__" -delete
 	@find . -name '*~' -delete
-	-@rm -fr *.egg-info build dist $(VENV) bin .tox .mypy_cache .pytest_cache otel-traces-file-output.json test_spans.json temp junit-*.xml
+	-@rm -fr src/pytest_otel.egg-info *.egg-info build dist $(VENV) bin .tox .mypy_cache .pytest_cache otel-traces-file-output.json test_spans.json temp junit-*.xml
 
 package: virtualenv
 	source $(VENV)/bin/activate;\
