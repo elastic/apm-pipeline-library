@@ -18,6 +18,9 @@ inputs:
     description: 'Enable git trace.'
     required: false
     default: 'false'
+  token:
+    description: 'GitHub token.'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -31,3 +34,4 @@ runs:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
         GIT_TRACE: "${{ inputs.trace }}"
+        GITHUB_TOKEN: ${{ inputs.token }}
