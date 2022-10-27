@@ -17,10 +17,8 @@ runs:
       uses: pre-commit/action@v3.0.0
       if: ${{ github.event.pull_request }}
       with:
-        extra_args: --color=always --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.event.pull_request.head.sha }}
+        extra_args: --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.event.pull_request.head.sha }}
 
     - name: Run pre-commit on branches
       uses: pre-commit/action@v3.0.0
       if: ${{ ! github.event.pull_request }}
-      with:
-        extra_args: --color=always
