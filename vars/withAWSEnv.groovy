@@ -31,7 +31,7 @@ def call(Map args = [:], Closure body) {
   def forceInstallation = args.get('forceInstallation', false)
 
   def awsUtilLocation = pwd(tmp: true)
-  def secretFileLocation = "${awsUtilLocation}/aws-credentials.json"
+  def secretFileLocation = "${awsUtilLocation}/aws-credentials.csv"
 
   withEnv(["PATH+AWS=${awsUtilLocation}/aws-cli", "PATH+AWS_BIN=${awsUtilLocation}/bin"]) {
     if (forceInstallation || !isInstalled(tool: 'aws', flag: '--version', version: version)) {
