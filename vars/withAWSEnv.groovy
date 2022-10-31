@@ -59,7 +59,8 @@ def call(Map args = [:], Closure body) {
     cmd(label: 'authenticate', script: 'aws configure import --csv file://' + secretFileLocation)
     try {
       // For the profile to match the user name
-      withEnv(["AWS_PROFILE=${user}"]){
+      // Since the shared credentials file is elsewhere, then let's specify shared_credentials_file.
+      withEnv(["AWS_PROFILE=${user}", "AWS_SHARED_CREDENTIALS_FILE=${secretFileLocation}"]){
         body()
       }
     } finally {
