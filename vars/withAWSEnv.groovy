@@ -60,7 +60,7 @@ def call(Map args = [:], Closure body) {
     try {
       // For the profile to match the user name
       // Since the shared credentials file is elsewhere, then let's specify shared_credentials_file.
-      withEnv(["AWS_PROFILE=${user}", "AWS_SHARED_CREDENTIALS_FILE=${secretFileLocation}"]){
+      withEnv(["AWS_PROFILE=${user}", 'AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials']){
         body()
       }
     } finally {
