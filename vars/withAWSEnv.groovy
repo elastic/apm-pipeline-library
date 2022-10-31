@@ -58,15 +58,10 @@ def call(Map args = [:], Closure body) {
     // See https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/import.html
     cmd(label: 'authenticate', script: 'aws configure import --csv file://' + secretFileLocation)
     try {
+      def home = env.containsKey('HOME') ? env.HOME : env.WORKSPACE
       // For the profile to match the user name
       // Since the shared credentials file is elsewhere, then let's specify shared_credentials_file.
-      withEnv(["AWS_PROFILE=${user}", "AWS_SHARED_CREDENTIALS_FILE=${HOME}/.aws/credentials"]){
-        def JOB_GCS_BUCKET = 'apm-ci-temp-internal'
-        def JOB_GCS_EXT_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
-        googleStorageUploadExt(
-          bucket: "gs://${JOB_GCS_BUCKET}/${env.JOB_NAME}-${env.BUILD_ID}",
-          credentialsId: "${JOB_GCS_EXT_CREDENTIALS}",
-          pattern: "${HOME}/.aws/credentials")
+      withEnv(["AWS_PROFILE=${user}", "AWS_SHARED_CREDENTIALS_FILE=${home}/.aws/credentials"]){
         body()
       }
     } finally {
