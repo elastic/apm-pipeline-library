@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class WithNodeJSEnvUnixStepTests extends ApmBasePipelineTest {
@@ -64,5 +65,26 @@ class WithNodeJSEnvUnixStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', 'Installing nvm'))
     assertTrue(assertMethodCallContainsPattern('sh', "Installing Node.js ${version}"))
     assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_if_nvm_path_does_not_exist() throws Exception {
+    def version = "1.15.1"
+    helper.registerAllowedMethod('readFile', [Map.class], { version })
+    helper.registerAllowedMethod('nodeJSDefaultVersion', [], { version })
+    helper.registerAllowedMethod('fileExists', [String.class], { false })
+    def isOK = false
+    try {
+      script.call(){
+        if (binding.getVariable("PATH+NVM") == "WS/.nvm/versions/node/${version}/bin"){
+          isOK = true
+        }
+      }
+    } catch(e){
+      //NOOP
+    }
+    printCallStack()
+    assertFalse(isOK)
+    assertTrue(assertMethodCallContainsPattern('error', 'does not exist'))
   }
 }
