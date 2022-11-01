@@ -65,4 +65,22 @@ class WithNodeJSEnvUnixStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "Installing Node.js ${version}"))
     assertJobStatusSuccess()
   }
+
+  @Test
+  void test_fallback() throws Exception {
+    def version = "1.15.1"
+    helper.registerAllowedMethod('readFile', [Map.class], { '' })
+    helper.registerAllowedMethod('nodeJSDefaultVersion', [], { version })
+    def isOK = false
+    script.call(){
+      if(binding.getVariable("PATH+NVM") == "WS/.nvm/versions/node/v${version}/bin"){
+        isOK = true
+      }
+    }
+    printCallStack()
+    assertTrue(isOK)
+    assertTrue(assertMethodCallContainsPattern('sh', 'Installing nvm'))
+    assertTrue(assertMethodCallContainsPattern('sh', "Installing Node.js ${version}"))
+    assertJobStatusSuccess()
+  }
 }
