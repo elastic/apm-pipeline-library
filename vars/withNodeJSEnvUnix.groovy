@@ -39,6 +39,9 @@ def call(Map args = [:], Closure body) {
         node --version || true
         ls -l ${nvmNodePath} || true
       """)
+      if (!node_version.trim()) {
+        error('withNodeJSEnvUnix: the node version could not be found! Look for errors in the logs.')
+      }
       body()
     }
   }
