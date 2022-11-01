@@ -55,9 +55,13 @@ def installNode(Map args = [:]) {
       set -e
       set +x
       export NVM_DIR="${HOME}/.nvm"
-      [ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh"
+      if [ -s "${NVM_DIR}/nvm.sh" ] ; then
+        echo "load existing nvm environment"
+        . "${NVM_DIR}/nvm.sh"
+      fi
 
       if [ -z "$(command -v nvm)" ]; then
+        echo "installing nvm"
         rm -fr "${NVM_DIR}"
         curl -so- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
       fi
@@ -65,14 +69,16 @@ def installNode(Map args = [:]) {
     sh(label: "Installing Node.js ${version}", script: """
       set -e
       set +x
+      echo "load existing nvm environment"
       export NVM_DIR="\${HOME}/.nvm"
       [ -s "\${NVM_DIR}/nvm.sh" ] && . "\${NVM_DIR}/nvm.sh"
 
-      set -x
+      echo "install node.js"
       nvm install --no-progress --default ${version}
       nvm use ${version}
 
       echo "Debug nvm env"
+      set -x
       nvm ls
       nvm version
       nvm --version
