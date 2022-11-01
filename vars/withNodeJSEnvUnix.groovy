@@ -28,7 +28,17 @@ def call(Map args = [:], Closure body) {
     "HOME=${env.WORKSPACE}"
   ]){
     def node_version = installNode(args)
-    withEnv(["PATH+NVM=${getNodePath(node_version)}"]){
+    def nvmNodePath = getNodePath(node_version)
+    withEnv(["PATH+NVM=${nvmNodePath}"]){
+      sh(label: 'Debug withNodeJSEnvUnix installation', script: """
+        which npm || true
+        whereis npm || true
+        npm --version || true
+        which node || true
+        whereis node || true
+        node --version || true
+        ls -l ${nvmNodePath} || true
+      """)
       body()
     }
   }
@@ -58,8 +68,6 @@ def installNode(Map args = [:]) {
       nvm install ${version}
       nvm version | head -n1 > "${nodeVersionLocation}/.nvm-node-version"
     """)
-    def nodeVersion = readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
-    sh(label: "Debug nodejs", script: "ls -l ${getNodePath(nodeVersion)}")
   }
   return readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
 }
