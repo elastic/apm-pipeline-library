@@ -29,6 +29,9 @@ def call(Map args = [:], Closure body) {
   ]){
     def node_version = installNode(args)
     def nvmNodePath = getNodePath(node_version)
+    if (!fileExists(nvmNodePath)) {
+      error('withNodeJSEnvUnix: the node version could not be found! Look for errors in the logs.')
+    }
     withEnv(["PATH+NVM=${nvmNodePath}"]){
       sh(label: 'Debug withNodeJSEnvUnix installation', script: """
         which npm || true
@@ -39,9 +42,6 @@ def call(Map args = [:], Closure body) {
         node --version || true
         ls -l ${nvmNodePath} || true
       """)
-      if (!node_version.trim()) {
-        error('withNodeJSEnvUnix: the node version could not be found! Look for errors in the logs.')
-      }
       body()
     }
   }
@@ -89,7 +89,15 @@ def installNode(Map args = [:]) {
       nvm version | head -n1 > "${nvmNodeFile}"
     """)
   }
-  return readFile(file: nvmNodeFile).trim()
+  def nvmNodeVersion = readFile(file: nvmNodeFile).trim()
+
+  // In some cases, nvm cannot resolve the installed version,
+  // let's then fallback to a hardcoded value.
+  if (!nvmNodeVersion.trim()) {
+    // version does not contain the prefix v
+    return "v${version}"
+  }
+  return nvmNodeVersion
 }
 
 def getNodePath(version) {
