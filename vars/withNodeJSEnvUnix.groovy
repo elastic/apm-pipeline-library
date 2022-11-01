@@ -78,7 +78,6 @@ def installNode(Map args = [:]) {
       nvm use ${version}
 
       echo "Debug nvm env"
-      set -x
       nvm ls
       nvm version
       nvm --version
