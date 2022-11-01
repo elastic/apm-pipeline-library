@@ -93,7 +93,7 @@ pipeline {
     }
     stage('virtual-machine') {
       options { skipDefaultCheckout() }
-      agent { label 'linux && immutable' }
+      agent { label 'ubuntu-22 && immutable' }
       stages {
          stage('Check pre-commit') {
           steps {
