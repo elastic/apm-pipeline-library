@@ -6,3 +6,4 @@ Install Node.js with NVM and run some command in a pre-configured environment fo
   }
 ```
 * version: Node.js version to install, if it is not set, it'll use [default version](#nodeJSDefaultVersion)
+* nvmVersion: nvm version to install, optional [default version `v0.39.2`]
