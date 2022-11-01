@@ -65,9 +65,11 @@ def installNode(Map args = [:]) {
       export NVM_DIR="\${HOME}/.nvm"
       [ -s "\${NVM_DIR}/nvm.sh" ] && . "\${NVM_DIR}/nvm.sh"
 
-      nvm install ${version}
+      nvm install --no-progress --default ${version}
+
       echo "Fetch nvm version"
       nvm version
+      nvm --version
       nvm version | head -n1
       nvm version | head -n1 > "${nvmNodeFile}"
     """)
