@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-@Library('apm@main') _
+@Library('apm@test/node') _
 
 pipeline {
   agent { label 'k8s' }
