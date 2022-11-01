@@ -66,11 +66,15 @@ def installNode(Map args = [:]) {
       [ -s "\${NVM_DIR}/nvm.sh" ] && . "\${NVM_DIR}/nvm.sh"
 
       nvm install --no-progress --default ${version}
+      nvm use ${version}
 
-      echo "Fetch nvm version"
+      echo "Debug nvm env"
       nvm version
       nvm --version
+      nvm current
       nvm version | head -n1
+
+      echo "Fetch the default nodejs version installed with nvm"
       nvm version | head -n1 > "${nvmNodeFile}"
     """)
   }
