@@ -79,6 +79,7 @@ def installNode(Map args = [:]) {
       nvm use ${version}
 
       echo "Fetch the default nodejs version installed with nvm"
+      nvm version
       nvm version | head -n1 > "${nvmNodeFile}"
     """)
   }
