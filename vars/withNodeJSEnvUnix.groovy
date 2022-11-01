@@ -41,7 +41,7 @@ def call(Map args = [:], Closure body) {
         whereis node || true
         node --version || true
         ls -l ${nvmNodePath} || true
-      """)
+      """, returnStatus: true)
       body()
     }
   }
@@ -78,26 +78,17 @@ def installNode(Map args = [:]) {
       nvm install --no-progress --default ${version}
       nvm use ${version}
 
-      echo "Debug nvm env"
-      nvm ls
-      nvm version
-      nvm --version
-      nvm current
-      nvm version | head -n1
-
       echo "Fetch the default nodejs version installed with nvm"
       nvm version | head -n1 > "${nvmNodeFile}"
     """)
   }
   def nvmNodeVersion = readFile(file: nvmNodeFile).trim()
-
-  // In some cases, nvm cannot resolve the installed version,
-  // let's then fallback to a hardcoded value.
-  if (!nvmNodeVersion.trim()) {
-    // version does not contain the prefix v
-    return "v${version}"
+  if (nvmNodeVersion.trim()) {
+    return nvmNodeVersion
   }
-  return nvmNodeVersion
+  log(level: 'WARN', text: "'nvm version' didn't return any output, let's assume it was correctly installed and then fallback to the given version")
+  // the nodejs versions in npm use the prefix v.
+  return "v${version}"
 }
 
 def getNodePath(version) {
