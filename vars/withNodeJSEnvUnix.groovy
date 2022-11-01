@@ -59,7 +59,7 @@ def installNode(Map args = [:]) {
       nvm version | head -n1 > "${nodeVersionLocation}/.nvm-node-version"
     """)
     def nodeVersion = readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
-    sh(label: "Debug nodejs", script: "ls -l ${getNodePath(nodeVersion)}/bin")
+    sh(label: "Debug nodejs", script: "ls -l ${getNodePath(nodeVersion)}")
   }
   return readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
 }
