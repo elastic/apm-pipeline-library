@@ -49,23 +49,24 @@ def call(Map args = [:], Closure body) {
 
 def installNode(Map args = [:]) {
   def version = args.containsKey('version') ? args.version : nodeJSDefaultVersion()
+  def nvmVersion = args.get('nvmVersion', 'v0.39.2')
   def nvmNodeFile = nvmNodeVersionFile()
   retryWithSleep(retries: 3, seconds: 5, backoff: true){
-    sh(label: 'Installing nvm', script: '''
+    sh(label: 'Installing nvm', script: """
       set -e
       set +x
-      export NVM_DIR="${HOME}/.nvm"
-      if [ -s "${NVM_DIR}/nvm.sh" ] ; then
+      export NVM_DIR="\${HOME}/.nvm"
+      if [ -s "\${NVM_DIR}/nvm.sh" ] ; then
         echo "load existing nvm environment"
-        . "${NVM_DIR}/nvm.sh"
+        . "\${NVM_DIR}/nvm.sh"
       fi
 
-      if [ -z "$(command -v nvm)" ]; then
+      if [ -z "\$(command -v nvm)" ]; then
         echo "installing nvm"
-        rm -fr "${NVM_DIR}"
-        curl -so- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        rm -fr "\${NVM_DIR}"
+        curl -so- https://raw.githubusercontent.com/nvm-sh/nvm/${nvmVersion}/install.sh | bash
       fi
-    ''')
+    """)
     sh(label: "Installing Node.js ${version}", script: """
       set -e
       set +x
