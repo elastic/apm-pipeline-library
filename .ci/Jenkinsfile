@@ -63,6 +63,16 @@ pipeline {
           dir("${BASE_DIR}"){
             setEnvVar('TEST_INFRA', isGitRegionMatch(patterns: [ '(^test-infra|^resources/scripts/jenkins)/.*' ], shouldMatchAll: false))
           }
+          withNodeJSEnv(){
+            dir("${BASE_DIR}"){
+              sh(label: 'which npm',script: 'which npm')
+              sh(label: 'whereis npm',script: 'whereis npm')
+              sh(label: 'npm version',script: 'npm --version')
+              sh(label: 'which node',script: 'which node')
+              sh(label: 'whereis node',script: 'whereis node')
+              sh(label: 'npm node',script: 'node --version')
+            }
+          }
         }
       }
     }

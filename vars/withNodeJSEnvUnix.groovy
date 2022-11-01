@@ -28,7 +28,7 @@ def call(Map args = [:], Closure body) {
     "HOME=${env.WORKSPACE}"
   ]){
     def node_version = installNode(args)
-    withEnv(["PATH+NVM=${HOME}/.nvm/versions/node/${node_version}/bin"]){
+    withEnv(["PATH+NVM=${getNodePath(node_version)}"]){
       body()
     }
   }
@@ -40,6 +40,7 @@ def installNode(Map args = [:]) {
   retryWithSleep(retries: 3, seconds: 5, backoff: true){
     sh(label: 'Installing nvm', script: '''
       set -e
+      set +x
       export NVM_DIR="${HOME}/.nvm"
       [ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh"
 
@@ -50,13 +51,19 @@ def installNode(Map args = [:]) {
     ''')
     sh(label: "Installing Node.js ${version}", script: """
       set -e
+      set +x
       export NVM_DIR="\${HOME}/.nvm"
       [ -s "\${NVM_DIR}/nvm.sh" ] && . "\${NVM_DIR}/nvm.sh"
 
       nvm install ${version}
       nvm version | head -n1 > "${nodeVersionLocation}/.nvm-node-version"
     """)
+    def nodeVersion = readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
+    sh(label: "Debug nodejs", script: "ls -l ${getNodePath(nodeVersion)}/bin")
+    return nodeVersion
   }
+}
 
-  return readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
+def getNodePath(version) {
+  return "${HOME}/.nvm/versions/node/${version}/bin"
 }
