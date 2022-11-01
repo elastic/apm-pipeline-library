@@ -103,6 +103,11 @@ pipeline {
               dir("${BASE_DIR}"){
                 preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
               }
+              withNodeJSEnv(){
+                dir("${BASE_DIR}"){
+                  echo "foo"
+                }
+              }
             }
           }
         }
