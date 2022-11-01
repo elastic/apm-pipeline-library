@@ -46,7 +46,7 @@ def call(Map args = [:], Closure body) {
 
 def installNode(Map args = [:]) {
   def version = args.containsKey('version') ? args.version : nodeJSDefaultVersion()
-  def nodeVersionLocation = pwd(tmp: true)
+  def nvmNodeFile = nvmNodeVersionFile()
   retryWithSleep(retries: 3, seconds: 5, backoff: true){
     sh(label: 'Installing nvm', script: '''
       set -e
@@ -66,12 +66,19 @@ def installNode(Map args = [:]) {
       [ -s "\${NVM_DIR}/nvm.sh" ] && . "\${NVM_DIR}/nvm.sh"
 
       nvm install ${version}
-      nvm version | head -n1 > "${nodeVersionLocation}/.nvm-node-version"
+      echo "Fetch nvm version"
+      nvm version
+      nvm version | head -n1
+      nvm version | head -n1 > "${nvmNodeFile}"
     """)
   }
-  return readFile(file: "${nodeVersionLocation}/.nvm-node-version").trim()
+  return readFile(file: nvmNodeFile).trim()
 }
 
 def getNodePath(version) {
   return "${HOME}/.nvm/versions/node/${version}/bin"
+}
+
+def nvmNodeVersionFile() {
+  return "${pwd(tmp: true)}/.nvm-node-version"
 }
