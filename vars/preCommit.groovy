@@ -43,7 +43,7 @@ def call(Map args = [:]) {
   sshagent([credentialsId]) {
 
     def newHome = env.HOME ?: env.WORKSPACE
-    withEnv(["HOME=${newHome}"]) {
+    withEnv(["HOME=${newHome}", "PATH+PRECOMMIT=${newHome}/.local/bin", "PATH+BIN=${newHome}/bin"]) {
       if (registry && secretRegistry) {
         dockerLogin(secret: "${secretRegistry}", registry: "${registry}")
       }
@@ -58,13 +58,11 @@ def call(Map args = [:]) {
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
         sh(label: 'Install precommit hooks', script: """
-          export PATH=${newHome}/bin:${newHome}/.local/bin:${env.PATH}
           ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos
           pre-commit install --install-hooks
         """)
       }
       sh(label: 'Run precommit', script: """
-        export PATH=${newHome}/bin:${env.PATH}
         ## Search for the repo with the scripts to be added to the PATH
         set +e
         searchFile=\$(find ${newHome}/.cache/pre-commit -type d -name 'scripts' | grep '.ci/scripts')
