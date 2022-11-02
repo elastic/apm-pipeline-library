@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew clean test --stacktrace
         working-directory: .ci/jobDSL
       - uses: v1v/otel-upload-test-artifact-action@v2
-        if: always()
+        if: success() || failure()
         continue-on-error: true
         with:
           jobName: "job-dsl"
@@ -37,3 +37,11 @@ jobs:
           path: ".ci/jobDSL/build/test-results/test/TEST-*.xml"
           type: "junit"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Store test results
+        if: success() || failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ".ci/jobDSL/build/test-results/test/TEST-*.xml"
