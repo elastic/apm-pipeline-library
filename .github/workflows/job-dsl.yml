@@ -9,9 +9,11 @@ on:
       - .ci/jobDSL/**
       - .github/workflows/**
 
-# limit the access of the generated GITHUB_TOKEN
+# See https://github.com/dorny/test-reporter/issues/168#issuecomment-1108868899
 permissions:
-  contents: read
+  checks: write
+  contents: write
+  pull-requests: write
 
 jobs:
   job-dsl:
