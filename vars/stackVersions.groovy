@@ -52,6 +52,10 @@ def dev(Map args = [:]){
 }
 
 def release(Map args = [:]){
+  return version(bumpUtils.getCurrentMinorReleaseFor8(), args)
+}
+
+def release7(Map args = [:]){
   return version(bumpUtils.getCurrentMinorReleaseFor7(), args)
 }
 
