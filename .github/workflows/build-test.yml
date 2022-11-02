@@ -5,11 +5,9 @@ on:
     branches: [main]
   pull_request:
 
-# See https://github.com/dorny/test-reporter/issues/168#issuecomment-1108868899
+# limit the access of the generated GITHUB_TOKEN
 permissions:
-  checks: write
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   build:
