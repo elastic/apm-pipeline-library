@@ -53,7 +53,10 @@ def call(Map args = [:]) {
           if command -v pip3 ; then
             PIP_COMMAND=pip3
           fi
-          ${PIP_COMMAND} install pre-commit
+          # if pre-commit was already installed then do nothing
+          if ! command -v pre-commit ; then
+            ${PIP_COMMAND} install pre-commit
+          fi
         ''')
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
