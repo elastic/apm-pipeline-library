@@ -23,7 +23,8 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
 
   class BumpUtilsMock {
     String getNextMinorReleaseFor8(){ "8.2.0" }
-    String getNextPatchReleaseFor8(){ "8.1.0" }
+    String getNextPatchReleaseFor8(){ "8.1.1" }
+    String getCurrentMinorReleaseFor8(){ "8.1.0" }
     String getCurrentMinorReleaseFor7(){ "7.17.1" }
   }
 
@@ -62,6 +63,14 @@ class StackVersionsStepTests extends ApmBasePipelineTest {
   @Test
   void testRelease() throws Exception {
     def versions = script.release()
+    printCallStack()
+    assertTrue(versions != "")
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void testRelease7() throws Exception {
+    def versions = script.release7()
     printCallStack()
     assertTrue(versions != "")
     assertJobStatusSuccess()
