@@ -28,6 +28,10 @@ def call(Map args = [:], Closure body) {
     "HOME=${env.WORKSPACE}"
   ]){
     def node_version = installNode(args)
+    def nvmPath = "${HOME}/.nvm/versions/node/${node_version}/bin"
+    if (!fileExists(nvmPath)) {
+      error("withNodeJSEnvUnix: ${nvmPath} does not exist.")
+    }
     withEnv(["PATH+NVM=${HOME}/.nvm/versions/node/${node_version}/bin"]){
       body()
     }
