@@ -49,16 +49,16 @@ def call(Map args = [:]) {
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
         sh(label: 'Install precommit', script: '''
-          PYTHON_COMMAND=python
-          if command -v python3 ; then
-            PYTHON_COMMAND=python3
+          PIP_COMMAND=pip
+          if command -v pip3 ; then
+            PIP_COMMAND=pip3
           fi
-          curl -s https://pre-commit.com/install-local.py | ${PYTHON_COMMAND} -
+          ${PIP_COMMAND} install pre-commit
         ''')
       }
       retryWithSleep(retries: 2, seconds: 5, backoff: true) {
         sh(label: 'Install precommit hooks', script: """
-          export PATH=${newHome}/bin:${env.PATH}
+          export PATH=${newHome}/bin:${newHome}/.local/bin:${env.PATH}
           ## Install with the hooks therefore ~/.cache/pre-commit will be created with the repos
           pre-commit install --install-hooks
         """)
