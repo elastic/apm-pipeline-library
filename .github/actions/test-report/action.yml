@@ -1,0 +1,72 @@
+---
+name: 'Test report'
+description: |
+  Shows test results in GitHub UI: .NET (xUnit, NUnit, MSTest), Dart, Flutter, Java (JUnit), JavaScript (JEST, Mocha)
+inputs:
+  artifact:
+    description: Name or regex of artifact containing test results
+    default: 'all'
+    required: false
+  name:
+    description: Name of the check run
+    default: 'JUnit Tests'
+    required: false
+  path:
+    description: |
+      Coma separated list of paths to test results
+      Supports wildcards via [fast-glob](https://github.com/mrmlnc/fast-glob)
+      All matched result files must be of same format
+    default: '**/*.xml'
+    required: true
+  reporter:
+    description: |
+      Format of test results. Supported options:
+        - dart-json
+        - dotnet-trx
+        - flutter-json
+        - java-junit
+        - jest-junit
+        - mocha-json
+    default: 'java-junit'
+    required: true
+  list-suites:
+    description: |
+      Limits which test suites are listed. Supported options:
+        - all
+        - only-failed
+    required: true
+    default: 'all'
+  list-tests:
+    description: |
+      Limits which test cases are listed. Supported options:
+        - all
+        - only-failed
+        - none
+    required: true
+    default: 'all'
+  fail-on-error:
+    description: Set this action as failed if test report contain any failed test
+    required: true
+    default: 'true'
+  only-summary:
+    description: |
+      Allows you to generate only the summary.
+      If enabled, the report will contain a table listing each test results file and the number of passed,
+      failed, and skipped tests.
+      Detailed listing of test suites and test cases will be skipped.
+    default: 'false'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Report test results
+      uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
+      with:
+        artifact: ${{ inputs.artifact }}
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+        reporter: ${{ inputs.reporter }}
+        list-suites: ${{ inputs.list-suites }}
+        list-tests: ${{ inputs.list-tests }}
+        fail-on-error: ${{ inputs.fail-on-error }}
+        only-summary: ${{ inputs.only-summary }}
