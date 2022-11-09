@@ -60,10 +60,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # If go-json reporter then it's required a specific transformation
-    - name: go-json - Report test results
+    - name: Report go test results
       if: contains('go-json', inputs.reporter)
-      uses: elastic/apm-pipeline-library/.github/actions/test-report@feature/go-json-reporter
+      uses: elastic/apm-pipeline-library/.github/actions/test-go-report@feature/go-json-reporter
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
@@ -72,7 +71,6 @@ runs:
         fail-on-error: ${{ inputs.fail-on-error }}
         only-summary: ${{ inputs.only-summary }}
 
-    # If no go-json reporter then as usual
     - name: Report test results
       if: ! contains('go-json', inputs.reporter)
       uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
