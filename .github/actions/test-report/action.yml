@@ -1,7 +1,7 @@
 ---
 name: 'Test report'
 description: |
-  Shows test results in GitHub UI: .NET (xUnit, NUnit, MSTest), Dart, Flutter, Java (JUnit), JavaScript (JEST, Mocha)
+  Shows test results in GitHub UI: .NET (xUnit, NUnit, MSTest), Dart, Flutter, Java (JUnit), JavaScript (JEST, Mocha), Gotest (Json)
 inputs:
   artifact:
     description: Name or regex of artifact containing test results
@@ -23,6 +23,7 @@ inputs:
       Format of test results. Supported options:
         - dart-json
         - dotnet-trx
+        - go-json
         - flutter-json
         - java-junit
         - jest-junit
@@ -59,8 +60,41 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # If go-json reporter then it's required to transform to junit
+    - name: go-json - Download artifacts
+      if: contains('go-json', inputs.reporter)
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.artifact }}
+
+    - name: go-json - Setup golang
+      if: contains('go-json', inputs.reporter)
+      uses: actions/setup-go@v3
+      with:
+        go-version: "1.18"
+
+    - name: go-json - Transform go-json to java-junit
+      if: contains('go-json', inputs.reporter)
+      run: |
+        go install gotest.tools/gotestsum@latest
+        cat ${{ inputs.path }} | gotestsum --junitfile go-json-test-results.xml
+
+    - name: go-json - Report test results
+      if: contains('go-json', inputs.reporter)
+      uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
+      with:
+        name: ${{ inputs.name }}
+        path: "go-json-test-results.xml"
+        reporter: 'java-junit'
+        list-suites: ${{ inputs.list-suites }}
+        list-tests: ${{ inputs.list-tests }}
+        fail-on-error: ${{ inputs.fail-on-error }}
+        only-summary: ${{ inputs.only-summary }}
+
+    # If no go-json reporter then as usual
     - name: Report test results
       uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
+      if: ! contains('go-json', inputs.reporter)
       with:
         artifact: ${{ inputs.artifact }}
         name: ${{ inputs.name }}
