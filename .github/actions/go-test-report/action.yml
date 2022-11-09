@@ -1,7 +1,7 @@
 ---
-name: 'Test report'
+name: 'Test Go report'
 description: |
-  Shows test results in GitHub UI: .NET (xUnit, NUnit, MSTest), Dart, Flutter, Java (JUnit), JavaScript (JEST, Mocha), Gotest (Json)
+  Shows test results in GitHub UI: Gotest (Json)
 inputs:
   artifact:
     description: Name or regex of artifact containing test results
@@ -9,26 +9,14 @@ inputs:
     required: false
   name:
     description: Name of the check run
-    default: 'JUnit Tests'
+    default: 'Go Tests'
     required: false
   path:
     description: |
       Coma separated list of paths to test results
       Supports wildcards via [fast-glob](https://github.com/mrmlnc/fast-glob)
       All matched result files must be of same format
-    default: '**/*.xml'
-    required: true
-  reporter:
-    description: |
-      Format of test results. Supported options:
-        - dart-json
-        - dotnet-trx
-        - go-json
-        - flutter-json
-        - java-junit
-        - jest-junit
-        - mocha-json
-    default: 'java-junit'
+    default: '**/*.json'
     required: true
   list-suites:
     description: |
@@ -60,27 +48,27 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # If go-json reporter then it's required a specific transformation
-    - name: go-json - Report test results
-      if: contains('go-json', inputs.reporter)
-      uses: elastic/apm-pipeline-library/.github/actions/test-report@feature/go-json-reporter
+    - name: go-json - Download artifacts
+      uses: actions/download-artifact@v3
       with:
-        name: ${{ inputs.name }}
-        path: ${{ inputs.path }}
-        list-suites: ${{ inputs.list-suites }}
-        list-tests: ${{ inputs.list-tests }}
-        fail-on-error: ${{ inputs.fail-on-error }}
-        only-summary: ${{ inputs.only-summary }}
+        name: ${{ inputs.artifact }}
 
-    # If no go-json reporter then as usual
-    - name: Report test results
-      if: ! contains('go-json', inputs.reporter)
+    - name: go-json - Setup golang
+      uses: actions/setup-go@v3
+      with:
+        go-version: "1.18"
+
+    - name: go-json - Transform go-json to java-junit
+      run: |
+        go install gotest.tools/gotestsum@latest
+        cat ${{ inputs.path }} | gotestsum --junitfile go-json-test-results.xml
+
+    - name: go-json - Report test results
       uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
       with:
-        artifact: ${{ inputs.artifact }}
         name: ${{ inputs.name }}
-        path: ${{ inputs.path }}
-        reporter: ${{ inputs.reporter }}
+        path: "go-json-test-results.xml"
+        reporter: 'java-junit'
         list-suites: ${{ inputs.list-suites }}
         list-tests: ${{ inputs.list-tests }}
         fail-on-error: ${{ inputs.fail-on-error }}
