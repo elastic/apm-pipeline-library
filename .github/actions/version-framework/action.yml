@@ -40,4 +40,5 @@ runs:
           f.write("matrix={}\n".format(json.dumps(matrix)))
     - id: debug
       shell: bash
-      run: echo ${{ steps.generator.outputs.matrix }}
+      run: |
+        echo 'Matrix to test: ${{ steps.generator.outputs.matrix }}'
