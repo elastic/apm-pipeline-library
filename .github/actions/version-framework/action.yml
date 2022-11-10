@@ -30,7 +30,6 @@ runs:
         frameworks = yaml.safe_load(Path('${{ inputs.frameworksFile }}').read_text())
         versions = yaml.safe_load(Path('${{ inputs.versionsFile }}').read_text())
         matrix = {'include': []}
-        print(excludes['exclude'])
         for version in versions['VERSION']:
           for framework in frameworks['FRAMEWORK']:
             if len(list(filter(lambda item: item['VERSION'] == version and item["FRAMEWORK"] == framework, excludes['exclude']))) > 0:
