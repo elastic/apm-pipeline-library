@@ -38,3 +38,6 @@ runs:
               matrix['include'].append({"version": version, "framework": framework})
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("matrix={}\n".format(json.dumps(matrix)))
+    - id: debug
+      shell: shell
+      run: echo ${{ steps.generator.outputs.matrix }}
