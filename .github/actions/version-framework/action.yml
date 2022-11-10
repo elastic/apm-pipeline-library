@@ -18,8 +18,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    outputs:
-      matrix: ${{ steps.generator.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
       - name: Generate matrix support
