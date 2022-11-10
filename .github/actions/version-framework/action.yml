@@ -39,5 +39,5 @@ runs:
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("matrix={}\n".format(json.dumps(matrix)))
     - id: debug
-      shell: shell
+      shell: bash
       run: echo ${{ steps.generator.outputs.matrix }}
