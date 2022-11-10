@@ -1,0 +1,47 @@
+---
+name: 'Matrix Version Framework'
+description: 'Create matrix for the supported versions and frameworks'
+inputs:
+  versionsFile:
+    description: 'The YAML file with the versions. Being VERSION the key for the list'
+    required: true
+  frameworksFile:
+    description: 'The YAML file with the frameworks. Being FRAMEWORK the key for the list'
+    required: true
+  excludedFile:
+    ddescription: 'The YAML file with the excluded tuples. Being exclude the key for the list of tuples (VERSION, FRAMEWORK)'
+    required: true
+outputs:
+  matrix:
+    description: "GitHub token"
+    value: ${{ steps.generator.outputs.matrix }}
+runs:
+  using: "composite"
+  steps:
+    outputs:
+      matrix: ${{ steps.generator.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate matrix support
+        id: generator
+        shell: python
+        run: |
+          import json
+          import os
+          import yaml
+          from pathlib import Path
+          excludes = yaml.safe_load(Path('${{ inputs.excludedFile }}').read_text())
+          frameworks = yaml.safe_load(Path('${{ inputs.frameworksFile }}').read_text())
+          versions = yaml.safe_load(Path('${{ inputs.versionsFile }}').read_text())
+          matrix = {'include': []}
+          print(excludes['exclude'])
+          for version in versions['VERSION']:
+            for framework in frameworks['FRAMEWORK']:
+              if len(list(filter(lambda item: item['VERSION'] == version and item["FRAMEWORK"] == framework, excludes['exclude']))) > 0:
+                print('excluded ' + version + ' with ' + framework)
+              else:
+                matrix['include'].append({"version": version, "framework": framework})
+          with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
+            f.write("matrix={}\n".format(json.dumps(matrix)))
+      - run: |
+          echo "Matrix to test: ${{ steps.generator.outputs.matrix }}"
