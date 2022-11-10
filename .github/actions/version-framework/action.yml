@@ -13,7 +13,7 @@ inputs:
     required: true
 outputs:
   matrix:
-    description: "GitHub token"
+    description: "Processed matrix with the required tuples of version and framework"
     value: ${{ steps.generator.outputs.matrix }}
 runs:
   using: "composite"
