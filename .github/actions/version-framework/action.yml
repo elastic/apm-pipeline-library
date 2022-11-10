@@ -18,28 +18,26 @@ outputs:
 runs:
   using: "composite"
   steps:
-    steps:
-      - uses: actions/checkout@v3
-      - name: Generate matrix support
-        id: generator
-        shell: python
-        run: |
-          import json
-          import os
-          import yaml
-          from pathlib import Path
-          excludes = yaml.safe_load(Path('${{ inputs.excludedFile }}').read_text())
-          frameworks = yaml.safe_load(Path('${{ inputs.frameworksFile }}').read_text())
-          versions = yaml.safe_load(Path('${{ inputs.versionsFile }}').read_text())
-          matrix = {'include': []}
-          print(excludes['exclude'])
-          for version in versions['VERSION']:
-            for framework in frameworks['FRAMEWORK']:
-              if len(list(filter(lambda item: item['VERSION'] == version and item["FRAMEWORK"] == framework, excludes['exclude']))) > 0:
-                print('excluded ' + version + ' with ' + framework)
-              else:
-                matrix['include'].append({"version": version, "framework": framework})
-          with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
-            f.write("matrix={}\n".format(json.dumps(matrix)))
-      - run: |
-          echo "Matrix to test: ${{ steps.generator.outputs.matrix }}"
+    - uses: actions/checkout@v3
+    - id: generator
+      shell: python
+      run: |
+        import json
+        import os
+        import yaml
+        from pathlib import Path
+        excludes = yaml.safe_load(Path('${{ inputs.excludedFile }}').read_text())
+        frameworks = yaml.safe_load(Path('${{ inputs.frameworksFile }}').read_text())
+        versions = yaml.safe_load(Path('${{ inputs.versionsFile }}').read_text())
+        matrix = {'include': []}
+        print(excludes['exclude'])
+        for version in versions['VERSION']:
+          for framework in frameworks['FRAMEWORK']:
+            if len(list(filter(lambda item: item['VERSION'] == version and item["FRAMEWORK"] == framework, excludes['exclude']))) > 0:
+              print('excluded ' + version + ' with ' + framework)
+            else:
+              matrix['include'].append({"version": version, "framework": framework})
+        with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
+          f.write("matrix={}\n".format(json.dumps(matrix)))
+    - run: |
+        echo "Matrix to test: ${{ steps.generator.outputs.matrix }}"
