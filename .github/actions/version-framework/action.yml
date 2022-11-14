@@ -9,8 +9,8 @@ inputs:
     description: 'The YAML file with the frameworks. Being FRAMEWORK the key for the list'
     required: true
   excludedFile:
-    ddescription: 'The YAML file with the excluded tuples. Being exclude the key for the list of tuples (VERSION, FRAMEWORK)'
-    required: true
+    description: 'The YAML file with the excluded tuples. Being exclude the key for the list of tuples (VERSION, FRAMEWORK)'
+    required: false
 outputs:
   matrix:
     description: "Processed matrix with the required tuples of version and framework"
@@ -26,7 +26,9 @@ runs:
         import os
         import yaml
         from pathlib import Path
-        excludes = yaml.safe_load(Path('${{ inputs.excludedFile }}').read_text())
+        excludes = {}
+        if len('${{ inputs.excludedFile }}') > 0:
+          excludes = yaml.safe_load(Path('${{ inputs.excludedFile }}').read_text())
         frameworks = yaml.safe_load(Path('${{ inputs.frameworksFile }}').read_text())
         versions = yaml.safe_load(Path('${{ inputs.versionsFile }}').read_text())
         matrix = {'include': []}
