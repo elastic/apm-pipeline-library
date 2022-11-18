@@ -35,9 +35,9 @@ runs:
     - id: gh-token
       uses: elastic/apm-pipeline-library/.github/actions/github-token/@current
       with:
-        url: ${{ inputs.url }}
-        roleId: ${{ inputs.roleId }}
-        secretId: ${{ inputs.secretId }}
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
     - name: 'Download artifact'
       uses: actions/github-script@v3.1.0
       with:
