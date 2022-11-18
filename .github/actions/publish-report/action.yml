@@ -26,18 +26,13 @@ inputs:
   bucket:
     description: 'Google bucket name'
     required: true
+  token:
+    description: 'GitHub token.'
+    required: true
 
 runs:
   using: "composite"
   steps:
-    # as long as it's required to interact with the PR/Issue then this is
-    # the only way when using composite workflows.
-    - id: gh-token
-      uses: elastic/apm-pipeline-library/.github/actions/github-token/@current
-      with:
-        url: ${{ inputs.vaultUrl }}
-        roleId: ${{ inputs.vaultRoleId }}
-        secretId: ${{ inputs.vaultSecretId }}
     - name: 'Download artifact'
       uses: actions/github-script@v3.1.0
       with:
@@ -59,20 +54,23 @@ runs:
           var fs = require('fs');
           fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
 
-    - run: unzip ${{ inputs.artifact }}.zip && rm ${{ inputs.artifact }}.zip
+    - name: 'Unzip the artifact'
+      run: unzip ${{ inputs.artifact }}.zip && rm ${{ inputs.artifact }}.zip
       shell: bash
 
-    - id: 'get-pr'
+    - name: 'Get the PR id'
+      id: 'get-pr'
       uses: actions/github-script@v6
       with:
-        github-token: ${{ env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.token }}
         script: |
           var fs = require('fs');
           var issue_number = Number(fs.readFileSync('./NR'));
           return issue_number;
         result-encoding: string
 
-    - uses: hashicorp/vault-action@v2.4.2
+    - name: 'Get service account'
+      uses: hashicorp/vault-action@v2.4.2
       with:
         url: ${{ inputs.vaultUrl }}
         roleId: ${{ inputs.vaultRoleId }}
@@ -93,7 +91,7 @@ runs:
         glob: ${{ inputs.globFiles }}
         destination: "${{ inputs.bucket }}/prs/${{ steps.get-pr.outputs.result }}"
 
-    - name: Find Comment
+    - name: 'Find a comment given the pattern'
       uses: peter-evans/find-comment@v2
       id: fc
       with:
@@ -104,7 +102,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id != '' }}
       with:
-        github-token: ${{ env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.token }}
         script: |
           await github.issues.updateComment({
             owner: context.repo.owner,
@@ -119,7 +117,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id == ''}}
       with:
-        github-token: ${{ env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.token }}
         script: |
           await github.issues.createComment({
             owner: context.repo.owner,
