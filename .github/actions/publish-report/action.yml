@@ -52,11 +52,11 @@ runs:
           fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
 
     - run: unzip ${{ inputs.artifact }}.zip && rm ${{ inputs.artifact }}.zip
+      shell: bash
 
     - id: 'get-pr'
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           var fs = require('fs');
           var issue_number = Number(fs.readFileSync('./NR'));
@@ -95,7 +95,6 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id != '' }}
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           await github.issues.updateComment({
             owner: context.repo.owner,
@@ -110,7 +109,6 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id == ''}}
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           await github.issues.createComment({
             owner: context.repo.owner,
