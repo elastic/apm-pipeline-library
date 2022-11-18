@@ -79,7 +79,7 @@ runs:
         secretId: ${{ inputs.vaultSecretId }}
         method: approle
         secrets: |
-          ${{ inputs.secret }} service-account | SERVICE_ACCOUNT ;
+          ${{ inputs.vaultSecret }} service-account | SERVICE_ACCOUNT ;
 
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
