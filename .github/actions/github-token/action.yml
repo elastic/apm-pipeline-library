@@ -11,10 +11,11 @@ inputs:
   secretId:
     description: 'Vault secret ID'
     required: true
-outputs:
-  token:
-    description: "GitHub token"
-    value: ${{ steps.get-token.outputs.token }}
+# This output is not yet working, so you can use the env.GITHUB_TOKEN
+#outputs:
+#  token:
+#    description: "GitHub token"
+#    value: ${{ steps.get-token.outputs.token }}
 runs:
   using: "composite"
   steps:
