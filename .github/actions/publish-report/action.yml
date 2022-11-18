@@ -26,6 +26,9 @@ inputs:
   bucket:
     description: 'Google bucket name'
     required: true
+  github_token:
+    description: 'The Generated GitHub token to interact with the Issues/PRs'
+    required: true
 
 runs:
   using: "composite"
@@ -57,6 +60,7 @@ runs:
     - id: 'get-pr'
       uses: actions/github-script@v6
       with:
+        github-token: ${{ inputs.github_token }}
         script: |
           var fs = require('fs');
           var issue_number = Number(fs.readFileSync('./NR'));
@@ -95,6 +99,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id != '' }}
       with:
+        github-token: ${{ inputs.github_token }}
         script: |
           await github.issues.updateComment({
             owner: context.repo.owner,
@@ -109,6 +114,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id == ''}}
       with:
+        github-token: ${{ inputs.github_token }}
         script: |
           await github.issues.createComment({
             owner: context.repo.owner,
