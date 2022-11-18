@@ -74,9 +74,9 @@ runs:
 
     - uses: hashicorp/vault-action@v2.4.2
       with:
-        url: ${{ inputs.url }}
-        roleId: ${{ inputs.roleId }}
-        secretId: ${{ inputs.secretId }}
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
         method: approle
         secrets: |
           ${{ inputs.secret }} service-account | SERVICE_ACCOUNT ;
