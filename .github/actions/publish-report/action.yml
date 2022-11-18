@@ -26,13 +26,18 @@ inputs:
   bucket:
     description: 'Google bucket name'
     required: true
-  github_token:
-    description: 'The Generated GitHub token to interact with the Issues/PRs'
-    required: true
 
 runs:
   using: "composite"
   steps:
+    # as long as it's required to interact with the PR/Issue then this is
+    # the only way when using composite workflows.
+    - id: gh-token
+      uses: elastic/apm-pipeline-library/.github/actions/github-token/@current
+      with:
+        url: ${{ inputs.url }}
+        roleId: ${{ inputs.roleId }}
+        secretId: ${{ inputs.secretId }}
     - name: 'Download artifact'
       uses: actions/github-script@v3.1.0
       with:
@@ -60,7 +65,7 @@ runs:
     - id: 'get-pr'
       uses: actions/github-script@v6
       with:
-        github-token: ${{ inputs.github_token }}
+        github-token: ${{ steps.gh-token.outputs.token }}
         script: |
           var fs = require('fs');
           var issue_number = Number(fs.readFileSync('./NR'));
@@ -99,7 +104,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id != '' }}
       with:
-        github-token: ${{ inputs.github_token }}
+        github-token: ${{ steps.gh-token.outputs.token }}
         script: |
           await github.issues.updateComment({
             owner: context.repo.owner,
@@ -114,7 +119,7 @@ runs:
       uses: actions/github-script@v3
       if: ${{ steps.fc.outputs.comment-id == ''}}
       with:
-        github-token: ${{ inputs.github_token }}
+        github-token: ${{ steps.gh-token.outputs.token }}
         script: |
           await github.issues.createComment({
             owner: context.repo.owner,
