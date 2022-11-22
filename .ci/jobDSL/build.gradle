@@ -33,7 +33,7 @@ dependencies {
   testCompile 'org.spockframework:spock-core:1.3-groovy-2.4'
 
   // Jenkins test harness dependencies
-  testCompile('org.jenkins-ci.main:jenkins-test-harness:1837.vb_6efb_1790942')
+  testCompile('org.jenkins-ci.main:jenkins-test-harness:1900.v9e128c991ef4')
   testCompile("org.jenkins-ci.main:jenkins-war:${jenkinsVersion}")
 
   // Detached
