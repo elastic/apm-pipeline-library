@@ -1,0 +1,129 @@
+---
+name: 'Publish report'
+description: 'Publish report on a PR basis'
+inputs:
+  globFiles:
+    description: 'The glob files to be published'
+    required: true
+  artifact:
+    description: 'The artifact name that contains the files to be published'
+    required: true
+  index:
+    description: 'The index.html to be highlighted in the report'
+    required: true
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  vaultSecret:
+    description: 'Vault secret with the format { service-account :"foo" }'
+    required: true
+  bucket:
+    description: 'Google bucket name'
+    required: true
+  token:
+    description: 'GitHub token.'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: 'Download artifact'
+      uses: actions/github-script@v3.1.0
+      with:
+        script: |
+          var artifacts = await github.actions.listWorkflowRunArtifacts({
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             run_id: ${{ github.event.workflow_run.id }},
+          });
+          var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+            return artifact.name == "${{ inputs.artifact }}"
+          })[0];
+          var download = await github.actions.downloadArtifact({
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             artifact_id: matchArtifact.id,
+             archive_format: 'zip',
+          });
+          var fs = require('fs');
+          fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
+
+    - name: 'Unzip the artifact'
+      run: unzip ${{ inputs.artifact }}.zip && rm ${{ inputs.artifact }}.zip
+      shell: bash
+
+    - name: 'Get the PR id'
+      id: 'get-pr'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          var fs = require('fs');
+          var issue_number = Number(fs.readFileSync('./NR'));
+          return issue_number;
+        result-encoding: string
+
+    - name: 'Get service account'
+      uses: hashicorp/vault-action@v2.4.2
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+        method: approle
+        secrets: |
+          ${{ inputs.vaultSecret }} service-account | SERVICE_ACCOUNT ;
+
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ env.SERVICE_ACCOUNT }}'
+
+    - uses: 'google-github-actions/upload-cloud-storage@v0'
+      with:
+        path: '.'
+        glob: ${{ inputs.globFiles }}
+        destination: "${{ inputs.bucket }}/prs/${{ steps.get-pr.outputs.result }}"
+
+    - name: 'Find a comment given the pattern'
+      uses: peter-evans/find-comment@v2
+      id: fc
+      with:
+        issue-number: ${{ steps.get-pr.outputs.result }}
+        body-includes: '<!-- automated report -->'
+
+    - name: 'Update PR'
+      uses: actions/github-script@v3
+      if: ${{ steps.fc.outputs.comment-id != '' }}
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          await github.issues.updateComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: ${{ steps.fc.outputs.comment-id }},
+            body: '${{ env.BODY_CONTENT }}'
+          });
+      env:
+        BODY_CONTENT: '<!-- automated report -->\n:rocket: [Report](https://storage.cloud.google.com/${{ inputs.bucket }}/prs/${{ steps.get-pr.outputs.result }}/${{ inputs.index }})'
+
+    - name: 'Comment on PR'
+      uses: actions/github-script@v3
+      if: ${{ steps.fc.outputs.comment-id == ''}}
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          await github.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: ${{ steps.get-pr.outputs.result }},
+            body: '${{ env.BODY_CONTENT }}'
+          });
+      env:
+        BODY_CONTENT: '<!-- automated report -->\n:rocket: [Report](https://storage.cloud.google.com/${{ inputs.bucket }}/prs/${{ steps.get-pr.outputs.result }}/${{ inputs.index }})'
