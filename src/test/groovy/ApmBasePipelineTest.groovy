@@ -58,7 +58,8 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     SECRET_CODECOV('secret-codecov'), SECRET_ERROR('secretError'),
     SECRET_NAME('secret/team/ci/secret-name'), SECRET_NOT_VALID('secretNotValid'), SECRET_GITHUB_APP('secret/observability-team/ci/github-app'),
     SECRET_NPMJS('secret/apm-team/ci/elastic-observability-npmjs'), SECRET_NPMRC('secret-npmrc'),
-    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin'), SECRET_GCP_PROVISIONER('service-account/provisioner')
+    SECRET_TOTP('secret-totp'), SECRET_GCP('service-account/apm-rum-admin'), SECRET_GCP_PROVISIONER('service-account/provisioner'),
+    SECRET_SNAPSHOTY('secret-snapshoty')
 
     VaultSecret(String value) {
       this.value = value
@@ -675,6 +676,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     helper.registerAllowedMethod('withOtelEnv', [Closure.class], { body ->
       return body()
     })
+    helper.registerAllowedMethod('withSecretVault', [Map.class, Closure.class], { m, c ->
+      def script = loadScript('vars/withSecretVault.groovy')
+      return script.call(m, c)
+    })
   }
 
   def getVaultSecret(String s) {
@@ -734,6 +739,9 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
     }
     if(VaultSecret.SECRET_TOTP.equals(s)){
       return [data: [ code: '123456' ], renewable: false]
+    }
+    if(VaultSecret.SECRET_SNAPSHOTY.equals(s)){
+      return [data: [ client_email: 'email', private_key: 'key', private_key_id: 'key_id', project_id: 'id' ]]
     }
     return null
   }
