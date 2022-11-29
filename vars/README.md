@@ -2269,6 +2269,7 @@ pipeline {
 * *image:* metricbeat Docker image to use (docker.elastic.co/beats/metricbeat:7.10.1).
 * *timeout:* Time to wait before kill the metricbeat Docker container on the stop operation.
 * *workdir:* Directory to use as root folder to read and write files (current folder).
+* *archiveOnlyOnFail:* if true only archive the files in case of failure.
 
 ```
   metricbeat(
@@ -3108,19 +3109,38 @@ setupAPMGitEmail(global: true)
 
 * *global*: to configure the user and email account globally. Optional.
 
+## snapshoty
+Given the bucket and google secrets then run the snapshoty to upload the artifacts to the
+google bucket
+
+```
+snapshoty(bucket: 'my-bucket',
+          gcsAccountSecret: 'secrets/my-team/my-gcs-secret',
+          dockerRegistry: 'my-docker-registry',
+          dockerSecret: 'secrets/my-team/mydocker-secret')
+```
+
+* *bucket*: The google bucket where to upload the artifacts to. Mandatory
+* *gcsAccountSecret*:
+* *dockerRegistry*: Vault secret where the user and password stored.
+* *dockerSecret*: Registry to login into Docker.
+
+**NOTE**: Windows is not supported
+
 ## stackVersions
 
   Return the version currently used for testing.
 
 ```
-  stackVersions() // [ '8.0.0', '7.11.0', '7.10.2' ]
-  stackVersions(snapshot: true) // [ '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
+  stackVersions() // [ '8.1.0', '8.0.0', '7.11.0', '7.10.2' ]
+  stackVersions(snapshot: true) // [ '8.1.0-SNAPSHOT', '8.0.0-SNAPSHOT', '7.11.0-SNAPSHOT', '7.10.2-SNAPSHOT' ]
 
-  stackVersions.edge() // '8.0.0'
+  stackVersions.edge() // '8.1.0'
   stackVersions.dev() // '7.11.0'
-  stackVersions.release() // '7.10.2'
+  stackVersions.release() // '8.0.0'
+  stackVersions.release7() // '7.10.2'
   stackVersions.snapshot('7.11.1') // '7.11.1-SNAPSHOT'
-  stackVersions.edge(snapshot: true) // '8.0.0-SNAPSHOT'
+  stackVersions.edge(snapshot: true) // '8.1.0-SNAPSHOT'
 ```
 
 ## stageStatusCache
