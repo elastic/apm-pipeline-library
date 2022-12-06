@@ -1,0 +1,16 @@
+Given the bucket and google secrets then run the snapshoty to upload the artifacts to the
+google bucket
+
+```
+snapshoty(bucket: 'my-bucket',
+          gcsAccountSecret: 'secrets/my-team/my-gcs-secret',
+          dockerRegistry: 'my-docker-registry',
+          dockerSecret: 'secrets/my-team/mydocker-secret')
+```
+
+* *bucket*: The google bucket where to upload the artifacts to. Mandatory
+* *gcsAccountSecret*:
+* *dockerRegistry*: Vault secret where the user and password stored.
+* *dockerSecret*: Registry to login into Docker.
+
+**NOTE**: Windows is not supported
