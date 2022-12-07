@@ -1,10 +1,10 @@
-Configure the Terraform context to run the given body closure
+Configure Packer context to run the given body closure
 
 ```
-withTerraformEnv(version: '0.15.1') {
+withPackerEnv(version: '1.8.4') {
   // block
 }
 ```
 
-* version: The terraform CLI version to be installed. Optional (1.1.9)
-* forceInstallation: Whether to install terraform regardless. Optional (false)
+* version: The packer CLI version to be installed. Optional (1.8.4)
+* forceInstallation: Whether to install packer regardless. Optional (false)

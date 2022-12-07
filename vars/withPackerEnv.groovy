@@ -16,20 +16,20 @@
 // under the License.
 
 /**
-Configure the Terraform context to run the given body closure
+Configure Packer context to run the given body closure
 
-withTerraformEnv(version: '0.15.1') {
+withPackerEnv(version: '0.15.1') {
   // block
 }
 */
 def call(Map args = [:], Closure body) {
-  def version = args.get('version', '1.1.9')
+  def version = args.get('version', '1.8.4')
   def forceInstallation = args.get('forceInstallation', false)
 
   def location = pwd(tmp: true)
 
-  withEnv(["PATH+TERRAFORM=${location}"]) {
-    if (forceInstallation || !isInstalled(tool: 'terraform', flag: '--version', version: version)) {
+  withEnv(["PATH+PACKER=${location}"]) {
+    if (forceInstallation || !isInstalled(tool: 'packer', flag: '--version', version: version)) {
       downloadAndInstall(location, version)
     }
     body()
@@ -37,24 +37,24 @@ def call(Map args = [:], Closure body) {
 }
 
 def downloadAndInstall(where, version) {
-  def url = terraformURL(version)
-  def zipfile = 'terraform.zip'
+  def url = packerURL(version)
+  def zipfile = 'packer.zip'
   dir(where) {
     retryWithSleep(retries: 5, seconds: 10, backoff: true) {
       download(url: url, output: zipfile)
     }
     unzip(quiet: true, zipFile: zipfile)
     if (isUnix()) {
-      sh(label: 'chmod terraform', script: 'chmod +x terraform')
+      sh(label: 'chmod packer', script: 'chmod +x packer')
     }
   }
 }
 
-def terraformURL(version) {
-  def url = 'https://releases.hashicorp.com/terraform'
+def packerURL(version) {
+  def url = 'https://releases.hashicorp.com/packer'
   def arch = is64() ? 'amd64' : '386'
   if (isArm()) {
     arch = is64() ? 'arm64' : 'arm'
   }
-  return "${url}/${version}/terraform_${version}_${nodeOS()}_${arch}.zip"
+  return "${url}/${version}/packer_${version}_${nodeOS()}_${arch}.zip"
 }
