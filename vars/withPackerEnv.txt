@@ -1,0 +1,10 @@
+Configure Packer context to run the given body closure
+
+```
+withPackerEnv(version: '1.8.4') {
+  // block
+}
+```
+
+* version: The packer CLI version to be installed. Optional (1.8.4)
+* forceInstallation: Whether to install packer regardless. Optional (false)
