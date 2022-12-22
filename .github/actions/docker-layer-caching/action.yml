@@ -6,20 +6,16 @@ description: 'Automatically cache docker layers in a GitHub Actions workflow'
 inputs:
   key:
     description: An explicit key for restoring and saving the cache
-    required: true
-    default: docker-layer-caching-${{ github.workflow }}-{hash}
+    required: false
   restore-keys:
     description: An ordered list of keys to use for restoring the cache if no cache hit occurred for key
     required: false
-    default: docker-layer-caching-${{ github.workflow }}-
   concurrency:
     description: The number of concurrency when restoring and saving layers
-    required: true
-    default: '4'
+    required: false
   skip-save:
     description: Skip saving layers in the post step
     required: false
-    default: 'false'
 
   continue-on-error:
     description: 'Continue on if the caching fails'
