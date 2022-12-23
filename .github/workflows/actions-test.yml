@@ -1,0 +1,31 @@
+---
+## Test custom actions in .github/actions/
+name: actions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/actions/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/actions/**'
+
+permissions:
+  contents: read
+
+jobs:
+  docker-layer-caching:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/docker-layer-caching
+        with:
+          key: custom-docker-cache-key-${{ github.workflow }}-{hash}
+          restore-keys: |
+            custom-docker-cache-key-${{ github.workflow }}-
+        # Random Dockerfile from .ci/docker
+      - run: docker build -t yamllint -f .ci/docker/yamllint/Dockerfile .
