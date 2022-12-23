@@ -1,0 +1,411 @@
+---
+# Dockerfile build config for .github/workflows/build-docker-images.yml
+# Schema: .ci/.docker-images.schema.json
+templates:
+
+  - &apm-agent-library-docker-images
+    repo: 'git@github.com:elastic/apm-pipeline-library.git'
+    tag: 'latest'
+    folder: '.ci/docker'
+    push: true
+
+  - &opbeans-docker-images
+    tag: 'daily'
+    push: true
+    folder: '.'
+
+  - &apm-agent-python-docker-images
+    name: "apm-agent-python"
+    repo: 'git@github.com:elastic/apm-agent-python.git'
+    folder: 'tests'
+    push: true
+
+  - &apm-agent-nodejs-docker-images
+    name: "apm-agent-nodejs"
+    repo: 'git@github.com:elastic/apm-agent-nodejs.git'
+    folder: '.ci/docker/node-container'
+    push: true
+
+  - &apm-agent-ruby-docker-images
+    name: "apm-agent-ruby"
+    repo: 'git@github.com:elastic/apm-agent-ruby.git'
+    folder: 'spec'
+    push: true
+
+  - &apm-agent-rum-docker-images
+    repo: 'git@github.com:elastic/apm-agent-rum-js.git'
+    push: true
+
+images:
+
+  - name: 'metricbeat-integrations-images'
+    repo: 'git@github.com:elastic/beats.git'
+    folder: 'metricbeat'
+    push: true
+    build_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:buildSupportedVersions'
+    push_script: 'eval $(gvm $(cat ../.go-version)) && make mage && mage compose:pushSupportedVersions'
+
+  - name: 'metricbeat-integrations-images-x-pack'
+    repo: 'git@github.com:elastic/beats.git'
+    folder: 'x-pack/metricbeat'
+    push: true
+    build_script: 'eval $(gvm $(cat ../../.go-version)) && make mage && mage compose:buildSupportedVersions'
+    push_script: 'eval $(gvm $(cat ../../.go-version)) && make mage && mage compose:pushSupportedVersions'
+
+  - name: 'apm-proxy'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    folder: 'tools/apm_proxy/frontend'
+    push: true
+    prepare_script: 'cd tools/apm_proxy/frontend && git clone git@github.com:haproxytech/spoa-mirror.git'
+
+  - name: 'apm-proxy-be'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    folder: 'tools/apm_proxy/backend'
+    push: true
+
+  - name: 'functional-opbeans'
+    repo: 'git@github.com:elastic/observability-test-environments.git'
+    tag: 'latest'
+    folder: 'tests'
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/functional-opbeans:latest functional-opbeans"
+    push_script: "docker push docker.elastic.co/observability-ci/functional-opbeans:latest"
+    push: true
+
+  - name: 'flakey'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "apps/automation/jenkins-toolbox"
+
+  - name: 'flakeyv2'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "apps/automation/flaky-test-analyzer"
+
+  - name: 'build-analyzer'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "apps/automation/build-analyzer"
+
+  - name: 'rebuild-analyzer'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "apps/automation/rebuild-analyzer"
+
+  - name: 'integrations-test-reporter'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "apps/automation/integrations/reporter"
+
+  - name: 'slack-bridge-hey-apm'
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: 'latest'
+    push: true
+    folder: "tools/report-bridge"
+
+  - name: 'obs-jenkins-heartbeat'
+    repo: "git@github.com:elastic/observability-robots.git"
+    tag: 'latest'
+    push: true
+    prepare_script: |
+      cd apps/beats/heartbeat
+      pip3 install pyyaml
+      python3 ./generate_heartbeat_configs.py
+    folder: "apps/beats/heartbeat"
+
+  - name: "bandstand"
+    repo: 'git@github.com:elastic/observability-dev'
+    tag: "latest"
+    folder: "apps/automation/bandstand"
+    push: true
+
+  - name: "azure-vm-tools"
+    repo: 'git@github.com:elastic/azure-vm-extension'
+    tag: "latest"
+    folder: ".ci/docker/azure-vm-tools"
+    push: true
+
+  - name: 'picklesdoc'
+    repo: 'git@github.com:elastic/observability-robots.git'
+    tag: 'latest'
+    build_script: 'make build'
+    push_script: 'make push'
+    push: true
+    folder: "apps/pickles"
+
+  - name: 'picklesdoc'
+    repo: 'git@github.com:elastic/observability-robots.git'
+    tag: 'latest'
+    build_script: 'make build'
+    push_script: 'make push'
+    push: true
+    folder: "apps/pickles"
+
+  # APM ITs Docker images are build daily.
+
+  - name: "apm-integration-testing"
+    repo: 'git@github.com:elastic/apm-integration-testing.git'
+    tag: "daily"
+    push: true
+
+  - name: "apm-integration-testing-all"
+    repo: 'git@github.com:elastic/apm-integration-testing.git'
+    build_script: "make -C docker all-tests"
+    push_script: "make -C docker all-push"
+    push: true
+#    rofl: okay
+
+  - name: "oracle-instant-client"
+    build_script: |
+      docker pull store/oracle/database-instantclient:12.2.0.1;
+      docker tag store/oracle/database-instantclient:12.2.0.1 docker.elastic.co/observability-ci/database-instantclient:12.2.0.1;
+      docker push docker.elastic.co/observability-ci/database-instantclient:12.2.0.1;
+
+  - name: "weblogic"
+    build_script: |
+      docker pull store/oracle/weblogic:12.2.1.3-dev;
+      docker tag store/oracle/weblogic:12.2.1.3-dev docker.elastic.co/observability-ci/weblogic:12.2.1.3-dev;
+      docker push docker.elastic.co/observability-ci/weblogic:12.2.1.3-dev;
+
+  # Opbeans Docker Images
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-dotnet"
+    repo: "git@github.com:elastic/opbeans-dotnet.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-node"
+    repo: "git@github.com:elastic/opbeans-node.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-python"
+    repo: "git@github.com:elastic/opbeans-python.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-frontend"
+    repo: "git@github.com:elastic/opbeans-frontend.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-java"
+    repo: "git@github.com:elastic/opbeans-java.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-go"
+    repo: "git@github.com:elastic/opbeans-go.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-loadgen"
+    repo: "git@github.com:elastic/opbeans-loadgen.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-php"
+    repo: "git@github.com:elastic/opbeans-php.git"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-ruby"
+    repo: "git@github.com:elastic/opbeans-ruby.git"
+
+  # APM Pipeline Library Docker Images
+
+  - <<: *apm-agent-library-docker-images
+    name: "apache-ant"
+    repo: 'git@github.com:elastic/apm-pipeline-library.git'
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/apache-ant:latest apache-ant"
+    push_script: "docker push docker.elastic.co/observability-ci/apache-ant:latest"
+    test_script: "make test-apache-ant"
+
+  - <<: *apm-agent-library-docker-images
+    name: "dind-buildx"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/dind-buildx:latest dind-buildx"
+    push_script: "docker push docker.elastic.co/observability-ci/dind-buildx:latest"
+    test_script: "make test-dind-buildx"
+
+  - <<: *apm-agent-library-docker-images
+    name: "github-label-sync"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/github-label-sync:latest github-label-sync"
+    push_script: "docker push docker.elastic.co/observability-ci/github-label-sync:latest"
+    test_script: "make test-github-label-sync"
+
+  - <<: *apm-agent-library-docker-images
+    name: "gren"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/gren:latest gren"
+    push_script: "docker push docker.elastic.co/observability-ci/gren:latest"
+    test_script: "make test-gren"
+
+  - <<: *apm-agent-library-docker-images
+    name: "shellcheck"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/shellcheck:latest shellcheck"
+    push_script: "docker push docker.elastic.co/observability-ci/shellcheck:latest"
+    test_script: "make test-shellcheck"
+
+  - <<: *apm-agent-library-docker-images
+    name: "yamllint"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/yamllint:latest yamllint"
+    push_script: "docker push docker.elastic.co/observability-ci/yamllint:latest"
+    test_script: "make test-yamllint"
+
+  - <<: *apm-agent-library-docker-images
+    name: "kibana-yarn"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/kibana-yarn:latest kibana-yarn"
+    push_script: "docker push docker.elastic.co/observability-ci/kibana-yarn:latest"
+    test_script: "make test-kibana-yarn"
+
+  - <<: *apm-agent-library-docker-images
+    name: "kibana-devmode"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/kibana-devmode:latest kibana-devmode"
+    push_script: "docker push docker.elastic.co/observability-ci/kibana-devmode:latest"
+    test_script: "make test-kibana-devmode"
+
+  - <<: *apm-agent-library-docker-images
+    name: "vmware-mock"
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/vmware-mock:latest vmware-mock"
+    push_script: "docker push docker.elastic.co/observability-ci/vmware-mock:latest"
+    test_script: "make test-vmware-mock"
+
+  # APM Pipeline Library Extra Docker Images
+
+  - name: "jenkins-agent"
+    repo: 'git@github.com:elastic/apm-pipeline-library.git'
+    tag: "latest"
+    folder: '.ci/docker'
+    build_script: "docker build --force-rm -t docker.elastic.co/observability-ci/jenkins-agent:latest jenkins-agent"
+    push_script: "docker push docker.elastic.co/observability-ci/jenkins-agent:latest"
+    test_script: "make simple-test-jenkins-agent"
+    push: true
+
+  # APM Agent Python Docker Images
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.6"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.6"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.7"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.7"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.8"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.8"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.9"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.9"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.10-rc"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.10-rc"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "pypy-3"
+    build_opts: "--build-arg PYTHON_IMAGE=pypy:3"
+
+  # APM Agent Node.js Docker Images
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "17"
+    build_opts: "--build-arg NODE_VERSION=17"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "16"
+    build_opts: "--build-arg NODE_VERSION=16"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "16.0"
+    build_opts: "--build-arg NODE_VERSION=16.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "14"
+    build_opts: "--build-arg NODE_VERSION=14"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "14.0"
+    build_opts: "--build-arg NODE_VERSION=14.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "12"
+    build_opts: "--build-arg NODE_VERSION=12"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "12.0"
+    build_opts: "--build-arg NODE_VERSION=12.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "10"
+    build_opts: "--build-arg NODE_VERSION=10"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "10.0"
+    build_opts: "--build-arg NODE_VERSION=10.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "8"
+    build_opts: "--build-arg NODE_VERSION=8"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "8.6"
+    build_opts: "--build-arg NODE_VERSION=8.6"
+
+  # APM Agent Ruby Docker images
+
+  - <<: *apm-agent-ruby-docker-images
+    name: "apm-agent-jruby"
+    folder: '.ci/docker/jruby'
+    build_script: "./run.sh --action build --registry docker.elastic.co/observability-ci"
+    test_script: "./run.sh --action test --registry docker.elastic.co/observability-ci"
+    push_script: "./run.sh --action push --registry docker.elastic.co/observability-ci"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-3.0"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:3.0'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.7"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.7'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.6"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.6'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.5"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.5'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.4"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.4'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "jruby-9.2"
+    build_opts: "--build-arg RUBY_IMAGE='jruby:9.2'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "docker.elastic.co/observability-ci/jruby-9.2-13-jdk"
+    build_opts: "--build-arg RUBY_IMAGE='jruby:docker.elastic.co/observability-ci/jruby:9.2-13-jdk'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "docker.elastic.co/observability-ci/jruby-9.2-11-jdk"
+    build_opts: "--build-arg RUBY_IMAGE='jruby:docker.elastic.co/observability-ci/jruby:9.2-11-jdk'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "docker.elastic.co/observability-ci/jruby-9.2-8-jdk"
+    build_opts: "--build-arg RUBY_IMAGE='jruby:docker.elastic.co/observability-ci/jruby:9.2-8-jdk'"
+
+  # APM Agent RUM Docker images
+
+  - <<: *apm-agent-rum-docker-images
+    name: "node-playwright"
+    tag: "12"
+    folder: ".ci/docker/node-playwright"
+    build_opts: "--build-arg NODEJS_VERSION='12'"
+
+  - <<: *apm-agent-rum-docker-images
+    name: "node-puppeteer"
+    tag: "12"
+    folder: ".ci/docker/node-puppeteer"
+    build_opts: "--build-arg NODEJS_VERSION='12'"

@@ -1,0 +1,77 @@
+name: build-apm-pipeline-library-docker-images
+
+on:
+  pull_request:
+#  workflow_dispatch:
+
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.create-matrix.outputs.include }}
+    steps:
+      - id: create-matrix
+        shell: python
+        run: |
+          import os
+          import json
+
+          REGISTRY = 'docker.elastic.co'
+          PREFIX = 'observability-ci'
+
+          docker_images = []
+          opbeans_docker_images = [
+            "apache-ant",
+            "dind-buildx",
+            "github-label-sync",
+            "gren",
+            "shellcheck",
+            "yamllint",
+            "kibana-yarn",
+            "kibana-devmode",
+            "vmware-mock"
+          ]
+          for name in opbeans_docker_images:
+            tag = 'latest'
+            docker_image = f'{REGISTRY}/{PREFIX}/{name}:{tag}'
+            docker_images.append({
+              'name': name,
+              'branch_docker': 'main',
+              'tag': tag,
+              'folder': '.ci/docker',
+              'build_script': f'docker build --force-rm -t {docker_image} {name}',
+              'push_script': f'docker push {docker_image}',
+              'test_script': f'make test-{name}',
+              'push': True
+            })
+
+          docker_images_json = json.dumps(docker_images)
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            print(f'include={docker_images_json}', file=f)
+
+  build:
+    runs-on: ubuntu-latest
+    needs: create-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.create-matrix.outputs.include )}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-layer-caching@current
+        with:
+          # {hash} must be included according to docs. https://github.com/marketplace/actions/docker-layer-caching
+          # The key must be unique to every distinct matrix job
+          key: docker-cache-${{ matrix.name }}-${{ github.workflow }}-{hash}
+          restore-keys: |
+            docker-cache-${{ matrix.name }}-${{ github.workflow }}-
+      - name: Build ${{ matrix.name }}
+        run: ${{ matrix.build_script }}
+        working-directory: ${{ matrix.folder }}
+      - name: Test
+        run: ${{ matrix.test_script }}
+        working-directory: ${{ matrix.folder }}
+#      - name: Push
+#        if: ${{ matrix.push }}
+#        run: ${{ matrix.push_script }}
