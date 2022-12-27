@@ -35,7 +35,7 @@ class FlattenMapStepTests extends ApmBasePipelineTest {
     def expected = [:]
     def result = script.call(map: map)
     printCallStack()
-    assertTrue(expected.equals(result))
+    assertTrue(expected == result)
     assertJobStatusSuccess()
   }
 
@@ -45,7 +45,7 @@ class FlattenMapStepTests extends ApmBasePipelineTest {
     def expected = ["a.b": 1, "a.c.e": [2,3,4], "a.c.f": "key", "d": "value"]
     def result = script.call(map: map)
     printCallStack()
-    assertTrue(expected.equals(result))
+    assertTrue(expected == result)
     assertJobStatusSuccess()
   }
 
@@ -55,7 +55,7 @@ class FlattenMapStepTests extends ApmBasePipelineTest {
     def expected = ["a-b": 1, "a-c-e": [2,3,4], "a-c-f": "key", "d": "value"]
     def result = script.call(map: map, separator: "-")
     printCallStack()
-    assertTrue(expected.equals(result))
+    assertTrue(expected == result)
     assertJobStatusSuccess()
   }
 }
