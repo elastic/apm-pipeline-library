@@ -1,0 +1,11 @@
+Return the given map as a flattened map.
+
+
+```
+def m = ["a": ["b": ["c":[1,2,3], "d":[4,5,6] ] ] ]
+
+def flattened = flattenMap(map: m)
+
+// flattened == ["a.b.c": [1,2,3], "a.b.d": [4,5,6] ]
+```
+
