@@ -75,7 +75,7 @@ using a [JSON Schema](https://json-schema.org/), you can find the schema in
 
 ## Pitfalls
 
-Currently, only the schema of the config is validated. Although we use the option `uniqueItems": true`, it cannot be
+Currently, only the schema of the config is validated. Although we use the option `"uniqueItems": true`, it cannot be
 guaranteed that combinations of `name` and `tag` attributes can occur more than once.
 Which means that multiple jobs may publish the same image. Especially when using custom build and push scripts,
 there is currently mechanism to prevent this behavior.
