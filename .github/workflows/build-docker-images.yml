@@ -9,6 +9,9 @@ env:
   REGISTRY: docker.elastic.co
   PREFIX: observability-ci
 
+permissions:
+  contents: read
+
 jobs:
   create-matrix:
     name: Create Matrix
