@@ -379,11 +379,3 @@ images:
     tag: "12"
     working_directory: ".ci/docker/node-playwright"
     build_opts: "--build-arg NODEJS_VERSION='12'"
-
-## This is also failing in Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/node-puppeteer/
-#  - <<: *apm-agent-rum-docker-images
-#    name: "node-puppeteer"
-#    tag: "12"
-#    working_directory: ".ci/docker/node-puppeteer"
-#    build_opts: "--build-arg NODEJS_VERSION='12'"
