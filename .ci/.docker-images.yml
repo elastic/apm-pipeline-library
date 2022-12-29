@@ -90,11 +90,11 @@ images:
     push_script: "make push"
     working_directory: "apps/pickles"
 
-  - name: "picklesdoc"
+  - name: "test-plans"
     repository: "elastic/observability-robots"
     build_script: "make build"
     push_script: "make push"
-    working_directory: "apps/pickles"
+    working_directory: "apps/test-plans"
 
   - name: "obs-jenkins-heartbeat"
     repository: "elastic/observability-robots"

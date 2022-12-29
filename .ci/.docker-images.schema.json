@@ -7,6 +7,7 @@
   "properties": {
     "images": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object",
         "properties": {
