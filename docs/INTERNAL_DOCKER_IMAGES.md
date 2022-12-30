@@ -10,15 +10,16 @@ Add a new entry into the YAML [config](../.ci/.docker-images.yml) under the `ima
 
 ### Schema
 
-| Key            | Type      | Description                                                                             | Required                            | Default  |
-|----------------|-----------|-----------------------------------------------------------------------------------------|-------------------------------------|----------|
-| name           | `string`  | The name of docker image in `<name>:<tag>`                                              | yes                                 | `null`   |
-| tag            | `string`  | The tag of the docker image in `<name>:<tag>`                                           | no                                  | `latest` |
-| repository     | `string`  | The GH repository name. E.g. elastic/apm-pipeline-library                               | no                                  | `null`   |
-| build_opts     | `string`  | Extra build options for `docker build`. Ignored if you are using a custom build script. | no                                  | `null`   |
-| prepare_script | `string`  | A script that runs before building.                                                     | no                                  | `null`   |
-| build_script   | `string`  | Custom build script.                                                                    | no (yes, if push_script is defined) | `null`   |
-| push           | `boolean` | Push the image.                                                                         | no                                  | `true`   |
+| Key            | Type      | Description                                                                             | Required                             | Default  |
+|----------------|-----------|-----------------------------------------------------------------------------------------|--------------------------------------|----------|
+| name           | `string`  | The name of docker image in `<name>:<tag>`                                              | yes                                  | `null`   |
+| tag            | `string`  | The tag of the docker image in `<name>:<tag>`                                           | no                                   | `latest` |
+| repository     | `string`  | The GH repository name. E.g. elastic/apm-pipeline-library                               | no                                   | `null`   |
+| build_opts     | `string`  | Extra build options for `docker build`. Ignored if you are using a custom build script. | no                                   | `null`   |
+| prepare_script | `string`  | A script that runs before building.                                                     | no                                   | `null`   |
+| build_script   | `string`  | Custom build script.                                                                    | no (yes, if push_script is defined)  | `null`   |
+| push_script    | `string`  | Custom push script.                                                                     | no (yes, if build_script is defined) | `null`   |
+| push           | `boolean` | Push the image.                                                                         | no                                   | `true`   |
 
 ### Example: New Entry
 
