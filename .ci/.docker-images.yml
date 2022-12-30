@@ -83,10 +83,6 @@ images:
     working_directory: "tools/report-bridge"
 
   - <<: *observability-dev-docker-images
-    name: "flakey"
-    working_directory: "apps/automation/jenkins-toolbox"
-
-  - <<: *observability-dev-docker-images
     name: "flakeyv2"
     working_directory: "apps/automation/flaky-test-analyzer"
 
