@@ -35,10 +35,7 @@ jobs:
 
           images = []
           with open(".ci/.docker-images.yml", "r") as stream:
-            try:
-              images.extend(yaml.safe_load(stream)['images'])
-            except yaml.YAMLError as exc:
-              print(exc)
+            images.extend(yaml.safe_load(stream)['images'])
           images_json = json.dumps(images)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
             print(f'include={images_json}', file=f)
