@@ -18,8 +18,11 @@ Add a new entry into the YAML [config](../.ci/.docker-images.yml) under the `ima
 | build_opts     | `string`  | Extra build options for `docker build`. Ignored if you are using a custom build script. | no                                   | `null`   |
 | prepare_script | `string`  | A script that runs before building.                                                     | no                                   | `null`   |
 | build_script   | `string`  | Custom build script.                                                                    | no (yes, if push_script is defined)  | `null`   |
+| test_script    | `string`  | A script that runs after build and before pusing.                                       | no                                   | `null`   |
 | push_script    | `string`  | Custom push script.                                                                     | no (yes, if build_script is defined) | `null`   |
 | push           | `boolean` | Push the image.                                                                         | no                                   | `true`   |
+
+> ℹ️ You can also take a look at the JSON Schema in [.ci/.docker-images.schema.json](../.ci/.docker-images.schema.json).
 
 ### Example: New Entry
 
