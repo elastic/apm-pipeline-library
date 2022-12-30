@@ -157,20 +157,6 @@ images:
 #    build_script: "make -C docker all-tests"
 #    push_script: "make -C docker all-push"
 
-## This is also failing in Jenkins
-##  https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/oracle-instant-client
-#  - name: "oracle-instant-client"
-#    prepare_script: docker pull store/oracle/database-instantclient:12.2.0.1
-#    build_script: docker tag store/oracle/database-instantclient:12.2.0.1 ${REGISTRY}/${PREFIX}/database-instantclient:12.2.0.1
-#    push_script: docker push ${REGISTRY}/${PREFIX}/database-instantclient:12.2.0.1
-
-## This is also failing in Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/weblogic/
-#  - name: "weblogic"
-#    prepare_script: docker pull store/oracle/weblogic:12.2.1.3-dev
-#    build_script: docker tag store/oracle/weblogic:12.2.1.3-dev ${REGISTRY}/${PREFIX}/weblogic:12.2.1.3-dev
-#    push_script: docker push ${REGISTRY}/${PREFIX}/weblogic:12.2.1.3-dev
-
   # Opbeans Docker Images
 
   - <<: *opbeans-docker-images
