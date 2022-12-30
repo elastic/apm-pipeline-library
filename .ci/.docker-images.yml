@@ -1,6 +1,8 @@
 ---
 # Dockerfile build config for .github/workflows/publish-docker-images.yml
 # Schema: .ci/.docker-images.schema.json
+# See docs/INTERNAL_DOCKER_IMAGES.md for further information.
+
 templates:
 
   - &apm-agent-library-docker-images

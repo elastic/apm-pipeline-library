@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://raw.githubusercontent.com/elastic/apm-pipeline-library/main/.ci/.docker-images.schema.json",
   "title": "Docker Images Config",
-  "description": "Config to build docker images",
+  "description": "Config to build docker images. See docs/INTERNAL_DOCKER_IMAGES.md for further information.",
   "type": "object",
   "properties": {
     "images": {

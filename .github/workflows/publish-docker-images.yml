@@ -1,3 +1,6 @@
+---
+# This workflow publishes docker images base on .ci/.docker-images.yml`.
+# See docs/INTERNAL_DOCKER_IMAGES.md for further information.
 name: publish-docker-images
 
 on:
