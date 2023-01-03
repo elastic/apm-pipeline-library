@@ -30,6 +30,10 @@ runs:
         git config --global user.name "${GIT_USER}"
         git config --global user.email "${GIT_EMAIL}"
         gh auth setup-git
+
+        echo "GIT_USER=${GIT_USER}" >> $GITHUB_ENV
+        echo "GIT_EMAIL=${GIT_EMAIL}" >> $GITHUB_ENV
+
       env:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
