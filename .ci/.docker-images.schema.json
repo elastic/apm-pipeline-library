@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/elastic/apm-pipeline-library/main/.ci/.docker-images.schema.json",
+  "title": "Docker Images Config",
+  "description": "Config to build docker images. See docs/INTERNAL_DOCKER_IMAGES.md for further information.",
+  "type": "object",
+  "properties": {
+    "images": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the image <name>:<tag>."
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^(\\w+[-_.]?)+\/(\\w+[-_.]?)+$",
+            "description": "The repo where the Dockerfile is. (e.g <owner>/<name>)"
+          },
+          "tag": {
+            "type": "string",
+            "description": "The tag of the image <name>:<tag>. (Default: 'latest')",
+            "default": "latest"
+          },
+          "prepare_script": {
+            "type": "string",
+            "description": "A script to run before the build script."
+          },
+          "build_script": {
+            "type": "string",
+            "description": "Override the default build script."
+          },
+          "push_script": {
+            "type": "string",
+            "description": "Override the default push script."
+          },
+          "test_script": {
+            "type": "string",
+            "description": "A test script that runs after building and before pushing."
+          },
+          "push": {
+            "type": "boolean",
+            "description": "Push the image (default: true).",
+            "default":  true
+          },
+          "working_directory": {
+            "type": "string",
+            "description": "The folder for the working directory. (Default: '.')",
+            "default": "."
+          },
+          "build_opts": {
+            "type": "string",
+            "description": "Additional build options. Only if build_script is not set."
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false,
+        "dependencies": {
+          "build_script": {
+            "not": {
+              "required": ["build_opts"],
+              "description": "When using a custom build_script you cannot use build_opts."
+            },
+            "required": ["push_script"]
+          },
+          "push_script": {
+            "required": ["build_script"]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "images"
+  ]
+}

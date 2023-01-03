@@ -1,0 +1,112 @@
+---
+# This workflow publishes docker images base on .ci/.docker-images.yml`.
+# See docs/INTERNAL_DOCKER_IMAGES.md for further information.
+name: publish-docker-images
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3-4 * * 1-5'
+
+env:
+  DOCKER_BUILDKIT: 1
+  REGISTRY: docker.elastic.co
+  PREFIX: observability-ci
+
+permissions:
+  contents: read
+
+jobs:
+  create-matrix:
+    name: Create Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.create-matrix.outputs.include }}
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install pyyaml
+      - name: Create Matrix
+        id: create-matrix
+        shell: python
+        run: |
+          import os
+          import json
+          import yaml
+
+          images = []
+          with open(".ci/.docker-images.yml", "r") as stream:
+            images.extend(yaml.safe_load(stream)['images'])
+          images_json = json.dumps(images)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            print(f'include={images_json}', file=f)
+
+  build-test-push:
+    name: "${{ matrix.name }}:${{ matrix.tag || 'latest' }}"
+    runs-on: ubuntu-latest
+    needs: create-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.create-matrix.outputs.include )}}
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: actions/checkout@v3
+        if: ${{ matrix.repository }}
+        with:
+          repository: ${{ matrix.repository }}
+          token: ${{ env.GITHUB_TOKEN }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - name: Setup Env
+        run: |
+          echo "NAME=${{ matrix.name }}" >> $GITHUB_ENV
+          echo "TAG=${{ matrix.tag || 'latest' }}" >> $GITHUB_ENV
+
+      - name: Prepare
+        if: ${{ matrix.prepare_script }}
+        run: ${{ matrix.prepare_script }}
+        working-directory: ${{ matrix.working_directory }}
+
+      - name: Generate Image Name
+        id: generate-image-name
+        run: echo "image_name=${{ env.REGISTRY }}/${{ env.PREFIX }}/${{ env.NAME }}:${{ env.TAG }}" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: |
+          if [ -z "${{ matrix.build_script}}" ]; then
+            docker build \
+              --cache-from=${{ steps.generate-image-name.outputs.image_name }} \
+              ${{ matrix.build_opts }} \
+              -t ${{ steps.generate-image-name.outputs.image_name }} \
+              .
+          else
+            bash -c "${{ matrix.build_script }}"
+          fi
+        working-directory: ${{ matrix.working_directory }}
+
+      - name: Test
+        if: ${{ matrix.test_script }}
+        run: ${{ matrix.test_script }}
+        working-directory: ${{ matrix.working_directory }}
+
+      - name: Push
+        if: ${{ matrix.push }}
+        run: |
+          if [ -z "${{ matrix.push_script }}" ]; then
+            docker push ${{ steps.generate-image-name.outputs.image_name }}
+          else
+            bash -c "${{ matrix.push_script }}"
+          fi
