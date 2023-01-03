@@ -38,6 +38,6 @@ jobs:
         with:
           token: ${{ github.token }}
       - name: Check GIT_USER
-        run: test "$GIT_USER" -eq "apmmachine"
+        run: test "$GIT_USER" = "apmmachine"
       - name: Check GIT_EMAIL
-        run: test "$GIT_EMAIL" -eq "apmmachine@users.noreply.github.com"
+        run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
