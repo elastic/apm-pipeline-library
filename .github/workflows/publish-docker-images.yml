@@ -103,7 +103,7 @@ jobs:
         working-directory: ${{ matrix.working_directory }}
 
       - name: Push
-        if: ${{ matrix.push }}
+        if: ${{ matrix.push != false }}
         run: |
           if [ -z "${{ matrix.push_script }}" ]; then
             docker push ${{ steps.generate-image-name.outputs.image_name }}
