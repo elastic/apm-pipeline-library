@@ -20,6 +20,7 @@ inputs:
     default: 'false'
   token:
     description: 'GitHub token.'
+    default: ${{ github.token }}
     required: false
 runs:
   using: "composite"
@@ -38,4 +39,4 @@ runs:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
         GIT_TRACE: "${{ inputs.trace }}"
-        GITHUB_TOKEN: ${{ inputs.token || github.token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
