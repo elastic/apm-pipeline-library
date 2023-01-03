@@ -35,6 +35,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-git
+        with:
+          token: ${{ github.token }}
       - name: Check GIT_USER
         run: test "$GIT_USER" -eq "apmmachine"
       - name: Check GIT_EMAIL
