@@ -74,6 +74,7 @@ jobs:
         run: |
           echo "NAME=${{ matrix.name }}" >> $GITHUB_ENV
           echo "TAG=${{ matrix.tag || 'latest' }}" >> $GITHUB_ENV
+          echo "PUSH=${{ matrix.push }}" >> $GITHUB_ENV
 
       - name: Prepare
         if: ${{ matrix.prepare_script }}
@@ -103,7 +104,7 @@ jobs:
         working-directory: ${{ matrix.working_directory }}
 
       - name: Push
-        if: ${{ matrix.push != false }}
+        if: ${{ env.PUSH != 'false' }}
         run: |
           if [ -z "${{ matrix.push_script }}" ]; then
             docker push ${{ steps.generate-image-name.outputs.image_name }}
