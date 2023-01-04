@@ -1,0 +1,332 @@
+---
+# Dockerfile build config for .github/workflows/publish-docker-images.yml
+# Schema: .ci/.docker-images.schema.json
+# See docs/INTERNAL_DOCKER_IMAGES.md for further information.
+
+templates:
+
+  - &apm-agent-library-docker-images
+    repository: "elastic/apm-pipeline-library"
+    working_directory: ".ci/docker"
+
+  - &opbeans-docker-images
+    tag: "daily"
+
+  - &apm-agent-python-docker-images
+    name: "apm-agent-python"
+    repository: "elastic/apm-agent-python"
+    working_directory: "tests"
+
+  - &apm-agent-nodejs-docker-images
+    name: "apm-agent-nodejs"
+    repository: "elastic/apm-agent-nodejs"
+    working_directory: ".ci/docker/node-container"
+
+  - &apm-agent-ruby-docker-images
+    name: "apm-agent-ruby"
+    repository: "elastic/apm-agent-ruby"
+    working_directory: "spec"
+
+  - &apm-agent-rum-docker-images
+    repository: "elastic/apm-agent-rum-js"
+
+  - &observability-dev-docker-images
+    repository: "elastic/observability-dev"
+
+images:
+
+  # observability-test-environments Docker Images
+
+  - name: "functional-opbeans"
+    repository: "elastic/observability-test-environments"
+    working_directory: "tests"
+    build_script: "docker build --force-rm -t ${REGISTRY}/${PREFIX}/${NAME}:${TAG} ${NAME}"
+    push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
+
+## This is also failing in Jenkins
+##  https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/oracle-instant-client/
+#  - name: "azure-vm-tools"
+#    repository: "elastic/azure-vm-extension"
+#    working_directory: ".ci/docker/azure-vm-tools"
+
+  # observability-robots Docker Images
+
+  - name: "picklesdoc"
+    repository: "elastic/observability-robots"
+    build_script: "make build"
+    push_script: "make push"
+    working_directory: "apps/pickles"
+
+## This is also failing on Jenkins
+## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/test-plans/
+#  - name: "test-plans"
+#    repository: "elastic/observability-robots"
+#    build_script: "make build"
+#    push_script: "make push"
+#    working_directory: "apps/test-plans"
+
+  - name: "obs-jenkins-heartbeat"
+    repository: "elastic/observability-robots"
+    prepare_script: |
+      pip3 install pyyaml
+      python3 ./generate_heartbeat_configs.py
+    working_directory: "apps/beats/heartbeat"
+
+  # observability-dev Docker Images
+
+  - <<: *observability-dev-docker-images
+    name: "bandstand"
+    working_directory: "apps/automation/bandstand"
+
+  - <<: *observability-dev-docker-images
+    name: "slack-bridge-hey-apm"
+    working_directory: "tools/report-bridge"
+
+  - <<: *observability-dev-docker-images
+    name: "flakeyv2"
+    working_directory: "apps/automation/flaky-test-analyzer"
+
+  - <<: *observability-dev-docker-images
+    name: "build-analyzer"
+    working_directory: "apps/automation/build-analyzer"
+
+  - <<: *observability-dev-docker-images
+    name: "rebuild-analyzer"
+    working_directory: "apps/automation/rebuild-analyzer"
+
+  - <<: *observability-dev-docker-images
+    name: "integrations-test-reporter"
+    working_directory: "apps/automation/integrations/reporter"
+
+  - <<: *observability-dev-docker-images
+    name: "apm-proxy"
+    working_directory: "tools/apm_proxy/frontend"
+    prepare_script: "git clone https://github.com/haproxytech/spoa-mirror.git"
+
+  - <<: *observability-dev-docker-images
+    name: "apm-proxy-be"
+    working_directory: "tools/apm_proxy/backend"
+
+  # APM ITs Docker Images are built daily.
+
+  - name: "apm-integration-testing"
+    repository: "elastic/apm-integration-testing"
+    tag: "daily"
+
+## This is also failing in Jenkins
+## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/apm-integration-testing-all
+#  - name: "apm-integration-testing-all"
+#    repository: "elastic/apm-integration-testing"
+#    build_script: "make -C docker all-tests"
+#    push_script: "make -C docker all-push"
+
+  # Opbeans Docker Images
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-dotnet"
+    repository: "elastic/opbeans-dotnet"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-node"
+    repository: "elastic/opbeans-node"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-python"
+    repository: "elastic/opbeans-python"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-frontend"
+    repository: "elastic/opbeans-frontend"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-java"
+    repository: "elastic/opbeans-java"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-go"
+    repository: "elastic/opbeans-go"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-loadgen"
+    repository: "elastic/opbeans-loadgen"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-php"
+    repository: "elastic/opbeans-php"
+
+  - <<: *opbeans-docker-images
+    name: "opbeans-ruby"
+    repository: "elastic/opbeans-ruby"
+
+  # APM Pipeline Library Docker Images
+
+  - <<: *apm-agent-library-docker-images
+    name: "apache-ant"
+    test_script: "cd .. && make test-apache-ant"
+    working_directory: ".ci/docker/apache-ant"
+
+  - <<: *apm-agent-library-docker-images
+    name: "dind-buildx"
+    test_script: "cd .. && make test-dind-buildx"
+    working_directory: ".ci/docker/dind-buildx"
+
+  - <<: *apm-agent-library-docker-images
+    name: "github-label-sync"
+    test_script: "cd .. && make test-github-label-sync"
+    working_directory: ".ci/docker/github-label-sync"
+
+  - <<: *apm-agent-library-docker-images
+    name: "gren"
+    test_script: "cd .. && make test-gren"
+    working_directory: ".ci/docker/gren"
+
+  - <<: *apm-agent-library-docker-images
+    name: "shellcheck"
+    test_script: "cd .. && make test-shellcheck"
+    working_directory: ".ci/docker/shellcheck"
+
+  - <<: *apm-agent-library-docker-images
+    name: "yamllint"
+    test_script: "cd .. && make test-yamllint"
+    working_directory: ".ci/docker/yamllint"
+
+## This is also failing in Jenkins
+## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/kibana-devmode/
+#  - <<: *apm-agent-library-docker-images
+#    name: "kibana-yarn"
+#    test_script: "cd .. && make test-kibana-yarn"
+#    working_directory: ".ci/docker/kibana-yarn"
+
+## This is also failing in Jenkins
+## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/kibana-devmode/
+#  - <<: *apm-agent-library-docker-images
+#    name: "kibana-devmode"
+#    test_script: "cd .. && make test-kibana-devmode"
+#    working_directory: ".ci/docker/kibana-devmode"
+
+  - <<: *apm-agent-library-docker-images
+    name: "vmware-mock"
+    test_script: "cd .. && make test-vmware-mock"
+    working_directory: ".ci/docker/vmware-mock"
+
+  # APM Pipeline Library Extra Docker Images
+
+  - name: "jenkins-agent"
+    repository: "elastic/apm-pipeline-library"
+    working_directory: ".ci/docker"
+    build_script: "docker build --force-rm -t ${REGISTRY}/${PREFIX}/${NAME}:${TAG} ${NAME}"
+    push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
+    test_script: "make simple-test-${NAME}"
+
+  # APM Agent Python Docker Images
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.6"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.6"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.7"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.7"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.8"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.8"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.9"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.9"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "python-3.10-rc"
+    build_opts: "--build-arg PYTHON_IMAGE=python:3.10-rc"
+
+  - <<: *apm-agent-python-docker-images
+    tag: "pypy-3"
+    build_opts: "--build-arg PYTHON_IMAGE=pypy:3"
+
+  # APM Agent Node.js Docker Images
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "17"
+    build_opts: "--build-arg NODE_VERSION=17"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "16"
+    build_opts: "--build-arg NODE_VERSION=16"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "16.0"
+    build_opts: "--build-arg NODE_VERSION=16.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "14"
+    build_opts: "--build-arg NODE_VERSION=14"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "14.0"
+    build_opts: "--build-arg NODE_VERSION=14.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "12"
+    build_opts: "--build-arg NODE_VERSION=12"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "12.0"
+    build_opts: "--build-arg NODE_VERSION=12.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "10"
+    build_opts: "--build-arg NODE_VERSION=10"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "10.0"
+    build_opts: "--build-arg NODE_VERSION=10.0"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "8"
+    build_opts: "--build-arg NODE_VERSION=8"
+
+  - <<: *apm-agent-nodejs-docker-images
+    tag: "8.6"
+    build_opts: "--build-arg NODE_VERSION=8.6"
+
+  # APM Agent Ruby Docker images
+
+  - <<: *apm-agent-ruby-docker-images
+    name: "apm-agent-jruby"
+    working_directory: ".ci/docker/jruby"
+    build_script: "./run.sh --action build --registry ${REGISTRY}/${PREFIX}"
+    test_script: "./run.sh --action test --registry ${REGISTRY}/${PREFIX}"
+    push_script: "./run.sh --action push --registry ${REGISTRY}/${PREFIX}"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-3.0"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:3.0'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.7"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.7'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.6"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.6'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.5"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.5'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "ruby-2.4"
+    build_opts: "--build-arg RUBY_IMAGE='ruby:2.4'"
+
+  - <<: *apm-agent-ruby-docker-images
+    tag: "jruby-9.2"
+    build_opts: "--build-arg RUBY_IMAGE='jruby:9.2'"
+
+  # APM Agent RUM Docker images
+
+  - <<: *apm-agent-rum-docker-images
+    name: "node-playwright"
+    tag: "12"
+    working_directory: ".ci/docker/node-playwright"
+    build_opts: "--build-arg NODEJS_VERSION='12'"

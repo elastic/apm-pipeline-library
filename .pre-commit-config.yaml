@@ -61,3 +61,12 @@ repos:
     hooks:
     -   id: codespell
         args: ['--ignore-words-list','pullrequest,pullrequests']
+
+-   repo: local
+    hooks:
+      - id: check-docker-images-config
+        name: check-docker-images-config
+        description: "Check .ci/.docker-images.yml schema"
+        language: script
+        entry: .ci/scripts/validate-docker-images-config-yaml.sh
+        files: \.ci/\.docker-images(\.yml|\.schema.json)

@@ -1,0 +1,34 @@
+# Facade around https://github.com/marketplace/actions/docker-layer-caching
+name: 'Docker Layer Caching'
+description: 'Automatically cache docker layers in a GitHub Actions workflow'
+
+# inputs copied from https://github.com/satackey/action-docker-layer-caching/blob/46d2c640b1d8ef50d185452ad6fb324e6bd1d052/action.yml
+inputs:
+  key:
+    description: An explicit key for restoring and saving the cache
+    required: true
+    default: docker-layer-caching-${{ github.workflow }}-{hash}
+  restore-keys:
+    description: An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+    required: false
+    default: docker-layer-caching-${{ github.workflow }}-
+  concurrency:
+    description: The number of concurrency when restoring and saving layers
+    required: true
+    default: '4'
+  skip-save:
+    description: Skip saving layers in the post step
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
+      # This is set by default to true because it seems to be recommended always anyways.
+      continue-on-error: true
+      with:
+        key: ${{ inputs.key }}
+        restore-keys: ${{ inputs.restore-keys }}
+        concurrency: ${{ inputs.concurrency }}
+        skip-save: ${{ inputs.skip-save }}
