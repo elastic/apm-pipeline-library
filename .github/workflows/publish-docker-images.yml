@@ -48,6 +48,9 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.create-matrix.outputs.include )}}
+    defaults:
+      run:
+        working-directory: ${{ matrix.working_directory }}
     steps:
 
       - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
@@ -79,7 +82,6 @@ jobs:
       - name: Prepare
         if: ${{ matrix.prepare_script }}
         run: ${{ matrix.prepare_script }}
-        working-directory: ${{ matrix.working_directory }}
 
       - name: Generate Image Name
         id: generate-image-name
@@ -96,12 +98,10 @@ jobs:
           else
             bash -c "${{ matrix.build_script }}"
           fi
-        working-directory: ${{ matrix.working_directory }}
 
       - name: Test
         if: ${{ matrix.test_script }}
         run: ${{ matrix.test_script }}
-        working-directory: ${{ matrix.working_directory }}
 
       - name: Push
         if: ${{ env.PUSH != 'false' }}
