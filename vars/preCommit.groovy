@@ -25,7 +25,7 @@
 
   preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
 
-  preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
+  preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/team/ci/docker-registry')
 */
 def call(Map args = [:]) {
   def junitFlag = args.get('junit', true)

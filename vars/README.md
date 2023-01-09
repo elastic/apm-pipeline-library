@@ -323,7 +323,7 @@ Parameters:
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
 ```
-codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/ci/apm-agent-go-codecov')
+codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/observability-team/ci/apm-agent-go-codecov')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 *basedir*: the folder to search into (the default value is '.').
@@ -2638,7 +2638,7 @@ preCommit(commit: 'abcdefg')
 
 preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
 
-preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
+preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/team/ci/docker-registry')
 ```
 
 * junit: whether to generate the JUnit report. Default: true. Optional
@@ -3995,6 +3995,18 @@ environment variables:
 
 **NOTE**: It requires the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry")
 
+## withPackerEnv
+Configure Packer context to run the given body closure
+
+```
+withPackerEnv(version: '1.8.4') {
+  // block
+}
+```
+
+* version: The packer CLI version to be installed. Optional (1.8.4)
+* forceInstallation: Whether to install packer regardless. Optional (false)
+
 ## withSecretVault
 Grab a secret from the vault, define the environment variables which have been
 passed as parameters and mask the secrets.
@@ -4088,7 +4100,7 @@ withVaultToken(path: '/foo', tokenFile: '.myfile') {
 Write the given data in vault for the given secret.
 
 ```
-writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+writeVaultSecret(secret: 'secret/team/ci/temp/github-comment', data: ['secret': 'foo'] )
 ```
 
 * secret: Name of the secret on the the vault root path. Mandatory

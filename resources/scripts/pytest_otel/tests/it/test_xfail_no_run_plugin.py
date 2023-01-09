@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from utils import assertTest
+from utils import assertTest, STATUS_CODE_OK
 
 pytest_plugins = ["pytester"]
 
@@ -24,4 +24,4 @@ def test_xfail_no_run_plugin(pytester, otel_service):
 def test_xfail_no_run():
     assert False
 """)
-    assertTest(pytester, None, "passed", "STATUS_CODE_OK", None, None)
+    assertTest(pytester, None, "passed", STATUS_CODE_OK, None, None)

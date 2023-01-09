@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from utils import assertTest
+from utils import assertTest, STATUS_CODE_OK
 
 pytest_plugins = ["pytester"]
 
@@ -24,4 +24,4 @@ def test_basic():
     time.sleep(5)
     pass
 """)
-    assertTest(pytester, "test_basic", "passed", "STATUS_CODE_OK", "passed", "STATUS_CODE_OK")
+    assertTest(pytester, "test_basic", "passed", STATUS_CODE_OK, "passed", STATUS_CODE_OK)

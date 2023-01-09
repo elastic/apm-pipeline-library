@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from utils import assertTest
+from utils import assertTest, STATUS_CODE_ERROR
 
 pytest_plugins = ["pytester"]
 
@@ -24,4 +24,4 @@ def test_failure_code():
     d = 1/0
     pass
 """)
-    assertTest(pytester, "test_failure_code", "failed", "STATUS_CODE_ERROR", "failed", "STATUS_CODE_ERROR")
+    assertTest(pytester, "test_failure_code", "failed", STATUS_CODE_ERROR, "failed", STATUS_CODE_ERROR)

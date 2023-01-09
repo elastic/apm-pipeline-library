@@ -18,7 +18,7 @@
 /**
   Write the given data in vault for the given secret.
 
-  writeVaultSecret(secret: 'secret/apm-team/ci/temp/github-comment', data: ['secret': 'foo'] )
+  writeVaultSecret(secret: 'secret/team/ci/temp/github-comment', data: ['secret': 'foo'] )
 */
 import groovy.json.JsonOutput
 
