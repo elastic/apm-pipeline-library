@@ -44,7 +44,7 @@ def call(Map args = [:]){
       token = getVaultSecret(secret: secret)?.data?.value
     } else {
       /** TODO remove it is only for APM projects */
-      token = getVaultSecret("${repo}-codecov")?.data?.value
+      token = getVaultSecret(secret: "secret/apm-team/ci/${repo}-codecov")?.data?.value
     }
     tokens["${repo}"] = token
   } else {

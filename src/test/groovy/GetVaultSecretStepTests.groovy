@@ -32,6 +32,9 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
       if(m?.url?.contains("v1/secret/observability-team/ci/secret")){
         return "{plaintext: '12345', encrypted: 'SECRET'}"
       }
+      if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
+        return "{plaintext: '12345', encrypted: 'SECRET'}"
+      }
       if(m?.url?.contains("v1/auth/approle/login")){
         return "{auth: {client_token: 'TOKEN'}}"
       }
