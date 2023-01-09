@@ -3,7 +3,7 @@ DSL = '''pipeline {
   agent none
   environment {
     DOCKER_REGISTRY = 'docker.elastic.co'
-    DOCKER_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    DOCKER_SECRET = 'secret/observability-team/ci/docker-registry/prod'
   }
   stages {
     stage('linux') {

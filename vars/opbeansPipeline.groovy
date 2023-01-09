@@ -31,11 +31,11 @@ def call(Map pipelineParams) {
       NOTIFY_TO = credentials('notify-to')
       JOB_GCS_BUCKET = credentials('gcs-bucket')
       JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
-      DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
+      DOCKERHUB_SECRET = 'secret/observability-team/ci/elastic-observability-dockerhub'
       PIPELINE_LOG_LEVEL = 'INFO'
       PATH = "${env.PATH}:${env.WORKSPACE}/bin"
       HOME = "${env.WORKSPACE}"
-      DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+      DOCKER_REGISTRY_SECRET = 'secret/observability-team/ci/docker-registry/prod'
       REGISTRY = 'docker.elastic.co'
       STAGING_IMAGE = "${env.REGISTRY}/observability-ci"
     }

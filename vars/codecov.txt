@@ -1,7 +1,7 @@
 Submits coverage information to codecov.io using their [bash script](https://codecov.io/bash")
 
 ```
-codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/apm-team/ci/apm-agent-go-codecov')
+codecov(basedir: "${WORKSPACE}", repo: 'apm-agent-go', secret: 'secret/observability-team/ci/apm-agent-go-codecov')
 ```
 *repo*: The repository name (for example apm-agent-go), it is needed
 *basedir*: the folder to search into (the default value is '.').
