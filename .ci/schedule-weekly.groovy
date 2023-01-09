@@ -22,8 +22,8 @@ pipeline {
   environment {
     NOTIFY_TO = credentials('notify-to')
     PIPELINE_LOG_LEVEL = 'INFO'
-    DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
-    DOCKERELASTIC_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    DOCKERHUB_SECRET = 'secret/observability-team/ci/elastic-observability-dockerhub'
+    DOCKERELASTIC_SECRET = 'secret/observability-team/ci/docker-registry/prod'
     BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
   }
   options {

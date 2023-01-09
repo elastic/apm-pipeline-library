@@ -141,7 +141,7 @@ pipeline {
           steps {
             deleteDir()
             unstash 'source'
-            dockerLogin(secret: "secret/apm-team/ci/docker-registry/prod",
+            dockerLogin(secret: "secret/observability-team/ci/docker-registry/prod",
               registry: "docker.elastic.co"
             )
             dir("${BASE_DIR}"){

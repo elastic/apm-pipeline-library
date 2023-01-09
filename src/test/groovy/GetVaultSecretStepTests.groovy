@@ -29,6 +29,9 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
     script = loadScript('vars/getVaultSecret.groovy')
 
     helper.registerAllowedMethod('httpRequest', [Map.class], { m ->
+      if(m?.url?.contains("v1/secret/observability-team/ci/secret")){
+        return "{plaintext: '12345', encrypted: 'SECRET'}"
+      }
       if(m?.url?.contains("v1/secret/apm-team/ci/secret")){
         return "{plaintext: '12345', encrypted: 'SECRET'}"
       }
@@ -48,7 +51,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
 
   @Test
   void testMap() throws Exception {
-    def jsonValue = script.call(secret: "secret/apm-team/ci/secret")
+    def jsonValue = script.call(secret: "secret/observability-team/ci/secret")
     assertTrue(jsonValue.plaintext == '12345')
     printCallStack()
     assertJobStatusSuccess()
@@ -124,7 +127,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
   @Test
   void test_in_internal_ci() throws Exception {
     helper.registerAllowedMethod('isInternalCI', { return true })
-    script.call(secret: "v1/secret/apm-team/ci/secret")
+    script.call(secret: "v1/secret/observability-team/ci/secret")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=apm-vault-role-id'))
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=apm-vault-secret-id'))
@@ -134,7 +137,7 @@ class GetVaultSecretStepTests extends ApmBasePipelineTest {
   @Test
   void test_in_another_ci() throws Exception {
     helper.registerAllowedMethod('isInternalCI', { return false })
-    script.call(secret: "v1/secret/apm-team/ci/secret")
+    script.call(secret: "v1/secret/observability-team/ci/secret")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=vault-role-id'))
     assertTrue(assertMethodCallContainsPattern('withCredentials', 'credentialsId=vault-secret-id'))

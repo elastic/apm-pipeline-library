@@ -127,8 +127,8 @@ run-otel-collector:
 
 #https://upload.pypi.org/legacy/
 #https://test.pypi.org/legacy/
-#secret/apm-team/ci/apm-agent-python-pypi-test
-#secret/apm-team/ci/apm-agent-python-pypi-prod
+#secret/observability-team/ci/apm-agent-python-pypi-test
+#secret/observability-team/ci/apm-agent-python-pypi-prod
 ## @help:publish REPO_URL=${REPO_URL} TWINE_USER=${TWINE_USER} TWINE_PASSWORD=${TWINE_PASSWORD}:Publish the Python project in a PyPI repository.
 .PHONY: publish
 publish: package

@@ -8,7 +8,7 @@ preCommit(commit: 'abcdefg')
 
 preCommit(commit: 'abcdefg', credentialsId: 'ssh-credentials-xyz')
 
-preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/apm-team/ci/docker-registry/prod')
+preCommit(registry: 'docker.elastic.co', secretRegistry: 'secret/team/ci/docker-registry')
 ```
 
 * junit: whether to generate the JUnit report. Default: true. Optional
