@@ -20,11 +20,6 @@ folder('apm-shared') {
   description('Folder for shared CI jobs')
 }
 
-folder('apm-shared/docker-images') {
-  displayName('Docker images folder')
-  description('Folder for the Docker image build jobs')
-}
-
 folder('apm-shared/oblt-test-env') {
   displayName('Oblt test Clusters')
   description('Folder for Oblt test Clusters CI jobs')

@@ -21,18 +21,12 @@ inputs:
     required: false
     default: 'false'
 
-  continue-on-error:
-    description: 'Continue on if the caching fails'
-    required: false
-    default: 'true'
-
 runs:
   using: 'composite'
   steps:
     - uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
       # This is set by default to true because it seems to be recommended always anyways.
-      # But it can be disabled if necessary.
-      continue-on-error: ${{ inputs.continue-on-error }}
+      continue-on-error: true
       with:
         key: ${{ inputs.key }}
         restore-keys: ${{ inputs.restore-keys }}

@@ -29,3 +29,25 @@ jobs:
             custom-docker-cache-key-${{ github.workflow }}-
         # Random Dockerfile from .ci/docker
       - run: docker build -t yamllint -f .ci/docker/yamllint/Dockerfile .
+
+  setup-git-with-token:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-git
+        with:
+          token: ${{ github.token }}
+      - name: Check GIT_USER
+        run: test "$GIT_USER" = "apmmachine"
+      - name: Check GIT_EMAIL
+        run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
+
+  setup-git-without-token:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-git
+      - name: Check GIT_USER
+        run: test "$GIT_USER" = "apmmachine"
+      - name: Check GIT_EMAIL
+        run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
