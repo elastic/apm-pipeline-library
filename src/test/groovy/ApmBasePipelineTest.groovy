@@ -417,6 +417,10 @@ class ApmBasePipelineTest extends DeclarativePipelineTest {
       def echoColor = loadScript('vars/echoColor.groovy')
       echoColor.call(m)
     })
+    helper.registerAllowedMethod('flattenMap', [Map.class], { m ->
+      def script = loadScript('vars/flattenMap.groovy')
+      return script.call(m)
+    })
     helper.registerAllowedMethod('generateReport', [Map.class], { true })
     helper.registerAllowedMethod('getBlueoceanDisplayURL', [], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/" })
     helper.registerAllowedMethod('getBlueoceanTabURL', [String.class], { "${env.JENKINS_URL}blue/organizations/jenkins/folder%2Fmbp/detail/${env.BRANCH_NAME}/${env.BUILD_ID}/tests" })
