@@ -14,6 +14,10 @@ inputs:
     description: 'Vault secret ID (it uses secrets.VAULT_SECRET_ID by default)'
     default: ${{ secrets.VAULT_SECRET_ID }}
     required: false
+  secret:
+    description: 'Vault secret with the apmServerOtel and apmServerToken fields.'
+    default: secret/observability-team/ci/jenkins-logs-robots
+    required: false
   githubToken:
     description: 'GitHub token (it uses github.token by default)'
     default: ${{ github.token }}
@@ -28,8 +32,8 @@ runs:
         secretId: ${{ inputs.vaultSecretId }}
         method: approle
         secrets: |
-          secret/observability-team/ci/jenkins-logs-robots apmServerOtel | OTLP_ENDPOINT ;
-          secret/observability-team/ci/jenkins-logs-robots apmServerToken | OTLP_TOKEN
+          ${{ inputs.secret }} apmServerOtel | OTLP_ENDPOINT ;
+          ${{ inputs.secret }} apmServerToken | OTLP_TOKEN
 
     - name: Export Workflow Trace
       uses: inception-health/otel-export-trace-action@v1

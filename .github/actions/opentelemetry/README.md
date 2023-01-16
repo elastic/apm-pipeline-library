@@ -55,10 +55,10 @@ jobs:
     steps:
       - uses: elastic/apm-pipeline-library/.github/actions/opentelemetry@current
         with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
 ```
 
@@ -70,7 +70,8 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
-| `vaultUrl`        | String  | `secrets.VAULT_ADDR`        | The Vault URL to connect to. |
+| `githubToken`     | String  | `github.token`              | The GitHub token used to comment out the URL with the report. |
 | `vaultRoleId`     | String  | `secrets.VAULT_ROLE_ID`     | The Vault role id. |
 | `vaultSecretId`   | String  | `secrets.VAULT_SECRET_ID`   | The Vault secret id. |
-| `githubToken`     | String  | `github.token`              | The GitHub token used to comment out the URL with the report. |
+| `vaultUrl`        | String  | `secrets.VAULT_ADDR`        | The Vault URL to connect to. |
+| `secret`          | String  | `secret/observability-team/ci/jenkins-logs-robots` | The Vault secret. |
