@@ -15,6 +15,10 @@
             "type": "string",
             "description": "The name of the image <name>:<tag>."
           },
+          "branch": {
+            "type": "string",
+            "description": "The branch to checkout."
+          },
           "repository": {
             "type": "string",
             "pattern": "^(\\w+[-_.]?)+\/(\\w+[-_.]?)+$",
@@ -57,7 +61,8 @@
           }
         },
         "required": [
-          "name"
+          "name",
+          "repository"
         ],
         "additionalProperties": false,
         "dependencies": {

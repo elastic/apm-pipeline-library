@@ -60,10 +60,10 @@ jobs:
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
       - uses: actions/checkout@v3
-        if: ${{ matrix.repository }}
         with:
           repository: ${{ matrix.repository }}
           token: ${{ env.GITHUB_TOKEN }}
+          ref: ${{ matrix.branch }}
 
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
         with:
@@ -103,11 +103,11 @@ jobs:
         if: ${{ matrix.test_script }}
         run: ${{ matrix.test_script }}
 
-      - name: Push
-        if: ${{ env.PUSH != 'false' }}
-        run: |
-          if [ -z "${{ matrix.push_script }}" ]; then
-            docker push ${{ steps.generate-image-name.outputs.image_name }}
-          else
-            bash -c "${{ matrix.push_script }}"
-          fi
+#      - name: Push
+#        if: ${{ env.PUSH != 'false' }}
+#        run: |
+#          if [ -z "${{ matrix.push_script }}" ]; then
+#            docker push ${{ steps.generate-image-name.outputs.image_name }}
+#          else
+#            bash -c "${{ matrix.push_script }}"
+#          fi
