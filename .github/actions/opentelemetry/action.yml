@@ -3,17 +3,14 @@ name: OpenTelemetry report
 description: Export GitHub actions as OpenTelemetry traces
 inputs:
   vaultUrl:
-    description: 'Vault URL (it uses secrets.VAULT_ADDR by default)'
-    default: ${{ secrets.VAULT_ADDR }}
-    required: false
+    description: 'Vault URL'
+    required: true
   vaultRoleId:
-    description: 'Vault role ID (it uses secrets.VAULT_ROLE_ID by default)'
-    default: ${{ secrets.VAULT_ROLE_ID }}
-    required: false
+    description: 'Vault role ID'
+    required: true
   vaultSecretId:
-    description: 'Vault secret ID (it uses secrets.VAULT_SECRET_ID by default)'
-    default: ${{ secrets.VAULT_SECRET_ID }}
-    required: false
+    description: 'Vault secret ID'
+    required: true
   secret:
     description: 'Vault secret with the apmServerOtel and apmServerToken fields.'
     default: secret/observability-team/ci/jenkins-logs-robots
