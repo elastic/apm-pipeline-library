@@ -3,16 +3,19 @@ name: OpenTelemetry report
 description: Export GitHub actions as OpenTelemetry traces
 inputs:
   vaultUrl:
-    description: 'Vault URL'
-    required: true
+    description: 'Vault URL (it uses secrets.VAULT_ADDR by default)'
+    default: ${{ secrets.VAULT_ADDR }}
+    required: false
   vaultRoleId:
-    description: 'Vault role ID'
-    required: true
+    description: 'Vault role ID (it uses secrets.VAULT_ROLE_ID by default)'
+    default: ${{ secrets.VAULT_ROLE_ID }}
+    required: false
   vaultSecretId:
-    description: 'Vault secret ID'
-    required: true
+    description: 'Vault secret ID (it uses secrets.VAULT_SECRET_ID by default)'
+    default: ${{ secrets.VAULT_SECRET_ID }}
+    required: false
   githubToken:
-    description: 'GitHub token.'
+    description: 'GitHub token (it uses github.token by default)'
     default: ${{ github.token }}
     required: false
 runs:
@@ -27,6 +30,7 @@ runs:
         secrets: |
           secret/observability-team/ci/jenkins-logs-robots apmServerOtel | OTLP_ENDPOINT ;
           secret/observability-team/ci/jenkins-logs-robots apmServerToken | OTLP_TOKEN
+
     - name: Export Workflow Trace
       uses: inception-health/otel-export-trace-action@v1
       with:

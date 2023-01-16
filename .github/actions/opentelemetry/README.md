@@ -70,7 +70,7 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
-| `vaultUrl`        | String  |                             | The Vault URL to connect to. |
-| `vaultRoleId`     | String  |                             | The Vault role id. |
-| `vaultSecretId`   | String  |                             | The Vault secret id. |
-| `githubToken`     | String  |                             | The GitHub token used to comment out the URL with the report. |
+| `vaultUrl`        | String  | `secrets.VAULT_ADDR`        | The Vault URL to connect to. |
+| `vaultRoleId`     | String  | `secrets.VAULT_ROLE_ID`     | The Vault role id. |
+| `vaultSecretId`   | String  | `secrets.VAULT_SECRET_ID`   | The Vault secret id. |
+| `githubToken`     | String  | `github.token`              | The GitHub token used to comment out the URL with the report. |
