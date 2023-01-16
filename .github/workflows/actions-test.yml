@@ -1,6 +1,6 @@
 ---
 ## Test custom actions in .github/actions/
-name: actions
+name: actions-test
 
 on:
   push:
