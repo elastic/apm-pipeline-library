@@ -15,14 +15,6 @@ on:
 
 jobs:
   otel-export-trace:
-    name: OpenTelemetry Export Trace
     runs-on: ubuntu-latest
     steps:
-      - name: Export Workflow Trace
-        uses: inception-health/otel-export-trace-action@v1
-        with:
-          otlpEndpoint: "${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}"
-          otlpHeaders: "${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}"
-          otelServiceName: ${{ github.repository }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          runId: ${{ github.event.workflow_run.id }}
+      - uses: elastic/apm-pipeline-library/.github/actions/opentelemetry@current
