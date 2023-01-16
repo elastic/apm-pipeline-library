@@ -71,7 +71,7 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
 | `githubToken`     | String  | `github.token`              | The GitHub token used to comment out the URL with the report. |
-| `vaultRoleId`     | String  | `secrets.VAULT_ROLE_ID`     | The Vault role id. |
-| `vaultSecretId`   | String  | `secrets.VAULT_SECRET_ID`   | The Vault secret id. |
-| `vaultUrl`        | String  | `secrets.VAULT_ADDR`        | The Vault URL to connect to. |
+| `vaultRoleId`     | String  |                             | The Vault role id. |
+| `vaultSecretId`   | String  |                             | The Vault secret id. |
+| `vaultUrl`        | String  |                             | The Vault URL to connect to. |
 | `secret`          | String  | `secret/observability-team/ci/jenkins-logs-robots` | The Vault secret. |
