@@ -4,7 +4,7 @@ name: Test Report
 
 on:
   workflow_run:
-    workflows: [Java CI, job-dsl]
+    workflows: [build-test, job-dsl, pytest_otel-build-test]
     types: [completed]
 
 jobs:

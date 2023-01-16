@@ -3,6 +3,14 @@ name: OpenTelemetry Export Trace
 
 on:
   workflow_run:
+    workflows:
+      - actions-test
+      - build-test
+      - job-dsl
+      - licenses
+      - publish-docker-images
+      - pytest_otel-build-test
+      - release-drafter
     types: [completed]
 
 jobs:

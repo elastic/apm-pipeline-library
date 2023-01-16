@@ -1,5 +1,5 @@
 ---
-name: pytest_otel build and tests
+name: pytest_otel-build-test
 
 on:
   workflow_dispatch:
