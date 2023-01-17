@@ -59,10 +59,11 @@ images:
     working_directory: "apps/pickles"
 
   - name: "test-plans"
-    repository: "elastic/observability-robots"
+    repository: "reakaleek/observability-robots"
     build_script: "make build"
     push_script: "make push"
     working_directory: "apps/test-plans"
+    branch: feature/fix-test-plans-web-build
 
   - name: "obs-jenkins-heartbeat"
     repository: "elastic/observability-robots"
