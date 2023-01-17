@@ -43,11 +43,12 @@ images:
     build_script: "docker build --force-rm -t ${REGISTRY}/${PREFIX}/${NAME}:${TAG} ${NAME}"
     push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
 
-## This is also failing in Jenkins
-##  https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/oracle-instant-client/
-#  - name: "azure-vm-tools"
-#    repository: "elastic/azure-vm-extension"
-#    working_directory: ".ci/docker/azure-vm-tools"
+  - name: "azure-vm-tools"
+    repository: "elastic/azure-vm-extension"
+    build_script: "make prepare"
+    # The full image name is defined here: https://github.com/elastic/azure-vm-extension/blob/82862124bbbc9bc7ab50184375d3b9743c42b2b7/.ci/Makefile#L5
+    push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
+    working_directory: ".ci"
 
   # observability-robots Docker Images
 
