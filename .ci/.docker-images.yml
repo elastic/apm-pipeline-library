@@ -58,13 +58,11 @@ images:
     push_script: "make push"
     working_directory: "apps/pickles"
 
-## This is also failing on Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/test-plans/
-#  - name: "test-plans"
-#    repository: "elastic/observability-robots"
-#    build_script: "make build"
-#    push_script: "make push"
-#    working_directory: "apps/test-plans"
+  - name: "test-plans"
+    repository: "elastic/observability-robots"
+    build_script: "make build"
+    push_script: "make push"
+    working_directory: "apps/test-plans"
 
   - name: "obs-jenkins-heartbeat"
     repository: "elastic/observability-robots"
