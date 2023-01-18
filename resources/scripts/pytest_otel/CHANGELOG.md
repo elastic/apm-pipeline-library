@@ -1,9 +1,9 @@
 # version 1.4.0
 
-* Remove support for Python 3.6 and 3.7
-* add support for Python 3.11
-* Bump OpenTelemetry SDK to 1.15.0
-* Update Elastic demo to 8.6.0
+* Remove support for Python 3.6 and 3.7 [2015](https://github.com/elastic/apm-pipeline-library/pull/2015)
+* add support for Python 3.11 [2015](https://github.com/elastic/apm-pipeline-library/pull/2015)
+* Bump OpenTelemetry SDK to 1.15.0 [2015](https://github.com/elastic/apm-pipeline-library/pull/2015)
+* Update Elastic demo to 8.6.0 [2015](https://github.com/elastic/apm-pipeline-library/pull/2015)
 
 # version 1.3.0
 
