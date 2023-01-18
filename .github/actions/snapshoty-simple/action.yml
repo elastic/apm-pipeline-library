@@ -28,9 +28,9 @@ runs:
 
     - uses: hashicorp/vault-action@v2
       with:
-        url: ${{ secrets.VAULT_ADDR }}
-        roleId: ${{ secrets.VAULT_ROLE_ID }}
-        secretId: ${{ secrets.VAULT_SECRET_ID }}
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
         method: approle
         secrets: |
           secret/observability-team/ci/snapshoty client_email | GCS_CLIENT_EMAIL ;
