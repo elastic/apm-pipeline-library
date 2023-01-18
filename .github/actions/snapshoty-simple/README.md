@@ -59,7 +59,7 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
-| `config`          | String  | `.ci/snapshoty.yml          | Path to configuration file |
+| `config`          | String  | `.ci/snapshoty.yml`         | Path to configuration file |
 | `vaultRoleId`     | String  |                             | The Vault role id. |
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |
