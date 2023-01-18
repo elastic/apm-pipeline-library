@@ -1031,7 +1031,8 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_generateBuildReport_with_snapshoty() throws Exception {
-    env.REPO_NAME = 'apm-pipeline-library'
+    env.REPO_NAME = 'apm-agent-dotnet'
+    env.BRANCH_NAME = 'PR-1956'
     script.generateBuildReport(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
@@ -1043,7 +1044,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'tests-summary.json')
     )
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/apm-pipeline-library/master'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/apm-agent-dotnet/PR-1956'))
     assertJobStatusSuccess()
   }
 
