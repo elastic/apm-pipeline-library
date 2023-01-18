@@ -404,6 +404,7 @@ def generateBuildReport(Map args = [:]) {
         "changeSet": changeSet,
         "docsUrl": docsUrl,
         "env": env,
+        "snapshoty": isSnapshotyEnabled(),
         "jenkinsText": env.JOB_NAME,
         "jenkinsUrl": env.JENKINS_URL,
         "jobUrl": boURL,
@@ -420,6 +421,12 @@ def generateBuildReport(Map args = [:]) {
       }
     }
     return output
+}
+
+def isSnapshotyEnabled() {
+  // explicit list of supported repositories with snapshoty
+  return env.REPO_NAME.equals('apm-pipeline-library') ||
+         env.REPO_NAME.equals('apm-agent-dotnet')
 }
 
 def queryFilter(jobName) {

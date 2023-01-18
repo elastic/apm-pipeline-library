@@ -975,6 +975,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
 
   @Test
   void test_generateBuildReport() throws Exception {
+    env.REPO_NAME = 'foo'
     script.generateBuildReport(
       build: readJSON(file: 'build-info.json'),
       buildStatus: 'SUCCESS',
@@ -990,6 +991,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
+    assertTrue(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/foo/master'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
   }
@@ -1024,6 +1026,24 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
       testsSummary: readJSON(file: 'empty/tests-summary.json'),
     )
     printCallStack()
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_generateBuildReport_with_snapshoty() throws Exception {
+    env.REPO_NAME = 'apm-pipeline-library'
+    script.generateBuildReport(
+      build: readJSON(file: 'build-info.json'),
+      buildStatus: 'SUCCESS',
+      changeSet: readJSON(file: 'changeSet-info.json'),
+      docsUrl: 'foo',
+      statsUrl: 'https://ecs.example.com/app/kibana',
+      stepsErrors: readJSON(file: 'steps-errors.json'),
+      testsErrors: readJSON(file: 'tests-errors.json'),
+      testsSummary: readJSON(file: 'tests-summary.json')
+    )
+    printCallStack()
+    assertTrue(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/apm-pipeline-library/master'))
     assertJobStatusSuccess()
   }
 
