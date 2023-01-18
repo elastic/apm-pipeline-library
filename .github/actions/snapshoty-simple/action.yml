@@ -40,7 +40,7 @@ runs:
 
     - uses: elastic/apm-pipeline-library/.github/actions/snapshoty@current
       with:
-        config: ${{ input.config }}
+        config: ${{ inputs.config }}
         bucketName: 'oblt-artifacts'
         gcsClientEmail: '${{ env.GCS_CLIENT_EMAIL }}'
         gcsPrivateKey: '${{ env.GCS_PRIVATE_KEY }}'
