@@ -9,9 +9,9 @@ pytest-otel plugin for reporting APM traces of tests executed.
 Requirements
 ------------
 
-* opentelemetry-api == 1.13.0
-* opentelemetry-exporter-otlp == 1.13.0
-* opentelemetry-sdk == 1.13.0
+* opentelemetry-api == 1.15.0
+* opentelemetry-exporter-otlp == 1.15.0
+* opentelemetry-sdk == 1.15.0
 * pytest >= 7.1.3
 
 Installation
