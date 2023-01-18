@@ -24,7 +24,7 @@ runs:
         url: ${{ inputs.vaultUrl }}
         roleId: ${{ inputs.vaultRoleId }}
         secretId: ${{ inputs.vaultSecretId }}
-        dockerVaultSecret: secret/observability-team/ci/docker-registry/prod
+        secret: secret/observability-team/ci/docker-registry/prod
 
     - uses: hashicorp/vault-action@v2
       with:
