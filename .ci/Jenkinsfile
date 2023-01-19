@@ -23,14 +23,13 @@ pipeline {
     REPO = 'apm-pipeline-library'
     BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
-    PIPELINE_LOG_LEVEL = 'DEBUG'
+    PIPELINE_LOG_LEVEL = 'INFO'
     MAVEN_CONFIG = "${params.MAVEN_CONFIG}"
     LANG = "C.UTF-8"
     LC_ALL = "C.UTF-8"
     SLACK_CHANNEL = '#observablt-bots'
     JOB_GCS_BUCKET = 'apm-ci-temp'
     JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin-file-credentials'
-    GITHUB_CHECK = 'true'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -46,7 +45,6 @@ pipeline {
   }
   parameters {
     string(name: 'MAVEN_CONFIG', defaultValue: '', description: 'Additional maven options.')
-    booleanParam(name: 'make_release', defaultValue: "false", description: "Enable perform a Release")
   }
   stages {
     /**
@@ -124,31 +122,6 @@ pipeline {
           post {
             always {
               junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/**/target/junit-test-infra.xml")
-            }
-          }
-        }
-        stage('Release') {
-          environment {
-            // gren and other tools are in the .ci/scripts folder.
-            PATH = "${env.WORKSPACE}/${env.BASE_DIR}/.ci/scripts:${env.PATH}"
-          }
-          when {
-            beforeAgent true
-            expression {
-              return params.make_release
-            }
-          }
-          steps {
-            deleteDir()
-            unstash 'source'
-            dockerLogin(secret: "secret/observability-team/ci/docker-registry/prod",
-              registry: "docker.elastic.co"
-            )
-            dir("${BASE_DIR}"){
-              setupAPMGitEmail(global: false)
-              sh(label: 'Performing the Release', script: './resources/scripts/jenkins/release-perform.sh')
-              gitPush()
-              gitCreateTag(tag: 'current', tagArgs: '--force', pushArgs: '--force')
             }
           }
         }
