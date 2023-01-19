@@ -8,12 +8,13 @@ on:
 permissions:
   contents: read
 
+# Those checks require access to the internal docker registry.
+# As we are migrating to GH then we don't need to lint those files.
+env:
+  SKIP: 'check-jenkins-pipelines,check-jjbb'
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
-    - uses: pre-commit/action@v3.0.0
-      env:
-        SKIP: 'check-jenkins-pipelines,check-jjbb'
+      - uses: elastic/apm-pipeline-library/.github/actions/pre-commit@current
