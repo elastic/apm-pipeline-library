@@ -8,6 +8,7 @@ on:
       - build-test
       - job-dsl
       - licenses
+      - pre-commit
       - publish-docker-images
       - pytest_otel-build-test
       - release-drafter
