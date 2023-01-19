@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@gh_actions
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
         if: ${{ contains(github.ref, 'main') || inputs.release }}
         with:
           registry: docker.elastic.co
