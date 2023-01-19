@@ -16,6 +16,13 @@
 ##  The automation will resolve the correct version at runtime, so you don't need to change it.
 ##
 projects:
+  - repo: apm-integration-testing
+    script: .ci/bump-stack-version.sh
+    branches:
+      - main
+    enabled: true
+    labels: dependency
+    reusePullRequest: true
   - repo: apm-server
     script: .ci/bump-stack-version.sh
     branches:
