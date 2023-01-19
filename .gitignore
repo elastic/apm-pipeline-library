@@ -22,8 +22,6 @@ out.html
 .vscode
 .ci/jobDSL/bin
 
-test-infra/__pycache__
-test-infra/.pytest_cache
 venv
 
 agent.jar
@@ -34,7 +32,6 @@ local.log
 .settings/
 .venv
 
-test-infra/apm-ci/__pycache__/
 latest-versions.json
 
 ## Wiremock
