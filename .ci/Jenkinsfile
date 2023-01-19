@@ -90,17 +90,6 @@ pipeline {
       options { skipDefaultCheckout() }
       agent { label 'linux && immutable' }
       stages {
-         stage('Check pre-commit') {
-          steps {
-            withGithubNotify(context: 'Check pre-commit', tab: 'tests') {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                preCommit(commit: "${GIT_BASE_COMMIT}", junit: true)
-              }
-            }
-          }
-        }
         stage('Test infra') {
           when {
             beforeAgent true

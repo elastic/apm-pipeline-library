@@ -1,4 +1,4 @@
-ARG NODE_VERSION=16.14.2
+ARG NODE_VERSION=18.13.0
 FROM node:${NODE_VERSION}-bullseye AS src
 
 # 19846019a2841428b8564d9ad5dfd56334e41277
@@ -24,21 +24,19 @@ RUN git clone --depth 1 --branch main --single-branch --jobs 5 https://github.co
   && git config --global user.name "None"
 
 WORKDIR /home/node/kibana
-RUN git --version && echo 1
+RUN git --version
 RUN git fetch --depth 1 --jobs 5 origin "${BRANCH}" \
-  && cat .git/FETCH_HEAD \
   && git checkout "${BRANCH}" -b "freeze_branch" \
-  && cat .git/FETCH_HEAD \
-  && git log -1 FETCH_HEAD --pretty=%h \
-  && cat .git/FETCH_HEAD
-
-RUN git log -1 FETCH_HEAD --pretty=%h
-RUN git merge-base HEAD FETCH_HEAD
+  && git merge-base HEAD FETCH_HEAD || true
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 RUN . "${NVM_DIR}/nvm.sh" \
   && nvm install $(cat .node-version) \
-  && nvm alias default $(cat .node-version)
+  && nvm alias default $(cat .node-version) \
+  && npm install -g npm@latest \
+  && npm install -g yarn@latest \
+  && npm --version \
+  && yarn --version
 
 RUN . "${NVM_DIR}/nvm.sh" \
   && yarn kbn bootstrap --prefer-offline --no-audit --link-duplicates
