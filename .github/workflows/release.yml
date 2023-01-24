@@ -29,17 +29,20 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - uses: hashicorp/vault-action@v2.4.2
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: approle
+          secrets: |
+            secret/observability-team/ci/github-token username | GIT_USER ;
+            secret/observability-team/ci/github-token email | GIT_EMAIL ;
+            secret/observability-team/ci/github-token token | GITHUB_TOKEN_PAT
 
       - uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
         with:
-          username: ${{ env.GIT_USER }}
-          email: ${{ env.GIT_EMAIL }}
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN_PAT }}
 
       - name: Configure git
         run: |
@@ -58,6 +61,8 @@ jobs:
 
       - name: Mvn release
         run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN_PAT }}
 
       - name: Update current tag
         run: |
