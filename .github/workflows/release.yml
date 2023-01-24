@@ -41,7 +41,7 @@ jobs:
           email: ${{ env.GIT_EMAIL }}
           token: ${{ env.GITHUB_TOKEN }}
 
-      - name: configure git
+      - name: Configure git
         run: |
           git remote add origin-1 "${REMOTE_URL}"
           git fetch --force --tags
@@ -56,10 +56,10 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
 
-      - name: mvn release
+      - name: Mvn release
         run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
 
-      - name: update current tag
+      - name: Update current tag
         run: |
           git push origin-1 main
           git tag -f current
