@@ -35,13 +35,24 @@ jobs:
       - name: configure git
         run: |
           git remote add origin-1 "${REMOTE_URL}"
-          git checkout -b main
           git fetch --force --tags
+          git checkout main
         env:
           REMOTE_URL: ${{ github.event.repository.html_url }}
 
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+            ${{ runner.os }}-maven-
+
       - name: mvn release
         run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: update current tag
         run: |
