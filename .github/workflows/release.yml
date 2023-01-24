@@ -42,6 +42,8 @@ jobs:
 
       - name: mvn release
         run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: update current tag
         run: |
