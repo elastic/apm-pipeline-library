@@ -33,6 +33,7 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
 
       - name: configure git
+        run: |
           git remote add origin-1 "${REMOTE_URL}"
           git checkout -b main
           git fetch --force --tags
