@@ -533,7 +533,6 @@ def getSupportedGithubCommands() {
   }
 
   if (isProjectSupported('apm-pipeline-library')) {
-    comments['run infra tests'] = 'Run the test-infra test.'
     comments['/test all'] = 'Re-trigger the build for all the stages.'
   }
 
