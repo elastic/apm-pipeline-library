@@ -65,14 +65,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN_PAT }}
 
-      - name: Debug git environment
-        if: success() || failure()
-        continue-on-error: true
-        run: |
-          git --no-pager log -n2
-          git config user.email
-          git config user.name
-
       - name: Update current tag
         run: |
           git push origin-1 main
