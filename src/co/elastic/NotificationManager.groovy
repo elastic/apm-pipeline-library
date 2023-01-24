@@ -433,7 +433,7 @@ def snapshotyUrl() {
 def isSnapshotyEnabled() {
   // explicit list of supported repositories with snapshoty
   return env.REPO_NAME.equals('apm-pipeline-library') ||
-         env.REPO_NAME.startsWith('apm-agent')
+         env.REPO_NAME?.startsWith('apm-agent')
 }
 
 def queryFilter(jobName) {
