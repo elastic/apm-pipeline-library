@@ -35,8 +35,8 @@ jobs:
       - name: configure git
         run: |
           git remote add origin-1 "${REMOTE_URL}"
-          git checkout -b main
           git fetch --force --tags
+          git checkout main
         env:
           REMOTE_URL: ${{ github.event.repository.html_url }}
 
