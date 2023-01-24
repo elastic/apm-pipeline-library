@@ -49,7 +49,6 @@ jobs:
         run: |
           git remote add origin-1 "${REMOTE_URL}"
           git fetch --force --tags
-          exit 0
           git checkout main
         env:
           REMOTE_URL: ${{ github.event.repository.html_url }}
@@ -76,7 +75,6 @@ jobs:
 
       - name: Update current tag
         run: |
-          exit 0
           git push origin-1 main
           git tag -f current
           git push origin-1 current -f
