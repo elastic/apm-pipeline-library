@@ -991,7 +991,7 @@ class NotificationManagerStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('writeFile', 'badge/docs-preview'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'Build Succeeded'))
     assertTrue(assertMethodCallContainsPattern('writeFile', 'file=build.md'))
-    assertTrue(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/foo/master'))
+    assertFalse(assertMethodCallContainsPattern('writeFile', '/oblt-artifacts/foo/master'))
     assertTrue(assertMethodCallContainsPattern('archiveArtifacts', 'build.md'))
     assertJobStatusSuccess()
   }
