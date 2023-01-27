@@ -16,7 +16,7 @@ ___
 
 ```yaml
 ---
-name: OpenTelemetry
+name: Run In BuildKite
 on:
   workflow_run:
     workflows: [ ci ]
@@ -30,7 +30,7 @@ jobs:
     steps:
 
       - name: Run BuildKite pipeline
-        uses: .github/actions/buildkite
+        uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
