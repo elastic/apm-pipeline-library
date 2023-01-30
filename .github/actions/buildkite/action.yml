@@ -46,96 +46,19 @@ runs:
           secrets: |
             ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
 
-      - name: Trigger Buildkite pipeline
+      - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
         shell: bash
+
+      - name: Trigger Buildkite pipeline
         run: |
-          #
-          # COMMIT - Git commit from which this pipeline has been triggered.
-          #
-          # BRANCH - Git branch of the given project that is used by Buildkite to checkout the repo.
-          #
-          # ignore_pipeline_branch_filters: By default Buildkite works only on master. As we want
-          #                                 to use different branch names, we have to set this.
-
-          JSON=$(
-            jq -c -n \
-              --arg COMMIT  "${{ github.sha }}" \
-              --arg BRANCH  "main" \
-              --arg COMMIT_AUTHOR "${{ github.event.head_commit.author.name }}" \
-              --arg COMMIT_MSG "${{ github.event.head_commit.message }}" \
-              '{
-                "commit": $COMMIT,
-                "branch": $BRANCH,
-                "author": {
-                  "name": $COMMIT_AUTHOR,
-                },
-                "message": $COMMIT_MSG,
-                "ignore_pipeline_branch_filters": true
-              }'
-          )
-
-          # Merge in the build environment variables, if they specified any
-          if [[ -n "${{ inputs.buildEnvVars }}" ]]; then
-            if ! JSON=$(echo "$JSON" | jq -c --argjson BUILD_ENV_VARS '${{ inputs.buildEnvVars }}' '. + {env: $BUILD_ENV_VARS}'); then
-              echo ""
-              echo "Error: BUILD_ENV_VARS provided invalid JSON: ${{ inputs.buildEnvVars }}"
-              exit 1
-            fi
-          fi
-
-          RESP=$(curl \
-            --no-progress-meter \
-            -H "Authorization: Bearer ${{ env.BUILDKITE_API_ACCESS_TOKEN }}" \
-            "https://api.buildkite.com/v2/organizations/${{ inputs.org }}/pipelines/${{ inputs.pipeline }}/builds" \
-            -X "POST" \
-            -d "$JSON")
-
-          echo "::group::Output"
-          echo "Triggered build:"
-          echo "$RESP" | jq .
-          echo "::endgroup::"
-
-          if [ "${{ inputs.waitFor }}" == "false" ]; then
-            echo "No wait for"
-            exit 0
-          fi
-
-          echo "::group::WaitFor"
-          URL=$(echo "$RESP" | jq -r ".url")
-          WEB_URL=$(echo "$RESP" | jq -r ".web_url")
-          STATE="running"
-
-          echo "Waiting for build $WEB_URL to run "
-          # https://buildkite.com/docs/pipelines/defining-steps#build-states
-          while [ "$STATE" == "running" ] || [ "$STATE" == "scheduled" ] || [ "$STATE" == "creating" ]; do
-            RESP=$(curl \
-              -H "Authorization: Bearer ${{ env.BUILDKITE_API_ACCESS_TOKEN }}" \
-              --no-progress-meter \
-              "$URL")
-            STATE=$(echo "$RESP" | jq -r ".state")
-            echo -n "."
-            sleep 1
-          done
-          echo ""
-          echo "::endgroup::"
-
-          if [ "${{ inputs.printBuildLogs }}" == "true" ]; then
-            echo "::group::BuildLogs"
-            for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url"); do
-                id=$(basename "${href}")
-              echo "Fetching logs $logs_url"
-              curl \
-                -H "Authorization: Bearer ${{ env.BUILDKITE_API_ACCESS_TOKEN }}" \
-                --no-progress-meter \
-                "$logs_url"
-            done
-            echo "::endgroup::"
-          fi
-
-          if [ "$STATE" == "passed" ]; then
-            echo "Build passed ($WEB_URL)"
-            exit 0
-          else
-            echo "Build did not pass, it's '$STATE'. Check the logs at $WEB_URL"
-            exit 1
-          fi
+          run.sh \
+            '${{ inputs.org }}' \
+            '${{ inputs.pipeline }}' \
+            '${{ inputs.buildEnvVars }}' \
+            '${{ inputs.waitFor }}' \
+            '${{ inputs.printBuildLogs }}' \
+            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
+            '${{ github.sha }}' \
+            '${{ github.event.head_commit.author.name }}' \
+            '${{ github.event.head_commit.message }}'
+        shell: bash
