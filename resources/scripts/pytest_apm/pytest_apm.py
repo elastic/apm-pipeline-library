@@ -179,7 +179,7 @@ def init_apm_client():
                                                  use_elastic_traceparent_header=True,
                                                  debug=True)
         elif apm_api_key:
-            apm_client_local = elasticapm.lient(service_name=apm_service_name,
+            apm_client_local = elasticapm.Client(service_name=apm_service_name,
                                                 server_url=apm_server_url,
                                                 verify_server_cert=False,
                                                 api_key=apm_api_key,
