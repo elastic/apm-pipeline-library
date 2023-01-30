@@ -19,7 +19,7 @@ DSL = '''pipeline {
       ## Assert json modifications
       jq '.build.result' build-report.json | grep 'SUCCESS'
       jq '.build.state' build-report.json | grep 'FINISHED'
-      jq '.test_summary.total' build-report.json && exit 1 || echo 'expected' 
+      jq '.test_summary.total' build-report.json && exit 1 || echo 'expected'
       ## Assert all the files are there
       [ -e 'artifacts-info.json' ] && echo yeah || exit 1
       [ -e 'changeSet-info.json' ] && echo yeah || exit 1
