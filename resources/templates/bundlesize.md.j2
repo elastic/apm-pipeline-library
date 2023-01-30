@@ -8,7 +8,7 @@ Filename | Size(bundled) | Size(gzip) | Diff(gzip)
         {%- set status = ":warning:" -%}
     {% else %}
         {%- set status = ":green_heart:" -%}
-    {%- endif -%} 
-{%- endif -%} 
+    {%- endif -%}
+{%- endif -%}
 {{ item.label }} | {{ item.parsedSize | int | filesizeformat(true) }} | {{ item.gzipSize | int | filesizeformat(true) }} | {% if item.previousGzipSize %} {{ status }} {{ ( item.gzipSize - item.previousGzipSize | int ) | filesizeformat(true) }} {% endif %}
 {% endfor %}

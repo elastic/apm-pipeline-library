@@ -55,7 +55,7 @@ class ReleaseNotificationStepTests extends ApmBasePipelineTest {
                 slackCredentialsId: 'credentials',
                 slackChannel: '#channel',
                 to: "to@foo.com",
-                subject: "[example] Release tag *0.1.1* has been created", 
+                subject: "[example] Release tag *0.1.1* has been created",
                 body: "Build: (<http://foo.bar|here>) for further details.")
     printCallStack()
     assertTrue(assertMethodCallContainsPattern('emailext', 'to@foo.com'))

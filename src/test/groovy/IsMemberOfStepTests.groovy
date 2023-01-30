@@ -87,7 +87,7 @@ class IsMemberOfStepTests extends ApmBasePipelineTest {
   void test_active_membership_with_a_list() throws Exception {
     helper.registerAllowedMethod('githubApiCall', [Map.class], { m ->
       if (m.url.contains('apm-ui')) {
-        return net.sf.json.JSONSerializer.toJSON('{"state":"active","role":"maintainer","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"}') 
+        return net.sf.json.JSONSerializer.toJSON('{"state":"active","role":"maintainer","url":"https://api.github.com/organizations/6764390/team/2448411/memberships/foo"}')
       } else {
         return notFound()
       }

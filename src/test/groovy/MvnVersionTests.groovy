@@ -42,7 +42,7 @@ class MvnVersionTests extends ApmBasePipelineTest {
   void testCall() throws Exception {
     script.call()
     printCallStack()
-    assertTrue(assertMethodCallContainsPattern('sh', './mvnw help:evaluate -Dexpression=project.version -q -DforceStdout')) 
+    assertTrue(assertMethodCallContainsPattern('sh', './mvnw help:evaluate -Dexpression=project.version -q -DforceStdout'))
   }
 
   @Test

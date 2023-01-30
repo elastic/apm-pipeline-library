@@ -26,7 +26,7 @@ stages:
   one:
     mage:
       - "mage build test"
-  two: 
+  two:
     make:
       - "make -C auditbeat crosscompile"
 """))

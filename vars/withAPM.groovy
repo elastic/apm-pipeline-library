@@ -18,7 +18,7 @@
 /**
   Create an APM reporting context by reporting and APM trace
   at the begin of the block and another at the end.
-  see apmCli.groovy fo the parameters description
+  see apmCli.groovy for the parameters description
 **/
 def call(Map args = [:], Closure body) {
   try {

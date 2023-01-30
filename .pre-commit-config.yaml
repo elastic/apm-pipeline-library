@@ -7,7 +7,7 @@ repos:
     -   id: check-executables-have-shebangs
         exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: (resources/flaky-watcher.json$|^target/)
+        exclude: (resources/flaky-watcher.json$|^target/|^src/test/resources/)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml
@@ -16,9 +16,11 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties)
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|.github/actions/snapshoty/dist/|mvnw.cmd)
     -   id: mixed-line-ending
+        exclude: src/test/resources/pipeline-log.txt
     -   id: trailing-whitespace
+        exclude: (.github/actions/snapshoty/dist/|mvnw.cmd|src/test/resources/)
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
@@ -27,7 +29,7 @@ repos:
         name: "Shellscript: lint"
         stages: [commit]
         types: [shell]
-        exclude: (^mvnw$|^target/|^.*/gradlew$)
+        exclude: (^mvnw$|^target/|^.*/gradlew$|mvnw.cmd|.ci/docker/tests/)
 
 -   repo: https://github.com/adrienverge/yamllint.git
     rev: v1.25.0
@@ -61,6 +63,7 @@ repos:
     hooks:
     -   id: codespell
         args: ['--ignore-words-list','pullrequest,pullrequests']
+        exclude: (.github/actions/snapshoty/dist|src/test/resources/jobs/)
 
 -   repo: local
     hooks:
