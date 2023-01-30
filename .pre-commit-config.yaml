@@ -62,6 +62,7 @@ repos:
     hooks:
     -   id: codespell
         args: ['--ignore-words-list','pullrequest,pullrequests']
+        exclude: (.github/actions/snapshoty/dist|src/test/resources/jobs/)
 
 -   repo: local
     hooks:
