@@ -76,7 +76,7 @@ runs:
 
           # Merge in the build environment variables, if they specified any
           if [[ -n "${{ inputs.buildEnvVars }}" ]]; then
-            if ! JSON=$(echo "$JSON" | jq -c --argjson BUILD_ENV_VARS "${{ inputs.buildEnvVars }}" '. + {env: $BUILD_ENV_VARS}'); then
+            if ! JSON=$(echo "$JSON" | jq -c --argjson BUILD_ENV_VARS '${{ inputs.buildEnvVars }}' '. + {env: $BUILD_ENV_VARS}'); then
               echo ""
               echo "Error: BUILD_ENV_VARS provided invalid JSON: ${{ inputs.buildEnvVars }}"
               exit 1
