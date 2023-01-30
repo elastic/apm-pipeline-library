@@ -29,7 +29,7 @@ repos:
         name: "Shellscript: lint"
         stages: [commit]
         types: [shell]
-        exclude: (^mvnw$|^target/|^.*/gradlew$|mvnw.cmd)
+        exclude: (^mvnw$|^target/|^.*/gradlew$|mvnw.cmd|.ci/docker/tests/)
 
 -   repo: https://github.com/adrienverge/yamllint.git
     rev: v1.25.0
