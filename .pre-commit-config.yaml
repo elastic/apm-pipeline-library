@@ -19,7 +19,7 @@ repos:
         exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|.github/actions/snapshoty/dist/|mvnw.cmd)
     -   id: mixed-line-ending
     -   id: trailing-whitespace
-        exclude: (.github/actions/snapshoty/dist/)
+        exclude: (.github/actions/snapshoty/dist/|mvnw.cmd|src/test/resources/)
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
