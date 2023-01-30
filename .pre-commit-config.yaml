@@ -7,7 +7,7 @@ repos:
     -   id: check-executables-have-shebangs
         exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: (resources/flaky-watcher.json$|^target/)
+        exclude: (resources/flaky-watcher.json$|^target/|^src/test/resources/)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml
@@ -16,7 +16,7 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties)
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/)
     -   id: mixed-line-ending
     -   id: trailing-whitespace
 
@@ -27,7 +27,7 @@ repos:
         name: "Shellscript: lint"
         stages: [commit]
         types: [shell]
-        exclude: (^mvnw$|^target/|^.*/gradlew$)
+        exclude: (^mvnw$|^target/|^.*/gradlew$|mvnw.cmd)
 
 -   repo: https://github.com/adrienverge/yamllint.git
     rev: v1.25.0
