@@ -47,7 +47,7 @@ class HttpRequestStepTests extends ApmBasePipelineTest {
 
 @Test
 void testResponseCodeOnly() throws Exception {
-  
+
   def response_code = script.call(url: "https://www.google.com",
     response_code_only: true)
   printCallStack()

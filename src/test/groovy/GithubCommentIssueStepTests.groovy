@@ -73,7 +73,7 @@ class GithubCommentIssueStepTests extends ApmBasePipelineTest {
     assertTrue(assertMethodCallContainsPattern('sh', "hub api repos/acme/foo/issues/1/comments -f body='foo'"))
     assertJobStatusSuccess()
   }
-  
+
   @Test
   void test_with_all_the_arguments() throws Exception {
     script.call(id: '1', comment: 'foo', org: 'acme', repo: 'my-repo')

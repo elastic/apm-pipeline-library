@@ -24,44 +24,44 @@ import static org.junit.Assert.assertTrue
 
 class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
 
-  def commentInterceptor = [[	
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",	
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",	
-      id: 2,	
-      user: [	
-        login: "elasticmachine",	
-        id: 3,	
-      ],	
-      created_at: "2020-01-03T16:16:26Z",	
-      updated_at: "2020-01-03T16:16:26Z",	
+  def commentInterceptor = [[
+      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/2",
+      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",
+      id: 2,
+      user: [
+        login: "elasticmachine",
+        id: 3,
+      ],
+      created_at: "2020-01-03T16:16:26Z",
+      updated_at: "2020-01-03T16:16:26Z",
       body: "\n## :green_heart: Build Succeeded\n* [pipeline](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/PR-1/2/display/redirect)\n* Commit: 1\n\n\n<!--COMMENT_GENERATED-->\n"
-    ],	
-    [	
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",	
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/11",	
-      id: 55,	
-      user: [	
-        login: "foo",	
-        id: 11,	
-      ],	
-      created_at: "2020-01-04T16:16:26Z",	
-      updated_at: "2020-01-04T16:16:26Z",	
-      body: "LGTM"	
-    ],	
+    ],
+    [
+      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/55",
+      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/11",
+      id: 55,
+      user: [
+        login: "foo",
+        id: 11,
+      ],
+      created_at: "2020-01-04T16:16:26Z",
+      updated_at: "2020-01-04T16:16:26Z",
+      body: "LGTM"
+    ],
   ]
 
-  def commentInterceptorFromSomeoneElse = [[	
-      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/20",	
-      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",	
-      id: 20,	
-      user: [	
-        login: "v1v",	
-        id: 30,	
-      ],	
-      created_at: "2020-02-03T17:21:44Z",	
-      updated_at: "2020-02-03T17:21:44Z",	
+  def commentInterceptorFromSomeoneElse = [[
+      url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/comments/20",
+      issue_url: "https://api.github.com/repos/elastic/apm-pipeline-library/issues/1",
+      id: 20,
+      user: [
+        login: "v1v",
+        id: 30,
+      ],
+      created_at: "2020-02-03T17:21:44Z",
+      updated_at: "2020-02-03T17:21:44Z",
       body: "<!--COMMENT_GENERATED-->"
-    ]	
+    ]
   ]
 
   @Override
@@ -72,8 +72,8 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
     env.ORG_NAME = 'elastic'
     env.REPO_NAME = 'apm-pipeline-library'
     env.CHANGE_ID = 'PR-1'
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {	
-      return commentInterceptor	
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return commentInterceptor
     })
   }
 
@@ -94,23 +94,23 @@ class GithubPrLatestCommentStepTests extends ApmBasePipelineTest {
   }
 
   @Test
-  void test_with_an_existing_match() throws Exception {	
+  void test_with_an_existing_match() throws Exception {
     def obj = script.call(pattern: '<!--COMMENT_GENERATED-->', users: ['elasticmachine'])
     printCallStack()
     assertNotNull(obj)
   }
 
   @Test
-  void test_with_an_existing_match_and_no_users_to_filter_with() throws Exception {	
+  void test_with_an_existing_match_and_no_users_to_filter_with() throws Exception {
     def obj = script.call(pattern: '<!--COMMENT_GENERATED-->')
     printCallStack()
     assertNotNull(obj)
   }
 
   @Test
-  void test_with_an_existing_match_from_another_user() throws Exception {	
-    helper.registerAllowedMethod('githubApiCall', [Map.class], {	
-      return commentInterceptorFromSomeoneElse	
+  void test_with_an_existing_match_from_another_user() throws Exception {
+    helper.registerAllowedMethod('githubApiCall', [Map.class], {
+      return commentInterceptorFromSomeoneElse
     })
     def obj = script.call(pattern: '<!--COMMENT_GENERATED-->', users: ['elasticmachine'])
     printCallStack()
