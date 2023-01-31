@@ -41,6 +41,10 @@ inputs:
     description: 'The BK build message to be shown in the UI.'
     default: Triggered automatically with GH actions
     required: false
+outputs:
+  build:
+    description: "The Buildkite build url"
+    value: ${{ steps.trigger-buildkite.outputs.build }}
 
 runs:
   using: "composite"
@@ -54,7 +58,8 @@ runs:
           secrets: |
             ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
 
-      - name: Trigger Buildkite pipeline
+      - id: trigger-buildkite
+        name: Trigger Buildkite pipeline
         run: |
           ${{ github.action_path }}/run.sh \
             '${{ inputs.org }}' \
