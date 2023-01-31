@@ -73,14 +73,14 @@ echo "Triggered build:"
 echo "$RESP" | jq .
 echo "::endgroup::"
 
+URL=$(echo "$RESP" | jq -r ".url")
+WEB_URL=$(echo "$RESP" | jq -r ".web_url")
 if [ "$WAIT_FOR" != "true" ]; then
-  echo "No wait for"
+  echo "No wait for build $WEB_URL to run "
   exit 0
 fi
 
 echo "::group::WaitFor"
-URL=$(echo "$RESP" | jq -r ".url")
-WEB_URL=$(echo "$RESP" | jq -r ".web_url")
 STATE="running"
 
 echo "Waiting for build $WEB_URL to run "
