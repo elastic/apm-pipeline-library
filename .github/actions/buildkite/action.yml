@@ -63,6 +63,6 @@ runs:
             '${{ inputs.waitFor }}' \
             '${{ inputs.printBuildLogs }}' \
             '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
-            '${{ inputs.triggerMessage }}'
+            '${{ inputs.triggerMessage }}' \
             '${{ inputs.pipelineVersion }}'
         shell: bash
