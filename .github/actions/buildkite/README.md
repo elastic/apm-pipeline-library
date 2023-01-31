@@ -36,8 +36,11 @@ jobs:
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: observability-release-helm
-          buildEnvVars: '{ "slackChannel": "#my-channel", "retry": "true" }'
-
+          buildEnvVars: |
+            commit=abderg
+            message=my-message
+            org=my-org
+            something=my super duper variable
 ```
 
 ## Customizing
@@ -56,4 +59,4 @@ Following inputs can be used as `step.with` keys
 | `pipeline`        | String  |                             | The Buildkite pipeline to interact with. |
 | `waitFor`         | boolean | `false`                     | Whether to wait for the build to finish. |
 | `printBuildLogs`  | boolean | `false`                     | Whether to print the build logs. |
-| `buildEnvVars`    | String  |                             | Additional environment variables to set on the build, in JSON format. e.g. {"my-var": "acme"}. |
+| `buildEnvVars`    | String  |                             | Additional environment variables to set on the build, in KEY=VALUE format. No double quoting or extra `=` |

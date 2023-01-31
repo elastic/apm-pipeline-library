@@ -49,7 +49,17 @@ jq -c -n \
 
 # Merge in the build environment variables, if they specified any
 if [[ -n "$BUILD_VARS" ]]; then
-  if ! JSON=$(echo "$JSON" | jq -c --argjson BUILD_ENV_VARS "$BUILD_VARS" '. + {env: $BUILD_ENV_VARS}'); then
+  # Parse those env variables that are split in lines (VARIABLE=value)
+  BUILD_VARS_MANIPULATED="{"
+  while IFS= read -r line; do
+    if [ -n "$line" ] ; then
+      name=$(echo "$line" | cut -d= -f1)
+      value=$(echo "$line" | cut -d= -f2)
+      BUILD_VARS_MANIPULATED="${BUILD_VARS_MANIPULATED} \"$name\": \"$value\","
+    fi
+  done <<< "$BUILD_VARS"
+  BUILD_VARS_MANIPULATED="$(echo "$BUILD_VARS_MANIPULATED" | sed '$ s#,$##') }"
+  if ! JSON=$(echo "$JSON" | jq -c --argjson BUILD_ENV_VARS "$BUILD_VARS_MANIPULATED" '. + {env: $BUILD_ENV_VARS}'); then
     echo ""
     echo "Error: BUILD_ENV_VARS provided invalid JSON: $BUILD_VARS"
     exit 1
