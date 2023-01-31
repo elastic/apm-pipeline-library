@@ -19,7 +19,8 @@ ___
 name: Run In BuildKite
 on:
   workflow_run:
-    workflows: [ ci ]
+    workflows:
+      - ci
     types: [ completed ]
 
 jobs:
