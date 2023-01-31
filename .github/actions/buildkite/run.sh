@@ -9,9 +9,8 @@
 #  $4 -> whether to wait for. Mandatory.
 #  $5 -> whether to report logs. Mandatory
 #  $6 -> the BK token. Mandatory.
-#  $7 -> the sha commit. Mandatory
-#  $8 -> the author. Mandatory
-#  $9 -> the commit message. Mandatory.
+#  $7 -> the BK build message. Mandatory.
+#  $8 -> the Pipeline version. Mandatory.
 #
 # NOTE:
 #  ignore_pipeline_branch_filters: By default Buildkite works only on master. As we want
@@ -26,23 +25,18 @@ BUILD_VARS=${3:?$MSG}
 WAIT_FOR=${4:?$MSG}
 PRINT_BUILD=${5:?$MSG}
 BK_TOKEN=${6:?$MSG}
-COMMIT=${7:?$MSG}
-AUTHOR=${8:-"unknown"}
-MESSAGE=${9:-"Triggered by the GitHub action"}
+MESSAGE=${7:-"Triggered automatically with GH actions"}
+PIPELINE_VERSION=${8:-"HEAD"}
 
 JSON=$(
 jq -c -n \
-  --arg COMMIT  "$COMMIT" \
-  --arg BRANCH  "main" \
-  --arg COMMIT_AUTHOR "$AUTHOR" \
-  --arg COMMIT_MSG "$MESSAGE" \
+  --arg COMMIT "$PIPELINE_VERSION" \
+  --arg BRANCH "main" \
+  --arg MESSAGE "$MESSAGE" \
   '{
     "commit": $COMMIT,
     "branch": $BRANCH,
-    "author": {
-      "name": $COMMIT_AUTHOR,
-    },
-    "message": $COMMIT_MSG,
+    "message": $MESSAGE,
     "ignore_pipeline_branch_filters": true
   }'
 )

@@ -58,6 +58,8 @@ Following inputs can be used as `step.with` keys
 | `secret`          | String  | `secret/observability-team/ci/buildkite-automation` | The Vault secret. |
 | `org`             | String  | `elastic`                   | The Buildkite org. |
 | `pipeline`        | String  |                             | The Buildkite pipeline to interact with. |
+| `pipelineVersion` | String  | `HEAD`                      | The Buildkite pipeline version to be used, git tag, commit or branch. |
+| `triggerMessage`  | String  | `Triggered automatically with GH actions` | The Buildkite build message to be shown in the UI. |
 | `waitFor`         | boolean | `false`                     | Whether to wait for the build to finish. |
 | `printBuildLogs`  | boolean | `false`                     | Whether to print the build logs. |
 | `buildEnvVars`    | String  |                             | Additional environment variables to set on the build, in KEY=VALUE format. No double quoting or extra `=` |
