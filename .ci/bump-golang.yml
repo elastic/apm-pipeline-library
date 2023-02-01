@@ -49,18 +49,19 @@ conditions:
     sourceid: latestGoVersion1.18
 
   goDefaultVersion-check:
-    name: Check if installed version differs
-    kind: file
-    spec:
-      file: vars/goDefaultVersion.groovy
-      find: '{{ source "latestGoVersion1.18" }}'
+    name: Check if defined golang version differs
+    kind: shell
     sourceid: latestGoVersion1.18
+    spec:
+      command: bash .ci/scripts/test-golang-version.sh
+      environments:
+        - name: PATH
 
 targets:
   update-goDefaultVersion:
     kind: file
     sourceid: latestGoVersion1.18
     spec:
+      content: '{{ source `latestGoVersion1.18` }}'
       file: vars/goDefaultVersion.groovy
-      matchpattern: '(\d*\.\d*\.\d*)'
-      replacepattern: '{{ source "latestGoVersion1.18" }}'
+      matchpattern: '[0-9]+\.[0-9]+\.[0-9]+'
