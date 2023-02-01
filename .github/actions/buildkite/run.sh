@@ -75,6 +75,7 @@ echo "::endgroup::"
 
 URL=$(echo "$RESP" | jq -r ".url")
 WEB_URL=$(echo "$RESP" | jq -r ".web_url")
+# shellcheck disable=SC2086
 echo "build=$WEB_URL" >> $GITHUB_OUTPUT
 if [ "$WAIT_FOR" != "true" ]; then
   echo "No wait for build $WEB_URL to run "
