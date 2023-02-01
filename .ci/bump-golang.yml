@@ -1,0 +1,66 @@
+---
+## Workflow to periodically check if there is an available newer APM Go agent version, e.g.
+## "v1.2.3". If so, then update to it.
+name: Bump elastic-apm-go to latest version
+
+scms:
+  githubConfig:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GIT_USER" }}'
+      email: '{{ requiredEnv "GIT_EMAIL" }}'
+      owner: elastic
+      repository: opbeans-go
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      branch: main
+
+actions:
+  opbeans-go:
+    kind: github/pullrequest
+    scmid: githubConfig
+    spec:
+      automerge: false
+      labels:
+        - dependencies
+
+sources:
+  latestGoVersion1.18:
+    name: Get Latest Go Release
+    kind: githubrelease
+    transformers:
+      - trimprefix: go
+    spec:
+      owner: golang
+      repository: go
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      versionfilter:
+        kind: regex
+        pattern: go1\.18\.(\d*)$
+
+conditions:
+  dockerTag:
+    name: Is docker image golang:{{ source "latestGoVersion1.18" }} published
+    kind: dockerimage
+    spec:
+      image: golang
+      tag: '{{ source "latestGoVersion1.18" }}'
+    sourceid: latestGoVersion1.18
+
+  goDefaultVersion-check:
+    name: Check if installed version differs
+    kind: file
+    disablesourceinput: true
+    spec:
+      file: vars/goDefaultVersion.groovy
+      find: '{{ source "latestGoVersion1.18" }}'
+    sourceid: latestGoVersion1.18
+
+targets:
+  update-goDefaultVersion:
+    kind: file
+    sourceid: whateverSource # Will be ignored as `replacepattern` is specified
+    spec:
+      file: vars/goDefaultVersion.groovy
+      matchpattern: '(\d*)\.(\d*)\.(\d*)'
