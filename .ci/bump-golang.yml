@@ -51,7 +51,6 @@ conditions:
   goDefaultVersion-check:
     name: Check if installed version differs
     kind: file
-    disablesourceinput: true
     spec:
       file: vars/goDefaultVersion.groovy
       find: '{{ source "latestGoVersion1.18" }}'
@@ -60,7 +59,8 @@ conditions:
 targets:
   update-goDefaultVersion:
     kind: file
-    sourceid: whateverSource # Will be ignored as `replacepattern` is specified
+    sourceid: latestGoVersion1.18
     spec:
       file: vars/goDefaultVersion.groovy
-      matchpattern: '(\d*)\.(\d*)\.(\d*)'
+      matchpattern: '(\d*\.\d*\.\d*)'
+      replacepattern: '{{ source "latestGoVersion1.18" }}'
