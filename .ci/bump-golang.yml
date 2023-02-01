@@ -59,8 +59,10 @@ conditions:
 
 targets:
   update-goDefaultVersion:
-    kind: file
+    name: "Update goDefaultVersion"
     sourceid: latestGoVersion
+    scmid: githubConfig
+    kind: file
     spec:
       content: '{{ source "latestGoVersion" }}'
       file: vars/goDefaultVersion.groovy
