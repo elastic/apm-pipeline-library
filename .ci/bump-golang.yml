@@ -1,7 +1,7 @@
 ---
 ## Workflow to periodically check if there is an available newer APM Go agent version, e.g.
 ## "v1.2.3". If so, then update to it.
-name: Bump elastic-apm-go to latest version
+name: Bump golang-version to latest version
 
 scms:
   githubConfig:
@@ -10,13 +10,13 @@ scms:
       user: '{{ requiredEnv "GIT_USER" }}'
       email: '{{ requiredEnv "GIT_EMAIL" }}'
       owner: elastic
-      repository: opbeans-go
+      repository: apm-pipeline-library
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       username: '{{ requiredEnv "GIT_USER" }}'
       branch: main
 
 actions:
-  opbeans-go:
+  apm-pipeline-library:
     kind: github/pullrequest
     scmid: githubConfig
     spec:
@@ -25,7 +25,7 @@ actions:
         - dependencies
 
 sources:
-  latestGoVersion1.18:
+  latestGoVersion:
     name: Get Latest Go Release
     kind: githubrelease
     transformers:
@@ -41,17 +41,17 @@ sources:
 
 conditions:
   dockerTag:
-    name: Is docker image golang:{{ source "latestGoVersion1.18" }} published
+    name: Is docker image golang:{{ source "latestGoVersion" }} published
     kind: dockerimage
     spec:
       image: golang
-      tag: '{{ source "latestGoVersion1.18" }}'
-    sourceid: latestGoVersion1.18
+      tag: '{{ source "latestGoVersion" }}'
+    sourceid: latestGoVersion
 
   goDefaultVersion-check:
     name: Check if defined golang version differs
     kind: shell
-    sourceid: latestGoVersion1.18
+    sourceid: latestGoVersion
     spec:
       command: bash .ci/scripts/test-golang-version.sh
       environments:
@@ -60,8 +60,8 @@ conditions:
 targets:
   update-goDefaultVersion:
     kind: file
-    sourceid: latestGoVersion1.18
+    sourceid: latestGoVersion
     spec:
-      content: '{{ source `latestGoVersion1.18` }}'
+      content: '{{ source "latestGoVersion" }}'
       file: vars/goDefaultVersion.groovy
       matchpattern: '[0-9]+\.[0-9]+\.[0-9]+'

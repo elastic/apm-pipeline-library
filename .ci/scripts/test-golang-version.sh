@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-grep -v -q vars/goDefaultVersion.groovy "$1"
+grep -v -q "$1" vars/goDefaultVersion.groovy
 
 exit $?
