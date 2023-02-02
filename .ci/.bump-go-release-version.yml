@@ -30,14 +30,6 @@ projects:
     enabled: true
     labels: dependency
     reviewer: elastic/observablt-ci
-  - repo: beats
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    overrideGoVersion: "1.18"
-    enabled: true
-    labels: dependency,backport-skip
-    description: It requires the version to be bumped first in golang-crossbuild project, then a new release will be added to https://github.com/elastic/golang-crossbuild/releases. Otherwise it will fail until the docker images are available.
   - repo: cloudbeat
     script: .ci/bump-go-release-version.sh
     branches:
