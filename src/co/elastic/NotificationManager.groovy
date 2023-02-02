@@ -404,6 +404,8 @@ def generateBuildReport(Map args = [:]) {
         "changeSet": changeSet,
         "docsUrl": docsUrl,
         "env": env,
+        "snapshoty": isSnapshotyEnabled(),
+        "snapshotyUrl": snapshotyUrl(),
         "jenkinsText": env.JOB_NAME,
         "jenkinsUrl": env.JENKINS_URL,
         "jobUrl": boURL,
@@ -420,6 +422,18 @@ def generateBuildReport(Map args = [:]) {
       }
     }
     return output
+}
+
+def snapshotyUrl() {
+  def short_commit = env.GIT_BASE_COMMIT.substring(0, Math.min(env.GIT_BASE_COMMIT.length(), 8));
+  def filter = "(%22StorageObjectListTable%22:(%22f%22:%22%255B%257B_22k_22_3A_22Name%2520contains_22_2C_22t_22_3A10_2C_22v_22_3A_22_5C_${short_commit}_5C_22_22_2C_22i_22_3A_22displayName_22%257D%255D%22))"
+  return "https://console.cloud.google.com/storage/browser/oblt-artifacts/${env?.REPO_NAME}/${env?.BRANCH_NAME};tab=objects?pageState=${filter}"
+}
+
+def isSnapshotyEnabled() {
+  // explicit list of supported repositories with snapshoty
+  return env.REPO_NAME.equals('apm-pipeline-library') ||
+         env.REPO_NAME?.startsWith('apm-agent')
 }
 
 def queryFilter(jobName) {
@@ -519,7 +533,6 @@ def getSupportedGithubCommands() {
   }
 
   if (isProjectSupported('apm-pipeline-library')) {
-    comments['run infra tests'] = 'Run the test-infra test.'
     comments['/test all'] = 'Re-trigger the build for all the stages.'
   }
 

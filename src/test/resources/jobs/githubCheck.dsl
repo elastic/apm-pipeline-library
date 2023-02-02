@@ -3,7 +3,7 @@ DSL = '''pipeline {
   agent { label "linux" }
   environment {
     PIPELINE_LOG_LEVEL = 'DEBUG'
-  }   
+  }
   stages {
     stage('githubCheck') {
       steps {

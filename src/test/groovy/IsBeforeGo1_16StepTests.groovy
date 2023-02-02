@@ -46,10 +46,34 @@ class IsBeforeGo1_16Tests extends ApmBasePipelineTest {
   }
 
   @Test
+  void test_go_1_20rc3() throws Exception {
+    def ret = script.call(version: '1.20rc3')
+    printCallStack()
+    assertFalse(ret)
+    assertJobStatusSuccess()
+  }
+
+  @Test
   void test_default() throws Exception {
     def ret = script.call()
     printCallStack()
     assertJobStatusSuccess()
   }
 
+
+  @Test
+  void test_normalise_with_version() throws Exception {
+    def ret = script.normaliseVersion('1.2.3')
+    printCallStack()
+    assertTrue(ret.equals('1.2.3'))
+    assertJobStatusSuccess()
+  }
+
+  @Test
+  void test_normalise_with_rc_version() throws Exception {
+    def ret = script.normaliseVersion('1.20rc3')
+    printCallStack()
+    assertTrue(ret.equals('1.20'))
+    assertJobStatusSuccess()
+  }
 }

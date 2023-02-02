@@ -17,30 +17,30 @@ DSL = '''pipeline {
         self.render_config_template(
             path=os.path.abspath(self.working_dir) + &quot;/log/*&quot;,
         )
-    
+
         os.mkdir(self.working_dir + &quot;/log/&quot;)
-    
+
         logfile = self.working_dir + &quot;/log/test.log&quot;
-    
+
         lines = [
             b&quot;Hello World\\n&quot;,
         ]
         with open(logfile, &apos;wb&apos;) as f:
             for line in lines:
                 f.write(line)
-    
+
             # Write some more data to hit the 16k min buffer size.
             # Make it web safe.
             f.write(base64.b64encode(os.urandom(16 * 1024)))
-    
+
         filebeat = self.start_beat()
-    
+
         # 13 on unix, 14 on windows.
         self.wait_until(lambda: self.log_contains(re.compile(
 &gt;           &apos;Matching null byte found at offset (13|14)&apos;)), max_timeout=5)
 
-tests/system/test_harvester.py:859: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/system/test_harvester.py:859:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 self = &lt;test_harvester.Test testMethod=test_debug_reader&gt;
 cond = &lt;function Test.test_debug_reader.&lt;locals&gt;.&lt;lambda&gt; at 0x10abc8b00&gt;
@@ -51,7 +51,7 @@ max_timeout = 5, poll_interval = 0.1, name = &apos;cond&apos;
         Waits until the cond function returns true,
         or until the max_timeout is reached. Calls the cond
         function every poll_interval seconds.
-    
+
         If the max_timeout is reached before cond() returns
         true, an exception is raised.
         &quot;&quot;&quot;
@@ -81,14 +81,14 @@ E               beat.beat.TimeoutError: Timeout waiting for &apos;cond&apos; to 
         os.mkdir(self.working_dir + &quot;/log/&quot;)
         self.copy_files([&quot;logs/json_timestamp.log&quot;],
                         target_dir=&quot;log&quot;)
-    
+
         proc = self.start_beat()
         self.wait_until(
             lambda: self.output_has(lines=5),
 &gt;           max_timeout=10)
 
-tests/system/test_json.py:175: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/system/test_json.py:175:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 self = &lt;test_json.Test testMethod=test_timestamp_in_message&gt;
 cond = &lt;function Test.test_timestamp_in_message.&lt;locals&gt;.&lt;lambda&gt; at 0x10a870950&gt;
@@ -99,7 +99,7 @@ max_timeout = 10, poll_interval = 0.1, name = &apos;cond&apos;
         Waits until the cond function returns true,
         or until the max_timeout is reached. Calls the cond
         function every poll_interval seconds.
-    
+
         If the max_timeout is reached before cond() returns
         true, an exception is raised.
         &quot;&quot;&quot;

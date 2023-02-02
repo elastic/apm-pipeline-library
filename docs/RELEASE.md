@@ -8,18 +8,17 @@ has a name like v[:number:].[:number:].[:number:] see [Semantic Versioning](http
 Follow the below steps:
 
 * Make sure your PRs contain the proper Github labels to group them under the proper changelog section, as defined in [Gren's configuration file, `groupBy` section](../.grenrc.js).
-* Navigate to the [APM Pipeline Library job](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/main/build?delay=0sec)
-* Choose `Build with Parameters`
-* Select the `make_release` checkbox.
-* Click `Build` and wait for ~25 minutes to complete.
+* Navigate to the [GitHub job](https://github.com/elastic/apm-pipeline-library/actions/workflows/release.yml)
+* Choose `Run workflow`.
+* Click `Run workflow` and wait for a few minutes to complete
 
 ## Manual release process :man: (replaced by the automated process above)
 
 To create a new release please use `Maven Release Plugin`, which uses the `pom.xml` file
 to store the semantic version for this project.
 
-```java
-mvn release:prepare release:perform
+```bash
+./mvnw release:prepare release:perform
 ```
 
 This command will bump the current SNAPSHOT, commit changes, and push the tag to upstream

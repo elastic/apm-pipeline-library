@@ -26,7 +26,7 @@ def call(Map args = [:]){
   def version = args.containsKey('version') ? args.version : goDefaultVersion()
   version = version.startsWith('go') ? version.minus('go') : version
   def ref = "1.16"
-  def vVer = version.tokenize(".")
+  def vVer = normaliseVersion(version).tokenize(".")
   def vRef = ref.tokenize(".")
   def n = Math.min(vVer.size(), vRef.size())
   for (int i = 0; i < n; i++) {
@@ -37,4 +37,8 @@ def call(Map args = [:]){
     }
   }
   return vVer.size() < vRef.size()
+}
+
+def normaliseVersion(version) {
+  return version.replaceAll('rc.*', '')
 }

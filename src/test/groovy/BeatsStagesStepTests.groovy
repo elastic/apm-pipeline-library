@@ -118,7 +118,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
         "multi-when" : [
           "mage" : [ "foo" ],
           "platforms" : [ 'windows-2016' ],
-          "when" : [ 
+          "when" : [
             "comments" : [ "/test auditbeat for windows" ]
           ]
         ]
@@ -146,7 +146,7 @@ class BeatsStagesStepTests extends ApmBasePipelineTest {
         "multi-when" : [
           "mage" : [ "foo" ],
           "platforms" : [ 'windows-2016' ],
-          "when" : [ 
+          "when" : [
             "comments" : [ "/test auditbeat for windows" ]
           ]
         ]

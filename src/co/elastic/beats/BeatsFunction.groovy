@@ -27,7 +27,7 @@ class BeatsFunction {
   public BeatsFunction(Map args){
     this.steps = args.steps
   }
-  
+
   /**
     This method should be overwritten by the target pipeline.
   */

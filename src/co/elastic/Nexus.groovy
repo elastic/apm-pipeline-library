@@ -51,7 +51,7 @@ private static void addData(HttpURLConnection conn, String method, byte[] bytes)
 // make the request, and parse the response as json
 private static Object getData(HttpURLConnection conn) {
     Object data = null;
-    String response = conn.getInputStream().getText('UTF-8') 
+    String response = conn.getInputStream().getText('UTF-8')
     def slurper = new groovy.json.JsonSlurperClassic()
     data = slurper.parseText(response)
     return data

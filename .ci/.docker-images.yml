@@ -58,13 +58,11 @@ images:
     push_script: "make push"
     working_directory: "apps/pickles"
 
-## This is also failing on Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/test-plans/
-#  - name: "test-plans"
-#    repository: "elastic/observability-robots"
-#    build_script: "make build"
-#    push_script: "make push"
-#    working_directory: "apps/test-plans"
+  - name: "test-plans"
+    repository: "elastic/observability-robots"
+    build_script: "make build"
+    push_script: "make push"
+    working_directory: "apps/test-plans"
 
   - name: "obs-jenkins-heartbeat"
     repository: "elastic/observability-robots"
@@ -191,19 +189,10 @@ images:
     test_script: "cd .. && make test-yamllint"
     working_directory: ".ci/docker/yamllint"
 
-## This is also failing in Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/kibana-devmode/
-#  - <<: *apm-agent-library-docker-images
-#    name: "kibana-yarn"
-#    test_script: "cd .. && make test-kibana-yarn"
-#    working_directory: ".ci/docker/kibana-yarn"
-
-## This is also failing in Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/kibana-devmode/
-#  - <<: *apm-agent-library-docker-images
-#    name: "kibana-devmode"
-#    test_script: "cd .. && make test-kibana-devmode"
-#    working_directory: ".ci/docker/kibana-devmode"
+  - <<: *apm-agent-library-docker-images
+    name: "kibana-yarn"
+    test_script: "cd .. && make test-kibana-yarn"
+    working_directory: ".ci/docker/kibana-yarn"
 
   - <<: *apm-agent-library-docker-images
     name: "vmware-mock"

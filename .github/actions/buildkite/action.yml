@@ -1,0 +1,73 @@
+---
+name: Buildkite Pipeline GitHub Action
+description: A GitHub Action for triggering a build on a Buildkite pipeline.
+inputs:
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  secret:
+    description: 'Vault secret with the token field.'
+    default: secret/observability-team/ci/buildkite-automation
+    required: false
+  org:
+    description: 'BuildKite org to interact with.'
+    default: elastic
+    required: false
+  pipeline:
+    description: 'BuildKite pipeline to interact with.'
+    required: true
+  waitFor:
+    description: 'Whether to wait for the build to finish.'
+    default: false
+    required: false
+  printBuildLogs:
+    description: 'Whether to wait for the build to finish.'
+    default: false
+    required: false
+  buildEnvVars:
+    description: 'Additional environment variables to set on the build.'
+    required: false
+  pipelineVersion:
+    description: 'The pipeline version to be used (e.g. git sha, tag, branch).'
+    default: HEAD
+    required: false
+  triggerMessage:
+    description: 'The BK build message to be shown in the UI.'
+    default: Triggered automatically with GH actions
+    required: false
+outputs:
+  build:
+    description: "The Buildkite build url"
+    value: ${{ steps.trigger-buildkite.outputs.build }}
+
+runs:
+  using: "composite"
+  steps:
+      - uses: hashicorp/vault-action@v2.4.2
+        with:
+          url: ${{ inputs.vaultUrl }}
+          roleId: ${{ inputs.vaultRoleId }}
+          secretId: ${{ inputs.vaultSecretId }}
+          method: approle
+          secrets: |
+            ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
+
+      - id: trigger-buildkite
+        name: Trigger Buildkite pipeline
+        run: |
+          ${{ github.action_path }}/run.sh \
+            '${{ inputs.org }}' \
+            '${{ inputs.pipeline }}' \
+            '${{ inputs.buildEnvVars }}' \
+            '${{ inputs.waitFor }}' \
+            '${{ inputs.printBuildLogs }}' \
+            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
+            '${{ inputs.triggerMessage }}' \
+            '${{ inputs.pipelineVersion }}'
+        shell: bash
