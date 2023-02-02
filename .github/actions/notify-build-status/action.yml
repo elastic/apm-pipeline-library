@@ -29,15 +29,22 @@ runs:
     - name: Prepare data
       id: prepare
       shell: python
+      env:
+        JOB_STATUS: "${{ job.status }}"
+        REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
+        PR_NUMBER: "${{ github.event.pull_request.number }}"
+        RUN_ID: "${{ github.run_id }}"
+        RUN_ATTEMPT: "${{ github.run_attempt }}"
+        EVENT_NAME: "${{ github.event_name }}"
       run: |
         import os
 
-        job_status = "${{ job.status }}"
-        repo_url = "${{ github.server_url }}/${{ github.repository }}"
-        pr_number = "${{ github.event.pull_request.number }}"
-        run_id = "${{ github.run_id }}"
-        run_attempt = "${{ github.run_attempt }}"
-        event_name = "${{ github.event_name }}"
+        job_status = os.environ["JOB_STATUS"]
+        repo_url = os.environ["REPO_URL"]
+        pr_number = os.environ["PR_NUMBER"]
+        run_id = os.environ["RUN_ID"]
+        run_attempt = os.environ["RUN_ATTEMPT"]
+        event_name = os.environ["EVENT_NAME"]
         is_pull_request = event_name == 'pull_request'
         sha = "${{ github.event.pull_request.head.sha }}" if is_pull_request else "${{ github.sha }}"
 
@@ -60,9 +67,12 @@ runs:
             for key, value in data.items():
               print(f'{key}={value}', file=f)
     - if: ${{ inputs.slackChannel }}
-      uses: slackapi/slack-github-action@v1.22.0
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
       with:
-        channel-id: '${{ inputs.slackChannel }}'
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+        channel: ${{ inputs.slackChannel }}
         payload: |
           {
             "attachments": [

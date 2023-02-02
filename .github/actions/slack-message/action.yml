@@ -28,7 +28,10 @@ inputs:
       This is a multiline message
       """) # Multiline message
       ```
-    required: true
+    required: false
+  payload:
+    description: 'Slack Payload'
+    required: false
   mask:
     description: 'True to mask the Slack message on the logs'
     required: false
@@ -57,6 +60,7 @@ runs:
         MESSAGE: ${{ inputs.message }}
         MASK: ${{ inputs.mask }}
         URL_ENCODED: ${{ inputs.urlEncoded }}
+        PAYLOAD: ${{ inputs.payload }}
       run: |
         # Prepare Slack API payload.
         # Documentation about the payload format.
@@ -68,32 +72,39 @@ runs:
         import os
         from urllib.parse import unquote
 
-        message = os.environ.get('MESSAGE', 'No message')
-        if os.environ['URL_ENCODED'] == 'true':
-          message = unquote(message)
-        message = '\n'.join(line.strip() for line in message.splitlines())
-        json_data = {
-          "text": message,
-          "blocks": [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": message
+        if os.environ["MESSAGE"]:
+          message = os.environ.get('MESSAGE', 'No message')
+          if os.environ['URL_ENCODED'] == 'true':
+            message = unquote(message)
+          message = '\n'.join(line.strip() for line in message.splitlines())
+          json_data = {
+            "text": message,
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": message
+                }
               }
-            }
-          ]
-        }
+            ]
+          }
+        elif os.environ["PAYLOAD"]:
+          json_data = json.loads(os.environ["PAYLOAD"])
+        else:
+          raise Exception("Either message or payload must be set.")
+
+
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
-            f.write("message={}".format(json.dumps(json_data)))
+          f.write("payload={}".format(json.dumps(json_data)))
         if os.environ.get('MASK') == 'true':
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
-      uses: slackapi/slack-github-action@v1.22.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '${{ inputs.channel }}'
         payload: |
-          ${{ steps.prepare.outputs.message }}
+          ${{ steps.prepare.outputs.payload }}
       env:
         SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
     - name: Reset environment
