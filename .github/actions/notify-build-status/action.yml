@@ -1,0 +1,107 @@
+name: notify-build-status
+description: "Notify the build status"
+
+inputs:
+  vaultUrl:
+    description: Vault URL
+    required: true
+  vaultRoleId:
+    description: Vault role ID
+    required: true
+  vaultSecretId:
+    description: Vault secret ID
+    required: true
+  slackChannel:
+    description: Slack channel
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare data
+      id: prepare
+      shell: python
+      env:
+        JOB_STATUS: "${{ job.status }}"
+        REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
+        PR_NUMBER: "${{ github.event.pull_request.number }}"
+        PR_SHA: "${{ github.event.pull_request.head.sha }}"
+        SHA: "${{ github.sha }}"
+        RUN_ID: "${{ github.run_id }}"
+        RUN_ATTEMPT: "${{ github.run_attempt }}"
+        EVENT_NAME: "${{ github.event_name }}"
+      run: |
+        import os
+
+        job_status = os.environ["JOB_STATUS"]
+        repo_url = os.environ["REPO_URL"]
+        pr_number = os.environ["PR_NUMBER"]
+        run_id = os.environ["RUN_ID"]
+        run_attempt = os.environ["RUN_ATTEMPT"]
+        event_name = os.environ["EVENT_NAME"]
+        is_pull_request = event_name == 'pull_request'
+        sha = os.environ["PR_SHA"] if is_pull_request else os.environ["SHA"]
+
+        # Keys taken from https://docs.github.com/en/actions/learn-github-actions/contexts#job-context
+        color_status_map = {
+          "success": "good",
+          "failure": "danger",
+          "cancelled": "", # grey
+        }
+
+        data = {
+          "color": color_status_map[job_status],
+          "short_sha": sha[:7],
+          "commit_url": f"{repo_url}/pull/{pr_number}/commits/{sha}" if is_pull_request else f"{repo_url}/commit/{sha}",
+          "run_url": f"{repo_url}/actions/runs/{run_id}/attempts/{run_attempt}",
+          "repo_url": repo_url,
+        }
+
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            for key, value in data.items():
+              print(f'{key}={value}', file=f)
+    - if: ${{ inputs.slackChannel }}
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+        channel: ${{ inputs.slackChannel }}
+        payload: |
+          {
+            "attachments": [
+              {
+                "pretext": "Workflow <${{ steps.prepare.outputs.repo_url }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}> triggered by <${{ github.server_url }}/${{ github.actor }}|${{ github.actor }}>",
+                "color": "${{ steps.prepare.outputs.color }}",
+                "fields": [
+                  {
+                    "title": "Status",
+                    "short": true,
+                    "value": "${{ job.status }}"
+                  },
+                  {
+                    "title": "Event",
+                    "short": true,
+                    "value": "${{ github.event_name	}}"
+                  },
+                  {
+                    "title": "Ref",
+                    "short": true,
+                    "value": "`${{ github.ref_name }}`"
+                  },
+                  {
+                    "title": "Commit",
+                    "short": true,
+                    "value": "<${{ steps.prepare.outputs.commit_url }}|`${{ steps.prepare.outputs.short_sha }}`>"
+                  },
+                  {
+                    "title": "Workflow",
+                    "short": false,
+                    "value": "<${{ steps.prepare.outputs.run_url }}|${{ github.workflow }} #${{ github.run_number }}>"
+                  }
+                ],
+                "footer": "<${{ steps.prepare.outputs.repo_url }}|${{ github.repository }}>",
+                "footer_icon": "https://slack-imgs.com/?c=1&o1=wi32.he32.si&url=https%3A%2F%2Fslack.github.com%2Fstatic%2Fimg%2Ffavicon-neutral.png"
+              }
+            ]
+          }
