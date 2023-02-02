@@ -94,7 +94,6 @@ runs:
         else:
           raise Exception("Either message or payload must be set.")
 
-
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("payload={}".format(json.dumps(json_data)))
         if os.environ.get('MASK') == 'true':
