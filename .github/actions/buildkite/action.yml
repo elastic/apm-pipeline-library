@@ -33,6 +33,18 @@ inputs:
   buildEnvVars:
     description: 'Additional environment variables to set on the build.'
     required: false
+  pipelineVersion:
+    description: 'The pipeline version to be used (e.g. git sha, tag, branch).'
+    default: HEAD
+    required: false
+  triggerMessage:
+    description: 'The BK build message to be shown in the UI.'
+    default: Triggered automatically with GH actions
+    required: false
+outputs:
+  build:
+    description: "The Buildkite build url"
+    value: ${{ steps.trigger-buildkite.outputs.build }}
 
 runs:
   using: "composite"
@@ -46,7 +58,8 @@ runs:
           secrets: |
             ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
 
-      - name: Trigger Buildkite pipeline
+      - id: trigger-buildkite
+        name: Trigger Buildkite pipeline
         run: |
           ${{ github.action_path }}/run.sh \
             '${{ inputs.org }}' \
@@ -55,7 +68,6 @@ runs:
             '${{ inputs.waitFor }}' \
             '${{ inputs.printBuildLogs }}' \
             '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
-            '${{ github.sha }}' \
-            '${{ github.event.head_commit.author.name }}' \
-            '${{ github.event.head_commit.message }}'
+            '${{ inputs.triggerMessage }}' \
+            '${{ inputs.pipelineVersion }}'
         shell: bash
