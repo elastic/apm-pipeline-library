@@ -15,14 +15,6 @@
 ##  description: Extended description to be added to the existing one in the PR. Optional.
 ##
 projects:
-  - repo: apm-pipeline-library
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    overrideGoVersion: "1.18"
-    enabled: true
-    labels: dependency
-    reviewer: elastic/observablt-ci
   - repo: apm-integration-testing
     script: .ci/bump-go-release-version.sh
     branches:
