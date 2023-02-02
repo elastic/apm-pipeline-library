@@ -1,6 +1,4 @@
 ---
-## Workflow to periodically check if there is an available newer APM Go agent version, e.g.
-## "v1.2.3". If so, then update to it.
 name: Bump golang-version to latest version
 
 scms:
@@ -23,6 +21,7 @@ actions:
       automerge: false
       labels:
         - dependencies
+      title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
 
 sources:
   latestGoVersion:
@@ -53,9 +52,7 @@ conditions:
     kind: shell
     sourceid: latestGoVersion
     spec:
-      command: bash .ci/scripts/test-golang-version.sh
-      environments:
-        - name: PATH
+      command: 'grep -v -q {{ source "latestGoVersion" }} vars/goDefaultVersion.groovy #'
 
 targets:
   update-goDefaultVersion:
