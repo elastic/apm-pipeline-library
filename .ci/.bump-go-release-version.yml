@@ -92,16 +92,10 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+      - "1.19"
       - "1.18"
     enabled: true
     labels: dependency
-  - repo: observability-robots
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    enabled: true
-    labels: dependency
-    reviewer: elastic/observablt-ci
   - repo: stream
     script: .ci/bump-go-release-version.sh
     branches:
