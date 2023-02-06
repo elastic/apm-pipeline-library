@@ -92,6 +92,7 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
+      - "1.19"
       - "1.18"
     enabled: true
     labels: dependency
