@@ -49,7 +49,6 @@ repos:
     -   id: check-jsonslurper-class
     -   id: check-jenkins-pipelines   # TODO: this hook won't be needed once the CI migration is completed
         files: ^(.ci/(.*\.groovy|Jenkinsfile)|Jenkinsfile|resources/JenkinsfileTemplate.groovy)$
-        exclude: ^.ci/jobDSL
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
