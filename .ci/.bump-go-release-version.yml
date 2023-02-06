@@ -15,13 +15,6 @@
 ##  description: Extended description to be added to the existing one in the PR. Optional.
 ##
 projects:
-  - repo: apm-integration-testing
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    enabled: true
-    labels: dependency
-    reviewer: elastic/observablt-ci
   - repo: beats
     script: .ci/bump-go-release-version.sh
     branches:
