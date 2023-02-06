@@ -37,13 +37,6 @@ projects:
     overrideGoVersion: "1.18"
     enabled: true
     labels: dependency
-  - repo: elastic-agent-libs
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    overrideGoVersion: "1.18"
-    enabled: true
-    labels: dependency
   - repo: elastic-agent-system-metrics
     script: .ci/bump-go-release-version.sh
     branches:
