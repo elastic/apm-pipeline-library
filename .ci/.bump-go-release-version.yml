@@ -73,13 +73,6 @@ projects:
     overrideGoVersion: "1.18"
     enabled: true
     labels: dependency
-  - repo: fleet-server
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    overrideGoVersion: "1.18"
-    enabled: true
-    labels: dependency,backport-skip
   - repo: golang-crossbuild
     script: .ci/bump-go-release-version.sh
     branches:
