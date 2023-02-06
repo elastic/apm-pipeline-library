@@ -81,9 +81,3 @@ projects:
       - "1.18"
     enabled: true
     labels: dependency
-  - repo: stream
-    script: .ci/bump-go-release-version.sh
-    branches:
-      - main
-    enabled: true
-    labels: dependency
