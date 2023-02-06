@@ -47,17 +47,6 @@ pipeline {
         generateSteps()
       }
     }
-    stage('Bump Go release') {
-      steps {
-        build(job: 'apm-shared/bump-go-release-version-pipeline',
-          parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: params.DRY_RUN_MODE)
-          ],
-          propagate: false,
-          wait: false
-        )
-      }
-    }
     stage('Stalled Beats Bumps') {
       steps {
         runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
