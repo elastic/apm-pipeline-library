@@ -81,25 +81,6 @@ pipeline {
         )
       }
     }
-    stage('Sync GitHub labels') {
-      steps {
-        build(job: 'apm-shared/github-syncup-labels-obs-dev-pipeline',
-          parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false),
-          ],
-          propagate: false,
-          wait: false
-        )
-      }
-    }
-    stage('Populate GitHub data') {
-      steps {
-        build(job: 'apm-shared/populate-github',
-          propagate: false,
-          wait: false
-        )
-      }
-    }
   }
   post {
     cleanup {
