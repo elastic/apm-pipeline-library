@@ -26,7 +26,7 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency,backport-skip
     description: It requires the version to be bumped first in golang-crossbuild project, then a new release will be added to https://github.com/elastic/golang-crossbuild/releases. Otherwise it will fail until the docker images are available.
@@ -37,19 +37,19 @@ projects:
     enabled: true
     labels: dependency
     reviewer: elastic/cloudbeat
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
   - repo: elastic-agent-shipper
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency,backport-skip
   - repo: elastic-agent
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency,backport-skip
     description: It requires the version to be bumped first in golang-crossbuild project, then a new release will be added to https://github.com/elastic/golang-crossbuild/releases. Otherwise it will fail until the docker images are available.
@@ -57,35 +57,35 @@ projects:
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency
   - repo: elastic-agent-inputs
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency
   - repo: elastic-agent-libs
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency
   - repo: elastic-agent-system-metrics
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency
   - repo: fleet-server
     script: .ci/bump-go-release-version.sh
     branches:
       - main
-    overrideGoVersion: "1.18"
+    overrideGoVersion: "1.19"
     enabled: true
     labels: dependency,backport-skip
   - repo: golang-crossbuild
