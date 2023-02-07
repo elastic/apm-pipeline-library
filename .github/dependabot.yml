@@ -20,15 +20,6 @@ updates:
     reviewers:
       - "elastic/observablt-ci"
 
-  # Enable version updates for Gradle
-  - package-ecosystem: "gradle"
-    directory: ".ci/jobDSL"
-    # Check for updates once a month
-    schedule:
-      interval: "monthly"
-    reviewers:
-      - "elastic/observablt-ci"
-
   # Enable version updates for pytest_otel
   - package-ecosystem: "pip"
     directory: "resources/scripts/pytest_otel"
