@@ -19,11 +19,12 @@ jobs:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
-      ## TODO: use the gh api if possible
       ## TODO: pass the current git context
-      - run: |
-          curl -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
-            --request POST \
-            --data '{"event_type": "benchmark-java", "client_payload": { "version": "1.2.3"}}' \
-            https://api.github.com/repos/elastic/observability-robots-playground/dispatches
+      - env:
+          GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+          PROJECT: observability-robots-playground
+        run: |-
+          gh api -H 'Accept: application/vnd.github.everest-preview+json' \
+            repos/elastic/${{ env.PROJECT }}/dispatches \
+            -X POST \
+            --input - <<< '{"event_type":"benchmark-java","client_payload":{ "version": "1.2.3"}}'
