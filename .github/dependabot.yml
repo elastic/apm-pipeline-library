@@ -1,16 +1,6 @@
 ---
 version: 2
 updates:
-  # Enable version updates for maven
-  - package-ecosystem: "maven"
-    # Look for `pom.xml` file in the `root` directory
-    directory: "/"
-    # Check for updates once a month
-    schedule:
-      interval: "monthly"
-    reviewers:
-      - "elastic/observablt-ci"
-
   # Enable version updates for Docker
   - package-ecosystem: "docker"
     directory: "/local"
