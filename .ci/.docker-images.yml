@@ -112,12 +112,10 @@ images:
     repository: "elastic/apm-integration-testing"
     tag: "daily"
 
-## This is also failing in Jenkins
-## https://apm-ci.elastic.co/job/apm-shared/job/docker-images/job/apm-integration-testing-all
-#  - name: "apm-integration-testing-all"
-#    repository: "elastic/apm-integration-testing"
-#    build_script: "make -C docker all-tests"
-#    push_script: "make -C docker all-push"
+  - name: "apm-integration-testing-all"
+    repository: "elastic/apm-integration-testing"
+    build_script: "make -C docker all-tests"
+    push_script: "make -C docker all-push"
 
   # Opbeans Docker Images
 
