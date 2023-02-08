@@ -2,5 +2,3 @@
 set -eo pipefail
 
 echo 'run my benchmark'
-
-exit 1
