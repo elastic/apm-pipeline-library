@@ -25,20 +25,16 @@ runs:
     run: .ci/scripts/bench.sh
     shell: bash
 
-  - name: Dump GitHub context
-    env:
-      GITHUB_CONTEXT: ${{ toJson(github) }}
-    run: echo "$GITHUB_CONTEXT"
-    shell: bash
-
   - name: Create GitHub check
+    if: always()
     env:
       GH_TOKEN: ${{ inputs.githubToken }}
       RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}"
+      STATE: "${{ success() && 'success' || 'failure' }}"
     run: |
       gh api repos/elastic/apm-pipeline-library/statuses/${{ inputs.sha }} \
       -X POST \
-      --input - <<< "{\"state\":\"success\",\"context\": \"benchmarks\", \"target_url\": \"${{ env.RUN_URL }}\", \"description\":\"The benchmark ran\"}"
+      --input - <<< "{\"state\":\"${{ env.STATE }}\",\"context\": \"benchmarks\", \"target_url\": \"${{ env.RUN_URL }}\", \"description\":\"The benchmark ran\"}"
     shell: bash
 
   - name: Report results
