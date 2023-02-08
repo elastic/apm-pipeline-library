@@ -10,6 +10,9 @@ inputs:
   vaultSecretId:
     description: 'Vault secret ID'
     required: true
+  githubToken:
+    description: 'GitHub token'
+    required: true
 
 runs:
   using: "composite"
@@ -18,6 +21,12 @@ runs:
   - name: Run benchmark script
     run: .ci/scripts/bench.sh
     shell: bash
+
+  - name: Create GitHub check
+    env:
+      GH_TOKEN: ${{ inputs.githubToken }}
+    run: |
+      gh api repos/elastic/apm-pipeline-library/issues
 
   - if: always()
     name: Report results
