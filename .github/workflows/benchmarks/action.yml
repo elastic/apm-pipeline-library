@@ -16,7 +16,8 @@ runs:
   steps:
 
   - name: Run benchmark script
-    run: echo 'run'
+    run: .ci/scripts/bench.sh
+    shell: bash
 
   - if: always()
     name: Report results
