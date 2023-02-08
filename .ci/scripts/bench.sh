@@ -2,3 +2,5 @@
 set -eo pipefail
 
 echo 'run my benchmark'
+
+env | sort

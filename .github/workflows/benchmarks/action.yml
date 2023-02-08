@@ -34,10 +34,11 @@ runs:
   - name: Create GitHub check
     env:
       GH_TOKEN: ${{ inputs.githubToken }}
+      RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}"
     run: |
       gh api repos/elastic/apm-pipeline-library/statuses/${{ inputs.sha }} \
       -X POST \
-      --input - <<< "{\"state\":\"success\",\"context\": \"benchmark\", \"target_url\": \"https://github.com/elastic/observability-robots-playground/\"}"
+      --input - <<< "{\"state\":\"success\",\"context\": \"benchmarks\", \"target_url\": \"${{ env.RUN_URL }}\", \"description\":\"The benchmark ran\"}"
     shell: bash
 
   - name: Report results
