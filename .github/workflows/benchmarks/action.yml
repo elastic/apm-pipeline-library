@@ -25,9 +25,10 @@ runs:
     run: .ci/scripts/bench.sh
     shell: bash
 
-  - name: Run benchmark script
-    run: echo ${{fromJson(github)}}
-    shell: bash
+  - name: Dump GitHub context
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+    run: echo "$GITHUB_CONTEXT"
 
   - name: Create GitHub check
     env:
