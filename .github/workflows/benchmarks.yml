@@ -1,0 +1,28 @@
+name: benchmarks
+
+inputs:
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Run benchmark script
+    run: echo 'run'
+
+  - if: always()
+    name: Report results
+    uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+    with:
+      url: ${{ inputs.vaultUrl }}
+      roleId: ${{ inputs.vaultRoleId }}
+      secretId: ${{ inputs.vaultSecretId }}
+      slackChannel: '#on-week-oblt-productivity'
