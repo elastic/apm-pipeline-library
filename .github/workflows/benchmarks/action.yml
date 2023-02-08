@@ -13,6 +13,9 @@ inputs:
   githubToken:
     description: 'GitHub token'
     required: true
+  sha:
+    description: 'The Git Sha commit'
+    required: true
 
 runs:
   using: "composite"
@@ -26,7 +29,9 @@ runs:
     env:
       GH_TOKEN: ${{ inputs.githubToken }}
     run: |
-      gh api repos/elastic/apm-pipeline-library/issues
+      gh api repos/elastic/apm-pipeline-library/statuses/${{ inputs.sha }} \
+      -X POST \
+      --input - <<< "{\"state\":\"success\",\"context\": \"benchmark\", \"target_url\": \"https://github.com/elastic/observability-robots-playground/\"}}"
 
   - if: always()
     name: Report results
