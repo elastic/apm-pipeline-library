@@ -23,7 +23,7 @@ runs:
     name: Report results
     uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
     with:
-      url: ${{ inputs.vaultUrl }}
-      roleId: ${{ inputs.vaultRoleId }}
-      secretId: ${{ inputs.vaultSecretId }}
+      vaultUrl: ${{ inputs.vaultUrl }}
+      vaultRoleId: ${{ inputs.vaultRoleId }}
+      vaultSecretId: ${{ inputs.vaultSecretId }}
       slackChannel: '#on-week-oblt-productivity'
