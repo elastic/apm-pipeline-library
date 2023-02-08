@@ -25,6 +25,10 @@ runs:
     run: .ci/scripts/bench.sh
     shell: bash
 
+  - name: Run benchmark script
+    run: echo ${{fromJson(github)}}
+    shell: bash
+
   - name: Create GitHub check
     env:
       GH_TOKEN: ${{ inputs.githubToken }}

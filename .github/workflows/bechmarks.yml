@@ -19,7 +19,6 @@ jobs:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
-      - uses: actions/checkout@v3
 
       - env:
           GH_TOKEN: ${{ env.GITHUB_TOKEN }}
