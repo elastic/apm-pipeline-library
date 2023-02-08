@@ -29,6 +29,7 @@ runs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
     run: echo "$GITHUB_CONTEXT"
+    shell: bash
 
   - name: Create GitHub check
     env:
@@ -39,8 +40,8 @@ runs:
       --input - <<< "{\"state\":\"success\",\"context\": \"benchmark\", \"target_url\": \"https://github.com/elastic/observability-robots-playground/\"}}"
     shell: bash
 
-  - if: always()
-    name: Report results
+  - name: Report results
+    if: always()
     uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
     with:
       vaultUrl: ${{ inputs.vaultUrl }}
