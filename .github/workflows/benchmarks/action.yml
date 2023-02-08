@@ -37,7 +37,7 @@ runs:
     run: |
       gh api repos/elastic/apm-pipeline-library/statuses/${{ inputs.sha }} \
       -X POST \
-      --input - <<< "{\"state\":\"success\",\"context\": \"benchmark\", \"target_url\": \"https://github.com/elastic/observability-robots-playground/\"}}"
+      --input - <<< "{\"state\":\"success\",\"context\": \"benchmark\", \"target_url\": \"https://github.com/elastic/observability-robots-playground/\"}"
     shell: bash
 
   - name: Report results
