@@ -22,6 +22,7 @@ runs:
   steps:
 
   - name: Run benchmark script
+    id: benchmark
     run: .ci/scripts/bench.sh
     shell: bash
 
@@ -30,7 +31,7 @@ runs:
     env:
       GH_TOKEN: ${{ inputs.githubToken }}
       RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}"
-      STATE: "${{ success() && 'success' || 'failure' }}"
+      STATE: "${{ steps.benchmark.conclusion == 'success' && 'success' || 'failure' }}"
     run: |
       gh api repos/elastic/apm-pipeline-library/statuses/${{ inputs.sha }} \
       -X POST \
