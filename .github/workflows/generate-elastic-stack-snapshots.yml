@@ -15,8 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: fetch snapshots
-        working-directory: ./snapshots  ## we avoid surprises by uploading the unexpected credentials json file
         run: |-
+          ## we avoid surprises by uploading the unexpected credentials json file
+          mkdir snapshots
+          cd snapshots
           URL="https://artifacts-api.elastic.co/v1"
           NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 
