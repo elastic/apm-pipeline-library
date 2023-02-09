@@ -5,6 +5,8 @@ on:
   workflow_run:
     workflows:
       - actions-test
+      - bump-golang
+      - bump-elastic-stack
       - build-test
       - job-dsl
       - licenses

@@ -1,9 +1,9 @@
 ---
-name: bump-golang
+name: bump-elastic-stack
 
 on:
   schedule:
-    - cron: '0 20 * * 6'
+    - cron: '0 15 * * 1-5'
 
 permissions:
   pull-requests: write
@@ -25,4 +25,4 @@ jobs:
       - name: Run Updatecli
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: updatecli apply --config ./.ci/bump-golang.yml
+        run: updatecli apply --config ./.ci/bump-elastic-stack.yml
