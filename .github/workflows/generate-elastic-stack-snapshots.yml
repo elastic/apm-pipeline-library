@@ -1,0 +1,54 @@
+---
+name: generate-elastic-stack-snapshots
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1-5'
+
+permissions:
+  contents: read
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fetch snapshots
+        run: |-
+          URL="https://artifacts-api.elastic.co/v1"
+          NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
+
+          QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT"))')
+          for version in ${QUERY_OUTPUT}; do
+            LATEST_OUTPUT=$(curl -s "${URL}/versions/${version}/builds/latest?${NO_KPI_URL_PARAM}" | jq 'del(.build.projects,.manifests) | . |= .build')
+            BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
+            echo "${LATEST_OUTPUT}" | tee "$BRANCH.json"
+
+            "versions": [12, 14, 16]
+          done
+          ## support main branch
+          cp master.json main.json || true
+          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | sed 's#-SNAPSHOT##g')
+          echo "\"branches\": ${BRANCHES}" > branches.json
+
+      - name: 'Get service account'
+        uses: hashicorp/vault-action@v2.4.2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: approle
+          secrets: |
+            secret/observability-team/ci/artifacts-api-bucket service-account | SERVICE_ACCOUNT ;
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ env.SERVICE_ACCOUNT }}'
+
+      - uses: 'google-github-actions/upload-cloud-storage@v0'
+        with:
+          path: '.'
+          glob: "*.json"
+          destination: "artifacts-api/snapshots"
