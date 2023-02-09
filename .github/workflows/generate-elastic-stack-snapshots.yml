@@ -24,11 +24,11 @@ jobs:
             LATEST_OUTPUT=$(curl -s "${URL}/versions/${version}/builds/latest?${NO_KPI_URL_PARAM}" | jq 'del(.build.projects,.manifests) | . |= .build')
             BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
             echo "${LATEST_OUTPUT}" | tee "$BRANCH.json"
-
-            "versions": [12, 14, 16]
           done
           ## support main branch
           cp master.json main.json || true
+          ## generate a manifest with the current active snapshot branches.
+          ## Aka those with artifacts that have been generated in the last 30 days.
           BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | sed 's#-SNAPSHOT##g')
           echo "\"branches\": ${BRANCHES}" > branches.json
 
