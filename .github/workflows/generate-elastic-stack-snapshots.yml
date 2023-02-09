@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: fetch snapshots
+        working-directory: ./snapshots  ## we avoid surprises by uploading the unexpected credentials json file
         run: |-
           URL="https://artifacts-api.elastic.co/v1"
           NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
@@ -50,6 +51,6 @@ jobs:
 
       - uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
-          path: '.'
+          path: 'snapshots'
           glob: "*.json"
           destination: "artifacts-api/snapshots"
