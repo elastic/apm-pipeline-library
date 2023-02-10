@@ -55,4 +55,4 @@ jobs:
         with:
           path: 'snapshots'
           glob: "*.json"
-          destination: "artifacts-api/snapshots"
+          destination: "artifacts-api"
