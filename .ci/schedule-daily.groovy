@@ -39,30 +39,6 @@ pipeline {
   stages {
     stage('Run Tasks'){
       steps {
-        build(job: 'apm-shared/apm-test-pipeline-mbp/main',
-          parameters: [
-            booleanParam(name: 'Run_As_Main_Branch', value: true),
-          ],
-          propagate: false,
-          wait: false
-        )
-
-        build(job: 'apm-shared/bump-stack-version-pipeline',
-          parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false)
-          ],
-          propagate: false,
-          wait: false
-        )
-
-        build(job: 'apm-shared/bump-stack-release-version-pipeline',
-          parameters: [
-            booleanParam(name: 'DRY_RUN_MODE', value: false)
-          ],
-          propagate: false,
-          wait: false
-        )
-
         build(job: 'apm-shared/update-stack-release-version-pipeline',
           parameters: [
             booleanParam(name: 'DRY_RUN_MODE', value: false)

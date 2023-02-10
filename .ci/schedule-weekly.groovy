@@ -52,11 +52,6 @@ pipeline {
         runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
       }
     }
-    stage('Stalled Elastic Agent Bumps') {
-      steps {
-        echo 'TBC'
-      }
-    }
   }
   post {
     cleanup {
