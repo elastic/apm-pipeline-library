@@ -30,10 +30,16 @@ jobs:
           done
           ## support main branch
           cp master.json main.json || true
-          ## generate a manifest with the current active snapshot branches.
+
+          ## generate a manifest with the current active snapshot branches (it also includes main).
           ## Aka those with artifacts that have been generated in the last 30 days.
-          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | sed 's#-SNAPSHOT##g')
-          echo "{\"branches\": ${BRANCHES}}" > branches.json
+          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | jq '. + [ "main" ]' | sed 's#-SNAPSHOT##g)
+          {
+            echo "{"
+            echo "\"$branches\":"
+            echo "${BRANCHES}"
+            echo "}"
+          } > branches.json
 
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.4.2
@@ -59,6 +65,7 @@ jobs:
           destination: "artifacts-api"
           headers: |-
             content-type: application/json
+            x-goog-meta-generator: generate-elastic-stack-snapshots.yml
             x-goog-meta-generator: generate-elastic-stack-snapshots.yml
 
       - name: debug
