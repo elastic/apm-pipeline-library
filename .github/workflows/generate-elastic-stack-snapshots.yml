@@ -33,7 +33,7 @@ jobs:
           ## generate a manifest with the current active snapshot branches.
           ## Aka those with artifacts that have been generated in the last 30 days.
           BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | sed 's#-SNAPSHOT##g')
-          echo "\"branches\": ${BRANCHES}" > branches.json
+          echo "{\"branches\": ${BRANCHES}}" > branches.json
 
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.4.2
