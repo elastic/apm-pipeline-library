@@ -33,10 +33,10 @@ jobs:
 
           ## generate a manifest with the current active snapshot branches (it also includes main).
           ## Aka those with artifacts that have been generated in the last 30 days.
-          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | jq '. + [ "main" ]' | sed 's#-SNAPSHOT##g)
+          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | jq '. + [ "main" ]' | sed 's#-SNAPSHOT##g')
           {
             echo "{"
-            echo "\"$branches\":"
+            echo "\"branches\":"
             echo "${BRANCHES}"
             echo "}"
           } > branches.json
@@ -65,7 +65,6 @@ jobs:
           destination: "artifacts-api"
           headers: |-
             content-type: application/json
-            x-goog-meta-generator: generate-elastic-stack-snapshots.yml
             x-goog-meta-generator: generate-elastic-stack-snapshots.yml
 
       - name: debug
