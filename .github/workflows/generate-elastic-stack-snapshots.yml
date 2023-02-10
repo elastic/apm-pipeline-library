@@ -60,7 +60,6 @@ jobs:
           headers: |-
             content-type: application/json
             x-goog-meta-generator: generate-elastic-stack-snapshots.yml
-          predefinedAcl: publicRead
 
       - name: debug
         run: echo "${{ steps.upload-file.outputs.uploaded }}"
