@@ -109,7 +109,6 @@ unclassified:
                   - wildcard: "local/**"
                   - wildcard: "src/test/**"
                   - wildcard: "target/**"
-                  - wildcard: "test-infra/**"
   gitscm:
     globalConfigName: username
     globalConfigEmail: username@example.com
