@@ -24,7 +24,6 @@ pipeline {
     PIPELINE_LOG_LEVEL = 'INFO'
     DOCKERHUB_SECRET = 'secret/observability-team/ci/elastic-observability-dockerhub'
     DOCKERELASTIC_SECRET = 'secret/observability-team/ci/docker-registry/prod'
-    BEATS_MAILING_LIST = "${params.BEATS_MAILING_LIST}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -47,11 +46,6 @@ pipeline {
         generateSteps()
       }
     }
-    stage('Stalled Beats Bumps') {
-      steps {
-        runNotifyStalledBeatsBumps(branches: ['main', '8.<minor>', '8.<next-patch>', '7.<minor>'], to: env.BEATS_MAILING_LIST)
-      }
-    }
     stage('Stalled Elastic Agent Bumps') {
       steps {
         echo 'TBC'
@@ -62,18 +56,6 @@ pipeline {
     cleanup {
       notifyBuildResult()
     }
-  }
-}
-
-def runNotifyStalledBeatsBumps(Map args = [:]) {
-  def branches = getBranchesFromAliases(aliases: args.branches)
-
-  def quietPeriod = 0
-  branches.each { branch ->
-    notifyStalledBeatsBumps(branch: branch,
-                            subject: "[${branch}] ${YYYY_MM_DD}: Elastic Stack version has not been updated recently.",
-                            sendEmail: !params.DRY_RUN_MODE,
-                            to: args.to)
   }
 }
 
