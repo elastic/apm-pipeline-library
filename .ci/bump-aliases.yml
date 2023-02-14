@@ -22,15 +22,6 @@ scms:
       username: '{{ requiredEnv "GIT_USER" }}'
       branch: main
 
-# TODO: next_minor_8 is not supported yet. The groovy scripts does something like the below snippet:
-#
-#   def latestVersions = artifactsApi(action: 'latest-versions')
-#   def latest8 = latestReleaseVersions.findAll { it ==~ /8\.\d+\.\d+/ }.sort().last()
-#   releaseVersions[bumpUtils.current8Key()] = current8
-#   releaseVersions[bumpUtils.nextMinor8Key()] = latest8
-#   releaseVersions[bumpUtils.nextPatch8Key()] = increaseVersion(current8, 1)
-#   releaseVersions[bumpUtils.edge8Key()] = latestVersions.main.version.replaceAll('-SNAPSHOT','')
-
 sources:
   current7:
     name: Get Latest 7.17 Release
@@ -69,6 +60,12 @@ sources:
       command: echo {{ source "current7" }}
     transformers:
       - semverinc: "patch"
+
+  next8:
+    name: Get next minor version for 8.x
+    kind: shell
+    spec:
+      command: .ci/get-next-minor-version.sh
 
   patch8:
     name: Get next patch version for 8.x
@@ -147,6 +144,16 @@ targets:
       file: resources/versions/releases.properties
       matchpattern: '(current_8)=\d+.\d+.\d+'
       replacepattern: '$1={{ source "current8" }}'
+
+  update-next_minor_8:
+    name: 'Update next_minor_8 alias {{ source "next8" }}'
+    sourceid: next8
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(next_minor_8)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "next8" }}'
 
   update-next_patch_8:
     name: 'Update next_patch_8 alias {{ source "patch8" }}'
