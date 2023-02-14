@@ -59,3 +59,4 @@ Following inputs can be used as `step.with` keys
 | `vaultRoleId`     | String  |                             | The Vault role id. |
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |
+| `command`         | String  | `apply`                     | What updatecli command to run. |
