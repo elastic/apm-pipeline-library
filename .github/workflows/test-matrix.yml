@@ -25,6 +25,6 @@ jobs:
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: ./bump-test.yml
-          action: 'diff'
+          command: 'diff'
         env:
           BRANCH: ${{ matrix.branch }}
