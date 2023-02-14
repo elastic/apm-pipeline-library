@@ -1,0 +1,24 @@
+---
+name: bump-aliases
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 30 * * 1-5'
+
+permissions:
+  contents: read
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: elastic/apm-pipeline-library/.github/actions/updatecli@current
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          pipeline: ./.ci/bump-aliases.yml
