@@ -135,7 +135,7 @@ pipeline {
             env.ONLY_DOCS = isGitRegionMatch(patterns: [ '.*\\.(asciidoc|md)' ], shouldMatchAll: true)
 
             // Enable Workers Checks stage for PRs with the given pattern
-            env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^test-infra|^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
+            env.TEST_INFRA = isGitRegionMatch(patterns: [ '(^resources\\/scripts\\/jenkins)\\/.*' ], shouldMatchAll: false)
           }
         }
       }
