@@ -1,10 +1,15 @@
-# Jenkins Shared Library for the Elastic Observability projects
+# CI Shared Library for the Elastic Observability projects
 
-[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-shared%2Fapm-pipeline-library-mbp%2Fmaster)](https://apm-ci.elastic.co/job/apm-shared/job/apm-pipeline-library-mbp/job/main/)
+[![Build Status](https://github.com/elastic/apm-pipeline-library/actions/workflows/build-test.yml/badge.svg)](https://github.com/elastic/apm-pipeline-library/actions/workflows/build-test.yml)
 [![Contributors](https://img.shields.io/github/contributors/elastic/apm-pipeline-library.svg)](https://github.com/elastic/apm-pipeline-library/graphs/contributors)
 [![GitHub release](https://img.shields.io/github/release/elastic/apm-pipeline-library.svg?label=changelog)](https://github.com/elastic/apm-pipeline-library/releases/latest)
 [![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg)](https://github-tools.github.io/github-release-notes/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
+We support different CI ecosystems:
+
+* Jenkins, this is deprecated and unless any security or major bugs, there will no updates.
+* GitHub actions, this is the current supported CI that will receive features.
 
 ## User Documentation
 
@@ -26,6 +31,10 @@ Read and understand our [contribution guidelines][apm-pipeline-library-contribut
 before opening a pull request.
 
 ## Resources
+
+### GitHub actions specific
+
+### Jenkins specific
 
 * [Pipeline User Handbook](https://jenkins.io/doc/book/pipeline/)
 * [Pipeline Development Tools](https://jenkins.io/doc/book/pipeline/development/)
