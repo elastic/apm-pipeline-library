@@ -88,7 +88,7 @@ sources:
           pattern: "[0-9].[0-9].[0-9]"
 
 conditions:
-  dockerTag_7:
+  docker_current7:
     name: Is docker image elasticsearch:{{ source "current7" }} published
     kind: dockerimage
     spec:
@@ -96,13 +96,53 @@ conditions:
       tag: '{{ source "current7" }}'
     sourceid: current7
 
-  dockerTag_8:
+  docker_current_8:
     name: Is docker image elasticsearch:{{ source "current8" }} published
     kind: dockerimage
     spec:
       image: elasticsearch
       tag: '{{ source "current8" }}'
     sourceid: current8
+
+  docker_next7:
+    name: Is docker image elasticsearch:{{ source "next7" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "next7" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: next7
+
+  docker_next8:
+    name: Is docker image elasticsearch:{{ source "next8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "next8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: next8
+
+  docker_patch8:
+    name: Is docker image elasticsearch:{{ source "patch8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "patch8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: patch8
+
+  docker_edge8:
+    name: Is docker image elasticsearch:{{ source "edge8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "edge8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: edge8
 
 targets:
   update-current_7:
