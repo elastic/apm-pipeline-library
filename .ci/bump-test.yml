@@ -5,12 +5,12 @@ scms:
   githubConfig:
     kind: github
     spec:
-      user: '{{ requiredEnv "GIT_USER" }}'
+      user: '{{ requiredEnv "DOCKER_USERNAME" }}'
       email: '{{ requiredEnv "GIT_EMAIL" }}'
       owner: elastic
       repository: apm-pipeline-library
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
-      username: '{{ requiredEnv "GIT_USER" }}'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
       branch: '{{ requiredEnv "BRANCH" }}'
 
 actions:
