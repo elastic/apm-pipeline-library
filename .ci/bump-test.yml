@@ -1,0 +1,50 @@
+---
+name: Bump golang-version to latest version
+
+scms:
+  githubConfig:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GIT_USER" }}'
+      email: '{{ requiredEnv "GIT_EMAIL" }}'
+      owner: elastic
+      repository: apm-pipeline-library
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      branch: '{{ requiredEnv "BRANCH" }}'
+
+actions:
+  apm-pipeline-library:
+    kind: github/pullrequest
+    scmid: githubConfig
+    spec:
+      automerge: false
+      labels:
+        - dependencies
+      title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
+
+sources:
+  latestGoVersion:
+    name: Get Latest Go Release
+    kind: githubrelease
+    transformers:
+      - trimprefix: go
+    spec:
+      owner: golang
+      repository: go
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      versionfilter:
+        kind: regex
+        pattern: go1\.18\.(\d*)$
+
+targets:
+  update-goDefaultVersion:
+    name: "Update goDefaultVersion"
+    sourceid: latestGoVersion
+    scmid: githubConfig
+    kind: file
+    spec:
+      content: '{{ source "latestGoVersion" }}'
+      file: vars/goDefaultVersion.groovy
+      matchpattern: '[0-9]+\.[0-9]+\.[0-9]+'
