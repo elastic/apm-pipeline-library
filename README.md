@@ -8,7 +8,7 @@
 
 We support different CI ecosystems:
 
-* Jenkins, this is deprecated and unless any security or major bugs, there will no updates.
+* Jenkins, this is deprecated and unless any security or major bugs, there will be no updates.
 * GitHub actions, this is the current supported CI that will receive features.
 
 ## User Documentation
