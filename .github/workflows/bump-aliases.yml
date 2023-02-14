@@ -4,7 +4,7 @@ name: bump-aliases
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 30 * * 1-5'
+    - cron: '0 15 * * 1-5'
 
 permissions:
   contents: read
