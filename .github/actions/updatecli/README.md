@@ -39,13 +39,7 @@ jobs:
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: ./.ci/update-specs.yml
 
-
 ```
-
-___
-
-* [Customizing](#customizing)
-  * [inputs](#inputs)
 
 ## Customizing
 
@@ -53,9 +47,11 @@ ___
 
 Following inputs can be used as `step.with` keys
 
-| Name              | Type    | Default                     | Description                        |
-|-------------------|---------|-----------------------------|------------------------------------|
-| `pipeline`        | String  |                             | Path to pipeline file. |
-| `vaultRoleId`     | String  |                             | The Vault role id. |
-| `vaultSecretId`   | String  |                             | The Vault secret id. |
-| `vaultUrl`        | String  |                             | The Vault URL to connect to. |
+| Name                | Type    | Default                     | Description                        |
+|---------------------|---------|-----------------------------|------------------------------------|
+| `pipeline`          | String  |                             | Path to pipeline file. |
+| `vaultRoleId`       | String  |                             | The Vault role id. |
+| `vaultSecretId`     | String  |                             | The Vault secret id. |
+| `vaultUrl`          | String  |                             | The Vault URL to connect to. |
+| `dockerRegistry`    | String  | `docker.elastic.co`         | The docker registry. |
+| `dockerVaultSecret` | String  | `secret/observability-team/ci/docker-registry/prod` | The Vault secret with the docker auth details. |
