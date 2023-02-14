@@ -21,6 +21,10 @@ runs:
   using: "composite"
   steps:
 
+    - name: debug
+      run: env | sort
+      shell: bash
+
     - name: Setup Git
       uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
 
