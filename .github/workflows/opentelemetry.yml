@@ -5,6 +5,7 @@ on:
   workflow_run:
     workflows:
       - actions-test
+      - bump-aliases
       - bump-golang
       - bump-elastic-stack
       - build-test
