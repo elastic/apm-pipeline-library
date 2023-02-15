@@ -96,9 +96,3 @@ See [release process][apm-pipeline-library-release]
 ## Upgrade repository maven wrapper
 
 `mvn -N io.takari:maven:0.7.6:wrapper -Dmaven=3.3.3`
-
-## Test Infra
-
-This is how we test the actual state of our CI workers that are configured with Ansible. Therefore, we can validate whether the CI worker templates have been configured with the expected requirements
-
-This particular implementation uses [testinfra](https://testinfra.readthedocs.io/en/latest/).
