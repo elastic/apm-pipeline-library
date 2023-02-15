@@ -57,7 +57,6 @@ jobs:
                   echo "}"
                 } > branches.json.tmp
                 mv branches.json.tmp branches.json
-                rm "$branch.json"
               fi
             fi
           done
