@@ -45,17 +45,14 @@ repos:
     rev: current
     hooks:
     -   id: check-bash-syntax
-    -   id: check-abstract-classes-and-trait
-    -   id: check-jsonslurper-class
-    -   id: check-jenkins-pipelines   # TODO: this hook won't be needed once the CI migration is completed
-        files: ^(.ci/(.*\.groovy|Jenkinsfile)|Jenkinsfile|resources/JenkinsfileTemplate.groovy)$
+    -   id: check-abstract-classes-and-trait   # TODO: this hook won't be needed once the CI migration is completed
+    -   id: check-jsonslurper-class   # TODO: this hook won't be needed once the CI migration is completed
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
         exclude: ^src/test/resources/mappings/
     -   id: remove-en-dashes
         exclude: ^src/test/resources/mappings/
-    -   id: check-jjbb                # TODO: this hook won't be needed once the CI migration is completed
 
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
