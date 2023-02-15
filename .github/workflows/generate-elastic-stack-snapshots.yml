@@ -41,6 +41,28 @@ jobs:
             echo "}"
           } > branches.json
 
+          ## Remove branches that have not been created yet, for such it queries the GitHub repositoreis
+          for branch in $(jq -r '.branches | .[]' branches.json); do
+            if git ls-remote --exit-code --heads https://github.com/elastic/elasticsearch.git "$branch" ; then
+              echo $branch
+            else
+              ## fallback to kibana just in case
+              if git ls-remote --exit-code --heads https://github.com/elastic/kibana.git "$branch" ; then
+                echo $branch
+              else
+                echo "$branch does not exist"
+                {
+                  echo "{"
+                  echo "\"branches\":"
+                  jq ".branches - [\"$branch\"]" branches.json
+                  echo "}"
+                } > branches.json.tmp
+                mv branches.json.tmp branches.json
+                rm "$branch.json"
+              fi
+            fi
+          done
+
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.4.2
         with:
