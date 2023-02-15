@@ -1,0 +1,216 @@
+---
+name: Bump aliases with the elastic stack versions
+
+actions:
+  default:
+    title: '[automation] Update Elastic stack release version source of truth'
+    kind: github/pullrequest
+    scmid: default
+    spec:
+      labels:
+        - automation
+
+scms:
+  default:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GIT_USER" }}'
+      email: '{{ requiredEnv "GIT_EMAIL" }}'
+      owner: elastic
+      repository: apm-pipeline-library
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      branch: main
+
+sources:
+  current7:
+    name: Get Latest 7.17 Release
+    kind: githubrelease
+    transformers:
+      - trimprefix: v
+    spec:
+      owner: elastic
+      repository: elasticsearch
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      versionfilter:
+        kind: regex
+        pattern: v7\.17\.\d+$
+
+  current8:
+    name: Get Latest 8.x Release
+    kind: githubrelease
+    transformers:
+      - trimprefix: v
+    spec:
+      owner: elastic
+      repository: elasticsearch
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      versionfilter:
+        kind: regex
+        pattern: v8\.\d+\.\d+$
+
+  next7:
+    name: Get next patch version for 7.17
+    kind: shell
+    dependson:
+      - current7
+    spec:
+      command: echo {{ source "current7" }}
+    transformers:
+      - semverinc: "patch"
+
+  next8:
+    name: Get next minor version for 8.x
+    kind: shell
+    spec:
+      command: .ci/get-next-minor-version.sh
+
+  patch8:
+    name: Get next patch version for 8.x
+    kind: shell
+    dependson:
+      - current8
+    spec:
+      command: echo {{ source "current8" }}
+    transformers:
+      - semverinc: "patch"
+
+  edge8:
+    name: Get latest semver for the main branch
+    kind: json
+    spec:
+      file: https://storage.googleapis.com/artifacts-api/snapshots/main.json
+      key: .build_id
+    transformers:
+      - findsubmatch:
+          pattern: "[0-9].[0-9].[0-9]"
+
+conditions:
+  docker_current7:
+    name: Is docker image elasticsearch:{{ source "current7" }} published
+    kind: dockerimage
+    spec:
+      image: elasticsearch
+      tag: '{{ source "current7" }}'
+    sourceid: current7
+
+  docker_current_8:
+    name: Is docker image elasticsearch:{{ source "current8" }} published
+    kind: dockerimage
+    spec:
+      image: elasticsearch
+      tag: '{{ source "current8" }}'
+    sourceid: current8
+
+  docker_next7:
+    name: Is docker image elasticsearch:{{ source "next7" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "next7" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: next7
+
+  docker_next8:
+    name: Is docker image elasticsearch:{{ source "next8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "next8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: next8
+
+  docker_patch8:
+    name: Is docker image elasticsearch:{{ source "patch8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "patch8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: patch8
+
+  docker_edge8:
+    name: Is docker image elasticsearch:{{ source "edge8" }}-SNAPSHOT available
+    kind: dockerimage
+    spec:
+      image: docker.elastic.co/elasticsearch/elasticsearch
+      tag: '{{ source "edge8" }}-SNAPSHOT'
+      username: '{{ requiredEnv "DOCKER_USERNAME" }}'
+      password: '{{ requiredEnv "DOCKER_PASSWORD" }}'
+    sourceid: edge8
+
+targets:
+  update-current_7:
+    name: 'Update current_7 alias {{ source "current7" }}'
+    sourceid: current7
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(current_7)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "current7" }}'
+
+  update-next_minor_7:
+    name: 'Update next_minor_7 alias {{ source "next7" }}'
+    sourceid: next7
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(next_minor_7)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "next7" }}'
+
+  update-next_patch_7:
+    name: 'Update next_patch_7 alias {{ source "next7" }}'
+    sourceid: next7
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(next_patch_7)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "next7" }}'
+
+  update-current_8:
+    name: 'Update current_8 alias {{ source "current8" }}'
+    sourceid: current8
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(current_8)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "current8" }}'
+
+  update-next_minor_8:
+    name: 'Update next_minor_8 alias {{ source "next8" }}'
+    sourceid: next8
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(next_minor_8)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "next8" }}'
+
+  update-next_patch_8:
+    name: 'Update next_patch_8 alias {{ source "patch8" }}'
+    sourceid: patch8
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(next_patch_8)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "patch8" }}'
+
+  update-edge_8:
+    name: 'Update edge_8 alias {{ source "edge8" }}'
+    sourceid: edge8
+    scmid: default
+    kind: file
+    spec:
+      file: resources/versions/releases.properties
+      matchpattern: '(edge_8)=\d+.\d+.\d+'
+      replacepattern: '$1={{ source "edge8" }}'
