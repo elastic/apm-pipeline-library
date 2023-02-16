@@ -22,7 +22,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./github/actions/is-member-elastic-org
+      - uses: ./.github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
           user: foo
@@ -43,7 +43,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./github/actions/is-member-elastic-org
+      - uses: ./.github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
           user: apmmachine
