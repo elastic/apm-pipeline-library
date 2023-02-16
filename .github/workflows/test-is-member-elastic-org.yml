@@ -1,11 +1,8 @@
 ---
 name: test-is-member-elastic-org
+
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/actions/is-member-elastic-org/**'
+  workflow_dispatch:
 
 jobs:
   test-with-non-elastic-user:
