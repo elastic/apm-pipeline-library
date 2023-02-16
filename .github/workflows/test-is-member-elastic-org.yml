@@ -25,7 +25,7 @@ jobs:
       - uses: ./.github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
-          username: victor
+          user: victor
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Log Result
@@ -48,7 +48,7 @@ jobs:
       - uses: ./.github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
-          username: v1v
+          user: v1v
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Log Result

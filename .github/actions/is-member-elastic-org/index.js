@@ -1,14 +1,14 @@
 const core = require('@actions/core');
 
 async function run() {
-  const username = core.getInput('username');
+  const user = core.getInput('user');
   const token = core.getInput('token');
   const octokit = new github.getOctokit(token);
 
   try {
     const { status } = await octokit.rest.orgs.checkMembershipForUser({
       org: "elastic",
-      username,
+      user,
     });
 
     if (status === 204) {
