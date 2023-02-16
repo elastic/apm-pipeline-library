@@ -4,9 +4,18 @@ const github = require('@actions/github');
 async function run() {
   const user = core.getInput('user');
   const token = core.getInput('token');
-  const octokit = new github.getOctokit(token);
 
   try {
+    // Validate action inputs
+    if (!user) {
+      throw new Error('user required');
+    }
+    if (!token) {
+      throw new Error('enrollmentToken required');
+    }
+
+    const octokit = new github.getOctokit(token);
+    core.info(`Validated Succeeded!`);
     const { status } = await octokit.rest.orgs.checkMembershipForUser({
       org: "elastic",
       user,
@@ -19,6 +28,7 @@ async function run() {
       core.setOutput("result", false);
     }
   } catch (error) {
+    core.warning('something went wrong');
     core.setFailed(error.message);
   }
 }
