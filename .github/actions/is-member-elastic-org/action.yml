@@ -1,0 +1,15 @@
+name: 'Is Member of Elastic org'
+description: 'Check if someone is member of the GitHub organization.'
+inputs:
+  user:
+    description: 'The GitHub user'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+outputs:
+  result:
+    description: 'The result in either true or false'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
