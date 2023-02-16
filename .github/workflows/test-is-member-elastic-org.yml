@@ -22,16 +22,14 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./.github/actions/is-member-elastic-org
+      - uses: .github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
-          user: victor
+          user: foo
           token: ${{ env.GITHUB_TOKEN }}
 
-      - name: Log Result
-        run: |
-          result=${{steps.is_elastic_member.outputs.result}}
-          echo "$result"
+      - name: Assert is no member
+        run: test "${{steps.is_elastic_member.outputs.result}}" = "false"
 
   test-with-elastic-user:
     runs-on: ubuntu-latest
@@ -45,13 +43,11 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./.github/actions/is-member-elastic-org
+      - uses: .github/actions/is-member-elastic-org
         id: is_elastic_member
         with:
-          user: v1v
+          user: apmmachine
           token: ${{ env.GITHUB_TOKEN }}
 
-      - name: Log Result
-        run: |
-          result=${{steps.is_elastic_member.outputs.result}}
-          echo "$result"
+      - name: Assert is member
+        run: test "${{steps.is_elastic_member.outputs.result}}" = "true"
