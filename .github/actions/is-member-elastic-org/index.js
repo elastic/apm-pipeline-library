@@ -16,23 +16,21 @@ async function run() {
 
     const octokit = new github.getOctokit(token);
 
-    core.debug(`octokit has been successfully logged!`);
-    core.info(`Validated Succeeded!`);
+    core.info(`Checking if ${user} is a member of elastic`);
     const { status } = await octokit.rest.orgs.checkMembershipForUser({
-      org: "elastic",
-      user,
+      org: 'elastic',
+      username,
     });
 
     if (status === 204) {
-      core.warning('user is member of elastic');
+      core.info(`${user} is an organization member`);
       core.setOutput("result", true);
     } else {
-      core.warning('user not a member of elastic');
+      core.warning(`${username} is not an organization member`);
       core.setOutput("result", false);
     }
 
   } catch (error) {
-    core.warning('something went wrong');
     core.warning(error);
     core.setFailed(error.message);
   }
