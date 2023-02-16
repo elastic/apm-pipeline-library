@@ -24,7 +24,7 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-memeber-elastic-org
         id: is_elastic_member
         with:
-          username: foo
+          username: mdelapenya
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Assert is no member
