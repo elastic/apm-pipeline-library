@@ -14,7 +14,6 @@ jobs:
   test-with-non-elastic-user:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
 
       - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
         with:
@@ -22,7 +21,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./.github/actions/is-member-elastic-org
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-memeber-elastic-org
         id: is_elastic_member
         with:
           user: foo
@@ -34,16 +33,13 @@ jobs:
   test-with-elastic-user:
     runs-on: ubuntu-latest
     steps:
-
-      - uses: actions/checkout@v3
-
       - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: ./.github/actions/is-member-elastic-org
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-memeber-elastic-org
         id: is_elastic_member
         with:
           user: apmmachine
