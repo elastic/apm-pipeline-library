@@ -15,6 +15,8 @@ async function run() {
     }
 
     const octokit = new github.getOctokit(token);
+
+    core.debug(`octokit has been successfully logged!`);
     core.info(`Validated Succeeded!`);
     const { status } = await octokit.rest.orgs.checkMembershipForUser({
       org: "elastic",
@@ -22,13 +24,16 @@ async function run() {
     });
 
     if (status === 204) {
+      core.warning('user is member of elastic');
       core.setOutput("result", true);
     } else {
       core.warning('user not a member of elastic');
       core.setOutput("result", false);
     }
+
   } catch (error) {
     core.warning('something went wrong');
+    core.warning(error);
     core.setFailed(error.message);
   }
 }
