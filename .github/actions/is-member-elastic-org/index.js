@@ -5,17 +5,16 @@ async function run() {
   const username = core.getInput('username');
   const token = core.getInput('token');
 
+  // Validate action inputs
+  if (!username) {
+    throw new Error('username required');
+  }
+  if (!token) {
+    throw new Error('enrollmentToken required');
+  }
+
   try {
-    // Validate action inputs
-    if (!username) {
-      throw new Error('username required');
-    }
-    if (!token) {
-      throw new Error('enrollmentToken required');
-    }
-
     const octokit = new github.getOctokit(token);
-
     core.info(`Checking if ${username} is a member of elastic`);
     const { status } = await octokit.rest.orgs.checkMembershipForUser({
       org: 'elastic',
@@ -32,7 +31,10 @@ async function run() {
 
   } catch (error) {
     core.warning(error);
-    core.setFailed(error.message);
+    // if user is not member or does not exist, then return false.
+    // let's play safe enough.
+    // for instance; HttpError: User does not exist or is not a member of the organization
+    core.setOutput("result", false);
   }
 }
 
