@@ -24,7 +24,7 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-memeber-elastic-org
         id: is_elastic_member
         with:
-          user: foo
+          username: foo
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Assert is no member
@@ -42,7 +42,7 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-memeber-elastic-org
         id: is_elastic_member
         with:
-          user: apmmachine
+          username: apmmachine
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Assert is member

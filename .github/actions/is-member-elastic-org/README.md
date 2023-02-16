@@ -32,7 +32,7 @@ jobs:
       - id: is_elastic_member
         uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
         with:
-          user: ${{ github.event.issue.user.login }}
+          username: ${{ github.event.issue.user.login }}
           token: ${{ secrets.PAT_TOKEN }}
 
       - if: steps.is_elastic_member.outputs.result == true
@@ -48,7 +48,7 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
-| `user`            | String  |                             | The GitHub user name |
+| `username`            | String  |                             | The GitHub user name |
 
 ### outputs
 

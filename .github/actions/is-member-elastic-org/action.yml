@@ -1,7 +1,7 @@
 name: 'Is Member of Elastic org'
 description: 'Check if someone is member of the GitHub organization.'
 inputs:
-  user:
+  username:
     description: 'The GitHub user'
     required: true
   token:
