@@ -15,7 +15,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/alternative-is-mberm-elastic-org
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
         id: is_elastic_member
         with:
           username: mdelapenya
@@ -33,7 +33,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/alternative-is-mberm-elastic-org
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
         id: is_elastic_member
         with:
           username: apmmachine
