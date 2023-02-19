@@ -22,6 +22,7 @@ runs:
           -H "Accept: application/vnd.github+json" \
           /orgs/elastic/members/${{ inputs.username }} ; then
           echo "result=true" >> $GITHUB_OUTPUT
+        else
+          echo "result=false" >> $GITHUB_OUTPUT
         fi
-        echo "result=false" >> $GITHUB_OUTPUT
       shell: bash
