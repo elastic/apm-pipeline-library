@@ -1,0 +1,29 @@
+name: 'Workflow run'
+description: 'Run GitHub workflow from a specific GitHub with some payload.'
+inputs:
+  repository:
+    description: 'The GitHub repository, format: ORG/REPO'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  type:
+    description: 'The GitHub event type.'
+    required: true
+  payload:
+    description: 'The workflow payload.'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Dispatch workflow
+      run: |
+        gh api \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -H "Authorization: Bearer ${{ inputs.token }}" \
+          repos/${{ inputs.repository }}/dispatches \
+          -X POST \
+          --input - <<< "{\"event_type\":\"${{ inputs.type }}\",\"client_payload\":{ \"ref\": \"${{ inputs.sha }}\", \"repository\": \"${{ inputs.repository }}\"}}"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
