@@ -65,5 +65,5 @@ Following inputs can be used as `step.with` keys
 |-------------------|---------|-----------------------------|------------------------------------|
 | `repository`      | String  |                             | The GitHub repository for the GitHub event type workflow to be triggered. Format: ORG/REPO . |
 | `event`           | String  |                             | The GitHub event type to be triggered. |
-| `payload`         | String  |                             | The GitHub event payload to be consumed by the GitHub workflow event type. Format: json |
+| `payload`         | String  |                             | The GitHub event payload to be consumed by the GitHub workflow event type. Format: JSON ( { "my-key": "my-value", ... } ). |
 | `token`           | String  |                             | The GitHub token with permissions to trigger the GitHub workflow event type. |
