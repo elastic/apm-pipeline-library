@@ -12,6 +12,8 @@ GitHub Action to react to the given comment with an emoji (default +1).
 
 ### Configuration
 
+Given the `PAT_TOKEN` GitHub secret then react to a comment in a Pull Request.
+
 ```yaml
 ---
 name: React to comment in a Pull Request
@@ -26,8 +28,8 @@ jobs:
     steps:
       - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
         with:
-          repo: ${{ github.event.issue.user.login }}
-          commentId: ${{ github.event.issue.user.login }}
+          repository: ${{ github.repository }}
+          commentId: ${{ github.event.comment.id }}
           emoji: hooray
           token: ${{ secrets.PAT_TOKEN }}
 ```
@@ -41,6 +43,6 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
 | `commentId`       | String  |                             | The GitHub comment Id              |
-| `repo`            | String  |                             | The GitHub repository name         |
+| `repository`      | String  |                             | The GitHub repository, format: ORG/REPO |
 | `emoji`           | String  | `+1`                        | The emoji reaction, see https://docs.github.com/en/rest/reactions?apiVersion=2022-11-28#about-reactions |
 | `token`           | String  |                             | The GitHub token                   |

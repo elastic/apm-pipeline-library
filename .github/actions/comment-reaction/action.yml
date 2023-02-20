@@ -1,8 +1,8 @@
 name: 'comment reaction'
 description: 'React to the given comment with an emoji (default +1).'
 inputs:
-  repo:
-    description: 'The GitHub repository'
+  repository:
+    description: 'The GitHub repository (format: ORG/REPO)'
     required: true
   commentId:
     description: 'The GitHub commentId'
@@ -22,6 +22,6 @@ runs:
           --method POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ inputs.token }}" \
-          /repos/elastic/${{ inputs.repo }}/issues/comments/${{ inputs.commentId }}/reactions \
+          /repos/${{ inputs.repository }}/issues/comments/${{ inputs.commentId }}/reactions \
           -f content='${{ inputs.emoji }}'
       shell: bash
