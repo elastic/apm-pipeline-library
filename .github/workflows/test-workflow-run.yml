@@ -26,4 +26,4 @@ jobs:
           repository: "elastic/observability-robots-playground"
           type: my-event
           token: ${{ env.GITHUB_TOKEN }}
-          payload: '{ "sha": "${{ github.event.pull_request.head.sha }}", repository: "${{ github.repository }}" }'
+          payload: '{ "ref": "${{ github.event.pull_request.head.sha }}", "repository": "${{ github.repository }}" }'

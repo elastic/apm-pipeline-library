@@ -33,7 +33,7 @@ jobs:
         with:
           repository: "my-org/acme"
           event: 'deploy-my-kibana'
-          payload: '{ "sha": "${{ github.event.pull_request.head.sha }}", repository: "${{ github.repository }}" }'
+          payload: '{ "ref": "${{ github.event.pull_request.head.sha }}", repository: "${{ github.repository }}" }'
           token: ${{ secrets.PAT_TOKEN }}
 ```
 
@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.client_payload.sha }}
+          ref: ${{ github.event.client_payload.ref }}
 ```
 
 ## Customizing
