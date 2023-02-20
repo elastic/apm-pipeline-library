@@ -12,8 +12,10 @@ GitHub Action to run a workflow event from another GitHub repository.
 
 ### Configuration
 
-Given the `PAT_TOKEN` GitHub secret when a merge happens in the `main` branch
-then trigger a `deploy-my-kibana` GitHub event workflow in the repository `my-org/acme`:
+Given the repository_dispatcher wokflow called `deploy my kibana`
+  And the `PAT_TOKEN` GitHub secret
+When a merge happens in the `main` branch
+Then it triggers a `deploy-my-kibana` GitHub event workflow in the repository `my-org/acme`:
 
 ```yaml
 ---
@@ -33,6 +35,24 @@ jobs:
           event: 'deploy-my-kibana'
           payload: ''
           token: ${{ secrets.PAT_TOKEN }}
+```
+
+```yaml
+---
+name: deploy my kibana
+
+on:
+  repository_dispatch:
+    types:
+      - deploy-my-kibana
+
+jobs:
+  dispatcher:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.client_payload..sha }}
 ```
 
 ## Customizing
