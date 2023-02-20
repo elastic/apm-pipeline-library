@@ -18,7 +18,7 @@ runs:
   steps:
     - name: Prepare payload
       run: |
-        if [ -n "${{ inputs.payload }}" ] ; then
+        if [ -n '${{ inputs.payload }}' ] ; then
           {
             echo '{'
             echo '  "event_type": "${{ inputs.type }}",'
