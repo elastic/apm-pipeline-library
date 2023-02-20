@@ -6,7 +6,6 @@ GitHub Action to run a workflow event from another GitHub repository.
   * [Configuration](#configuration)
 * [Customizing](#customizing)
   * [inputs](#inputs)
-  * [outputs](#outputs)
 
 ## Usage
 
