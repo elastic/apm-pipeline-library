@@ -61,7 +61,7 @@ runs:
             for key, value in data.items():
               print(f'{key}={value}', file=f)
     - if: ${{ inputs.slackChannel }}
-      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@main
       with:
         url: ${{ inputs.vaultUrl }}
         roleId: ${{ inputs.vaultRoleId }}

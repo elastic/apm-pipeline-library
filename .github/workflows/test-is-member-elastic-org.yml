@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@main
         id: is_elastic_member
         with:
           username: mdelapenya
@@ -27,13 +27,13 @@ jobs:
   test-with-elastic-user:
     runs-on: ubuntu-latest
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@main
         id: is_elastic_member
         with:
           username: apmmachine

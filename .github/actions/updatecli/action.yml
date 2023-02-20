@@ -29,15 +29,15 @@ runs:
   steps:
 
     - name: Setup Git
-      uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+      uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
 
-    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
       with:
         url: ${{ inputs.vaultUrl }}
         roleId: ${{ inputs.vaultRoleId }}
         secretId: ${{ inputs.vaultSecretId }}
 
-    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
       with:
         registry: ${{ inputs.dockerRegistry }}
         url: ${{ inputs.vaultUrl }}
