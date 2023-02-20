@@ -14,14 +14,14 @@ GitHub Action to run a workflow event from another GitHub repository.
 
 Given the repository_dispatcher wokflow called `deploy my kibana`
   And the `PAT_TOKEN` GitHub secret
-When a merge happens in the `main` branch
+When a Pull Request happens that targets the `main` branch
 Then it triggers a `deploy-my-kibana` GitHub event workflow in the repository `my-org/acme`:
 
 ```yaml
 ---
 name: Run GitHub Event Workflow example
 on:
-  push:
+  pull_request:
     branches:
       - main
 jobs:
@@ -33,7 +33,7 @@ jobs:
         with:
           repository: "my-org/acme"
           event: 'deploy-my-kibana'
-          payload: ''
+          payload: '{ "sha": "${{ github.event.pull_request.head.sha }}", repository: "${{ github.repository }}" }'
           token: ${{ secrets.PAT_TOKEN }}
 ```
 
@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.client_payload..sha }}
+          ref: ${{ github.event.client_payload.sha }}
 ```
 
 ## Customizing
