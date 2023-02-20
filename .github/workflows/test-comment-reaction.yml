@@ -1,0 +1,43 @@
+---
+name: test-comment-reaction
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  comment-reaction-by-default:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+        with:
+          repo: ${{ github.repository }}
+          commentId: ${{ github.event.comment.id }}
+          emoji: hooray
+          token: ${{ env.GITHUB_TOKEN }}
+
+  comment-reaction-if-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && icontains(github.event.comment.body, '/run-comment-reaction') }}
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+        with:
+          repo: ${{ github.repository }}
+          commentId: ${{ github.event.comment.id }}
+          token: ${{ env.GITHUB_TOKEN }}
