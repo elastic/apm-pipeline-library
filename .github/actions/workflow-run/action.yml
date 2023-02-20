@@ -20,10 +20,9 @@ runs:
       run: |
         gh api \
           -H 'Accept: application/vnd.github.everest-preview+json' \
-          -H "Authorization: Bearer ${{ inputs.token }}" \
           repos/${{ inputs.repository }}/dispatches \
           -X POST \
-          --input - <<< "{\"event_type\":\"${{ inputs.type }}\",\"client_payload\":{ \"ref\": \"${{ inputs.sha }}\", \"repository\": \"${{ inputs.repository }}\"}}"
-      shell: bash
+          --input - <<< "{\"event_type\":\"${{ inputs.type }}\",\"client_payload\":{ \"ref\": \"foo\", \"repository\": \"${{ inputs.repository }}\"}}"
       env:
         GH_TOKEN: ${{ inputs.token }}
+      shell: bash

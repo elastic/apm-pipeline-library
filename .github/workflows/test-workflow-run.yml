@@ -1,0 +1,29 @@
+---
+name: test-workflow-run
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  test-with-elastic-user:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - name: Dump GitHub context
+        run: echo '${{ toJSON(github) }}'
+
+      - uses: elastic/apm-pipeline-library/.github/actions/workflow-run@feature/github-workflow-run
+        with:
+          repository: "elastic/observability-robots-playground"
+          type: my-event
+          token: ${{ env.GITHUB_TOKEN }}
+          payload: '{ "sha": "${{ github.sha }}", repository: "${{ github.repository }}" }'
