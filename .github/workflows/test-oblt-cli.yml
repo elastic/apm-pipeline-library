@@ -24,4 +24,4 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-action
         with:
           token: ${{ env.GITHUB_TOKEN }}
-          command: 'cluster create ccs --remote-cluster=dev-oblt --cluster-name-prefix test-github-action'
+          command: 'cluster create ccs --remote-cluster=dev-oblt --cluster-name-prefix testgithubaction'
