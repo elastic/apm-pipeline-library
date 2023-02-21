@@ -18,11 +18,12 @@ runs:
       name: Check if user is member of the Elastic org
       run: |
         if gh api \
-          -H "Authorization: Bearer ${{ inputs.token }}" \
           -H "Accept: application/vnd.github+json" \
           /orgs/elastic/members/${{ inputs.username }} ; then
           echo "result=true" >> $GITHUB_OUTPUT
         else
           echo "result=false" >> $GITHUB_OUTPUT
         fi
+      env:
+        GH_TOKEN: ${{ inputs.token }}
       shell: bash
