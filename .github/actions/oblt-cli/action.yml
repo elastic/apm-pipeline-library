@@ -28,9 +28,5 @@ runs:
 
     - name: run oblt-cli
       run: |
-        verboseFlag=''
-        if [ '${{ env.RUNNER_DEBUG }}' == "true" ] ; then
-          verboseFlag='--verbose'
-        fi
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} $verboseFlag
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose
       shell: bash
