@@ -88,22 +88,6 @@ sources:
           pattern: "[0-9].[0-9].[0-9]"
 
 conditions:
-  docker_current7:
-    name: Is docker image elasticsearch:{{ source "current7" }} published
-    kind: dockerimage
-    spec:
-      image: elasticsearch
-      tag: '{{ source "current7" }}'
-    sourceid: current7
-
-  docker_current_8:
-    name: Is docker image elasticsearch:{{ source "current8" }} published
-    kind: dockerimage
-    spec:
-      image: elasticsearch
-      tag: '{{ source "current8" }}'
-    sourceid: current8
-
   docker_next7:
     name: Is docker image elasticsearch:{{ source "next7" }}-SNAPSHOT available
     kind: dockerimage
