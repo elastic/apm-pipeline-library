@@ -19,10 +19,10 @@ runs:
 
     - name: configure oblt-cli
       run: |
-        GITHUB_TOKEN: ${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine
       shell: bash
 
     - name: run oblt-cli
       run: |
-        GITHUB_TOKEN: ${{ inputs.token }} ./oblt-cli ${{ inputs.command }}
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }}
       shell: bash
