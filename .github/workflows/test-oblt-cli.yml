@@ -12,7 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - name: Setup Git
+        uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
