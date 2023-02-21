@@ -84,7 +84,7 @@ jobs:
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           slackChannel: "#some-channel"
 ```
-> 💡 In this example the results of all jobs are evaluated the combined result is notified.
+> 💡 In this example the results of all jobs are evaluated and the combined result is notified.
 
 ## Customizing
 
