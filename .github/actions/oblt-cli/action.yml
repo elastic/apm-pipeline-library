@@ -19,7 +19,7 @@ runs:
 
     - name: configure oblt-cli
       run: |
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine --slack-channel='#channelIsRequired'
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine --slack-channel='#observablt-bots'
       shell: bash
 
     - name: run oblt-cli
