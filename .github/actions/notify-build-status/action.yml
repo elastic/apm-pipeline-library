@@ -14,6 +14,9 @@ inputs:
   slackChannel:
     description: Slack channel
     required: false
+  message:
+    description: Add additional message
+    required: false
 
 runs:
   using: composite
@@ -73,6 +76,7 @@ runs:
               {
                 "pretext": "Workflow <${{ steps.prepare.outputs.repo_url }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}> triggered by <${{ github.server_url }}/${{ github.actor }}|${{ github.actor }}>",
                 "color": "${{ steps.prepare.outputs.color }}",
+                "text": "${{ inputs.message }}",
                 "fields": [
                   {
                     "title": "Status",
