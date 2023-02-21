@@ -52,9 +52,10 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name            | Type    | Required | Description                                             |
-|-----------------|---------|------|-------------------------------------------------------------|
-| `vaultRoleId`   | String  | yes  | The Vault role id.                                          |
-| `vaultSecretId` | String  | yes  | The Vault secret id.                                        |
-| `vaultUrl`      | String  | yes  | The Vault URL to connect to.                                |
-| `slackChannel`  | String  | no   | Slack channel id, channel name, or user id to post message. |
+| Name            | Type    | Required | Description                                                   |
+|-----------------|---------|------|-------------------------------------------------------------------|
+| `vaultRoleId`   | String  | yes  | The Vault role id.                                                |
+| `vaultSecretId` | String  | yes  | The Vault secret id.                                              |
+| `vaultUrl`      | String  | yes  | The Vault URL to connect to.                                      |
+| `slackChannel`  | String  | no   | Slack channel id, channel name, or user id to post message.       |
+| `message`       | String | no | Add additional message to the notification.                          |
