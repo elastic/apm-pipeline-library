@@ -1,0 +1,28 @@
+name: 'Oblt-cli wrapper'
+description: 'Run the oblt-cli wrapper.'
+inputs:
+  command:
+    description: 'The oblt-cli command to run'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: download oblt-cli
+      run: |
+        gh release download --repo elastic/observability-test-environments -p '*linux_amd64.tar.gz' --output - | tar -xz
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+
+    - name: configure oblt-cli
+      run: |
+        GITHUB_TOKEN: ${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine
+      shell: bash
+
+    - name: run oblt-cli
+      run: |
+        GITHUB_TOKEN: ${{ inputs.token }} ./oblt-cli ${{ inputs.command }}
+      shell: bash
