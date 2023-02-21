@@ -7,6 +7,10 @@ inputs:
   token:
     description: 'The GitHub access token.'
     required: true
+  slackChannel:
+    description: 'The slack channel to notify the status.'
+    default: '#observablt-bots'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -19,7 +23,7 @@ runs:
 
     - name: configure oblt-cli
       run: |
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine --slack-channel='#observablt-bots'
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username=apmmachine --slack-channel='${{ inputs.slackChannel }}'
       shell: bash
 
     - name: run oblt-cli

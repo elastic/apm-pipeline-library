@@ -39,4 +39,5 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
 | `command`         | String  |                             | The oblt-cli command to run, without the oblt-cli prefix. |
+| `slackChannel`    | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli. |
 | `token`           | String  |                             | The GitHub token with permissions fetch releases. |
