@@ -21,7 +21,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-ccs@feature/oblt-cli-create-ccs-action
         with:
           token: ${{ env.GITHUB_TOKEN }}
           remote-cluster: 'release-oblt'

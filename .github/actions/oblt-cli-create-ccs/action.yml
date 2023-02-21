@@ -48,7 +48,7 @@ runs:
         rm command
       shell: bash
 
-    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
       with:
         command: 'cluster create ccs ${{ env.COMMAND }}'
         slackChannel: ${{ inputs.slackChannel }}
