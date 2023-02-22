@@ -20,7 +20,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-action
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@main
         with:
           token: ${{ env.GITHUB_TOKEN }}
           command: 'cluster create ccs --remote-cluster=dev-oblt --cluster-name-prefix testgithubaction'
