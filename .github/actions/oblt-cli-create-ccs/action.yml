@@ -26,6 +26,10 @@ inputs:
     description: 'The slack channel to notify the status.'
     default: '#observablt-bots'
     required: false
+  username:
+    description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
+    default: 'apmmachine'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -53,3 +57,4 @@ runs:
         command: 'cluster create ccs ${{ env.COMMAND }}'
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
+        username: ${{ inputs.username }}

@@ -46,3 +46,4 @@ Following inputs can be used as `step.with` keys
 | `kibana-docker-image`       | String  | Optional                    | Force to use a Docker image for the Kibana Deployment |
 | `slackChannel`              | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli. |
 | `token`                     | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
+| `username`                  | String  | `apmmachine`                | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
