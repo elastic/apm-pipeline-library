@@ -37,15 +37,6 @@ sources:
         kind: regex
         pattern: ^v8\.(\d+)\.(\d+)$
 
-conditions:
-  dockerTag:
-    name: Is docker image elasticsearch:{{ source "latestRelease" }} published
-    kind: dockerimage
-    spec:
-      image: elasticsearch
-      tag: '{{ source "latestRelease" }}'
-    sourceid: latestRelease
-
 targets:
   update-filebeat:
     name: 'Update elastic stack version to {{ source "latestRelease" }}'
