@@ -41,3 +41,4 @@ Following inputs can be used as `step.with` keys
 | `command`         | String  |                             | The oblt-cli command to run, without the oblt-cli prefix. |
 | `slackChannel`    | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli. |
 | `token`           | String  |                             | The GitHub token with permissions fetch releases. |
+| `username`        | String  | `apmmachine`                | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
