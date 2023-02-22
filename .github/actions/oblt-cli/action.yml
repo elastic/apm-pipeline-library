@@ -1,0 +1,36 @@
+name: 'Oblt-cli wrapper'
+description: 'Run the oblt-cli wrapper.'
+inputs:
+  command:
+    description: 'The oblt-cli command to run'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  slackChannel:
+    description: 'The slack channel to notify the status.'
+    default: '#observablt-bots'
+    required: false
+  username:
+    description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
+    default: 'apmmachine'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: download oblt-cli
+      run: |
+        gh release download --repo elastic/observability-test-environments -p '*linux_amd64.tar.gz' --output - | tar -xz
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+
+    - name: configure oblt-cli
+      run: |
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username='${{ inputs.username }}' --slack-channel='${{ inputs.slackChannel }}'
+      shell: bash
+
+    - name: run oblt-cli
+      run: |
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose
+      shell: bash
