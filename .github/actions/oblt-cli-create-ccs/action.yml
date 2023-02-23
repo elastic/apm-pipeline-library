@@ -13,14 +13,8 @@ inputs:
   cluster-name-suffix:
     description: 'Suffix to be appended to the randomised cluster name'
     required: false
-  apm-docker-image:
-    description: 'Force a Docker image for the APM Deployment'
-    required: false
   elasticsearch-docker-image:
     description: 'Force to use a Docker image for the Elasticserach Deployment'
-    required: false
-  kibana-docker-image:
-    description: 'Force to use a Docker image for the Kibana Deployment'
     required: false
   slackChannel:
     description: 'The slack channel to notify the status.'
@@ -41,12 +35,8 @@ runs:
             && echo -n '--cluster-name-prefix=${{ inputs.cluster-name-prefix }} '
           [ -n '${{ inputs.cluster-name-suffix }}' ] \
             && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
-          [ -n '${{ inputs.apm-docker-image }}' ] \
-            && echo -n '--apm-docker-image=${{ inputs.apm-docker-image }} '
           [ -n '${{ inputs.elasticsearch-docker-image }}' ] \
             && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
-          [ -n '${{ inputs.kibana-docker-image }}' ] \
-            && echo -n '--kibana-docker-image=${{ inputs.kibana-docker-image }} '
         } > command
         echo "COMMAND=$(cat command)" >> $GITHUB_ENV
         rm command
