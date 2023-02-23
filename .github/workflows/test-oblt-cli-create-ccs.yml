@@ -1,0 +1,27 @@
+---
+name: test-oblt-cli-create-ccs
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  run-oblt-cli-create-ccs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Git
+        uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-ccs@main
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          remote-cluster: 'release-oblt'
+          cluster-name-prefix: 'testgithubaction'
