@@ -62,7 +62,8 @@ runs:
       if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
         {
-          echo -n '--issue=${{ github.event.issue.number }} '
+          [ -n '${{ github.event.issue.number }}' ] \
+            && echo -n '--issue=${{ github.event.issue.number }} '
         } > .gitops
       shell: bash
 
