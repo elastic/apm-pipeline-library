@@ -1,0 +1,46 @@
+---
+name: test-is-pr-author-member-elastic-org
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-with-non-elastic-author:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@feature/is-per-author-elastic-member
+        id: is_pr_author_elastic_member
+        with:
+          pull-request: 1129
+          repository: 'elastic/apm-pipeline-library'
+          token: ${{ env.GITHUB_TOKEN }}
+
+      - name: Assert is no member
+        run: test "${{steps.is_pr_author_elastic_member.outputs.result}}" = "false"
+
+  test-with-elastic-author:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@feature/is-per-author-elastic-member
+        id: is_pr_author_elastic_member
+        with:
+          pull-request: 2110
+          repository: 'elastic/apm-pipeline-library'
+          token: ${{ env.GITHUB_TOKEN }}
+
+      - name: Assert is member
+        run: test "${{steps.is_pr_author_elastic_member.outputs.result}}" = "true"
