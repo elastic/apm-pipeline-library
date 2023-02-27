@@ -77,8 +77,7 @@ runs:
       if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
       run: |
         {
-          echo -n '--comment-id=${{ github.repository }} '
-          echo -n '--commit=${{ github.repository }} '
+          echo -n '--comment-id=${{ github.event.comment.id }} '
           echo -n '--pull-request=${{ github.event.issue.number }} '
         } > .gitops
       shell: bash
