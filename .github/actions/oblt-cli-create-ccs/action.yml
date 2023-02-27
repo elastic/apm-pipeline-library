@@ -59,7 +59,7 @@ runs:
       shell: bash
 
     - name: Configure oblt-cli command for gitops - issues
-      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, "true") }}
+      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
         {
           echo -n '--issue=${{ github.event.issue.number }} '
@@ -67,7 +67,7 @@ runs:
       shell: bash
 
     - name: Configure oblt-cli command for gitops - pull-request
-      if: github.event.issue.pull_request && contains(inputs.gitops, "true")
+      if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
       run: |
         {
           echo -n '--comment-id=${{ github.repository }} '
@@ -77,7 +77,7 @@ runs:
       shell: bash
 
     - name: Configure oblt-cli command for gitops
-      if: contains(inputs.gitops, "true")
+      if: contains(inputs.gitops, 'true')
       run: |
         {
           echo -n '--repo=${{ github.repository }} '
