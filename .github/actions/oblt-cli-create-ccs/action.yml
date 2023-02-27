@@ -31,7 +31,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: create oblt-cli command
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
+    - name: Create oblt-cli command
       run: |
         {
           echo -n '--remote-cluster=${{ inputs.remote-cluster }} '
@@ -46,17 +51,30 @@ runs:
         rm command
       shell: bash
 
-    - name: create oblt-cli command for gitops
+    - name: Configure oblt-cli command for gitops - issues
+      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, "true") }}
       run: |
-        if [ '${{ inputs.gitops }}' == "true" ] ; then
-          {
-            echo -n '--repo=${{ github.repository }} '
-            echo -n '--comment-id=${{ github.repository }} '
-            echo -n '--commit=${{ github.repository }} '
-            echo -n '--issue=${{ github.repository }} '
-            echo -n '--pull-request=${{ github.repository }} '
-          } > command
-        fi
+        {
+          echo -n '--issue=${{ github.event.issue.number }} '
+        } > command
+      shell: bash
+
+    - name: Configure oblt-cli command for gitops - pull-request
+      if: github.event.issue.pull_request && contains(inputs.gitops, "true")
+      run: |
+        {
+          echo -n '--comment-id=${{ github.repository }} '
+          echo -n '--commit=${{ github.repository }} '
+          echo -n '--pull-request=${{ github.event.issue.number }} '
+        } > command
+      shell: bash
+
+    - name: Configure oblt-cli command for gitops
+      if: contains(inputs.gitops, "true")
+      run: |
+        {
+          echo -n '--repo=${{ github.repository }} '
+        } >> command
         touch command
         echo "GITOPS=$(cat command)" >> $GITHUB_ENV
         rm gitops
