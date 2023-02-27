@@ -15,13 +15,14 @@ on:
       - publish-docker-images
       - pytest_otel-build-test
       - release-drafter
+      - test-is-member-elastic-org
     types: [completed]
 
 jobs:
   otel-export-trace:
     runs-on: ubuntu-latest
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/opentelemetry@current
+      - uses: elastic/apm-pipeline-library/.github/actions/opentelemetry@main
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}

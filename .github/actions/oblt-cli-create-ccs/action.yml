@@ -1,0 +1,50 @@
+name: 'Oblt-cli create ccs'
+description: 'Run the oblt-cli wrapper to create a CCS cluster.'
+inputs:
+  remote-cluster:
+    description: 'The Oblt cluster to use'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  cluster-name-prefix:
+    description: 'Prefix to be prepended to the randomised cluster name'
+    required: false
+  cluster-name-suffix:
+    description: 'Suffix to be appended to the randomised cluster name'
+    required: false
+  elasticsearch-docker-image:
+    description: 'Force to use a Docker image for the Elasticserach Deployment'
+    required: false
+  slackChannel:
+    description: 'The slack channel to notify the status.'
+    default: '#observablt-bots'
+    required: false
+  username:
+    description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
+    default: 'apmmachine'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: create oblt-cli command
+      run: |
+        {
+          echo -n '--remote-cluster=${{ inputs.remote-cluster }} '
+          [ -n '${{ inputs.cluster-name-prefix }}' ] \
+            && echo -n '--cluster-name-prefix=${{ inputs.cluster-name-prefix }} '
+          [ -n '${{ inputs.cluster-name-suffix }}' ] \
+            && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
+          [ -n '${{ inputs.elasticsearch-docker-image }}' ] \
+            && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
+        } > command
+        echo "COMMAND=$(cat command)" >> $GITHUB_ENV
+        rm command
+      shell: bash
+
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
+      with:
+        command: 'cluster create ccs ${{ env.COMMAND }}'
+        slackChannel: ${{ inputs.slackChannel }}
+        token: ${{ inputs.token }}
+        username: ${{ inputs.username }}

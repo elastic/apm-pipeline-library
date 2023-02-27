@@ -1,0 +1,42 @@
+name: 'Workflow run'
+description: 'Run GitHub workflow from a specific GitHub with some payload.'
+inputs:
+  repository:
+    description: 'The GitHub repository, format: ORG/REPO'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  type:
+    description: 'The GitHub event type.'
+    required: true
+  payload:
+    description: 'The workflow payload in JSON format ( { "my-key": "my-value", ... } ).'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare payload
+      run: |
+        if [ -n '${{ inputs.payload }}' ] ; then
+          {
+            echo '{'
+            echo '  "event_type": "${{ inputs.type }}",'
+            echo '  "client_payload": ${{ inputs.payload }}'
+            echo '}'
+          } | jq . > payload.json
+        else
+          echo '{ "event_type" : "${{ inputs.type }}" }' | jq . > payload.json
+        fi
+      shell: bash
+
+    - name: Dispatch workflow
+      run: |
+        gh api \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          repos/${{ inputs.repository }}/dispatches \
+          -X POST \
+          --input payload.json
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash

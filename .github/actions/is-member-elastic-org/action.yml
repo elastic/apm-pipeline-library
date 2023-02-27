@@ -1,0 +1,29 @@
+name: 'Is Member of Elastic org'
+description: 'Check if someone is member of the GitHub organization.'
+inputs:
+  username:
+    description: 'The GitHub user'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+outputs:
+  result:
+    description: 'The result in either true or false'
+    value: ${{ steps.gh-api-is-member.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - id: gh-api-is-member
+      name: Check if user is member of the Elastic org
+      run: |
+        if gh api \
+          -H "Accept: application/vnd.github+json" \
+          /orgs/elastic/members/${{ inputs.username }} ; then
+          echo "result=true" >> $GITHUB_OUTPUT
+        else
+          echo "result=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash

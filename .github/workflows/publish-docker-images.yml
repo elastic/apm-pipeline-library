@@ -53,7 +53,7 @@ jobs:
         working-directory: ${{ matrix.working_directory || '.' }}
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
@@ -65,7 +65,7 @@ jobs:
           token: ${{ env.GITHUB_TOKEN }}
           ref: ${{ matrix.branch }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
           registry: docker.elastic.co
           secret: secret/observability-team/ci/docker-registry/prod

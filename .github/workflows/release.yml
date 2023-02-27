@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
           registry: docker.elastic.co
           secret: secret/observability-team/ci/docker-registry/prod
@@ -27,13 +27,13 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+      - uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
         with:
           username: ${{ env.GIT_USER }}
           email: ${{ env.GIT_EMAIL }}

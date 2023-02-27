@@ -1,0 +1,26 @@
+---
+name: test-oblt-cli
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  run-oblt-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Git
+        uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@main
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          command: 'cluster create ccs --remote-cluster=dev-oblt --cluster-name-prefix testgithubaction'
