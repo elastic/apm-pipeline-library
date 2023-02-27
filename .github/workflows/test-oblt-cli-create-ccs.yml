@@ -2,7 +2,6 @@
 name: test-oblt-cli-create-ccs
 
 on:
-  pull_request:
   workflow_dispatch:
 
 jobs:
