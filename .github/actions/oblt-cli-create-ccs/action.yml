@@ -35,17 +35,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |-
-        echo "::group::Debug GitHub context"
-        echo "$GITHUB_CONTEXT"
-        echo "::endgroup::"
-        echo "::group::Debug env context"
-        env | sort
-        echo "::endgroup::"
-      shell: bash
 
     - name: Configure oblt-cli flags
       run: |
@@ -68,27 +57,22 @@ runs:
       if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
         {
+          echo -n '--repo="${{ github.repository }}" '
           [ -n '${{ github.event.issue.number }}' ] \
-            && echo -n '--issue=${{ github.event.issue.number }} '
+            && echo -n '--issue="${{ github.event.issue.number }}" '
         } > .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
       shell: bash
 
     - name: Configure oblt-cli flags for gitops - pull-request
       if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
       run: |
         {
-          echo -n '--comment-id=${{ github.event.comment.id }} '
-          echo -n '--pull-request=${{ github.event.issue.number }} '
+          echo -n '--repo="${{ github.repository }}" '
+          echo -n '--comment-id="${{ github.event.comment.id }}" '
+          echo -n '--pull-request="${{ github.event.issue.number }}" '
         } > .gitops
-      shell: bash
-
-    - name: Configure oblt-cli flags for gitops
-      if: contains(inputs.gitops, 'true')
-      run: |
-        {
-          echo -n '--repo=${{ github.repository }} '
-        } >> .gitops
-        touch .gitops
         echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
         rm .gitops
       shell: bash
