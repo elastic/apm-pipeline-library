@@ -21,7 +21,7 @@ runs:
       name: Gather PR Owner
       run: |-
         PR_AUTHOR=$(gh pr view ${{ inputs.pull-request }} --repo ${{ inputs.repository }} --json author --jq .author.login)
-        echo result=${PR_AUTHOR}" >> $GITHUB_OUTPUT
+        echo "result=${PR_AUTHOR}" >> $GITHUB_OUTPUT
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
