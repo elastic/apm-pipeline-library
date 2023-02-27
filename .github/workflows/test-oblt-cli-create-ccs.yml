@@ -2,6 +2,7 @@
 name: test-oblt-cli-create-ccs
 
 on:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -20,8 +21,10 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-ccs@main
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-ccs@feature/support-gitops
         with:
           token: ${{ env.GITHUB_TOKEN }}
           remote-cluster: 'release-oblt'
           cluster-name-prefix: 'testgithubaction'
+          gitOps: true
+          dry-run: true
