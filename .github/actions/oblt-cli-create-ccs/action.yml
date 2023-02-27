@@ -24,6 +24,10 @@ inputs:
     description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
     default: 'apmmachine'
     required: false
+  gitops:
+    description: 'Whether to provide the GitOps metadata to the oblt-cli'
+    default: false
+    required: false
 runs:
   using: "composite"
   steps:
@@ -38,13 +42,29 @@ runs:
           [ -n '${{ inputs.elasticsearch-docker-image }}' ] \
             && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
         } > command
-        echo "COMMAND=$(cat command)" >> $GITHUB_ENV
+        echo "GITOPS=$(cat command)" >> $GITHUB_ENV
         rm command
+      shell: bash
+
+    - name: create oblt-cli command for gitops
+      run: |
+        if [ '${{ inputs.gitops }}' == "true" ] ; then
+          {
+            echo -n '--repo=${{ github.repository }} '
+            echo -n '--comment-id=${{ github.repository }} '
+            echo -n '--commit=${{ github.repository }} '
+            echo -n '--issue=${{ github.repository }} '
+            echo -n '--pull-request=${{ github.repository }} '
+          } > command
+        fi
+        touch command
+        echo "GITOPS=$(cat command)" >> $GITHUB_ENV
+        rm gitops
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
       with:
-        command: 'cluster create ccs ${{ env.COMMAND }}'
+        command: 'cluster create ccs ${{ env.COMMAND }} ${{ env.GITOPS }}'
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}
