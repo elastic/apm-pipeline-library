@@ -29,5 +29,5 @@ runs:
     - id: is_elastic_pr_author
       uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
       with:
-        username: ${{ steps.gh_api_pr_author.outputs.result }}"
+        username: ${{ steps.gh_api_pr_author.outputs.result }}
         token: ${{ inputs.token }}
