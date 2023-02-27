@@ -38,7 +38,13 @@ runs:
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
+      run: |-
+        echo "::group::Debug GitHub context"
+        echo "$GITHUB_CONTEXT"
+        echo "::endgroup::"
+        echo "::group::Debug env context"
+        env | sort
+        echo "::endgroup::"
       shell: bash
 
     - name: Configure oblt-cli flags
