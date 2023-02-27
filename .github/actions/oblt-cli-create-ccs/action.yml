@@ -41,7 +41,7 @@ runs:
       run: echo "$GITHUB_CONTEXT"
       shell: bash
 
-    - name: Create oblt-cli command
+    - name: Configure oblt-cli flags
       run: |
         {
           echo -n '--remote-cluster=${{ inputs.remote-cluster }} '
@@ -53,38 +53,38 @@ runs:
             && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
           [ '${{ inputs.dry-run }}' == 'true' ] \
             && echo -n '--dry-run '
-        } > command
-        echo "GITOPS=$(cat command)" >> $GITHUB_ENV
-        rm command
+        } > .flags
+        echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
+        rm .flags
       shell: bash
 
-    - name: Configure oblt-cli command for gitops - issues
+    - name: Configure oblt-cli flags for gitops - issues
       if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
         {
           echo -n '--issue=${{ github.event.issue.number }} '
-        } > command
+        } > .gitops
       shell: bash
 
-    - name: Configure oblt-cli command for gitops - pull-request
+    - name: Configure oblt-cli flags for gitops - pull-request
       if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
       run: |
         {
           echo -n '--comment-id=${{ github.repository }} '
           echo -n '--commit=${{ github.repository }} '
           echo -n '--pull-request=${{ github.event.issue.number }} '
-        } > command
+        } > .gitops
       shell: bash
 
-    - name: Configure oblt-cli command for gitops
+    - name: Configure oblt-cli flags for gitops
       if: contains(inputs.gitops, 'true')
       run: |
         {
           echo -n '--repo=${{ github.repository }} '
-        } >> command
-        touch command
-        echo "GITOPS=$(cat command)" >> $GITHUB_ENV
-        rm gitops
+        } >> .gitops
+        touch .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
