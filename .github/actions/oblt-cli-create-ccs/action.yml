@@ -39,6 +39,7 @@ runs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
+      shell: bash
 
     - name: Create oblt-cli command
       run: |
