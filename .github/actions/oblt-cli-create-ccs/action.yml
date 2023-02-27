@@ -28,6 +28,10 @@ inputs:
     description: 'Whether to provide the GitOps metadata to the oblt-cli'
     default: false
     required: false
+  dry-run:
+    description: 'Whether to dryRun'
+    default: false
+    required: false
 runs:
   using: "composite"
   steps:
@@ -46,6 +50,8 @@ runs:
             && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
           [ -n '${{ inputs.elasticsearch-docker-image }}' ] \
             && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
+          [ '${{ inputs.dry-run }}' == 'true' ] \
+            && echo -n '--dry-run '
         } > command
         echo "GITOPS=$(cat command)" >> $GITHUB_ENV
         rm command
