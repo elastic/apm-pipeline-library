@@ -1,14 +1,13 @@
 ---
-name: bump-golang
+name: bump-aliases
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 20 * * 6'
+    - cron: '0 15 * * 1-5'
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 jobs:
   bump:
@@ -22,4 +21,4 @@ jobs:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          pipeline: ./.ci/bump-golang.yml
+          pipeline: ./.ci/bump-aliases.yml

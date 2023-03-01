@@ -13,7 +13,7 @@ inputs:
     required: true
   secret:
     description: 'Vault secret with the apmServerOtel and apmServerToken fields.'
-    default: secret/observability-team/ci/jenkins-logs-robots
+    default: secret/observability-team/ci/observability-ci/apm-credentials
     required: false
   githubToken:
     description: 'GitHub token (it uses github.token by default)'

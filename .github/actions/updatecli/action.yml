@@ -1,0 +1,55 @@
+name: 'Updatecli'
+description: 'Run the declarative dependency manager.'
+inputs:
+  pipeline:
+    description: 'The updatecli pipeline to run'
+    required: true
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  dockerRegistry:
+    description: 'Docker registry'
+    default: 'docker.elastic.co'
+    required: false
+  dockerVaultSecret:
+    description: 'Vault secret with the format {username:"foo", password:"bar"}'
+    default: 'secret/observability-team/ci/docker-registry/prod'
+  command:
+    description: 'What updatecli command'
+    default: 'apply'
+    required: false
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Git
+      uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      with:
+        registry: ${{ inputs.dockerRegistry }}
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+        secret: ${{ inputs.dockerVaultSecret }}
+
+    - name: Install Updatecli in the runner
+      uses: updatecli/updatecli-action@453502948b442d7b9a923de7b40cc7ce8628505c
+
+    - name: Run Updatecli
+      run: updatecli ${{ inputs.command }} --config ${{ inputs.pipeline }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

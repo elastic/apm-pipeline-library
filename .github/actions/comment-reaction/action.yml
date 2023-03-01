@@ -1,0 +1,28 @@
+name: 'comment reaction'
+description: 'React to the given comment with an emoji (default +1).'
+inputs:
+  repository:
+    description: 'The GitHub repository (format: ORG/REPO)'
+    required: true
+  commentId:
+    description: 'The GitHub commentId'
+    required: true
+  emoji:
+    description: 'The GitHub emoji (see https://docs.github.com/en/rest/reactions?apiVersion=2022-11-28#about-reactions)'
+    default: '+1'
+  token:
+    description: 'The GitHub access token.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: React to the given comment
+      run: |
+        gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          /repos/${{ inputs.repository }}/issues/comments/${{ inputs.commentId }}/reactions \
+          -f content='${{ inputs.emoji }}'
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash

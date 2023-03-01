@@ -1,0 +1,33 @@
+name: 'Is PR author a member of Elastic org'
+description: 'Check if a Pull Request author is member of the GitHub organization.'
+inputs:
+  pull-request:
+    description: 'The GitHub Pull Request'
+    required: true
+  repository:
+    description: 'The GitHub repository (format: ORG/REPO)'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+outputs:
+  result:
+    description: 'The result in either true or false'
+    value: ${{ steps.is_elastic_pr_author.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - id: gh_api_pr_author
+      name: Gather PR Owner
+      run: |-
+        PR_AUTHOR=$(gh pr view ${{ inputs.pull-request }} --repo ${{ inputs.repository }} --json author --jq .author.login)
+        echo "result=${PR_AUTHOR}" >> $GITHUB_OUTPUT
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+
+    - id: is_elastic_pr_author
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ steps.gh_api_pr_author.outputs.result }}
+        token: ${{ inputs.token }}

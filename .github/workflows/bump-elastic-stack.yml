@@ -1,10 +1,10 @@
 ---
-name: bump-golang
+name: bump-elastic-stack
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 20 * * 6'
+    - cron: '0 15 * * 1-5'
 
 permissions:
   pull-requests: write
@@ -22,4 +22,4 @@ jobs:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          pipeline: ./.ci/bump-golang.yml
+          pipeline: ./.ci/bump-elastic-stack.yml

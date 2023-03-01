@@ -20,7 +20,6 @@ metadata.txt
 
 out.html
 .vscode
-.ci/jobDSL/bin
 
 venv
 

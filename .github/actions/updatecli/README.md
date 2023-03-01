@@ -1,9 +1,7 @@
 
 ## About
 
-GitHub Action to export GitHub actions as OpenTelemetry traces.
-
-___
+GitHub Action to run the updatecli with vault access.
 
 * [Usage](#usage)
   * [Configuration](#configuration)
@@ -14,51 +12,32 @@ ___
 
 ### Configuration
 
-Given the CI GitHub action:
 
-```
+```yaml
 ---
-name: ci
+name: update-specs
 
 on:
-  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
 
 permissions:
   contents: read
 
 jobs:
-  generate:
-    timeout-minutes: 5
+  bump:
     runs-on: ubuntu-latest
     steps:
-      ...
 
-```
+      - uses: actions/checkout@v3
 
-Then, let's create a new workflow to export the data
-
-```yaml
----
-name: OpenTelemetry
-on:
-  workflow_run:
-    workflows: [ ci ]
-    types: [ completed ]
-
-jobs:
-  publish_results:
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-      actions: read
-    steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/opentelemetry@current
+      - uses: elastic/apm-pipeline-library/.github/actions/updatecli@current
         with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          pipeline: ./.ci/update-specs.yml
 
 ```
 
@@ -70,8 +49,10 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
-| `githubToken`     | String  | `github.token`              | The GitHub token used to comment out the URL with the report. |
+| `pipeline`        | String  |                             | Path to pipeline file. |
 | `vaultRoleId`     | String  |                             | The Vault role id. |
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |
-| `secret`          | String  | `secret/observability-team/ci/observability-ci/apm-credentials` | The Vault secret. |
+| `command`         | String  | `apply`                     | What updatecli command to run. |
+| `dockerRegistry`    | String  | `docker.elastic.co`         | The docker registry. |
+| `dockerVaultSecret` | String  | `secret/observability-team/ci/docker-registry/prod` | The Vault secret with the docker auth details. |

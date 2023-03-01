@@ -45,6 +45,46 @@ jobs:
 
 
 ```
+> ⚠️ This will only report the status of the current job.
+
+```yaml
+---
+name: example
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 0;
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1;
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 0;
+  status:
+    needs:
+      - build
+      - test
+      - release
+    runs-on: ubuntu-latest
+    steps:
+      - run: test $(echo '${{ toJSON(needs) }}' | jq -s 'map(.[].result) | all(.=="success")') = 'true'
+      - if: always()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#some-channel"
+```
+> 💡 In this example the results of all jobs are evaluated and the combined result is notified.
 
 ## Customizing
 
@@ -52,9 +92,10 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name            | Type    | Required | Description                                             |
-|-----------------|---------|------|-------------------------------------------------------------|
-| `vaultRoleId`   | String  | yes  | The Vault role id.                                          |
-| `vaultSecretId` | String  | yes  | The Vault secret id.                                        |
-| `vaultUrl`      | String  | yes  | The Vault URL to connect to.                                |
-| `slackChannel`  | String  | no   | Slack channel id, channel name, or user id to post message. |
+| Name            | Type     | Required | Description                                                   |
+|-----------------|----------|----------|---------------------------------------------------------------|
+| `vaultRoleId`   | String   | yes      | The Vault role id.                                            |
+| `vaultSecretId` | String   | yes      | The Vault secret id.                                          |
+| `vaultUrl`      | String   | yes      | The Vault URL to connect to.                                  |
+| `slackChannel`  | String   | no       | Slack channel id, channel name, or user id to post message.   |
+| `message`       | String   | no       | Add additional message to the notification.                   |
