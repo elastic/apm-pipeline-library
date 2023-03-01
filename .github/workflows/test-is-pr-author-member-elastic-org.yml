@@ -15,7 +15,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@feature/is-per-author-elastic-member
+      - uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@main
         id: is_pr_author_elastic_member
         with:
           pull-request: 1129
@@ -34,7 +34,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@feature/is-per-author-elastic-member
+      - uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@main
         id: is_pr_author_elastic_member
         with:
           pull-request: 2110
