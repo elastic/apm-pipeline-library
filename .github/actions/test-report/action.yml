@@ -27,20 +27,21 @@ inputs:
         - java-junit
         - jest-junit
         - mocha-json
+        - mochawesome-json
     default: 'java-junit'
     required: true
   list-suites:
     description: |
       Limits which test suites are listed. Supported options:
         - all
-        - only-failed
+        - failed
     required: true
     default: 'all'
   list-tests:
     description: |
       Limits which test cases are listed. Supported options:
         - all
-        - only-failed
+        - failed
         - none
     required: true
     default: 'all'
@@ -56,11 +57,20 @@ inputs:
       Detailed listing of test suites and test cases will be skipped.
     default: 'false'
     required: false
+  output-to:
+    description: |
+      The location to write the report to. Supported options:
+        - checks
+        - step-summary
+    default: 'checks'
+    required: false
 runs:
   using: "composite"
   steps:
     - name: Report test results
-      uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226
+      # Wait for https://github.com/phoenix-actions/test-reporting/pull/33 and a new release
+      #uses: phoenix-actions/test-reporting@93ce19fa5882ebe3969ebdb9ee1024b3d29e776f
+      uses: Mpdreamz/test-reporting@fix/only-failed
       with:
         artifact: ${{ inputs.artifact }}
         name: ${{ inputs.name }}
@@ -70,3 +80,4 @@ runs:
         list-tests: ${{ inputs.list-tests }}
         fail-on-error: ${{ inputs.fail-on-error }}
         only-summary: ${{ inputs.only-summary }}
+        output-to: ${{ inputs.output-to }}
