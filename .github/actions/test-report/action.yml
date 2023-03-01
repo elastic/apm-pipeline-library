@@ -68,7 +68,9 @@ runs:
   using: "composite"
   steps:
     - name: Report test results
-      uses: phoenix-actions/test-reporting@93ce19fa5882ebe3969ebdb9ee1024b3d29e776f
+      # Wait for https://github.com/phoenix-actions/test-reporting/pull/33 and a new release
+      #uses: phoenix-actions/test-reporting@93ce19fa5882ebe3969ebdb9ee1024b3d29e776f
+      uses: Mpdreamz/test-reporting@fix/only-failed
       with:
         artifact: ${{ inputs.artifact }}
         name: ${{ inputs.name }}
