@@ -1,7 +1,9 @@
 queue_rules:
   - name: default
     conditions:
-      - check-success=apm-ci/pr-merge
+      - check-success=build
+      - check-success=licenses
+      - check-success=pre-commit
 
 pull_request_rules:
   - name: Automatic squash and merge on approval with success checks and ready-to-merge label
@@ -16,29 +18,6 @@ pull_request_rules:
       queue:
         method: squash
         name: default
-  - name: backport patches to 7.x branch
-    conditions:
-      - base=main
-      - label=backport-to-7.x
-    actions:
-      backport:
-        assignees:
-          - "{{ author }}"
-        branches:
-          - 7.x
-        title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
-        labels:
-          - "automation"
-  - name: Automatic squash and merge on approval with success checks and ready-to-merge label for 7.x
-    conditions:
-      - check-success=apm-ci/pr-merge
-      - check-success=CLA
-      - check-success=Test
-      - base=7.x
-    actions:
-      queue:
-        method: squash
-        name: default
   - name: delete upstream branch that has been merged or closed
     conditions:
       - or:
@@ -46,7 +25,7 @@ pull_request_rules:
         - closed
       - and:
         - label=automation
-        - base~=^update-.*
+        - base~=^update.*
     actions:
       delete_head_branch:
   - name: assign PRs
@@ -58,31 +37,3 @@ pull_request_rules:
       assign:
         add_users:
           - "{{author}}"
-  - name: notify the backport has not been merged yet (updated)
-    conditions:
-      - -merged
-      - -closed
-      - author=mergify[bot]
-      - check-success=CLA
-      - schedule=Mon-Fri 13:00-14:00[Europe/Paris]
-      - updated-at<1 days ago
-      - "#assignee>=1"
-    actions:
-      comment:
-        message: |
-          UPDATED This pull request has not been merged yet.
-          Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
-  - name: notify the backport has not been merged yet (created)
-    conditions:
-      - -merged
-      - -closed
-      - author=mergify[bot]
-      - check-success=CLA
-      - schedule=Mon-Fri 16:00-17:00[Europe/Paris]
-      - created-at<1 days ago
-      - "#assignee>=1"
-    actions:
-      comment:
-        message: |
-          CREATED This pull request has not been merged yet.
-          Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
