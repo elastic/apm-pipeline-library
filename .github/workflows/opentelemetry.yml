@@ -16,6 +16,7 @@ on:
       - pytest_otel-build-test
       - release-drafter
       - test-is-member-elastic-org
+      - test-is-pr-author-member-elastic-org
     types: [completed]
 
 jobs:
