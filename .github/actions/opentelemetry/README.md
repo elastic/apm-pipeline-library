@@ -74,4 +74,4 @@ Following inputs can be used as `step.with` keys
 | `vaultRoleId`     | String  |                             | The Vault role id. |
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |
-| `secret`          | String  | `secret/observability-team/ci/jenkins-logs-robots` | The Vault secret. |
+| `secret`          | String  | `secret/observability-team/ci/observability-ci/apm-credentials` | The Vault secret. |
