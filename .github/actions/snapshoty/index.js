@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const os = require("os");
 
 async function run() {
   try {
@@ -11,10 +12,12 @@ async function run() {
     const config = core.getInput('config');
 
     const workDir = process.env.GITHUB_WORKSPACE;
+    const userInfo = os.userInfo();
 
     const args = [
       'run', '--rm',
       '-v', `${workDir}:/app`,
+      '-u', `${userInfo.uid}:${userInfo.gid}`,
       '-w', '/app',
       '-e', `GCS_CLIENT_EMAIL=${gcsClientEmail}`,
       '-e', `GCS_PRIVATE_KEY=${gcsPrivateKey}`,
