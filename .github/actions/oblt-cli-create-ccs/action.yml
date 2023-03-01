@@ -24,10 +24,19 @@ inputs:
     description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
     default: 'apmmachine'
     required: false
+  gitops:
+    description: 'Whether to provide the GitOps metadata to the oblt-cli'
+    default: false
+    required: false
+  dry-run:
+    description: 'Whether to dryRun'
+    default: false
+    required: false
 runs:
   using: "composite"
   steps:
-    - name: create oblt-cli command
+
+    - name: Configure oblt-cli flags
       run: |
         {
           echo -n '--remote-cluster=${{ inputs.remote-cluster }} '
@@ -37,14 +46,40 @@ runs:
             && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
           [ -n '${{ inputs.elasticsearch-docker-image }}' ] \
             && echo -n '--elasticsearch-docker-image=${{ inputs.elasticsearch-docker-image }} '
-        } > command
-        echo "COMMAND=$(cat command)" >> $GITHUB_ENV
-        rm command
+          [ '${{ inputs.dry-run }}' == 'true' ] \
+            && echo -n '--dry-run '
+        } > .flags
+        echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
+        rm .flags
+      shell: bash
+
+    - name: Configure oblt-cli flags for gitops - issues
+      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
+      run: |
+        {
+          echo -n '--repo="${{ github.repository }}" '
+          [ -n '${{ github.event.issue.number }}' ] \
+            && echo -n '--issue="${{ github.event.issue.number }}" '
+        } > .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
+      shell: bash
+
+    - name: Configure oblt-cli flags for gitops - pull-request
+      if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
+      run: |
+        {
+          echo -n '--repo="${{ github.repository }}" '
+          echo -n '--comment-id="${{ github.event.comment.id }}" '
+          echo -n '--pull-request="${{ github.event.issue.number }}" '
+        } > .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
       with:
-        command: 'cluster create ccs ${{ env.COMMAND }}'
+        command: 'cluster create ccs ${{ env.COMMAND }} ${{ env.GITOPS }}'
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}

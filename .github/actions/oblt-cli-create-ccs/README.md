@@ -41,7 +41,9 @@ Following inputs can be used as `step.with` keys
 | `remote-cluster`            | String  | Mandatory                   | The Oblt cluster to use. |
 | `cluster-name-prefix`       | String  | Optional                    | Prefix to be prepended to the randomised cluster name |
 | `cluster-name-suffix`       | String  | Optional                    | Suffix to be appended to the randomised cluster name |
+| `dry-run`                   | Boolean | `false`                     | Whether to dry-run the oblt-cli. |
 | `elasticsearch-docker-image`| String  | Optional                    | Force to use a Docker image for the Elasticserach Deployment |
 | `slackChannel`              | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli. |
 | `token`                     | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
 | `username`                  | String  | `apmmachine`                | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
+| `gitops`                    | Boolean | `false`                     | Whether to provide the GitOps metadata to the oblt-cli. |

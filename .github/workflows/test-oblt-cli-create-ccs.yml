@@ -25,3 +25,5 @@ jobs:
           token: ${{ env.GITHUB_TOKEN }}
           remote-cluster: 'release-oblt'
           cluster-name-prefix: 'testgithubaction'
+          gitops: true
+          dry-run: true
