@@ -77,7 +77,7 @@ runs:
         rm .gitops
       shell: bash
 
-    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@feature/oblt-cli-create-ccs-action
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
         command: 'cluster create ccs ${{ env.COMMAND }} ${{ env.GITOPS }}'
         slackChannel: ${{ inputs.slackChannel }}
