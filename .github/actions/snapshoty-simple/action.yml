@@ -33,6 +33,7 @@ runs:
         secretId: ${{ inputs.vaultSecretId }}
         method: approle
         secrets: |
+          secret/observability-team/ci/snapshoty bucket_name | GCS_BUCKET_NAME ;
           secret/observability-team/ci/snapshoty client_email | GCS_CLIENT_EMAIL ;
           secret/observability-team/ci/snapshoty private_key | GCS_PRIVATE_KEY ;
           secret/observability-team/ci/snapshoty private_key_id | GCS_PRIVATE_KEY_ID ;
@@ -41,7 +42,7 @@ runs:
     - uses: elastic/apm-pipeline-library/.github/actions/snapshoty@current
       with:
         config: ${{ inputs.config }}
-        bucketName: 'oblt-artifacts'
+        bucketName: '${{ env.GCS_BUCKET_NAME }}'
         gcsClientEmail: '${{ env.GCS_CLIENT_EMAIL }}'
         gcsPrivateKey: '${{ env.GCS_PRIVATE_KEY }}'
         gcsPrivateKeyId: '${{ env.GCS_PRIVATE_KEY_ID }}'
