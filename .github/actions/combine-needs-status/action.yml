@@ -1,0 +1,15 @@
+---
+
+name: combine-needs-status
+description: |
+  Combines the status results of the provided needs context and exits with 0 if all jobs are successful
+  or with 1 if at least one job is failing.
+inputs:
+  needs:
+    required: true
+    description: needs context as JSON string
+runs:
+  using: composite
+  steps:
+    - run: test $(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")') = 'true'
+      shell: bash
