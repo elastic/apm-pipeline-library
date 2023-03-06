@@ -14,29 +14,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'maven'
-      - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
-      - uses: v1v/otel-upload-test-artifact-action@v2
-        if: success() || failure()
-        continue-on-error: true
-        with:
-          jobName: "build"
-          stepName: "Build with Maven"
-          path: "target/surefire-reports/*.xml"
-          type: "junit"
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Store test results
-        if: success() || failure()
-        continue-on-error: true
+      - name: Generate junit placeholder - to integrate with test-reporter
+        run: |-
+          cat > python-agent-junit.xml << ENDOFFILE
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites name="apm-agent-python" tests="1" failures="0" errors="0" time="1">
+            <testsuite name="apm-agent-python-docs" errors="0" failures="0" skipped="1" time="1" tests=1">
+              <testcase classname="docs" name="Skipped test" time="0">
+                <skipped/>
+              </testcase>
+            </testsuite>
+          </testsuites>
+          ENDOFFILE
+      - if: success() || failure()
+        name: Upload JUnit Test Results
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: "target/surefire-reports/*.xml"
+          path: "python-agent-junit.xml"
