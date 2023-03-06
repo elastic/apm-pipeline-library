@@ -56,7 +56,6 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     needs:
-      - fail
       - docker-layer-caching
       - setup-git-with-token
       - setup-git-without-token
