@@ -69,15 +69,16 @@ jobs:
     steps:
       - run: exit 0;
   status:
+    if: always()
     needs:
       - build
       - test
       - release
     runs-on: ubuntu-latest
     steps:
-      - run: test $(echo '${{ toJSON(needs) }}' | jq -s 'map(.[].result) | all(.=="success")') = 'true'
-      - if: always()
-        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+      - uses: elastic/apm-pipeline-library/.github/actions/combine-needs-status@current
+        with: ${{ toJSON(needs) }}
+      - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
