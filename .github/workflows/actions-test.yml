@@ -52,11 +52,6 @@ jobs:
       - name: Check GIT_EMAIL
         run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
 
-  fail:
-    runs-on: ubuntu-latest
-    steps:
-      - run: exit 1;
-
   combined-status:
     if: always()
     runs-on: ubuntu-latest
