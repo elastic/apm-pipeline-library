@@ -76,8 +76,10 @@ jobs:
       - release
     runs-on: ubuntu-latest
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
+      - id: is_success
+        uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
         with: ${{ toJSON(needs) }}
+      - run: ${{ steps.is_success.outputs.isSuccess }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
