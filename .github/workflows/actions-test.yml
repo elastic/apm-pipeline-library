@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: is_success
-        uses: ./.github/actions/combine-needs-status
+        uses: ./.github/actions/are-dependent-jobs-successful
         with:
           needs: ${{ toJSON(needs) }}
       - run: ${{ steps.is_success.outputs.isSuccess }}

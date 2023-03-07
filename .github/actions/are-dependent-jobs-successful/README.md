@@ -41,7 +41,7 @@ jobs:
       - job-b
     steps:
       - id: is_success
-        uses: elastic/apm-pipeline-library/.github/actions/combine-needs-status@current
+        uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
         with:
           needs: ${{ toJSON(needs) }}
       - run: ${{ steps.is_success.outputs.isSuccess }}

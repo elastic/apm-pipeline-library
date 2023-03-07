@@ -76,7 +76,7 @@ jobs:
       - release
     runs-on: ubuntu-latest
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/combine-needs-status@current
+      - uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
         with: ${{ toJSON(needs) }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
