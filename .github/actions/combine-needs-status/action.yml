@@ -2,14 +2,20 @@
 
 name: combine-needs-status
 description: |
-  Combines the status results of the provided needs context and exits with 0 if all jobs are successful
-  or with 1 if at least one job is failing.
+  Evaluates the combined the status results of the provided needs context.
 inputs:
   needs:
     required: true
     description: needs context as JSON string
+outputs:
+  isSuccess:
+    description: the evaluated result of all provided jobs in the needs context.
+    value: ${{ steps.test.outputs.isSuccess }}
 runs:
   using: composite
   steps:
-    - run: test $(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")') = 'true'
+    - id: test
+      run: |
+        RESULT=$(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")')
+        echo "isSuccess=${RESULT}" >> $GITHUB_OUTPUT
       shell: bash

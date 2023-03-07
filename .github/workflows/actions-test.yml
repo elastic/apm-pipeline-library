@@ -61,6 +61,8 @@ jobs:
       - setup-git-without-token
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/combine-needs-status
+      - id: is_success
+        uses: ./.github/actions/combine-needs-status
         with:
           needs: ${{ toJSON(needs) }}
+      - run: ${{ steps.is_success.outputs.isSuccess }}

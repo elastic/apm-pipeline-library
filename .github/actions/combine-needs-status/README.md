@@ -1,6 +1,6 @@
 ## About
 
-GitHub Action that exits with the combined status of the provided needs context.
+Evaluates the combined the status results of the provided needs context.
 This is useful for creating a single status check.
 
 That status check can the be set as required status check or it can be used
@@ -40,8 +40,11 @@ jobs:
       - job-a
       - job-b
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/combine-needs-status@current
-        with: ${{ toJSON(needs) }}
+      - id: is_success
+        uses: elastic/apm-pipeline-library/.github/actions/combine-needs-status@current
+        with:
+          needs: ${{ toJSON(needs) }}
+      - run: ${{ steps.is_success.outputs.isSuccess }}
 ```
 
 ## Customizing
@@ -53,3 +56,9 @@ Following inputs can be used as `step.with` keys
 | Name         | Type    | Default                     | Description                      |
 |--------------|---------|-----------------------------|----------------------------------|
 | `needs`      | String  |                             | JSON string of the needs context |
+
+### outputs
+
+| Name        | Type    | Description                        |
+|-------------|---------|------------------------------------|
+| `isSuccess` | Boolean | If all jobs are successful or not. |
