@@ -73,6 +73,14 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+        with:
+          registry: ""
+          secret: secret/observability-team/ci/elastic-observability-dockerhub
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
       - name: Setup Env
         run: |
           echo "NAME=${{ matrix.name }}" >> $GITHUB_ENV
