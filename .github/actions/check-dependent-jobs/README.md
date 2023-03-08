@@ -44,7 +44,7 @@ jobs:
         uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
         with:
           needs: ${{ toJSON(needs) }}
-      - run: ${{ steps.is_success.check.isSuccess }} # should exit with 1 or 0.
+      - run: ${{ steps.check.isSuccess }} # should exit with 1 or 0.
 ```
 
 ## Customizing
