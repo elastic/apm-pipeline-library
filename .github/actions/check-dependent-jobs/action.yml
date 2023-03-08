@@ -1,0 +1,21 @@
+---
+
+name: check-dependent-jobs
+description: |
+  Evaluates the combined the status results of the provided needs context.
+inputs:
+  needs:
+    required: true
+    description: needs context as JSON string
+outputs:
+  isSuccess:
+    description: the evaluated result of all provided jobs in the needs context.
+    value: ${{ steps.test.outputs.isSuccess }}
+runs:
+  using: composite
+  steps:
+    - id: test
+      run: |
+        RESULT=$(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")')
+        echo "isSuccess=${RESULT}" >> $GITHUB_OUTPUT
+      shell: bash
