@@ -54,5 +54,7 @@ Following inputs can be used as `step.with` keys
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |
 | `command`         | String  | `apply`                     | What updatecli command to run. |
-| `dockerRegistry`    | String  | `docker.elastic.co`         | The docker registry. |
+| `dockerRegistry`    | String  | `docker.elastic.co`       | The docker registry. |
 | `dockerVaultSecret` | String  | `secret/observability-team/ci/docker-registry/prod` | The Vault secret with the docker auth details. |
+| `notifyIfFailure`   | Boolean | `true`                    | Whether to notify if any failure while running the updatecli. |
+| `notifySlackChannel`| String  | `#observablt-bots`        | What slack channel to be used for notifying any failures while running the updatecli. |
