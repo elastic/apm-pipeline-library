@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: is_success
-        uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
+        uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
         with: ${{ toJSON(needs) }}
       - run: ${{ steps.is_success.outputs.isSuccess }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current

@@ -1,6 +1,6 @@
 ---
 
-name: are-dependent-jobs-successful
+name: check-dependent-jobs
 description: |
   Evaluates the combined the status results of the provided needs context.
 inputs:

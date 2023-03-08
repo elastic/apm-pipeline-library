@@ -3,7 +3,7 @@
 Evaluates the combined the status results of the provided needs context.
 This is useful for creating a single status check.
 
-That status check can the be set as required status check or it can be used
+That status check can then be set as required status check, or it can be used
 in combination with the `notify-built-status` action.
 
 * [Usage](#usage)
@@ -41,10 +41,10 @@ jobs:
       - job-b
     steps:
       - id: is_success
-        uses: elastic/apm-pipeline-library/.github/actions/are-dependent-jobs-successful@current
+        uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
         with:
           needs: ${{ toJSON(needs) }}
-      - run: ${{ steps.is_success.outputs.isSuccess }}
+      - run: ${{ steps.is_success.outputs.isSuccess }} # should exit with 1 or 0.
 ```
 
 ## Customizing
