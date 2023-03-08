@@ -40,7 +40,6 @@ runs:
       run: |
         {
           echo -n '--template=${{ inputs.template }} '
-          printf "--parameters='%s'" '${{ inputs.parameters }}'
           [ -n '${{ inputs.cluster-name-prefix }}' ] \
             && echo -n '--cluster-name-prefix=${{ inputs.cluster-name-prefix }} '
           [ -n '${{ inputs.cluster-name-suffix }}' ] \
@@ -78,7 +77,7 @@ runs:
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: 'cluster create custom ${{ env.COMMAND }} ${{ env.GITOPS }}'
+        command: cluster create custom ${{ env.COMMAND }} --parameters='${{ inputs.parameters }}' ${{ env.GITOPS }}
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}
