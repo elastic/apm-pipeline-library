@@ -42,6 +42,7 @@ runs:
         echo 'PARAMETERS<<EOF' >> $GITHUB_ENV
         echo ${{ inputs.parameters }} >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
+      shell: bash
 
     - name: Configure oblt-cli flags
       run: |
