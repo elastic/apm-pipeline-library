@@ -75,7 +75,7 @@ jobs:
 
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
         with:
-          registry: ""
+          registry: docker.io
           secret: secret/observability-team/ci/elastic-observability-dockerhub
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
