@@ -18,7 +18,7 @@ inputs:
     description: Add additional message
     required: false
   status:
-    description: Explicitly set status. One of success, failure, cancelled
+    description: "Explicitly set status. One of success, failure, cancelled, auto. Default: auto"
     required: false
     default: auto
 
