@@ -279,13 +279,13 @@ images:
     build_opts: "--build-arg NODE_VERSION=8.6"
 
   # APM Agent Ruby Docker images
-
+  # dockerhub
   - <<: *apm-agent-ruby-docker-images
     name: "apm-agent-jruby"
     working_directory: ".ci/docker/jruby"
-    build_script: "./run.sh --action build --registry ${REGISTRY}/${PREFIX}"
-    test_script: "./run.sh --action test --registry ${REGISTRY}/${PREFIX}"
-    push_script: "./run.sh --action push --registry ${REGISTRY}/${PREFIX}"
+    build_script: "./run.sh --action build --registry 'elasticobservability'"
+    test_script: "./run.sh --action test --registry 'elasticobservability'"
+    push_script: "./run.sh --action push --registry 'elasticobservability'"
 
   - <<: *apm-agent-ruby-docker-images
     tag: "ruby-3.0"
