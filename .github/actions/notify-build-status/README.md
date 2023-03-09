@@ -78,10 +78,11 @@ jobs:
     steps:
       - id: check
         uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
-        with: ${{ toJSON(needs) }}
-      - run: ${{ steps.check.outputs.isSuccess }}
+        with:
+          needs: ${{ toJSON(needs) }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
+          status: ${{ steps.check.outputs.status }}
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
@@ -95,10 +96,11 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name            | Type     | Required | Description                                                   |
-|-----------------|----------|----------|---------------------------------------------------------------|
-| `vaultRoleId`   | String   | yes      | The Vault role id.                                            |
-| `vaultSecretId` | String   | yes      | The Vault secret id.                                          |
-| `vaultUrl`      | String   | yes      | The Vault URL to connect to.                                  |
-| `slackChannel`  | String   | no       | Slack channel id, channel name, or user id to post message.   |
-| `message`       | String   | no       | Add additional message to the notification.                   |
+| Name            | Type     | Required | Description                                                 |
+|-----------------|----------|----------|-------------------------------------------------------------|
+| `vaultRoleId`   | String   | yes      | The Vault role id.                                          |
+| `vaultSecretId` | String   | yes      | The Vault secret id.                                        |
+| `vaultUrl`      | String   | yes      | The Vault URL to connect to.                                |
+| `slackChannel`  | String   | no       | Slack channel id, channel name, or user id to post message. |
+| `message`       | String   | no       | Add additional message to the notification.                 |
+| `status`        | String   | no       | One of success, failure, cancelled, auto. Default: auto     |
