@@ -62,3 +62,4 @@ Following inputs can be used as `step.with` keys
 | Name        | Type    | Description                        |
 |-------------|---------|------------------------------------|
 | `isSuccess` | Boolean | If all jobs are successful or not. |
+| `status`    | String  | `success` or `failure`             |

@@ -18,4 +18,10 @@ runs:
       run: |
         RESULT=$(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")')
         echo "isSuccess=${RESULT}" >> $GITHUB_OUTPUT
+        if [[ $RESULT == true ]]; then
+          STATUS=success
+        else
+          STATUS=failure
+        fi
+        echo "status=${STATUS}" >> $GITHUB_OUTPUT
       shell: bash
