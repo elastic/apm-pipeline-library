@@ -9,8 +9,11 @@ inputs:
     description: needs context as JSON string
 outputs:
   isSuccess:
-    description: the evaluated result of all provided jobs in the needs context.
+    description: The evaluated result of all provided jobs in the needs context.
     value: ${{ steps.test.outputs.isSuccess }}
+  status:
+    description: One of success or failure.
+    value: ${{ steps.test.outputs.status }}
 runs:
   using: composite
   steps:
