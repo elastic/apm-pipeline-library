@@ -78,10 +78,11 @@ jobs:
     steps:
       - id: check
         uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
-        with: ${{ toJSON(needs) }}
+        with:
+          needs: ${{ toJSON(needs) }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
-          status: "${{ steps.check.outputs.isSuccess == 'true' && 'success' || 'failure' }}"
+          status: ${{ steps.check.outputs.status }}
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
