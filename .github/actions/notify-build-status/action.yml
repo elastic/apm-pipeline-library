@@ -17,6 +17,10 @@ inputs:
   message:
     description: Add additional message
     required: false
+  status:
+    description: Explicitly set status. One of success, failure, cancelled
+    required: false
+    default: auto
 
 runs:
   using: composite
@@ -25,7 +29,7 @@ runs:
       id: prepare
       shell: python
       env:
-        JOB_STATUS: "${{ job.status }}"
+        JOB_STATUS: "${{ inputs.status != 'auto' ? inputs.status : job.status }}"
         REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
         PR_NUMBER: "${{ github.event.pull_request.number }}"
         PR_SHA: "${{ github.event.pull_request.head.sha }}"
@@ -81,7 +85,7 @@ runs:
                   {
                     "title": "Status",
                     "short": true,
-                    "value": "${{ job.status }}"
+                    "value": ""${{ inputs.status != 'auto' ? inputs.status : job.status }}""
                   },
                   {
                     "title": "Event",
