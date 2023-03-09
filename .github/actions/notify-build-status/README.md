@@ -79,7 +79,6 @@ jobs:
       - id: check
         uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
         with: ${{ toJSON(needs) }}
-      - run: ${{ steps.check.outputs.isSuccess }}
       - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
         with:
           status: "${{ steps.check.outputs.isSuccess ? 'success' : 'failure' }}"
