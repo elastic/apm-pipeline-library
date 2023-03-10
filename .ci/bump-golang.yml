@@ -37,7 +37,7 @@ sources:
       username: '{{ requiredEnv "GIT_USER" }}'
       versionfilter:
         kind: regex
-        pattern: go1\.18\.(\d*)$
+        pattern: go1\.(\d*)\.(\d*)$
 
 conditions:
   dockerTag:
