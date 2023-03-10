@@ -1,0 +1,75 @@
+name: 'Oblt-cli wrapper'
+description: 'Run the oblt-cli wrapper.'
+inputs:
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  event:
+    description: 'The GitHub event payload. JSON'
+    required: true
+  user:
+    description: 'The GitHub user that triggered the workflow'
+    required: true
+  repository:
+    description: 'The GitHub repository'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      with:
+        repository: ${{ inputs.repository }}
+        commentId: ${{ event.comment.id }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    ### TODO: From cluster need to know the version based on the target branch
+    - name: Create github issue body
+      run: |-
+        cat <<EOT >> .body-content
+        ### From cluster
+
+        release-oblt
+
+        ### Kibana branch
+
+        pr/${{ event.pull_request.number}}
+
+        ### Custom prefix (Optional)
+
+        _No response_
+
+        ### Oblt-cli user (Optional)
+
+        deploykibana
+
+        ### further details
+
+        Created by a GitHub command in the project TBC
+        EOT
+      shell: bash
+
+    ### TODO: gather the http url so it can be reported back to the GitHub comment
+    - name: Create github issue for the deploy-my-kibana
+      run: |
+        gh issue \
+          create \
+          --label 'deploy-custom-kibana' \
+          --title "[Deploy Kibana]: for user ${{ inputs.user }}" \
+          --assignee ${{ inputs.user }} \
+          --body-file .body-content \
+          --repo elastic/observability-robots-automation
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+      shell: bash
