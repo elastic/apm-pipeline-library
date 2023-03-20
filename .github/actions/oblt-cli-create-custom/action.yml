@@ -79,12 +79,8 @@ runs:
         echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
         rm .flags
         # Merge GITOPS with the PARAMETERS
-        if [ -n "$GITOPS" ] ; then
-          MERGED=$(echo '${{ inputs.parameters }} ${{ env.GITOPS }}' | jq -c -s add)
-          echo "PARAMETERS=${MERGED}" >> $GITHUB_ENV
-        else
-          echo "PARAMETERS=${{ inputs.parameters }}" >> $GITHUB_ENV
-        fi
+        MERGED=$(echo '${{ inputs.parameters }} ${{ env.GITOPS }}' | jq -c -s add)
+        echo "PARAMETERS=${MERGED}" >> $GITHUB_ENV
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
