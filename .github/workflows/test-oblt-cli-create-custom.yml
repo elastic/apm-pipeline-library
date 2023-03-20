@@ -2,7 +2,6 @@
 name: test-oblt-cli-create-custom
 
 on:
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -21,7 +20,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@feature/oblt-cli-create-custom
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
           token: ${{ env.GITHUB_TOKEN }}
           template: 'deploy-kibana'
@@ -44,7 +43,7 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@feature/oblt-cli-create-custom
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
           token: ${{ env.GITHUB_TOKEN }}
           template: 'deploy-kibana'
