@@ -1,5 +1,5 @@
-name: 'Oblt-cli wrapper'
-description: 'Run the oblt-cli wrapper.'
+name: 'Deploy My Kibana'
+description: 'GitHub Action to deploy my kibana given the Pull Request'
 inputs:
   vaultUrl:
     description: 'Vault URL'
@@ -44,12 +44,21 @@ runs:
     - name: Get cluster given the target branch (either edge-lite or release)
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |-
-        if [ "${{ github.base_ref }}" == 'main' ] ; then
+        # issue_comment does not contain any references to the original PR so it's requires
+        # to parse github.event.comment.issue_url
+        PR=$(basename ${{ inputs.event.comment.issue_url }})
+        echo "PR=${PR}" >> $GITHUB_ENV
+
+        # issue_comment does not contain any references to github.base_ref
+        TARGET_BRANCH=$(gh pr view ${PR} --repo ${{ inputs.repository }} --json baseRefName --jq .baseRefName)
+        if [ "${TARGET_BRANCH}" == 'main' ] ; then
           echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
         else
           echo "CLUSTER=release-oblt" >> $GITHUB_ENV
         fi
       shell: bash
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
 
     - name: Create github issue body
       if: contains(steps.is_elastic_member.outputs.result, 'true')
@@ -61,7 +70,7 @@ runs:
 
         ### Kibana branch
 
-        pr/${{ inputs.event.pull_request.number }}
+        pr/${{ env.PR }}
 
         ### Custom prefix (Optional)
 
@@ -73,23 +82,21 @@ runs:
 
         ### Further details
 
-        Caused by @${{ inputs.user }} with the GitHub command `${{ inputs.event.comment.body }}` in ${{ inputs.event.comment.html_url }}
+        Caused by @${{ inputs.user }} in ${{ inputs.event.comment.html_url }}
         EOT
       shell: bash
 
-    ### TODO: gather the http url so it can be reported back to the GitHub comment
     - name: Create github issue for the deploy-my-kibana
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |
-        cat .body-content
-        exit 0
         gh issue \
           create \
           --label 'deploy-custom-kibana' \
           --title "[Deploy Kibana]: for user ${{ inputs.user }}" \
           --assignee ${{ inputs.user }} \
           --body-file .body-content \
-          --repo elastic/observability-robots-automation
+          --repo elastic/observability-test-environments | tee .issue
+        echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ env.GITHUB_TOKEN }}
       shell: bash
