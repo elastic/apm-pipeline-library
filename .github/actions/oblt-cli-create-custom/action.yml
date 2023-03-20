@@ -81,9 +81,9 @@ runs:
         # Merge GITOPS with the PARAMETERS
         if [ -n "$GITOPS" ] ; then
           MERGED=$(echo '${{ inputs.parameters }} ${{ env.GITOPS }}' | jq -c -s add)
-          echo "PARAMETERS='${MERGED}'" >> $GITHUB_ENV
+          echo "PARAMETERS=${MERGED}" >> $GITHUB_ENV
         else
-          echo "PARAMETERS='${{ inputs.parameters }}'" >> $GITHUB_ENV
+          echo "PARAMETERS=${{ inputs.parameters }}" >> $GITHUB_ENV
         fi
       shell: bash
 
