@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  run-oblt-cli-create-ccs:
+  run-oblt-cli-create-custom:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
