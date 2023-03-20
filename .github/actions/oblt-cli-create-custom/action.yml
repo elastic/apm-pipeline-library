@@ -36,6 +36,29 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Configure oblt-cli flags for gitops - issues
+      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
+      run: |
+        {
+          echo -n '"GitOps":"true", "GitHubRepository":"${{ github.repository }}" '
+          [ -n '${{ github.event.issue.number }}' ] && echo -n '"GitHubIssue":"${{ github.event.issue.number }}" '
+        } > .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
+      shell: bash
+
+    - name: Configure oblt-cli flags for gitops - pull-request
+      if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
+      run: |
+        {
+          echo -n '"GitOps":"true", "GitHubRepository":"${{ github.repository }}" '
+          echo -n ',"GitHubCommit":"${{ github.event.comment.id }}" '
+          echo -n ',"GitHubPullRequest":"${{ github.event.issue.number }}" '
+        } > .gitops
+        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
+        rm .gitops
+      shell: bash
+
     - name: Configure oblt-cli flags
       run: |
         {
@@ -49,35 +72,18 @@ runs:
         } > .flags
         echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
         rm .flags
-      shell: bash
-
-    - name: Configure oblt-cli flags for gitops - issues
-      if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
-      run: |
-        {
-          echo -n '--repo="${{ github.repository }}" '
-          [ -n '${{ github.event.issue.number }}' ] \
-            && echo -n '--issue="${{ github.event.issue.number }}" '
-        } > .gitops
-        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
-        rm .gitops
-      shell: bash
-
-    - name: Configure oblt-cli flags for gitops - pull-request
-      if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
-      run: |
-        {
-          echo -n '--repo="${{ github.repository }}" '
-          echo -n '--comment-id="${{ github.event.comment.id }}" '
-          echo -n '--pull-request="${{ github.event.issue.number }}" '
-        } > .gitops
-        echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
-        rm .gitops
+        # Merge GITOPS with the PARAMETERS
+        if [ -n "$GITOPS" ] ; then
+          MERGED=$(echo '${{ inputs.parameters }} ${{ env.GITOPS }}' | jq -c -s add)
+          echo "PARAMETERS='${MERGED}'" >> $GITHUB_ENV
+        else
+          echo "PARAMETERS='${{ inputs.parameters }}'" >> $GITHUB_ENV
+        fi
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: cluster create custom ${{ env.COMMAND }} --parameters='${{ inputs.parameters }}' ${{ env.GITOPS }}
+        command: cluster create custom ${{ env.COMMAND }} --parameters='${{ env.PARAMETERS }}'
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}
