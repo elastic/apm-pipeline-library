@@ -38,7 +38,7 @@ runs:
       id: is_elastic_member
       uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
       with:
-        username: ${{ inputs.event.issue.user.login }}
+        username: ${{ inputs.user }}
         token: ${{ env.GITHUB_TOKEN }}
 
     - name: Get cluster given the target branch (either edge-lite or release)
@@ -69,11 +69,11 @@ runs:
 
         ### Oblt-cli user (Optional)
 
-        ${{ inputs.event.issue.user.login }}
+        ${{ inputs.user }}
 
         ### Further details
 
-        Caused by @${{ inputs.event.issue.user.login }} with the GitHub command `${{ inputs.event.comment.body }}` in ${{ inputs.event.comment.html_url }}
+        Caused by @${{ inputs.user }} with the GitHub command `${{ inputs.event.comment.body }}` in ${{ inputs.event.comment.html_url }}
         EOT
       shell: bash
 
