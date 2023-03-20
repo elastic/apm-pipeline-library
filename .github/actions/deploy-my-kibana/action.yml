@@ -10,15 +10,15 @@ inputs:
   vaultSecretId:
     description: 'Vault secret ID'
     required: true
-  event:
+  githubEvent:
     description: 'The GitHub event payload. JSON'
-    required: true
+    default: ${{ github.event }}
   user:
     description: 'The GitHub user that triggered the workflow'
-    required: true
+    default: ${{ github.triggering_actor }}
   repository:
     description: 'The GitHub repository'
-    required: true
+    default: ${{ github.repository }}
 runs:
   using: "composite"
   steps:
@@ -31,7 +31,7 @@ runs:
     - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
       with:
         repository: ${{ inputs.repository }}
-        commentId: ${{ inputs.event.comment.id }}
+        commentId: ${{ inputs.githubEvent.comment.id }}
         token: ${{ env.GITHUB_TOKEN }}
 
     - name: Is an Elastician comment?
@@ -46,7 +46,7 @@ runs:
       run: |-
         # issue_comment does not contain any references to the original PR so it's requires
         # to parse github.event.comment.issue_url
-        PR=$(basename ${{ inputs.event.comment.issue_url }})
+        PR=$(basename ${{ inputs.githubEvent.comment.issue_url }})
         echo "PR=${PR}" >> $GITHUB_ENV
 
         # issue_comment does not contain any references to github.base_ref
@@ -82,7 +82,7 @@ runs:
 
         ### Further details
 
-        Caused by @${{ inputs.user }} in ${{ inputs.event.comment.html_url }}
+        Caused by @${{ inputs.user }} in ${{ inputs.githubEvent.comment.html_url }}
         EOT
       shell: bash
 
@@ -106,6 +106,6 @@ runs:
       if: contains(steps.is_elastic_member.outputs.result, 'false')
       with:
         repository: ${{ inputs.repository }}
-        commentId: ${{ inputs.event.comment.id }}
+        commentId: ${{ inputs.githubEvent.comment.id }}
         emoji: '-1'
         token: ${{ env.GITHUB_TOKEN }}
