@@ -10,24 +10,21 @@ inputs:
   vaultSecretId:
     description: 'Vault secret ID'
     required: true
-  event:
-    description: 'The GitHub event payload. JSON'
-    default: ${{ github.event }}
-  issue_url:
-    description: 'The GitHub Issue URL'
-    required: true
   comment_url:
     description: 'The GitHub Comment URL'
-    required: true
+    default: ${{ github.event.comment.html_url }}
   comment_id:
     description: 'The GitHub Comment ID'
-    required: true
-  user:
-    description: 'The GitHub user that triggered the workflow'
-    default: ${{ github.triggering_actor }}
+    default: ${{ github.event.comment.id }}
+  issue_url:
+    description: 'The GitHub Issue URL'
+    default: ${{ github.event.comment.issue_url }}
   repository:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
+  user:
+    description: 'The GitHub user that triggered the workflow'
+    default: ${{ github.triggering_actor }}
 runs:
   using: "composite"
   steps:
