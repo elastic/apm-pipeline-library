@@ -41,18 +41,27 @@ runs:
         username: ${{ github.event.issue.user.login }}
         token: ${{ env.GITHUB_TOKEN }}
 
-    ### TODO: From cluster need to know the version based on the target branch
+    - name: Get cluster given the target branch (either edge-lite or release)
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        if [ "${{ github.base_ref }}" == 'main' ] ; then
+          echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
+        else
+          echo "CLUSTER=release-oblt" >> $GITHUB_ENV
+        fi
+      shell: bash
+
     - name: Create github issue body
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |-
         cat <<EOT >> .body-content
         ### From cluster
 
-        release-oblt
+        ${{ env.CLUSTER }}
 
         ### Kibana branch
 
-        pr/${{ event.pull_request.number}}
+        pr/${{ event.pull_request.number }}
 
         ### Custom prefix (Optional)
 
@@ -64,7 +73,7 @@ runs:
 
         ### further details
 
-        Created by a GitHub command in the project TBC
+        Created by a GitHub command in the project https://github.com/${{ inputs.repository }}/pulls/${{ event.pull_request.number }}
         EOT
       shell: bash
 
