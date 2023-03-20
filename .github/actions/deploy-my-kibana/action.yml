@@ -34,8 +34,16 @@ runs:
         commentId: ${{ event.comment.id }}
         token: ${{ env.GITHUB_TOKEN }}
 
+    - name: Is an Elastician comment?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ github.event.issue.user.login }}
+        token: ${{ env.GITHUB_TOKEN }}
+
     ### TODO: From cluster need to know the version based on the target branch
     - name: Create github issue body
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |-
         cat <<EOT >> .body-content
         ### From cluster
@@ -52,7 +60,7 @@ runs:
 
         ### Oblt-cli user (Optional)
 
-        deploykibana
+        ${{ github.event.issue.user.login }}
 
         ### further details
 
@@ -62,6 +70,7 @@ runs:
 
     ### TODO: gather the http url so it can be reported back to the GitHub comment
     - name: Create github issue for the deploy-my-kibana
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |
         gh issue \
           create \
@@ -73,3 +82,12 @@ runs:
       env:
         GH_TOKEN: ${{ env.GITHUB_TOKEN }}
       shell: bash
+
+    - name: Notify with a reaction if a non-elastician comment
+      uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      if: contains(steps.is_elastic_member.outputs.result, 'false')
+      with:
+        repository: ${{ inputs.repository }}
+        commentId: ${{ event.comment.id }}
+        emoji: '-1'
+        token: ${{ env.GITHUB_TOKEN }}
