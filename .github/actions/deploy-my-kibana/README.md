@@ -25,9 +25,6 @@ jobs:
     steps:
       - uses: elastic/apm-pipeline-library/.github/actions/deploy-my-kibana@current
         with:
-          githubEvent: ${{ github.event }}
-          user: ${{ github.triggering_actor }}
-          repository: ${{ github.repository }}
           vaultUrl: ${{ secrets.OBLT_VAULT_ADDR }}
           vaultRoleId: ${{ secrets.OBLT_VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.OBLT_VAULT_SECRET_ID }}
@@ -41,7 +38,7 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                         | Description                        |
 |-------------------|---------|---------------------------------|------------------------------------|
-| `githubEvent`     | String  | `${{ github.event }}`           | The GitHub event payload. Json.  |
+| `event`           | String  | `${{ github.event }}`           | The GitHub event payload. Json.  |
 | `user`            | String  | `${{ github.triggering_actor }}`| The GitHub user avatar           |
 | `repository`      | String  | `${{ github.repository }}`      | The GitHub repository, ORG/REPO. |
 | `vaultRoleId`     | String  |                                 | The Vault role id. |
