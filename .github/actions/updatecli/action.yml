@@ -24,6 +24,14 @@ inputs:
     description: 'What updatecli command'
     default: 'apply'
     required: false
+  notifyIfFailure:
+    description: 'Whether to notify if any failure while running the updatecli'
+    default: true
+    required: false
+  notifySlackChannel:
+    description: 'What slack channel to be used for notifying any failures while running the updatecli'
+    default: '#observablt-bots'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -53,3 +61,13 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+
+    - if: ${{ failure() && contains(inputs.notifyIfFailure, 'true') }}
+      name: Report updatecli failure in slack
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+        channel: ${{ inputs.notifySlackChannel }}
+        message: ":traffic_cone: updatecli failed for `${{ github.repository }}@${{ github.ref_name }}`, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
