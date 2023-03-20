@@ -7,7 +7,7 @@ actions:
     title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
     kind: github/pullrequest
     spec:
-      automerge: true
+      automerge: false
       labels:
         - dependencies
     scmid: default
