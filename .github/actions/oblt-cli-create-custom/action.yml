@@ -43,7 +43,7 @@ runs:
           echo -n '{'
           echo -n '"GitOps":"true",'
           echo -n '"GitHubRepository":"${{ github.repository }}"'
-          [ -n '${{ github.event.issue.number }}' ] && echo -n '"GitHubIssue":"${{ github.event.issue.number }}"'
+          [ -n '${{ github.event.issue.number }}' ] && echo -n ',"GitHubIssue":"${{ github.event.issue.number }}"'
           echo -n '}'
         } > .gitops
         echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
