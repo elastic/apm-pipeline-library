@@ -40,8 +40,11 @@ runs:
       if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
         {
-          echo -n '"GitOps":"true", "GitHubRepository":"${{ github.repository }}" '
-          [ -n '${{ github.event.issue.number }}' ] && echo -n '"GitHubIssue":"${{ github.event.issue.number }}" '
+          echo -n '{'
+          echo -n '"GitOps":"true",'
+          echo -n '"GitHubRepository":"${{ github.repository }}"'
+          [ -n '${{ github.event.issue.number }}' ] && echo -n '"GitHubIssue":"${{ github.event.issue.number }}"'
+          echo -n '}'
         } > .gitops
         echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
         rm .gitops
@@ -51,9 +54,12 @@ runs:
       if: github.event.issue.pull_request && contains(inputs.gitops, 'true')
       run: |
         {
-          echo -n '"GitOps":"true", "GitHubRepository":"${{ github.repository }}" '
-          echo -n ',"GitHubCommit":"${{ github.event.comment.id }}" '
-          echo -n ',"GitHubPullRequest":"${{ github.event.issue.number }}" '
+          echo -n '{'
+          echo -n '"GitOps":"true",'
+          echo -n '"GitHubRepository":"${{ github.repository }}",'
+          echo -n '"GitHubCommit":"${{ github.event.comment.id }}",'
+          echo -n '"GitHubPullRequest":"${{ github.event.issue.number }}"'
+          echo -n '}'
         } > .gitops
         echo "GITOPS=$(cat .gitops)" >> $GITHUB_ENV
         rm .gitops
