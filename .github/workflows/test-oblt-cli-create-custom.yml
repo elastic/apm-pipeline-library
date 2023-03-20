@@ -28,7 +28,7 @@ jobs:
           cluster-name-prefix: 'testgithubaction'
           gitops: true
           dry-run: true
-          parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0"}'
+          parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0","KibanaDockerImage":"foo"}'
 
   run-oblt-cli-create-custom:
     runs-on: ubuntu-latest
@@ -51,4 +51,4 @@ jobs:
           cluster-name-prefix: 'testgithubaction'
           gitops: false
           dry-run: true
-          parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0"}'
+          parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0","KibanaDockerImage":"foo"}'
