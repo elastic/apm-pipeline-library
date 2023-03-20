@@ -13,6 +13,15 @@ inputs:
   event:
     description: 'The GitHub event payload. JSON'
     default: ${{ github.event }}
+  issue_url:
+    description: 'The GitHub Issue URL'
+    required: true
+  comment_url:
+    description: 'The GitHub Comment URL'
+    required: true
+  comment_id:
+    description: 'The GitHub Comment ID'
+    required: true
   user:
     description: 'The GitHub user that triggered the workflow'
     default: ${{ github.triggering_actor }}
@@ -31,7 +40,7 @@ runs:
     - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
       with:
         repository: ${{ inputs.repository }}
-        commentId: ${{ inputs.event.comment.id }}
+        commentId: ${{ inputs.comment_id }}
         token: ${{ env.GITHUB_TOKEN }}
 
     - name: Is an Elastician comment?
@@ -44,9 +53,7 @@ runs:
     - name: Get cluster given the target branch (either edge-lite or release)
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |-
-        # issue_comment does not contain any references to the original PR so it's requires
-        # to parse github.event.comment.issue_url
-        PR=$(basename ${{ inputs.event.comment.issue_url }})
+        PR=$(basename ${{ inputs.issue_url }})
         echo "PR=${PR}" >> $GITHUB_ENV
 
         # issue_comment does not contain any references to github.base_ref
@@ -82,7 +89,7 @@ runs:
 
         ### Further details
 
-        Caused by @${{ inputs.user }} in ${{ inputs.event.comment.html_url }}
+        Caused by @${{ inputs.user }} in ${{ inputs.comment_url }}
         EOT
       shell: bash
 
@@ -106,6 +113,6 @@ runs:
       if: contains(steps.is_elastic_member.outputs.result, 'false')
       with:
         repository: ${{ inputs.repository }}
-        commentId: ${{ inputs.event.comment.id }}
+        commentId: ${{ inputs.comment_id }}
         emoji: '-1'
         token: ${{ env.GITHUB_TOKEN }}

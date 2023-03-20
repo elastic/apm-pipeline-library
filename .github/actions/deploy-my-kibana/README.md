@@ -36,11 +36,13 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name              | Type    | Default                         | Description                        |
-|-------------------|---------|---------------------------------|------------------------------------|
-| `event`           | String  | `${{ github.event }}`           | The GitHub event payload. Json.  |
-| `user`            | String  | `${{ github.triggering_actor }}`| The GitHub user avatar           |
-| `repository`      | String  | `${{ github.repository }}`      | The GitHub repository, ORG/REPO. |
-| `vaultRoleId`     | String  |                                 | The Vault role id. |
-| `vaultSecretId`   | String  |                                 | The Vault secret id. |
-| `vaultUrl`        | String  |                                 | The Vault URL to connect to. |
+| Name              | Type    | Default                                | Description                        |
+|-------------------|---------|----------------------------------------|------------------------------------|
+| `issue_url`       | String  | `${{ github.event.comment.issue_url }}`| The GitHub issue URL.  |
+| `comment_url`     | String  | `${{ github.event.comment.html_url }}` | The GitHub comment URL.  |
+| `comment_id`      | String  | `${{ github.event.comment.id }}`       | The GitHub comment ID.  |
+| `user`            | String  | `${{ github.triggering_actor }}`       | The GitHub user avatar           |
+| `repository`      | String  | `${{ github.repository }}`             | The GitHub repository, ORG/REPO. |
+| `vaultRoleId`     | String  |                                        | The Vault role id. |
+| `vaultSecretId`   | String  |                                        | The Vault secret id. |
+| `vaultUrl`        | String  |                                        | The Vault URL to connect to. |
