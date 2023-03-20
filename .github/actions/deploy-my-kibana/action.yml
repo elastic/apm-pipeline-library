@@ -81,6 +81,8 @@ runs:
     - name: Create github issue for the deploy-my-kibana
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |
+        cat .body-content
+        exit 0
         gh issue \
           create \
           --label 'deploy-custom-kibana' \
