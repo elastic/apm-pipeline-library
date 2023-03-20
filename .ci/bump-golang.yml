@@ -2,8 +2,18 @@
 name: Bump golang-version to latest version
 pipelineid: 'updatecli-bump-golang-{{ requiredEnv "GITHUB_RUN_ID" }}'
 
+actions:
+  default:
+    title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
+    kind: github/pullrequest
+    spec:
+      automerge: true
+      labels:
+        - dependencies
+    scmid: default
+
 scms:
-  githubConfig:
+  default:
     kind: github
     spec:
       user: '{{ requiredEnv "GIT_USER" }}'
@@ -13,16 +23,6 @@ scms:
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       username: '{{ requiredEnv "GIT_USER" }}'
       branch: main
-
-actions:
-  apm-pipeline-library:
-    kind: github/pullrequest
-    scmid: githubConfig
-    spec:
-      automerge: false
-      labels:
-        - dependencies
-      title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
 
 sources:
   latestGoVersion:
@@ -57,9 +57,9 @@ conditions:
 
 targets:
   update-goDefaultVersion:
-    name: "Update goDefaultVersion"
+    name: 'Update goDefaultVersion {{ source "latestGoVersion" }}'
     sourceid: latestGoVersion
-    scmid: githubConfig
+    scmid: default
     kind: file
     spec:
       content: '{{ source "latestGoVersion" }}'
