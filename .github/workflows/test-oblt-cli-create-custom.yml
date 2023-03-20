@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  run-oblt-cli-create-custom:
+  run-oblt-cli-create-custom-gitops:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,5 +27,28 @@ jobs:
           template: 'deploy-kibana'
           cluster-name-prefix: 'testgithubaction'
           gitops: true
+          dry-run: true
+          parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0"}'
+
+  run-oblt-cli-create-custom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Git
+        uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
+
+      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@feature/oblt-cli-create-custom
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          template: 'deploy-kibana'
+          cluster-name-prefix: 'testgithubaction'
+          gitops: false
           dry-run: true
           parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0"}'
