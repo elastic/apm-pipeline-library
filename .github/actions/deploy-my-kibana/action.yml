@@ -71,9 +71,9 @@ runs:
 
         ${{ github.event.issue.user.login }}
 
-        ### further details
+        ### Further details
 
-        Created by a GitHub command in the project https://github.com/${{ inputs.repository }}/pulls/${{ event.pull_request.number }}
+        Caused by @${{ github.event.issue.user.login }} with the GitHub command `${{ inputs.event.comment.body }}` in ${{ inputs.event.comment.html_url }}
         EOT
       shell: bash
 
