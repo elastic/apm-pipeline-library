@@ -1,0 +1,115 @@
+name: 'Deploy My Kibana'
+description: 'GitHub Action to deploy my kibana given the Pull Request'
+inputs:
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  comment_url:
+    description: 'The GitHub Comment URL'
+    default: ${{ github.event.comment.html_url }}
+  comment_id:
+    description: 'The GitHub Comment ID'
+    default: ${{ github.event.comment.id }}
+  issue_url:
+    description: 'The GitHub Issue URL'
+    default: ${{ github.event.comment.issue_url }}
+  repository:
+    description: 'The GitHub repository'
+    default: ${{ github.repository }}
+  user:
+    description: 'The GitHub user that triggered the workflow'
+    default: ${{ github.triggering_actor }}
+runs:
+  using: "composite"
+  steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vaultUrl }}
+        roleId: ${{ inputs.vaultRoleId }}
+        secretId: ${{ inputs.vaultSecretId }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      with:
+        repository: ${{ inputs.repository }}
+        commentId: ${{ inputs.comment_id }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Is an Elastician comment?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ inputs.user }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Get cluster given the target branch (either edge-lite or release)
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        PR=$(basename ${{ inputs.issue_url }})
+        echo "PR=${PR}" >> $GITHUB_ENV
+
+        # issue_comment does not contain any references to github.base_ref
+        TARGET_BRANCH=$(gh pr view ${PR} --repo ${{ inputs.repository }} --json baseRefName --jq .baseRefName)
+        if [ "${TARGET_BRANCH}" == 'main' ] ; then
+          echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
+        else
+          echo "CLUSTER=release-oblt" >> $GITHUB_ENV
+        fi
+      shell: bash
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+
+    - name: Create github issue body
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        cat <<EOT >> .body-content
+        ### From cluster
+
+        ${{ env.CLUSTER }}
+
+        ### Kibana branch
+
+        pr/${{ env.PR }}
+
+        ### Custom prefix (Optional)
+
+        _No response_
+
+        ### Oblt-cli user (Optional)
+
+        ${{ inputs.user }}
+
+        ### Further details
+
+        Caused by @${{ inputs.user }} in ${{ inputs.comment_url }}
+        EOT
+      shell: bash
+
+    - name: Create github issue for the deploy-my-kibana
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |
+        gh issue \
+          create \
+          --label 'deploy-custom-kibana' \
+          --title "[Deploy Kibana]: for user ${{ inputs.user }}" \
+          --assignee ${{ inputs.user }} \
+          --body-file .body-content \
+          --repo elastic/observability-test-environments | tee .issue
+        echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+      shell: bash
+
+    - name: Notify with a reaction if a non-elastician comment
+      uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      if: contains(steps.is_elastic_member.outputs.result, 'false')
+      with:
+        repository: ${{ inputs.repository }}
+        commentId: ${{ inputs.comment_id }}
+        emoji: '-1'
+        token: ${{ env.GITHUB_TOKEN }}
