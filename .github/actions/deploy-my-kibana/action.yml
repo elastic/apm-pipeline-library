@@ -82,7 +82,7 @@ runs:
 
         ### Oblt-cli user (Optional)
 
-        ${{ inputs.user }}
+        deploykibana
 
         ### Further details
 
