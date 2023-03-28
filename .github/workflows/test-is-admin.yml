@@ -1,0 +1,35 @@
+---
+name: test-is-admin
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-with-non-elastic-admin:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/is-admin@feature/is-admin
+        id: is_admin
+        with:
+          username: mdelapenya
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Assert is no member
+        run: test "${{steps.is_admin.outputs.result}}" = "false"
+
+  test-with-elastic-admin:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: elastic/apm-pipeline-library/.github/actions/is-admin@feature/is-admin
+        id: is_admin
+        with:
+          username: v1v
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Assert is member
+        run: test "${{steps.is_admin.outputs.result}}" = "true"
