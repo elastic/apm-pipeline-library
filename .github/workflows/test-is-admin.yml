@@ -5,22 +5,19 @@ on:
   workflow_dispatch:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test-with-non-elastic-admin:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-
       - uses: elastic/apm-pipeline-library/.github/actions/is-admin@feature/is-admin
         id: is_admin
         with:
           username: mdelapenya
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Assert is no member
         run: test "${{steps.is_admin.outputs.result}}" = "false"
@@ -28,17 +25,12 @@ jobs:
   test-with-elastic-admin:
     runs-on: ubuntu-latest
     steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
 
       - uses: elastic/apm-pipeline-library/.github/actions/is-admin@feature/is-admin
         id: is_admin
         with:
           username: v1v
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Assert is member
         run: test "${{steps.is_admin.outputs.result}}" = "true"
