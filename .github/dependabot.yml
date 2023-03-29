@@ -1,15 +1,6 @@
 ---
 version: 2
 updates:
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    directory: "/local"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "elastic/observablt-ci"
-
   # Enable version updates for pytest_otel
   - package-ecosystem: "pip"
     directory: "resources/scripts/pytest_otel"
@@ -19,3 +10,202 @@ updates:
     reviewers:
       - "elastic/observablt-ci"
       - "kuisathaverat"
+
+  # Maintain dependencies for GitHub Actions (/.github/workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  # Maintain dependencies for GitHub composite Actions (/.github/actions)
+  # Waiting for supporting wildcards see https://github.com/dependabot/dependabot-core/issues/5137
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/buildkite"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/check-dependent-jobs"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/comment-reaction"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/deploy-my-kibana"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/docker-layer-caching"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/docker-login"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/elastic-stack-snapshot-branches"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/github-token"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/is-admin"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/is-member-elastic-org"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/is-pr-author-member-elastic-org"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/notify-build-status"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/oblt-cli"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/oblt-cli-create-ccs"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/oblt-cli-create-custom"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/opentelemetry"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/pre-commit"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/publish-report"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/setup-git"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/setup-vault-cli"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/slack-message"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/snapshoty"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/snapshoty-simple"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/test-report"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/updatecli"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/version-framework"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/workflow-run"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
