@@ -34,7 +34,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Download artifact'
-      ## TODO: forced to use v3.1.0 but I don't recall why, let's keep it for now
+      ## TODO: forced to use v3.1.0 but I don't recall why, let's keep it for now
       uses: actions/github-script@v3.1.0
       with:
         script: |
