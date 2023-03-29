@@ -34,7 +34,8 @@ runs:
   using: "composite"
   steps:
     - name: 'Download artifact'
-      uses: actions/github-script@v6
+      ## TODO: forced to use v3.1.0 but I don't recall why, let's keep it for now
+      uses: actions/github-script@v3.1.0
       with:
         script: |
           var artifacts = await github.actions.listWorkflowRunArtifacts({
