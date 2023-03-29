@@ -78,7 +78,7 @@ jobs:
           credentials_json: '${{ env.SERVICE_ACCOUNT }}'
 
       - id: 'upload-file'
-        uses: 'google-github-actions/upload-cloud-storage@v0'
+        uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: snapshots
           glob: "*.json"
