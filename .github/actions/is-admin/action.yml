@@ -1,0 +1,27 @@
+name: 'Is Admin of the repository'
+description: 'Check if the given user is admin for the given repository.'
+inputs:
+  username:
+    description: 'The GitHub user'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  repository:
+    description: 'The GitHub repository (format: ORG/REPO)'
+    default: ${{ github.repository }}
+outputs:
+  result:
+    description: 'The result in either true or false'
+    value: ${{ steps.gh-api-is-admin.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - id: gh-api-is-admin
+      name: Check if user is admin of the GitHub repository
+      run: |
+        IS_ADMIN=$(gh api /repos/${{ inputs.repository }}/collaborators/${{ inputs.username }}/permission --jq .user.permissions.admin)
+        echo "result=${IS_ADMIN}" >> $GITHUB_OUTPUT
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
