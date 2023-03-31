@@ -22,3 +22,4 @@ jobs:
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: ./updatecli/updatecli.d/bump-aliases.yml
+          values: ./updatecli/values.yml
