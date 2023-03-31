@@ -1,0 +1,31 @@
+name: 'Is GitHub comment allowed'
+description: 'Check whether the GitHub comment was triggered by a user with write permissions.'
+runs:
+  using: "composite"
+  steps:
+    - name: Is comment allowed?
+      uses: actions/github-script@v6
+      with:
+        script: |
+          // Report with a reaction that the event has been listened
+          await github.rest.reactions.createForIssueComment({
+            ...context.repo,
+            comment_id: context.payload.comment.id,
+            content: '+1',
+          })
+
+          const actorPermission = (await github.rest.repos.getCollaboratorPermissionLevel({
+            ...context.repo,
+            username: context.actor
+          })).data.permission
+          const isPermitted = ['write', 'admin'].includes(actorPermission)
+          if (!isPermitted) {
+            const errorMessage = 'Only users with write permission to the repository can run GitHub commands'
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: errorMessage,
+            })
+            core.setFailed(errorMessage)
+            return;
+          }

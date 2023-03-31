@@ -197,6 +197,13 @@ updates:
       - "elastic/observablt-ci"
 
   - package-ecosystem: "github-actions"
+    directory: "/.github/actions/validate-github-comment"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
     directory: "/.github/actions/version-framework"
     schedule:
       interval: "weekly"
