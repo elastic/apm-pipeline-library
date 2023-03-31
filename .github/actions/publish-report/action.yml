@@ -34,6 +34,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Download artifact'
+      ## TODO: forced to use v3.1.0 but I don't recall why, let's keep it for now
       uses: actions/github-script@v3.1.0
       with:
         script: |
@@ -99,7 +100,7 @@ runs:
         body-includes: '<!-- automated report -->'
 
     - name: 'Update PR'
-      uses: actions/github-script@v3
+      uses: actions/github-script@v6
       if: ${{ steps.fc.outputs.comment-id != '' }}
       with:
         github-token: ${{ inputs.token }}
@@ -114,7 +115,7 @@ runs:
         BODY_CONTENT: '<!-- automated report -->\n:rocket: [Report](https://storage.cloud.google.com/${{ inputs.bucket }}/prs/${{ steps.get-pr.outputs.result }}/${{ inputs.index }})'
 
     - name: 'Comment on PR'
-      uses: actions/github-script@v3
+      uses: actions/github-script@v6
       if: ${{ steps.fc.outputs.comment-id == ''}}
       with:
         github-token: ${{ inputs.token }}
