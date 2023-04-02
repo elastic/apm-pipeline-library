@@ -96,7 +96,7 @@ runs:
         gh issue \
           create \
           --label 'deploy-custom-kibana' \
-          --title "[Deploy Kibana]: for user ${{ inputs.user }}" \
+          --title "[Deploy Kibana] for user ${{ inputs.user }} with PR kibana@pr-${{ env.PR }} on cluster ${{ env.CLUSTER }}" \
           --assignee ${{ inputs.user }} \
           --body-file .body-content \
           --repo elastic/observability-test-environments | tee .issue
