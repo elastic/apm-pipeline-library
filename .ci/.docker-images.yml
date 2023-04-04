@@ -17,7 +17,7 @@ templates:
     repository: "elastic/apm-agent-python"
     working_directory: "tests"
     build_script: docker build --build-arg PYTHON_IMAGE=${TAG/-/:} -t elasticobservability/apm-agent-python:${TAG} .
-    push_script: docker push elasticobservability/apm-agent-python:${TAG} .
+    push_script: docker push elasticobservability/apm-agent-python:${TAG}
 
   - &apm-agent-nodejs-docker-images
     name: "apm-agent-nodejs"
