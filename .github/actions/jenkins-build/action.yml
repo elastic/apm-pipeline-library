@@ -1,0 +1,57 @@
+---
+name: Jenkins job GitHub Action
+description: A GitHub Action for triggering a build on a Jenkins job.
+inputs:
+  vaultUrl:
+    description: 'Vault URL'
+    required: true
+  vaultRoleId:
+    description: 'Vault role ID'
+    required: true
+  vaultSecretId:
+    description: 'Vault secret ID'
+    required: true
+  secret:
+    description: 'Vault secret with the token field.'
+    default: secret/observability-team/ci/internal-ci-automation
+    required: false
+  jenkins-url:
+    description: 'Jenkins URL'
+    required: true
+  jenkins-job:
+    description: 'Jenkins Job'
+    required: true
+  waitFor:
+    description: 'Whether to wait for the build to finish.'
+    default: false
+    required: false
+  printBuildLogs:
+    description: 'Whether to print the build logs.'
+    default: false
+    required: false
+  build-params:
+    description: 'Specify the build parameters.'
+    required: false
+runs:
+  using: "composite"
+  steps:
+      - uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: ${{ inputs.vaultUrl }}
+          roleId: ${{ inputs.vaultRoleId }}
+          secretId: ${{ inputs.vaultSecretId }}
+          method: approle
+          secrets: |
+            ${{ inputs.secret }} user | JENKINS_USER ;
+            ${{ inputs.secret }} token | JENKINS_ACCESS_TOKEN
+
+      - name: Trigger Jenkins job
+        run: |
+          ${{ github.action_path }}/run.sh \
+            '${{ inputs.jenkins-url }}' \
+            '${{ inputs.jenkins-job }}' \
+            '${{ inputs.build-params }}' \
+            '${{ inputs.waitFor }}' \
+            '${{ inputs.printBuildLogs }}' \
+            '${{ env.JENKINS_USER }}:${{ env.JENKINS_ACCESS_TOKEN }}'
+        shell: bash
