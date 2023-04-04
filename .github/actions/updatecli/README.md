@@ -50,6 +50,7 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
 | `pipeline`        | String  |                             | Path to pipeline file. |
+| `values`          | String  |                             | Path to the values file uses for templating. Optional |
 | `vaultRoleId`     | String  |                             | The Vault role id. |
 | `vaultSecretId`   | String  |                             | The Vault secret id. |
 | `vaultUrl`        | String  |                             | The Vault URL to connect to. |

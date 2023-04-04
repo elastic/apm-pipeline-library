@@ -4,6 +4,9 @@ inputs:
   pipeline:
     description: 'The updatecli pipeline to run'
     required: true
+  values:
+    description: 'The updatecli values file uses for templating'
+    required: false
   vaultUrl:
     description: 'Vault URL'
     required: true
@@ -57,7 +60,11 @@ runs:
       uses: updatecli/updatecli-action@b2a980fc36545947ed73c43f841ca0675532ebe7
 
     - name: Run Updatecli
-      run: updatecli ${{ inputs.command }} --config ${{ inputs.pipeline }}
+      run: |-
+        if [ -n '${{ inputs.values }}' ] ; then
+          FLAGS="--values ${{ inputs.values }}"
+        fi
+        updatecli ${{ inputs.command }} --config ${{ inputs.pipeline }} ${FLAGS}
       shell: bash
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
