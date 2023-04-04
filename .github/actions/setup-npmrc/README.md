@@ -32,9 +32,7 @@ jobs:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-      - run: npm ci
-      - run: npm run build
-      - run: npm publish
+      - run: npm whoami
 ```
 
 ## Customizing
