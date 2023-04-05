@@ -206,8 +206,8 @@ images:
   - name: "apm-agent-python-testing"
     repository: "elastic/apm-agent-python"
     working_directory: .ci/docker
-    build_script: ./util --action build
-    push_script: ./util --action push
+    build_script: ./util.sh --action build
+    push_script: ./util.sh --action push
 
   # APM Agent Node.js Docker Images
 
