@@ -12,13 +12,6 @@ templates:
   - &opbeans-docker-images
     tag: "daily"
 
-  - &apm-agent-python-docker-images
-    name: "apm-agent-python"
-    repository: "elastic/apm-agent-python"
-    working_directory: "tests"
-    build_script: docker build --build-arg PYTHON_IMAGE=${TAG/-/:} -t elasticobservability/apm-agent-python:${TAG} .
-    push_script: docker push elasticobservability/apm-agent-python:${TAG}
-
   - &apm-agent-nodejs-docker-images
     name: "apm-agent-nodejs"
     repository: "elastic/apm-agent-nodejs"
@@ -209,25 +202,12 @@ images:
     test_script: "make simple-test-${NAME}"
 
   # APM Agent Python Docker Images
-  # Taken from https://github.com/elastic/apm-agent-python/blob/main/.ci/.matrix_python_full.yml
 
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.6"
-
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.7"
-
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.8"
-
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.9"
-
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.10"
-
-  - <<: *apm-agent-python-docker-images
-    tag: "python-3.11"
+  - name: "apm-agent-python-testing"
+    repository: "elastic/apm-agent-python"
+    working_directory: .ci/docker
+    build_script: ./util --action build
+    push_script: ./util --action push
 
   # APM Agent Node.js Docker Images
 
