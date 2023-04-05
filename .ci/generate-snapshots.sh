@@ -22,7 +22,7 @@
 #
 set -eo pipefail
 
-## we avoid surprises by uploading the unexpected credentials json file
+## We avoid surprises by uploading the unexpected credentials json file
 mkdir snapshots
 cd snapshots
 URL="https://artifacts-api.elastic.co/v1"
@@ -68,7 +68,6 @@ for branch in $(jq -r '.branches | .[]' branches.json); do
   fi
 done
 
-set -x
 ## There are times when there are two minor versions at the same time and that's valid in some cases but
 ## in other cases it's not required.
 searchLatestBranch=$(jq -r '.branches | map(select(. != "main")) | .[-1]' branches.json)
