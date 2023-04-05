@@ -40,7 +40,7 @@ jobs:
             echo "}"
           } > branches.json
 
-          ## Remove branches that have not been created yet, for such it queries the GitHub repositoreis
+          ## Remove branches that have not been created yet, for such it queries the GitHub repositories
           for branch in $(jq -r '.branches | .[]' branches.json); do
             if git ls-remote --exit-code --heads https://github.com/elastic/elasticsearch.git "$branch" ; then
               echo $branch
@@ -60,6 +60,21 @@ jobs:
               fi
             fi
           done
+
+          ## There are times when there are two minor versions at the same time and that's valid in some cases but
+          ## in other cases it's not required.
+          searchLatestBranch=$(jq -r '.branches | map(select(. != "main")) | .[-1]' branches.json)
+          searchVersion=$(jq -r '.version' "$searchLatestBranch.json" | sed 's#-SNAPSHOT##g')
+          if [ "${searchVersion}" != "${searchLatestBranch}.0"  ] ; then
+            ## Remove 8.x-1
+            majorVersion=$(cut -d '.' -f 1 <<< "$searchLatestBranch")
+            minorVersion=$(cut -d '.' -f 2 <<< "$searchLatestBranch")
+            ## manipulate minorVersion to get the -1
+            newMinorVersion=$(echo "$minorVersion - 1" | bc)
+            export removeBranch="${majorVersion}.${newMinorVersion}"
+            jq -r ".branches | map(select(. != env.removeBranch))" branches.json > branches.json.tmp
+            mv branches.json.tmp branches.json
+          fi
 
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.4.2
