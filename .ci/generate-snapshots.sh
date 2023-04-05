@@ -17,8 +17,8 @@
 # under the License.
 
 #
-# It queries the artifacts-api entry point to fetch the next release
-# version for the 8.x line.
+# It produces the list of active release branches using the artifacts-api and does some
+# manipulation to discard those branches that are not active anymore. A bit opinionated. 
 #
 set -eo pipefail
 
