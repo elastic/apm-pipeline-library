@@ -79,6 +79,6 @@ if [ "${searchVersion}" != "${searchLatestBranch}.0"  ] ; then
   ## manipulate minorVersion to get the -1
   newMinorVersion=$(echo "$minorVersion - 1" | bc)
   export removeBranch="${majorVersion}.${newMinorVersion}"
-  jq -r ".branches | map(select(. != env.removeBranch))" branches.json > branches.json.tmp
+  jq -r 'del(.branches[] | select(test(env.removeBranch)))' branches.json > branches.json.tmp
   mv branches.json.tmp branches.json
 fi
