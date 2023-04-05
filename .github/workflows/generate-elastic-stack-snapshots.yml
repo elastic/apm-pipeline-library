@@ -10,56 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  bump:
+  generate-snapshots:
     runs-on: ubuntu-latest
     steps:
-      - name: fetch snapshots
-        run: |-
-          ## we avoid surprises by uploading the unexpected credentials json file
-          mkdir snapshots
-          cd snapshots
-          URL="https://artifacts-api.elastic.co/v1"
-          NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
-
-          QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT"))')
-          for version in ${QUERY_OUTPUT}; do
-            LATEST_OUTPUT=$(curl -s "${URL}/versions/${version}/builds/latest?${NO_KPI_URL_PARAM}" | jq 'del(.build.projects,.manifests) | . |= .build')
-            BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
-            echo "${LATEST_OUTPUT}" | tee "$BRANCH.json"
-          done
-          ## support main branch
-          cp master.json main.json || true
-
-          ## generate a manifest with the current active snapshot branches (it also includes main).
-          ## Aka those with artifacts that have been generated in the last 30 days.
-          BRANCHES=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" | jq -r 'del(.aliases[] | select(test("SNAPSHOT$")|not)) | .aliases' | jq '. + [ "main" ]' | sed 's#-SNAPSHOT##g')
-          {
-            echo "{"
-            echo "\"branches\":"
-            echo "${BRANCHES}"
-            echo "}"
-          } > branches.json
-
-          ## Remove branches that have not been created yet, for such it queries the GitHub repositoreis
-          for branch in $(jq -r '.branches | .[]' branches.json); do
-            if git ls-remote --exit-code --heads https://github.com/elastic/elasticsearch.git "$branch" ; then
-              echo $branch
-            else
-              ## fallback to kibana just in case
-              if git ls-remote --exit-code --heads https://github.com/elastic/kibana.git "$branch" ; then
-                echo $branch
-              else
-                echo "$branch does not exist"
-                {
-                  echo "{"
-                  echo "\"branches\":"
-                  jq ".branches - [\"$branch\"]" branches.json
-                  echo "}"
-                } > branches.json.tmp
-                mv branches.json.tmp branches.json
-              fi
-            fi
-          done
+      - uses: actions/checkout@v3
+      - run: .ci/generate-snapshots.sh
 
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.4.2
