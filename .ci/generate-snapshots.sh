@@ -18,7 +18,7 @@
 
 #
 # It produces the list of active release branches using the artifacts-api and does some
-# manipulation to discard those branches that are not active anymore. A bit opinionated. 
+# manipulation to discard those branches that are not active anymore. A bit opinionated.
 #
 set -eo pipefail
 
