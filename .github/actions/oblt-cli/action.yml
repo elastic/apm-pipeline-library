@@ -28,9 +28,13 @@ runs:
     - name: configure oblt-cli
       run: |
         GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username='${{ inputs.username }}' --slack-channel='${{ inputs.slackChannel }}'
+      env:
+        ELASTIC_APM_ENVIRONMENT: CI
       shell: bash
 
     - name: run oblt-cli
       run: |
         GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose
+      env:
+        ELASTIC_APM_ENVIRONMENT: CI
       shell: bash
