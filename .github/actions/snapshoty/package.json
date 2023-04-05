@@ -15,7 +15,7 @@
     "JavaScript"
   ],
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.0.1"
