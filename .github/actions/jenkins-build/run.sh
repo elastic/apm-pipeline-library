@@ -49,6 +49,7 @@ curl --no-progress-meter \
 echo "::endgroup::"
 
 echo "::group::BuildLogs"
+# shellcheck disable=SC2086
 java -jar \
   jenkins-cli.jar \
   -s "${URL}" \
