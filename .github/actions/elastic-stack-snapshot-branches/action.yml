@@ -1,6 +1,12 @@
 ---
 name: 'Elastic Stack Snapshot branches'
 description: 'Fetch the current list of active branches with snapshots in Elastic'
+inputs:
+  exclude-branches:
+    description: "Exclude branches comma separated"
+    required: false
+    type: string
+    default: ''
 outputs:
   matrix:
     description: "Processed matrix with the required tuples of version and framework"
@@ -8,19 +14,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
     - id: generator
-      shell: python
-      run: |
-        import json
-        import os
-        import requests
-        r = requests.get(url='https://storage.googleapis.com/artifacts-api/snapshots/branches.json')
-        matrix = {'include': []}
-        for branch in r.json()['branches']:
-          matrix['include'].append({"branch": branch})
-        with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
-          f.write("matrix={}\n".format(json.dumps(matrix)))
+      shell: bash
+      run: python ${{ github.action_path }}/script.py
+      env:
+        EXCLUDE_BRANCHES: ${{ inputs.exclude-branches }}
     - id: debug
       shell: bash
       run: |
