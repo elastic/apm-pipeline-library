@@ -1,0 +1,20 @@
+---
+name: test-elastic-stack-snapshot-branches
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: generator
+        uses: elastic/apm-pipeline-library/.github/actions/elastic-stack-snapshot-branches@main
+
+  test-with-exclude-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - id: generator
+        uses: elastic/apm-pipeline-library/.github/actions/elastic-stack-snapshot-branches@main
+        with:
+          exclude-branches: '7.17,main'
