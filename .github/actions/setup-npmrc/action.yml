@@ -24,7 +24,7 @@ inputs:
     description: 'NPM registry. (Optional. Default: registry.npmjs.org)'
     default: registry.npmjs.org
     required: false
-  npmrcfile:
+  npmrcFile:
     description: 'Name of the file with the token. (Optional. Default: .npmrc)'
     default: .npmrc
     required: false
@@ -44,5 +44,5 @@ runs:
         secrets: |
           ${{ inputs.secret }} ${{ inputs.secretKey }} | NPM_TOKEN
     - run: |
-        echo "//${{ inputs.registry }}/:_authToken=${NPM_TOKEN}" > "${{ inputs.path }}/${{ inputs.npmrcfile }}"
+        echo "//${{ inputs.registry }}/:_authToken=${NPM_TOKEN}" > "${{ inputs.path }}/${{ inputs.npmrcFile }}"
       shell: bash

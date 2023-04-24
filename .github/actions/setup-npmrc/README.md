@@ -49,5 +49,5 @@ Following inputs can be used as `step.with` keys
 | `secret`        | String | `secret/apm-team/ci/elastic-observability-npmjs` | The Vault secret.                               |
 | `secretKey`     | String | `token`                                          | The Vault secret key.                           |
 | `registry`      | String | `registry.npmjs.org`                             | NPM Registry.                                   |
-| `npmrcfile`     | String | `.npmrc`                                         | Name of the file with the token.                |
+| `npmrcFile`     | String | `.npmrc`                                         | Name of the file with the token.                |
 | `path`          | String | `.`                                              | Folder where the `.npmrc` file will be created. |
