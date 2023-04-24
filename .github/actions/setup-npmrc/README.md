@@ -29,9 +29,9 @@ jobs:
           node-version-file: .nvmrc
       - uses: elastic/apm-pipeline-library/.github/actions/setup-npmrc@current
         with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          vault-url: ${{ secrets.VAULT_ADDR }}
+          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
       - run: npm whoami
 ```
 
@@ -43,11 +43,11 @@ Following inputs can be used as `step.with` keys
 
 | Name            | Type   | Default                                          | Description                                     |
 |-----------------|--------|--------------------------------------------------|-------------------------------------------------|
-| `vaultRoleId`   | String |                                                  | The Vault role id.                              |
-| `vaultSecretId` | String |                                                  | The Vault secret id.                            |
-| `vaultUrl`      | String |                                                  | The Vault URL to connect to.                    |
+| `vault-role-id`   | String |                                                  | The Vault role id.                              |
+| `vault-secret-id` | String |                                                  | The Vault secret id.                            |
+| `vault-url`      | String |                                                  | The Vault URL to connect to.                    |
 | `secret`        | String | `secret/apm-team/ci/elastic-observability-npmjs` | The Vault secret.                               |
-| `secretKey`     | String | `token`                                          | The Vault secret key.                           |
+| `secret-key`     | String | `token`                                          | The Vault secret key.                           |
 | `registry`      | String | `registry.npmjs.org`                             | NPM Registry.                                   |
-| `npmrcFile`     | String | `.npmrc`                                         | Name of the file with the token.                |
+| `npmrc-file`     | String | `.npmrc`                                         | Name of the file with the token.                |
 | `path`          | String | `.`                                              | Folder where the `.npmrc` file will be created. |

@@ -3,20 +3,20 @@ name: setup-npmrc
 description: Creates an .npmrc file given a Vault secret.
 
 inputs:
-  vaultUrl:
+  vault-url:
     description: 'Vault URL'
     required: true
-  vaultRoleId:
+  vault-role-id:
     description: 'Vault role ID'
     required: true
-  vaultSecretId:
+  vault-secret-id:
     description: 'Vault secret ID'
     required: true
   secret:
     description: 'Vault secret with the token field. (Optional. Default: secret/apm-team/ci/elastic-observability-npmjs)'
     default: secret/apm-team/ci/elastic-observability-npmjs
     required: false
-  secretKey:
+  secret-key:
     description: 'Vault secret key. (Optional. Default: token)'
     default: token
     required: false
@@ -24,7 +24,7 @@ inputs:
     description: 'NPM registry. (Optional. Default: registry.npmjs.org)'
     default: registry.npmjs.org
     required: false
-  npmrcFile:
+  npmrc-file:
     description: 'Name of the file with the token. (Optional. Default: .npmrc)'
     default: .npmrc
     required: false
@@ -37,12 +37,12 @@ runs:
   steps:
     - uses: hashicorp/vault-action@v2.5.0
       with:
-        url: ${{ inputs.vaultUrl }}
-        roleId: ${{ inputs.vaultRoleId }}
-        secretId: ${{ inputs.vaultSecretId }}
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
         method: approle
         secrets: |
-          ${{ inputs.secret }} ${{ inputs.secretKey }} | NPM_TOKEN
+          ${{ inputs.secret }} ${{ inputs.secret-key }} | NPM_TOKEN
     - run: |
-        echo "//${{ inputs.registry }}/:_authToken=${NPM_TOKEN}" > "${{ inputs.path }}/${{ inputs.npmrcFile }}"
+        echo "//${{ inputs.registry }}/:_authToken=${NPM_TOKEN}" > "${{ inputs.path }}/${{ inputs.npmrc-file }}"
       shell: bash
