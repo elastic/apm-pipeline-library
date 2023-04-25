@@ -4,14 +4,12 @@ queue_rules:
       - check-success=build
       - check-success=licenses
       - check-success=pre-commit
+      - check-success=CLA
 
 pull_request_rules:
   - name: Automatic squash and merge on approval with success checks and ready-to-merge label
     conditions:
       - "#approved-reviews-by>=2"
-      - check-success=apm-ci/pr-merge
-      - check-success=CLA
-      - check-success=Test
       - label=ready-to-merge
       - base=main
     actions:
