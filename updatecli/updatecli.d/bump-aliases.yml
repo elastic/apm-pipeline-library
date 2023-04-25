@@ -1,6 +1,6 @@
 ---
 name: Bump aliases with the elastic stack versions
-pipelineid: 'updatecli-bump-aliases-{{ requiredEnv "GITHUB_RUN_ID" }}'
+pipelineid: 'updatecli-bump-aliases'
 
 actions:
   default:

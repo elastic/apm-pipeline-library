@@ -9,6 +9,7 @@ actions:
     spec:
       labels:
         - dependencies
+        - automation
     scmid: default
 
 scms:
