@@ -1,6 +1,6 @@
 ---
 name: Bump golang-version to latest version
-pipelineid: 'updatecli-bump-golang-{{ requiredEnv "GITHUB_RUN_ID" }}'
+pipelineid: 'updatecli-bump-golang'
 
 actions:
   default:
@@ -10,6 +10,7 @@ actions:
       automerge: false
       labels:
         - dependencies
+        - automation
     scmid: default
 
 scms:
