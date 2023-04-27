@@ -72,7 +72,7 @@ done
 ## in other cases it's not required.
 searchLatestBranch=$(jq -r '.branches | map(select(. != "main")) | .[-1]' branches.json)
 
-## If branch is not available yet, likely it's related with a new release is created from the main branch
+## If branch is not available yet, likely it's related when a new release is created from the main branch
 ## then the unified release likely has not been triggered yet. Then let's fall back to create the file
 ## matching the main.json (this will avoid issues with the consumers)
 if [ ! -e  "$searchLatestBranch.json" ] ; then
