@@ -71,6 +71,14 @@ done
 ## There are times when there are two minor versions at the same time and that's valid in some cases but
 ## in other cases it's not required.
 searchLatestBranch=$(jq -r '.branches | map(select(. != "main")) | .[-1]' branches.json)
+
+## If branch is not available yet, likely it's related when a new release is created from the main branch
+## then the unified release likely has not been triggered yet. Then let's fall back to create the file
+## matching the main.json (this will avoid issues with the consumers)
+if [ ! -e  "$searchLatestBranch.json" ] ; then
+  cp main.json "$searchLatestBranch.json"
+fi
+
 searchVersion=$(jq -r '.version' "$searchLatestBranch.json" | sed 's#-SNAPSHOT##g')
 if [ "${searchVersion}" != "${searchLatestBranch}.0"  ] ; then
   ## Remove 8.x-1
