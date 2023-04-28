@@ -2,10 +2,10 @@ import {expect, describe, beforeEach, afterEach, it, jest} from '@jest/globals'
 import {RunTarget, RunOptions} from 'github-action-ts-run-api'
 import path from 'path'
 import nock, {Scope} from 'nock'
-import {DEFAULT_ALLOWED_ACTORS, run} from '../src/main'
+import {DEFAULT_ALLOWED_ACTORS, run} from '../../src/main'
 
 function resolveFixture(name: string): string {
-  return path.resolve(__dirname, `fixtures/${name}.json`)
+  return path.resolve(process.cwd(), `tests/fixtures/${name}.json`)
 }
 
 describe('check missing inputs', () => {
