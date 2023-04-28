@@ -16,11 +16,11 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|.github/actions/snapshoty/dist/|mvnw.cmd)
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|.github/actions/snapshoty/dist/|.github/actions/is-pr-approved/dist/|mvnw.cmd)
     -   id: mixed-line-ending
         exclude: src/test/resources/pipeline-log.txt
     -   id: trailing-whitespace
-        exclude: (.github/actions/snapshoty/dist/|mvnw.cmd|src/test/resources/)
+        exclude: (.github/actions/is-pr-approved|.github/actions/snapshoty/dist/|mvnw.cmd|src/test/resources/)
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
@@ -59,7 +59,7 @@ repos:
     hooks:
     -   id: codespell
         args: ['--ignore-words-list','pullrequest,pullrequests']
-        exclude: (.github/actions/snapshoty/dist|src/test/resources/jobs/)
+        exclude: (.github/actions/snapshoty/dist|.github/actions/is-pr-approved|src/test/resources/jobs/)
 
 -   repo: local
     hooks:
