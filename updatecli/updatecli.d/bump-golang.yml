@@ -6,12 +6,14 @@ actions:
   default:
     title: '[Automation] Bump Golang version to {{ source "latestGoVersion" }}'
     kind: github/pullrequest
+    scmid: default
     spec:
       automerge: false
       labels:
-        - dependencies
         - automation
-    scmid: default
+        - dependencies
+      description: |
+        Generated automatically with {{ requiredEnv "JOB_URL" }}
 
 scms:
   default:
