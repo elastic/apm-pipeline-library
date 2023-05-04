@@ -2,11 +2,16 @@
 name: 'Run pre-commit on PRs and branches'
 description: |
   Run pre-commit independently you are running on a PR or a branch.
+inputs:
+  clean-checkout:
+    default: "true"
+    description: "Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching"
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3
       with:
+        clean: ${{ inputs.clean-checkout }}
         # Fetch all the history so the pre-commit/action can compare changes between the target and the git commit
         fetch-depth: 0
     - uses: actions/setup-python@v4
