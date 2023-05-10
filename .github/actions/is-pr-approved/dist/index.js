@@ -39,7 +39,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = exports.UNSUPPORTED_EVENT_ERROR = exports.DEFAULT_ALLOWED_ACTORS = void 0;
+exports.run = exports.DEFAULT_ALLOWED_ACTORS = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github_actions_utils_1 = __nccwpck_require__(8267);
 exports.DEFAULT_ALLOWED_ACTORS = [
@@ -48,7 +48,6 @@ exports.DEFAULT_ALLOWED_ACTORS = [
     'mergify[bot]',
     'github-actions[bot]'
 ];
-exports.UNSUPPORTED_EVENT_ERROR = 'This action only support `push`, `workflow_dispatch`, `pull_request` and `pull_request_target` events';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // Use dynamic import to let `github-action-ts-run-api` library inject
@@ -58,11 +57,8 @@ function run() {
         try {
             // Validate event source
             const eventName = github.context.eventName;
-            if (['push', 'workflow_dispatch'].includes(eventName)) {
-                return core.info(`Skipping validation due to priviledge event (${eventName})`);
-            }
-            else if (!['pull_request', 'pull_request_target'].includes(eventName)) {
-                return core.setFailed(exports.UNSUPPORTED_EVENT_ERROR);
+            if (!['pull_request', 'pull_request_target'].includes(eventName)) {
+                return core.info(`Skip validation for events other than 'pull_request' and 'pull_request_target' (${eventName})`);
             }
             // Get the Github token from the environment
             const githubToken = github_actions_utils_1.actionInputs.getString('github-token', false) || process.env.GITHUB_TOKEN;

@@ -16,9 +16,6 @@ export const DEFAULT_ALLOWED_ACTORS: readonly string[] = [
   'github-actions[bot]'
 ]
 
-export const UNSUPPORTED_EVENT_ERROR =
-  'This action only support `push`, `workflow_dispatch`, `pull_request` and `pull_request_target` events'
-
 export async function run(): Promise<void> {
   // Use dynamic import to let `github-action-ts-run-api` library inject
   // Github Context before using it.
@@ -28,10 +25,8 @@ export async function run(): Promise<void> {
   try {
     // Validate event source
     const eventName = github.context.eventName
-    if (['push', 'workflow_dispatch'].includes(eventName)) {
-      return core.info(`Skipping validation due to priviledge event (${eventName})`)
-    } else if (!['pull_request', 'pull_request_target'].includes(eventName)) {
-      return core.setFailed(UNSUPPORTED_EVENT_ERROR)
+    if (!['pull_request', 'pull_request_target'].includes(eventName)) {
+      return core.info(`Skip validation for events other than 'pull_request' and 'pull_request_target' (${eventName})`)
     }
 
     // Get the Github token from the environment
