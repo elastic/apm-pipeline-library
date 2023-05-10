@@ -4,7 +4,7 @@ inputs:
   github-token:
     description: 'Github PAT Token'
     required: false
-  allow-actors:
+  allowed-actors:
     description: 'List of allowed actors'
     required: false
 runs:

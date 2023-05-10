@@ -2,7 +2,7 @@ import {expect, describe, beforeEach, afterEach, it, jest} from '@jest/globals'
 import {RunTarget, RunOptions} from 'github-action-ts-run-api'
 import path from 'path'
 import nock, {Scope} from 'nock'
-import {DEFAULT_ALLOWED_ACTORS, run} from '../../src/main'
+import {DEFAULT_ALLOWED_ACTORS, UNSUPPORTED_EVENT_ERROR, run} from '../../src/main'
 
 function resolveFixture(name: string): string {
   return path.resolve(process.cwd(), `tests/fixtures/${name}.json`)
@@ -36,16 +36,14 @@ describe('check missing inputs', () => {
     expect(result.commands.errors?.includes('Unable to retrieve a valid `GITHUB_TOKEN`')).toStrictEqual(true)
   })
 
-  it('should fail if the github action is trigger on push', async () => {
+  it('should fail if the github action is trigger on `pull_request_review`', async () => {
     const result = await RunTarget.asyncFn(run).run(
       commonOptions.clone().setGithubContext({
-        eventName: 'push'
+        eventName: 'pull_request_review'
       })
     )
     expect(result.isSuccess).toStrictEqual(false)
-    expect(
-      result.commands.errors?.includes('This action only support `pull_request` and `pull_request_target` events')
-    ).toStrictEqual(true)
+    expect(result.commands.errors?.includes(UNSUPPORTED_EVENT_ERROR)).toStrictEqual(true)
   })
 })
 

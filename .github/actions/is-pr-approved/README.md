@@ -18,11 +18,11 @@
 ## Motivation & Context
 
 * We needed a way to check if a PR is approved to run within a workflow.
-* It enable the usage of `pull_request_target` event for forked repositories.
+* It enables the usage of `pull_request_target` event for forked repositories.
 * The solution must allow a PR to run within the workflow if one of the following conditions is met:
-  * The workflow has been trigger by an allowed actor (explicit list of actors).
-  * The workflow has been trigger by an actor with write/admin permissions on the repository.
-  * The workflow has been trigger by an org actor.
+  * The workflow has been triggered by an allowed actor (explicit list of actors).
+  * The workflow has been triggered by an actor with `write/admin` permissions on the repository.
+  * The workflow has been triggered by an org actor.
   * The PR has been approved (review) by a trusted actor.
 
 ## Workflow
@@ -97,6 +97,8 @@ on:
   # One of the following event
   pull_request:
   pull_request_target:
+  push:
+  workflow_dispatch:
 
 permissions:
   contents: read
