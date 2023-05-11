@@ -57,4 +57,17 @@ class MvnVersionTests extends ApmBasePipelineTest {
     assertEquals("1.1.82", ret)
   }
 
+  @Test
+  void testVersionMultiline() throws Exception {
+    helper.registerAllowedMethod('sh', [Map.class], { return """
+Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
+Maven home: /Users/vmartinez/.m2/wrapper/dists/apache-maven-3.8.5-bin/5i5jha092a3i37g0paqnfr15e0/apache-maven-3.8.5
+Java version: 17.0.5, vendor: Eclipse Adoptium, runtime: /Users/vmartinez/.sdkman/candidates/java/17.0.5-tem
+Default locale: en_GB, platform encoding: UTF-8
+OS name: "mac os x", version: "13.3", arch: "x86_64", family: "mac"
+1.36.1-SNAPSHOT""" })
+    def ret = script.call()
+    assertEquals("1.36.1-SNAPSHOT", ret)
+  }
+
 }

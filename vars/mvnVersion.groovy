@@ -31,9 +31,10 @@ def call(Map args = [:]) {
         error "Error executing Maven. Check to ensure that you are in the project root and that `mvnw` and `pom.xml` are present."
         throw err
     }
+    def line = ver.split('\n').last()
     if (!showQualifiers){
-        return ver.replaceAll(/-.*$/, '')
+        return line.replaceAll(/-.*$/, '')
     } else {
-        return ver
+        return line
     }
 }
