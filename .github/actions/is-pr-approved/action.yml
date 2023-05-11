@@ -1,0 +1,12 @@
+name: 'is-pr-approved'
+description: 'Check if we can execute a PR.'
+inputs:
+  github-token:
+    description: 'Github PAT Token'
+    required: false
+  allowed-actors:
+    description: 'List of allowed actors'
+    required: false
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
