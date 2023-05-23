@@ -56,13 +56,21 @@ runs:
         PR=$(basename ${{ inputs.issue_url }})
         echo "PR=${PR}" >> $GITHUB_ENV
 
-        # If serverless
-        if [ "${{ inputs.serverless }}" == 'true' ] ; then
-          echo "CLUSTER=serverless-oblt" >> $GITHUB_ENV
-          exit 0
-        fi
         # issue_comment does not contain any references to github.base_ref
         TARGET_BRANCH=$(gh pr view ${PR} --repo ${{ inputs.repository }} --json baseRefName --jq .baseRefName)
+
+        # If serverless
+        if [ "${{ inputs.serverless }}" == 'true' ] ; then
+          if [ "${TARGET_BRANCH}" == 'main' ] ; then
+            # As long as serverless is not yet available we use stateless instead
+            #echo "CLUSTER=serverless-oblt" >> $GITHUB_ENV
+            echo "CLUSTER=stateless-oblt" >> $GITHUB_ENV
+            exit 0
+          fi
+          STATUS="#### You cannot deploy your PR when targeting a branch other than main :broken_heart:"
+          echo "${STATUS}" >> $GITHUB_STEP_SUMMARY
+          echo "::setFailed::${STATUS}"
+        fi
         if [ "${TARGET_BRANCH}" == 'main' ] ; then
           echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
         else
