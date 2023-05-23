@@ -22,6 +22,9 @@ inputs:
   repository:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
+  serverless:
+    description: 'Whether to deploy a serverless cluster'
+    default: false
   user:
     description: 'The GitHub user that triggered the workflow'
     default: ${{ github.triggering_actor }}
@@ -55,6 +58,20 @@ runs:
 
         # issue_comment does not contain any references to github.base_ref
         TARGET_BRANCH=$(gh pr view ${PR} --repo ${{ inputs.repository }} --json baseRefName --jq .baseRefName)
+
+        # If serverless
+        if [ "${{ inputs.serverless }}" == 'true' ] ; then
+          if [ "${TARGET_BRANCH}" == 'main' ] ; then
+            # As long as serverless is not yet available we use stateless instead
+            #echo "CLUSTER=serverless-oblt" >> $GITHUB_ENV
+            echo "CLUSTER=stateless-oblt" >> $GITHUB_ENV
+            exit 0
+          fi
+          MESSAGE="You cannot deploy your PR when targeting a branch other than main"
+          echo "#### :broken_heart: ${MESSAGE}" >> $GITHUB_STEP_SUMMARY
+          echo "::error::${MESSAGE}"
+          exit 1
+        fi
         if [ "${TARGET_BRANCH}" == 'main' ] ; then
           echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
         else
@@ -101,6 +118,7 @@ runs:
           --body-file .body-content \
           --repo elastic/observability-test-environments | tee .issue
         echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
+        echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ env.GITHUB_TOKEN }}
       shell: bash

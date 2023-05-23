@@ -43,6 +43,13 @@ Following inputs can be used as `step.with` keys
 | `comment_id`      | String  | `${{ github.event.comment.id }}`       | The GitHub comment ID.  |
 | `user`            | String  | `${{ github.triggering_actor }}`       | The GitHub user avatar           |
 | `repository`      | String  | `${{ github.repository }}`             | The GitHub repository, ORG/REPO. |
+| `serverless`      | Boolean | `false`                                | Whether to deploy a serverless deployment. |
 | `vaultRoleId`     | String  |                                        | The Vault role id. |
 | `vaultSecretId`   | String  |                                        | The Vault secret id. |
 | `vaultUrl`        | String  |                                        | The Vault URL to connect to. |
+
+### outputs
+
+| Name              | Type    | Description                               |
+|-------------------|---------| ------------------------------------------|
+| `issue`           | String  | The GitHub issue URL with the deployment. |
