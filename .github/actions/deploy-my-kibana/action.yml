@@ -22,6 +22,9 @@ inputs:
   repository:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
+  serverless:
+    description: 'Whether to deploy a serverless cluster'
+    default: false
   user:
     description: 'The GitHub user that triggered the workflow'
     default: ${{ github.triggering_actor }}
@@ -53,6 +56,11 @@ runs:
         PR=$(basename ${{ inputs.issue_url }})
         echo "PR=${PR}" >> $GITHUB_ENV
 
+        # If serverless
+        if [ "${{ inputs.serverless }}" == 'true' ] ; then
+          echo "CLUSTER=serverless-oblt" >> $GITHUB_ENV
+          exit 0
+        fi
         # issue_comment does not contain any references to github.base_ref
         TARGET_BRANCH=$(gh pr view ${PR} --repo ${{ inputs.repository }} --json baseRefName --jq .baseRefName)
         if [ "${TARGET_BRANCH}" == 'main' ] ; then
