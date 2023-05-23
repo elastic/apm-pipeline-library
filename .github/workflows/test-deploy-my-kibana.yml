@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: elastic/apm-pipeline-library/.github/actions/deploy-my-kibana@test/support-serverless
         with:
-          vaultUrl: ${{ secrets.OBLT_VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.OBLT_VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.OBLT_VAULT_SECRET_ID }}
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           serverless: true
