@@ -69,7 +69,8 @@ runs:
           fi
           MESSAGE="You cannot deploy your PR when targeting a branch other than main"
           echo "#### :broken_heart: ${MESSAGE}" >> $GITHUB_STEP_SUMMARY
-          echo "::setFailed::${STATUS}"
+          echo "::error::${MESSAGE}"
+          exit 1
         fi
         if [ "${TARGET_BRANCH}" == 'main' ] ; then
           echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
