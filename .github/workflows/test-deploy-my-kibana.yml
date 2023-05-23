@@ -9,6 +9,15 @@ permissions:
   contents: read
 
 jobs:
+  deploy-my-kibana:
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/oblt-deploy'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: elastic/apm-pipeline-library/.github/actions/deploy-my-kibana@test/support-serverless
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
   deploy-my-kibana-serverless:
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/oblt-deploy-serverless'}}
     runs-on: ubuntu-latest
