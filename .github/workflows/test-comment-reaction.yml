@@ -4,7 +4,9 @@ name: test-comment-reaction
 on:
   issue_comment:
     types:
-      - created
+      # disable for the time being...
+      #- created
+      - deleted
 
 jobs:
   comment-reaction-by-default:
