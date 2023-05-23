@@ -47,3 +47,9 @@ Following inputs can be used as `step.with` keys
 | `vaultRoleId`     | String  |                                        | The Vault role id. |
 | `vaultSecretId`   | String  |                                        | The Vault secret id. |
 | `vaultUrl`        | String  |                                        | The Vault URL to connect to. |
+
+### outputs
+
+| Name              | Type    | Description                               |
+|-------------------|---------| ------------------------------------------|
+| `issue`           | String  | The GitHub issue URL with the deployment. |

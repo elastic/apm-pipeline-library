@@ -117,6 +117,7 @@ runs:
           --body-file .body-content \
           --repo elastic/observability-test-environments | tee .issue
         echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
+        echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ env.GITHUB_TOKEN }}
       shell: bash
