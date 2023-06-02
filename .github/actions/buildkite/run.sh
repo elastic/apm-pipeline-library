@@ -75,8 +75,10 @@ echo "::endgroup::"
 
 URL=$(echo "$RESP" | jq -r ".url")
 WEB_URL=$(echo "$RESP" | jq -r ".web_url")
+BUILD_NUMBER=$(echo "$RESP" | jq -r ".number")
 # shellcheck disable=SC2086
 echo "build=$WEB_URL" >> $GITHUB_OUTPUT
+echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
 if [ "$WAIT_FOR" != "true" ]; then
   echo "No wait for build $WEB_URL to run "
   exit 0
@@ -113,8 +115,10 @@ fi
 
 if [ "$STATE" == "passed" ]; then
   echo "Build passed ($WEB_URL)"
+  echo "build_state=${STATE}" >> "$GITHUB_OUTPUT"
   exit 0
 else
   echo "Build did not pass, it's '$STATE'. Check the logs at $WEB_URL"
+  echo "build_state=${STATE}" >> "$GITHUB_OUTPUT"
   exit 1
 fi
