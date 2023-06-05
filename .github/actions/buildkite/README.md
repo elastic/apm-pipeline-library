@@ -95,7 +95,7 @@ in the GH workflow and then uploaded to GH artifacts again with `actions/upload-
 
 When you specify `artifactsName` and `artifactsPath`, the files are not automatically uploaded
 in a Buildkite pipeline. You must make sure that these files are uploaded in the targeted
-Buildkite pipeline itself. This action onlyu downloads the files already uploaded in
+Buildkite pipeline itself. This action only downloads the files already uploaded in
 Buildkite and uploads them again in GitHub via actions/upload-artifact.
 
 Due to the functionality of the Buildkite Artifacts API, files are downloaded individually.
