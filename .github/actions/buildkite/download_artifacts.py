@@ -9,7 +9,7 @@ HEADERS = {'Authorization': f'Bearer {BUILDKITE_API_ACCESS_TOKEN}'}
 
 
 @dataclass
-class ListArtifactsRequestBuilder:
+class ListArtifactsRequestURLBuilder:
     org: str
     pipeline: str
     build_number: str
@@ -98,7 +98,7 @@ def run() -> None:
     pipeline = os.environ["PIPELINE"]
     build_number = os.environ["BUILD_NUMBER"]
     artifact_path = os.environ["ARTIFACT_PATH"]
-    request = ListArtifactsRequestBuilder(org, pipeline, build_number)
+    request = ListArtifactsRequestURLBuilder(org, pipeline, build_number)
     artifacts_to_download = get_artifacts_to_download(
         artifact_path,
         request.get_url()
