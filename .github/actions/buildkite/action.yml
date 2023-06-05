@@ -87,7 +87,7 @@ runs:
 
       - id: download-artifacts
         name: Download artifacts
-        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != '' && steps.trigger-buildkite.outputs.build_state == "passed"
+        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != '' && steps.trigger-buildkite.outputs.build_state == 'passed'
         run: python ${{ github.action_path }}/download_artifacts.py
         env:
           ORG: ${{ inputs.org }}
