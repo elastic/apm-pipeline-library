@@ -66,7 +66,7 @@ def download_artifacts(artifacts: list) -> None:
             f.write(download_response.content)
 
 
-def get_artifacts_to_download(pattern: str, request_url: str, artifacts=None) -> list:
+def get_artifacts_to_download(pattern: str, request_url: str, artifacts: list = None) -> list:
     """
     Recursively gets all artifacts match the given pattern from a paginated artifacts list request.
     See https://buildkite.com/docs/apis/rest-api/artifacts#list-artifacts-for-a-build
