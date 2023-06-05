@@ -113,12 +113,11 @@ if [ "$PRINT_BUILD" == "true" ]; then
   echo "::endgroup::"
 fi
 
+echo "build_state=${STATE}" >> "$GITHUB_OUTPUT"
 if [ "$STATE" == "passed" ]; then
   echo "Build passed ($WEB_URL)"
-  echo "build_state=${STATE}" >> "$GITHUB_OUTPUT"
   exit 0
 else
   echo "Build did not pass, it's '$STATE'. Check the logs at $WEB_URL"
-  echo "build_state=${STATE}" >> "$GITHUB_OUTPUT"
   exit 1
 fi
