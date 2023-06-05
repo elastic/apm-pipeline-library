@@ -1,8 +1,10 @@
 from typing import Optional
-from pathlib import PurePath
 from dataclasses import dataclass
+
+import globber
 import requests
 import os
+
 
 BUILDKITE_API_ACCESS_TOKEN = os.environ["BUILDKITE_API_ACCESS_TOKEN"]
 HEADERS = {'Authorization': f'Bearer {BUILDKITE_API_ACCESS_TOKEN}'}
@@ -33,7 +35,7 @@ def find_all_matching_artifacts(artifacts: list, pattern: str) -> list:
     :param pattern: glob path
     :return: list of artifacts
     """
-    return [artifact for artifact in artifacts if PurePath(artifact["path"]).match(pattern)]
+    return [artifact for artifact in artifacts if globber.match(pattern, artifact["path"])]
 
 
 def get_next_artifacts_url(artifacts_response) -> Optional[str]:
