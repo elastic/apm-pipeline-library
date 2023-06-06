@@ -13,7 +13,7 @@ inputs:
     required: true
   secret:
     description: 'Vault secret with the token field.'
-    default: secret/observability-team/ci/buildkite-automation
+    default: secret/observability-team/ci/buildkite-automation-v2
     required: false
   org:
     description: 'BuildKite org to interact with.'
@@ -41,6 +41,19 @@ inputs:
     description: 'The BK build message to be shown in the UI.'
     default: Triggered automatically with GH actions
     required: false
+  artifactName:
+    description: Artifact name
+    required: false
+  artifactPath:
+    description: A file, directory or wildcard pattern that describes what to upload
+    required: false
+  artifactIfNoFilesFound:
+    description: |
+      Passed to actions/upload-artifact.
+      Equivalent to https://github.com/actions/upload-artifact/blob/v3/action.yml#L11
+    default: warn
+    required: false
+
 outputs:
   build:
     description: "The Buildkite build url"
@@ -71,3 +84,29 @@ runs:
             '${{ inputs.triggerMessage }}' \
             '${{ inputs.pipelineVersion }}'
         shell: bash
+
+      - id: download-artifacts
+        name: Download artifacts
+        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != '' && steps.trigger-buildkite.outputs.build_state == 'passed'
+        run: |
+          pip install globber==0.2.1
+          python ${{ github.action_path }}/download_artifacts.py
+        env:
+          ORG: ${{ inputs.org }}
+          PIPELINE: ${{ inputs.pipeline }}
+          BUILD_NUMBER: ${{ steps.trigger-buildkite.outputs.build_number }}
+          ARTIFACT_PATH: ${{ inputs.artifactPath }}
+        shell: bash
+
+      - uses: actions/upload-artifact@v3
+        if: steps.download-artifacts.outcome == 'success'
+        with:
+          name: ${{ inputs.artifactName }}
+          path: ${{ inputs.artifactPath }}
+          if-no-files-found: ${{ inputs.artifactIfNoFilesFound }}
+
+      - name: Reset environment
+        if: always()
+        shell: bash
+        run: |
+          echo "BUILDKITE_API_ACCESS_TOKEN=" >> $GITHUB_ENV
