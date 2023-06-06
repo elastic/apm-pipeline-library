@@ -49,7 +49,7 @@ inputs:
     required: false
   artifactIfNoFilesFound:
     description: |
-      Passed to actons/upload-artifact.
+      Passed to actions/upload-artifact.
       Equivalent to https://github.com/actions/upload-artifact/blob/v3/action.yml#L11
     default: warn
     required: false
