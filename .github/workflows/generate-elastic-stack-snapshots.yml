@@ -17,7 +17,7 @@ jobs:
       - run: .ci/generate-snapshots.sh
 
       - name: 'Get service account'
-        uses: hashicorp/vault-action@v2.4.2
+        uses: hashicorp/vault-action@v2.6.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
           roleId: ${{ secrets.VAULT_ROLE_ID }}
