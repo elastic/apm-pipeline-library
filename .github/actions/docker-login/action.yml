@@ -33,7 +33,7 @@ runs:
           ${{ inputs.secret }} username | DOCKER_USERNAME ;
           ${{ inputs.secret }} password | DOCKER_PASSWORD
     - name: Log in to the Container registry
-      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
       with:
         registry: ${{ inputs.registry }}
         username: ${{ env.DOCKER_USERNAME }}
