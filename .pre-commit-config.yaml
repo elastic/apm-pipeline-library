@@ -7,7 +7,7 @@ repos:
     -   id: check-executables-have-shebangs
         exclude: (.+.bat$|.+.ps1$|^target/)
     -   id: check-json
-        exclude: (resources/flaky-watcher.json$|^target/|^src/test/resources/|.github/actions/is-pr-approved/tsconfig.json$)
+        exclude: (resources/flaky-watcher.json$|^target/|^src/test/resources/|.github/actions/(is-pr-approved|slack-message)/tsconfig.json$)
     -   id: check-merge-conflict
         exclude: ^target/
     -   id: check-yaml
@@ -16,11 +16,11 @@ repos:
     -   id: check-xml
         exclude: ^target/
     -   id: end-of-file-fixer
-        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|\.github/actions/snapshoty/dist/|\.github/actions/is-pr-approved/dist/|mvnw.cmd)
+        exclude: (^src/test/resources/preCommitToJunit/output|^target/|^vars/README.md|resources/versions/releases.properties|^src/test/resources/|\.github/actions/(snapshoty|is-pr-approved|slack-message)/dist/|mvnw.cmd)
     -   id: mixed-line-ending
-        exclude: (src/test/resources/pipeline-log.txt|\.github/actions/is-pr-approved/dist/)
+        exclude: (src/test/resources/pipeline-log.txt|\.github/actions/(snapshoty|is-pr-approved|slack-message)/dist/)
     -   id: trailing-whitespace
-        exclude: (.github/actions/is-pr-approved|\.github/actions/snapshoty/dist/|mvnw.cmd|src/test/resources/)
+        exclude: (.github/actions/is-pr-approved|\.github/actions/(snapshoty|is-pr-approved|slack-message)/dist/|mvnw.cmd|src/test/resources/)
 
 -   repo: https://github.com/detailyang/pre-commit-shell.git
     rev: master
@@ -50,16 +50,16 @@ repos:
     -   id: check-unicode-non-breaking-spaces
     -   id: remove-unicode-non-breaking-spaces
     -   id: check-en-dashes
-        exclude: (^src/test/resources/mappings/|\.github/actions/is-pr-approved/dist/)
+        exclude: (^src/test/resources/mappings/|\.github/actions/(snapshoty|is-pr-approved|slack-message)/dist/)
     -   id: remove-en-dashes
-        exclude: (^src/test/resources/mappings/|\.github/actions/is-pr-approved/dist/)
+        exclude: (^src/test/resources/mappings/|\.github/actions/(snapshoty|is-pr-approved|slack-message)/dist/)
 
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
     hooks:
     -   id: codespell
         args: ['--ignore-words-list','pullrequest,pullrequests']
-        exclude: (.github/actions/snapshoty/dist|.github/actions/is-pr-approved|src/test/resources/jobs/)
+        exclude: (.github/actions/(snapshoty|is-pr-approved|slack-message)|src/test/resources/jobs/)
 
 -   repo: local
     hooks:
