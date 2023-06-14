@@ -103,7 +103,7 @@ echo "::endgroup::"
 
 if [ "$PRINT_BUILD" == "true" ]; then
   echo "::group::BuildLogs"
-  for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url"); do
+  for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url | select(. != null)"); do
     echo "Fetching logs $logs_url"
     curl \
       -H "Authorization: Bearer $BK_TOKEN" \
