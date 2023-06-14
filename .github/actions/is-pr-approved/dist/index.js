@@ -1,190 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3109:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = exports.DEFAULT_ALLOWED_ACTORS = void 0;
-const core = __importStar(__nccwpck_require__(2186));
-const github_actions_utils_1 = __nccwpck_require__(8267);
-exports.DEFAULT_ALLOWED_ACTORS = [
-    'greenkeeper[bot]',
-    'dependabot[bot]',
-    'mergify[bot]',
-    'github-actions[bot]'
-];
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Use dynamic import to let `github-action-ts-run-api` library inject
-        // Github Context before using it.
-        // Static import will not work and result in empty Github Context
-        const github = yield Promise.resolve().then(() => __importStar(__nccwpck_require__(5438)));
-        try {
-            // Validate event source
-            const eventName = github.context.eventName;
-            if (!['pull_request', 'pull_request_target'].includes(eventName)) {
-                return core.info(`Skip validation for events other than 'pull_request' and 'pull_request_target' (${eventName})`);
-            }
-            // Get the Github token from the environment
-            const githubToken = github_actions_utils_1.actionInputs.getString('github-token', false) || process.env.GITHUB_TOKEN;
-            if (githubToken == null) {
-                return core.setFailed('Unable to retrieve a valid `GITHUB_TOKEN`');
-            }
-            else {
-                core.setSecret(githubToken);
-            }
-            // Create an Octokit client with the user's access token
-            const octokit = github.getOctokit(githubToken);
-            // Perform all checks
-            const isKnownActor = checkKnownActor(github.context.actor);
-            const userHasPermission = yield checkActorPermission(octokit, github.context);
-            const isMemberOfOrg = yield checkMemberOfOrg(octokit, github.context);
-            const isPRReviewed = yield checkPRReviewed(octokit, github.context);
-            // Compute approval in order
-            const isPRApproved = isKnownActor || userHasPermission || isMemberOfOrg || isPRReviewed;
-            // Check if PR is approved
-            if (isPRApproved) {
-                core.info('The PR is approved');
-            }
-            else {
-                core.setFailed("The PR isn't approved");
-            }
-        }
-        catch (err) {
-            if (err instanceof Error) {
-                core.setFailed(err);
-            }
-            else {
-                core.setFailed('Unhandled error occured');
-            }
-        }
-    });
-}
-exports.run = run;
-function checkPRReviewed(octokit, context) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        // Get repository information from the environment
-        const repository = context.repo;
-        // This use case shouldn't exist since we support only `pull_request` and `pull_request_target` events
-        // We still need to check if the pull request id is defined
-        const pullRequestId = ((_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number) || -1;
-        if (pullRequestId < 0)
-            return false;
-        try {
-            // List all reviews
-            // Ref: https://docs.github.com/en/rest/pulls/reviews?apiVersion=2022-11-28#list-reviews-for-a-pull-request
-            let page = 1;
-            while (page > 0) {
-                // Fetch reviews
-                const { data: reviews } = yield octokit.rest.pulls.listReviews(Object.assign(Object.assign({}, repository), { pull_number: pullRequestId, page }));
-                // No more reviews to process
-                if (reviews.length === 0)
-                    return false;
-                // Filter approved reviews for the specific commit
-                const approvedReviews = reviews.filter(review => {
-                    return (review.commit_id === context.sha &&
-                        review.state === 'APPROVED' &&
-                        // Exclude billing manager
-                        ['MEMBER', 'OWNER', 'COLLABORATOR'].includes(review.author_association));
-                });
-                // A trusted user has allowed the PR with the specific commit
-                if (approvedReviews.length > 0)
-                    return true;
-                // Next page
-                page += 1;
-            }
-            return false;
-        }
-        catch (err) {
-            return false;
-        }
-    });
-}
-function checkActorPermission(octokit, context) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Get repository information from the environment
-        const repository = context.repo;
-        try {
-            // Check repository permissions for user
-            // Ref: https://docs.github.com/en/rest/collaborators/collaborators?apiVersion=2022-11-28#get-repository-permissions-for-a-user
-            const { data: permissionsLevel } = yield octokit.rest.repos.getCollaboratorPermissionLevel(Object.assign(Object.assign({}, repository), { username: context.actor }));
-            // Check if the user has admin/write permissions on the repository
-            return ['admin', 'write'].includes(permissionsLevel.permission);
-        }
-        catch (err) {
-            return false;
-        }
-    });
-}
-function checkKnownActor(actor) {
-    // Get allowed actors from the environment
-    let allowedActors = (0, github_actions_utils_1.transformIfSet)(github_actions_utils_1.actionInputs.getString('allowed-actors', false), actors => actors.split(',').map(allowedActor => allowedActor.trim()));
-    if (allowedActors == null) {
-        allowedActors = exports.DEFAULT_ALLOWED_ACTORS;
-    }
-    // Check
-    return allowedActors.includes(actor);
-}
-function checkMemberOfOrg(octokit, context) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Check actor is member of org
-            // Ref: https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#get-organization-membership-for-a-user
-            const { data } = yield octokit.rest.orgs.getMembershipForUser({
-                org: context.repo.owner,
-                username: context.actor
-            });
-            return data.state === 'active' && ['admin', 'member'].includes(data.role);
-        }
-        catch (err) {
-            const apiError = err;
-            if (apiError.status === 403) {
-                core.debug("The `GITHUB_TOKEN` haven't enough permissions");
-            }
-            return false;
-        }
-    });
-}
-
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -10042,6 +9858,190 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 399:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = exports.DEFAULT_ALLOWED_ACTORS = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github_actions_utils_1 = __nccwpck_require__(8267);
+exports.DEFAULT_ALLOWED_ACTORS = [
+    'greenkeeper[bot]',
+    'dependabot[bot]',
+    'mergify[bot]',
+    'github-actions[bot]'
+];
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Use dynamic import to let `github-action-ts-run-api` library inject
+        // Github Context before using it.
+        // Static import will not work and result in empty Github Context
+        const github = yield Promise.resolve().then(() => __importStar(__nccwpck_require__(5438)));
+        try {
+            // Validate event source
+            const eventName = github.context.eventName;
+            if (!['pull_request', 'pull_request_target'].includes(eventName)) {
+                return core.info(`Skip validation for events other than 'pull_request' and 'pull_request_target' (${eventName})`);
+            }
+            // Get the Github token from the environment
+            const githubToken = github_actions_utils_1.actionInputs.getString('github-token', false) || process.env.GITHUB_TOKEN;
+            if (githubToken == null) {
+                return core.setFailed('Unable to retrieve a valid `GITHUB_TOKEN`');
+            }
+            else {
+                core.setSecret(githubToken);
+            }
+            // Create an Octokit client with the user's access token
+            const octokit = github.getOctokit(githubToken);
+            // Perform all checks
+            const isKnownActor = checkKnownActor(github.context.actor);
+            const userHasPermission = yield checkActorPermission(octokit, github.context);
+            const isMemberOfOrg = yield checkMemberOfOrg(octokit, github.context);
+            const isPRReviewed = yield checkPRReviewed(octokit, github.context);
+            // Compute approval in order
+            const isPRApproved = isKnownActor || userHasPermission || isMemberOfOrg || isPRReviewed;
+            // Check if PR is approved
+            if (isPRApproved) {
+                core.info('The PR is approved');
+            }
+            else {
+                core.setFailed("The PR isn't approved");
+            }
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                core.setFailed(err);
+            }
+            else {
+                core.setFailed('Unhandled error occured');
+            }
+        }
+    });
+}
+exports.run = run;
+function checkPRReviewed(octokit, context) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        // Get repository information from the environment
+        const repository = context.repo;
+        // This use case shouldn't exist since we support only `pull_request` and `pull_request_target` events
+        // We still need to check if the pull request id is defined
+        const pullRequestId = ((_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number) || -1;
+        if (pullRequestId < 0)
+            return false;
+        try {
+            // List all reviews
+            // Ref: https://docs.github.com/en/rest/pulls/reviews?apiVersion=2022-11-28#list-reviews-for-a-pull-request
+            let page = 1;
+            while (page > 0) {
+                // Fetch reviews
+                const { data: reviews } = yield octokit.rest.pulls.listReviews(Object.assign(Object.assign({}, repository), { pull_number: pullRequestId, page }));
+                // No more reviews to process
+                if (reviews.length === 0)
+                    return false;
+                // Filter approved reviews for the specific commit
+                const approvedReviews = reviews.filter(review => {
+                    return (review.commit_id === context.sha &&
+                        review.state === 'APPROVED' &&
+                        // Exclude billing manager
+                        ['MEMBER', 'OWNER', 'COLLABORATOR'].includes(review.author_association));
+                });
+                // A trusted user has allowed the PR with the specific commit
+                if (approvedReviews.length > 0)
+                    return true;
+                // Next page
+                page += 1;
+            }
+            return false;
+        }
+        catch (err) {
+            return false;
+        }
+    });
+}
+function checkActorPermission(octokit, context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Get repository information from the environment
+        const repository = context.repo;
+        try {
+            // Check repository permissions for user
+            // Ref: https://docs.github.com/en/rest/collaborators/collaborators?apiVersion=2022-11-28#get-repository-permissions-for-a-user
+            const { data: permissionsLevel } = yield octokit.rest.repos.getCollaboratorPermissionLevel(Object.assign(Object.assign({}, repository), { username: context.actor }));
+            // Check if the user has admin/write permissions on the repository
+            return ['admin', 'write'].includes(permissionsLevel.permission);
+        }
+        catch (err) {
+            return false;
+        }
+    });
+}
+function checkKnownActor(actor) {
+    // Get allowed actors from the environment
+    let allowedActors = (0, github_actions_utils_1.transformIfSet)(github_actions_utils_1.actionInputs.getString('allowed-actors', false), actors => actors.split(',').map(allowedActor => allowedActor.trim()));
+    if (allowedActors == null) {
+        allowedActors = exports.DEFAULT_ALLOWED_ACTORS;
+    }
+    // Check
+    return allowedActors.includes(actor);
+}
+function checkMemberOfOrg(octokit, context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Check actor is member of org
+            // Ref: https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#get-organization-membership-for-a-user
+            const { data } = yield octokit.rest.orgs.getMembershipForUser({
+                org: context.repo.owner,
+                username: context.actor
+            });
+            return data.state === 'active' && ['admin', 'member'].includes(data.role);
+        }
+        catch (err) {
+            const apiError = err;
+            if (apiError.status === 403) {
+                core.debug("The `GITHUB_TOKEN` haven't enough permissions");
+            }
+            return false;
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -10216,13 +10216,20 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(3109);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const main_1 = __nccwpck_require__(399);
+// noinspection JSIgnoredPromiseFromCall
+(0, main_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
