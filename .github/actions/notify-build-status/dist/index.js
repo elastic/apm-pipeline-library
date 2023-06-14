@@ -2758,8 +2758,8 @@ function run() {
             const githubWorkflow = checkEnvVar('GITHUB_WORKFLOW');
             const jobStatus = checkEnvVar('JOB_STATUS');
             const message = checkEnvVar('MESSAGE');
-            const pullRequestId = checkEnvVar('PULL_REQUEST_ID');
-            const pullRequestSha = checkEnvVar('PULL_REQUEST_SHA');
+            const pullRequestId = process.env.PULL_REQUEST_ID || '';
+            const pullRequestSha = process.env.PULL_REQUEST_SHA || '';
             // Compute values
             const repoUrl = `${githubServerUrl}/${githubRepository}`;
             const isPullRequest = ['pull_request', 'pull_request_target'].includes(githubEventName);
