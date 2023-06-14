@@ -44,7 +44,7 @@ runs:
   using: "composite"
   steps:
     - name: Get the Slack token from Vault
-      uses: hashicorp/vault-action@v2.5.0
+      uses: hashicorp/vault-action@v2.6.0
       with:
         url: ${{ inputs.url }}
         roleId: ${{ inputs.roleId }}
