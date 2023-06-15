@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Is PR Approved",
-  "main": "lib/main.js",
+  "main": "lib/index.js",
   "scripts": {
     "check": "checkIsUnchanged ./dist/index.js",
     "lint": "eslint src/**/*.ts",
