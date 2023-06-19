@@ -18,7 +18,7 @@ describe('validate env vars', () => {
     jest.resetModules()
   })
 
-  it.each([['JOB_STATUS'], ['MESSAGE']])(
+  it.each([['JOB_STATUS']])(
     'should failed if env var `%s` is absent',
     async (envVar: string): Promise<void> => {
       const envVars: {[name: string]: string} = {

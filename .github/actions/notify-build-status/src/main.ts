@@ -13,7 +13,7 @@ export async function run(): Promise<void> {
     const githubSha = checkEnvVar('GITHUB_SHA')
     const githubWorkflow = checkEnvVar('GITHUB_WORKFLOW')
     const jobStatus = checkEnvVar('JOB_STATUS')
-    const message = checkEnvVar('MESSAGE')
+    const message = process.env.MESSAGE || undefined
     const pullRequestId = process.env.PULL_REQUEST_ID || ''
     const pullRequestSha = process.env.PULL_REQUEST_SHA || ''
 
