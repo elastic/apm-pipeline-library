@@ -38,7 +38,7 @@ describe('validate env vars', () => {
     }
   )
 
-  it.each([['PULL_REQUEST_ID'], ['PULL_REQUEST_SHA']])(
+  it.each([['PULL_REQUEST_ID'], ['PULL_REQUEST_SHA'], ['MESSAGE']])(
     'should succeed if env var `%s` is absent',
     async (envVar: string): Promise<void> => {
       const envVars: {[name: string]: string} = {
