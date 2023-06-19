@@ -2757,7 +2757,7 @@ function run() {
             const githubSha = checkEnvVar('GITHUB_SHA');
             const githubWorkflow = checkEnvVar('GITHUB_WORKFLOW');
             const jobStatus = checkEnvVar('JOB_STATUS');
-            const message = process.env.MESSAGE || undefined;
+            const message = process.env.MESSAGE || '';
             const pullRequestId = process.env.PULL_REQUEST_ID || '';
             const pullRequestSha = process.env.PULL_REQUEST_SHA || '';
             // Compute values
