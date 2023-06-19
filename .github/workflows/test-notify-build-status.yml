@@ -18,8 +18,6 @@ permissions:
 jobs:
   test-notify-build-status-wrapper:
     runs-on: ubuntu-latest
-    needs:
-      - is-pr-approved
     defaults:
       run:
         working-directory: ./.github/actions/notify-build-status
