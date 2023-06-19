@@ -6,10 +6,13 @@ on:
   pull_request:
     paths:
       - '.github/actions/is-pr-approved/**'
+      - '.github/workflows/test-is-pr-approved.yml'
   push:
-    branches: main
+    branches:
+      - main
     paths:
       - '.github/actions/is-pr-approved/**'
+      - '.github/workflows/test-is-pr-approved.yml'
 
 jobs:
   test-is-pr-approved:
@@ -29,3 +32,22 @@ jobs:
         run: npm run all
       - name: Check nothing changes
         run: npm run check
+
+  test-is-pr-approved-dist:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./.github/actions/is-pr-approved
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          # Must be kept in sync with node version in action.yml
+          node-version: '16'
+      - name: Validate dist package
+        run: |
+          set +e
+          logs="$(node dist/index.js)"
+          status="${?}"
+          set -e
+          [ "${status}" != "0" ] && [ ! -z "${logs}" ]
