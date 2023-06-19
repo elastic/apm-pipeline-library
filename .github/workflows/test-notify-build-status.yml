@@ -12,6 +12,9 @@ on:
     paths:
       - '.github/actions/notify-build-status/**'
 
+permissions:
+  contents: read
+
 jobs:
   test-notify-build-status-wrapper:
     runs-on: ubuntu-latest
