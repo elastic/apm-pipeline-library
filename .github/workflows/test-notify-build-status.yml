@@ -34,6 +34,7 @@ jobs:
   test-notify-build-status:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/notify-build-status
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
