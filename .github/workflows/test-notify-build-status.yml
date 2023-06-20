@@ -5,12 +5,14 @@ on:
   pull_request:
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status.yml'
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status.yml'
 
 permissions:
   contents: read

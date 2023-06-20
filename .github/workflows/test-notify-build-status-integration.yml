@@ -7,12 +7,14 @@ on:
       - main
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status-integration.yml'
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status-integration.yml'
 
 jobs:
 
