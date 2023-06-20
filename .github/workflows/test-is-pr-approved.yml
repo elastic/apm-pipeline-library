@@ -44,10 +44,16 @@ jobs:
         with:
           # Must be kept in sync with node version in action.yml
           node-version: '16'
-      - name: Validate dist package
+      - name: Validate dist package with push event
         run: |
-          set +e
-          logs="$(node dist/index.js)"
-          status="${?}"
-          set -e
-          [ "${status}" != "0" ] && [ ! -z "${logs}" ]
+          logs="$(GITHUB_EVENT_NAME=push node dist/index.js)"
+          [ "${logs}" = "Skip validation for events other than 'pull_request' and 'pull_request_target' (push)" ]
+      - name: Validate dist package with pull_request event
+        shell: bash +e {0}
+        run: |
+          logs="$(GITHUB_EVENT_NAME=pull_request node dist/index.js)"
+          status=${?}
+          [ "${logs}" = '::error::Unable to retrieve a valid `GITHUB_TOKEN`' ]
+          if [ "${status}" != "1" ]; then
+            exit 1
+          fi
