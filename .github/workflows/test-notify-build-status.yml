@@ -2,15 +2,20 @@
 name: test-notify-build-status
 
 on:
-  workflow_dispatch:
   pull_request:
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status.yml'
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - '.github/actions/notify-build-status/**'
+      - '.github/workflows/test-notify-build-status.yml'
+
+permissions:
+  contents: read
 
 jobs:
   test-notify-build-status-wrapper:
@@ -30,23 +35,3 @@ jobs:
         run: npm run all
       - name: Check nothing changes
         run: npm run check
-
-  test-notify-build-status:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@refactor/notify-build-status
-        with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          slackChannel: '#observablt-bots'
-          message: 'Test Github Action Notify Build Status'
-      - uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@refactor/notify-build-status
-        with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          slackChannel: '#observablt-bots'
-          message: |
-            Test Multiline
-            Github Action Notify Build Status

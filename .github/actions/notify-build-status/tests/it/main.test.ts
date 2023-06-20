@@ -18,27 +18,24 @@ describe('validate env vars', () => {
     jest.resetModules()
   })
 
-  it.each([['JOB_STATUS'], ['MESSAGE']])(
-    'should failed if env var `%s` is absent',
-    async (envVar: string): Promise<void> => {
-      const envVars: {[name: string]: string} = {
-        GITHUB_RUN_ATTEMPT: '1',
-        GITHUB_REF_NAME: 'feature-branch-1',
-        GITHUB_SHA: '6233871ea2db9ddc0b5e627fafc52a15c77756d9',
-        PULL_REQUEST_ID: '2',
-        PULL_REQUEST_SHA: '6233871ea2db9ddc0b5e627fafc52a15c77756d7',
-        JOB_STATUS: 'success',
-        MESSAGE: 'foobar'
-      }
-      delete envVars[envVar]
-
-      const result = await RunTarget.asyncFn(run).run(commonOptions.clone().setEnv(envVars))
-      expect(result.isSuccess).toStrictEqual(false)
-      expect(result.commands.errors?.includes(`Error: The env var '${envVar}' isn't defined.`)).toStrictEqual(true)
+  it.each([['JOB_STATUS']])('should failed if env var `%s` is absent', async (envVar: string): Promise<void> => {
+    const envVars: {[name: string]: string} = {
+      GITHUB_RUN_ATTEMPT: '1',
+      GITHUB_REF_NAME: 'feature-branch-1',
+      GITHUB_SHA: '6233871ea2db9ddc0b5e627fafc52a15c77756d9',
+      PULL_REQUEST_ID: '2',
+      PULL_REQUEST_SHA: '6233871ea2db9ddc0b5e627fafc52a15c77756d7',
+      JOB_STATUS: 'success',
+      MESSAGE: 'foobar'
     }
-  )
+    delete envVars[envVar]
 
-  it.each([['PULL_REQUEST_ID'], ['PULL_REQUEST_SHA']])(
+    const result = await RunTarget.asyncFn(run).run(commonOptions.clone().setEnv(envVars))
+    expect(result.isSuccess).toStrictEqual(false)
+    expect(result.commands.errors?.includes(`Error: The env var '${envVar}' isn't defined.`)).toStrictEqual(true)
+  })
+
+  it.each([['PULL_REQUEST_ID'], ['PULL_REQUEST_SHA'], ['MESSAGE']])(
     'should succeed if env var `%s` is absent',
     async (envVar: string): Promise<void> => {
       const envVars: {[name: string]: string} = {
