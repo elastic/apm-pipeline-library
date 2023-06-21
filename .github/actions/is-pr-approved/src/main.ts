@@ -13,7 +13,8 @@ export const DEFAULT_ALLOWED_ACTORS: readonly string[] = [
   'greenkeeper[bot]',
   'dependabot[bot]',
   'mergify[bot]',
-  'github-actions[bot]'
+  'github-actions[bot]',
+  'renovate[bot]'
 ]
 
 export async function run(): Promise<void> {

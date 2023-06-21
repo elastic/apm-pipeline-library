@@ -9903,7 +9903,8 @@ exports.DEFAULT_ALLOWED_ACTORS = [
     'greenkeeper[bot]',
     'dependabot[bot]',
     'mergify[bot]',
-    'github-actions[bot]'
+    'github-actions[bot]',
+    'renovate[bot]'
 ];
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
