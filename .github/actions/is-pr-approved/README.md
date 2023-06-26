@@ -116,7 +116,7 @@ jobs:
           # Define a specific PAT token (optional)
           github-token: 'PAT Token'
           # Define a list of allowed actors delimited by ',' (optional)
-          # Default: greenkeeper[bot], dependabot[bot], mergify[bot], github-actions[bot]
+          # Default: greenkeeper[bot], dependabot[bot], mergify[bot], github-actions[bot], renovate[bot]
           allowed-actors: 'octokit,octocat'
       - run: echo 'The PR is approved'
 
