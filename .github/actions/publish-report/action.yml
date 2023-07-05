@@ -70,7 +70,7 @@ runs:
         result-encoding: string
 
     - name: 'Get service account'
-      uses: hashicorp/vault-action@v2.6.0
+      uses: hashicorp/vault-action@v2.7.0
       with:
         url: ${{ inputs.vaultUrl }}
         roleId: ${{ inputs.vaultRoleId }}
