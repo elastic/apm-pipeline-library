@@ -17,13 +17,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Download oblt-cli
+    - name: Download oblt-cli and append to PATH
       run: ${{ github.action_path }}/download.sh
       env:
         GH_TOKEN: ${{ inputs.github-token }}
-      shell: bash
-    - name: Append oblt-cli to PATH
-      run: echo "${HOME}/oblt-cli" >> "${GITHUB_PATH}"
       shell: bash
     - name: Configure oblt-cli
       run: >
