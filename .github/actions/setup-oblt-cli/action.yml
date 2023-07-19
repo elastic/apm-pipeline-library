@@ -34,3 +34,6 @@ runs:
         OBLT_CLI_USERNAME: ${{ inputs.username }}
         OBLT_CLI_SLACK_CHANNEL: ${{ inputs.slack-channel }}
       shell: bash
+    - name: Export env
+      run: echo "ELASTIC_APM_ENVIRONMENT=ci" >> $GITHUB_ENV
+      shell: bash
