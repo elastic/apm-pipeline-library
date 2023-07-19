@@ -87,7 +87,7 @@ runs:
 
       - id: download-artifacts
         name: Download artifacts
-        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != '' && steps.trigger-buildkite.outputs.build_state == 'passed'
+        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != ''
         run: |
           pip install globber==0.2.1
           python ${{ github.action_path }}/download_artifacts.py
