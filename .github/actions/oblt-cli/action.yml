@@ -34,7 +34,7 @@ runs:
 
     - name: run oblt-cli
       run: |
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose
+        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose --disable-banner
       env:
         ELASTIC_APM_ENVIRONMENT: ci
       shell: bash
