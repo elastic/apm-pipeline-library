@@ -62,7 +62,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-      - uses: hashicorp/vault-action@v2.7.2
+      - uses: hashicorp/vault-action@v2.7.3
         with:
           url: ${{ inputs.vaultUrl }}
           roleId: ${{ inputs.vaultRoleId }}
@@ -87,7 +87,7 @@ runs:
 
       - id: download-artifacts
         name: Download artifacts
-        if: inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != '' && steps.trigger-buildkite.outputs.build_state == 'passed'
+        if: always() && inputs.waitFor && inputs.artifactName != '' && inputs.artifactPath != ''
         run: |
           pip install globber==0.2.1
           python ${{ github.action_path }}/download_artifacts.py
@@ -99,7 +99,7 @@ runs:
         shell: bash
 
       - uses: actions/upload-artifact@v3
-        if: steps.download-artifacts.outcome == 'success'
+        if: always() && steps.download-artifacts.outcome == 'success'
         with:
           name: ${{ inputs.artifactName }}
           path: ${{ inputs.artifactPath }}
