@@ -18,23 +18,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: download oblt-cli
-      run: |
-        gh release download --repo elastic/observability-test-environments -p '*linux_amd64.tar.gz' --output - | tar -xz
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-      shell: bash
-
-    - name: configure oblt-cli
-      run: |
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli configure --git-http-mode --username='${{ inputs.username }}' --slack-channel='${{ inputs.slackChannel }}'
-      env:
-        ELASTIC_APM_ENVIRONMENT: ci
-      shell: bash
-
+    - name: Setup oblt-cli
+      uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
+      with:
+        github-token: ${{ inputs.token }}
+        slack-channel: ${{ inputs.slackChannel }}
+        username: ${{ inputs.username }}
     - name: run oblt-cli
       run: |
-        GITHUB_TOKEN=${{ inputs.token }} ./oblt-cli ${{ inputs.command }} --verbose --disable-banner
-      env:
-        ELASTIC_APM_ENVIRONMENT: ci
+        GITHUB_TOKEN=${{ inputs.token }} oblt-cli ${{ inputs.command }} --verbose --disable-banner
       shell: bash
