@@ -119,3 +119,11 @@ jobs:
           else
             bash -c "${{ matrix.push_script }}"
           fi
+
+      - if: failure()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#observablt-bots"
