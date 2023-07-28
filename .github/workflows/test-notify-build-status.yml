@@ -28,10 +28,37 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           # Must be kept in sync with node version in action.yml
-          node-version: '16'
+          node-version-file: './.github/actions/notify-build-status/.node-version'
       - name: Install dependencies
         run: npm ci
       - name: Lint, Format, Build, Test & Package
         run: npm run all
       - name: Check nothing changes
         run: npm run check
+
+  test-notify-build-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/notify-build-status
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: '#observablt-bots'
+          message: 'Test Github Action Notify Build Status'
+      - uses: ./.github/actions/notify-build-status
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: '#observablt-bots'
+          message: |
+            Test Multiline
+            Github Action Notify Build Status
+      - uses: ./.github/actions/notify-build-status
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: '#observablt-bots'
