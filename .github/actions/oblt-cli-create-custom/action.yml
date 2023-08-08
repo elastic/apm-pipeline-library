@@ -32,9 +32,9 @@ inputs:
     description: 'Whether to dryRun'
     default: false
     required: false
-  random-seed:
+  skip-random-name:
     description: 'Whether to deploy a cluster with a random name'
-    default: true
+    default: false
     required: false
 runs:
   using: "composite"
@@ -78,7 +78,7 @@ runs:
             && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
           [ '${{ inputs.dry-run }}' == 'true' ] \
             && echo -n '--dry-run '
-          echo -n '--random-seed=${{ inputs.random-seed }} '
+          echo -n '--skip-random-name=${{ inputs.skip-random-name }} '
         } > .flags
         echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
         rm .flags
