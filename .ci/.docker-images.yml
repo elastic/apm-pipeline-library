@@ -77,18 +77,6 @@ images:
     working_directory: "tools/report-bridge"
 
   - <<: *observability-dev-docker-images
-    name: "flakeyv2"
-    working_directory: "apps/automation/flaky-test-analyzer"
-
-  - <<: *observability-dev-docker-images
-    name: "build-analyzer"
-    working_directory: "apps/automation/build-analyzer"
-
-  - <<: *observability-dev-docker-images
-    name: "rebuild-analyzer"
-    working_directory: "apps/automation/rebuild-analyzer"
-
-  - <<: *observability-dev-docker-images
     name: "integrations-test-reporter"
     working_directory: "apps/automation/integrations/reporter"
 
@@ -166,11 +154,6 @@ images:
     name: "github-label-sync"
     test_script: "cd .. && make test-github-label-sync"
     working_directory: ".ci/docker/github-label-sync"
-
-  - <<: *apm-agent-library-docker-images
-    name: "gren"
-    test_script: "cd .. && make test-gren"
-    working_directory: ".ci/docker/gren"
 
   - <<: *apm-agent-library-docker-images
     name: "shellcheck"
