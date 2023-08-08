@@ -6,7 +6,7 @@ name: publish-docker-images
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 3-4 * * 1-5'
+    - cron: '0 3 * * 1-5'
 
 env:
   DOCKER_BUILDKIT: 1
