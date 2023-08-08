@@ -44,6 +44,7 @@ Following inputs can be used as `step.with` keys
 | `token`                     | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
 | `cluster-name-prefix`       | String  | Optional                    | Prefix to be prepended to the randomised cluster name |
 | `cluster-name-suffix`       | String  | Optional                    | Suffix to be appended to the randomised cluster name |
+| `random-seed`               | Boolean | `true`                      | Whether to skip the randomised cluster name |
 | `dry-run`                   | Boolean | `false`                     | Whether to dry-run the oblt-cli. |
 | `slackChannel`              | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli. |
 | `username`                  | String  | `apmmachine`                | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
