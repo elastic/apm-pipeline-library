@@ -27,6 +27,7 @@ jobs:
           cluster-name-prefix: 'testgithubaction'
           gitops: true
           dry-run: true
+          skip-random-name: true
           parameters: '{"RemoteClusterName":"release-oblt","StackVersion":"8.7.0","KibanaDockerImage":"foo"}'
 
   run-oblt-cli-create-custom:
