@@ -9,5 +9,5 @@ Follow the below steps:
 
 * Make sure your PRs contain the proper Github labels to group them under the proper changelog section, as defined in [Release-Drafter's configuration file](../.github/release-drafter.yml).
 * Navigate to the [GitHub job](https://github.com/elastic/apm-pipeline-library/actions/workflows/release.yml)
-* Choose `Run workflow`.
+* Choose `Run workflow` and what type of release.
 * Click `Run workflow` and wait for a few minutes to complete
