@@ -78,7 +78,8 @@ runs:
             && echo -n '--cluster-name-suffix=${{ inputs.cluster-name-suffix }} '
           [ '${{ inputs.dry-run }}' == 'true' ] \
             && echo -n '--dry-run '
-          echo -n '--skip-random-name=${{ inputs.skip-random-name }} '
+          [ '${{ inputs.skip-random-name }}' == 'true' ] \
+            && echo -n '--skip-random-name '
         } > .flags
         echo "COMMAND=$(cat .flags)" >> $GITHUB_ENV
         rm .flags
