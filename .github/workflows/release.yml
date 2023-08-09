@@ -27,11 +27,12 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - run: npm install semver
       - name: Create tag
         uses: actions/github-script@v6
         with:
           script: |
-            import semver, { ReleaseType } from "semver"
+            const semver = require('semver')
 
             var release = github.rest.git.getLatestRelease({
               owner: context.repo.owner,
