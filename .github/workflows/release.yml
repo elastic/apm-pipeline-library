@@ -34,34 +34,48 @@ jobs:
           script: |
             const semver = require('semver')
 
-            const { owner, repo } = context.repo
             const release_type = context.payload.inputs.release_type
 
             const { data: latestRelease } = await github.rest.repos.getLatestRelease({
-              owner,
-              repo
+              owner: context.repo.owner,
+              repo: context.repo.repo,
             })
             console.log(`Latest release is "${latestRelease.tag_name}"`)
             const rawVersion = latestRelease.tag_name.replace('v', '')
             console.log(`Latest version is "${rawVersion}"`)
 
-            const incResult = semver.inc(rawVersion, release_type)
-            console.log(`Upcoming ${release_type} release is "${incResult}"`)
+            const newVersion = semver.inc(rawVersion, release_type)
+            const newTag = `v${newVersion}`
 
-            github.rest.git.createRef({
-              owner,
-              repo,
-              ref: `refs/tags/v${incResult}`,
-              sha: context.sha
+            console.log(`Creating a ${release_type} release with title: ${newVersion} and SHA: ${context.sha}`);
+            const createdTag = await github.rest.git.createTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: newTag,
+              message: newTag,
+              object: context.sha,
+              type: 'commit'
             })
 
-      - name: Update current tag
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.git.updateRef({
+            const createdRef = await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/' + newTag,
+                sha: createdTag.data.sha
+            })
+
+            if (createdRef.status === 201) {
+                console.log(`Tag ${newTag} was created successfully`);
+            }
+
+            console.log(`Updating current tag with ${context.sha}`);
+            const updateRef = await github.rest.git.updateRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/current',
               sha: context.sha
             })
+
+            if (updateRef.status === 201) {
+              console.log(`Tag current was updated successfully`);
+            }
