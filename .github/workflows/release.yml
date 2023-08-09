@@ -55,6 +55,11 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
 
+      - name: Debug git
+        run: |
+          git config user.name
+          git config user.email
+
       - name: Mvn release
         run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
 
