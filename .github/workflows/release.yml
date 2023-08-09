@@ -39,7 +39,7 @@ jobs:
               repo: context.repo.repo
             })
 
-            const rawVersion = release.tag_name.replace('v'', '')
+            const rawVersion = release.tag_name.replace('v', '')
             const incResult = semver.inc(rawVersion, core.getInput('release_type'))
 
             github.rest.git.createRef({
