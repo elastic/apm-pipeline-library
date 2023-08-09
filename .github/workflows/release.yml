@@ -15,51 +15,36 @@ jobs:
       contents: write
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-
-      - uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
-        with:
-          username: ${{ env.GIT_USER }}
-          email: ${{ env.GIT_EMAIL }}
-          token: ${{ env.GITHUB_TOKEN }}
-
       - uses: actions/checkout@v3
+
+      - name: Create tag
+        uses: actions/github-script@v6
         with:
-          fetch-depth: 0
-          token: ${{ env.GITHUB_TOKEN }}
+          script: |
+            import semver, { ReleaseType } from "semver"
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
-        with:
-          registry: docker.elastic.co
-          secret: secret/observability-team/ci/docker-registry/prod
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+            var release = github.rest.git.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
 
-      - name: Configure git
-        run: |
-          git remote add origin-1 "${REMOTE_URL}"
-          git fetch --force --tags
-          git checkout main
-        env:
-          REMOTE_URL: ${{ github.event.repository.html_url }}
+            const rawVersion = release.tag_name.replace('v'', '')
+            const incResult = semver.inc(rawVersion, 'patch')
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'maven'
-
-      - name: Mvn release
-        run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${incResult}`,
+              sha: context.sha
+            })
 
       - name: Update current tag
-        run: |
-          git push origin-1 main
-          git tag -f current
-          git push origin-1 current -f
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.git.updateRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/current',
+              sha: context.sha
+            })
