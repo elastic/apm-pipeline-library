@@ -6,6 +6,16 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: Type of release [major, minor, patch]
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - "patch"
+          - "minor"
+          - "major"
 
 jobs:
   release:
@@ -29,7 +39,7 @@ jobs:
             })
 
             const rawVersion = release.tag_name.replace('v'', '')
-            const incResult = semver.inc(rawVersion, 'patch')
+            const incResult = semver.inc(rawVersion, core.getInput('release_type'))
 
             github.rest.git.createRef({
               owner: context.repo.owner,
