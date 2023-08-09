@@ -35,6 +35,7 @@ jobs:
             const semver = require('semver')
 
             const { owner, repo } = context.repo
+            const release_type = core.getInput('release_type')
 
             const { data: latestRelease } = await github.rest.repos.getLatestRelease({
               owner,
@@ -42,8 +43,10 @@ jobs:
             })
             console.log(`Latest release is "${latestRelease.tag_name}"`)
             const rawVersion = latestRelease.tag_name.replace('v', '')
-            const incResult = semver.inc(rawVersion, core.getInput('release_type'))
-            console.log(`Upcoming release is "${incResult}"`)
+            console.log(`Latest version is "${rawVersion}"`)
+
+            const incResult = semver.inc(rawVersion, release_type)
+            console.log(`Upcoming ${release_type} release is "${incResult}"`)
 
             github.rest.git.createRef({
               owner,
