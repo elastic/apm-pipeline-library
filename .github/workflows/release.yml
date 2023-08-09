@@ -72,7 +72,7 @@ jobs:
             const updateRef = await github.rest.git.updateRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/current',
+              ref: 'tags/current',
               sha: context.sha
             })
 
