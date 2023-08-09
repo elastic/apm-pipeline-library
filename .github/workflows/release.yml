@@ -35,7 +35,7 @@ jobs:
             const semver = require('semver')
 
             const { owner, repo } = context.repo
-            const release_type = core.getInput('release_type')
+            const release_type = context.payload.inputs.release_type
 
             const { data: latestRelease } = await github.rest.repos.getLatestRelease({
               owner,
