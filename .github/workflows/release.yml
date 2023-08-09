@@ -34,7 +34,7 @@ jobs:
           script: |
             const semver = require('semver')
 
-            var release = github.rest.git.getLatestRelease({
+            var release = github.rest.repos.getLatestRelease({
               owner: context.repo.owner,
               repo: context.repo.repo
             })
