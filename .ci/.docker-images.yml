@@ -247,30 +247,6 @@ images:
     test_script: "./run.sh --action test --registry 'elasticobservability'"
     push_script: "./run.sh --action push --registry 'elasticobservability'"
 
-  - <<: *apm-agent-ruby-docker-images
-    tag: "ruby-3.0"
-    build_opts: "--build-arg RUBY_IMAGE='ruby:3.0'"
-
-  - <<: *apm-agent-ruby-docker-images
-    tag: "ruby-2.7"
-    build_opts: "--build-arg RUBY_IMAGE='ruby:2.7'"
-
-  - <<: *apm-agent-ruby-docker-images
-    tag: "ruby-2.6"
-    build_opts: "--build-arg RUBY_IMAGE='ruby:2.6'"
-
-  - <<: *apm-agent-ruby-docker-images
-    tag: "ruby-2.5"
-    build_opts: "--build-arg RUBY_IMAGE='ruby:2.5'"
-
-  - <<: *apm-agent-ruby-docker-images
-    tag: "ruby-2.4"
-    build_opts: "--build-arg RUBY_IMAGE='ruby:2.4'"
-
-  - <<: *apm-agent-ruby-docker-images
-    tag: "jruby-9.2"
-    build_opts: "--build-arg RUBY_IMAGE='jruby:9.2'"
-
   # APM Agent RUM Docker images
 
   - <<: *apm-agent-rum-docker-images
