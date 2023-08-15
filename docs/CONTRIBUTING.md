@@ -75,7 +75,7 @@ Once your changes are ready to submit for review:
    but we'll do our best to dedicate it the attention it deserves.
    Your effort is much appreciated!
 
-### Coding pattern
+### Coding patterns
 
 See [coding guidelines of this project][apm-pipeline-library-guidelines]
 
