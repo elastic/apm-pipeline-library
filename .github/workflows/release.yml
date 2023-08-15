@@ -6,60 +6,92 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: Type of release [major, minor, patch]
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - "patch"
+          - "minor"
+          - "major"
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
     permissions:
+      # write permission is required to create a github release
       contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: write
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-
-      - uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
-        with:
-          username: ${{ env.GIT_USER }}
-          email: ${{ env.GIT_EMAIL }}
-          token: ${{ env.GITHUB_TOKEN }}
-
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ env.GITHUB_TOKEN }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
-        with:
-          registry: docker.elastic.co
-          secret: secret/observability-team/ci/docker-registry/prod
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+      - run: npm install semver
 
-      - name: Configure git
-        run: |
-          git remote add origin-1 "${REMOTE_URL}"
-          git fetch --force --tags
-          git checkout main
+      - name: Create tag
+        id: new-version
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const semver = require('semver')
+
+            const release_type = context.payload.inputs.release_type
+
+            const { data: latestRelease } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            console.log(`Latest release is "${latestRelease.tag_name}"`)
+            const rawVersion = latestRelease.tag_name.replace('v', '')
+            console.log(`Latest version is "${rawVersion}"`)
+
+            const newVersion = semver.inc(rawVersion, release_type)
+            const newTag = `v${newVersion}`
+
+            console.log(`Creating a ${release_type} release with title: ${newVersion} and SHA: ${context.sha}`);
+            const createdTag = await github.rest.git.createTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: newTag,
+              message: newTag,
+              object: context.sha,
+              type: 'commit'
+            })
+
+            const createdRef = await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/' + newTag,
+                sha: createdTag.data.sha
+            })
+
+            if (createdRef.status === 201) {
+                console.log(`Tag ${newTag} was created successfully`);
+            }
+
+            console.log(`Updating current tag with ${context.sha}`);
+            const updateRef = await github.rest.git.updateRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'tags/current',
+              sha: context.sha
+            })
+
+            if (updateRef.status === 201) {
+              console.log(`Tag current was updated successfully`);
+            }
+
+            return newTag
+
+      - uses: release-drafter/release-drafter@v5
+        with:
+          version: ${{ steps.new-version.outputs.result }}
+          publish: true
         env:
-          REMOTE_URL: ${{ github.event.repository.html_url }}
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'maven'
-
-      - name: Mvn release
-        run: ./mvnw -B -V release:prepare release:perform --batch-mode -Darguments="-DskipTests=true --batch-mode"
-
-      - name: Update current tag
-        run: |
-          git push origin-1 main
-          git tag -f current
-          git push origin-1 current -f
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
