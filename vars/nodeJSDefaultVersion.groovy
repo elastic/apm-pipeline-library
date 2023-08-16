@@ -30,5 +30,5 @@ def call(Map args = [:]) {
 }
 
 def defaultVersion(){
-  return '14.17.5'
+  return '18.17.1'
 }
