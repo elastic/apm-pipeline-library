@@ -26,4 +26,8 @@ jobs:
       run: |
         go install github.com/rhysd/actionlint/cmd/actionlint@latest
         ls -ltra "$(go env GOPATH)"/bin
-        "$(go env GOPATH)"/bin/actionlint
+        "$(go env GOPATH)"/bin/actionlint -color \
+        -format ${{ env.FORMAT }} \
+        -ignore 'SC2086:'
+      env:
+        FORMAT: '{{range $err := .}}::error file={{$err.Filepath}},line={{$err.Line}},col={{$err.Column}}::{{$err.Message}}%0A```%0A{{replace $err.Snippet "\\n" "%0A"}}%0A```\n{{end}}'
