@@ -3,7 +3,6 @@ name: lint
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 # limit the access of the generated GITHUB_TOKEN
