@@ -11,6 +11,7 @@ on:
       - build-test
       - job-dsl
       - licenses
+      - lint
       - pre-commit
       - publish-docker-images
       - pytest_otel-build-test
