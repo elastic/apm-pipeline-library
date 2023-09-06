@@ -1,0 +1,23 @@
+---
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# limit the access of the generated GITHUB_TOKEN
+permissions:
+  contents: read
+
+jobs:
+  licenses:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v4
+    - name: Lint
+      run: |
+        go install github.com/rhysd/actionlint/cmd/actionlint@latest
+        ls -ltra $(go env GOPATH)/bin
+        $(go env GOPATH)/bin/actionlint
