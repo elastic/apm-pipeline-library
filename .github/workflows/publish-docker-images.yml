@@ -83,9 +83,9 @@ jobs:
 
       - name: Setup Env
         run: |
-          echo 'NAME=${{ matrix.name }}' >> $GITHUB_ENV
-          echo 'TAG=${{ matrix.tag || 'latest' }}' >> $GITHUB_ENV
-          echo 'PUSH=${{ matrix.push }}' >> $GITHUB_ENV
+          echo "NAME=${{ matrix.name }}" >> $GITHUB_ENV
+          echo "TAG=${{ matrix.tag || 'latest' }}" >> $GITHUB_ENV
+          echo "PUSH=${{ matrix.push }}" >> $GITHUB_ENV
 
       - name: Prepare
         if: ${{ matrix.prepare_script }}
