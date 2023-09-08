@@ -155,6 +155,20 @@ updates:
       - "elastic/observablt-ci"
 
   - package-ecosystem: "github-actions"
+    directory: "/.github/actions/setup-npmrc"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/setup-oblt-cli"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "elastic/observablt-ci"
+
+  - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup-vault-cli"
     schedule:
       interval: "weekly"
