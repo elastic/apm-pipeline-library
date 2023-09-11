@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - dependabot/*
+      - 'dependabot/**'
     paths:
       - '.github/actions/notify-build-status/**'
       - '.github/workflows/test-notify-build-status.yml'
