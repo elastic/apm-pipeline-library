@@ -1,0 +1,56 @@
+name: test-kibana-docker-image-action
+
+on:
+  pull_request: ~ # TODO: Remove this
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  kibana-cloud-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/kibana-docker-image
+        id: kibana-docker-image
+        with:
+          vault-url: ${{ secrets.VAULT_ADDR }}
+          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
+      - name: Verify
+        run: |
+          echo "${DOCKER_IMAGE_REF:?}"
+          docker pull "${DOCKER_IMAGE_REF}"
+        env:
+          DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+      - if: failure()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#observablt-bots"
+
+  kibana-serverless-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/kibana-docker-image
+        id: kibana-docker-image
+        with:
+          vault-url: ${{ secrets.VAULT_ADDR }}
+          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
+          serverless: true
+      - name: Verify
+        run: |
+          echo "${DOCKER_IMAGE_REF:?}"
+          docker pull "${DOCKER_IMAGE_REF}"
+        env:
+          DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+      - if: failure()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#observablt-bots"

@@ -1,0 +1,108 @@
+name: Kibana Docker Image
+description: |
+  An Action to build and push Kibana docker images given a git ref.
+inputs:
+  vault-url:
+    description: Vault URL
+    required: true
+  vault-role-id:
+    description: Vault Role ID
+    required: true
+  vault-secret-id:
+    description: Vault Secret ID
+    required: true
+  git-repository:
+    description: The git repository to build the image from.
+    default: "elastic/kibana"
+    required: false
+  git-ref:
+    description: "The git ref of elastic/kibana to build the image from. (Default: default branch)"
+    required: false
+  serverless:
+    description: Whether to build the serverless image or not.
+    required: false
+    default: "false"
+  docker-registry:
+    description: Docker registry to publish the image to.
+    required: false
+    default: "docker.elastic.co"
+  docker-namespace:
+    description: Docker namespace to publish the image to.
+    required: false
+    default: "observability-ci"
+  docker-credentials-vault-secret-path:
+    description: The vault secret path to retrieve the docker credentials from.
+    required: false
+    default: "secret/observability-team/ci/docker-registry/prod"
+
+outputs:
+  ref:
+    description: The reference of the Docker image that was built in the format image:tag.
+    value: ${{ steps.vars.outputs.docker-reference }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.git-repository }}
+        ref: ${{ inputs.git-ref }}
+        path: kibana-repo-checkout
+
+    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      with:
+        registry: ${{ inputs.docker-registry }}
+        secret: ${{ inputs.docker-credentials-vault-secret-path }}
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: kibana-repo-checkout/.node-version
+        cache: yarn
+        cache-dependency-path: kibana-repo-checkout/yarn.lock
+
+    - name: Set up variables
+      id: vars
+      working-directory: kibana-repo-checkout
+      run: |
+        docker_registry="${DOCKER_REGISTRY}"
+        docker_namespace="${DOCKER_NAMESPACE}"
+
+        docker_image="kibana-cloud"
+        if [[ "${{ inputs.serverless }}" == "true" ]]; then
+          docker_image="kibana-serverless"
+        fi
+
+        kibana_commit_sha=$(git rev-parse HEAD)
+        kibana_version="$(jq -r .version package.json)-SNAPSHOT"
+        docker_tag="${kibana_version}-${kibana_commit_sha}"
+        docker_reference="${docker_registry}/${docker_namespace}/${docker_image}:${docker_tag}"
+
+        echo "kibana-version=${kibana_version}" >> "$GITHUB_OUTPUT"
+        echo "docker-registry=${docker_registry}" >> "$GITHUB_OUTPUT"
+        echo "docker-namespace=${docker_namespace}" >> "$GITHUB_OUTPUT"
+        echo "docker-image=${docker_image}" >> "$GITHUB_OUTPUT"
+        echo "docker-tag=${docker_tag}" >> "$GITHUB_OUTPUT"
+        echo "docker-reference=${docker_reference}" >> "$GITHUB_OUTPUT"
+      env:
+        DOCKER_REGISTRY: ${{ inputs.docker-registry }}
+        DOCKER_NAMESPACE: ${{ inputs.docker-namespace }}
+      shell: bash
+
+    - name: Build and Push
+      working-directory: kibana-repo-checkout
+      run: ${{ github.action_path }}/build-and-push.sh
+      shell: bash
+      env:
+        SERVERLESS: ${{ inputs.serverless }}
+        DOCKER_NAMESPACE: ${{ steps.vars.outputs.docker-namespace }}
+        DOCKER_TAG: ${{ steps.vars.outputs.docker-tag }}
+        DOCKER_REFERENCE: ${{ steps.vars.outputs.docker-reference }}
+
+    - name: Verify image exists
+      run: docker manifest inspect "${DOCKER_REFERENCE}" > /dev/null 2>&1;
+      env:
+        DOCKER_REFERENCE: ${{ steps.vars.outputs.docker-reference }}
+      shell: bash

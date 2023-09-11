@@ -1,0 +1,55 @@
+## About
+
+This action builds and pushes a Kibana docker image to a registry.
+Afterward, it outputs the docker image reference, which can be used in other steps.
+___
+
+## Example
+
+```yaml
+---
+name: example
+
+on: workflow_dispatch
+
+jobs:
+  kibana-docker-image-cloud:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/kibana-docker-image
+        id: kibana-docker-image
+        with:
+          vault-url: ${{ secrets.VAULT_ADDR }}
+          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
+          git-ref: main # git ref of elastic/kibana
+      - run: |
+          echo "${DOCKER_IMAGE:?}"
+          docker pull "${DOCKER_IMAGE}"
+        env:
+          DOCKER_IMAGE: ${{ steps.kibana-docker-image.outputs.ref }}
+
+
+```
+
+## Inputs
+
+Following inputs can be used as `step.with` keys
+
+| Name                | Type   | Required | Description                                                               |
+|---------------------|--------|----------|---------------------------------------------------------------------------|
+| `vault-url`         | String | yes      | The Vault URL to connect to.                                              |
+| `vault-role-id`     | String | yes      | The Vault secret id.                                                      |
+| `vault-secret-id`   | String | yes      | The Vault role id.                                                        |
+| `git-repository`    | String | no       | The git repository to checkout. (Default: `elastic/kibana`)               |
+| `git-ref`           | String | no       | The git ref of the repository. (Default: default branch, e.g. `main`)     |
+| `serverless`        | String | no       | Whether to build serverless images or not. (Default: `false`)             |
+| `docker-registry`   | String | no       | The docker registry for pushing the image. (Default: `docker.elastic.co`) |
+| `docker-namespace`  | String | no       | The namespace of the repository. (Default: `observability-ci`)            |
+
+## Outputs
+
+| Name   | Description                                         |
+|--------|-----------------------------------------------------|
+| `ref`  | The published docker image reference. (`image:tag`) |
