@@ -49,29 +49,11 @@ runs:
     - name: Set up variables
       id: vars
       working-directory: ${{ inputs.checkout-path }}
-      run: |
-        docker_registry="${DOCKER_REGISTRY}"
-        docker_namespace="${DOCKER_NAMESPACE}"
-
-        docker_image="kibana-cloud"
-        if [[ "${{ inputs.serverless }}" == "true" ]]; then
-          docker_image="kibana-serverless"
-        fi
-
-        kibana_commit_sha=$(git rev-parse HEAD)
-        kibana_version="$(jq -r .version package.json)-SNAPSHOT"
-        docker_tag="${kibana_version}-${kibana_commit_sha}"
-        docker_reference="${docker_registry}/${docker_namespace}/${docker_image}:${docker_tag}"
-
-        echo "kibana-version=${kibana_version}" >> "$GITHUB_OUTPUT"
-        echo "docker-registry=${docker_registry}" >> "$GITHUB_OUTPUT"
-        echo "docker-namespace=${docker_namespace}" >> "$GITHUB_OUTPUT"
-        echo "docker-image=${docker_image}" >> "$GITHUB_OUTPUT"
-        echo "docker-tag=${docker_tag}" >> "$GITHUB_OUTPUT"
-        echo "docker-reference=${docker_reference}" >> "$GITHUB_OUTPUT"
+      run: ${{ github.action_path }}/setup-vars.sh
       env:
         DOCKER_REGISTRY: ${{ inputs.docker-registry }}
         DOCKER_NAMESPACE: ${{ inputs.docker-namespace }}
+        SERVERLESS: ${{ inputs.serverless }}
       shell: bash
 
     - name: Build and Push
