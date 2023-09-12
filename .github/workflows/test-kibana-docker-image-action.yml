@@ -1,0 +1,72 @@
+---
+#
+# Test the kibana-docker-image action if it produces the expected output and if the image can be pulled.
+#
+name: test-kibana-docker-image-action
+
+on:
+  workflow_dispatch: ~
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/actions/kibana-docker-image/**"
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  kibana-cloud-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+      - uses: ./.github/actions/kibana-docker-image
+        id: kibana-docker-image
+      - name: Verify
+        run: |
+          echo "${DOCKER_IMAGE_REF:?}"
+          docker pull "${DOCKER_IMAGE_REF}"
+        env:
+          DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+      - if: failure()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#observablt-bots"
+
+  kibana-serverless-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+      - uses: ./.github/actions/kibana-docker-image
+        id: kibana-docker-image
+        with:
+          serverless: true
+      - name: Verify
+        run: |
+          echo "${DOCKER_IMAGE_REF:?}"
+          docker pull "${DOCKER_IMAGE_REF}"
+        env:
+          DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+      - if: failure()
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          slackChannel: "#observablt-bots"

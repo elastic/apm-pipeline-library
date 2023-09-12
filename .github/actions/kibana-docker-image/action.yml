@@ -1,0 +1,73 @@
+name: Kibana Docker Image
+description: |
+  An Action to build and push Kibana docker images given a git ref.
+inputs:
+  github-repository:
+    description: The git repository to build the image from.
+    default: "elastic/kibana"
+    required: false
+  git-ref:
+    description: "The git ref of elastic/kibana to build the image from. (Default: default branch)"
+    required: false
+  serverless:
+    description: Whether to build the serverless image or not.
+    required: false
+    default: "false"
+  docker-registry:
+    description: Docker registry to publish the image to.
+    required: false
+    default: "docker.elastic.co"
+  docker-namespace:
+    description: Docker namespace to publish the image to.
+    required: false
+    default: "observability-ci"
+  checkout-path:
+    description: The path to checkout the git repository to.
+    required: false
+    default: "kibana-repo-checkout"
+
+outputs:
+  ref:
+    description: The reference of the Docker image that was built in the format image:tag.
+    value: ${{ steps.vars.outputs.docker-reference }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.github-repository }}
+        ref: ${{ inputs.git-ref }}
+        path: ${{ inputs.checkout-path }}
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: ${{ inputs.checkout-path }}/.node-version
+        cache: yarn
+        cache-dependency-path: ${{ inputs.checkout-path }}/yarn.lock
+
+    - name: Set up variables
+      id: vars
+      working-directory: ${{ inputs.checkout-path }}
+      run: ${{ github.action_path }}/setup-vars.sh
+      env:
+        DOCKER_REGISTRY: ${{ inputs.docker-registry }}
+        DOCKER_NAMESPACE: ${{ inputs.docker-namespace }}
+        SERVERLESS: ${{ inputs.serverless }}
+      shell: bash
+
+    - name: Build and Push
+      working-directory: ${{ inputs.checkout-path }}
+      run: ${{ github.action_path }}/build-and-push.sh
+      shell: bash
+      env:
+        SERVERLESS: ${{ inputs.serverless }}
+        DOCKER_NAMESPACE: ${{ steps.vars.outputs.docker-namespace }}
+        DOCKER_TAG: ${{ steps.vars.outputs.docker-tag }}
+        DOCKER_REFERENCE: ${{ steps.vars.outputs.docker-reference }}
+
+    - name: Verify image exists
+      run: docker manifest inspect "${DOCKER_REFERENCE}" > /dev/null 2>&1;
+      env:
+        DOCKER_REFERENCE: ${{ steps.vars.outputs.docker-reference }}
+      shell: bash
