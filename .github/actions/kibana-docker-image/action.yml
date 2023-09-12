@@ -2,15 +2,6 @@ name: Kibana Docker Image
 description: |
   An Action to build and push Kibana docker images given a git ref.
 inputs:
-  vault-url:
-    description: Vault URL
-    required: true
-  vault-role-id:
-    description: Vault Role ID
-    required: true
-  vault-secret-id:
-    description: Vault Secret ID
-    required: true
   git-repository:
     description: The git repository to build the image from.
     default: "elastic/kibana"
@@ -30,10 +21,6 @@ inputs:
     description: Docker namespace to publish the image to.
     required: false
     default: "observability-ci"
-  docker-credentials-vault-secret-path:
-    description: The vault secret path to retrieve the docker credentials from.
-    required: false
-    default: "secret/observability-team/ci/docker-registry/prod"
 
 outputs:
   ref:
@@ -48,14 +35,6 @@ runs:
         repository: ${{ inputs.git-repository }}
         ref: ${{ inputs.git-ref }}
         path: kibana-repo-checkout
-
-    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
-      with:
-        registry: ${{ inputs.docker-registry }}
-        secret: ${{ inputs.docker-credentials-vault-secret-path }}
-        url: ${{ inputs.vault-url }}
-        roleId: ${{ inputs.vault-role-id }}
-        secretId: ${{ inputs.vault-secret-id }}
 
     - uses: actions/setup-node@v3
       with:

@@ -17,6 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
       - uses: elastic/apm-pipeline-library/.github/actions/kibana-docker-image@current
         id: kibana-docker-image
         with:
@@ -39,15 +46,11 @@ Following inputs can be used as `step.with` keys
 
 | Name                                    | Type   | Required | Description                                                               |
 |-----------------------------------------|--------|----------|---------------------------------------------------------------------------|
-| `vault-url`                             | String | yes      | The Vault URL to connect to.                                              |
-| `vault-role-id`                         | String | yes      | The Vault secret id.                                                      |
-| `vault-secret-id`                       | String | yes      | The Vault role id.                                                        |
 | `git-repository`                        | String | no       | The git repository to checkout. (Default: `elastic/kibana`)               |
 | `git-ref`                               | String | no       | The git ref of the repository. (Default: default branch, e.g. `main`)     |
 | `serverless`                            | String | no       | Whether to build serverless images or not. (Default: `false`)             |
 | `docker-registry`                       | String | no       | The docker registry for pushing the image. (Default: `docker.elastic.co`) |
 | `docker-namespace`                      | String | no       | The namespace of the repository. (Default: `observability-ci`)            |
-| `docker-credentials-vault-secret-path`  | String | no       | The Vault secret path of the docker credentials. (Default: `secret/observability-team/ci/docker-registry/prod`)              |
 
 ## Outputs
 

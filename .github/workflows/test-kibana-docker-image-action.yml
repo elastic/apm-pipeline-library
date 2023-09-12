@@ -19,12 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
       - uses: ./.github/actions/kibana-docker-image
         id: kibana-docker-image
         with:
-          vault-url: ${{ secrets.VAULT_ADDR }}
-          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
-          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
+          git-ref: "0f07497d2096d3133acac90439fa5009cd88bbdb"
       - name: Verify
         run: |
           echo "${DOCKER_IMAGE_REF:?}"
@@ -43,13 +48,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+        with:
+          registry: docker.elastic.co
+          secret: secret/observability-team/ci/docker-registry/prod
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
       - uses: ./.github/actions/kibana-docker-image
         id: kibana-docker-image
         with:
-          vault-url: ${{ secrets.VAULT_ADDR }}
-          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
-          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
           serverless: true
+          git-ref: "0f07497d2096d3133acac90439fa5009cd88bbdb"
       - name: Verify
         run: |
           echo "${DOCKER_IMAGE_REF:?}"
