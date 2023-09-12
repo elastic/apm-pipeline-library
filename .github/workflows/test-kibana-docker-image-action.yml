@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
           registry: docker.elastic.co
           secret: secret/observability-team/ci/docker-registry/prod
@@ -35,7 +35,7 @@ jobs:
         env:
           DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
       - if: failure()
-        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
           registry: docker.elastic.co
           secret: secret/observability-team/ci/docker-registry/prod
@@ -64,7 +64,7 @@ jobs:
         env:
           DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
       - if: failure()
-        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
