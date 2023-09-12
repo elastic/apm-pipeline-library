@@ -5,7 +5,6 @@
 name: test-kibana-docker-image-action
 
 on:
-  pull_request: ~
   workflow_dispatch: ~
   push:
     branches:
