@@ -62,7 +62,7 @@ runs:
         # If serverless
         if [ "${{ inputs.serverless }}" == 'true' ] ; then
           if [ "${TARGET_BRANCH}" == 'main' ] ; then
-            echo "CLUSTER=serverless-oblt" >> $GITHUB_ENV
+            echo "CLUSTER=serverless-qa-oblt" >> $GITHUB_ENV
             exit 0
           fi
           MESSAGE="You cannot deploy your PR when targeting a branch other than main"
