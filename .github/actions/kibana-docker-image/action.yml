@@ -21,6 +21,10 @@ inputs:
     description: Docker namespace to publish the image to.
     required: false
     default: "observability-ci"
+  checkout-path:
+    description: The path to checkout the git repository to.
+    required: false
+    default: "kibana-repo-checkout"
 
 outputs:
   ref:
@@ -34,17 +38,17 @@ runs:
       with:
         repository: ${{ inputs.git-repository }}
         ref: ${{ inputs.git-ref }}
-        path: kibana-repo-checkout
+        path: ${{ inputs.checkout-path }}
 
     - uses: actions/setup-node@v3
       with:
-        node-version-file: kibana-repo-checkout/.node-version
+        node-version-file: ${{ inputs.checkout-path }}/.node-version
         cache: yarn
-        cache-dependency-path: kibana-repo-checkout/yarn.lock
+        cache-dependency-path: ${{ inputs.checkout-path }}/yarn.lock
 
     - name: Set up variables
       id: vars
-      working-directory: kibana-repo-checkout
+      working-directory: ${{ inputs.checkout-path }}
       run: |
         docker_registry="${DOCKER_REGISTRY}"
         docker_namespace="${DOCKER_NAMESPACE}"
@@ -71,7 +75,7 @@ runs:
       shell: bash
 
     - name: Build and Push
-      working-directory: kibana-repo-checkout
+      working-directory: ${{ inputs.checkout-path }}
       run: ${{ github.action_path }}/build-and-push.sh
       shell: bash
       env:
