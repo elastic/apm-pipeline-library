@@ -1,3 +1,7 @@
+---
+#
+# Test the kibana-docker-image action if it produces the expected output and if the image can be pulled.
+#
 name: test-kibana-docker-image-action
 
 on:
