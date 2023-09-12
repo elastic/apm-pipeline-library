@@ -1,6 +1,11 @@
 name: test-kibana-docker-image-action
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/actions/kibana-docker-image/**"
   schedule:
     - cron: '0 6 * * *'
 
