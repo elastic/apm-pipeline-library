@@ -1,7 +1,6 @@
 name: test-kibana-docker-image-action
 
 on:
-  pull_request: ~ # TODO: Remove this
   schedule:
     - cron: '0 6 * * *'
 
