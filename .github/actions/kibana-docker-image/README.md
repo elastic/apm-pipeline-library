@@ -42,14 +42,14 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name               | Type   | Required | Description                                                                   |
-|--------------------|--------|----------|-------------------------------------------------------------------------------|
-| `git-repository`   | String | no       | The git repository to checkout. (Default: `elastic/kibana`)                   |
-| `git-ref`          | String | no       | The git ref of the repository. (Default: default branch, e.g. `main`)         |
-| `serverless`       | String | no       | Whether to build serverless images or not. (Default: `false`)                 |
-| `docker-registry`  | String | no       | The docker registry for pushing the image. (Default: `docker.elastic.co`)     |
-| `docker-namespace` | String | no       | The namespace of the repository. (Default: `observability-ci`)                |
-| `checkout-path`    | String | no       | The path to checkout the git repository to. (Default: `kibana-repo-checkout`) |
+| Name                 | Type   | Required | Description                                                                   |
+|----------------------|--------|----------|-------------------------------------------------------------------------------|
+| `github-repository`  | String | no       | The git repository to checkout. (Default: `elastic/kibana`)                   |
+| `git-ref`            | String | no       | The git ref of the repository. (Default: default branch, e.g. `main`)         |
+| `serverless`         | String | no       | Whether to build serverless images or not. (Default: `false`)                 |
+| `docker-registry`    | String | no       | The docker registry for pushing the image. (Default: `docker.elastic.co`)     |
+| `docker-namespace`   | String | no       | The namespace of the repository. (Default: `observability-ci`)                |
+| `checkout-path`      | String | no       | The path to checkout the git repository to. (Default: `kibana-repo-checkout`) |
 
 ## Outputs
 

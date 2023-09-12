@@ -2,7 +2,7 @@ name: Kibana Docker Image
 description: |
   An Action to build and push Kibana docker images given a git ref.
 inputs:
-  git-repository:
+  github-repository:
     description: The git repository to build the image from.
     default: "elastic/kibana"
     required: false
@@ -36,7 +36,7 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        repository: ${{ inputs.git-repository }}
+        repository: ${{ inputs.github-repository }}
         ref: ${{ inputs.git-ref }}
         path: ${{ inputs.checkout-path }}
 
