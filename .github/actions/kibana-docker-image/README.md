@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/kibana-docker-image
+      - uses: elastic/apm-pipeline-library/.github/actions/kibana-docker-image@current
         id: kibana-docker-image
         with:
           vault-url: ${{ secrets.VAULT_ADDR }}
