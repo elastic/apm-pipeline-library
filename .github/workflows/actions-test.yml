@@ -21,7 +21,7 @@ jobs:
   docker-layer-caching:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/docker-layer-caching
         with:
           key: custom-docker-cache-key-${{ github.workflow }}-{hash}
@@ -33,7 +33,7 @@ jobs:
   setup-git-with-token:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-git
         with:
           token: ${{ github.token }}
@@ -45,7 +45,7 @@ jobs:
   setup-git-without-token:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-git
       - name: Check GIT_USER
         run: test "$GIT_USER" = "apmmachine"
@@ -60,7 +60,7 @@ jobs:
       - setup-git-with-token
       - setup-git-without-token
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: check
         uses: ./.github/actions/check-dependent-jobs
         with:
