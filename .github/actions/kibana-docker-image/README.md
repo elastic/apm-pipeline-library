@@ -27,10 +27,8 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/kibana-docker-image@current
         id: kibana-docker-image
         with:
-          vault-url: ${{ secrets.VAULT_ADDR }}
-          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
-          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
           git-ref: main # git ref of elastic/kibana
+          serverless: true # Default: false
       - run: |
           echo "${DOCKER_IMAGE:?}"
           docker pull "${DOCKER_IMAGE}"
