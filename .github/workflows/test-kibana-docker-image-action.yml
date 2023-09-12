@@ -28,8 +28,6 @@ jobs:
           secretId: ${{ secrets.VAULT_SECRET_ID }}
       - uses: ./.github/actions/kibana-docker-image
         id: kibana-docker-image
-        with:
-          git-ref: "0f07497d2096d3133acac90439fa5009cd88bbdb"
       - name: Verify
         run: |
           echo "${DOCKER_IMAGE_REF:?}"
@@ -59,7 +57,6 @@ jobs:
         id: kibana-docker-image
         with:
           serverless: true
-          git-ref: "0f07497d2096d3133acac90439fa5009cd88bbdb"
       - name: Verify
         run: |
           echo "${DOCKER_IMAGE_REF:?}"
