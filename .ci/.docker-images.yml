@@ -141,11 +141,6 @@ images:
   # APM Pipeline Library Docker Images
 
   - <<: *apm-agent-library-docker-images
-    name: "apache-ant"
-    test_script: "cd .. && make test-apache-ant"
-    working_directory: ".ci/docker/apache-ant"
-
-  - <<: *apm-agent-library-docker-images
     name: "dind-buildx"
     test_script: "cd .. && make test-dind-buildx"
     working_directory: ".ci/docker/dind-buildx"

@@ -1,7 +1,0 @@
-**UNSUPPORTED**
-
-Scan the repository for third-party dependencies and report the results.
-
-```
-licenseScan()
-```
