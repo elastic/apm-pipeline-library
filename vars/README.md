@@ -2136,15 +2136,6 @@ populated later on with the runbld post build step.
 
 **NOTE**: See https://www.jenkins.io/doc/pipeline/steps/junit/#junit-plugin for reference of the arguments
 
-## licenseScan
-**UNSUPPORTED**
-
-Scan the repository for third-party dependencies and report the results.
-
-```
-licenseScan()
-```
-
 ## listGithubReleases
 List the GitHub releases in the current project. It returns
 a dictionary with the release id as primary key and then the whole information.
