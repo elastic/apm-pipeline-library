@@ -35,6 +35,10 @@ inputs:
     description: 'What slack channel to be used for notifying any failures while running the updatecli'
     default: '#observablt-bots'
     required: false
+  messageIfFailure:
+    description: 'What message to be sent if any failures while running the updatecli'
+    default: ":traffic_cone: updatecli failed for `${{ github.repository }}@${{ github.ref_name }}`, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -77,4 +81,4 @@ runs:
         roleId: ${{ inputs.vaultRoleId }}
         secretId: ${{ inputs.vaultSecretId }}
         channel: ${{ inputs.notifySlackChannel }}
-        message: ":traffic_cone: updatecli failed for `${{ github.repository }}@${{ github.ref_name }}`, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
+        message: ${{ inputs.messageIfFailure }}
