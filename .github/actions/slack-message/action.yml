@@ -40,11 +40,11 @@ inputs:
     description: 'True if the message is URL encoded'
     required: false
     default: 'true'
-  thread_ts:
+  thread_timestamp:
     description: 'The timestamp on the message that was posted into Slack when using bot token'
     required: false
 outputs:
-  thread_ts:
+  thread_timestamp:
     description: 'The timestamp on the message that was posted into Slack when using bot token'
 runs:
   using: "composite"
@@ -67,7 +67,7 @@ runs:
         MASK: ${{ inputs.mask }}
         URL_ENCODED: ${{ inputs.urlEncoded }}
         PAYLOAD: ${{ inputs.payload }}
-        THREAD_TS: ${{ inputs.thread_ts }}
+        THREAD_TIMESTAMP: ${{ inputs.thread_timestamp }}
       run: |
         # Prepare Slack API payload.
         # Documentation about the payload format.
@@ -101,8 +101,8 @@ runs:
         else:
           raise Exception("Either message or payload must be set.")
 
-        if os.environ["THREAD_TS"]:
-          json_data.thread_ts = os.environ["THREAD_TS"]
+        if os.environ["THREAD_TIMESTAMP"]:
+          json_data.thread_ts = os.environ["THREAD_TIMESTAMP"]
 
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("payload={}".format(json.dumps(json_data)))
