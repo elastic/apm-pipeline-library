@@ -16,7 +16,7 @@ inputs:
     required: true
   message:
     description: |
-      Slack message on Markdown format. Multiline messages must be escaped ussing URL encoding.
+      Slack message on Markdown format. Multiline messages must be escaped using URL encoding.
       https://github.com/orgs/community/discussions/26288
 
       This is an example how to escape a multiline message in Python:
@@ -40,6 +40,12 @@ inputs:
     description: 'True if the message is URL encoded'
     required: false
     default: 'true'
+  thread_ts:
+    description: 'The timestamp on the message that was posted into Slack when using bot token'
+    required: false
+outputs:
+  thread_ts:
+    description: 'The timestamp on the message that was posted into Slack when using bot token'
 runs:
   using: "composite"
   steps:
@@ -61,6 +67,7 @@ runs:
         MASK: ${{ inputs.mask }}
         URL_ENCODED: ${{ inputs.urlEncoded }}
         PAYLOAD: ${{ inputs.payload }}
+        THREAD_TS: ${{ inputs.thread_ts }}
       run: |
         # Prepare Slack API payload.
         # Documentation about the payload format.
@@ -94,11 +101,15 @@ runs:
         else:
           raise Exception("Either message or payload must be set.")
 
+        if os.environ["THREAD_TS"]:
+          json_data.thread_ts = os.environ["THREAD_TS"]
+
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("payload={}".format(json.dumps(json_data)))
         if os.environ.get('MASK') == 'true':
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
+      id: slack_message
       uses: slackapi/slack-github-action@v1.24.0
       with:
         channel-id: '${{ inputs.channel }}'
@@ -106,6 +117,8 @@ runs:
           ${{ steps.prepare.outputs.payload }}
       env:
         SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
+    - name: Set Outputs
+      run: echo "thread_ts=${{ steps.slack_message.outputs.thread_ts }}" >> ${GITHUB_OUTPUTS}
     - name: Reset environment
       shell: bash
       run: |
