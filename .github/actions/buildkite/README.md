@@ -38,6 +38,7 @@ jobs:
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: observability-release-helm
+          waitFor: true
           buildEnvVars: |
             commit=abderg
             message=my-message

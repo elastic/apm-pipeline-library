@@ -1,0 +1,136 @@
+---
+name: run-synthetics-stack-e2e
+description: |
+  An action that orchestrates the Synthetics Stack E2E tests for a Kibana PR.
+  This action can only be used in a workflow that is triggered by an issue_comment in elastic/kibana
+
+  E.g.:
+  ```
+  on:
+    issue_comment:
+      types:
+        - created
+  ```
+
+  It first creates a Kibana docker image, then it deploys an ESS cluster with the created docker image,
+  and finally it runs the Synthetics Stack E2E tests against the deployed ESS cluster.
+
+inputs:
+  repository:
+    description: 'The GitHub repository'
+    default: ${{ github.repository }}
+  comment-id:
+    description: 'The GitHub Comment ID'
+    default: ${{ github.event.comment.id }}
+  vault-url:
+    description: 'Vault URL'
+    required: true
+  vault-role-id:
+    description: 'Vault role ID'
+    required: true
+  vault-secret-id:
+    description: 'Vault secret ID'
+    required: true
+  pr-number:
+    description: 'The PR number'
+    default: ${{ github.event.issue.number }}
+    required: false
+  user:
+    description: 'The GitHub user that triggered the workflow'
+    default: ${{ github.triggering_actor }}
+
+runs:
+  using: composite
+  steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+      with:
+        username: ${{ env.GIT_USER }}
+        email: ${{ env.GIT_EMAIL }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
+      with:
+        github-token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Is an Elastician comment?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ inputs.user }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Notify with a reaction
+      continue-on-error: true
+      uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      with:
+        repository: ${{ inputs.repository }}
+        commentId: ${{ inputs.comment-id }}
+        emoji: ${{ steps.is_elastic_member.outputs.result && '+1' || '-1' }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Exit if not an Elastician comment
+      if: steps.is_elastic_member.outputs.result == 'false'
+      run: exit 1;
+      shell: bash
+
+    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      with:
+        registry: docker.elastic.co
+        secret: secret/observability-team/ci/docker-registry/prod
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/kibana-docker-image@current
+      id: kibana-docker-image
+      with:
+        github-repository: ${{ inputs.repository }}
+        git-ref: refs/pull/${{ inputs.pr-number }}/head
+
+    - name: Create cluster
+      id: create-cluster
+      run: >-
+        ${{ github.action_path }}/create-cluster.sh
+        ${{ steps.kibana-docker-image.outputs.kibana-docker-image }}
+        ${{ steps.kibana-docker-image.outputs.kibana-stack-version }}
+      shell: bash
+
+    - uses: hashicorp/vault-action@v2.7.3
+      with:
+        url: ${{ inputs.vault-url }}
+        method: approle
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+        exportToken: true
+
+    - name: Get credentials
+      id: get-credentials
+      run: >-
+        ${{ github.action_path }}/get-credentials.sh
+        ${{ steps.create-cluster.outputs.cluster-name }}
+      shell: bash
+
+    - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
+      with:
+        vaultUrl: ${{ inputs.vault-url }}
+        vaultRoleId: ${{ inputs.vault-role-id }}
+        vaultSecretId: ${{ inputs.vault-secret-id }}
+        pipeline: synthetics-stack-e2e-ci
+        triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
+        buildEnvVars: |
+          KIBANA_URL=${{ steps.get-credentials.outputs.kibana-url }}
+          KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
+          KIBANA_PASSWORD=${{ steps.get-credentials.outputs.kibana-password }}
+
+    - if: always() && steps.create-cluster.outcome == 'success'
+      name: Destroy cluster
+      run: >-
+        ${{ github.action_path }}/destroy-cluster.sh
+        ${{ steps.create-cluster.outputs.cluster-name }}
+      shell: bash
