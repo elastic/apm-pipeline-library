@@ -12,7 +12,7 @@ inputs:
     default: "qa"
     required: false
   project-type:
-    description: 'The projec type. Default: `observability`'
+    description: 'The project type. Default: `observability`'
     default: "observability"
     required: false
   token:

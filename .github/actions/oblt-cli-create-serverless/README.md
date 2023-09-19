@@ -38,8 +38,8 @@ Following inputs can be used as `step.with` keys
 
 | Name                        | Type    | Default                     | Description                        |
 |-----------------------------|---------|-----------------------------|------------------------------------|
-| `target`                    | String  | `qa`                        | The Oblt cluster to use. |
-| `project-type`              | String  | `observability`             | The Oblt cluster to use. |
+| `target`                    | String  | `qa`                        | The target environment where to deploy the serverless cluster. |
+| `project-type`              | String  | `observability`             | The project type. |
 | `cluster-name-prefix`       | String  | Optional                    | Prefix to be prepended to the randomised cluster name |
 | `cluster-name-suffix`       | String  | Optional                    | Suffix to be appended to the randomised cluster name |
 | `dry-run`                   | Boolean | `false`                     | Whether to dry-run the oblt-cli. |
