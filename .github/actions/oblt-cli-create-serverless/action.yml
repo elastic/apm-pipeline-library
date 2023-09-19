@@ -68,7 +68,7 @@ runs:
           parameters.ProjectType = project_type
           parameters.Target = target
 
-          core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters)}'`)
+          core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
