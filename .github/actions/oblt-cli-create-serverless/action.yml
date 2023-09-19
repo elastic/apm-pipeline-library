@@ -86,7 +86,7 @@ runs:
         {
           echo -n '{'
           echo -n '"Target":"${{ inputs.target }}",'
-          echo -n '"ProjectType":"${{ project-type }}"'
+          echo -n '"ProjectType":"${{ inputs.project-type }}"'
           echo -n '}'
         } > .parameters
         # Merge GITOPS with the PARAMETERS
