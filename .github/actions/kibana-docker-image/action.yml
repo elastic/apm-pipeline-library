@@ -28,12 +28,17 @@ inputs:
 
 outputs:
   ref:
+    description: |
+      Will be deprecated: Use 'kibana-docker-image' instead.
+      The reference of the Docker image that was built in the format image:tag.
+    value: ${{ steps.vars.outputs.docker-reference }}
+  kibana-docker-image:
     description: The reference of the Docker image that was built in the format image:tag.
     value: ${{ steps.vars.outputs.docker-reference }}
-  git-commit-sha:
+  kibana-commit-sha:
     description: The git commit SHA of the image that was built.
     value: ${{ steps.vars.outputs.kibana-commit-sha }}
-  stack-version:
+  kibana-stack-version:
     description: The elastic stack version of Kibana that was built.
     value: ${{ steps.vars.outputs.kibana-version }}
 
