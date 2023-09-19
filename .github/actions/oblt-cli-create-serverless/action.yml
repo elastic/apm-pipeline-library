@@ -65,13 +65,9 @@ runs:
                 parameters.GitHubIssue = context.issue.number
               }
             } else {
-              // parameters.GitHubCommit = context.payload.event.comment.id
               parameters.GitHubPullRequest = context.issue.number
             }
           }
-          console.log(parameters)
-          console.log(context.eventName)
-          console.log(context.payload)
           console.log(`Create PARAMETERS env variable`)
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
       env:
