@@ -89,11 +89,11 @@ runs:
           echo -n '"ProjectType":"${{ inputs.project-type }}"'
           echo -n '}'
         } > .serverless
-        echo "SERVERLESS=$(cat .parameters)" >> $GITHUB_ENV
+        echo "SERVERLESS=$(cat .serverless)" >> $GITHUB_ENV
         rm .serverless
-        # Merge GITOPS with the PARAMETERS
-        MERGED=$(echo '${{ env.SERVERLESS }} ${{ env.GITOPS }}' | jq -c -s add)
-        echo "PARAMETERS=${MERGED}" >> $GITHUB_ENV
+        # Merge GITOPS with the SERVERLESS
+        PARAMETERS=$(echo '${{ env.SERVERLESS }} ${{ env.GITOPS }}' | jq -c -s add)
+        echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_ENV
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
