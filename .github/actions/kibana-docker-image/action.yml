@@ -29,7 +29,7 @@ inputs:
 outputs:
   ref:
     description: |
-      Will be deprecated: Use 'kibana-docker-image' instead.
+      Will be deprecated. Use 'kibana-docker-image' instead.
       The reference of the Docker image that was built in the format image:tag.
     value: ${{ steps.vars.outputs.docker-reference }}
   kibana-docker-image:
