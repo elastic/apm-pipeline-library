@@ -41,17 +41,22 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
+          console.log(`Parsing flags`)
           const { cluster_name_prefix, cluster_name_suffix, dry_run, gitops, target, project_type  } = process.env
           if (cluster_name_prefix != '') {
             core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix==${cluster_name_prefix}`)
           }
-          if (cluster-name-prefix != '') {
+          if (cluster_name_suffix != '') {
             core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix==${cluster_name_suffix}`)
           }
           if (dry_run != 'false') {
             core.exportVariable('DRY_RUN', `--dry-run`)
           }
           var parameters = {}
+          parameters.ProjectType = project_type
+          parameters.Target = target
+
+          console.log(`Parsing gitops flags`)
           if (gitops == 'true') {
             parameters.GitOps = "true"
             parameters.GitHubRepository = context.repo
@@ -60,14 +65,12 @@ runs:
                 parameters.GitHubIssue = context.issue.number
               }
             } else {
-              parameters.GitHubCommit = context.repo
-              parameters.GitHubPullRequest = context.issue.number  //  github.event.comment.id
+              parameters.GitHubCommit = context.repo  //  github.event.comment.id
+              parameters.GitHubPullRequest = context.issue.number
             }
           }
 
-          parameters.ProjectType = project_type
-          parameters.Target = target
-
+          console.log(`Create PARAMETERS env variable`)
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
