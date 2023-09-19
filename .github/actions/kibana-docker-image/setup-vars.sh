@@ -8,12 +8,12 @@ if [[ "${SERVERLESS}" == "true" ]]; then
 fi
 
 kibana_commit_sha=$(git rev-parse HEAD)
-kibana_version="$(jq -r .version package.json)-SNAPSHOT"
-docker_tag="${kibana_version}-${kibana_commit_sha}"
+kibana_stack_version="$(jq -r .version package.json)-SNAPSHOT"
+docker_tag="${kibana_stack_version}-${kibana_commit_sha}"
 docker_reference="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${docker_image}:${docker_tag}"
-
 {
-  echo "kibana-version=${kibana_version}"
+  echo "kibana-stack-version=${kibana_stack_version}"
+  echo "kibana-commit-sha=${kibana_commit_sha}"
   echo "docker-registry=${DOCKER_REGISTRY}"
   echo "docker-namespace=${DOCKER_NAMESPACE}"
   echo "docker-image=${docker_image}"
