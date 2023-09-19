@@ -44,10 +44,10 @@ runs:
           console.log(`Parsing flags`)
           const { cluster_name_prefix, cluster_name_suffix, dry_run, gitops, target, project_type  } = process.env
           if (cluster_name_prefix != '') {
-            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix==${cluster_name_prefix}`)
+            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix=${cluster_name_prefix}`)
           }
           if (cluster_name_suffix != '') {
-            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix==${cluster_name_suffix}`)
+            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix=${cluster_name_suffix}`)
           }
           if (dry_run != 'false') {
             core.exportVariable('DRY_RUN', `--dry-run`)
@@ -72,6 +72,12 @@ runs:
 
           console.log(`Create PARAMETERS env variable`)
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
+      env:
+        cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
+        cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
+        dry_run: ${{ inputs.dry-run }}
+        target: ${{ inputs.target }}
+        project_type: ${{ inputs.project-type }}
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
