@@ -30,10 +30,12 @@ jobs:
         id: kibana-docker-image
       - name: Verify
         run: |
+          echo "${GIT_COMMIT_SHA:?}"
           echo "${DOCKER_IMAGE_REF:?}"
           docker pull "${DOCKER_IMAGE_REF}"
         env:
           DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+          GIT_COMMIT_SHA: ${{ steps.kibana-docker-image.outputs.git-commit-sha }}
       - if: failure()
         uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
         with:
@@ -59,10 +61,12 @@ jobs:
           serverless: true
       - name: Verify
         run: |
+          echo "${GIT_COMMIT_SHA:?}"
           echo "${DOCKER_IMAGE_REF:?}"
           docker pull "${DOCKER_IMAGE_REF}"
         env:
           DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.ref }}
+          GIT_COMMIT_SHA: ${{ steps.kibana-docker-image.outputs.git-commit-sha }}
       - if: failure()
         uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
         with:
