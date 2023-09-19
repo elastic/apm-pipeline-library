@@ -41,14 +41,14 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { cluster-name-prefix, cluster-name-suffix, dry-run, gitops, target, project-type  } = process.env
-          if (cluster-name-prefix != '') {
-            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix==${cluster-name-prefix}`)
+          const { cluster_name_prefix, cluster_name_suffix, dry_run, gitops, target, project_type  } = process.env
+          if (cluster_name_prefix != '') {
+            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix==${cluster_name_prefix}`)
           }
           if (cluster-name-prefix != '') {
-            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix==${cluster-name-suffix}`)
+            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix==${cluster_name_suffix}`)
           }
-          if (dry-run != 'false') {
+          if (dry_run != 'false') {
             core.exportVariable('DRY_RUN', `--dry-run`)
           }
           var parameters = {}
@@ -65,7 +65,7 @@ runs:
             }
           }
 
-          parameters.ProjectType = project-type
+          parameters.ProjectType = project_type
           parameters.Target = target
 
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters)}'`)
