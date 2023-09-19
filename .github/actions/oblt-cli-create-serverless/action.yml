@@ -81,7 +81,7 @@ runs:
         rm .gitops
       shell: bash
 
-    - name: Configure oblt-cli parameters
+    - name: Configure oblt-cli serverless parameters
       run: |
         {
           echo -n '{'
@@ -91,7 +91,10 @@ runs:
         } > .serverless
         echo "SERVERLESS=$(cat .serverless)" >> $GITHUB_ENV
         rm .serverless
-        # Merge GITOPS with the SERVERLESS
+      shell: bash
+
+    - name: Configure oblt-cli merge parameters
+      run: |
         PARAMETERS=$(echo '${{ env.SERVERLESS }} ${{ env.GITOPS }}' | jq -c -s add)
         echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_ENV
       shell: bash
