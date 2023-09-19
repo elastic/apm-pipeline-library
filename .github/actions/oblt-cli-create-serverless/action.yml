@@ -42,8 +42,10 @@ runs:
       with:
         script: |
           const { GITHUB_ACTION_PATH } = process.env
-          const script = require(`${GITHUB_ACTION_PATH}/prepare-flags.js')
-          console.log(script())
+          const script_path = `${GITHUB_ACTION_PATH}/prepare-flags.js'
+          console.log(`Running script ${script_path}`)
+          const script = require(script_path)
+          script()
       env:
         cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
         cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
