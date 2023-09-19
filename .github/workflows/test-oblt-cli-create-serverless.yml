@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/actions/oblt-cli-create-serverless/**'    
+      - '.github/actions/oblt-cli-create-serverless/**'
 
 jobs:
 
