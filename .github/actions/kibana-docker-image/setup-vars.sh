@@ -11,7 +11,6 @@ kibana_commit_sha=$(git rev-parse HEAD)
 kibana_version="$(jq -r .version package.json)-SNAPSHOT"
 docker_tag="${kibana_version}-${kibana_commit_sha}"
 docker_reference="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${docker_image}:${docker_tag}"
-
 {
   echo "kibana-version=${kibana_version}"
   echo "kibana-commit-sha=${kibana_commit_sha}"

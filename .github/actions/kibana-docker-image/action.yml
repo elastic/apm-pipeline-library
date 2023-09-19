@@ -33,6 +33,9 @@ outputs:
   git-commit-sha:
     description: The git commit SHA of the image that was built.
     value: ${{ steps.vars.outputs.kibana-commit-sha }}
+  stack-version:
+    description: The elastic stack version of Kibana that was built.
+    value: ${{ steps.vars.outputs.kibana-version }}
 
 runs:
   using: composite
