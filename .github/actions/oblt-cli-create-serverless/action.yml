@@ -41,11 +41,8 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { GITHUB_ACTION_PATH } = process.env
-          const script_path = `${GITHUB_ACTION_PATH}/prepare-flags.js'
-          console.log(`Running script ${script_path}`)
-          const script = require(script_path)
-          script()
+          const script = require('.github/actions/oblt-cli-create-serverless/prepare-flags.js')
+          await script()
       env:
         cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
         cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
