@@ -3,6 +3,11 @@ name: test-oblt-cli-create-serverless
 
 on:
   workflow_dispatch: ~
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/actions/oblt-cli-create-serverless/**'    
 
 jobs:
 
