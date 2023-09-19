@@ -30,6 +30,9 @@ outputs:
   ref:
     description: The reference of the Docker image that was built in the format image:tag.
     value: ${{ steps.vars.outputs.docker-reference }}
+  git-commit-sha:
+    description: The git commit SHA of the image that was built.
+    value: ${{ steps.vars.outputs.kibana-commit-sha }}
 
 runs:
   using: composite

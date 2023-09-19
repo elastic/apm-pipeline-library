@@ -14,6 +14,7 @@ docker_reference="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${docker_image}:${docke
 
 {
   echo "kibana-version=${kibana_version}"
+  echo "kibana-commit-sha=${kibana_commit_sha}"
   echo "docker-registry=${DOCKER_REGISTRY}"
   echo "docker-namespace=${DOCKER_NAMESPACE}"
   echo "docker-image=${docker_image}"
