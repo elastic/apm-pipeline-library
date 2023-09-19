@@ -40,7 +40,7 @@ outputs:
     value: ${{ steps.vars.outputs.kibana-commit-sha }}
   kibana-stack-version:
     description: The elastic stack version of Kibana that was built.
-    value: ${{ steps.vars.outputs.kibana-version }}
+    value: ${{ steps.vars.outputs.kibana-stack-version }}
 
 runs:
   using: composite
