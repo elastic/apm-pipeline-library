@@ -41,34 +41,42 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { cluster-name-prefix, cluster-name-suffix, dry-run, gitops, target, project-type  } = process.env
-          if (cluster-name-prefix != '') {
-            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix==${cluster-name-prefix}`)
+          console.log(`Parsing flags`)
+          const { cluster_name_prefix, cluster_name_suffix, dry_run, gitops, target, project_type  } = process.env
+          if (cluster_name_prefix != '') {
+            core.exportVariable('CLUSTER_NAME_PREFIX', `--cluster-name-prefix=${cluster_name_prefix}`)
           }
-          if (cluster-name-prefix != '') {
-            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix==${cluster-name-suffix}`)
+          if (cluster_name_suffix != '') {
+            core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix=${cluster_name_suffix}`)
           }
-          if (dry-run != 'false') {
+          if (dry_run != 'false') {
             core.exportVariable('DRY_RUN', `--dry-run`)
           }
           var parameters = {}
+          parameters.ProjectType = project_type
+          parameters.Target = target
+
           if (gitops == 'true') {
+            console.log(`Parsing gitops flags`)
             parameters.GitOps = "true"
-            parameters.GitHubRepository = context.repo
+            parameters.GitHubRepository = `${context.repo.owner}/${context.repo.repo}`
             if (context.eventName == 'issues') {
               if (context.issue.number) {
                 parameters.GitHubIssue = context.issue.number
               }
             } else {
-              parameters.GitHubCommit = context.repo
-              parameters.GitHubPullRequest = context.issue.number  //  github.event.comment.id
+              parameters.GitHubPullRequest = context.issue.number
             }
           }
-
-          parameters.ProjectType = project-type
-          parameters.Target = target
-
-          core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters)}'`)
+          console.log(`Create PARAMETERS env variable`)
+          core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
+      env:
+        cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
+        cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
+        dry_run: ${{ inputs.dry-run }}
+        gitops: ${{ inputs.gitops }}
+        target: ${{ inputs.target }}
+        project_type: ${{ inputs.project-type }}
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
