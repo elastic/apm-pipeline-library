@@ -42,7 +42,7 @@ runs:
       with:
         script: |
           const path = require('path')
-          return require(path.resolve(prepare-flags.js'))()
+          return require(path.resolve(prepare-flags.js'))
       env:
         cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
         cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
