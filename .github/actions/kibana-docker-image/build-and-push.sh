@@ -15,6 +15,8 @@ export FORCE_COLOR=1
 export NODE_OPTIONS=" --max-old-space-size=4096"
 export BUILD_TS_REFS_DISABLE="true"
 
+npm install -g yarn
+
 echo "::group::Bootstrap"
 time yarn kbn clean
 time yarn kbn bootstrap
