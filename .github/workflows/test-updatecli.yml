@@ -8,13 +8,27 @@ permissions:
   contents: read
 
 jobs:
-  bump:
+  bump-default:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
 
-      - uses: elastic/apm-pipeline-library/.github/actions/updatecli@main
+      - uses: ./.github/actions/updatecli
         with:
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
           pipeline: ./.ci/file-doesnt-exist-so-it-should-fail-and-notify-error
+
+  bump-override:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/updatecli
+        with:
+          vaultUrl: ${{ secrets.VAULT_ADDR }}
+          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
+          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          pipeline: ./.ci/file-doesnt-exist-so-it-should-fail-and-notify-error
+          messageIfFailure: "my super duper-message"
