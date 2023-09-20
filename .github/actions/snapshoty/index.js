@@ -30,6 +30,13 @@ async function run() {
         args.push('-e', `${key}=${value}`);
         core.setSecret(value);
       }
+      // Special case so we can inject env variables
+      if (key.startsWith("SNAPSHOTY_")) {
+        let value = process.env[key];
+        let variable = key.replace("SNAPSHOTY_", "")
+        args.push('-e', `${variable}=${value}`);
+        core.setSecret(value);
+      }
     });
     args.push('docker.elastic.co/observability-ci/snapshoty:v1', 'snapshoty');
     if (core.isDebug()) {
