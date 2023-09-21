@@ -16,7 +16,9 @@ kibana_username=$(yq '.kibana_username' "${cluster_state_output_file}")
 kibana_password=$(yq '.kibana_password' "${cluster_state_output_file}")
 
 echo "::add-mask::${kibana_url}"
-echo "::add-mask::${kibana_username}"
+# Don't mask the username for now, because this is usually "elastic" has a lot of
+# occurrences in the logs.
+# echo "::add-mask::${kibana_username}"
 echo "::add-mask::${kibana_password}"
 
 {
