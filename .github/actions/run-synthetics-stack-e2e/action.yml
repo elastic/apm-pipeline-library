@@ -127,8 +127,9 @@ runs:
         waitFor: true
         buildEnvVars: |
           KIBANA_URL_SECRET=${{ steps.get-credentials.outputs.kibana-url }}
-          KIBANA_USERNAME_SECRET=${{ steps.get-credentials.outputs.kibana-username }}
+          KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
           KIBANA_PASSWORD_SECRET=${{ steps.get-credentials.outputs.kibana-password }}
+          KIBANA_PR_URL=${{ github.server_url }}/${{ inputs.repository }}/pull/${{ inputs.pr-number }}
 
     - if: always() && steps.buildkite.outputs.build
       name: Add notice message
