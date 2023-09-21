@@ -117,6 +117,7 @@ runs:
       shell: bash
 
     - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
+      id: buildkite
       with:
         vaultUrl: ${{ inputs.vault-url }}
         vaultRoleId: ${{ inputs.vault-role-id }}
@@ -127,6 +128,15 @@ runs:
           KIBANA_URL=${{ steps.get-credentials.outputs.kibana-url }}
           KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
           KIBANA_PASSWORD=${{ steps.get-credentials.outputs.kibana-password }}
+
+    - if: always() && steps.buildkite.outputs.build
+      name: Add notice message
+      run: |
+        echo "::notice title=${TITLE}::${BUILDKITE_BUILD_URL}"
+      shell: bash
+      env:
+        BUILDKITE_BUILD_URL: ${{ steps.buildkite.outputs.build }}
+        TITLE: Synthetics Stack E2E Buildkite Build
 
     - if: always() && steps.create-cluster.outcome == 'success'
       name: Destroy cluster
