@@ -112,7 +112,7 @@ runs:
           echo "BUILDKITE_API_ACCESS_TOKEN=" >> $GITHUB_ENV
 
       - name: Cancel Buildkite pipeline
-        if: cancelled() inputs.waitFor && steps.trigger-buildkite.outputs.build_number
+        if: cancelled() && inputs.waitFor && steps.trigger-buildkite.outputs.build_number
         run: |
           ${{ github.action_path }}/cancel.sh \
             '${{ inputs.org }}' \
