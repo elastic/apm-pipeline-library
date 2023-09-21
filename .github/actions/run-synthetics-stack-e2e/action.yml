@@ -126,9 +126,9 @@ runs:
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
         waitFor: true
         buildEnvVars: |
-          KIBANA_URL=${{ steps.get-credentials.outputs.kibana-url }}
-          KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
-          KIBANA_PASSWORD=${{ steps.get-credentials.outputs.kibana-password }}
+          KIBANA_URL_SECRET=${{ steps.get-credentials.outputs.kibana-url }}
+          KIBANA_USERNAME_SECRET=${{ steps.get-credentials.outputs.kibana-username }}
+          KIBANA_PASSWORD_SECRET=${{ steps.get-credentials.outputs.kibana-password }}
 
     - if: always() && steps.buildkite.outputs.build
       name: Add notice message
