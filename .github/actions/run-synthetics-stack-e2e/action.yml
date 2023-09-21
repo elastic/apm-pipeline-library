@@ -124,6 +124,7 @@ runs:
         vaultSecretId: ${{ inputs.vault-secret-id }}
         pipeline: synthetics-stack-e2e-ci
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
+        waitFor: true
         buildEnvVars: |
           KIBANA_URL=${{ steps.get-credentials.outputs.kibana-url }}
           KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
