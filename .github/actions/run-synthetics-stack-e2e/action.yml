@@ -101,21 +101,6 @@ runs:
         ${{ steps.kibana-docker-image.outputs.kibana-stack-version }}
       shell: bash
 
-    - uses: hashicorp/vault-action@v2.7.3
-      with:
-        url: ${{ inputs.vault-url }}
-        method: approle
-        roleId: ${{ inputs.vault-role-id }}
-        secretId: ${{ inputs.vault-secret-id }}
-        exportToken: true
-
-    - name: Get credentials
-      id: get-credentials
-      run: >-
-        ${{ github.action_path }}/get-credentials.sh
-        ${{ steps.create-cluster.outputs.cluster-name }}
-      shell: bash
-
     - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
       id: buildkite
       with:
@@ -126,9 +111,7 @@ runs:
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
         waitFor: true
         buildEnvVars: |
-          KIBANA_URL_SECRET=${{ steps.get-credentials.outputs.kibana-url }}
-          KIBANA_USERNAME=${{ steps.get-credentials.outputs.kibana-username }}
-          KIBANA_PASSWORD_SECRET=${{ steps.get-credentials.outputs.kibana-password }}
+          OBLT_CLUSTER_STATE_SECRET_PATH=secret/observability-team/ci/test-clusters/${{ steps.create-cluster.outputs.cluster-name }}/cluster-state
           KIBANA_PR_URL=${{ github.server_url }}/${{ inputs.repository }}/pull/${{ inputs.pr-number }}
 
     - if: always() && steps.buildkite.outputs.build
