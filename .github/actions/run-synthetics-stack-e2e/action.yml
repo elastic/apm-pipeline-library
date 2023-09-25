@@ -113,6 +113,7 @@ runs:
         vaultSecretId: ${{ inputs.vault-secret-id }}
         pipeline: ${{ inputs.buildkite-pipeline-slug }}
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
+        pipelineVersion: use-kibana-url # TODO: Remove this once the pipeline is merged to main
         waitFor: true
         buildEnvVars: |
           OBLT_CLUSTER_STATE_SECRET_PATH=secret/observability-team/ci/test-clusters/${{ steps.create-cluster.outputs.cluster-name }}/cluster-state
