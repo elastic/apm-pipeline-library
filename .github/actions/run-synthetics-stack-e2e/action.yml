@@ -105,7 +105,8 @@ runs:
         ${{ steps.kibana-docker-image.outputs.kibana-stack-version }}
       shell: bash
 
-    - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
+    # - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current # TODO: Use this when PR is merged
+    - uses: reakaleek/apm-pipeline-library/.github/actions/buildkite@feature/buildkite-branch-input
       id: buildkite
       with:
         vaultUrl: ${{ inputs.vault-url }}
@@ -113,7 +114,7 @@ runs:
         vaultSecretId: ${{ inputs.vault-secret-id }}
         pipeline: ${{ inputs.buildkite-pipeline-slug }}
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
-        pipelineVersion: c6ed10815811cee3195b8512f6ab01c51f4f75a5 # TODO: Remove this once the pipeline is merged to main
+        pipelineBranch: use-kibana-url
         waitFor: true
         buildEnvVars: |
           OBLT_CLUSTER_STATE_SECRET_PATH=secret/observability-team/ci/test-clusters/${{ steps.create-cluster.outputs.cluster-name }}/cluster-state
