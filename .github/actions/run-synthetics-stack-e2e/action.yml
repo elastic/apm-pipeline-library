@@ -38,6 +38,10 @@ inputs:
   user:
     description: 'The GitHub user that triggered the workflow'
     default: ${{ github.triggering_actor }}
+  buildkite-pipeline-slug:
+    description: 'The Buildkite pipeline slug'
+    default: kibana-pr-synthetics-stack-e2e-ci
+    required: false
 
 runs:
   using: composite
@@ -107,7 +111,7 @@ runs:
         vaultUrl: ${{ inputs.vault-url }}
         vaultRoleId: ${{ inputs.vault-role-id }}
         vaultSecretId: ${{ inputs.vault-secret-id }}
-        pipeline: synthetics-stack-e2e-ci
+        pipeline: ${{ inputs.buildkite-pipeline-slug }}
         triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
         waitFor: true
         buildEnvVars: |
