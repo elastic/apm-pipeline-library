@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/lock.py ${{ inputs.owner }} ${{ inputs.repo }} ${{ inputs.branch }} ${{ inputs.lock }}
+    - run: python ${{ github.action_path }}/lock.py ${{ inputs.owner }} ${{ inputs.repo }} ${{ inputs.branch }} ${{ inputs.lock }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
-      shell: shell
+      shell: bash
