@@ -1,0 +1,25 @@
+name: 'Manage GitHub branches'
+description: 'Manage the given GitHub branches'
+inputs:
+  branch:
+    description: 'The GitHub branch'
+    required: true
+  lock:
+    description: 'Whether to lock the branch or no'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  owner:
+    description: 'The GitHub owner'
+    default: ${{ github.repository }}
+  repo:
+    description: 'The GitHub repo'
+    default: ${{ github.repository }}
+runs:
+  using: "composite"
+  steps:
+    - run: ${{ github.action_path }}/lock.py ${{ inputs.owner }} ${{ inputs.repo }} ${{ inputs.branch }} ${{ inputs.lock }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      shell: shell
