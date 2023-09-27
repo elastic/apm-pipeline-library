@@ -39,26 +39,30 @@ def set_lock(protection_id, enabled):
   }""" % (protection_id, enabled)
 
 def process_error(response):
-  if "errors" in response:
-    print('ERROR: ' + response['errors'][0]['message'])
+  print('::debug::response : %s'% (response.text))
+  if "errors" in response.json():
+    print('::error::' + response.json()['errors'][0]['message'])
     sys.exit(1)
 
 def fetch_branch_protections(owner, repo):
-  print('INFO: fetch the branch protections for "%s/%s"' % (owner, repo))
-  response = post(branch_protection_query(owner, repo))
-  process_error(response.json())
+  print('fetch the branch protections for "%s/%s"' % (owner, repo))
+  query = branch_protection_query(owner, repo)
+  print('::debug::query branch protection : %s'% (query))
+  response = post(query)
+  process_error(response)
   return response.json()['data']['repository']['branchProtectionRules']['nodes']
 
-def update_lock(protection_id, lock):
-  print('INFO: setting lock("%s")'% (enabled))
+def update_lock(protection_id, enabled):
+  print('setting lock("%s")'% (enabled))
   query = set_lock(protection_id, str(enabled).lower())
+  print('::debug::query update lock %s'% (query))
   response = post(query)
-  process_error(response.json())
-  print('INFO: all done!')
+  process_error(response)
+  print('successfully done!')
 
 # If no arguments then say it!
 if len(sys.argv) < 5:
-  print('ERROR: missing arguments <owner> <repo> <branch> <enabled>')
+  print('::error::missing arguments <owner> <repo> <branch> <enabled>')
   sys.exit(1)
 
 owner = sys.argv[1]
@@ -70,8 +74,15 @@ enabled =  sys.argv[4]
 branch_protection_rules = fetch_branch_protections(owner, repo)
 
 # For each branch protection search for the given branch and update the lock
+if len(branch_protection_rules) < 1:
+  print('::warning::no branch protections')
+
 protection_id = None
 for rule in branch_protection_rules:
   if rule['pattern'] == branch:
-    print('DEBUG: branch protection found for "%s"'% (branch))
-    update_lock(rule['id'], enabled)
+    protection_id = rule['id']
+    print('::debug::branch protection found for the branch "%s"'% (branch))
+    update_lock(protection_id, enabled)
+
+if protection_id is None:
+  print('::warning::branch protections does not match %s'% (branch))
