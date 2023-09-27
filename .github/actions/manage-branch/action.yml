@@ -16,10 +16,13 @@ inputs:
   repo:
     description: 'The GitHub repo'
     default: ${{ github.repository }}
+  fail-on-warning:
+    description: 'Whether to fail if any warning'
+    default: false
 runs:
   using: "composite"
   steps:
-    - run: python ${{ github.action_path }}/lock.py ${{ inputs.owner }} ${{ inputs.repo }} ${{ inputs.branch }} ${{ inputs.lock }}
+    - run: python ${{ github.action_path }}/lock.py ${{ inputs.owner }} ${{ inputs.repo }} ${{ inputs.branch }} ${{ inputs.lock }} ${{ inputs.fail-on-warning }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash

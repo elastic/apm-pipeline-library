@@ -30,7 +30,6 @@ jobs:
           token: ${{ secrets.PAT }}
 ```
 
-
 ## Customizing
 
 ### inputs
@@ -40,6 +39,7 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                     | Description                        |
 |-------------------|---------|-----------------------------|------------------------------------|
 | `branch`          | String  |                             | The GitHub branch name             |
+| `fail-on-warning` | Boolean | `false`                     | Whether to fail on warnings        |
 | `lock`            | Boolean |                             | Whether to lock the given branch   |
 | `owner`           | String  | `github.repository.owner`   | The GitHub owner                   |
 | `repo`            | String  | `github.repository.repo`    | The GitHub repo                    |

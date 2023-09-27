@@ -62,21 +62,25 @@ def update_lock(protection_id, enabled):
 
 # If no arguments then say it!
 if len(sys.argv) < 5:
-  print('::error::missing arguments <owner> <repo> <branch> <enabled>')
+  print('::error::missing arguments <owner> <repo> <branch> <enabled> <fail-on-warning>')
   sys.exit(1)
 
 owner = sys.argv[1]
 repo = sys.argv[2]
 branch = sys.argv[3]
-enabled =  sys.argv[4]
+enabled = sys.argv[4]
+fail_on_warning = sys.argv[5]
 
 # Fetch all the branch protections for the given GitHub repository
 branch_protection_rules = fetch_branch_protections(owner, repo)
 
-# For each branch protection search for the given branch and update the lock
+# Validate branch protections
 if len(branch_protection_rules) < 1:
-  print('::warning::no branch protections')
+  print('::warning::no branch protections. Maybe your GitHub token does not have enough privileges?')
+  if fail_on_warning:
+    sys.exit(1)
 
+# For each branch protection search for the given branch and update the lock
 protection_id = None
 for rule in branch_protection_rules:
   if rule['pattern'] == branch:
@@ -86,3 +90,5 @@ for rule in branch_protection_rules:
 
 if protection_id is None:
   print('::warning::branch protections does not match %s'% (branch))
+  if fail_on_warning:
+    sys.exit(1)
