@@ -119,7 +119,7 @@ runs:
       uses: actions/github-script@v6
       env:
         SHA: ${{ steps.get-pr-head-sha.outputs.result }}
-        JOB_STATUS: ${{ job.status }}
+        OUTCOME: ${{ steps.synthetics-stack-e2e-run.outcome }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}?pr=${{ github.event.issue.number }}
         CONTEXT: ${{ inputs.context }}
       with:
@@ -130,7 +130,7 @@ runs:
             repo,
             context: process.env.CONTEXT,
             sha: process.env.SHA,
-            state: process.env.JOB_STATUS == 'success' ? 'success' : 'failure',
+            state: process.env.OUTCOME == 'success' ? 'success' : 'failure',
             description: process.env.JOB_STATUS == 'success' ? "The synthetics-stack-e2e tests succeeded" : "synthetics-stack-e2e tests failed",
             target_url: process.env.RUN_URL,
           });
