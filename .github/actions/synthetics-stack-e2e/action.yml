@@ -102,7 +102,7 @@ runs:
 
     - if: steps.create-pending-commit-status.outcome == 'success'
       id: synthetics-stack-e2e-run
-      uses: ./.github/actions/synthetics-stack-e2e-run
+      uses: ${{ github.action_path }}/../synthetics-stack-e2e-run
       with:
         buildkite-pipeline-slug: ${{ inputs.buildkite-pipeline-slug }}
         commit-sha: ${{ steps.get-pr-head-sha.outputs.result }}
