@@ -54,7 +54,7 @@ runs:
       with:
         github-token: ${{ env.GITHUB_TOKEN }}
 
-    - name: Is an Elastician comment?
+    - name: Is an Elastic member?
       id: is_elastic_member
       uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
       with:

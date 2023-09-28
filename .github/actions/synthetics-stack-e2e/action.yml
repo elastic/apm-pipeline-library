@@ -46,8 +46,20 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - name: Is an Elastic member?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ inputs.user }}
+        token: ${{ env.GITHUB_TOKEN }}
     # If the action is used in a pull_request[_target] workflow
-    - if: github.event.pull_request
+    - if: steps.is_elastic_member.output.result && github.event.pull_request
       name: Create initial failing commit status
       uses: actions/github-script@v6
       env:
@@ -66,7 +78,7 @@ runs:
             description: `Comment "${process.env.COMMENT_COMMAND}" to run the synthetics stack e2e tests`,
           });
 
-    - if: github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, '/synthetics-stack-e2e')
+    - if: steps.is_elastic_member.output.result && github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, '/synthetics-stack-e2e')
       name: Get PR head SHA
       id: get-pr-head-sha
       uses: actions/github-script@v6
@@ -114,7 +126,7 @@ runs:
         vault-role-id: ${{ inputs.vault-role-id }}
         vault-secret-id: ${{ inputs.vault-secret-id }}
 
-    - if: always() && github.event.comment
+    - if: always() && steps.is_elastic_member.output.result && github.event.comment
       name: Create final commit status
       uses: actions/github-script@v6
       env:
