@@ -27,11 +27,12 @@ PRINT_BUILD=${5:?$MSG}
 BK_TOKEN=${6:?$MSG}
 MESSAGE=${7:-"Triggered automatically with GH actions"}
 PIPELINE_VERSION=${8:-"HEAD"}
+PIPELINE_BRANCH=${9:-"main"}
 
 JSON=$(
 jq -c -n \
   --arg COMMIT "$PIPELINE_VERSION" \
-  --arg BRANCH "main" \
+  --arg BRANCH "${PIPELINE_BRANCH}" \
   --arg MESSAGE "$MESSAGE" \
   '{
     "commit": $COMMIT,

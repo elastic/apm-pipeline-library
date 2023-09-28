@@ -33,10 +33,19 @@ inputs:
   buildEnvVars:
     description: 'Additional environment variables to set on the build.'
     required: false
+  pipelineBranch:
+    description: 'Branch the commit belongs to. This allows you to take advantage of your pipeline and step-level branch filtering rules.'
+    default: main
+    required: false
+  pipelineCommit:
+    description: 'Ref, SHA or tag to be built.'
+    default: HEAD
+    required: false
   pipelineVersion:
     description: 'The pipeline version to be used (e.g. git sha, tag, branch).'
     default: HEAD
     required: false
+    deprecationMessage: "Use pipelineCommit instead."
   triggerMessage:
     description: 'The BK build message to be shown in the UI.'
     default: Triggered automatically with GH actions
@@ -82,7 +91,8 @@ runs:
             '${{ inputs.printBuildLogs }}' \
             '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
             '${{ inputs.triggerMessage }}' \
-            '${{ inputs.pipelineVersion }}'
+            '${{ inputs.pipelineCommit || inputs.pipelineVersion }}' \
+            '${{ inputs.pipelineBranch }}'
         shell: bash
 
       - id: download-artifacts
