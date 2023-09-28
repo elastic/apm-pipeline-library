@@ -98,7 +98,7 @@ runs:
       shell: bash
 
     # - uses: elastic/apm-pipeline-library/.github/actions/buildkite@current # TODO: Use this when PR is merged
-    - uses: reakaleek/apm-pipeline-library/.github/actions/buildkite@feature/buildkite-branch-input
+    - uses: reakaleek/apm-pipeline-library/.github/actions/buildkite@main
       id: buildkite
       with:
         vaultUrl: ${{ inputs.vault-url }}
