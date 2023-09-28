@@ -47,6 +47,11 @@ runs:
   using: composite
   steps:
     # If the action is used in a pull_request[_target] workflow
+
+    - if: github.event.pull_request
+      shell: bash
+      run: echo '${{ inputs.commit-sha }}'
+
     - if: github.event.pull_request
       name: Create initial failing commit status
       uses: actions/github-script@v6
