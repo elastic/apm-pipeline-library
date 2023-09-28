@@ -49,14 +49,15 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name                          | Type   | Required | Description                                                                                  |
-|-------------------------------|--------|----------|----------------------------------------------------------------------------------------------|
-| `buildkite-pipeline-slug`     | String | no       | The buildkite pipeline slug. (Default `kibana-pr-synthetics-stack-e2e-ci`)                   |
-| `comment-id`                  | String | no       | The GitHub Comment ID. (Default `${{ github.event.comment.id }}`)                            |
-| `comment-command`             | String | no       | The literal comment you need to post to trigger the flow. (Default: `/synthetics-stack-e2e`) |
-| `context`                     | String | no       | The commit status context. (Default: `synthetics-stack-e2e`)                                 |
-| `pr-number`                   | String | no       | The PR number. (Default: `${{ github.event.issue.number }}`)                                 |
-| `user`                        | String | no       | The GitHub user that triggered the workflow. (Default: `${{ github.triggering_actor }}`)     |
-| `vault-url`                   | String | yes      | Vault URL                                                                                    |
-| `vault-role-id`               | String | yes      | Vault role ID                                                                                |
-| `vault-secret-id`             | String | yes      | Vault secret ID                                                                              |
+| Name                      | Type   | Required | Description                                                                                  |
+|---------------------------|--------|----------|----------------------------------------------------------------------------------------------|
+| `buildkite-pipeline-slug` | String | no       | The buildkite pipeline slug. (Default `kibana-pr-synthetics-stack-e2e-ci`)                   |
+| `comment-id`              | String | no       | The GitHub Comment ID. (Default `${{ github.event.comment.id }}`)                            |
+| `comment-command`         | String | no       | The literal comment you need to post to trigger the flow. (Default: `/synthetics-stack-e2e`) |
+| `commit-sha`              | String | no       | The commit SHA. (Default: `${{ github.event.pull_request.head.sha }}`)                       |
+| `context`                 | String | no       | The commit status context. (Default: `synthetics-stack-e2e`)                                 |
+| `pr-number`               | String | no       | The PR number. (Default: `${{ github.event.issue.number }}`)                                 |
+| `user`                    | String | no       | The GitHub user that triggered the workflow. (Default: `${{ github.triggering_actor }}`)     |
+| `vault-url`               | String | yes      | Vault URL                                                                                    |
+| `vault-role-id`           | String | yes      | Vault role ID                                                                                |
+| `vault-secret-id`         | String | yes      | Vault secret ID                                                                              |
