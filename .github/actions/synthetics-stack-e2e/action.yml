@@ -24,6 +24,7 @@ inputs:
     default: ${{ github.event.comment.id }}
   commit-sha:
     description: 'The commit SHA'
+    default: ${{ github.event.pull_request.head.sha }}
     required: false
   pr-number:
     description: 'The PR number'
