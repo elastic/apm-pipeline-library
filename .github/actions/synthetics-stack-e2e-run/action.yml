@@ -1,27 +1,16 @@
 ---
-name: run-synthetics-stack-e2e
+name: synthetics-stack-e2e-run
 description: |
-  An action that orchestrates the Synthetics Stack E2E tests for a Kibana PR.
-  This action can only be used in a workflow that is triggered by an issue_comment in elastic/kibana
-
-  E.g.:
-  ```
-  on:
-    issue_comment:
-      types:
-        - created
-  ```
+  This action is part of the synthetics-stack-e2e action.
 
   It first creates a Kibana docker image, then it deploys an ESS cluster with the created docker image,
   and finally it runs the Synthetics Stack E2E tests against the deployed ESS cluster.
 
 inputs:
-  repository:
-    description: 'The GitHub repository'
-    default: ${{ github.repository }}
-  comment-id:
-    description: 'The GitHub Comment ID'
-    default: ${{ github.event.comment.id }}
+  buildkite-pipeline-slug:
+    description: 'The Buildkite pipeline slug'
+    default: kibana-pr-synthetics-stack-e2e-ci
+    required: false
   vault-url:
     description: 'Vault URL'
     required: true
@@ -31,6 +20,12 @@ inputs:
   vault-secret-id:
     description: 'Vault secret ID'
     required: true
+  comment-id:
+    description: 'The GitHub Comment ID'
+    default: ${{ github.event.comment.id }}
+  commit-sha:
+    description: 'The commit SHA'
+    required: false
   pr-number:
     description: 'The PR number'
     default: ${{ github.event.issue.number }}
@@ -38,10 +33,7 @@ inputs:
   user:
     description: 'The GitHub user that triggered the workflow'
     default: ${{ github.triggering_actor }}
-  buildkite-pipeline-slug:
-    description: 'The Buildkite pipeline slug'
-    default: kibana-pr-synthetics-stack-e2e-ci
-    required: false
+    required: true
 
 runs:
   using: composite
@@ -73,7 +65,7 @@ runs:
       continue-on-error: true
       uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
       with:
-        repository: ${{ inputs.repository }}
+        repository: ${{ github.repository }}
         commentId: ${{ inputs.comment-id }}
         emoji: ${{ steps.is_elastic_member.outputs.result && '+1' || '-1' }}
         token: ${{ env.GITHUB_TOKEN }}
@@ -94,8 +86,8 @@ runs:
     - uses: elastic/apm-pipeline-library/.github/actions/kibana-docker-image@current
       id: kibana-docker-image
       with:
-        github-repository: ${{ inputs.repository }}
-        git-ref: refs/pull/${{ inputs.pr-number }}/head
+        github-repository: ${{ github.repository }}
+        git-ref: ${{ inputs.commit-sha || format('refs/pull/{0}/head', inputs.pr-number) }}
 
     - name: Create cluster
       id: create-cluster
@@ -113,12 +105,12 @@ runs:
         vaultRoleId: ${{ inputs.vault-role-id }}
         vaultSecretId: ${{ inputs.vault-secret-id }}
         pipeline: ${{ inputs.buildkite-pipeline-slug }}
-        triggerMessage: Triggered by PR ${{ inputs.repository }}#${{ inputs.pr-number }}
+        triggerMessage: Triggered by PR ${{ github.repository }}#${{ inputs.pr-number }}
         pipelineBranch: use-kibana-url
         waitFor: true
         buildEnvVars: |
           OBLT_CLUSTER_STATE_SECRET_PATH=secret/observability-team/ci/test-clusters/${{ steps.create-cluster.outputs.cluster-name }}/cluster-state
-          KIBANA_PR_URL=${{ github.server_url }}/${{ inputs.repository }}/pull/${{ inputs.pr-number }}
+          KIBANA_PR_URL=${{ github.server_url }}/${{ github.repository }}/pull/${{ inputs.pr-number }}
 
     - if: always() && steps.buildkite.outputs.build
       name: Add notice message

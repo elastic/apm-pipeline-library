@@ -1,0 +1,134 @@
+---
+name: synthetics-stack-e2e
+description: |
+  An action that orchestrates the Synthetics Stack E2E tests for a Kibana PR.
+  It first creates a Kibana docker image, then it deploys an ESS cluster with the created docker image,
+  and finally it runs the Synthetics Stack E2E tests against the deployed ESS cluster.
+
+inputs:
+  buildkite-pipeline-slug:
+    description: 'The Buildkite pipeline slug'
+    default: kibana-pr-synthetics-stack-e2e-ci
+    required: false
+  vault-url:
+    description: 'Vault URL'
+    required: true
+  vault-role-id:
+    description: 'Vault role ID'
+    required: true
+  vault-secret-id:
+    description: 'Vault secret ID'
+    required: true
+  comment-id:
+    description: 'The GitHub Comment ID'
+    default: ${{ github.event.comment.id }}
+  commit-sha:
+    description: 'The commit SHA'
+    required: false
+  pr-number:
+    description: 'The PR number'
+    default: ${{ github.event.issue.number }}
+    required: false
+  user:
+    description: 'The GitHub user that triggered the workflow'
+    default: ${{ github.triggering_actor }}
+    required: true
+  context:
+    description: 'The commit status context'
+    default: synthetics-stack-e2e
+    required: false
+  comment-command:
+    description: 'The comment command'
+    default: '/synthetics-stack-e2e'
+    required: false
+
+runs:
+  using: composite
+  steps:
+    # If the action is used in a pull_request[_target] workflow
+    - if: github.event.pull_request
+      name: Create initial failing commit status
+      uses: actions/github-script@v6
+      env:
+        SHA: ${{ inputs.commit-sha }}
+        CONTEXT: ${{ inputs.context }}
+        COMMENT_COMMAND: ${{ inputs.comment-command }}
+      with:
+        script: |
+          const { owner, repo } = context.repo;
+          github.rest.repos.createCommitStatus({
+            owner,
+            repo,
+            context: process.env.CONTEXT,
+            sha: process.env.SHA,
+            state: 'failure',
+            description: `Comment "${process.env.COMMENT_COMMAND}" to run the synthetics stack e2e tests,
+          });
+
+    - if: github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, '/synthetics-stack-e2e')
+      name: Get PR head SHA
+      id: get-pr-head-sha
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          const { owner, repo } = context.repo;
+          const pull = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: context.issue.number,
+          });
+          return pull.data.head.sha;
+    - if: steps.get-pr-head-sha.outcome == 'success'
+      name: Create pending commit status
+      id: create-pending-commit-status
+      uses: actions/github-script@v6
+      env:
+        SHA: ${{ steps.get-pr-head-sha.outputs.result }}
+        JOB_STATUS: ${{ job.status }}
+      with:
+        script: |
+          const { owner, repo } = context.repo;
+          github.rest.repos.createCommitStatus({
+            owner,
+            repo,
+            context: "synthetics-stack-e2e",
+            sha: process.env.SHA,
+            state: 'pending',
+            description: "Running synthetics-stack-e2e",
+            target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+          });
+
+    - if: steps.create-pending-commit-status.outcome == 'success'
+      id: synthetics-stack-e2e-run
+      uses: ./.github/actions/synthetics-stack-e2e-run
+      with:
+        buildkite-pipeline-slug: ${{ inputs.buildkite-pipeline-slug }}
+        commit-sha: ${{ steps.get-pr-head-sha.outputs.result }}
+        comment-id: ${{ inputs.comment-id }}
+        pr-number: ${{ inputs.pr-number }}
+        user: ${{ inputs.user }}
+        vault-url: ${{ inputs.vault-url }}
+        vault-role-id: ${{ inputs.vault-role-id }}
+        vault-secret-id: ${{ inputs.vault-secret-id }}
+
+    - if: always()
+      name: Create final commit status
+      uses: actions/github-script@v6
+      env:
+        SHA: ${{ steps.get-pr-head-sha.outputs.result }}
+        JOB_STATUS: ${{ job.status }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}?pr=${{ github.event.issue.number }}
+        CONTEXT: ${{ inputs.context }}
+      with:
+        script: |
+          const { owner, repo } = context.repo;
+          github.rest.repos.createCommitStatus({
+            owner,
+            repo,
+            context: process.env.CONTEXT,
+            sha: process.env.SHA,
+            state: process.env.JOB_STATUS == 'success' ? 'success' : 'failure',
+            description: process.env.JOB_STATUS == 'success' ? "The synthetics-stack-e2e tests succeeded" : "synthetics-stack-e2e tests failed",
+            target_url: process.env.RUN_URL,
+          });
