@@ -63,7 +63,7 @@ runs:
             context: process.env.CONTEXT,
             sha: process.env.SHA,
             state: 'failure',
-            description: `Comment "${process.env.COMMENT_COMMAND}" to run the synthetics stack e2e tests,
+            description: `Comment "${process.env.COMMENT_COMMAND}" to run the synthetics stack e2e tests`,
           });
 
     - if: github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, '/synthetics-stack-e2e')
