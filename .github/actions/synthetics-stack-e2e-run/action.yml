@@ -54,27 +54,6 @@ runs:
       with:
         github-token: ${{ env.GITHUB_TOKEN }}
 
-    - name: Is an Elastic member?
-      id: is_elastic_member
-      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
-      with:
-        username: ${{ inputs.user }}
-        token: ${{ env.GITHUB_TOKEN }}
-
-    - name: Notify with a reaction
-      continue-on-error: true
-      uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
-      with:
-        repository: ${{ github.repository }}
-        commentId: ${{ inputs.comment-id }}
-        emoji: ${{ steps.is_elastic_member.outputs.result && '+1' || '-1' }}
-        token: ${{ env.GITHUB_TOKEN }}
-
-    - name: Exit if not an Elastician comment
-      if: steps.is_elastic_member.outputs.result == 'false'
-      run: exit 1;
-      shell: bash
-
     - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
       with:
         registry: docker.elastic.co
