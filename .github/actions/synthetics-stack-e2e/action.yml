@@ -61,8 +61,15 @@ runs:
         COMMENT_COMMAND: ${{ inputs.comment-command }}
       with:
         script: |
-          console.log(process.env.SHA);
           const { owner, repo } = context.repo;
+
+
+          console.log(process.env.SHA)
+          console.log(process.env.SHA)
+          console.log(process.env.SHA)
+          console.log(process.env.SHA)
+          console.log(process.env.SHA)
+
           github.rest.repos.createCommitStatus({
             owner,
             repo,
