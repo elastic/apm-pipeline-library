@@ -58,6 +58,16 @@ runs:
       with:
         username: ${{ inputs.user }}
         token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Notify with a reaction
+      continue-on-error: true
+      uses: elastic/apm-pipeline-library/.github/actions/comment-reaction@current
+      with:
+        repository: ${{ github.repository }}
+        commentId: ${{ inputs.comment-id }}
+        emoji: ${{ steps.is_elastic_member.outputs.result && '+1' || '-1' }}
+        token: ${{ env.GITHUB_TOKEN }}
+
     # If the action is used in a pull_request[_target] workflow
     - if: steps.is_elastic_member.output.result && github.event.pull_request
       name: Create initial failing commit status
