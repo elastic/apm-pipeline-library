@@ -124,5 +124,6 @@ runs:
       with:
         script: |
           core.exportVariable('SLACK_BOT_TOKEN', '')
+          core.exportVariable('THREAD_TIMESTAMP', '${{ steps.slack_message.outputs.thread_ts }}')
           core.setOutput('threadTimestamp', '${{ steps.slack_message.outputs.thread_ts }}')
           core.setOutput('bar', 'baz')
