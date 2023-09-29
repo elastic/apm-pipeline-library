@@ -40,11 +40,11 @@ inputs:
     description: 'True if the message is URL encoded'
     required: false
     default: 'true'
-  thread_timestamp:
+  threadTimestamp:
     description: 'The timestamp on the message that was posted into Slack when using bot token'
     required: false
 outputs:
-  thread_timestamp:
+  threadTimestamp:
     description: 'The timestamp on the message that was posted into Slack when using bot token'
 runs:
   using: "composite"
@@ -67,7 +67,7 @@ runs:
         MASK: ${{ inputs.mask }}
         URL_ENCODED: ${{ inputs.urlEncoded }}
         PAYLOAD: ${{ inputs.payload }}
-        THREAD_TIMESTAMP: ${{ inputs.thread_timestamp }}
+        THREAD_TIMESTAMP: ${{ inputs.threadTimestamp }}
       run: |
         # Prepare Slack API payload.
         # Documentation about the payload format.
@@ -119,7 +119,7 @@ runs:
         SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
     - name: Set Outputs
       shell: bash
-      run: echo "thread_timestamp=${{ steps.slack_message.outputs.thread_ts }}" >> "${GITHUB_OUTPUT}"
+      run: echo "threadTimestamp=${{ steps.slack_message.outputs.thread_ts }}" >> "${GITHUB_OUTPUT}"
     - name: Reset environment
       shell: bash
       run: |
