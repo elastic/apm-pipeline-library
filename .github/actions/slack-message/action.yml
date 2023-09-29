@@ -106,7 +106,7 @@ runs:
           raise Exception("Either message or payload must be set.")
 
         if os.environ["THREAD_TIMESTAMP"]:
-          json_data.thread_ts = os.environ["THREAD_TIMESTAMP"]
+          json_data['thread_ts'] = os.environ["THREAD_TIMESTAMP"]
 
         with open(os.environ.get('GITHUB_OUTPUT'), "a") as f:
           f.write("payload={}".format(json.dumps(json_data)))
