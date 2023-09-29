@@ -1,0 +1,46 @@
+---
+name: Microbenchmark Pipeline GitHub Action
+description: A GitHub Action for triggering the microbenchmark.
+inputs:
+  vault-url:
+    description: 'Vault URL'
+    required: true
+  vault-role-id:
+    description: 'Vault role ID'
+    required: true
+  vault-secret-id:
+    description: 'Vault secret ID'
+    required: true
+  script:
+    description: 'The script name.'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - name: Run workflow
+      run: |-
+        gh workflow run $WORKFLOW --repo $REPO
+        gh run list --workflow=$WORKFLOW --repo $REPO --limit 2
+      shell: bash
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+        REPO: elastic/observability-robots
+        WORKFLOW: test-php-release.yml
+
+    - if: ${{ failure() }}
+      name: Report snapshoty failure in slack
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+        channel: '#observablt-bots'
+        message: "Microbenchmark failed, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
