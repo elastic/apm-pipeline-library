@@ -118,6 +118,7 @@ runs:
       env:
         SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
     - name: Set Outputs
+      shell: bash
       run: echo "thread_timestamp=${{ steps.slack_message.outputs.thread_ts }}" >> "${GITHUB_OUTPUT}"
     - name: Reset environment
       shell: bash
