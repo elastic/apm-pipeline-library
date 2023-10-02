@@ -118,7 +118,11 @@ runs:
 
     - if: always() && steps.create-cluster.outcome == 'success'
       name: Destroy cluster
-      run: >-
-        ${{ github.action_path }}/destroy-cluster.sh
-        ${{ steps.create-cluster.outputs.cluster-name }}
+      run: |
+        oblt-cli cluster destroy \
+          --force \
+          --disable-banner \
+          --cluster-name="${CLUSTER_NAME}"
+      env:
+        CLUSTER_NAME: ${{ steps.create-cluster.outputs.cluster-name }}
       shell: bash
