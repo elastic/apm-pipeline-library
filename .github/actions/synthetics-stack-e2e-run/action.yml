@@ -48,7 +48,7 @@ runs:
         haskell: true
         large-packages: true
         docker-images: true
-        swap-storage: true
+        swap-storage: false
 
     - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
       with:
