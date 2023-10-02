@@ -15,40 +15,32 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  kibana-cloud-docker-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
-        with:
-          registry: docker.elastic.co
-          secret: secret/observability-team/ci/docker-registry/prod
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-      - uses: ./.github/actions/kibana-docker-image
-        id: kibana-docker-image
-      - name: Verify
-        run: |
-          echo "${STACK_VERSION:?}"
-          echo "${GIT_COMMIT_SHA:?}"
-          echo "${DOCKER_IMAGE_REF:?}"
-          docker pull "${DOCKER_IMAGE_REF}"
-        env:
-          DOCKER_IMAGE_REF: ${{ steps.kibana-docker-image.outputs.kibana-docker-image }}
-          GIT_COMMIT_SHA: ${{ steps.kibana-docker-image.outputs.kibana-commit-sha }}
-          STACK_VERSION: ${{ steps.kibana-docker-image.outputs.kibana-stack-version }}
-      - if: failure()
-        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
-        with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          slackChannel: "#observablt-bots"
 
-  kibana-serverless-docker-image:
+  kibana-docker-image:
+    name: kibana-${{ matrix.serverless && 'serverless' || 'cloud' }}-docker-image
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - serverless: false
+          - serverless: true
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@d5af243ce7bacb67384aa6c5b1fc5f169e30903e
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+
+          # This needs to be set to false.
+          # See https://github.com/jlumbroso/free-disk-space/issues/12
+          # TL;DR
+          # Otherwise, the workflow is cancelled with an 143 exit code.
+          swap-storage: false
       - uses: actions/checkout@v4
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
@@ -60,7 +52,7 @@ jobs:
       - uses: ./.github/actions/kibana-docker-image
         id: kibana-docker-image
         with:
-          serverless: true
+          serverless: ${{ matrix.serverless }}
       - name: Verify
         run: |
           echo "${STACK_VERSION:?}"
