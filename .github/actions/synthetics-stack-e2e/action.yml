@@ -152,7 +152,7 @@ runs:
         vault-role-id: ${{ inputs.vault-role-id }}
         vault-secret-id: ${{ inputs.vault-secret-id }}
 
-    - if: always() && steps.is_elastic_member.outputs.result && github.event.comment
+    - if: always() && steps.synthetics-stack-e2e-run.outcome && github.event.comment
       name: Create final commit status
       uses: actions/github-script@v6
       env:
