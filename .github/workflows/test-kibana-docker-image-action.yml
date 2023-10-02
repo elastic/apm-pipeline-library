@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        includes:
+        include:
           - serverless: false
           - serverless: true
     steps:
