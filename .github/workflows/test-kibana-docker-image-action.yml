@@ -17,6 +17,7 @@ on:
 jobs:
 
   kibana-docker-image:
+    name: kibana-${{ matrix.serverless && 'serverless' || 'cloud' }}-docker-image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
