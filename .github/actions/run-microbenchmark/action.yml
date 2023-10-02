@@ -39,6 +39,7 @@ runs:
           --field='script=${{ inputs.script }}' \
           --field='sha=${{ github.sha }}' \
           --field='environments=${{ github.environments }}' \
+          --ref test/microbenchmark-github \
           --repo $REPO
         gh run list --workflow=$WORKFLOW --repo $REPO --limit 2
       shell: bash
