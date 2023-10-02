@@ -116,7 +116,7 @@ runs:
         BUILDKITE_BUILD_URL: ${{ steps.buildkite.outputs.build }}
         TITLE: Synthetics Stack E2E Buildkite Build
 
-    - if: always() && steps.create-cluster.outcome == 'success'
+    - if: always() && steps.create-cluster.outputs.cluster-name
       name: Destroy cluster
       run: |
         oblt-cli cluster destroy \

@@ -154,6 +154,6 @@ runs:
             context: process.env.CONTEXT,
             sha: process.env.SHA,
             state: process.env.OUTCOME == 'success' ? 'success' : 'failure',
-            description: process.env.JOB_STATUS == 'success' ? "The synthetics-stack-e2e tests succeeded" : "synthetics-stack-e2e tests failed",
+            description: process.env.OUTCOME == 'success' ? "The synthetics-stack-e2e tests succeeded" : "synthetics-stack-e2e tests failed",
             target_url: process.env.RUN_URL,
           });
