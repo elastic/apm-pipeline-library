@@ -26,16 +26,16 @@ jobs:
           - serverless: false
           - serverless: true
     steps:
-#      - name: Free Disk Space (Ubuntu)
-#        uses: jlumbroso/free-disk-space@d5af243ce7bacb67384aa6c5b1fc5f169e30903e
-#        with:
-#          tool-cache: false
-#          android: true
-#          dotnet: true
-#          haskell: true
-#          large-packages: true
-#          docker-images: true
-#          swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@d5af243ce7bacb67384aa6c5b1fc5f169e30903e
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: false
       - uses: actions/checkout@v4
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
         with:
