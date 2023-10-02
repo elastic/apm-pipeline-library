@@ -2,6 +2,16 @@
 name: Microbenchmark Pipeline GitHub Action
 description: A GitHub Action for triggering the microbenchmark.
 inputs:
+  environments:
+    description: 'Dynamic environment variables with key=value format'
+    default: ''
+    required: false
+  script:
+    description: 'The script name.'
+    required: true
+  slack-channel:
+    description: 'The team slack channel to send if any failures.'
+    required: false
   vault-url:
     description: 'Vault URL'
     required: true
@@ -10,9 +20,6 @@ inputs:
     required: true
   vault-secret-id:
     description: 'Vault secret ID'
-    required: true
-  script:
-    description: 'The script name.'
     required: true
 
 runs:
@@ -27,20 +34,39 @@ runs:
 
     - name: Run workflow
       run: |-
-        gh workflow run $WORKFLOW --repo $REPO
+        gh workflow run $WORKFLOW \
+          --field='repository=${{ github.repository }}' \
+          --field='script=${{ inputs.script }}' \
+          --field='sha=${{ github.sha }}' \
+          --field='environments=${{ github.environments }}' \
+          --repo $REPO
         gh run list --workflow=$WORKFLOW --repo $REPO --limit 2
       shell: bash
       env:
         GH_TOKEN: ${{ env.GITHUB_TOKEN }}
         REPO: elastic/observability-robots
-        WORKFLOW: test-php-release.yml
+        WORKFLOW: microbenchmark.yml
 
     - if: ${{ failure() }}
-      name: Report snapshoty failure in slack
+      name: Report microbenchmark failure in slack to the robots team
       uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      continue-on-error: true
       with:
         url: ${{ inputs.vault-url }}
         roleId: ${{ inputs.vault-role-id }}
         secretId: ${{ inputs.vault-secret-id }}
         channel: '#observablt-bots'
         message: "Microbenchmark failed, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
+
+    - name: Report microbenchmark failure in slack to the given channel
+      if: ${{ failure() && inputs.slack-channel }}
+      uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+      continue-on-error: true
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+        channel: ${{ inputs.slack-channel }}
+        message: |
+          :ghost: [${{ github.repository }}] microbenchmark *${{ github.ref_name }}* failed to run.
+          Build: (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>)

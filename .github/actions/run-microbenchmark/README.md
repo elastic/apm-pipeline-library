@@ -24,21 +24,21 @@ on:
     types: [ completed ]
 
 jobs:
-  build-sign:
+  microbenchmark:
     timeout-minutes: 5
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Run BuildKite pipeline
-        id: buildkite
-        uses: elastic/apm-pipeline-library/.github/actions/run-microbenchmark@current
+      - uses: elastic/apm-pipeline-library/.github/actions/run-microbenchmark@current
         with:
           vault-url: ${{ secrets.VAULT_ADDR }}
           vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
           vault-scret-id: ${{ secrets.VAULT_SECRET_ID }}
-          notify-if-failure: true
           script: my-super-script
+          environments: |
+            FOO=bar
+            BRANCH=main
 
 ```
 
@@ -53,4 +53,6 @@ Following inputs can be used as `step.with` keys
 | `vault-role-id`               | String  |                                                     | The Vault role id.                                                                                                |
 | `vault-secret-id`             | String  |                                                     | The Vault secret id.                                                                                              |
 | `vault-url`                  | String  |                                                     | The Vault URL to connect to.                                                                                      |
-| `script`                    | String  |  | The script to run                                                       |
+| `environments`              | String  |  | Dynamic environment variables with key=value format                                                      |
+| `slack-channel`                    | String  |  | The script to run                                                       |
+| `script`                    | String  |  | The slack channel to send if any failures.                                                       |
