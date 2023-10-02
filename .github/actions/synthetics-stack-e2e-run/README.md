@@ -24,7 +24,6 @@ jobs:
     steps:
       - uses: ./.github/actions/synthetics-stack-e2e-run
         with:
-          buildkite-pipeline-slug: ${{ inputs.buildkite-pipeline-slug }}
           commit-sha: ${{ steps.get-pr-head-sha.outputs.result }}
           comment-id: ${{ inputs.comment-id }}
           pr-number: ${{ inputs.pr-number }}

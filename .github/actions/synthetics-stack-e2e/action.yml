@@ -6,10 +6,6 @@ description: |
   and finally it runs the Synthetics Stack E2E tests against the deployed ESS cluster.
 
 inputs:
-  buildkite-pipeline-slug:
-    description: 'The Buildkite pipeline slug'
-    default: kibana-pr-synthetics-stack-e2e-ci
-    required: false
   vault-url:
     description: 'Vault URL'
     required: true
@@ -128,7 +124,6 @@ runs:
 #      uses: elastic/apm-pipeline-library/.github/actions/synthetics-stack-e2e-run@current TODO: change to this line
       uses: reakaleek/apm-pipeline-library/.github/actions/synthetics-stack-e2e-run@feature/synthetics-stack-e2e-action
       with:
-        buildkite-pipeline-slug: ${{ inputs.buildkite-pipeline-slug }}
         commit-sha: ${{ steps.get-pr-head-sha.outputs.result }}
         comment-id: ${{ inputs.comment-id }}
         pr-number: ${{ inputs.pr-number }}

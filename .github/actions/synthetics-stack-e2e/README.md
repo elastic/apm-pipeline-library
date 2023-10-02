@@ -51,7 +51,6 @@ Following inputs can be used as `step.with` keys
 
 | Name                      | Type   | Required | Description                                                                                  |
 |---------------------------|--------|----------|----------------------------------------------------------------------------------------------|
-| `buildkite-pipeline-slug` | String | no       | The buildkite pipeline slug. (Default `kibana-pr-synthetics-stack-e2e-ci`)                   |
 | `comment-id`              | String | no       | The GitHub Comment ID. (Default `${{ github.event.comment.id }}`)                            |
 | `comment-command`         | String | no       | The literal comment you need to post to trigger the flow. (Default: `/synthetics-stack-e2e`) |
 | `commit-sha`              | String | no       | The commit SHA. (Default: `${{ github.event.pull_request.head.sha }}`)                       |

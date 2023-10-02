@@ -7,10 +7,6 @@ description: |
   and finally it runs the Synthetics Stack E2E tests against the deployed ESS cluster.
 
 inputs:
-  buildkite-pipeline-slug:
-    description: 'The Buildkite pipeline slug'
-    default: kibana-pr-synthetics-stack-e2e-ci
-    required: false
   vault-url:
     description: 'Vault URL'
     required: true
@@ -99,7 +95,7 @@ runs:
         vaultUrl: ${{ inputs.vault-url }}
         vaultRoleId: ${{ inputs.vault-role-id }}
         vaultSecretId: ${{ inputs.vault-secret-id }}
-        pipeline: ${{ inputs.buildkite-pipeline-slug }}
+        pipeline: kibana-pr-synthetics-stack-e2e-ci
         triggerMessage: Triggered by PR ${{ github.repository }}#${{ inputs.pr-number }}
         pipelineBranch: use-kibana-url
         waitFor: true
