@@ -35,6 +35,11 @@ jobs:
           haskell: true
           large-packages: true
           docker-images: true
+
+          # This needs to be set to false.
+          # See https://github.com/jlumbroso/free-disk-space/issues/12
+          # TL;DR
+          # Otherwise, the workflow is cancelled with an 143 exit code.
           swap-storage: false
       - uses: actions/checkout@v4
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
