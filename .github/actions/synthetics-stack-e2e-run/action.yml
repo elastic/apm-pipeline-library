@@ -35,7 +35,7 @@ runs:
   using: composite
   steps:
     - name: Free Disk Space (Ubuntu)
-      uses: jlumbroso/free-disk-space@main
+      uses: jlumbroso/free-disk-space@d5af243ce7bacb67384aa6c5b1fc5f169e30903e
       with:
         # this might remove tools that are actually needed,
         # if set to "true" but frees about 6 GB
