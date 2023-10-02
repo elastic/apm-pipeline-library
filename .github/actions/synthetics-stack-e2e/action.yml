@@ -85,7 +85,7 @@ runs:
             description: `Comment "${process.env.COMMENT_COMMAND}" to run the synthetics stack e2e tests`,
           });
 
-    - if: steps.is_elastic_member.outputs.result && github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, '/synthetics-stack-e2e')
+    - if: steps.is_elastic_member.outputs.result && github.event.comment && github.event.issue.pull_request && startsWith(github.event.comment.body, inputs.comment-command)
       name: Get PR head SHA
       id: get-pr-head-sha
       uses: actions/github-script@v6
@@ -106,13 +106,14 @@ runs:
       env:
         SHA: ${{ steps.get-pr-head-sha.outputs.result }}
         JOB_STATUS: ${{ job.status }}
+        CONTEXT: ${{ inputs.context }}
       with:
         script: |
           const { owner, repo } = context.repo;
           github.rest.repos.createCommitStatus({
             owner,
             repo,
-            context: "synthetics-stack-e2e",
+            context: process.env.CONTEXT,
             sha: process.env.SHA,
             state: 'pending',
             description: "Running synthetics-stack-e2e",
