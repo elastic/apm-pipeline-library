@@ -38,7 +38,7 @@ if [ "${SERVERLESS}" == "false" ] ; then
 else
   skip_docker_flag="--skip-docker-cloud"
   docker_cross_compile="--docker-cross-compile"
-  all_platforms="--all-platforms"
+  all_platforms="--release"
 fi
 
 time node scripts/build \
@@ -46,7 +46,6 @@ time node scripts/build \
       --docker-namespace="${DOCKER_NAMESPACE}" \
       --docker-tag="${DOCKER_TAG}" \
       --docker-push \
-      --skip-archives \
       --skip-initialize \
       --skip-docker-contexts \
       --skip-docker-ubi \
