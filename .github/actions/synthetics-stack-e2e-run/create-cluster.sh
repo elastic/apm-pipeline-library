@@ -13,6 +13,7 @@ oblt-cli cluster create custom \
   --parameters="{\"StackVersion\":\"${stack_version}\", \"KibanaDockerImage\": \"${kibana_docker_image}\", \"EphemeralCluster\": true}" \
   --wait 15 \
   --disable-banner \
+  --verbose \
   --output-file="${create_output_file}"
 
 cluster_name=$(jq -r '.ClusterName' < "${create_output_file}")
