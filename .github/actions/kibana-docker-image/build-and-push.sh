@@ -34,7 +34,7 @@ echo "::group::Build docker images"
 if [ "${SERVERLESS}" == "false" ] ; then
   skip_docker_flag="--skip-docker-serverless"
 else
-  skip_docker_flag="--skip-docker-cloud"
+  skip_docker_flag="--skip-docker-cloud --docker-cross-compile"
 fi
 time node scripts/build \
       --docker-images \
