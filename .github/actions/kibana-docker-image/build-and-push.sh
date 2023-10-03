@@ -46,12 +46,9 @@ time node scripts/build \
       --docker-namespace="${DOCKER_NAMESPACE}" \
       --docker-tag="${DOCKER_TAG}" \
       --docker-push \
-      --skip-initialize \
       --skip-docker-contexts \
       --skip-docker-ubi \
       --skip-docker-ubuntu \
-      --skip-generic-folders \
-      --skip-platform-folders \
       "${skip_docker_flag}" \
       "${docker_cross_compile}" \
       "${all_platforms}"
