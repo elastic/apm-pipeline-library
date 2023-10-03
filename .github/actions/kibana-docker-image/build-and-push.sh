@@ -34,10 +34,13 @@ echo "::group::Build docker images"
 if [ "${SERVERLESS}" == "false" ] ; then
   skip_docker_flag="--skip-docker-serverless"
   docker_cross_compile=""
+  all_platforms=""
 else
   skip_docker_flag="--skip-docker-cloud"
   docker_cross_compile="--docker-cross-compile"
+  all_platforms="--all-platforms"
 fi
+
 time node scripts/build \
       --docker-images \
       --docker-namespace="${DOCKER_NAMESPACE}" \
@@ -51,5 +54,6 @@ time node scripts/build \
       --skip-generic-folders \
       --skip-platform-folders \
       "${skip_docker_flag}" \
-      "${docker_cross_compile}"
+      "${docker_cross_compile}" \
+      "${all_platforms}"
 echo "::endgroup::"
