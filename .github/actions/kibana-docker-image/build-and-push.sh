@@ -48,7 +48,6 @@ time node scripts/build \
       --docker-namespace="${DOCKER_NAMESPACE}" \
       --docker-tag="${DOCKER_TAG}" \
       --docker-push \
-      --skip-archives \
       --skip-initialize \
       --skip-docker-contexts \
       --skip-docker-ubi \
