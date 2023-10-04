@@ -51,7 +51,6 @@ time node scripts/build \
       --skip-docker-contexts \
       --skip-docker-ubi \
       --skip-docker-ubuntu \
-      --skip-generic-folders \
       --skip-platform-folders \
       "${skip_docker_flag}" \
       "${docker_cross_compile}" \
