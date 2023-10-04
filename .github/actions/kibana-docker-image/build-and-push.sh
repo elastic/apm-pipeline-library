@@ -37,8 +37,10 @@ if [ "${SERVERLESS}" == "false" ] ; then
   all_platforms=""
 else
   skip_docker_flag="--skip-docker-cloud"
-  docker_cross_compile="--docker-cross-compile"
   all_platforms="--release"
+  # enable Docker multiarch support
+  docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  docker_cross_compile="--docker-cross-compile"
 fi
 
 time node scripts/build \
