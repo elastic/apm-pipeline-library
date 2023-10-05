@@ -46,7 +46,7 @@ if [ "${SERVERLESS}" == "false" ] ; then
         --skip-platform-folders \
         --skip-docker-serverless
 else
-  # enable Docker multiarch support
+  # enable Docker multiarch support
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   time node scripts/build \
         --release \
