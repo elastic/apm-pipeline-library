@@ -32,21 +32,32 @@ echo "::endgroup::"
 # https://github.com/elastic/kibana/blob/main/.buildkite/scripts/build_kibana.sh#L21-L34
 echo "::group::Build docker images"
 if [ "${SERVERLESS}" == "false" ] ; then
-  skip_docker_flag="--skip-docker-serverless"
+  time node scripts/build \
+        --docker-images \
+        --docker-namespace="${DOCKER_NAMESPACE}" \
+        --docker-tag="${DOCKER_TAG}" \
+        --docker-push \
+        --skip-archives \
+        --skip-initialize \
+        --skip-docker-contexts \
+        --skip-docker-ubi \
+        --skip-docker-ubuntu \
+        --skip-generic-folders \
+        --skip-platform-folders \
+        --skip-docker-serverless
 else
-  skip_docker_flag="--skip-docker-cloud"
+  # enable Docker multiarch support
+  docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  time node scripts/build \
+        --release \
+        --docker-cross-compile \
+        --docker-images \
+        --docker-namespace="${DOCKER_NAMESPACE}" \
+        --docker-tag="${DOCKER_TAG}" \
+        --docker-push \
+        --skip-docker-contexts \
+        --skip-docker-ubi \
+        --skip-docker-ubuntu \
+        --skip-docker-cloud
 fi
-time node scripts/build \
-      --docker-images \
-      --docker-namespace="${DOCKER_NAMESPACE}" \
-      --docker-tag="${DOCKER_TAG}" \
-      --docker-push \
-      --skip-archives \
-      --skip-initialize \
-      --skip-docker-contexts \
-      --skip-docker-ubi \
-      --skip-docker-ubuntu \
-      --skip-generic-folders \
-      --skip-platform-folders \
-      "${skip_docker_flag}"
 echo "::endgroup::"
