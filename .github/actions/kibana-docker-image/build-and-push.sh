@@ -49,7 +49,7 @@ else
   # enable Docker multiarch support
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   time node scripts/build \
-        --release
+        --release \
         --docker-cross-compile \
         --docker-images \
         --docker-namespace="${DOCKER_NAMESPACE}" \
