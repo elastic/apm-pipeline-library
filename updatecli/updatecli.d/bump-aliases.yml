@@ -88,7 +88,7 @@ sources:
       key: .build_id
     transformers:
       - findsubmatch:
-          pattern: "(\d+.\d+.\d+)-(.*)"
+          pattern: '(\d+.\d+.\d+)-(.+)'
           captureindex: 1
 
 conditions:
