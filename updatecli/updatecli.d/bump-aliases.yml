@@ -88,7 +88,8 @@ sources:
       key: .build_id
     transformers:
       - findsubmatch:
-          pattern: "[0-9].[0-9].[0-9]"
+          pattern: "([0-9].[0-9].[0-9])-(.*)"
+          captureindex: 1
 
 conditions:
   docker_next7:
