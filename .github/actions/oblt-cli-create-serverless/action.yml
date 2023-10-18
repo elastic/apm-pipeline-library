@@ -68,6 +68,7 @@ runs:
               parameters.GitHubPullRequest = context.issue.number
             }
           }
+          parameters.EphemeralCluster = "true"
           console.log(`Create PARAMETERS env variable`)
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
       env:
