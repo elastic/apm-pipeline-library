@@ -35,7 +35,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: hashicorp/vault-action@v2.7.3
+    - uses: hashicorp/vault-action@v2.7.4
       with:
         url: ${{ inputs.vault-url }}
         roleId: ${{ inputs.vault-role-id }}
