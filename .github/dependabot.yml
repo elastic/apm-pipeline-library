@@ -7,6 +7,8 @@ updates:
     # Check for updates once a month
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
       - "kuisathaverat"
@@ -16,8 +18,16 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   # Maintain dependencies for GitHub composite Actions (/.github/actions)
   # Waiting for supporting wildcards see https://github.com/dependabot/dependabot-core/issues/5137
@@ -25,208 +35,478 @@ updates:
     directory: "/.github/actions/buildkite"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/check-dependent-jobs"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/comment-reaction"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/deploy-my-kibana"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/docker-layer-caching"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/docker-login"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/elastic-stack-snapshot-branches"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/github-token"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/is-admin"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/is-member-elastic-org"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/is-pr-author-member-elastic-org"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/kibana-docker-image"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    reviewers:
+      - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/notify-build-status"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/oblt-cli"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/oblt-cli-create-ccs"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/oblt-cli-create-custom"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/oblt-cli-create-serverless"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    reviewers:
+      - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/opentelemetry"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/pre-commit"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/publish-report"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup-git"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup-npmrc"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup-oblt-cli"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup-vault-cli"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/slack-message"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/snapshoty"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/snapshoty-simple"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/test-report"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/updatecli"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/validate-github-comment"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/version-framework"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/workflow-run"
     schedule:
       interval: "weekly"
+      day: "sunday"
+      time: "22:00"
     reviewers:
       - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
