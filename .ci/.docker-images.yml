@@ -89,17 +89,6 @@ images:
     name: "apm-proxy-be"
     working_directory: "tools/apm_proxy/backend"
 
-  # APM ITs Docker Images are built daily.
-
-  - name: "apm-integration-testing"
-    repository: "elastic/apm-integration-testing"
-    tag: "daily"
-
-  - name: "apm-integration-testing-all"
-    repository: "elastic/apm-integration-testing"
-    build_script: "make -C docker all-tests"
-    push_script: "make -C docker all-push"
-
   # Opbeans Docker Images
 
   - <<: *opbeans-docker-images
