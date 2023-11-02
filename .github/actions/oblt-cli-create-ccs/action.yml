@@ -79,7 +79,7 @@ runs:
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: cluster create ccs ${{ env.COMMAND }} ${{ env.GITOPS }} --parameters='{"EphemeralCluster":"true"}'
+        command: cluster create ccs ${{ env.COMMAND }} ${{ env.GITOPS }}
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}
