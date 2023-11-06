@@ -31,7 +31,6 @@ runs:
 
     - name: run oblt-cli
       run: |
-        set +x
         oblt-cli cluster secrets env --cluster-name ${{ env.CLUSTER_NAME }} --output-file "${ENV_FILE}"
         cat "${ENV_FILE}" >> "${GITHUB_ENV}"
         source ${ENV_FILE}
