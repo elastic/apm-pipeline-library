@@ -20,7 +20,9 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@main
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-credentials@test/cluster-credentials
         with:
           token: ${{ env.GITHUB_TOKEN }}
-          command: 'cluster create ccs --remote-cluster=dev-oblt --cluster-name-prefix testgithubaction'
+          cluster-name: 'issue-ess-mlueh'
+
+      - run: curl -X GET '${ELASTICSEARCH_HOST}/_cat/indices?v' -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}
