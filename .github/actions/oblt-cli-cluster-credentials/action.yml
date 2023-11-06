@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
+    - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@test/cluster-credentials
       with:
         github-token: ${{ inputs.github-token }}
 
