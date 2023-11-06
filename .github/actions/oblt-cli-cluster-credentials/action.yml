@@ -30,16 +30,24 @@ runs:
         secretId: ${{ inputs.vault-secret-id }}
 
     - name: run oblt-cli
-      run: |
-        oblt-cli cluster secrets env --cluster-name ${{ env.CLUSTER_NAME }} --output-file "${ENV_FILE}"
-        cat "${ENV_FILE}" >> "${GITHUB_ENV}"
-        source ${ENV_FILE}
-        for i in $(cat "${ENV_FILE}"|cut -d "=" -f 1); do
-          VALUE=$(eval "echo \${$i}")
-          echo "::add-mask::${VALUE}"
-        done
-        rm -f "${ENV_FILE}"
+      run: oblt-cli cluster secrets env --cluster-name ${{ env.CLUSTER_NAME }} --output-file ".cluster-secrets"
       shell: bash
       env:
         CLUSTER_NAME: ${{ inputs.cluster-name }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: mask secrets
+      uses: actions/github-script@v6
+      with:
+        script: |
+          var PropertiesReader = require('properties-reader')
+          var properties = PropertiesReader('.cluster-secrets')
+          properties.each((key, value) => {
+            console.log(key + ": masked")
+            core.setSecret(value)
+            core.exportVariable(key, value)
+          })
+          var fs = require('fs')
+          fs.rmSync('.cluster-secrets', {
+              force: true,
+          });
