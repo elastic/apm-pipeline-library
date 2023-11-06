@@ -22,7 +22,7 @@ jobs:
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-credentials@test/cluster-credentials
         with:
-          token: ${{ env.GITHUB_TOKEN }}
+          github-token: ${{ env.GITHUB_TOKEN }}
           cluster-name: 'issue-ess-mlueh'
           vault-url: ${{ secrets.VAULT_ADDR }}
           vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
