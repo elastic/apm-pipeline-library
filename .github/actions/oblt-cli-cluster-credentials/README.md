@@ -33,7 +33,8 @@ jobs:
           vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
 
       ...
-      - run: curl -X GET '${ELASTICSEARCH_HOST}/_cat/indices?v' -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}
+      - run: curl -X GET '${{ env.ELASTICSEARCH_HOST }}/_cat/indices?v' -u ${{ env.ELASTICSEARCH_USERNAME }}:${{ env.ELASTICSEARCH_PASSWORD }}
+
 ...
 ```
 
