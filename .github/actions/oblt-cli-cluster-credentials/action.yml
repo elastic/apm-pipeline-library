@@ -36,7 +36,9 @@ runs:
         source "${{ env.ENV_FILE }}"
         for i in $(cat "${{ env.ENV_FILE }}"|cut -d "=" -f 1); do
           VALUE=$(eval "echo \${$i}")
-          echo "::add-mask::${VALUE}"
+          if [ -n "$VALUE" ] ; then
+            echo "::add-mask::${VALUE}"
+          fi
         done
         rm -f "${{ env.ENV_FILE }}"
       shell: bash
