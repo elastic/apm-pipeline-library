@@ -16,7 +16,7 @@ Given the CI GitHub action:
 
 ```yaml
 ---
-name: Create serverless cluster using the oblt-cli
+name: Cat indices for the given cluster using the oblt-cli
 
 ...
 
