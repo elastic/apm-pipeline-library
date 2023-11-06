@@ -14,8 +14,6 @@ runs:
       uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
         github-token: ${{ inputs.token }}
-        slack-channel: ${{ inputs.slackChannel }}
-        username: ${{ inputs.username }}
 
     - name: run oblt-cli
       run: |
