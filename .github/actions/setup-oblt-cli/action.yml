@@ -29,7 +29,7 @@ runs:
         --username="${OBLT_CLI_USERNAME}"
         --slack-channel="${OBLT_CLI_SLACK_CHANNEL}"
       env:
-        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
         ELASTIC_APM_ENVIRONMENT: ci
         OBLT_CLI_USERNAME: ${{ inputs.username }}
         OBLT_CLI_SLACK_CHANNEL: ${{ inputs.slack-channel }}
