@@ -29,6 +29,8 @@ runs:
           const clusterName = core.getInput('cluster-name')
           const clusterInfoFile = core.getInput('cluster-info-file')
 
+          console.log(`clusterName is "${clusterName}"`)
+          console.log(`clusterInfoFile is "${clusterInfoFile}"`)
           if (clusterName && clusterInfoFile) {
             core.setFailed(`Either cluster-name or cluster-info-file but no both`)
           }
@@ -38,7 +40,10 @@ runs:
           if (clusterInfoFile) {
             const fs = require('fs')
             const data = fs.readFileSync(clusterInfoFile, 'utf8')
+
+            console.log(`data is "${data}"`)
             const jsonObject = JSON.parse(data)
+            console.log(`jsonObject is "${jsonObject}"`)
             if (jsonObject && jsonObject.ClusterName === undefined) {
               core.setFailed(`cluster-info-file does not contain the field ClusterName`)
             }
