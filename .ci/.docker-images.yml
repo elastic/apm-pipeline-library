@@ -59,26 +59,11 @@ images:
     push_script: "make push"
     working_directory: "apps/test-plans"
 
-  - name: "obs-jenkins-heartbeat"
-    repository: "elastic/observability-robots"
-    prepare_script: |
-      pip3 install pyyaml
-      python3 ./generate_heartbeat_configs.py
-    working_directory: "apps/beats/heartbeat"
-
   # observability-dev Docker Images
 
   - <<: *observability-dev-docker-images
     name: "bandstand"
     working_directory: "apps/automation/bandstand"
-
-  - <<: *observability-dev-docker-images
-    name: "slack-bridge-hey-apm"
-    working_directory: "tools/report-bridge"
-
-  - <<: *observability-dev-docker-images
-    name: "integrations-test-reporter"
-    working_directory: "apps/automation/integrations/reporter"
 
   - <<: *observability-dev-docker-images
     name: "apm-proxy"
