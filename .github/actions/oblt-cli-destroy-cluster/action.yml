@@ -15,16 +15,19 @@ runs:
   steps:
     - name: Process inputs
       uses: actions/github-script@v6
+      env:
+        CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
+        CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
       with:
         script: |
-          const clusterName = core.getInput('cluster-name')
-          const clusterInfoFile = core.getInput('cluster-info-file')
+          const clusterNameInput = process.env.CLUSTER_NAME_INPUT
+          const clusterInfoFile = process.env.CLUSTER_INFO_FILE_INPUT
 
-          if (clusterName && clusterInfoFile) {
+          if (clusterNameInput && clusterInfoFile) {
             core.setFailed(`Either cluster-name or cluster-info-file but no both`)
           }
 
-          var cluster = clusterName
+          var clusterName = clusterNameInput
 
           if (clusterInfoFile) {
             const fs = require('fs')
@@ -33,13 +36,15 @@ runs:
             if (jsonObject && jsonObject.ClusterName === undefined) {
               core.setFailed(`cluster-info-file does not contain the field ClusterName`)
             }
-            cluster = jsonObject.ClusterName
+            clusterName = jsonObject.ClusterName
           }
 
-          if (cluster.trim().length === 0) {
+          if (clusterName.trim().length === 0) {
             core.setFailed(`cluster name is empty`)
           }
-          core.exportVariable('CLUSTER_NAME', `${cluster}`)
+
+          console.log(`clusterName is "${clusterName}"`)
+          core.exportVariable('CLUSTER_NAME', `${clusterName}`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
