@@ -15,6 +15,7 @@ runs:
   steps:
     - name: Process inputs
       uses: actions/github-script@v6
+      id: process
       env:
         CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
         CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
@@ -25,6 +26,7 @@ runs:
 
           if (clusterNameInput && clusterInfoFile) {
             core.setFailed(`Either cluster-name or cluster-info-file but no both`)
+            return
           }
 
           var clusterName = clusterNameInput
@@ -35,18 +37,20 @@ runs:
             const jsonObject = JSON.parse(data)
             if (jsonObject && jsonObject.ClusterName === undefined) {
               core.setFailed(`cluster-info-file does not contain the field ClusterName`)
+              return
             }
             clusterName = jsonObject.ClusterName
           }
 
           if (clusterName.trim().length === 0) {
             core.setFailed(`cluster name is empty`)
+            return
           }
 
           console.log(`clusterName is "${clusterName}"`)
-          core.exportVariable('CLUSTER_NAME', `${clusterName}`)
+          core.setOutput('clusterName', `${clusterName}`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: cluster destroy --cluster-name "${{ env.CLUSTER_NAME }}" --force
+        command: cluster destroy --cluster-name "${{ steps.process.outputs.clusterName }}" --force
         token: ${{ inputs.github-token }}

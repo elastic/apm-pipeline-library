@@ -24,6 +24,7 @@ runs:
   steps:
     - name: Process inputs
       uses: actions/github-script@v6
+      id: process
       env:
         CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
         CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
@@ -62,7 +63,7 @@ runs:
           }
 
           console.log(`clusterName is "${clusterName}"`)
-          core.exportVariable('CLUSTER_NAME', `${clusterName}`)
+          core.setOutput('clusterName', `${clusterName}`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
@@ -76,7 +77,7 @@ runs:
 
     - name: run oblt-cli
       run: |
-        oblt-cli cluster secrets env --cluster-name ${{ env.CLUSTER_NAME }} --output-file "$(pwd)/${{ env.ENV_FILE }}"
+        oblt-cli cluster secrets env --cluster-name "${{ steps.process.outputs.clusterName }}" --output-file "$(pwd)/${{ env.ENV_FILE }}"
         cat "${{ env.ENV_FILE }}" >> "${GITHUB_ENV}"
         source "${{ env.ENV_FILE }}"
         for i in $(cat "${{ env.ENV_FILE }}"|cut -d "=" -f 1); do
