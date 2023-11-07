@@ -10,7 +10,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # TODO: avoid destroying a golden cluster
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
         command: cluster destroy --cluster-name "${{ env.CLUSTER_NAME }}" --force
