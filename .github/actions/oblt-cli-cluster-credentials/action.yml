@@ -4,6 +4,9 @@ inputs:
   cluster-name:
     description: 'The cluster name'
     required: false
+  cluster-info-file:
+    description: 'The cluster info file (absolute path)'
+    required: false
   github-token:
     description: 'The GitHub access token.'
     required: true
@@ -19,6 +22,34 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Process inputs
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const clusterName = core.getInput('cluster-name')
+          const clusterInfoFile = core.getInput('cluster-info-file')
+
+          if (clusterName && clusterInfoFile) {
+            core.setFailed(`Either cluster-name or cluster-info-file but no both`)
+          }
+
+          var cluster = clusterName
+
+          if (clusterInfoFile) {
+            const fs = require('fs')
+            const data = fs.readFileSync(clusterInfoFile, 'utf8')
+            const jsonObject = JSON.parse(data)
+            if (jsonObject && jsonObject.ClusterName === undefined) {
+              core.setFailed(`cluster-info-file does not contain the field ClusterName`)
+            }
+            cluster = jsonObject.ClusterName
+          }
+
+          if (cluster.trim().length === 0) {
+            core.setFailed(`cluster name is empty`)
+          }
+          core.exportVariable('CLUSTER_NAME', `${cluster}`)
+
     - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
         github-token: ${{ inputs.github-token }}
@@ -43,6 +74,5 @@ runs:
         rm -f "${{ env.ENV_FILE }}"
       shell: bash
       env:
-        CLUSTER_NAME: ${{ inputs.cluster-name }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
         ENV_FILE: .cluster-credentials
