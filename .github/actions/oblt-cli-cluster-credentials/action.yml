@@ -24,6 +24,9 @@ runs:
   steps:
     - name: Process inputs
       uses: actions/github-script@v6
+      env:
+        CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
+        CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
       with:
         script: |
           const clusterName = process.env.CLUSTER_NAME_INPUT
@@ -54,9 +57,6 @@ runs:
             core.setFailed(`cluster name is empty`)
           }
           core.exportVariable('CLUSTER_NAME', `${cluster}`)
-        env:
-          CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
-          CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
 
     - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
