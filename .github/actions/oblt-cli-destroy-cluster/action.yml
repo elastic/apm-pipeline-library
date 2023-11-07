@@ -25,6 +25,7 @@ runs:
 
           if (clusterNameInput && clusterInfoFile) {
             core.setFailed(`Either cluster-name or cluster-info-file but no both`)
+            return
           }
 
           var clusterName = clusterNameInput
@@ -35,12 +36,14 @@ runs:
             const jsonObject = JSON.parse(data)
             if (jsonObject && jsonObject.ClusterName === undefined) {
               core.setFailed(`cluster-info-file does not contain the field ClusterName`)
+              return
             }
             clusterName = jsonObject.ClusterName
           }
 
           if (clusterName.trim().length === 0) {
             core.setFailed(`cluster name is empty`)
+            return
           }
 
           console.log(`clusterName is "${clusterName}"`)
