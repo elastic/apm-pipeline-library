@@ -31,7 +31,7 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
 
       ...
-      
+
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-destroy-cluster@current
         with:
           cluster-name: 'foo'
