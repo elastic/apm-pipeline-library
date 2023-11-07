@@ -6,7 +6,6 @@ GitHub Action to run the oblt-cli wrapper to destroy any given cluster
   * [Configuration](#configuration)
 * [Customizing](#customizing)
   * [inputs](#inputs)
-  * [outputs](#outputs)
 
 ## Usage
 
@@ -52,9 +51,3 @@ Following inputs can be used as `step.with` keys
 | `cluster-name `             | String  | Optional                    | The cluster name                                  |
 | `cluster-info-file `        | String  | Optional                    | The cluster info file (absolute path)             |
 | `github-token`              | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
-
-### outputs
-
-Unmasked environment variable:
-
-* CLUSTER_NAME

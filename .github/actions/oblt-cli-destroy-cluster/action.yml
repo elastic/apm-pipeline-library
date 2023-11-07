@@ -15,6 +15,7 @@ runs:
   steps:
     - name: Process inputs
       uses: actions/github-script@v6
+      id: process
       env:
         CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
         CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
@@ -47,9 +48,9 @@ runs:
           }
 
           console.log(`clusterName is "${clusterName}"`)
-          core.exportVariable('CLUSTER_NAME', `${clusterName}`)
+          core.setOutput('clusterName', `${clusterName}`)
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: cluster destroy --cluster-name "${{ env.CLUSTER_NAME }}" --force
+        command: cluster destroy --cluster-name "${{ steps.process.outputs.clusterName }}" --force
         token: ${{ inputs.github-token }}
