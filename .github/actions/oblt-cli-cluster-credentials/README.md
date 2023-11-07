@@ -86,6 +86,10 @@ Following inputs can be used as `step.with` keys
 
 ### outputs
 
+Unmasked environment variable:
+
+* CLUSTER_NAME
+
 Masked environment variables that are available:
 
 * ELASTIC_APM_SERVER_URL
