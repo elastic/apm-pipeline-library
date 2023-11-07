@@ -1,0 +1,48 @@
+name: 'Oblt-cli cluster credentials'
+description: 'Run the oblt-cli wrapper to retrieve the credentials to connect to the given cluster'
+inputs:
+  cluster-name:
+    description: 'The cluster name'
+    required: false
+  github-token:
+    description: 'The GitHub access token.'
+    required: true
+  vault-role-id:
+    description: 'Vault role ID'
+    required: true
+  vault-secret-id:
+    description: 'Vault secret ID'
+    required: true
+  vault-url:
+    description: 'Vault URL'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
+      with:
+        github-token: ${{ inputs.github-token }}
+
+    - uses: elastic/apm-pipeline-library/.github/actions/setup-vault-cli@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - name: run oblt-cli
+      run: |
+        oblt-cli cluster secrets env --cluster-name ${{ env.CLUSTER_NAME }} --output-file "$(pwd)/${{ env.ENV_FILE }}"
+        cat "${{ env.ENV_FILE }}" >> "${GITHUB_ENV}"
+        source "${{ env.ENV_FILE }}"
+        for i in $(cat "${{ env.ENV_FILE }}"|cut -d "=" -f 1); do
+          VALUE=$(eval "echo \${$i}")
+          if [ -n "$VALUE" ] ; then
+            echo "::add-mask::${VALUE}"
+          fi
+        done
+        rm -f "${{ env.ENV_FILE }}"
+      shell: bash
+      env:
+        CLUSTER_NAME: ${{ inputs.cluster-name }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        ENV_FILE: .cluster-credentials
