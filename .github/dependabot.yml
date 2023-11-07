@@ -242,6 +242,21 @@ updates:
           - "*"
 
   - package-ecosystem: "github-actions"
+    directory: "/.github/actions/oblt-cli-cluster-credentials"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    reviewers:
+      - "elastic/observablt-ci"
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
     directory: "/.github/actions/oblt-cli-create-ccs"
     schedule:
       interval: "weekly"

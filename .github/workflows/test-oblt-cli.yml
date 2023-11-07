@@ -23,9 +23,9 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-credentials@test/cluster-credentials
         with:
           github-token: ${{ env.GITHUB_TOKEN }}
-          cluster-name: 'issue-ess-mlueh'
+          cluster-name: 'dev-oblt'
           vault-url: ${{ secrets.VAULT_ADDR }}
           vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
           vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
 
-      - run: curl -X GET '${{ env.ELASTICSEARCH_HOST }}/_cat/indices?v' -u ${{ env.ELASTICSEARCH_USERNAME }}:${{ env.ELASTICSEARCH_PASSWORD }}
+      - run: curl -X GET '${ELASTICSEARCH_HOST}/_cat/indices?v' -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}
