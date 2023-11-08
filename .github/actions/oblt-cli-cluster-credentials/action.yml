@@ -28,11 +28,6 @@ runs:
         cluster-name: ${{ inputs.cluster-name }}
         cluster-info-file: ${{ inputs.cluster-info-file }}
 
-    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
-      with:
-        command: cluster destroy --cluster-name "${{ steps.validation.outputs.cluster-name }}" --force
-        token: ${{ inputs.github-token }}
-
     - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
         github-token: ${{ inputs.github-token }}
