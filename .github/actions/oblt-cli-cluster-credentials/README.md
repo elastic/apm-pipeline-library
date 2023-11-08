@@ -16,7 +16,7 @@ Given the CI GitHub action:
 
 ```yaml
 ---
-name: Cat indices for the given cluster using the oblt-cli
+name: Cat indices for the given cluster name using the oblt-cli
 
 ...
 
@@ -38,6 +38,37 @@ jobs:
 ...
 ```
 
+or alternatively if you use `oblt-cli` with `--output-file "${CLUSTER_INFO_FILE}"'` then
+
+```yaml
+---
+name: Cat indices for the given cluster file using the oblt-cli
+
+...
+
+jobs:
+  cat-indices:
+    runs-on: ubuntu-latest
+    steps:
+      ...
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
+        with:
+          command: 'cluster create ... --output-file "${{ github.workspace }}/cluster-info.json" --wait 15'
+
+      - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-credentials@current
+        with:
+          cluster-info-file: ${{ github.workspace }}/cluster-info.json
+          github-token: ${{ secrets.PAT_TOKEN }}
+          vault-url: ${{ secrets.VAULT_ADDR }}
+          vault-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-secret-id: ${{ secrets.VAULT_SECRET_ID }}
+
+      ...
+      - run: curl -X GET ${ELASTICSEARCH_HOST}/_cat/indices?v -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}
+
+...
+```
+
 ## Customizing
 
 ### inputs
@@ -46,7 +77,8 @@ Following inputs can be used as `step.with` keys
 
 | Name                        | Type    | Default                     | Description                                       |
 |-----------------------------|---------|-----------------------------|-------------------------------------------------- |
-| `cluster-name `             | String  | Mandatory                   | The cluster name                                  |
+| `cluster-name `             | String  | Optional                    | The cluster name                                  |
+| `cluster-info-file `        | String  | Optional                    | The cluster info file (absolute path)             |
 | `github-token`              | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
 | `vault-role-id`             | String  | Mandatory                   | The Vault role id.                                |
 | `vault-secret-id`           | String  | Mandatory                   | The Vault secret id.                              |

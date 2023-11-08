@@ -48,5 +48,6 @@ Following inputs can be used as `step.with` keys
 
 | Name                        | Type    | Default                     | Description                                       |
 |-----------------------------|---------|-----------------------------|-------------------------------------------------- |
-| `cluster-name `             | String  | Mandatory                   | The cluster name                                  |
+| `cluster-name `             | String  | Optional                    | The cluster name                                  |
+| `cluster-info-file `        | String  | Optional                    | The cluster info file (absolute path)             |
 | `github-token`              | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
