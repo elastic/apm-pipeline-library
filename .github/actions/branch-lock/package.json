@@ -10,7 +10,7 @@
     "fmt": "prettier --write '**/*.ts'",
     "build": "tsc",
     "test": "jest",
-    "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "package": "ncc build src/index.ts -o dist --license licenses.txt",
     "all": "npm run lint && npm run fmt && npm run build && npm test && npm run package"
   },
   "keywords": [
