@@ -1,0 +1,23 @@
+---
+
+name: 'Lock/Unlock a Branch'
+description: 'Lock or Unlock a branch using branch protections.'
+inputs:
+  branch:
+    description: 'The GitHub branch'
+    required: true
+  lock:
+    description: 'Whether to lock or unlock the branch'
+    required: true
+  token:
+    description: 'The GitHub access token.'
+    required: true
+  owner:
+    description: 'The GitHub owner'
+    default: ${{ github.repository }}
+  repo:
+    description: 'The GitHub repo'
+    default: ${{ github.repository }}
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
