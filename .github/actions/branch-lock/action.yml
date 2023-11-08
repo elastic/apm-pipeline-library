@@ -14,10 +14,10 @@ inputs:
     required: true
   owner:
     description: 'The GitHub owner'
-    default: ${{ github.repository }}
+    default: ${{ github.repository_owner }}
   repo:
     description: 'The GitHub repo'
-    default: ${{ github.repository }}
+    default: ${{ github.event.repository.name }}
 runs:
   using: 'node20'
   main: 'dist/index.js'
