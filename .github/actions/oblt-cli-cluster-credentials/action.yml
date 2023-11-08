@@ -22,42 +22,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Process inputs
-      uses: actions/github-script@v6
-      id: process
-      env:
-        CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
-        CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-name-validation@current
+      id: validation
       with:
-        script: |
-          const clusterNameInput = process.env.CLUSTER_NAME_INPUT
-          const clusterInfoFile = process.env.CLUSTER_INFO_FILE_INPUT
+        cluster-name: ${{ inputs.cluster-name }}
+        cluster-info-file: ${{ inputs.cluster-info-file }}
 
-          if (clusterNameInput && clusterInfoFile) {
-            core.setFailed(`Either cluster-name or cluster-info-file but no both`)
-            return
-          }
-
-          var clusterName = clusterNameInput
-
-          if (clusterInfoFile) {
-            const fs = require('fs')
-            const data = fs.readFileSync(clusterInfoFile, 'utf8')
-            const jsonObject = JSON.parse(data)
-            if (jsonObject && jsonObject.ClusterName === undefined) {
-              core.setFailed(`cluster-info-file does not contain the field ClusterName`)
-              return
-            }
-            clusterName = jsonObject.ClusterName
-          }
-
-          if (clusterName.trim().length === 0) {
-            core.setFailed(`cluster name is empty`)
-            return
-          }
-
-          console.log(`clusterName is "${clusterName}"`)
-          core.setOutput('clusterName', `${clusterName}`)
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
+      with:
+        command: cluster destroy --cluster-name "${{ steps.validation.outputs.cluster-name }}" --force
+        token: ${{ inputs.github-token }}
 
     - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
       with:
@@ -71,7 +45,7 @@ runs:
 
     - name: run oblt-cli
       run: |
-        oblt-cli cluster secrets env --cluster-name "${{ steps.process.outputs.clusterName }}" --output-file "$(pwd)/${{ env.ENV_FILE }}"
+        oblt-cli cluster secrets env --cluster-name "${{ steps.validation.outputs.cluster-name }}" --output-file "$(pwd)/${{ env.ENV_FILE }}"
         cat "${{ env.ENV_FILE }}" >> "${GITHUB_ENV}"
         source "${{ env.ENV_FILE }}"
         for i in $(cat "${{ env.ENV_FILE }}"|cut -d "=" -f 1); do

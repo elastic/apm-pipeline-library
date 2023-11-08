@@ -1,0 +1,52 @@
+name: 'Oblt-cli cluster name validation'
+description: 'Get the cluster name based on the parameters'
+inputs:
+  cluster-name:
+    description: 'The cluster name'
+    required: false
+  cluster-info-file:
+    description: 'The cluster info file (absolute path)'
+    required: false
+outputs:
+  cluster-name:
+    description: "The cluster name"
+    value: ${{ steps.process.outputs.cluster-name }}
+runs:
+  using: "composite"
+  steps:
+    - name: Process inputs
+      uses: actions/github-script@v6
+      id: process
+      env:
+        CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
+        CLUSTER_INFO_FILE_INPUT: ${{ inputs.cluster-info-file }}
+      with:
+        script: |
+          const clusterNameInput = process.env.CLUSTER_NAME_INPUT
+          const clusterInfoFile = process.env.CLUSTER_INFO_FILE_INPUT
+
+          if (clusterNameInput && clusterInfoFile) {
+            core.setFailed(`Either cluster-name or cluster-info-file but no both`)
+            return
+          }
+
+          var clusterName = clusterNameInput
+
+          if (clusterInfoFile) {
+            const fs = require('fs')
+            const data = fs.readFileSync(clusterInfoFile, 'utf8')
+            const jsonObject = JSON.parse(data)
+            if (jsonObject && jsonObject.ClusterName === undefined) {
+              core.setFailed(`cluster-info-file does not contain the field ClusterName`)
+              return
+            }
+            clusterName = jsonObject.ClusterName
+          }
+
+          if (clusterName.trim().length === 0) {
+            core.setFailed(`cluster name is empty`)
+            return
+          }
+
+          console.log(`clusterName is "${clusterName}"`)
+          core.setOutput('cluster-name', `${clusterName}`)
