@@ -22,7 +22,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-name-validation@current
+    - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-cluster-name-validation@teset/support-cluster-info-file
       id: validation
       with:
         cluster-name: ${{ inputs.cluster-name }}
