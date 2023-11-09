@@ -13,7 +13,7 @@ inputs:
     required: true
   secret:
     description: 'Vault secret with the token field.'
-    default: secret/observability-team/ci/buildkite-automation-v2
+    default: secret/observability-team/ci/buildkite-automation-v3
     required: false
   org:
     description: 'BuildKite org to interact with.'
