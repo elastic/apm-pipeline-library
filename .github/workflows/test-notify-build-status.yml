@@ -22,7 +22,7 @@ jobs:
         working-directory: ./.github/actions/notify-build-status
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           # Must be kept in sync with node version in action.yml
           node-version-file: './.github/actions/notify-build-status/.node-version'
