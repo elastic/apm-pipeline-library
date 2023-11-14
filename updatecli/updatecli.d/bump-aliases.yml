@@ -10,8 +10,6 @@ actions:
     spec:
       labels:
         - automation
-      description: |
-        Generated automatically with {{ requiredEnv "JOB_URL" }}
 
 scms:
   default:
