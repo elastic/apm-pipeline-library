@@ -15,7 +15,7 @@ runs:
   using: "composite"
   steps:
     - name: Process inputs
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       id: process
       env:
         CLUSTER_NAME_INPUT: ${{ inputs.cluster-name }}
