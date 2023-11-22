@@ -176,4 +176,4 @@ images:
     name: "node-playwright"
     tag: "12"
     working_directory: ".ci/docker/node-playwright"
-    build_opts: "--build-arg NODEJS_VERSION='12'"
+    build_opts: "--build-arg NODEJS_VERSION='14'"
