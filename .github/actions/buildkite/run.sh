@@ -21,7 +21,7 @@ set -euo pipefail
 MSG="parameter missing."
 ORG=${1:?$MSG}
 PIPELINE=${2:?$MSG}
-BUILD_VARS=${3:?$MSG}
+BUILD_VARS=${3:-''}
 WAIT_FOR=${4:?$MSG}
 PRINT_BUILD=${5:?$MSG}
 BK_TOKEN=${6:?$MSG}
