@@ -61,17 +61,13 @@ runs:
 
         # If serverless
         if [ "${{ inputs.serverless }}" == 'true' ] ; then
-          if [ "${TARGET_BRANCH}" == 'main' ] ; then
-            echo "::warning::It will deploy to the QA environment. If a new environment is needed other than QA then contact the oblt-robots team."
-            // NOTE: keep_serverless-qa-oblt is the long running environment defined in the oblt-test-env repository.
-            echo "CLUSTER=keep_serverless-qa-oblt" >> $GITHUB_ENV
-            exit 0
-          fi
-          MESSAGE="You cannot deploy your PR when targeting a branch other than main"
-          echo "#### :broken_heart: ${MESSAGE}" >> $GITHUB_STEP_SUMMARY
-          echo "::error::${MESSAGE}"
-          exit 1
+          echo "::warning::It will deploy to the QA environment. If a new environment is needed other than QA then contact the oblt-robots team."
+          ## NOTE: keep_serverless-qa-oblt is the long running environment defined in the oblt-test-env repository.
+          echo "CLUSTER=keep_serverless-qa-oblt" >> $GITHUB_ENV
+          exit 0
         fi
+
+        # If non-serverless
         if [ "${TARGET_BRANCH}" == 'main' ] ; then
           echo "CLUSTER=edge-lite-oblt" >> $GITHUB_ENV
         else
