@@ -43,7 +43,6 @@ inputs:
     required: false
   pipelineVersion:
     description: 'The pipeline version to be used (e.g. git sha, tag, branch).'
-    default: HEAD
     required: false
     deprecationMessage: "Use pipelineCommit instead."
   triggerMessage:
@@ -91,7 +90,7 @@ runs:
             '${{ inputs.printBuildLogs }}' \
             '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
             '${{ inputs.triggerMessage }}' \
-            '${{ inputs.pipelineCommit || inputs.pipelineVersion }}' \
+            '${{ inputs.pipelineVersion || inputs.pipelineCommit }}' \
             '${{ inputs.pipelineBranch }}'
         shell: bash
 
