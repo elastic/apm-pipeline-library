@@ -161,52 +161,6 @@ images:
     build_script: ./util.sh --action build
     push_script: ./util.sh --action push
 
-  # APM Agent Node.js Docker Images
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "17"
-    build_opts: "--build-arg NODE_VERSION=17"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "16"
-    build_opts: "--build-arg NODE_VERSION=16"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "16.0"
-    build_opts: "--build-arg NODE_VERSION=16.0"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "14"
-    build_opts: "--build-arg NODE_VERSION=14"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "14.0"
-    build_opts: "--build-arg NODE_VERSION=14.0"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "12"
-    build_opts: "--build-arg NODE_VERSION=12"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "12.0"
-    build_opts: "--build-arg NODE_VERSION=12.0"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "10"
-    build_opts: "--build-arg NODE_VERSION=10"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "10.0"
-    build_opts: "--build-arg NODE_VERSION=10.0"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "8"
-    build_opts: "--build-arg NODE_VERSION=8"
-
-  - <<: *apm-agent-nodejs-docker-images
-    tag: "8.6"
-    build_opts: "--build-arg NODE_VERSION=8.6"
-
   # APM Agent Ruby Docker images
   # dockerhub
   - <<: *apm-agent-ruby-docker-images
