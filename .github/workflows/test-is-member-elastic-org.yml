@@ -4,6 +4,9 @@ name: test-is-member-elastic-org
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test-with-non-elastic-user:
     runs-on: ubuntu-latest

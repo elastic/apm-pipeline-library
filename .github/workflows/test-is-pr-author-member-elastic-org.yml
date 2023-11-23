@@ -4,6 +4,9 @@ name: test-is-pr-author-member-elastic-org
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test-with-non-elastic-author:
     runs-on: ubuntu-latest
