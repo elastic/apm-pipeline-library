@@ -9,6 +9,9 @@ on:
     paths:
       - '.github/actions/oblt-cli-create-serverless/**'
 
+permissions:
+  contents: read
+
 jobs:
 
   run-oblt-cli-create-serverless:

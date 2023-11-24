@@ -4,6 +4,9 @@ name: test-oblt-cli
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
 
   run-oblt-cli:

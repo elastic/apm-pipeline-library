@@ -20,6 +20,9 @@ on:
       - test-is-pr-author-member-elastic-org
     types: [completed]
 
+permissions:
+  contents: read
+
 jobs:
   otel-export-trace:
     runs-on: ubuntu-latest

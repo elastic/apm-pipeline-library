@@ -4,6 +4,9 @@ name: test-elastic-stack-snapshot-branches
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

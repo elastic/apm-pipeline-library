@@ -4,6 +4,9 @@ name: test-workflow-run
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
 
   dispatch-workflow:
