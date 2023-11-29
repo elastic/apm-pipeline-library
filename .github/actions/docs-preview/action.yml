@@ -28,7 +28,7 @@ runs:
 
           const comment = `A documentation preview will be available soon:
             - 📚 [HTML diff](https://${REPO}_${PR}.docs-preview.app.elstc.co/diff)
-            - 📙 [${NAME} Guide](https://${context.repo.repo}_${PR}.docs-preview.app.elstc.co/guide/en/${NAME}/master/index.html)`;
+            - 📙 [${NAME} Guide](https://${REPO}_${PR}.docs-preview.app.elstc.co/guide/en/${NAME}/master/index.html)`;
 
           github.rest.issues.createComment({
             issue_number: PR,
