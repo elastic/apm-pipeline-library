@@ -31,7 +31,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ github.event.repository.name }}
           name: 'observability'
-          pr: ${{ github.event.pull_request.id }}
+          pr: ${{ github.event.pull_request.number }}
           
 ```
 
