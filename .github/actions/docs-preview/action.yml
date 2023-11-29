@@ -1,0 +1,38 @@
+name: 'docs-preview'
+description: 'Add docs-preview comment in the given repository.'
+inputs:
+  name:
+    description: 'the name of the project'
+    required: true
+  repo:
+    description: 'the name of the repository'
+    required: true
+  pr:
+    description: 'the pull-request'
+    required: true
+  github-token:
+    description: 'The GitHub access token.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/github-script@v7
+      env:
+        REPO: ${{ inputs.repo }}
+        NAME: ${{ inputs.name }}
+        PR: ${{ inputs.pr }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const { NAME, REPO, PR } = process.env
+
+          const comment = `A documentation preview will be available soon:
+            - 📚 [HTML diff](https://${REPO}_${PR}.docs-preview.app.elstc.co/diff)
+            - 📙 [${NAME} Guide](https://${context.repo.repo}_${PR}.docs-preview.app.elstc.co/guide/en/${NAME}/master/index.html)`;
+
+          github.rest.issues.createComment({
+            issue_number: PR,
+            owner: 'elastic',
+            repo: REPO,
+            body: comment,
+          });
