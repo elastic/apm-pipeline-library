@@ -354,7 +354,7 @@ def pytest_runtest_logreport(report):
     test_name = report.nodeid.split("::")[0]
 
     if report.failed and report.when == "teardown":
-        span = spans[test_name]
+        span = spans[session_name]
         span.set_attribute("tests.systemerr", report.capstderr)
         span.set_attribute("tests.systemout", report.capstdout)
         span.set_attribute("tests.duration", getattr(report, "duration", 0.0))

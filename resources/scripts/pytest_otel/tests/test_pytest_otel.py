@@ -95,6 +95,22 @@ def test_failure_code():
     assertTest(pytester, "test_failure_code", "failed", "ERROR", "failed", "ERROR")
 
 
+def test_failure_teardown_plugin(pytester):
+    """test a test with an exception during teardown"""
+    pytester.makepyfile(
+        common_code
+        + """
+@pytest.fixture(autouse=True)
+def bad_teardown():
+    yield
+    raise RuntimeError("Bad teardown")
+
+def test_failure_teardown():
+    pass
+""")
+    assertTest(pytester, "test_failure_teardown", "failed", "ERROR", None, "OK")
+
+
 def test_skip_plugin(pytester):
     """test a skipped test"""
     pytester.makepyfile(
