@@ -103,7 +103,7 @@ def test_failure_teardown_plugin(pytester):
 @pytest.fixture(autouse=True)
 def bad_teardown():
     yield
-    raise RuntimeError("Bad teardown")
+    raise RuntimeError("Bad fixture teardown")
 
 def test_failure_teardown():
     pass
