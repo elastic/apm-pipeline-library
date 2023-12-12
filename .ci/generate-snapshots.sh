@@ -91,20 +91,30 @@ searchLatestBranch=$(jq -r '.branches | map(select(. != "main")) | .[-1]' branch
 ## If branch is not available yet, likely it's related when a new release is created from the main branch
 ## then the unified release likely has not been triggered yet. Then let's fall back to create the file
 ## matching the main.json (this will avoid issues with the consumers)
-if [ ! -e  "$searchLatestBranch.json" ] ; then
-  cp main.json "$searchLatestBranch.json"
+echo "$searchLatestBranch exist?"
+if [ ! -e "$searchLatestBranch.json" ] ; then
+
+  ## If latest branch has not been built then validate whether the version matches
+  ## otherwise there are cases that the build for main has been built with the version
+  ## hence we cannot copy and create the file otherwise it will be a misleading version
+  searchVersion=$(jq -r '.version' "main.json" | sed 's#\.0-SNAPSHOT##g')
+  if [ "${searchVersion}" = "${searchLatestBranch}" ] ; then
+    cp main.json "$searchLatestBranch.json"
+  fi
 fi
 
-searchVersion=$(jq -r '.version' "$searchLatestBranch.json" | sed 's#-SNAPSHOT##g')
-if [ "${searchVersion}" != "${searchLatestBranch}.0"  ] ; then
-  echo ">>> Remove <major>.x-1"
-  ## Remove 8.x-1
-  majorVersion=$(cut -d '.' -f 1 <<< "$searchLatestBranch")
-  minorVersion=$(cut -d '.' -f 2 <<< "$searchLatestBranch")
-  ## manipulate minorVersion to get the -1
-  newMinorVersion=$(echo "$minorVersion - 1" | bc)
-  export removeBranch="${majorVersion}.${newMinorVersion}"
-  echo ">>> $removeBranch"
-  jq -r 'del(.branches[] | select(test(env.removeBranch)))' branches.json > branches.json.tmp
-  mv branches.json.tmp branches.json
+if [ -e "$searchLatestBranch.json" ] ; then
+  searchVersion=$(jq -r '.version' "$searchLatestBranch.json" | sed 's#-SNAPSHOT##g')
+  if [ "${searchVersion}" != "${searchLatestBranch}.0"  ] ; then
+    echo ">>> Remove <major>.x-1"
+    ## Remove 8.x-1
+    majorVersion=$(cut -d '.' -f 1 <<< "$searchLatestBranch")
+    minorVersion=$(cut -d '.' -f 2 <<< "$searchLatestBranch")
+    ## manipulate minorVersion to get the -1
+    newMinorVersion=$(echo "$minorVersion - 1" | bc)
+    export removeBranch="${majorVersion}.${newMinorVersion}"
+    echo ">>> $removeBranch"
+    jq -r 'del(.branches[] | select(test(env.removeBranch)))' branches.json > branches.json.tmp
+    mv branches.json.tmp branches.json
+  fi
 fi
