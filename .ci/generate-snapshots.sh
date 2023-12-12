@@ -100,6 +100,11 @@ if [ ! -e "$searchLatestBranch.json" ] ; then
   searchVersion=$(jq -r '.version' "main.json" | sed 's#\.0-SNAPSHOT##g')
   if [ "${searchVersion}" = "${searchLatestBranch}" ] ; then
     cp main.json "$searchLatestBranch.json"
+  else
+    export searchLatestBranch
+    echo ">>> $searchLatestBranch"
+    jq -r 'del(.branches[] | select(test(env.searchLatestBranch)))' branches.json > branches.json.tmp
+    mv branches.json.tmp branches.json
   fi
 fi
 
