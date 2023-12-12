@@ -96,7 +96,7 @@ if [ ! -e "$searchLatestBranch.json" ] ; then
 
   ## If latest branch has not been built then validate whether the version matches
   ## otherwise there are cases that the build for main has been built with the version
-  ## hence we cannot copy and create the file otherwise it will be a misleading version
+  ## hence we cannot copy and create the file otherwise it will be a misleading version
   searchVersion=$(jq -r '.version' "main.json" | sed 's#\.0-SNAPSHOT##g')
   if [ "${searchVersion}" = "${searchLatestBranch}" ] ; then
     cp main.json "$searchLatestBranch.json"
