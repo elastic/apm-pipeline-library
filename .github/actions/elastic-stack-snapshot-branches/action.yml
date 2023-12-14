@@ -9,8 +9,11 @@ inputs:
     default: ''
 outputs:
   matrix:
-    description: "Processed matrix with the required tuples of version and framework"
+    description: "Processed matrix with the branches (using the include format)"
     value: ${{ steps.generator.outputs.matrix }}
+  branches:
+    description: "Processed list of branches"
+    value: ${{ steps.generator.outputs.branches }}
 runs:
   using: "composite"
   steps:
