@@ -13,6 +13,12 @@ permissions:
 jobs:
   report:
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+      checks: write
+      contents: write
+      pull-requests: write
+      actions: write
     steps:
       - uses: elastic/apm-pipeline-library/.github/actions/test-report@main
         with:
