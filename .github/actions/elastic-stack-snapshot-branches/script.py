@@ -26,8 +26,12 @@ exclude_branches = set(filter(lambda branch: len(branch) > 0, exclude_branches.s
 if exclude_branches:
     branches = list(filter(lambda branch: branch not in exclude_branches, branches))
 
-branches = list(map(lambda branch: {"branch": branch}, branches))
-matrix = {'include': branches}
+include_branches = list(map(lambda branch: {"branch": branch}, branches))
+matrix = {'include': include_branches}
 
 with open(os.environ.get('GITHUB_OUTPUT'), "a") as file_descriptor:
     file_descriptor.write(f"matrix={json.dumps(matrix)}\n")
+    file_descriptor.write(f"branches={json.dumps(branches)}\n")
+
+print(f"INFO: matrix={json.dumps(matrix)}")
+print(f"INFO: branches={json.dumps(branches)}")
