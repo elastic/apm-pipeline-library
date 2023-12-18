@@ -107,7 +107,7 @@ runs:
           ARTIFACT_PATH: ${{ inputs.artifactPath }}
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always() && steps.download-artifacts.outcome == 'success'
         with:
           name: ${{ inputs.artifactName }}
