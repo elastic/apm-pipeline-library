@@ -61,9 +61,8 @@ runs:
 
         # If serverless
         if [ "${{ inputs.serverless }}" == 'true' ] ; then
-          echo "::warning::It will deploy to the QA environment. If a new environment is needed other than QA then contact the oblt-robots team."
-          ## NOTE: keep_serverless-qa-oblt is the long running environment defined in the oblt-test-env repository.
-          echo "CLUSTER=keep_serverless-qa-oblt" >> $GITHUB_ENV
+          echo "::warning::It will deploy to the QA environment. QA is the only environment that allows override of the Docker images."
+          echo "CLUSTER=serverless-qa" >> $GITHUB_ENV
           exit 0
         fi
 
