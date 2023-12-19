@@ -1,0 +1,47 @@
+---
+name: generate-elastic-stack-snapshots
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */1 * * 1-5'
+
+permissions:
+  contents: read
+
+jobs:
+  generate-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: .ci/generate-releases.sh
+
+      - name: 'Get service account'
+        uses: hashicorp/vault-action@v2.7.4
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: approle
+          secrets: |
+            secret/observability-team/ci/artifacts-api-bucket service-account | SERVICE_ACCOUNT ;
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ env.SERVICE_ACCOUNT }}'
+
+      - id: 'upload-file'
+        uses: 'google-github-actions/upload-cloud-storage@v2'
+        with:
+          path: releases
+          glob: "**/*.json"
+          destination: "artifacts-api"
+          parent: false
+          headers: |-
+            content-type: application/json
+            x-goog-meta-generator: generate-elastic-stack-releases.yml
+
+      - name: debug
+        run: echo "${{ steps.upload-file.outputs.uploaded }}"

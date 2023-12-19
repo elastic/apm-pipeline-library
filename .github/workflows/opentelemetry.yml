@@ -9,6 +9,8 @@ on:
       - bump-golang
       - bump-elastic-stack
       - build-test
+      - generate-elastic-stack-releases
+      - generate-elastic-stack-snapshots
       - job-dsl
       - licenses
       - lint

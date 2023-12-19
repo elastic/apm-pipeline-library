@@ -44,3 +44,4 @@ wiremock-standalone.jar
 node_modules/
 
 snapshots/
+releases/
