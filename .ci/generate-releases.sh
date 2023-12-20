@@ -66,17 +66,6 @@ function latest() {
   rm $file &> /dev/null || true
 }
 
-function debug_latest() {
-  local version="${1}"
-  local file=.releases
-  retry 3 gh api repos/elastic/elasticsearch/releases > $file
-  jq -r --arg version "$version" '[.[].tag_name
-    | select(startswith($version))
-    | sub("v"; ""; "g")]
-    | sort_by(.| split(".") | map(tonumber))' .releases
-  rm $file &> /dev/null || true
-}
-
 # Get the next release for the given semver prefix.
 # Releases start with major.minor.patch.
 # It uses the artifacts-api.elastic.co entrypoint.
@@ -165,10 +154,6 @@ next_7=$(incPatch "$current_7")
 next_minor_8=$(next 8)
 next_patch_8=$(incPatch "$current_8")
 edge_8=$(edge)
-
-## debug
-debug_latest v7
-debug_latest v8
 
 ## 2. Generate files
 
