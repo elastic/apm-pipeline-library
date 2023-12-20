@@ -27,18 +27,36 @@ set -eo pipefail
 ### FUNCTIONS
 ###############
 
+retry() {
+  local retries=$1
+  shift
+  local count=0
+  until "$@"; do
+    exit=$?
+    wait=$((2 ** count))
+    count=$((count + 1))
+    if [ $count -lt "$retries" ]; then
+      sleep $wait
+    else
+      return $exit
+    fi
+  done
+  return 0
+}
+
 # Get the latest github release for the given tag prefix.
 # Releases starts with v<major>, i.e: v8
 # It uses the gh cli in elastic/elasticsearch.
 # Owned by: release team
 function latest() {
   local version="${1}"
-  gh api repos/elastic/elasticsearch/releases \
-    | jq -r --arg version "$version" '[.[].tag_name
+  retry 3 gh api repos/elastic/elasticsearch/releases 2> /dev/null > .releases
+  jq -r --arg version "$version" '[.[].tag_name
     | select(startswith($version))
     | sub("v"; ""; "g")]
     | sort_by(.| split(".") | map(tonumber))
-    | .[-1]'
+    | .[-1]' .releases
+  rm .releases &> /dev/null
 }
 
 # Get the next release for the given semver prefix.
@@ -49,12 +67,13 @@ function next() {
   local version="${1}"
   local URL="https://artifacts-api.elastic.co/v1"
   local NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
-  curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" \
-    | jq -r --arg version "$version" '[.versions[]
+  retry 3 curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" 2> /dev/null > .versions
+  jq -r --arg version "$version" '[.versions[]
     | select(contains("SNAPSHOT")|not)
     | select(startswith($version))]
     | sort_by(.| split(".") | map(tonumber))
-    | .[-1]'
+    | .[-1]' .versions
+  rm .versions &> /dev/null
 }
 
 # Bump the patch version for the given version
@@ -72,16 +91,16 @@ function incPatch() {
 # It uses the https://storage.googleapis.com/artifacts-api.
 # Owned by: observability-robots
 function edge() {
-  curl -s https://storage.googleapis.com/artifacts-api/snapshots/main.json \
-  | jq -r .build_id \
-  | sed 's#-.*##g'
+  retry 3 curl -s https://storage.googleapis.com/artifacts-api/snapshots/main.json 2> /dev/null > .edge
+  jq -r .build_id .edge | sed 's#-.*##g'
+  rm .edge &> /dev/null
 }
 
 # Get the major version for the given semver
 function major() {
   local version="$1"
   version="${version#[vV]}"
-  major="${version%%\.*}"
+  major="${version%%.*}"
   echo "${major}"
 }
 
@@ -89,7 +108,7 @@ function major() {
 function majorminor() {
   local version="$1"
   version="${version#[vV]}"
-  major="${version%%\.*}"
+  major="${version%%.*}"
   minor="${version#*.}"
   minor="${minor%.*}"
   echo "${major}.${minor}"
@@ -100,11 +119,11 @@ function majorminor() {
 function isAvailable() {
   local version="$1"
   # apm-server docker image is smaller.
-  if docker pull --quiet docker.elastic.co/apm/apm-server:"$version"-SNAPSHOT 2> /dev/null; then
+  if retry 3 docker pull --quiet docker.elastic.co/apm/apm-server:"$version"-SNAPSHOT &> /dev/null; then
     echo 'true'
   else
     # Fallback to use the elasticsearch - a quite  bigger docker image.
-    if docker pull --quiet docker.elastic.co/elasticsearch/elasticsearch:"$version"-SNAPSHOT 2> /dev/null; then
+    if retry 3 docker pull --quiet docker.elastic.co/elasticsearch/elasticsearch:"$version"-SNAPSHOT &> /dev/null; then
       echo 'true'
     else
       echo 'false'
