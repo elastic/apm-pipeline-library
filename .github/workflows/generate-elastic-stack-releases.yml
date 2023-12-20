@@ -47,7 +47,6 @@ jobs:
         uses: 'google-github-actions/upload-cloud-storage@v2'
         with:
           path: releases
-          glob: "**/*.json"
           destination: "artifacts-api"
           parent: false
           headers: |-
