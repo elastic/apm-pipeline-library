@@ -90,15 +90,26 @@ function majorminor() {
   echo "${major}.${minor}"
 }
 
+# Whether the given version is available.
+# It uses docker images in the internal docker registry
+function isAvailable() {
+  local version="$1"
+  if docker pull --quiet docker.elastic.co/elasticsearch/elasticsearch:"$version"-SNAPSHOT > /dev/null; then
+    echo 'true'
+  else
+    echo 'false'
+  fi
+}
+
 ## Static versions
 current_6="6.8.23"
 
 ## Fetch the versions
 current_7=$(latest v7)
 current_8=$(latest v8)
-next7=$(incPatch "$current_7")
-next8=$(next 8)
-patch8=$(incPatch "$current_8")
+next_7=$(incPatch "$current_7")
+next_minor_8=$(next 8)
+next_patch_8=$(incPatch "$current_8")
 edge_8=$(edge)
 
 ## Validate if releases are available
@@ -112,14 +123,15 @@ cd releases
 {
   echo "current_6=$current_6"
   echo "current_7=$current_7"
-  echo "next_minor_7=$next7"
-  echo "next_patch_7=$next7"
+  echo "next_minor_7=$next_7"
+  echo "next_patch_7=$next_7"
   echo "current_8=$current_8"
-  echo "next_minor_8=$next8"
-  echo "next_patch_8=$patch8"
+  echo "next_minor_8=$next_minor_8"
+  echo "next_patch_8=$next_patch_8"
   echo "edge_8=$edge_8"
-} | tee releases.properties
+} > releases.properties
 
+### Generate the files for the current releases
 mkdir -p releases/current
 echo "$current_6" > "releases/current/$(major "$current_6")"
 echo "$current_7" > "releases/current/$(major "$current_7")"
@@ -128,15 +140,28 @@ echo "$current_6" > "releases/current/$(majorminor "$current_6")"
 echo "$current_7" > "releases/current/$(majorminor "$current_7")"
 echo "$current_8" > "releases/current/$(majorminor "$current_8")"
 
+
+### Generate the files for the upcoming releases only if artifacts
+### are available
 mkdir -p releases/next
-echo "$next7" > "releases/next/minor-$(major "$next7")"
-echo "$next8" > "releases/next/minor-$(major "$next8")"
-echo "$next7" > "releases/next/minor-$(majorminor "$next7")"
-echo "$next8" > "releases/next/minor-$(majorminor "$next8")"
-echo "$next7" > "releases/next/patch-$(major "$next7")"
-echo "$patch8" > "releases/next/patch-$(major "$patch8")"
-echo "$next7" > "releases/next/patch-$(majorminor "$next7")"
-echo "$patch8" > "releases/next/patch-$(majorminor "$patch8")"
+if [ "$(isAvailable "$next_7")" = "true" ] ; then
+  echo "$next_7" > "releases/next/minor-$(major "$next_7")"
+  echo "$next_7" > "releases/next/minor-$(majorminor "$next_7")"
+  echo "$next_7" > "releases/next/patch-$(majorminor "$next_7")"
+  echo "$next_7" > "releases/next/patch-$(major "$next_7")"
+fi
+
+if [ "$(isAvailable "$next_minor_8")" = "true" ] ; then
+echo "$next_minor_8" > "releases/next/minor-$(majorminor "$next_minor_8")"
+echo "$next_minor_8" > "releases/next/minor-$(major "$next_minor_8")"
+fi
+
+if [ "$(isAvailable "$next_patch_8")" = "true" ] ; then
+  echo "$next_patch_8" > "releases/next/patch-$(major "$next_patch_8")"
+  echo "$next_patch_8" > "releases/next/patch-$(majorminor "$next_patch_8")"
+fi
 
 mkdir -p releases/edge
-echo "$edge_8" > "releases/edge/$(major "$edge_8")"
+if [ "$(isAvailable "$edge_8")" = "true" ] ; then
+  echo "$edge_8" > "releases/edge/$(major "$edge_8")"
+fi
