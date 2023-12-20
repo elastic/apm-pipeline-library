@@ -23,7 +23,7 @@
 set -eo pipefail
 
 # Get the latest github release for the given tag prefix.
-# Releases starts with v<major>, i.e: v8
+# Releases starts with v<major>, i.e: v8
 # It uses the gh cli in elastic/elasticsearch.
 # Owned by: release team
 function latest() {
