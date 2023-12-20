@@ -215,3 +215,9 @@ if [ "$(isAvailable "$edge_8")" = "true" ] ; then
   # NOTE: when 9.x happens then `main` will point to 9.
   echo "$edge_8" > "$EDGE_FOLDER/main"
 fi
+
+## 3. debug
+if command -v tree ; then
+  echo "The below files have been generated"
+  tree .
+fi
