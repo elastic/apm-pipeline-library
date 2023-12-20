@@ -22,6 +22,9 @@
 #
 set -eo pipefail
 
+if [ -n "$RUNNER_DEBUG" ] ; then
+  set -x
+fi
 
 ###############
 ### FUNCTIONS
