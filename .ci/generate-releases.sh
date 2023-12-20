@@ -175,7 +175,7 @@ cd releases
   echo "next_patch_8=$next_patch_8"
   echo "edge_8=$edge_8"
   echo "generated=https://github.com/elastic/apm-pipeline-library/actions/workflows/generate-elastic-stack-releases.yml"
-} > releases.properties
+} | tee releases.properties
 
 ### Generate the files for the current releases
 CURRENT_FOLDER=releases/current
