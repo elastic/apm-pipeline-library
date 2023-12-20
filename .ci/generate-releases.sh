@@ -27,6 +27,9 @@ set -eo pipefail
 ### FUNCTIONS
 ###############
 
+# Retry the given command for the given times.
+# It should not print anything if it failed to help
+# the other functions that return values through the stdout.
 retry() {
   local retries=$1
   shift
@@ -50,13 +53,14 @@ retry() {
 # Owned by: release team
 function latest() {
   local version="${1}"
-  retry 3 gh api repos/elastic/elasticsearch/releases 2> /dev/null > .releases
+  local file=.releases
+  retry 3 gh api repos/elastic/elasticsearch/releases 2> /dev/null > $file
   jq -r --arg version "$version" '[.[].tag_name
     | select(startswith($version))
     | sub("v"; ""; "g")]
     | sort_by(.| split(".") | map(tonumber))
     | .[-1]' .releases
-  rm .releases &> /dev/null
+  rm $file &> /dev/null || true
 }
 
 # Get the next release for the given semver prefix.
@@ -65,15 +69,16 @@ function latest() {
 # Owned by: release team
 function next() {
   local version="${1}"
+  local file=.versions
   local URL="https://artifacts-api.elastic.co/v1"
   local NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
-  retry 3 curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" 2> /dev/null > .versions
+  retry 3 curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" 2> /dev/null > $file
   jq -r --arg version "$version" '[.versions[]
     | select(contains("SNAPSHOT")|not)
     | select(startswith($version))]
     | sort_by(.| split(".") | map(tonumber))
-    | .[-1]' .versions
-  rm .versions &> /dev/null
+    | .[-1]' $file
+  rm $file &> /dev/null || true
 }
 
 # Bump the patch version for the given version
@@ -91,9 +96,10 @@ function incPatch() {
 # It uses the https://storage.googleapis.com/artifacts-api.
 # Owned by: observability-robots
 function edge() {
-  retry 3 curl -s https://storage.googleapis.com/artifacts-api/snapshots/main.json 2> /dev/null > .edge
+  local file=.edge
+  retry 3 curl -s https://storage.googleapis.com/artifacts-api/snapshots/main.json 2> /dev/null > $file
   jq -r .build_id .edge | sed 's#-.*##g'
-  rm .edge &> /dev/null
+  rm $file &> /dev/null || true
 }
 
 # Get the major version for the given semver
