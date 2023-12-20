@@ -116,10 +116,10 @@ function isAvailable() {
 ### MAIN
 ###############
 
-## 0. Static versions
+## 0. Static versions
 current_6="6.8.23"
 
-## 1. Fetch the versions
+## 1. Fetch the versions
 current_7=$(latest v7)
 current_8=$(latest v8)
 next_7=$(incPatch "$current_7")
@@ -134,7 +134,7 @@ mkdir releases
 cd releases
 
 ### IMPORTANT:
-### This file might contain some versions that are not available yet.
+### This file might contain some versions that are not available yet.
 ### One way to solve this particular case will be by reading the current releases.properties
 ### and apply some validations with isAvailable, otherwise then fallback to the previous version.
 {
