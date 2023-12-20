@@ -99,10 +99,16 @@ function majorminor() {
 # It uses docker images in the internal docker registry
 function isAvailable() {
   local version="$1"
-  if docker pull --quiet docker.elastic.co/elasticsearch/elasticsearch:"$version"-SNAPSHOT > /dev/null; then
+  # apm-server docker image is smaller.
+  if docker pull --quiet docker.elastic.co/apm/apm-server:"$version"-SNAPSHOT 2> /dev/null; then
     echo 'true'
   else
-    echo 'false'
+    # Fallback to use the elasticsearch - a quite  bigger docker image.
+    if docker pull --quiet docker.elastic.co/elasticsearch/elasticsearch:"$version"-SNAPSHOT 2> /dev/null; then
+      echo 'true'
+    else
+      echo 'false'
+    fi
   fi
 }
 
