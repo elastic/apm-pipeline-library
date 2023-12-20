@@ -183,5 +183,6 @@ fi
 EDGE_FOLDER=releases/edge
 mkdir -p $EDGE_FOLDER
 if [ "$(isAvailable "$edge_8")" = "true" ] ; then
-  echo "$edge_8" > "$EDGE_FOLDER/$(major "$edge_8")"
+  ## Edge always point to the main branch.
+  echo "$edge_8" > "$EDGE_FOLDER/main"
 fi
