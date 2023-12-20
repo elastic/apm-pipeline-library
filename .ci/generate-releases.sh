@@ -131,8 +131,12 @@ echo "$current_8" > "releases/current/$(majorminor "$current_8")"
 mkdir -p releases/next
 echo "$next7" > "releases/next/minor-$(major "$next7")"
 echo "$next8" > "releases/next/minor-$(major "$next8")"
+echo "$next7" > "releases/next/minor-$(majorminor "$next7")"
+echo "$next8" > "releases/next/minor-$(majorminor "$next8")"
 echo "$next7" > "releases/next/patch-$(major "$next7")"
 echo "$patch8" > "releases/next/patch-$(major "$patch8")"
+echo "$next7" > "releases/next/patch-$(majorminor "$next7")"
+echo "$patch8" > "releases/next/patch-$(majorminor "$patch8")"
 
 mkdir -p releases/edge
 echo "$edge_8" > "releases/edge/$(major "$edge_8")"
