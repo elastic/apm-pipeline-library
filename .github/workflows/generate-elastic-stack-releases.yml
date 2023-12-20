@@ -24,6 +24,8 @@ jobs:
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
       - run: .ci/generate-releases.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: 'Get service account'
         uses: hashicorp/vault-action@v2.7.4
