@@ -4,7 +4,7 @@ name: generate-elastic-stack-releases
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */1 * * 1-5'
+    - cron: '0 */6 * * 1-5'
 
 permissions:
   contents: read
