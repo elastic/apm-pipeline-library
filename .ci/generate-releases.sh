@@ -22,6 +22,11 @@
 #
 set -eo pipefail
 
+
+###############
+### FUNCTIONS
+###############
+
 # Get the latest github release for the given tag prefix.
 # Releases starts with v<major>, i.e: v8
 # It uses the gh cli in elastic/elasticsearch.
@@ -101,10 +106,14 @@ function isAvailable() {
   fi
 }
 
-## Static versions
+###############
+### MAIN
+###############
+
+## 0. Static versions
 current_6="6.8.23"
 
-## Fetch the versions
+## 1. Fetch the versions
 current_7=$(latest v7)
 current_8=$(latest v8)
 next_7=$(incPatch "$current_7")
@@ -112,14 +121,16 @@ next_minor_8=$(next 8)
 next_patch_8=$(incPatch "$current_8")
 edge_8=$(edge)
 
-## Validate if releases are available
-
-## Generate files
+## 2. Generate files
 
 ### We avoid surprises by uploading the unexpected credentials json file
 mkdir releases
 cd releases
 
+### IMPORTANT:
+### This file might contain some versions that are not available yet.
+### One way to solve this particular case will be by reading the current releases.properties
+### and apply some validations with isAvailable, otherwise then fallback to the previous version.
 {
   echo "current_6=$current_6"
   echo "current_7=$current_7"
@@ -129,39 +140,42 @@ cd releases
   echo "next_minor_8=$next_minor_8"
   echo "next_patch_8=$next_patch_8"
   echo "edge_8=$edge_8"
+  echo "generated=https://github.com/elastic/apm-pipeline-library/actions/workflows/generate-elastic-stack-releases.yml"
 } > releases.properties
 
 ### Generate the files for the current releases
-mkdir -p releases/current
-echo "$current_6" > "releases/current/$(major "$current_6")"
-echo "$current_7" > "releases/current/$(major "$current_7")"
-echo "$current_8" > "releases/current/$(major "$current_8")"
-echo "$current_6" > "releases/current/$(majorminor "$current_6")"
-echo "$current_7" > "releases/current/$(majorminor "$current_7")"
-echo "$current_8" > "releases/current/$(majorminor "$current_8")"
-
+CURRENT_FOLDER=releases/current
+mkdir -p $CURRENT_FOLDER
+echo "$current_6" > "$CURRENT_FOLDER/$(major "$current_6")"
+echo "$current_7" > "$CURRENT_FOLDER/$(major "$current_7")"
+echo "$current_8" > "$CURRENT_FOLDER/$(major "$current_8")"
+echo "$current_6" > "$CURRENT_FOLDER/$(majorminor "$current_6")"
+echo "$current_7" > "$CURRENT_FOLDER/$(majorminor "$current_7")"
+echo "$current_8" > "$CURRENT_FOLDER/$(majorminor "$current_8")"
 
 ### Generate the files for the upcoming releases only if artifacts
 ### are available
-mkdir -p releases/next
+NEXT_FOLDER=releases/next
+mkdir -p $NEXT_FOLDER
 if [ "$(isAvailable "$next_7")" = "true" ] ; then
-  echo "$next_7" > "releases/next/minor-$(major "$next_7")"
-  echo "$next_7" > "releases/next/minor-$(majorminor "$next_7")"
-  echo "$next_7" > "releases/next/patch-$(majorminor "$next_7")"
-  echo "$next_7" > "releases/next/patch-$(major "$next_7")"
+  echo "$next_7" > "$NEXT_FOLDER/minor-$(major "$next_7")"
+  echo "$next_7" > "$NEXT_FOLDER/minor-$(majorminor "$next_7")"
+  echo "$next_7" > "$NEXT_FOLDER/patch-$(majorminor "$next_7")"
+  echo "$next_7" > "$NEXT_FOLDER/patch-$(major "$next_7")"
 fi
 
 if [ "$(isAvailable "$next_minor_8")" = "true" ] ; then
-echo "$next_minor_8" > "releases/next/minor-$(majorminor "$next_minor_8")"
-echo "$next_minor_8" > "releases/next/minor-$(major "$next_minor_8")"
+echo "$next_minor_8" > "$NEXT_FOLDER/minor-$(majorminor "$next_minor_8")"
+echo "$next_minor_8" > "$NEXT_FOLDER/minor-$(major "$next_minor_8")"
 fi
 
 if [ "$(isAvailable "$next_patch_8")" = "true" ] ; then
-  echo "$next_patch_8" > "releases/next/patch-$(major "$next_patch_8")"
-  echo "$next_patch_8" > "releases/next/patch-$(majorminor "$next_patch_8")"
+  echo "$next_patch_8" > "$NEXT_FOLDER/patch-$(major "$next_patch_8")"
+  echo "$next_patch_8" > "$NEXT_FOLDER/patch-$(majorminor "$next_patch_8")"
 fi
 
-mkdir -p releases/edge
+EDGE_FOLDER=releases/edge
+mkdir -p $EDGE_FOLDER
 if [ "$(isAvailable "$edge_8")" = "true" ] ; then
-  echo "$edge_8" > "releases/edge/$(major "$edge_8")"
+  echo "$edge_8" > "$EDGE_FOLDER/$(major "$edge_8")"
 fi
