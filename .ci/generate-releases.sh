@@ -22,6 +22,9 @@
 #
 set -eo pipefail
 
+if [ -n "$RUNNER_DEBUG" ] ; then
+  set -x
+fi
 
 ###############
 ### FUNCTIONS
@@ -172,7 +175,7 @@ cd releases
   echo "next_patch_8=$next_patch_8"
   echo "edge_8=$edge_8"
   echo "generated=https://github.com/elastic/apm-pipeline-library/actions/workflows/generate-elastic-stack-releases.yml"
-} > releases.properties
+} | tee releases.properties
 
 ### Generate the files for the current releases
 CURRENT_FOLDER=releases/current
@@ -211,4 +214,10 @@ if [ "$(isAvailable "$edge_8")" = "true" ] ; then
   echo "$edge_8" > "$EDGE_FOLDER/$(major "$edge_8")"
   # NOTE: when 9.x happens then `main` will point to 9.
   echo "$edge_8" > "$EDGE_FOLDER/main"
+fi
+
+## 3. debug
+if command -v tree ; then
+  echo "The below files have been generated"
+  tree .
 fi
