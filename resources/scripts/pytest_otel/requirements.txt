@@ -5,5 +5,5 @@ opentelemetry-sdk==1.15.0
 psutil==5.9.3
 pytest==7.2.1
 pre-commit==2.21.0
-mypy==0.982
+mypy==1.8.0
 pytest-docker==1.0.1
