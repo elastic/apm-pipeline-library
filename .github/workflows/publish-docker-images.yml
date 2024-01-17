@@ -53,16 +53,17 @@ jobs:
         working-directory: ${{ matrix.working_directory || '.' }}
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+      - name: Get token
+        id: get_token
+        uses: elastic/actions-app-token@master
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          APP_PEM: ${{ secrets.ELASTIC_OBSERVABILITY_APP_PEM }}
+          APP_ID: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
 
       - uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repository }}
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ steps.get_token.outputs.app_token }}
           ref: ${{ matrix.branch }}
 
       - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
