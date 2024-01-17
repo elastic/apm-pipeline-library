@@ -19,14 +19,14 @@ jobs:
 
       - name: Get token
         id: get_token
-        uses: elastic/actions-app-token@master
+        uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d
         with:
-          APP_PEM: ${{ secrets.ELASTIC_OBSERVABILITY_APP_PEM }}
-          APP_ID: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
+          app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
-          token: ${{ steps.get_token.outputs.app_token }}
+          token: ${{ steps.get_token.outputs.token }}
           template: 'deploy-kibana'
           cluster-name-prefix: 'testgithubaction'
           gitops: true
@@ -44,14 +44,14 @@ jobs:
 
       - name: Get token
         id: get_token
-        uses: elastic/actions-app-token@master
+        uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d
         with:
-          APP_PEM: ${{ secrets.ELASTIC_OBSERVABILITY_APP_PEM }}
-          APP_ID: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
+          app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
-          token: ${{ steps.get_token.outputs.app_token }}
+          token: ${{ steps.get_token.outputs.token }}
           template: 'deploy-kibana'
           cluster-name-prefix: 'testgithubaction'
           gitops: false
