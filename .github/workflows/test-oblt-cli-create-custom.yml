@@ -23,6 +23,7 @@ jobs:
         with:
           private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
           app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          repositories: "observability-test-environments"
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
@@ -48,6 +49,7 @@ jobs:
         with:
           private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
           app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          repositories: "observability-test-environments"
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:

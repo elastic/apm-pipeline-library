@@ -59,6 +59,7 @@ jobs:
         with:
           private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
           app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          repositories: ${{ matrix.repository }}
 
       - uses: actions/checkout@v4
         with:
