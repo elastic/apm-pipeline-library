@@ -61,7 +61,7 @@ runs:
         secret: ${{ inputs.dockerVaultSecret }}
 
     - name: Install Updatecli in the runner
-      uses: updatecli/updatecli-action@7443aa3f35bcc6a9061030d73e953bf6ede758f9
+      uses: updatecli/updatecli-action@1c73b91b39cd86ade2dc50f14d6b8581b71bc1f8
 
     - name: Run Updatecli
       run: |-
