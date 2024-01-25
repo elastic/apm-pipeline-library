@@ -1,0 +1,166 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: apm-pipeline-library-release
+  description: GitHub action to run the release process for the apm-pipeline-library
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/workflows/release.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+    github.com/team-slug: elastic/observablt-robots
+  tags:
+    - github
+    - release
+  links:
+    - title: GitHub action
+      url: https://github.com/elastic/apm-pipeline-library/actions/workflows/release.yml
+spec:
+  type: github-actions
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: apm-pipeline-library-opentelemetry
+  description: GitHub action to export traces with opentelemetry
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/workflows/opentelemetry.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+    github.com/team-slug: elastic/observablt-robots
+  tags:
+    - github
+    - opentelemetry
+  links:
+    - title: GitHub action
+      url: https://github.com/elastic/apm-pipeline-library/actions/workflows/opentelemetry.yml
+spec:
+  type: github-actions
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "component:github-action-opentelemetry"
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action-buildkite
+  description: GitHub Action for triggering a build on a Buildkite pipeline.
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/buildkite/action.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+  tags:
+    - github
+  links:
+    - title: Docs
+      url: https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/buildkite
+spec:
+  type: github-composite-action
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action-oblt-cli-create-serverless
+  description: GitHub Action for creating a serverless cluster using oblt-cli.
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/oblt-cli-create-serverless/action.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+  tags:
+    - github
+  links:
+    - title: Docs
+      url: https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/oblt-cli-create-serverless
+spec:
+  type: github-composite-action
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "component:oblt-cli"
+    - "component:github-action-oblt-cli"
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action-oblt-cli
+  description: GitHub Action for running oblt-cli wrapper.
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/oblt-cli/action.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+  tags:
+    - github
+  links:
+    - title: Docs
+      url: https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/oblt-cli
+spec:
+  type: github-composite-action
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "component:oblt-cli"
+    - "component:github-action-setup-oblt-cli"
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action-opentelemetry
+  description: GitHub Action for exporting GitHub actions as OpenTelemetry traces.
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/opentelemetry/action.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+  tags:
+    - github
+    - user:apmmachine
+    - opentelemetry
+  links:
+    - title: Docs
+      url: https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/opentelemetry
+spec:
+  type: github-composite-action
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "user:apmmachine"
+    - "system:github-actions"
+
+---
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action-setup-oblt-cli
+  description: GitHub Action for setting up the oblt-cli wrapper.
+  annotations:
+    backstage.io/source-location: url:https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/setup-oblt-cli/action.yml
+    github.com/project-slug: elastic/apm-pipeline-library
+  tags:
+    - github
+  links:
+    - title: Docs
+      url: https://github.com/elastic/apm-pipeline-library/blob/main/.github/actions/setup-oblt-cli
+spec:
+  type: github-composite-action
+  owner: group:observablt-robots
+  lifecycle: production
+  dependsOn:
+    - "component:oblt-cli"
+    - "system:github-actions"
