@@ -76,6 +76,7 @@ echo "::endgroup::"
 
 URL=$(echo "$RESP" | jq -r ".url")
 WEB_URL=$(echo "$RESP" | jq -r ".web_url")
+echo "::notice title=Buildkite Build URL::${WEB_URL}"
 BUILD_NUMBER=$(echo "$RESP" | jq -r ".number")
 # shellcheck disable=SC2086
 echo "build=$WEB_URL" >> $GITHUB_OUTPUT
