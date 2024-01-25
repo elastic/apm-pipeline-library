@@ -139,7 +139,7 @@ spec:
   owner: group:observablt-robots
   lifecycle: production
   dependsOn:
-    - "resource:user-apmmachine"
+    - "user:apmmachine"
     - "system:github-actions"
 
 ---
