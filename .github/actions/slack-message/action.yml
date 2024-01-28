@@ -114,7 +114,7 @@ runs:
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
       id: slack_message
-      uses: slackapi/slack-github-action@v1.24.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '${{ inputs.channel }}'
         payload: |
