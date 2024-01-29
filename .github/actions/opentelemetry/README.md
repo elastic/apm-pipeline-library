@@ -1,7 +1,6 @@
 
 ## About
-
-GitHub Action to export GitHub actions as OpenTelemetry traces.
+GitHub Action will export GitHub actions as OpenTelemetry traces.
 
 ___
 
@@ -42,7 +41,7 @@ Then, let's create a new workflow to export the data
 name: OpenTelemetry
 on:
   workflow_run:
-    workflows: [ ci ]
+    workflows: ["*"]
     types: [ completed ]
 
 jobs:
