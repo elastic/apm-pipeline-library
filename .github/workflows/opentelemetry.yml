@@ -1,25 +1,11 @@
 ---
+# Look up results at https://ela.st/oblt-ci-cd-stats.
+# There will be one service per GitHub repository, including the org name, and one Transaction per Workflow.
 name: OpenTelemetry Export Trace
 
 on:
   workflow_run:
-    workflows:
-      - actions-test
-      - bump-aliases
-      - bump-golang
-      - bump-elastic-stack
-      - build-test
-      - generate-elastic-stack-releases
-      - generate-elastic-stack-snapshots
-      - job-dsl
-      - licenses
-      - lint
-      - pre-commit
-      - publish-docker-images
-      - pytest_otel-build-test
-      - release-drafter
-      - test-is-member-elastic-org
-      - test-is-pr-author-member-elastic-org
+    workflows: ["*"]
     types: [completed]
 
 permissions:
