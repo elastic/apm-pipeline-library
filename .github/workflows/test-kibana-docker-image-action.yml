@@ -69,6 +69,7 @@ jobs:
       - if: failure()
         uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@main
         with:
+          message: "<!subteam^S03HM5G8CH0>" # @robots-ci (https://api.slack.com/reference/surfaces/formatting#mentioning-groups)
           vaultUrl: ${{ secrets.VAULT_ADDR }}
           vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
           vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
