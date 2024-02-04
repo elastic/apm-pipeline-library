@@ -54,7 +54,7 @@ runs:
   using: "composite"
   steps:
     - name: Get the Slack token from Vault
-      uses: hashicorp/vault-action@v2.7.4
+      uses: hashicorp/vault-action@v2.8.0
       with:
         url: ${{ inputs.url }}
         roleId: ${{ inputs.roleId }}
@@ -114,7 +114,7 @@ runs:
           print("::add-mask::{}".format(json.dumps(json_data)))
     - name: Processing message
       id: slack_message
-      uses: slackapi/slack-github-action@v1.24.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '${{ inputs.channel }}'
         payload: |
