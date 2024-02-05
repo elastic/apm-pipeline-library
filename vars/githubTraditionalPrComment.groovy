@@ -37,12 +37,13 @@ def call(Map args = [:]){
   def id = "${args.get('id', '')}"
   def message = args.containsKey('message') ? args.message : error('githubTraditionalPrComment: message parameter is required')
 
+  def commonUrl = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues"
   if (isPR()) {
     def token = getGithubToken()
-    def url = "https://api.github.com/repos/${env.ORG_NAME}/${env.REPO_NAME}/issues/${env.CHANGE_ID}/comments"
+    def url = "${commonUrl}/${env.CHANGE_ID}/comments"
     def method = 'POST'
     if(id.trim()) {
-       url = "${url}/${id}"
+       url = "${commonUrl}/comments/${id}"
        method = 'PATCH'
     }
     def comment = githubApiCall(token: token, url: url, data: [ "body": "${message}" ], method: method, noCache: true)
