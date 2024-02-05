@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     # FIXME we need a GitHub APP with enough permissions.
-    # - uses: hashicorp/vault-action@v2.7.4
+    # - uses: hashicorp/vault-action@v2.8.0
     #   with:
     #     url: ${{ inputs.url }}
     #     roleId: ${{ inputs.roleId }}
@@ -50,7 +50,7 @@ runs:
     #       echo "GIT_USER=apmmachine" >> $GITHUB_ENV
     #       echo "GIT_EMAIL=apmmachine@users.noreply.github.com" >> $GITHUB_ENV
 
-    - uses: hashicorp/vault-action@v2.7.4
+    - uses: hashicorp/vault-action@v2.8.0
       with:
         url: ${{ inputs.url }}
         roleId: ${{ inputs.roleId }}
