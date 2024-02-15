@@ -24,18 +24,28 @@ async function run() {
       '-e', `GCS_PRIVATE_KEY_ID=${gcsPrivateKeyId}`,
       '-e', `GCS_PROJECT=${gcsProject}`
     ]
+
+    // GCS env vars are secrets
+    for (secret of [gcsClientEmail, gcsPrivateKey, gcsPrivateKeyId, gcsProject]) {
+        core.setSecret(secret);
+    }
+
+    // Forward env vars
     Object.keys(process.env).forEach(function (key) {
       if (key.startsWith("GITHUB_") || key.startsWith("RUNNER_")) {
         let value = process.env[key];
         args.push('-e', `${key}=${value}`);
-        core.setSecret(value);
+
+        if (key === 'GITHUB_TOKEN') {
+          core.setSecret(value);
+        }
       }
+
       // Special case so we can inject env variables
       if (key.startsWith("SNAPSHOTY_")) {
         let value = process.env[key];
         let variable = key.replace("SNAPSHOTY_", "")
         args.push('-e', `${variable}=${value}`);
-        core.setSecret(value);
       }
     });
     args.push('docker.elastic.co/observability-ci/snapshoty:v1', 'snapshoty');

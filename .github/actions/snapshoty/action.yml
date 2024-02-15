@@ -20,5 +20,5 @@ inputs:
     description: 'Google Cloud project id of the service account'
     required: true
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
