@@ -1,13 +1,13 @@
 name: 'Wait for Maven Central Artifact'
 description: 'Waits for an artifact to be available on maven central'
 inputs:
-  groupid:  
+  groupid:
     description: 'Maven group-ID of the artifact'
     required: true
-  artifactid:  
+  artifactid:
     description: 'Maven artifact-ID of the artifact'
     required: true
-  version:  
+  version:
     description: 'Version of the artifact to wait for'
     required: true
 runs:
