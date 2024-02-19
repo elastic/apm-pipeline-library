@@ -70,7 +70,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-      - uses: hashicorp/vault-action@v2.8.0
+      - uses: hashicorp/vault-action@v3.0.0
         with:
           url: ${{ inputs.vaultUrl }}
           roleId: ${{ inputs.vaultRoleId }}
