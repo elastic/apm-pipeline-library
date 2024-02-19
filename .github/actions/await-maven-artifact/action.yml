@@ -1,0 +1,24 @@
+name: 'Wait for Maven Central Artifact'
+description: 'Waits for an artifact to be available on maven central'
+inputs:
+  groupid:  
+    description: 'Maven group-ID of the artifact'
+    required: true
+  artifactid:  
+    description: 'Maven artifact-ID of the artifact'
+    required: true
+  version:  
+    description: 'Version of the artifact to wait for'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Wait for artifact to be available on maven central
+      shell: bash
+      run: |
+        full_url="https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=${{ inputs.groupid }}&a=${{ inputs.artifactid }}&v=${{ inputs.version }}"
+        until curl -fs "${full_url}" > /dev/null
+        do
+          echo "Artifact '${{ inputs.groupid }}:${{ inputs.artifactid }}:${{ inputs.version }}' not found on maven central. Sleeping 30 seconds, retrying afterwards"
+          sleep 30s
+        done

@@ -6,6 +6,8 @@ release.properties
 target
 jenkins-cli.jar
 
+# Mac filesystem management files
+**/.DS_Store 
 
 # For the BATS testing
 bats-core/
