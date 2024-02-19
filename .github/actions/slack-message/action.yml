@@ -47,9 +47,6 @@ outputs:
   threadTimestamp:
     description: 'The timestamp on the message that was posted into Slack when using bot token'
     value: ${{ steps.set_outputs.outputs.threadTimestamp }}
-  bar:
-    description: test
-    value: ${{ steps.set_outputs.outputs.bar }}
 runs:
   using: "composite"
   steps:
@@ -128,4 +125,3 @@ runs:
         script: |
           core.exportVariable('SLACK_BOT_TOKEN', '')
           core.setOutput('threadTimestamp', '${{ steps.slack_message.outputs.thread_ts }}')
-          core.setOutput('bar', 'baz')
