@@ -1,5 +1,5 @@
 name: 'Is Member of Elastic org'
-description: 'Check if someone is member of the GitHub organization.'
+description: 'Check if someone is a member of the GitHub organization.'
 inputs:
   username:
     description: 'The GitHub user'
