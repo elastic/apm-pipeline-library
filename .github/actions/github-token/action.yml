@@ -1,6 +1,6 @@
 ---
 name: 'Get GitHub Personal Access Token'
-description: 'Get a temporal GitHub Token using a GitHub App ID and a private key.'
+description: 'Get a temporary GitHub Token using a GitHub App ID and a private key.'
 inputs:
   url:
     description: 'Vault URL'

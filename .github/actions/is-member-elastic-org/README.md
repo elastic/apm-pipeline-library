@@ -1,6 +1,6 @@
 ## About
 
-GitHub Action to check if someone is member of the GitHub organization.
+GitHub Action to check if someone is a member of the GitHub organization.
 
 * [Usage](#usage)
   * [Configuration](#configuration)
@@ -30,8 +30,10 @@ jobs:
         with:
           username: ${{ github.event.issue.user.login }}
           token: ${{ secrets.PAT_TOKEN }}
-      - if: steps.is_elastic_member.outputs.result == true
+      - if: contains(steps.is_elastic_member.outputs.result, 'true')
         run: echo '${{ github.event.issue.user.login }} is member'
+      - if: contains(steps.is_elastic_member.outputs.result, 'false')
+        run: echo '${{ github.event.issue.user.login }} is not a member'
 ```
 
 
@@ -41,12 +43,12 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name              | Type    | Default                     | Description                        |
-|-------------------|---------|-----------------------------|------------------------------------|
-| `username`            | String  |                             | The GitHub user name |
+| Name         | Type    | Default           | Description          |
+|--------------|---------|-------------------|----------------------|
+| `username`   | String  |                   | The GitHub user name |
 
 ### outputs
 
-| Name              | Type    | Description                 |
-|-------------------|---------| ----------------------------|
-| `result`          | Boolean | Whether the user is member. |
+| Name              | Type                       | Description                 |
+|-------------------|----------------------------| ----------------------------|
+| `result`          | String (`true` or `false`) | Whether the user is member. |
