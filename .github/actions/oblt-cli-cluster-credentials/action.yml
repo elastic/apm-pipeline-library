@@ -13,12 +13,15 @@ inputs:
   vault-role-id:
     description: 'Vault role ID'
     required: true
+    deprecationMessage: "This field won't be needed once migrated to a different Secrets system."
   vault-secret-id:
     description: 'Vault secret ID'
     required: true
+    deprecationMessage: "This field won't be needed once migrated to a different Secrets system."
   vault-url:
     description: 'Vault URL'
     required: true
+    deprecationMessage: "This field won't be needed once migrated to a different Secrets system."
 runs:
   using: "composite"
   steps:
