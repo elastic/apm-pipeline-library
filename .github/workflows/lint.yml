@@ -29,4 +29,4 @@ jobs:
       run: ${{ steps.get_actionlint.outputs.executable }} -color -format '${{ env.FORMAT }}' -ignore '${{ env.IGNORE }}'
       env:
         FORMAT: '{{range $err := .}}::error file={{$err.Filepath}},line={{$err.Line}},col={{$err.Column}}::{{$err.Message}}%0A```%0A{{replace $err.Snippet "\\n" "%0A"}}%0A```\n{{end}}'
-        IGNORE: 'SC2086:'
+        IGNORE: 'property "uploaded" is not defined in object type {}'

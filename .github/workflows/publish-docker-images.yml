@@ -81,21 +81,16 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
 
-      - name: Setup Env
-        run: |
-          {
-            echo "NAME=${{ matrix.name }}"
-            echo "TAG=${{ matrix.tag || 'latest' }}"
-            echo "PUSH=${{ matrix.push }}"
-          } >> $GITHUB_ENV
-
       - name: Prepare
         if: ${{ matrix.prepare_script }}
         run: ${{ matrix.prepare_script }}
 
       - name: Generate Image Name
         id: generate-image-name
-        run: echo "image_name=${{ env.REGISTRY }}/${{ env.PREFIX }}/${{ env.NAME }}:${{ env.TAG }}" >> $GITHUB_OUTPUT
+        run: echo "image_name=${{ env.REGISTRY }}/${{ env.PREFIX }}/${{ env.NAME }}:${{ env.TAG }}" >> "$GITHUB_OUTPUT"
+        env:
+          NAME: ${{ matrix.name }}
+          TAG: ${{ matrix.tag || 'latest' }}
 
       - name: Build
         run: |
@@ -114,7 +109,7 @@ jobs:
         run: ${{ matrix.test_script }}
 
       - name: Push
-        if: ${{ env.PUSH != 'false' }}
+        if: ${{ matrix.push != 'false' }}
         run: |
           if [ -z "${{ matrix.push_script }}" ]; then
             docker push ${{ steps.generate-image-name.outputs.image_name }}
