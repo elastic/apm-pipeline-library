@@ -95,6 +95,9 @@ while [ "$STATE" == "running" ] || [ "$STATE" == "scheduled" ] || [ "$STATE" == 
   RESP=$(curl \
     -H "Authorization: Bearer $BK_TOKEN" \
     --no-progress-meter \
+    --retry 5 \
+    --retry-delay \
+    --retry-all-errors \
     "$URL")
   STATE=$(echo "$RESP" | jq -r ".state")
   echo -n "."
@@ -107,10 +110,15 @@ if [ "$PRINT_BUILD" == "true" ]; then
   echo "::group::BuildLogs"
   for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url | select(. != null)"); do
     echo "Fetching logs $logs_url"
-    curl \
-      -H "Authorization: Bearer $BK_TOKEN" \
-      --no-progress-meter \
-      "$logs_url"
+    if ! curl \
+        -H "Authorization: Bearer $BK_TOKEN" \
+        --no-progress-meter \
+        --retry 5 \
+        --retry-delay \
+        --retry-all-errors \
+        "$logs_url" ; then
+      echo "::warning::Fetching logs from Buildkite failed. Check the logs at $WEB_URL instead."
+    fi
   done
   echo "::endgroup::"
 fi
