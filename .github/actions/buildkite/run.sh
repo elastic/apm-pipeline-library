@@ -96,7 +96,7 @@ while [ "$STATE" == "running" ] || [ "$STATE" == "scheduled" ] || [ "$STATE" == 
     -H "Authorization: Bearer $BK_TOKEN" \
     --no-progress-meter \
     --retry 5 \
-    --retry-delay \
+    --retry-delay 5 \
     --retry-all-errors \
     "$URL")
   STATE=$(echo "$RESP" | jq -r ".state")
@@ -114,7 +114,7 @@ if [ "$PRINT_BUILD" == "true" ]; then
         -H "Authorization: Bearer $BK_TOKEN" \
         --no-progress-meter \
         --retry 5 \
-        --retry-delay \
+        --retry-delay 5 \
         --retry-all-errors \
         "$logs_url" ; then
       echo "::warning::Fetching logs from Buildkite failed. Check the logs at $WEB_URL instead."
