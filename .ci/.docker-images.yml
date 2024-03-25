@@ -137,15 +137,6 @@ images:
     test_script: "cd .. && make test-vmware-mock"
     working_directory: ".ci/docker/vmware-mock"
 
-  # APM Pipeline Library Extra Docker Images
-
-  - name: "jenkins-agent"
-    repository: "elastic/apm-pipeline-library"
-    working_directory: ".ci/docker"
-    build_script: "docker build --force-rm -t ${REGISTRY}/${PREFIX}/${NAME}:${TAG} ${NAME}"
-    push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
-    test_script: "make simple-test-${NAME}"
-
   # APM Agent Python Docker Images
 
   - name: "apm-agent-python-testing"
