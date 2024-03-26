@@ -94,7 +94,6 @@ jobs:
 
       - name: Build
         run: |
-          set -x
           echo "DEBUG: ${{ matrix.build_script }}"
           if [ -z "${{ matrix.build_script}}" ]; then
             echo "DEBUG: run docker build"
