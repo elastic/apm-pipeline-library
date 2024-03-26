@@ -2,19 +2,9 @@
 name: Buildkite Pipeline GitHub Action
 description: A GitHub Action for triggering a build on a Buildkite pipeline.
 inputs:
-  vaultUrl:
-    description: 'Vault URL'
+  buildkite-token:
+    description: 'Buildkite token.'
     required: true
-  vaultRoleId:
-    description: 'Vault role ID'
-    required: true
-  vaultSecretId:
-    description: 'Vault secret ID'
-    required: true
-  secret:
-    description: 'Vault secret with the token field.'
-    default: secret/observability-team/ci/buildkite-automation-v3
-    required: false
   org:
     description: 'BuildKite org to interact with.'
     default: elastic
@@ -70,15 +60,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-      - uses: hashicorp/vault-action@v3.0.0
-        with:
-          url: ${{ inputs.vaultUrl }}
-          roleId: ${{ inputs.vaultRoleId }}
-          secretId: ${{ inputs.vaultSecretId }}
-          method: approle
-          secrets: |
-            ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
-
       - id: trigger-buildkite
         name: Trigger Buildkite pipeline
         run: |
@@ -88,7 +69,7 @@ runs:
             '${{ inputs.buildEnvVars }}' \
             '${{ inputs.waitFor }}' \
             '${{ inputs.printBuildLogs }}' \
-            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
+            '${{ inputs.buildkite-token }}' \
             '${{ inputs.triggerMessage }}' \
             '${{ inputs.pipelineVersion || inputs.pipelineCommit }}' \
             '${{ inputs.pipelineBranch }}'
@@ -107,18 +88,12 @@ runs:
           ARTIFACT_PATH: ${{ inputs.artifactPath }}
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always() && steps.download-artifacts.outcome == 'success'
         with:
           name: ${{ inputs.artifactName }}
           path: ${{ inputs.artifactPath }}
           if-no-files-found: ${{ inputs.artifactIfNoFilesFound }}
-
-      - name: Reset environment
-        if: always()
-        shell: bash
-        run: |
-          echo "BUILDKITE_API_ACCESS_TOKEN=" >> $GITHUB_ENV
 
       - name: Cancel Buildkite pipeline
         if: cancelled() && inputs.waitFor && steps.trigger-buildkite.outputs.build_number
@@ -127,5 +102,5 @@ runs:
             '${{ inputs.org }}' \
             '${{ inputs.pipeline }}' \
             '${{ steps.trigger-buildkite.outputs.build_number }}' \
-            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}'
+            '${{ inputs.buildkite-token }}'
         shell: bash
