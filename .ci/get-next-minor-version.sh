@@ -25,8 +25,9 @@ set -eo pipefail
 URL="https://artifacts-api.elastic.co/v1"
 NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 
+# 8.13.0+build202403222138 is unexpected let's exclude it
 curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" \
-    | jq -r '.versions[] | select(contains("SNAPSHOT")|not)' \
+    | jq -r '.versions[] | select(contains("SNAPSHOT")|not) | select(contains("+build")|not)' \
     | jq -R . | jq -s '. | sort_by(.| split(".") | map(tonumber))' \
     | jq -r '.[]|select(. | startswith("8"))' \
     | tail -n1
