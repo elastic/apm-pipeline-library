@@ -30,14 +30,6 @@ templates:
 
 images:
 
-  # observability-test-environments Docker Images
-
-  - name: "functional-opbeans"
-    repository: "elastic/observability-test-environments"
-    working_directory: "tests"
-    build_script: "docker build --force-rm -t ${REGISTRY}/${PREFIX}/${NAME}:${TAG} ${NAME} ."
-    push_script: "docker push ${REGISTRY}/${PREFIX}/${NAME}:${TAG}"
-
   # observability-robots Docker Images
 
   - name: "picklesdoc"
