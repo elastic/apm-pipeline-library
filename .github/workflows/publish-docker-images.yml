@@ -98,7 +98,8 @@ jobs:
           if [ -z "${{ matrix.build_script}}" ]; then
             echo "DEBUG: run docker build"
             docker build \
-              --cache-from=${{ steps.generate-image-name.outputs.image_name }} \
+              --cache-from=type=gha \
+              --cache-to=type=gha,mode=max \
               ${{ matrix.build_opts }} \
               -t ${{ steps.generate-image-name.outputs.image_name }} \
               .
