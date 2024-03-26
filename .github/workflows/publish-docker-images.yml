@@ -103,6 +103,9 @@ jobs:
           else
             bash -c "${{ matrix.build_script }}"
           fi
+        env:
+          NAME: ${{ matrix.name }}
+          TAG: ${{ matrix.tag || 'latest' }}
 
       - name: Test
         if: ${{ matrix.test_script }}
