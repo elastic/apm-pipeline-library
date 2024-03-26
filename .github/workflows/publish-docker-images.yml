@@ -94,13 +94,17 @@ jobs:
 
       - name: Build
         run: |
+          set -x
+          echo "DEBUG: ${{ matrix.build_script }}"
           if [ -z "${{ matrix.build_script}}" ]; then
+            echo "DEBUG: run docker build"
             docker build \
               --cache-from=${{ steps.generate-image-name.outputs.image_name }} \
               ${{ matrix.build_opts }} \
               -t ${{ steps.generate-image-name.outputs.image_name }} \
               .
           else
+            echo "DEBUG: run build_script"
             bash -c "${{ matrix.build_script }}"
           fi
         env:
