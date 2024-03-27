@@ -177,3 +177,8 @@ images:
     tag: "12"
     working_directory: ".ci/docker/node-playwright"
     build_opts: "--build-arg NODEJS_VERSION='14'"
+
+  - name: opentelemetry-collector-contrib
+    working_directory: "apps/opentelemetry-collector-contrib"
+    repository: "elastic/observability-robots"
+    build_opts: "--no-cache-filter=clone"
