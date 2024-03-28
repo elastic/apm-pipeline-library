@@ -155,6 +155,6 @@ images:
     build_opts: "--build-arg NODEJS_VERSION='14'"
 
   - name: opentelemetry-collector-contrib
-    working_directory: "apps/opentelemetry-collector-contrib"
+    working_directory: "projects/opentelemetry-collector-contrib-githubactionslogreceiver/build"
     repository: "elastic/observability-robots"
     build_opts: "--no-cache-filter=clone"
