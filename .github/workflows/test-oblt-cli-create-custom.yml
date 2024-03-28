@@ -17,15 +17,17 @@ jobs:
       - name: Setup Git
         uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+      - name: Get token
+        id: get_token
+        uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
+          app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          repositories: "observability-test-environments"
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ steps.get_token.outputs.token }}
           template: 'deploy-kibana'
           cluster-name-prefix: 'testgithubaction'
           gitops: true
@@ -41,15 +43,17 @@ jobs:
       - name: Setup Git
         uses: elastic/apm-pipeline-library/.github/actions/setup-git@main
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+      - name: Get token
+        id: get_token
+        uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          private-key: ${{ secrets.ELASTIC_OBSERVABILITY_PRIVATE_KEY }}
+          app-id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          repositories: "observability-test-environments"
 
       - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli-create-custom@main
         with:
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ steps.get_token.outputs.token }}
           template: 'deploy-kibana'
           cluster-name-prefix: 'testgithubaction'
           gitops: false
