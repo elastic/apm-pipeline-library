@@ -64,6 +64,7 @@ runs:
       - id: trigger-buildkite
         name: Trigger Buildkite pipeline
         run: |
+          set -x
           ${{ github.action_path }}/run.sh \
             '${{ inputs.org }}' \
             '${{ inputs.pipeline }}' \
