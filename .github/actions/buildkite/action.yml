@@ -22,6 +22,7 @@ inputs:
     required: false
   buildEnvVars:
     description: 'Additional environment variables to set on the build.'
+    default: ''
     required: false
   pipelineBranch:
     description: 'Branch the commit belongs to. This allows you to take advantage of your pipeline and step-level branch filtering rules.'
@@ -66,10 +67,10 @@ runs:
           ${{ github.action_path }}/run.sh \
             '${{ inputs.org }}' \
             '${{ inputs.pipeline }}' \
-            '${{ inputs.buildEnvVars }}' \
             '${{ inputs.waitFor }}' \
             '${{ inputs.printBuildLogs }}' \
             '${{ inputs.buildkite-token }}' \
+            '${{ inputs.buildEnvVars }}' \
             '${{ inputs.triggerMessage }}' \
             '${{ inputs.pipelineVersion || inputs.pipelineCommit }}' \
             '${{ inputs.pipelineBranch }}'

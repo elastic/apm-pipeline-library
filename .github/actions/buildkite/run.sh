@@ -5,12 +5,13 @@
 # Parameters:
 #  $1 -> the BK org. Mandatory.
 #  $2 -> the BK pipeline. Mandatory.
-#  $3 -> the build env vars in json format. Mandatory. "" if empty
-#  $4 -> whether to wait for. Mandatory.
-#  $5 -> whether to report logs. Mandatory
-#  $6 -> the BK token. Mandatory.
-#  $7 -> the BK build message. Mandatory.
-#  $8 -> the Pipeline version. Mandatory.
+#  $3 -> whether to wait for. Mandatory.
+#  $4 -> whether to report logs. Mandatory
+#  $5 -> the BK token. Mandatory.
+#  $6 -> the build env vars in json format. Optional. "" if empty
+#  $7 -> the BK build message. Optional. "Triggered automatically with GH actions" if empty
+#  $8 -> the Pipeline version. Optional. "HEAD" if empty
+#  $9 -> the Pipeline branch. Optional. "main" if empty
 #
 # NOTE:
 #  ignore_pipeline_branch_filters: By default Buildkite works only on master. As we want
@@ -21,10 +22,10 @@ set -euo pipefail
 MSG="parameter missing."
 ORG=${1:?$MSG}
 PIPELINE=${2:?$MSG}
-BUILD_VARS=${3:-''}
-WAIT_FOR=${4:?$MSG}
-PRINT_BUILD=${5:?$MSG}
-BK_TOKEN=${6:?$MSG}
+WAIT_FOR=${3:?$MSG}
+PRINT_BUILD=${4:?$MSG}
+BK_TOKEN=${5:?$MSG}
+BUILD_VARS=${6:-''}
 MESSAGE=${7:-"Triggered automatically with GH actions"}
 PIPELINE_VERSION=${8:-"HEAD"}
 PIPELINE_BRANCH=${9:-"main"}
