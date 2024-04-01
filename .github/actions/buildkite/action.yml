@@ -86,6 +86,7 @@ runs:
           PIPELINE: ${{ inputs.pipeline }}
           BUILD_NUMBER: ${{ steps.trigger-buildkite.outputs.build_number }}
           ARTIFACT_PATH: ${{ inputs.artifactPath }}
+          BUILDKITE_API_ACCESS_TOKEN: ${{ inputs.buildkite-token }}
         shell: bash
 
       - uses: actions/upload-artifact@v4
