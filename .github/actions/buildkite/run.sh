@@ -62,22 +62,23 @@ if [[ -n "$BUILD_VARS" ]]; then
 fi
 
 set +x
-RESP=$(curl \
+RESPONSE=$(mktemp)
+curl \
   --no-progress-meter \
   -H "Authorization: Bearer $BK_TOKEN" \
   "https://api.buildkite.com/v2/organizations/$ORG/pipelines/$PIPELINE/builds" \
   -X "POST" \
-  -d "$JSON")
+  -d "$JSON" > "$RESPONSE"
 
 echo "::group::Output"
 echo "Triggered build:"
-echo "$RESP" | jq .
+jq . "$RESPONSE"
 echo "::endgroup::"
 
-URL=$(echo "$RESP" | jq -r ".url")
-WEB_URL=$(echo "$RESP" | jq -r ".web_url")
+URL=$(jq -r ".url" "$RESPONSE")
+WEB_URL=$(jq -r ".web_url" "$RESPONSE")
 echo "::notice title=Buildkite Build URL::${WEB_URL}"
-BUILD_NUMBER=$(echo "$RESP" | jq -r ".number")
+BUILD_NUMBER=$(jq -r ".number" "$RESPONSE")
 # shellcheck disable=SC2086
 echo "build=$WEB_URL" >> $GITHUB_OUTPUT
 echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
@@ -92,14 +93,14 @@ STATE="running"
 echo "Waiting for build $WEB_URL to run "
 # https://buildkite.com/docs/pipelines/defining-steps#build-states
 while [ "$STATE" == "running" ] || [ "$STATE" == "scheduled" ] || [ "$STATE" == "creating" ]; do
-  RESP=$(curl \
+  curl \
     -H "Authorization: Bearer $BK_TOKEN" \
     --no-progress-meter \
     --retry 5 \
     --retry-delay 5 \
     --retry-all-errors \
-    "$URL")
-  STATE=$(echo "$RESP" | jq -r ".state")
+    "$URL" > "$RESPONSE"
+  STATE=$(jq -r ".state" "$RESPONSE")
   echo -n "."
   sleep 1
 done
@@ -108,7 +109,7 @@ echo "::endgroup::"
 
 if [ "$PRINT_BUILD" == "true" ]; then
   echo "::group::BuildLogs"
-  for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url | select(. != null)"); do
+  for logs_url in $(jq -r ".jobs[].raw_log_url | select(. != null)" "$RESPONSE"); do
     echo "Fetching logs $logs_url"
     if ! curl \
         -H "Authorization: Bearer $BK_TOKEN" \
