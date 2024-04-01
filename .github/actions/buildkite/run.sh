@@ -62,7 +62,7 @@ if [[ -n "$BUILD_VARS" ]]; then
   fi
 fi
 
-set +x
+set -x
 RESPONSE=$(mktemp)
 curl \
   --no-progress-meter \
