@@ -129,6 +129,11 @@ images:
     test_script: "cd .. && make test-vmware-mock"
     working_directory: ".ci/docker/vmware-mock"
 
+  - <<: *apm-agent-library-docker-images
+    name: "fpm"
+    test_script: "cd .. && make test-fpm"
+    working_directory: ".ci/docker/fpm"
+
   # APM Agent Python Docker Images
 
   - name: "apm-agent-python-testing"
