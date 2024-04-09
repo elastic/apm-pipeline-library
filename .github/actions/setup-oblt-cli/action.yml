@@ -4,15 +4,19 @@ description: Setup oblt-cli
 
 inputs:
   github-token:
-    description: 'The GitHub access token.'
+    description: "The GitHub access token."
     required: true
   slack-channel:
-    description: 'The slack channel to notify the status.'
-    default: '#observablt-bots'
+    description: "The slack channel to notify the status."
+    default: "#observablt-bots"
     required: false
   username:
-    description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
-    default: 'apmmachine'
+    description: "Username to show in the deployments with oblt-cli, format: [a-z0-9]"
+    default: "apmmachine"
+    required: false
+  version:
+    description: "Install a specific version of oblt-cli"
+    default: "6.5.3"
     required: false
 runs:
   using: composite
@@ -21,6 +25,7 @@ runs:
       run: ${{ github.action_path }}/download.sh
       env:
         GH_TOKEN: ${{ inputs.github-token }}
+        OBLT_CLI_VERSION: ${{ inputs.version }}
       shell: bash
     - name: Configure oblt-cli
       run: >

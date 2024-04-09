@@ -31,13 +31,12 @@ jobs:
           token: ${{ env.GITHUB_TOKEN }}
       - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
         with:
-          slack-channel: '#observablt-bots' # default
-          username: 'apmmachine' # default
+          slack-channel: "#observablt-bots" # default
+          username: "apmmachine" # default
           github-token: ${{ env.GITHUB_TOKEN }}
 
       - run: oblt-cli cluster list
 ```
-
 
 ## Customizing
 
@@ -45,8 +44,9 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name            | Type    | Default                     | Description                                                          |
-|-----------------|---------|-----------------------------|----------------------------------------------------------------------|
-| `slack-channel` | String  | `#observablt-bots`          | The slack channel to be configured in the oblt-cli.                  |
-| `github-token`  | String  |                             | The GitHub token with permissions fetch releases.                    |
-| `username`      | String  | `apmmachine`                | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
+| Name            | Type   | Default            | Description                                                          |
+| --------------- | ------ | ------------------ | -------------------------------------------------------------------- |
+| `slack-channel` | String | `#observablt-bots` | The slack channel to be configured in the oblt-cli.                  |
+| `github-token`  | String |                    | The GitHub token with permissions fetch releases.                    |
+| `username`      | String | `apmmachine`       | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
+| `version`       | String | `6.5.3`            | Install a specific version of oblt-cli                               |
