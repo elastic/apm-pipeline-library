@@ -4,7 +4,6 @@
 # yaml-language-server: $schema=./.docker-images.schema.json
 
 templates:
-
   - &apm-agent-library-docker-images
     repository: "elastic/apm-pipeline-library"
     working_directory: ".ci/docker"
@@ -29,7 +28,6 @@ templates:
     repository: "elastic/observability-dev"
 
 images:
-
   # observability-robots Docker Images
 
   - name: "picklesdoc"
@@ -128,11 +126,6 @@ images:
     name: "vmware-mock"
     test_script: "cd .. && make test-vmware-mock"
     working_directory: ".ci/docker/vmware-mock"
-
-  - <<: *apm-agent-library-docker-images
-    name: "fpm"
-    test_script: "cd .. && make test-fpm"
-    working_directory: ".ci/docker/fpm"
 
   # APM Agent Python Docker Images
 
