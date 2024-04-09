@@ -29,9 +29,12 @@ else
   exit 1
 fi
 
-echo "::warning::It will download the version 6.5.3. Latest version does not support Vault access anymore."
+if [ "${OBLT_CLI_VERSION}" == "6.5.3" ]; then
+  echo "::warning::It will download the version 6.5.3. Latest version does not support Vault access anymore."
+fi
+
 # TODO: use the latest available version.
-gh release download 6.5.3 \
+gh release download "${OBLT_CLI_VERSION}" \
   --repo elastic/observability-test-environments \
   -p "${PATTERN}" \
   --output - | tar -xz -C "${BIN_DIR}"
