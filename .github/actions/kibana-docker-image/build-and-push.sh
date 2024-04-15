@@ -26,6 +26,7 @@ export KBN_NP_PLUGINS_BUILT=true
 time node scripts/build \
   --skip-os-packages \
   --skip-canvas-shareable-runtime \
+  --skip-cdn-assets \
   --skip-docker-contexts
 echo "::endgroup::"
 
@@ -39,6 +40,7 @@ if [ "${SERVERLESS}" == "false" ] ; then
         --docker-push \
         --skip-archives \
         --skip-initialize \
+        --skip-cdn-assets \
         --skip-docker-contexts \
         --skip-docker-ubi \
         --skip-docker-ubuntu \
@@ -55,6 +57,7 @@ else
         --docker-namespace="${DOCKER_NAMESPACE}" \
         --docker-tag="${DOCKER_TAG}" \
         --docker-push \
+        --skip-cdn-assets \
         --skip-docker-contexts \
         --skip-docker-ubi \
         --skip-docker-ubuntu \
