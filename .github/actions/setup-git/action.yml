@@ -9,11 +9,11 @@ inputs:
   username:
     description: 'Git username.'
     required: false
-    default: 'apmmachine'
+    default: 'obltmachine'
   email:
     description: 'Git email.'
     required: false
-    default: 'apmmachine@users.noreply.github.com'
+    default: 'obltmachine@users.noreply.github.com'
   trace:
     description: 'Enable git trace.'
     required: false
