@@ -38,9 +38,9 @@ jobs:
         with:
           token: ${{ github.token }}
       - name: Check GIT_USER
-        run: test "$GIT_USER" = "apmmachine"
+        run: test "$GIT_USER" = "obltmachine"
       - name: Check GIT_EMAIL
-        run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
+        run: test "$GIT_EMAIL" = "obltmachine@users.noreply.github.com"
 
   setup-git-without-token:
     runs-on: ubuntu-latest
@@ -48,9 +48,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-git
       - name: Check GIT_USER
-        run: test "$GIT_USER" = "apmmachine"
+        run: test "$GIT_USER" = "obltmachine"
       - name: Check GIT_EMAIL
-        run: test "$GIT_EMAIL" = "apmmachine@users.noreply.github.com"
+        run: test "$GIT_EMAIL" = "obltmachine@users.noreply.github.com"
 
   combined-status:
     if: always()

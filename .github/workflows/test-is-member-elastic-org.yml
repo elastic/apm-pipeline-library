@@ -39,7 +39,7 @@ jobs:
       - uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@main
         id: is_elastic_member
         with:
-          username: apmmachine
+          username: obltmachine
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Assert is member

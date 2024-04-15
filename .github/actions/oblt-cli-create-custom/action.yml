@@ -22,7 +22,7 @@ inputs:
     required: false
   username:
     description: 'Username to show in the deployments with oblt-cli, format: [a-z0-9]'
-    default: 'apmmachine'
+    default: 'obltmachine'
     required: false
   gitops:
     description: 'Whether to provide the GitOps metadata to the oblt-cli'
