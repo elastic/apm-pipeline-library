@@ -41,6 +41,7 @@ Following inputs can be used as `step.with` keys
 | `issue_url`       | String  | `${{ github.event.comment.issue_url }}`| The GitHub issue URL.  |
 | `comment_url`     | String  | `${{ github.event.comment.html_url }}` | The GitHub comment URL.  |
 | `comment_id`      | String  | `${{ github.event.comment.id }}`       | The GitHub comment ID.  |
+| `pr_label`        | String  | `ci:project-deploy-observability`      | The GitHub label to tag the PR.  |
 | `user`            | String  | `${{ github.triggering_actor }}`       | The GitHub user avatar           |
 | `repository`      | String  | `${{ github.repository }}`             | The GitHub repository, ORG/REPO. |
 | `serverless`      | Boolean | `false`                                | Whether to deploy a serverless deployment. |

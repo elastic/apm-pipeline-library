@@ -19,6 +19,9 @@ inputs:
   issue_url:
     description: 'The GitHub Issue URL'
     default: ${{ github.event.comment.issue_url }}
+  pr_label:
+    description: 'The GitHub label to be tagged'
+    default: "ci:project-deploy-observability"
   repository:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
@@ -49,6 +52,20 @@ runs:
       with:
         username: ${{ inputs.user }}
         token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Get PR given the issue_url (either edge-lite or release)
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        PR=$(basename ${{ inputs.issue_url }})
+        echo "PR=${PR}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Add GitHub label
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: gh pr edit ${PR} --add-label "${{ inputs.pr_label }}" --repo "${{ inputs.repository }}"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
 
     - name: Get cluster given the target branch (either edge-lite or release)
       if: contains(steps.is_elastic_member.outputs.result, 'true')
