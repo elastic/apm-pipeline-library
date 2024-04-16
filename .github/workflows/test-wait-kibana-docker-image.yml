@@ -3,7 +3,9 @@ name: test-wait-kibana-docker-image
 
 on:
   workflow_dispatch:
-
+  push:
+    branches: [feature/wait-for-kibana-docker]
+  
 permissions:
   contents: read
 
