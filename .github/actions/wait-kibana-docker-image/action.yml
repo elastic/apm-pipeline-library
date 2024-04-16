@@ -1,0 +1,53 @@
+name: Wait Kibana Docker Image
+description: |
+  An Action to wait for the Kibana docker images given a git ref.
+inputs:
+  github-repository:
+    description: The git repository.
+    default: "elastic/kibana"
+    required: false
+  token:
+    description: The github token.
+    required: true
+  git-ref:
+    description: "The git ref of elastic/kibana to build the image from. (Default: default branch)"
+    required: false
+  checkout-path:
+    description: The path to checkout the git repository to.
+    required: false
+    default: "kibana-repo-checkout"
+
+outputs:
+  ref:
+    description: |
+      Will be deprecated. Use 'kibana-docker-image' instead.
+      The reference of the Docker image that was built in the format image:tag.
+    value: ${{ steps.vars.outputs.docker-reference }}
+  kibana-docker-image:
+    description: The reference of the Docker image that was built in the format image:tag.
+    value: ${{ steps.vars.outputs.docker-reference }}
+  kibana-commit-sha:
+    description: The git commit SHA of the image that was built.
+    value: ${{ steps.vars.outputs.kibana-commit-sha }}
+  kibana-stack-version:
+    description: The elastic stack version of Kibana that was built.
+    value: ${{ steps.vars.outputs.kibana-stack-version }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.github-repository }}
+        ref: ${{ inputs.git-ref }}
+        path: ${{ inputs.checkout-path }}
+        token: ${{ inputs.token }}
+
+    - name: Wait for build to succeed
+      uses: fountainhead/action-wait-for-check@v1.2.0
+      id: wait-for-build
+      with:
+        token: ${{ inputs.token }}
+        checkName: "buildkite/docs-build-pr"
+        ref: '0db4e2fd8d6822ecd8a3762b005a138cc9ccf68e'
+
