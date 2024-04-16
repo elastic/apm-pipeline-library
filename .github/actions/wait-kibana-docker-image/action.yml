@@ -2,10 +2,6 @@ name: Wait Kibana Docker Image
 description: |
   An Action to wait for the Kibana docker images given a git ref.
 inputs:
-  github-repository:
-    description: The git repository.
-    default: "elastic/kibana"
-    required: false
   token:
     description: The github token.
     required: true
@@ -38,7 +34,7 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        repository: ${{ inputs.github-repository }}
+        repository: "elastic/kibana"
         ref: ${{ inputs.git-ref }}
         path: ${{ inputs.checkout-path }}
         token: ${{ inputs.token }}
@@ -48,6 +44,8 @@ runs:
       id: wait-for-build
       with:
         token: ${{ inputs.token }}
+        repo: "kibana"
+        owner: "elastic"
         checkName: "buildkite/docs-build-pr"
         ref: '0db4e2fd8d6822ecd8a3762b005a138cc9ccf68e'
 
