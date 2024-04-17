@@ -2,7 +2,7 @@
 set -eo pipefail
 
 if [ -z "${JENKINS_URL}" ] ; then
-  JENKINS_URL=https://apm-ci.elastic.co
+  JENKINS_URL=https://beats-ci.elastic.co
 else
   # See https://jenkins.io/doc/book/pipeline/development/#linter
   JENKINS_URL=${JENKINS_URL%%/}  ## Remove last / if it's defined
