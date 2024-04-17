@@ -40,6 +40,6 @@ Following inputs can be used as `step.with` keys
 | Name           | Type    | Default                              | Description        |
 |----------------|---------|---------------------------------------|--------------------|
 | `username`     | String  | `obltmachine`                         | Git username       |
-| `secretId`     | String  | `obltmachine@users.noreply.github.com`| Git email.         |
+| `secretId`     | String  | `150269514+obltmachine@users.noreply.github.com`| Git email.         |
 | `trace`        | Boolean | `false`                               | Enable git trace.  |
 | `token`        | String  | `github.token`                        | GitHub token.      |

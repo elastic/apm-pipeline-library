@@ -40,7 +40,7 @@ jobs:
       - name: Check GIT_USER
         run: test "$GIT_USER" = "obltmachine"
       - name: Check GIT_EMAIL
-        run: test "$GIT_EMAIL" = "obltmachine@users.noreply.github.com"
+        run: test "$GIT_EMAIL" = "150269514+obltmachine@users.noreply.github.com"
 
   setup-git-without-token:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
       - name: Check GIT_USER
         run: test "$GIT_USER" = "obltmachine"
       - name: Check GIT_EMAIL
-        run: test "$GIT_EMAIL" = "obltmachine@users.noreply.github.com"
+        run: test "$GIT_EMAIL" = "150269514+obltmachine@users.noreply.github.com"
 
   combined-status:
     if: always()

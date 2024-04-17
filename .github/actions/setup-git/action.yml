@@ -13,7 +13,7 @@ inputs:
   email:
     description: 'Git email.'
     required: false
-    default: 'obltmachine@users.noreply.github.com'
+    default: '150269514+obltmachine@users.noreply.github.com'
   trace:
     description: 'Enable git trace.'
     required: false
