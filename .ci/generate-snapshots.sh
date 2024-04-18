@@ -30,7 +30,7 @@ NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 
 
 echo ">> Query versions in ${URL}"
-QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT"))')
+QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT")) | select(contains("+build")|not)')
 for version in ${QUERY_OUTPUT}; do
   LATEST_OUTPUT=$(curl -s "${URL}/versions/${version}/builds/latest?${NO_KPI_URL_PARAM}" | jq 'del(.build.projects,.manifests) | . |= .build')
   BRANCH=$(echo "$LATEST_OUTPUT" | jq -r .branch)
