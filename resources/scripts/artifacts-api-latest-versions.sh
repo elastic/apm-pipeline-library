@@ -32,7 +32,7 @@ NO_KPI_URL_PARAM="x-elastic-no-kpi=true"
 TEMP_FILE=$(mktemp)
 OUTPUT=latest-versions.json
 
-QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT"))')
+QUERY_OUTPUT=$(curl -s "${URL}/versions?${NO_KPI_URL_PARAM}"| jq -r '.aliases[] | select(contains("SNAPSHOT")) | select(contains("+build")|not)')
 LENGTH=$(echo "$QUERY_OUTPUT" | wc -l)
 i=0
 echo "{" > "${TEMP_FILE}"

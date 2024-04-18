@@ -78,6 +78,7 @@ function next() {
   retry 3 curl -s "${URL}/versions?${NO_KPI_URL_PARAM}" 2> /dev/null > $file
   jq -r --arg version "$version" '[.versions[]
     | select(contains("SNAPSHOT")|not)
+    | select(contains("+build")|not)
     | select(startswith($version))]
     | sort_by(.| split(".") | map(tonumber))
     | .[-1]' $file
