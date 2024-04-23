@@ -43,3 +43,5 @@ Following inputs can be used as `step.with` keys
 | `secretId`     | String  | `150269514+obltmachine@users.noreply.github.com`| Git email.         |
 | `trace`        | Boolean | `false`                               | Enable git trace.  |
 | `token`        | String  | `github.token`                        | GitHub token.      |
+
+`GITHUB_TOKEN` env variable is created on the fly.
