@@ -35,6 +35,8 @@ runs:
         echo "GIT_USER=${GIT_USER}" >> $GITHUB_ENV
         echo "GIT_EMAIL=${GIT_EMAIL}" >> $GITHUB_ENV
 
+        gh auth status
+
       env:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
