@@ -27,7 +27,9 @@ runs:
   steps:
     - if: ${{ inputs.token }}
       shell: bash
-      run: echo 'GITHUB_TOKEN=${{ inputs.token }}' >> $GITHUB_ENV
+      run: echo 'GITHUB_TOKEN=${{ env.GITHUB_TOKEN }}' >> $GITHUB_ENV
+      env:
+        GITHUB_TOKEN: "${{ inputs.token }}"
 
     - name: Setup git
       shell: bash
