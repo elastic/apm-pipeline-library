@@ -43,3 +43,7 @@ runs:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
         GIT_TRACE: "${{ inputs.trace }}"
+
+    - name: Debug gh status
+      shell: bash
+      run: gh auth status
