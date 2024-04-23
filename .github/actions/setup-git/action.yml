@@ -25,18 +25,19 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - if: ${{ inputs.token }}
+      shell: bash
+      run: echo 'GITHUB_TOKEN=${{ inputs.token }}' >> $GITHUB_ENV
+
     - name: Setup git
       shell: bash
       run: |
         git config --global user.name "${GIT_USER}"
         git config --global user.email "${GIT_EMAIL}"
         gh auth setup-git
-
-        echo "GIT_USER=${GIT_USER}" >> $GITHUB_ENV
+        echo "GIT_USER=${GIT_USER}"   >> $GITHUB_ENV
         echo "GIT_EMAIL=${GIT_EMAIL}" >> $GITHUB_ENV
-
       env:
         GIT_USER: "${{ inputs.username }}"
         GIT_EMAIL: "${{ inputs.email }}"
         GIT_TRACE: "${{ inputs.trace }}"
-        GITHUB_TOKEN: ${{ inputs.token }}
