@@ -1,0 +1,65 @@
+name: 'Undeploy My Kibana'
+description: 'GitHub Action to undeploy my kibana given the Pull Request'
+inputs:
+  vault-url:
+    description: 'Vault URL'
+    required: true
+  vault-role-id:
+    description: 'Vault role ID'
+    required: true
+  vault-secret-id:
+    description: 'Vault secret ID'
+    required: true
+  pull-request:
+    description: 'The GitHub Pull Request ID'
+    default: ${{ github.event.pull_request.number }}
+  repository:
+    description: 'The GitHub repository'
+    default: ${{ github.repository }}
+  user:
+    description: 'The GitHub PR's user'
+    default: ${{ github.event.pull_request.head.repo.owner.login }}
+runs:
+  using: "composite"
+  steps:
+    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
+      with:
+        url: ${{ inputs.vault-url }}
+        roleId: ${{ inputs.vault-role-id }}
+        secretId: ${{ inputs.vault-secret-id }}
+
+    - name: Is an Elastician comment?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ inputs.user }}
+        token: ${{ env.GITHUB_TOKEN }}
+
+    - name: Create github issue body
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        cat <<EOT >> .body-content
+        ### Kibana branch
+
+        ${{ inputs.pull-request }}
+
+        ### Further details
+
+        Caused by @${{ inputs.user }} in https://github.com/elastic/kibana/pull/${{ inputs.pull-request }}
+        EOT
+      shell: bash
+
+    - name: Create github issue for the undeploy-my-kibana
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |
+        gh issue \
+          create \
+          --label 'destroy-custom-kibana-serverless' \
+          --title "[Undeploy Kibana] for user ${{ inputs.user }} with PR kibana@pr-${{ inputs.pull-request }}" \
+          --body-file .body-content \
+          --repo elastic/observability-test-environments | tee .issue
+        echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
+        echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+      shell: bash
