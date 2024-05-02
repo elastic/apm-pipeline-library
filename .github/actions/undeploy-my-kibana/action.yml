@@ -1,3 +1,4 @@
+---
 name: 'Undeploy My Kibana'
 description: 'GitHub Action to undeploy my kibana given the Pull Request'
 inputs:

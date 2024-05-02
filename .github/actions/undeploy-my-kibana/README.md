@@ -38,12 +38,12 @@ Following inputs can be used as `step.with` keys
 
 | Name              | Type    | Default                                | Description                        |
 |-------------------|---------|----------------------------------------|------------------------------------|
-| `pull-request`    | String  | `${{ github.event.comment.id }}`       | The GitHub comment ID.  |
-| `user`            | String  | `${{ github.triggering_actor }}`       | The GitHub user avatar           |
+| `pull-request`    | String  | `${{ github.event.pull_request.number }}`       | The GitHub Pull Request ID.      |
+| `user`            | String  | `${{ github.event.pull_request.head.repo.owner.login }}`       | The GitHub user avatar           |
 | `repository`      | String  | `${{ github.repository }}`             | The GitHub repository, ORG/REPO. |
-| `vault-role-id`   | String |                                         | The Vault role id.                              |
-| `vault-secret-id` | String |                                         | The Vault secret id.                            |
-| `vault-url`       | String |                                          | The Vault URL to connect to.   
+| `vault-role-id`   | String |                                         | The Vault role id.               |
+| `vault-secret-id` | String |                                         | The Vault secret id.             |
+| `vault-url`       | String |                                         | The Vault URL to connect to.     |
 
 ### outputs
 
