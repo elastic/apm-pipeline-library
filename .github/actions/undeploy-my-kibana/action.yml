@@ -18,7 +18,7 @@ inputs:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
   user:
-    description: 'The GitHub PR's user'
+    description: 'The GitHub PR onwer'
     default: ${{ github.event.pull_request.head.repo.owner.login }}
 runs:
   using: "composite"
