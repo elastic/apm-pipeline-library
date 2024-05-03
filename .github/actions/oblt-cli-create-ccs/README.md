@@ -39,6 +39,7 @@ Following inputs can be used as `step.with` keys
 | Name                        | Type    | Default                     | Description                        |
 |-----------------------------|---------|-----------------------------|------------------------------------|
 | `remote-cluster`            | String  | Mandatory                   | The Oblt cluster to use. |
+| `cluster-name`              | String  | Optional                    | The name of the cluster rather than a random one. |
 | `cluster-name-prefix`       | String  | Optional                    | Prefix to be prepended to the randomised cluster name |
 | `cluster-name-suffix`       | String  | Optional                    | Suffix to be appended to the randomised cluster name |
 | `dry-run`                   | Boolean | `false`                     | Whether to dry-run the oblt-cli. |

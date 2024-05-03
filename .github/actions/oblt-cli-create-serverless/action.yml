@@ -1,6 +1,9 @@
 name: 'Oblt-cli create serverless'
 description: 'Run the oblt-cli wrapper to create a serverless cluster.'
 inputs:
+  cluster-name:
+    description: 'Name of the cluster if no a random one.'
+    required: false
   cluster-name-prefix:
     description: 'Prefix to be prepended to the randomised cluster name'
     required: false
@@ -49,6 +52,9 @@ runs:
           if (cluster_name_suffix != '') {
             core.exportVariable('CLUSTER_NAME_SUFFIX', `--cluster-name-suffix=${cluster_name_suffix}`)
           }
+          if (cluster_name != '') {
+            core.exportVariable('CLUSTER_NAME', `--cluster-name=${cluster_name}`)
+          }
           if (dry_run != 'false') {
             core.exportVariable('DRY_RUN', `--dry-run`)
           }
@@ -72,6 +78,7 @@ runs:
           console.log(`Create PARAMETERS env variable`)
           core.exportVariable('PARAMETERS', `--parameters='${(JSON.stringify(parameters))}'`)
       env:
+        cluster_name: ${{ inputs.cluster-name }}
         cluster_name_prefix: ${{ inputs.cluster-name-prefix }}
         cluster_name_suffix: ${{ inputs.cluster-name-suffix }}
         dry_run: ${{ inputs.dry-run }}
@@ -81,7 +88,7 @@ runs:
 
     - uses: elastic/apm-pipeline-library/.github/actions/oblt-cli@current
       with:
-        command: cluster create custom --template serverless ${{ env.DRY_RUN }} ${{ env.CLUSTER_NAME_PREFIX }} ${{ env.CLUSTER_NAME_SUFFIX }} ${{ env.PARAMETERS }}
+        command: cluster create custom --template serverless ${{ env.DRY_RUN }} ${{ env.CLUSTER_NAME_PREFIX }} ${{ env.CLUSTER_NAME_SUFFIX }} ${{ env.CLUSTER_NAME }} ${{ env.PARAMETERS }}
         slackChannel: ${{ inputs.slackChannel }}
         token: ${{ inputs.token }}
         username: ${{ inputs.username }}

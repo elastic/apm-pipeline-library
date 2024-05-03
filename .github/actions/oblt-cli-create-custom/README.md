@@ -42,6 +42,7 @@ Following inputs can be used as `step.with` keys
 | `template`                  | String  | Mandatory                   | The Oblt cluster to use. |
 | `parameters`                | String  | Mandatory                   | Parameters values defined in JSON |
 | `token`                     | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
+| `cluster-name`              | String  | Optional                    | The name of the cluster rather than a random one. |
 | `cluster-name-prefix`       | String  | Optional                    | Prefix to be prepended to the randomised cluster name |
 | `cluster-name-suffix`       | String  | Optional                    | Suffix to be appended to the randomised cluster name |
 | `skip-random-name`          | Boolean | `false`                      | Whether to skip the randomised cluster name |

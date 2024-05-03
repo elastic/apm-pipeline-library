@@ -7,6 +7,9 @@ inputs:
   token:
     description: 'The GitHub access token.'
     required: true
+  cluster-name:
+    description: 'Name of the cluster if no a random one.'
+    required: false
   cluster-name-prefix:
     description: 'Prefix to be prepended to the randomised cluster name'
     required: false
@@ -40,6 +43,8 @@ runs:
       run: |
         {
           echo -n '--remote-cluster=${{ inputs.remote-cluster }} '
+          [ -n '${{ inputs.cluster-name }}' ] \
+            && echo -n '--cluster-name=${{ inputs.cluster-name }} '
           [ -n '${{ inputs.cluster-name-prefix }}' ] \
             && echo -n '--cluster-name-prefix=${{ inputs.cluster-name-prefix }} '
           [ -n '${{ inputs.cluster-name-suffix }}' ] \
