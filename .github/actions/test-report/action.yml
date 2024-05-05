@@ -68,7 +68,7 @@ runs:
   using: "composite"
   steps:
     - name: Report test results
-      uses: phoenix-actions/test-reporting@785ebc5dbc049dc0a1507c1277bdb70dbc89d7f9
+      uses: phoenix-actions/test-reporting@f957cd93fc2d848d556fa0d03c57bc79127b6b5e
       with:
         artifact: ${{ inputs.artifact }}
         name: ${{ inputs.name }}
