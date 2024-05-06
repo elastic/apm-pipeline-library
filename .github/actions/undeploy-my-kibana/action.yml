@@ -1,0 +1,61 @@
+---
+name: 'Undeploy My Kibana'
+description: 'GitHub Action to undeploy my kibana given the Pull Request'
+inputs:
+  pull-request:
+    description: 'The GitHub Pull Request ID'
+    default: ${{ github.event.pull_request.number }}
+  repository:
+    description: 'The GitHub repository'
+    default: ${{ github.repository }}
+  user:
+    description: 'The GitHub PR onwer'
+    default: ${{ github.event.pull_request.head.repo.owner.login }}
+  token:
+    description: 'The GitHub access token.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Is an Elastician comment?
+      id: is_elastic_member
+      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+      with:
+        username: ${{ inputs.user }}
+        token: ${{ inputs.token }}
+
+    - name: Create github issue body
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |-
+        cat <<EOT >> .body-content
+        ### Kibana branch
+
+        ${{ env.PR }}
+
+        ### Further details
+
+        Caused by @${{ env.USER }} in https://github.com/${{ env.REPO }}/pull/${{ env.PR }}
+        EOT
+      env:
+        REPO: ${{ inputs.repository }}
+        PR: ${{ inputs.pull-request }}
+        USER: ${{ inputs.user }}
+      shell: bash
+
+    - name: Create github issue for the undeploy-my-kibana
+      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      run: |
+        gh issue \
+          create \
+          --label 'destroy-custom-kibana-serverless' \
+          --title "[Undeploy Kibana] ${{ env.REPO }}@pr-${{ env.PR }}" \
+          --body-file .body-content \
+          --repo elastic/observability-test-environments | tee .issue
+        echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
+        echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        PR: ${{ inputs.pull-request }}
+        REPO: ${{ inputs.repository }}
+        USER: ${{ inputs.user }}
+      shell: bash
