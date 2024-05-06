@@ -28,7 +28,7 @@ runs:
       if: contains(steps.is_elastic_member.outputs.result, 'true')
       run: |-
         cat <<EOT >> .body-content
-        ### Kibana branch
+        ### Kibana pull request
 
         ${{ env.PR }}
 
