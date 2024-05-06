@@ -32,7 +32,7 @@ jobs:
           repository: ${{ github.repository }}
           token: ${{ secrets.PAT_TOKEN }}
       - if: steps.is_pr_author_elastic_member.outputs.result == true
-        run: echo 'PR author of ${{ github.event.issue.number }} is Elastic member'
+        run: echo 'PR author "${{ steps.is_pr_author_elastic_member.outputs.author }}" of ${{ github.event.issue.number }} is Elastic member'
 ```
 
 
@@ -53,3 +53,4 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Description                 |
 |-------------------|---------| ----------------------------|
 | `result`          | Boolean | Whether the PR author is member. |
+| `author`          | Strin g | The PR author. |

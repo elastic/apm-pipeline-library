@@ -37,7 +37,6 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Default                                                 | Description                        |
 |-------------------|---------|---------------------------------------------------------|------------------------------------|
 | `pull-request`    | String  | `${{ github.event.pull_request.number }}`               | The GitHub Pull Request ID.      |
-| `user`            | String  | `${{ github.event.pull_request.head.repo.owner.login }}`| The GitHub user avatar           |
 | `repository`      | String  | `${{ github.repository }}`                              | The GitHub repository, ORG/REPO. |
 | `token`           | String  |                                                         | GitHub token.      |
 

@@ -8,24 +8,22 @@ inputs:
   repository:
     description: 'The GitHub repository'
     default: ${{ github.repository }}
-  user:
-    description: 'The GitHub PR onwer'
-    default: ${{ github.event.pull_request.head.repo.owner.login }}
   token:
     description: 'The GitHub access token.'
     required: true
 runs:
   using: "composite"
   steps:
-    - name: Is an Elastician comment?
-      id: is_elastic_member
-      uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
+
+    - id: is_elastic_pr_author
+      uses: elastic/apm-pipeline-library/.github/actions/is-pr-author-member-elastic-org@current
       with:
-        username: ${{ inputs.user }}
+        pull-request: ${{ inputs.pull-request }}
+        repository: ${{ inputs.repository }}
         token: ${{ inputs.token }}
 
     - name: Create github issue body
-      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      if: contains(steps.is_elastic_pr_author.outputs.result, 'true')
       run: |-
         cat <<EOT >> .body-content
         ### Kibana pull request
@@ -39,11 +37,11 @@ runs:
       env:
         REPO: ${{ inputs.repository }}
         PR: ${{ inputs.pull-request }}
-        USER: ${{ inputs.user }}
+        USER: ${{ steps.is_elastic_pr_author.outputs.author }}
       shell: bash
 
     - name: Create github issue for the undeploy-my-kibana
-      if: contains(steps.is_elastic_member.outputs.result, 'true')
+      if: contains(steps.is_elastic_pr_author.outputs.result, 'true')
       run: |
         gh issue \
           create \
@@ -57,5 +55,5 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
         PR: ${{ inputs.pull-request }}
         REPO: ${{ inputs.repository }}
-        USER: ${{ inputs.user }}
+        USER: ${{ steps.is_elastic_pr_author.outputs.author }}
       shell: bash
