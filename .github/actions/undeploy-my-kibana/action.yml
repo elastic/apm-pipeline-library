@@ -30,15 +30,16 @@ runs:
         cat <<EOT >> .body-content
         ### Kibana branch
 
-        ${{ inputs.pull-request }}
+        ${{ env.PR }}
 
         ### Further details
 
-        Caused by @${{ inputs.user }} in https://github.com/${{ env.REPO }}/pull/${{ env.PR }}
+        Caused by @${{ env.USER }} in https://github.com/${{ env.REPO }}/pull/${{ env.PR }}
         EOT
       env:
         REPO: ${{ inputs.repository }}
         PR: ${{ inputs.pull-request }}
+        USER: ${{ inputs.user }}
       shell: bash
 
     - name: Create github issue for the undeploy-my-kibana
@@ -47,7 +48,7 @@ runs:
         gh issue \
           create \
           --label 'destroy-custom-kibana-serverless' \
-          --title "[Undeploy Kibana] for user ${{ env.USER }} with PR ${{ env.REPO }}@pr-${{ env.PR }}" \
+          --title "[Undeploy Kibana] ${{ env.REPO }}@pr-${{ env.PR }}" \
           --body-file .body-content \
           --repo elastic/observability-test-environments | tee .issue
         echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
