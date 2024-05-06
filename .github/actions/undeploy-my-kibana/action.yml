@@ -2,15 +2,6 @@
 name: 'Undeploy My Kibana'
 description: 'GitHub Action to undeploy my kibana given the Pull Request'
 inputs:
-  vault-url:
-    description: 'Vault URL'
-    required: true
-  vault-role-id:
-    description: 'Vault role ID'
-    required: true
-  vault-secret-id:
-    description: 'Vault secret ID'
-    required: true
   pull-request:
     description: 'The GitHub Pull Request ID'
     default: ${{ github.event.pull_request.number }}
@@ -20,21 +11,18 @@ inputs:
   user:
     description: 'The GitHub PR onwer'
     default: ${{ github.event.pull_request.head.repo.owner.login }}
+  token:
+    description: 'The GitHub access token.'
+    required: true
 runs:
   using: "composite"
   steps:
-    - uses: elastic/apm-pipeline-library/.github/actions/github-token@current
-      with:
-        url: ${{ inputs.vault-url }}
-        roleId: ${{ inputs.vault-role-id }}
-        secretId: ${{ inputs.vault-secret-id }}
-
     - name: Is an Elastician comment?
       id: is_elastic_member
       uses: elastic/apm-pipeline-library/.github/actions/is-member-elastic-org@current
       with:
         username: ${{ inputs.user }}
-        token: ${{ env.GITHUB_TOKEN }}
+        token: ${{ inputs.token }}
 
     - name: Create github issue body
       if: contains(steps.is_elastic_member.outputs.result, 'true')
@@ -46,8 +34,11 @@ runs:
 
         ### Further details
 
-        Caused by @${{ inputs.user }} in https://github.com/elastic/kibana/pull/${{ inputs.pull-request }}
+        Caused by @${{ inputs.user }} in https://github.com/${{ env.REPO }}/pull/${{ env.PR }}
         EOT
+      env:
+        REPO: ${{ inputs.repository }}
+        PR: ${{ inputs.pull-request }}
       shell: bash
 
     - name: Create github issue for the undeploy-my-kibana
@@ -56,11 +47,14 @@ runs:
         gh issue \
           create \
           --label 'destroy-custom-kibana-serverless' \
-          --title "[Undeploy Kibana] for user ${{ inputs.user }} with PR kibana@pr-${{ inputs.pull-request }}" \
+          --title "[Undeploy Kibana] for user ${{ env.USER }} with PR ${{ env.REPO }}@pr-${{ env.PR }}" \
           --body-file .body-content \
           --repo elastic/observability-test-environments | tee .issue
         echo "ISSUE=$(cat .issue)" >> $GITHUB_ENV
         echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
       env:
-        GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
+        PR: ${{ inputs.pull-request }}
+        REPO: ${{ inputs.repository }}
+        USER: ${{ inputs.user }}
       shell: bash
