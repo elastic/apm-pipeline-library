@@ -53,4 +53,4 @@ Following inputs can be used as `step.with` keys
 | Name              | Type    | Description                 |
 |-------------------|---------| ----------------------------|
 | `result`          | Boolean | Whether the PR author is member. |
-| `author`          | Strin g | The PR author. |
+| `author`          | String | The PR author. |
