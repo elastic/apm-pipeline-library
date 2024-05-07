@@ -51,3 +51,4 @@ Following inputs can be used as `step.with` keys
 | `cluster-name `             | String  | Optional                    | The cluster name                                  |
 | `cluster-info-file `        | String  | Optional                    | The cluster info file (absolute path)             |
 | `github-token`              | String  | Mandatory                   | The GitHub token with permissions fetch releases. |
+| `username`                  | String  | `obltmachine`               | Username to show in the deployments with oblt-cli, format: [a-z0-9]. |
