@@ -64,7 +64,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
   @Test
   void testPullRequest() throws Exception {
     env.CHANGE_ID = "123"
-    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString(), sendTelemetry: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
@@ -85,7 +85,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
-    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString(), sendTelemetry: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
@@ -98,13 +98,12 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     script.call()
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
-    assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
     assertFalse(assertMethodCallContainsPattern('log', 'notifyBuildResult: Notifying results by email.'))
   }
 
   @Test
   void testWithoutSecret() throws Exception {
-    script.call(es: EXAMPLE_URL)
+    script.call(es: EXAMPLE_URL, sendTelemetry: true)
     printCallStack()
     assertTrue(assertMethodCallOccurrences('getBuildInfoJsonFiles', 1))
     assertTrue(assertMethodCallOccurrences('sendDataToElasticsearch', 2))
@@ -121,7 +120,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     binding.getVariable('currentBuild').result = "SUCCESS"
     binding.getVariable('currentBuild').currentResult = "SUCCESS"
 
-    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString(), sendTelemetry: true)
     printCallStack()
 
     // Then senddata to ElasticSearch happens
@@ -336,7 +335,7 @@ class NotifyBuildResultStepTests extends ApmBasePipelineTest {
     // When PR and there is a builk file
     helper.registerAllowedMethod('isPR', { return true })
 
-    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString())
+    script.call(es: EXAMPLE_URL, secret: VaultSecret.SECRET_NAME.toString(), sendTelemetry: true)
     printCallStack()
 
     // Then sendDataToElasticsearch happens three times
