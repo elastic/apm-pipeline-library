@@ -45,7 +45,7 @@ runs:
     - name: Create workloadIdentityPool provider ID
       id: generate-workload-identity-pool-provider-id
       run: |
-        HASH=$(echo "${{ github.repository }}" | sha256sum | cut -c1-22)
+        HASH=$(echo -n "${{ github.repository }}" | sha256sum | cut -c1-22)
         echo "workload_identity_provider_id=oblt-cli-${HASH}" >> "${GITHUB_OUTPUT}"
       shell: bash
     - uses: 'google-github-actions/auth@v2'
