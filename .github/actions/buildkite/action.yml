@@ -114,12 +114,6 @@ runs:
           path: ${{ inputs.artifactPath }}
           if-no-files-found: ${{ inputs.artifactIfNoFilesFound }}
 
-      - name: Reset environment
-        if: always()
-        shell: bash
-        run: |
-          echo "BUILDKITE_API_ACCESS_TOKEN=" >> $GITHUB_ENV
-
       - name: Cancel Buildkite pipeline
         if: cancelled() && inputs.waitFor && steps.trigger-buildkite.outputs.build_number
         run: |
@@ -129,3 +123,9 @@ runs:
             '${{ steps.trigger-buildkite.outputs.build_number }}' \
             '${{ env.BUILDKITE_API_ACCESS_TOKEN }}'
         shell: bash
+
+      - name: Reset environment
+        if: always()
+        shell: bash
+        run: |
+          echo "BUILDKITE_API_ACCESS_TOKEN=" >> $GITHUB_ENV
