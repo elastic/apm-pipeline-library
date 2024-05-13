@@ -1,0 +1,25 @@
+---
+# This workflow sets the test / build check to success in case it's a no Jenkins related PR and build-test.yml is not triggered
+# https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/troubleshooting-required-status-checks#handling-skipped-but-required-checks
+name: build-test # The name must be the same as in build-test.yml
+
+on:
+  pull_request:
+    paths-ignore: # This expression needs to match the paths ignored on build-test.yml.
+      - '**'
+      - '!resources/**'
+      - '!src/**'
+      - '!vars/**'
+      - '!.github/workflows/build-test.yml'
+      - '!.mvn/*'
+      - '!pom.xml'
+      - '!mvnw'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No build required"'

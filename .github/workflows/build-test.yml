@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
+    paths:
+      - 'resources/**'
+      - 'src/**'
+      - 'vars/**'
+      - '.github/workflows/build-test.yml'
+      - '.mvn/*'
+      - 'pom.xml'
+      - 'mvnw'
 
 # limit the access of the generated GITHUB_TOKEN
 permissions:
