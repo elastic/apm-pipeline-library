@@ -16,7 +16,7 @@ inputs:
     required: false
   version:
     description: "Install a specific version of oblt-cli"
-    default: "6.5.3"
+    default: "7.1.3"
     required: false
 runs:
   using: composite
@@ -42,3 +42,13 @@ runs:
     - name: Export env
       run: echo "ELASTIC_APM_ENVIRONMENT=ci" >> $GITHUB_ENV
       shell: bash
+    - name: Create workloadIdentityPool provider ID
+      id: generate-workload-identity-pool-provider-id
+      run: |
+        HASH=$(echo "${{ github.repository }}" | sha256sum | cut -c1-22)
+        echo "workload_identity_provider_id=oblt-cli-${HASH}" >> "${GITHUB_OUTPUT}"
+      shell: bash
+    - uses: 'google-github-actions/auth@v2'
+      with:
+        project_id: 'elastic-observability'
+        workload_identity_provider: 'projects/8560181848/locations/global/workloadIdentityPools/github/providers/${{ steps.generate-workload-identity-pool-provider-id.outputs.workload_identity_provider_id }}'

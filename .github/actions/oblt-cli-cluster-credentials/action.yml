@@ -31,15 +31,15 @@ runs:
         cluster-name: ${{ inputs.cluster-name }}
         cluster-info-file: ${{ inputs.cluster-info-file }}
 
-    - uses: elastic/apm-pipeline-library/.github/actions/setup-oblt-cli@current
+    - uses: .github/actions/setup-oblt-cli
       with:
         github-token: ${{ inputs.github-token }}
 
-    - uses: elastic/apm-pipeline-library/.github/actions/setup-vault-cli@current
-      with:
-        url: ${{ inputs.vault-url }}
-        roleId: ${{ inputs.vault-role-id }}
-        secretId: ${{ inputs.vault-secret-id }}
+#    - uses: elastic/apm-pipeline-library/.github/actions/setup-vault-cli@current
+#      with:
+#        url: ${{ inputs.vault-url }}
+#        roleId: ${{ inputs.vault-role-id }}
+#        secretId: ${{ inputs.vault-secret-id }}
 
     - name: run oblt-cli
       run: |
