@@ -45,6 +45,7 @@ import co.elastic.NotificationManager
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 def call(Map args = [:]) {
+  def sendTelemetry = args.containsKey('sendTelemetry') ? args.sendTelemetry : false
   def notifyPRComment = args.containsKey('prComment') ? args.prComment : true
   def notifyCoverageComment = args.containsKey('coverageComment') ? args.coverageComment : true
   def notifyGoBenchmarkComment = args.containsKey('goBenchmarkComment') ? args.goBenchmarkComment : false
@@ -115,24 +116,26 @@ def call(Map args = [:]) {
         createGitHubIssue(data: data, when: notifyGHIssue)
       }
 
-      catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-        timeout(5) {
-          // New indexes
-          def bulkFile = 'ci-test-report-bulk.json'
-          if (fileExists(bulkFile)) {
-            datafile = readFile(file: bulkFile)
-            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-tests/_bulk/')
-          }
-          datafile = 'ci-build-report.json'
-          if (fileExists(datafile)) {
-            sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
-          }
+      if (sendTelemetry) {
+        catchError(message: 'There were some failures when sending data to elasticsearch', buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          timeout(5) {
+            // New indexes
+            def bulkFile = 'ci-test-report-bulk.json'
+            if (fileExists(bulkFile)) {
+              datafile = readFile(file: bulkFile)
+              sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-tests/_bulk/')
+            }
+            datafile = 'ci-build-report.json'
+            if (fileExists(datafile)) {
+              sendDataToElasticsearch(es: es, secret: secret, restCall: '/ci-builds/_doc/', data: readFile(file: datafile))
+            }
 
-          // NOTE: Support temporarily the email notifications with the test summary
-          //       See https://github.com/elastic/apm-pipeline-library/pull/1514 as a potential replacement
-          if (env.REPO_NAME == 'integrations') {
-            datafile = readFile(file: 'custom-build-report.json')
-            sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-integrations-builds/_doc/')
+            // NOTE: Support temporarily the email notifications with the test summary
+            //       See https://github.com/elastic/apm-pipeline-library/pull/1514 as a potential replacement
+            if (env.REPO_NAME == 'integrations') {
+              datafile = readFile(file: 'custom-build-report.json')
+              sendDataToElasticsearch(es: es, secret: secret, data: datafile, restCall: '/ci-integrations-builds/_doc/')
+            }
           }
         }
       }
