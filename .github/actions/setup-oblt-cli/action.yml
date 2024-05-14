@@ -45,8 +45,7 @@ runs:
     - name: Create workloadIdentityPool provider ID
       id: generate-workload-identity-pool-provider-id
       run: |
-        WORKFLOW_PATH=$(echo "${GITHUB_WORKFLOW_REF}" | awk -F@ '{print $1}')
-        HASH=$(echo -n "${WORKFLOW_PATH}" | sha256sum | cut -c1-23)
+        HASH=$(echo "${GITHUB_WORKFLOW_REF" | awk -F@ '{print $1}' | sha256sum | cut -c1-23)
         echo "workload_identity_provider_id=workflow-${HASH}" >> "${GITHUB_OUTPUT}"
       shell: bash
     - uses: 'google-github-actions/auth@v2'
