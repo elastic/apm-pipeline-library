@@ -46,6 +46,7 @@ runs:
       id: generate-workload-identity-pool-provider-id
       run: |
         WORKFLOW_PATH=$(echo "${GITHUB_WORKFLOW_REF}" | awk -F@ '{print $1}')
+        echo "##[debug] ${WORKFLOW_PATH}"
         HASH=$(echo -n "${GITHUB_REPOSITORY}/${WORKFLOW_PATH}" | sha256sum | cut -c1-23)
         echo "workload_identity_provider_id=workflow-${HASH}" >> "${GITHUB_OUTPUT}"
       shell: bash
