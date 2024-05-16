@@ -30,9 +30,8 @@ updates:
           - "*"
 
   # Maintain dependencies for GitHub composite Actions (/.github/actions)
-  # Waiting for supporting wildcards see https://github.com/dependabot/dependabot-core/issues/5137
+  # Waiting for supporting wildcards, see https://github.com/dependabot/dependabot-core/issues/5137
   - package-ecosystem: "github-actions"
-    directory: "/.github/actions/buildkite"
     schedule:
       interval: "weekly"
       day: "sunday"
