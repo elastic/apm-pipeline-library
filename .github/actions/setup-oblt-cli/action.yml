@@ -52,3 +52,4 @@ runs:
       with:
         project_id: 'elastic-observability'
         workload_identity_provider: 'projects/8560181848/locations/global/workloadIdentityPools/github/providers/${{ steps.generate-workload-identity-pool-provider-id.outputs.workload_identity_provider_id }}'
+        request_reason: ${{ github.workflow_ref }}
