@@ -25,3 +25,5 @@ jobs:
           slack-send-when: 'failure'
         env:
           GITHUB_TOKEN: ${{ secrets.UPDATECLI_GH_TOKEN }}
+          GIT_USER: "obltmachine"
+          GIT_EMAIL: "150269514+obltmachine@users.noreply.github.com"
