@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - uses: elastic/oblt-actions/updatecli/run-and-notify@main
+      - uses: elastic/oblt-actions/updatecli/run-and-notify@v1
         with:
           command: apply --config updatecli/updatecli.d/bump-aliases.yml --values updatecli/values.yml
           slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
