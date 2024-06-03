@@ -26,7 +26,7 @@ runs:
           const needs = JSON.parse(process.env.NEEDS)
           let allJobsAreSuccess = false
           for (const job in needs) {
-            if (!needs[job].success) {
+            if (!needs[job].result === 'success') {
               allJobsAreSuccess = false
               break
             }
