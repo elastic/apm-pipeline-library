@@ -27,6 +27,4 @@ runs:
           const isSuccess = (currentValue: any) => currentValue.result === "success"
           const allSuccess = Object.values(needs).every(isSuccess)
           console.log(allSuccess)
-          const status = allSuccess ? "success" : "failure"
           core.setOutput('isSuccess', allSuccess)
-          core.setOutput('status', status)
