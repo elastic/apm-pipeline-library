@@ -20,7 +20,7 @@ runs:
     - id: check
       uses: actions/github-script@v7
       env:
-        NEEDS: ${{ toJSON(needs) }}
+        NEEDS: ${{ inputs.needs }}
       with:
         script: |
           const needs = JSON.parse(process.env.NEEDS)
