@@ -24,9 +24,7 @@ runs:
       with:
         script: |
           const needs = JSON.parse(process.env.NEEDS)
-          const isSuccess = (currentValue: any) => currentValue.result === "success"
-          const allSuccess = Object.values(needs).every(isSuccess)
+          const allSuccess = Object.values(needs).every(job => job.result === 'success')
           console.log(allSuccess)
-          const status = allSuccess ? "success" : "failure"
           core.setOutput('isSuccess', allSuccess)
-          core.setOutput('status', status)
+          core.setOutput('status', allSuccess ? 'success' : 'failure')
