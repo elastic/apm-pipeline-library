@@ -10,21 +10,21 @@ inputs:
 outputs:
   isSuccess:
     description: The evaluated result of all provided jobs in the needs context.
-    value: ${{ steps.test.outputs.isSuccess }}
+    value: ${{ steps.check.outputs.isSuccess }}
   status:
     description: One of success or failure.
-    value: ${{ steps.test.outputs.status }}
+    value: ${{ steps.check.outputs.status }}
 runs:
   using: composite
   steps:
-    - id: test
-      run: |
-        RESULT=$(echo '${{ inputs.needs }}' | jq -s 'map(.[].result) | all(.=="success")')
-        echo "isSuccess=${RESULT}" >> $GITHUB_OUTPUT
-        if [[ $RESULT == true ]]; then
-          STATUS=success
-        else
-          STATUS=failure
-        fi
-        echo "status=${STATUS}" >> $GITHUB_OUTPUT
-      shell: bash
+    - id: check
+      uses: actions/github-script@v7
+      env:
+        NEEDS: ${{ inputs.needs }}
+      with:
+        script: |
+          const needs = JSON.parse(process.env.NEEDS)
+          const allSuccess = Object.values(needs).every(job => job.result === 'success')
+          console.log(allSuccess)
+          core.setOutput('isSuccess', allSuccess)
+          core.setOutput('status', allSuccess ? 'success' : 'failure')
