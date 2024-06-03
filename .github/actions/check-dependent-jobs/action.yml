@@ -24,8 +24,12 @@ runs:
       with:
         script: |
           const needs = JSON.parse(process.env.NEEDS)
-          const isSuccess = (currentValue) => currentValue.result === "success"
-          const success = needs.every(isSuccess)
-          const status = success ? "success" : "failure"
-          core.setOutput('isSuccess', success)
-          core.setOutput('status', status)
+          let allJobsAreSuccess = false
+          for (const job in needs) {
+            if (!jsonObject[job].success) {
+              allJobsAreSuccess = false
+              break
+            }
+          }
+          core.setOutput('isSuccess', allJobsAreSuccess)
+          core.setOutput('status', allJobsAreSuccess ? "success" : "failure")
