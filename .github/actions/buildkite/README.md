@@ -34,9 +34,7 @@ jobs:
         id: buildkite
         uses: elastic/apm-pipeline-library/.github/actions/buildkite@current
         with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
+          buildkite-token: ${{ secrets.BUILDKITE_API_TOKEN }}
           pipeline: observability-release-helm
           buildEnvVars: |
             commit=abderg
@@ -64,10 +62,7 @@ Following inputs can be used as `step.with` keys
 
 | Name                        | Type    | Default                                             | Description                                                                                                       |
 |-----------------------------|---------|-----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| `vaultRoleId`               | String  |                                                     | The Vault role id.                                                                                                |
-| `vaultSecretId`             | String  |                                                     | The Vault secret id.                                                                                              |
-| `vaultUrl`                  | String  |                                                     | The Vault URL to connect to.                                                                                      |
-| `secret`                    | String  | `secret/observability-team/ci/buildkite-automation` | The Vault secret.                                                                                                 |
+| `buildkite-token`           | String  |                                                     | The Buildkite API token.                                                                                                 |
 | `org`                       | String  | `elastic`                                           | The Buildkite org.                                                                                                |
 | `pipeline`                  | String  |                                                     | The Buildkite pipeline to interact with.                                                                          |
 | `pipelineBranch`            | String  | `main`                                              | Branch the commit belongs to. This allows you to take advantage of your pipeline and step-level branch filtering rules. |

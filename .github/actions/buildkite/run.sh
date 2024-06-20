@@ -5,12 +5,13 @@
 # Parameters:
 #  $1 -> the BK org. Mandatory.
 #  $2 -> the BK pipeline. Mandatory.
-#  $3 -> the build env vars in json format. Mandatory. "" if empty
-#  $4 -> whether to wait for. Mandatory.
-#  $5 -> whether to report logs. Mandatory
-#  $6 -> the BK token. Mandatory.
-#  $7 -> the BK build message. Mandatory.
-#  $8 -> the Pipeline version. Mandatory.
+#  $3 -> whether to wait for. Mandatory.
+#  $4 -> whether to report logs. Mandatory
+#  $5 -> the BK token. Mandatory.
+#  $6 -> the build env vars in json format. Optional. "" if empty
+#  $7 -> the BK build message. Optional. "Triggered automatically with GH actions" if empty
+#  $8 -> the Pipeline version. Optional. "HEAD" if empty
+#  $9 -> the Pipeline branch. Optional. "main" if empty
 #
 # NOTE:
 #  ignore_pipeline_branch_filters: By default Buildkite works only on master. As we want
@@ -21,10 +22,10 @@ set -euo pipefail
 MSG="parameter missing."
 ORG=${1:?$MSG}
 PIPELINE=${2:?$MSG}
-BUILD_VARS=${3:-''}
-WAIT_FOR=${4:?$MSG}
-PRINT_BUILD=${5:?$MSG}
-BK_TOKEN=${6:?$MSG}
+WAIT_FOR=${3:?$MSG}
+PRINT_BUILD=${4:?$MSG}
+BK_TOKEN=${5:?$MSG}
+BUILD_VARS=${6:-''}
 MESSAGE=${7:-"Triggered automatically with GH actions"}
 PIPELINE_VERSION=${8:-"HEAD"}
 PIPELINE_BRANCH=${9:-"main"}
@@ -61,23 +62,24 @@ if [[ -n "$BUILD_VARS" ]]; then
   fi
 fi
 
-set +x
-RESP=$(curl \
+set -x
+RESPONSE=$(mktemp)
+curl \
   --no-progress-meter \
   -H "Authorization: Bearer $BK_TOKEN" \
   "https://api.buildkite.com/v2/organizations/$ORG/pipelines/$PIPELINE/builds" \
   -X "POST" \
-  -d "$JSON")
+  -d "$JSON" > "$RESPONSE"
 
 echo "::group::Output"
 echo "Triggered build:"
-echo "$RESP" | jq .
+jq . "$RESPONSE"
 echo "::endgroup::"
 
-URL=$(echo "$RESP" | jq -r ".url")
-WEB_URL=$(echo "$RESP" | jq -r ".web_url")
+URL=$(jq -r ".url" "$RESPONSE")
+WEB_URL=$(jq -r ".web_url" "$RESPONSE")
 echo "::notice title=Buildkite Build URL::${WEB_URL}"
-BUILD_NUMBER=$(echo "$RESP" | jq -r ".number")
+BUILD_NUMBER=$(jq -r ".number" "$RESPONSE")
 # shellcheck disable=SC2086
 echo "build=$WEB_URL" >> $GITHUB_OUTPUT
 echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
@@ -92,14 +94,14 @@ STATE="running"
 echo "Waiting for build $WEB_URL to run "
 # https://buildkite.com/docs/pipelines/defining-steps#build-states
 while [ "$STATE" == "running" ] || [ "$STATE" == "scheduled" ] || [ "$STATE" == "creating" ]; do
-  RESP=$(curl \
+  curl \
     -H "Authorization: Bearer $BK_TOKEN" \
     --no-progress-meter \
     --retry 5 \
     --retry-delay 5 \
     --retry-all-errors \
-    "$URL")
-  STATE=$(echo "$RESP" | jq -r ".state")
+    "$URL" > "$RESPONSE"
+  STATE=$(jq -r ".state" "$RESPONSE")
   echo -n "."
   sleep 1
 done
@@ -108,7 +110,7 @@ echo "::endgroup::"
 
 if [ "$PRINT_BUILD" == "true" ]; then
   echo "::group::BuildLogs"
-  for logs_url in $(echo "$RESP" | jq -r ".jobs[].raw_log_url | select(. != null)"); do
+  for logs_url in $(jq -r ".jobs[].raw_log_url | select(. != null)" "$RESPONSE"); do
     echo "Fetching logs $logs_url"
     if ! curl \
         -H "Authorization: Bearer $BK_TOKEN" \

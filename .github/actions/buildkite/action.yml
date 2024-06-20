@@ -2,19 +2,9 @@
 name: Buildkite Pipeline GitHub Action
 description: A GitHub Action for triggering a build on a Buildkite pipeline.
 inputs:
-  vaultUrl:
-    description: 'Vault URL'
+  buildkite-token:
+    description: 'Buildkite token.'
     required: true
-  vaultRoleId:
-    description: 'Vault role ID'
-    required: true
-  vaultSecretId:
-    description: 'Vault secret ID'
-    required: true
-  secret:
-    description: 'Vault secret with the token field.'
-    default: secret/observability-team/ci/buildkite-automation-v3
-    required: false
   org:
     description: 'BuildKite org to interact with.'
     default: elastic
@@ -32,6 +22,7 @@ inputs:
     required: false
   buildEnvVars:
     description: 'Additional environment variables to set on the build.'
+    default: ''
     required: false
   pipelineBranch:
     description: 'Branch the commit belongs to. This allows you to take advantage of your pipeline and step-level branch filtering rules.'
@@ -70,25 +61,17 @@ outputs:
 runs:
   using: "composite"
   steps:
-      - uses: hashicorp/vault-action@v3.0.0
-        with:
-          url: ${{ inputs.vaultUrl }}
-          roleId: ${{ inputs.vaultRoleId }}
-          secretId: ${{ inputs.vaultSecretId }}
-          method: approle
-          secrets: |
-            ${{ inputs.secret }} token | BUILDKITE_API_ACCESS_TOKEN
-
       - id: trigger-buildkite
         name: Trigger Buildkite pipeline
         run: |
+          set -x
           ${{ github.action_path }}/run.sh \
             '${{ inputs.org }}' \
             '${{ inputs.pipeline }}' \
-            '${{ inputs.buildEnvVars }}' \
             '${{ inputs.waitFor }}' \
             '${{ inputs.printBuildLogs }}' \
-            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}' \
+            '${{ inputs.buildkite-token }}' \
+            '${{ inputs.buildEnvVars }}' \
             '${{ inputs.triggerMessage }}' \
             '${{ inputs.pipelineVersion || inputs.pipelineCommit }}' \
             '${{ inputs.pipelineBranch }}'
@@ -105,6 +88,7 @@ runs:
           PIPELINE: ${{ inputs.pipeline }}
           BUILD_NUMBER: ${{ steps.trigger-buildkite.outputs.build_number }}
           ARTIFACT_PATH: ${{ inputs.artifactPath }}
+          BUILDKITE_API_ACCESS_TOKEN: ${{ inputs.buildkite-token }}
         shell: bash
 
       - uses: actions/upload-artifact@v4
@@ -121,7 +105,7 @@ runs:
             '${{ inputs.org }}' \
             '${{ inputs.pipeline }}' \
             '${{ steps.trigger-buildkite.outputs.build_number }}' \
-            '${{ env.BUILDKITE_API_ACCESS_TOKEN }}'
+            '${{ inputs.buildkite-token }}'
         shell: bash
 
       - name: Reset environment
