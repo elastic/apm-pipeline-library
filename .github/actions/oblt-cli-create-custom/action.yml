@@ -39,6 +39,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/oblt-cli/cluster-create-custom')
+
     - name: Configure oblt-cli flags for gitops - issues
       if: ${{ !github.event.issue.pull_request && contains(inputs.gitops, 'true') }}
       run: |
