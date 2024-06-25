@@ -14,6 +14,11 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/oblt-cli/cluster-name-validation.')
+
     - name: Process inputs
       uses: actions/github-script@v7
       id: process

@@ -25,6 +25,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/git/setup.')
     - if: ${{ inputs.token }}
       shell: bash
       run: echo 'GITHUB_TOKEN=${{ env.GITHUB_TOKEN }}' >> $GITHUB_ENV

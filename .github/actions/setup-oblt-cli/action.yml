@@ -21,6 +21,12 @@ inputs:
 runs:
   using: composite
   steps:
+
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/oblt-cli/setup')
+
     - name: Download oblt-cli and append to PATH
       run: ${{ github.action_path }}/download.sh
       env:

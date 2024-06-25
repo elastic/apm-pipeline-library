@@ -35,6 +35,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/oblt-cli/cluster-create-ccs')
 
     - name: Configure oblt-cli flags
       run: |
