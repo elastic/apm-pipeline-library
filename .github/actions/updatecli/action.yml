@@ -46,7 +46,7 @@ runs:
     - uses: actions/github-script@v7
       with:
         script: |
-          core.warning('This action is deprecated. Use `updatecli/updatecli-action` with GitHub secrets.')
+          core.warning('This action is deprecated. Use https://github.com/elastic/oblt-actions/tree/main/updatecli/run.')
 
     - name: Setup Git
       uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
