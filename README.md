@@ -9,8 +9,14 @@
 
 We support different CI ecosystems:
 
-* `GitHub actions`, this is the current supported CI that receives features. 📌 **Active**
+* `GitHub actions`, this is the current supported CI that receives features. 📌 **Deprecation**
 * `Jenkins`, this is deprecated and unless any security or major bugs, there will be no updates. 📌 **Deprecation**
+
+## Status
+
+**This project is now in maintenance mode. We will archive it in the future.**
+
+You can use https://github.com/elastic/oblt-actions/ instead.
 
 ## User Documentation
 
