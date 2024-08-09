@@ -57,10 +57,8 @@ jobs:
         run: echo "${{ steps.upload-file.outputs.uploaded }}"
 
       - if: ${{ failure() }}
-        uses: elastic/apm-pipeline-library/.github/actions/slack-message@current
+        uses: elastic/oblt-actions/slack/notify-result@v1
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          channel: '#observablt-bots'
-          message: ":traffic_cone: generate-elastic-stack-releases failed for `${{ github.repository }}@${{ github.ref_name }}`, @robots-ci please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: "#observablt-bots"
+          message: ":traffic_cone: generate-elastic-stack-releases failed for `${{ github.repository }}@${{ github.ref_name }}`, <!subteam^S03HM5G8CH0> please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"

@@ -44,3 +44,10 @@ jobs:
 
       - name: debug
         run: echo "${{ steps.upload-file.outputs.uploaded }}"
+
+      - if: ${{ failure() }}
+        uses: elastic/oblt-actions/slack/notify-result@v1
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: "#observablt-bots"
+          message: ":traffic_cone: generate-elastic-stack-snapshots failed for `${{ github.repository }}@${{ github.ref_name }}`, <!subteam^S03HM5G8CH0> please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
