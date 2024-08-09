@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   generate-releases:
@@ -27,21 +28,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: 'Get service account'
-        uses: hashicorp/vault-action@v3.0.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          method: approle
-          secrets: |
-            secret/observability-team/ci/artifacts-api-bucket service-account | SERVICE_ACCOUNT ;
-
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ env.SERVICE_ACCOUNT }}'
+      - uses: elastic/oblt-actions/google/auth@v1
 
       - id: 'upload-file'
         uses: 'google-github-actions/upload-cloud-storage@v2'
