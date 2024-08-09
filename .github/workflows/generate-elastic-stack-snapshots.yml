@@ -50,4 +50,4 @@ jobs:
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: "#observablt-bots"
-          message: ":traffic_cone: generate-elastic-stack-snapshots failed for `${{ github.repository }}@${{ github.ref_name }}`, <!subteam^S03HM5G8CH0> please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>"
+          message: "<!subteam^S03HM5G8CH0>"
