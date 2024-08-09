@@ -50,4 +50,4 @@ jobs:
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: "#observablt-bots"
-          message: "<!subteam^S03HM5G8CH0>"
+          message: "<!subteam^S03HM5G8CH0>" # @robots-ci (https://api.slack.com/reference/surfaces/formatting#mentioning-groups)
