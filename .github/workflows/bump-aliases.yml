@@ -28,7 +28,7 @@ jobs:
               "pull_requests": "write"
             }
           repositories: >-
-            ["${{ github.repository }}"]
+            ["apm-pipeline-library"]
 
       - uses: elastic/oblt-actions/updatecli/run-and-notify@v1
         with:
