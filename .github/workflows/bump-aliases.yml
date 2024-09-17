@@ -27,6 +27,8 @@ jobs:
               "contents": "write",
               "pull_requests": "write"
             }
+          repositories: >-
+            ["${{ github.repository }}"]
 
       - uses: elastic/oblt-actions/updatecli/run-and-notify@v1
         with:
