@@ -37,7 +37,7 @@ jobs:
           with open(".ci/.docker-images.yml", "r") as stream:
             images.extend(yaml.safe_load(stream)['images'])
             for image in images:
-              image['repository_name'] = image['repository'].split('/')[-1]
+              image['repository_name_without_owner'] = image['repository'].split('/')[-1]
 
           images_json = json.dumps(images)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
@@ -67,7 +67,7 @@ jobs:
               "contents": "read"
             }
           repositories: >-
-            ["${{ matrix.repository_name }}"]
+            ["${{ matrix.repository_name_without_owner }}"]
 
       - uses: actions/checkout@v4
         with:
