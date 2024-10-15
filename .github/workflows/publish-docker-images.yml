@@ -63,8 +63,6 @@ jobs:
             {
               "contents": "read",
             }
-          repositories: >-
-            ["${{ matrix.repository }}"]
 
       - uses: actions/checkout@v4
         with:
@@ -128,10 +126,8 @@ jobs:
             bash -c "${{ matrix.push_script }}"
           fi
 
-      - if: failure()
-        uses: elastic/apm-pipeline-library/.github/actions/notify-build-status@current
+      - if: failure() && github.event_name == 'schedule'
+        uses: elastic/oblt-actions/slack/notify-result@v1
         with:
-          vaultUrl: ${{ secrets.VAULT_ADDR }}
-          vaultRoleId: ${{ secrets.VAULT_ROLE_ID }}
-          vaultSecretId: ${{ secrets.VAULT_SECRET_ID }}
-          slackChannel: "#observablt-bots"
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: "#observablt-bots"
