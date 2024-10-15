@@ -53,33 +53,38 @@ jobs:
         working-directory: ${{ matrix.working_directory || '.' }}
     steps:
 
-      - uses: elastic/apm-pipeline-library/.github/actions/github-token@main
+      - name: Get token
+        id: get_token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
         with:
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          app_id: ${{ secrets.ELASTIC_OBSERVABILITY_APP_ID }}
+          private_key: ${{ secrets.ELASTIC_OBSERVABILITY_APP_PEM }}
+          permissions: >-
+            {
+              "contents": "read",
+            }
+          repositories: >-
+            ["${{ matrix.repository }}"]
 
       - uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repository }}
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ steps.get_token.outputs.token }}
           ref: ${{ matrix.branch }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@main
+      - name: Login to docker.elastic.co
+        uses: docker/login-action@v3
         with:
-          registry: docker.elastic.co
-          secret: secret/observability-team/ci/docker-registry/prod
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          registry: ${{ secrets.ELASTIC_DOCKER_REGISTRY }}
+          username: ${{ secrets.ELASTIC_DOCKER_USERNAME }}
+          password: ${{ secrets.ELASTIC_DOCKER_PASSWORD }}
 
-      - uses: elastic/apm-pipeline-library/.github/actions/docker-login@current
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
         with:
-          registry: docker.io
-          secret: secret/observability-team/ci/elastic-observability-dockerhub
-          url: ${{ secrets.VAULT_ADDR }}
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          registry: ${{ secrets.DOCKERHUB_REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Prepare
         if: ${{ matrix.prepare_script }}
